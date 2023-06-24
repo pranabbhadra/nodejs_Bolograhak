@@ -1,5 +1,13 @@
 const express = require('express');
 const path = require('path');
+const mysql = require('mysql');
+
+const db = mysql.createConnection({
+    host: process.env.DATABASE_HOST,
+    user: process.env.DATABASE_USER,
+    password: process.env.DATABASE_PASSWORD,
+    database: process.env.DATABASE
+})
 
 const router = express.Router();
 const publicPath = path.join(__dirname, '../public');
@@ -27,24 +35,46 @@ router.get('/logout', (req, res) => {
 });
 
 // Protected route example
-router.get('/dashboard', (req, res) => {
-    const encodedUserData = req.cookies.user;
 
+// Middleware function to check if user is logged in
+const checkLoggedIn = (req, res, next) => {
+    const encodedUserData = req.cookies.user;
     if (encodedUserData) {
-        const userData = JSON.parse(encodedUserData);
-        res.render('dashboard', { userData });
+      // User is logged in, proceed to the next middleware or route handler
+      next();
     } else {
-        res.redirect('sign-in');
+      res.redirect('sign-in');
     }
+};
+
+router.get('/dashboard', checkLoggedIn, (req, res) => {
+    const encodedUserData = req.cookies.user;
+    const userData = JSON.parse(encodedUserData);
+    res.render('dashboard', { page_title: 'Dashboard', userData });
 });
 
-router.get('/profile', (_, resp) => {
-    const user = {
-        name: 'Peter',
-        email: 'peter@test.com',
-        country: 'USA'
-    }
-    resp.render('profile', { user })
+router.get('/profile', checkLoggedIn, (req, res) => {
+    const encodedUserData = req.cookies.user;
+    const userData = JSON.parse(encodedUserData);
+    res.render('profile', { page_title: 'User Profile', userData });
+});
+
+router.get('/edit-profile', checkLoggedIn, (req, res) => {
+    const encodedUserData = req.cookies.user;
+    const userData = JSON.parse(encodedUserData);
+    let country_response = [];
+    //-- Get Country List --/
+    db.query('SELECT * FROM countries', (err, results) => {
+        if (err) {
+            console.log(err);
+        } else {
+            if (results.length > 0) {
+                console.log(results);
+                country_response = results;
+                res.render('edit-profile', { page_title: 'Account Settings', userData, country_response });
+            }
+        }
+    })
 });
 
 router.get('/help', (_, resp) => {

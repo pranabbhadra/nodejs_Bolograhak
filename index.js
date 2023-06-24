@@ -34,5 +34,6 @@ app.use(express.json());
 // Define Routes
 app.use('/', require('./routes/pages'));
 app.use('/auth', require('./routes/auth'));
+app.use('/api', require('./routes/api'));
 
 app.listen(5000);
