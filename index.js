@@ -1,6 +1,6 @@
 const express = require('express');
 const path = require('path');
-const mysql = require('mysql');
+const mysql = require('mysql2');
 const dotenv = require('dotenv');
 const cookieParser = require('cookie-parser');
 
@@ -8,6 +8,7 @@ dotenv.config({ path: './.env' });
 
 const app = express();
 const publicPath = path.join(__dirname,'public');
+const uploadsPath = path.join(__dirname,'uploads');
 
 const db = mysql.createConnection({
     host: process.env.DATABASE_HOST,
@@ -26,7 +27,10 @@ db.connect( (err)=>{
 
 app.use(cookieParser());
 app.use(express.static(publicPath));
+app.use(express.static(uploadsPath));
 app.set('view engine','ejs');
+
+
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());

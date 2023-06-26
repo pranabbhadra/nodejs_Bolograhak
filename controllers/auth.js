@@ -1,5 +1,5 @@
 const express = require('express');
-const mysql = require('mysql');
+const mysql = require('mysql2');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 //const cookieParser = require('cookie-parser');
@@ -58,10 +58,10 @@ exports.register = (req, res) => {
         const hours = String(currentDate.getHours()).padStart(2, '0');
         const minutes = String(currentDate.getMinutes()).padStart(2, '0');
         const seconds = String(currentDate.getSeconds()).padStart(2, '0');
-        
+
         const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
-        db.query('INSERT INTO users SET ?', { first_name: first_name, last_name: last_name, email: email, phone: phone, password: hasPassword, user_registered:formattedDate, user_status:1, user_type_id: 2}, (err, results) => {
+        db.query('INSERT INTO users SET ?', { first_name: first_name, last_name: last_name, email: email, phone: phone, password: hasPassword, user_registered: formattedDate, user_status: 1, user_type_id: 2 }, (err, results) => {
             if (err) {
                 // return res.render('sign-up', {
                 //     message: 'An error occurred while processing your request' + err
@@ -74,17 +74,17 @@ exports.register = (req, res) => {
                     }
                 )
             } else {
-                //console.log(results);
-                // return res.render('sign-up', {
-                //     message: 'User registered.'
-                // })
-                return res.send(
-                    {
-                        statue: 'ok',
-                        data: results,
-                        message: 'User registered'
-                    }
-                )
+                //console.log(results,'User Table');
+                //-- Insert User data to meta table--------//
+                db.query('INSERT INTO user_customer_meta SET ?', { user_id: results.insertId, address: '', country: '', state: '', city: '', zip: '', review_count: 0, date_of_birth: '', occupation: '', gender: '', profile_pic: '' }, (err, results) => {
+                    return res.send(
+                        {
+                            statue: 'ok',
+                            data: results,
+                            message: 'User registered'
+                        }
+                    )
+                })
             }
         })
     })
@@ -122,24 +122,78 @@ exports.login = (req, res) => {
                     }
                     if (result) {
                         //check Administrative Login
-                        if( user.user_type_id==1 && user.user_status==1){
-                            // Set a cookie
-                            const userData = { id: user.id, first_name: user.first_name, last_name: user.last_name, email: user.email, phone: user.phone, user_type_id: user.user_type_id };
-                            const encodedUserData = JSON.stringify(userData);
-                            res.cookie('user', encodedUserData);
-                            //res.redirect('/dashboard');
-                            return res.send(
-                                {
-                                    statue: 'ok',
-                                    data: userData,
-                                    message: 'Login Successfull'
+                        if (user.user_type_id == 1 && user.user_status == 1) {
+                            const query = `
+                                        SELECT user_meta.*, c.name as country_name, s.name as state_name
+                                        FROM user_customer_meta user_meta
+                                        JOIN countries c ON user_meta.country = c.id
+                                        JOIN states s ON user_meta.state = s.id
+                                        WHERE user_id = ?
+                                        `;
+                            db.query(query, [user.user_id], async (err, results) => {
+                                if (results.length > 0) {
+                                    const user_meta = results[0];
+                                    //console.log(user_meta,'aaaaaaaa');
+                                    // Set a cookie
+                                    const dateString = user_meta.date_of_birth;
+                                    const date_of_birth_date = new Date(dateString);
+                                    const formattedDate = date_of_birth_date.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+
+                                    const userData = {
+                                        user_id: user.user_id,
+                                        first_name: user.first_name,
+                                        last_name: user.last_name,
+                                        email: user.email,
+                                        phone: user.phone,
+                                        user_type_id: user.user_type_id,
+                                        address: user_meta.address,
+                                        country: user_meta.country,
+                                        country_name: user_meta.country_name,
+                                        state: user_meta.state,
+                                        state_name: user_meta.state_name,
+                                        city: user_meta.city,
+                                        zip: user_meta.zip,
+                                        review_count: user_meta.review_count,
+                                        date_of_birth: formattedDate,
+                                        occupation: user_meta.occupation,
+                                        gender: user_meta.gender,
+                                        profile_pic: user_meta.profile_pic
+                                    };
+                                    const encodedUserData = JSON.stringify(userData);
+                                    res.cookie('user', encodedUserData);
+                                    return res.send(
+                                        {
+                                            statue: 'ok',
+                                            data: userData,
+                                            message: 'Login Successfull'
+                                        }
+                                    )
+                                } else {
+                                    // Set a cookie
+                                    const userData = {
+                                        user_id: user.user_id,
+                                        first_name: user.first_name,
+                                        last_name: user.last_name,
+                                        email: user.email,
+                                        phone: user.phone,
+                                        user_type_id: user.user_type_id
+                                    };
+                                    const encodedUserData = JSON.stringify(userData);
+                                    res.cookie('user', encodedUserData);
+                                    return res.send(
+                                        {
+                                            statue: 'ok',
+                                            data: userData,
+                                            message: 'Login Successfull'
+                                        }
+                                    )
                                 }
-                            )
-                        }else{
+                            })
+                        } else {
                             let err_msg = '';
-                            if(user.user_status==0){
+                            if (user.user_status == 0) {
                                 err_msg = 'your account is inactive, please contact with administrator.';
-                            }else{
+                            } else {
                                 err_msg = 'You do not have permission to login as administrator.';
                             }
                             return res.send(

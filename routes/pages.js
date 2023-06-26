@@ -1,6 +1,6 @@
 const express = require('express');
 const path = require('path');
-const mysql = require('mysql');
+const mysql = require('mysql2');
 
 const db = mysql.createConnection({
     host: process.env.DATABASE_HOST,
@@ -69,7 +69,7 @@ router.get('/edit-profile', checkLoggedIn, (req, res) => {
             console.log(err);
         } else {
             if (results.length > 0) {
-                console.log(results);
+                //console.log(results);
                 country_response = results;
                 res.render('edit-profile', { page_title: 'Account Settings', userData, country_response });
             }
