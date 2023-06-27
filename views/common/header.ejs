@@ -1850,10 +1850,10 @@
                                     <div class="cursor-pointer symbol symbol-30px symbol-md-40px"
                                         data-kt-menu-trigger="click" data-kt-menu-attach="parent"
                                         data-kt-menu-placement="bottom-end" data-kt-menu-flip="bottom">
-                                        <% if(userData.profile_pic){ %>
-                                            <img src="<%= userData.profile_pic %>" alt="<%= userData.first_name+' '+userData.last_name %>" />
+                                        <% if(currentUserData.profile_pic){ %>
+                                            <img src="<%= currentUserData.profile_pic %>" alt="<%= currentUserData.first_name+' '+currentUserData.last_name %>" />
                                         <% } else { %>
-                                            <img src="assets/media/avatars/blank.png" alt="<%= userData.first_name+' '+userData.last_name %>" />
+                                            <img src="assets/media/avatars/blank.png" alt="<%= currentUserData.first_name+' '+currentUserData.last_name %>" />
                                         <% } %>
                                     </div>
                                     <!--begin::Menu-->
@@ -1864,25 +1864,25 @@
                                             <div class="menu-content d-flex align-items-center px-3">
                                                 <!--begin::Avatar-->
                                                 <div class="symbol symbol-50px me-5">
-                                                    <% if(userData.profile_pic){ %>
-                                                    <img alt="<%= userData.first_name+' '+userData.last_name %>" src="<%= userData.profile_pic %>" />
+                                                    <% if(currentUserData.profile_pic){ %>
+                                                    <img alt="<%= currentUserData.first_name+' '+currentUserData.last_name %>" src="<%= currentUserData.profile_pic %>" />
                                                     <% } else { %>
-                                                        <img src="assets/media/avatars/blank.png" alt="<%= userData.first_name+' '+userData.last_name %>" />
+                                                        <img src="assets/media/avatars/blank.png" alt="<%= currentUserData.first_name+' '+currentUserData.last_name %>" />
                                                     <% } %>
                                                 </div>
                                                 <!--end::Avatar-->
                                                 <!--begin::Username-->
                                                 <div class="d-flex flex-column">
                                                     <div class="fw-bolder d-flex align-items-center fs-5">
-                                                        <%= userData.first_name+' '+userData.last_name %>
+                                                        <%= currentUserData.first_name+' '+currentUserData.last_name %>
                                                         <span class="badge badge-light-success fw-bolder fs-8 px-2 py-1 ms-2">
-                                                            <% if ( userData.user_type_id == 1){ %>
+                                                            <% if ( currentUserData.user_type_id == 1){ %>
                                                                 Admin
                                                             <% } else { %>
                                                                 Contributer
                                                             <% } %>
                                                         </span></div>
-                                                        <a href="#" class="fw-bold text-muted text-hover-primary fs-7"><%= userData.email %></a>
+                                                        <a href="#" class="fw-bold text-muted text-hover-primary fs-7"><%= currentUserData.email %></a>
                                                     </div>
                                                     <!--end::Username-->
                                                 </div>
