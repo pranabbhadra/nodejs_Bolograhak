@@ -14,7 +14,7 @@ exports.countries = (req, res) => {
         if (err) {
             return res.send(
                 {
-                    statue: 'err',
+                    status: 'err',
                     data: '',
                     message: 'An error occurred while processing your request' + err
                 }
@@ -23,13 +23,13 @@ exports.countries = (req, res) => {
             if (results.length > 0) {
                 // return res.send(
                 //     {
-                //         statue: 'ok',
+                //         status: 'ok',
                 //         data: results,
                 //         message: 'All state recived'
                 //     }
                 // )
                 return res.status(200).json({
-                    statue: 'ok',
+                    status: 'ok',
                     data: results,
                     message: 'All countries received',
                   });
@@ -46,7 +46,7 @@ exports.states = (req, res) => {
         if (err) {
             return res.send(
                 {
-                    statue: 'err',
+                    status: 'err',
                     data: '',
                     message: 'An error occurred while processing your request' + err
                 }
@@ -55,7 +55,7 @@ exports.states = (req, res) => {
             if (results.length > 0) {
                 return res.send(
                     {
-                        statue: 'ok',
+                        status: 'ok',
                         data: results,
                         message: 'All state recived'
                     }
@@ -63,7 +63,7 @@ exports.states = (req, res) => {
             } else {
                 return res.send(
                     {
-                        statue: 'err',
+                        status: 'err',
                         data: '',
                         message: 'State not avilable for this country id'
                     }
@@ -86,7 +86,7 @@ exports.editProfile = (req, res) => {
             //console.log(checkError)
             return res.send(
                 {
-                    statue: 'err',
+                    status: 'err',
                     data: '',
                     message: 'An error occurred while processing your request' + checkError
                 }
@@ -97,7 +97,7 @@ exports.editProfile = (req, res) => {
             // Phone number already exists for another user
             return res.send(
                 {
-                    statue: 'err',
+                    status: 'err',
                     data: '',
                     message: 'Phone number already exists for another user'
                 }
@@ -111,7 +111,7 @@ exports.editProfile = (req, res) => {
                     //console.log(updateError);
                     return res.send(
                         {
-                            statue: 'err',
+                            status: 'err',
                             data: '',
                             message: 'An error occurred while processing your request' + updateError
                         }
@@ -137,7 +137,7 @@ exports.editProfile = (req, res) => {
                             if (updateError){
                                 return res.send(
                                     {
-                                        statue: 'err',
+                                        status: 'err',
                                         data: '',
                                         message: 'An error occurred while processing your request' + updateError
                                     }
@@ -167,7 +167,7 @@ exports.editProfile = (req, res) => {
                                 res.cookie('user', encodedUserData);
                                 return res.send(
                                     {
-                                        statue: 'ok',
+                                        status: 'ok',
                                         data: userupdatedData,
                                         message: 'Update Successfull'
                                     }
@@ -181,7 +181,7 @@ exports.editProfile = (req, res) => {
                             if (updateError){
                                 return res.send(
                                     {
-                                        statue: 'err',
+                                        status: 'err',
                                         data: '',
                                         message: 'An error occurred while processing your request' + updateError
                                     }
@@ -211,7 +211,7 @@ exports.editProfile = (req, res) => {
                                 res.cookie('user', encodedUserData);
                                 return res.send(
                                     {
-                                        statue: 'ok',
+                                        status: 'ok',
                                         data: userupdatedData,
                                         message: 'Update Successfull'
                                     }

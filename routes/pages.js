@@ -1,9 +1,11 @@
 const express = require('express');
 const path = require('path');
 const db = require('../config');
+var moment = require('moment');
 
 const router = express.Router();
 const publicPath = path.join(__dirname, '../public');
+
 
 router.get('', (_, resp) => {
     resp.sendFile(`${publicPath}/index.html`)
@@ -14,7 +16,7 @@ router.get('/countries', (req, res) =>{
         if (err) {
             return res.send(
                 {
-                    statue: 'err',
+                    status: 'err',
                     data: '',
                     message: 'An error occurred while processing your request' + err
                 }
@@ -22,7 +24,7 @@ router.get('/countries', (req, res) =>{
         } else {
             if (results.length > 0) {
                 return res.status(200).json({
-                    statue: 'ok',
+                    status: 'ok',
                     data: results,
                     message: 'All countries received',
                   });
@@ -66,13 +68,13 @@ const checkLoggedIn = (req, res, next) => {
 router.get('/dashboard', checkLoggedIn, (req, res) => {
     const encodedUserData = req.cookies.user;
     const currentUserData = JSON.parse(encodedUserData);
-    res.render('dashboard', { menu_active_class: 'here show mb-1', page_title: 'Dashboard', currentUserData });
+    res.render('dashboard', { menu_active_id: 'dashboard', page_title: 'Dashboard', currentUserData });
 });
 
 router.get('/profile', checkLoggedIn, (req, res) => {
     const encodedUserData = req.cookies.user;
     const currentUserData = JSON.parse(encodedUserData);
-    res.render('profile', { menu_active_class: 'here show mb-1', page_title: 'User Profile', currentUserData });
+    res.render('profile', { menu_active_id: 'profile', page_title: 'User Profile', currentUserData });
 });
 
 router.get('/edit-profile', checkLoggedIn, (req, res) => {
@@ -97,7 +99,7 @@ router.get('/edit-profile', checkLoggedIn, (req, res) => {
                         }else{
                             if (state_results.length > 0) {
                                 state_response = state_results;
-                                res.render('edit-profile', { menu_active_class: 'here show mb-1', page_title: 'Account Settings', currentUserData, country_response, state_response });
+                                res.render('edit-profile', { menu_active_id: 'profile', page_title: 'Account Settings', currentUserData, country_response, state_response });
                             }
                         }
                     })
@@ -111,25 +113,31 @@ router.get('/edit-profile', checkLoggedIn, (req, res) => {
 router.get('/users', checkLoggedIn, (req, res) => {
     const encodedUserData = req.cookies.user;
     const currentUserData = JSON.parse(encodedUserData);
-    //res.render('users', { menu_active_class: 'here show mb-1', page_title: 'Users', currentUserData });
+    //res.render('users', { menu_active_id: 'user', page_title: 'Users', currentUserData });
+    
     const user_query = `
-                    SELECT users.*, user_customer_meta.*, user_account_type.role_name
+                    SELECT users.*, user_customer_meta.*, user_account_type.role_name, user_device_info.last_logged_in
                     FROM users
                     JOIN user_customer_meta ON users.user_id = user_customer_meta.user_id
                     JOIN user_account_type ON users.user_type_id = user_account_type.ID
+                    LEFT JOIN user_device_info ON users.user_id = user_device_info.user_id
                     `;
     db.query(user_query, (err, results) => {
         if (err) {
             return res.send(
                 {
-                    statue: 'err',
+                    status: 'err',
                     data: '',
                     message: 'An error occurred while processing your request' + err
                 }
             )
         } else {
             if (results.length > 0) {
-                res.render('users', { menu_active_class: 'here show mb-1', page_title: 'Users', currentUserData, 'allusers': results });
+                const users = results.map((user) => ({
+                    ...user,
+                    registered_date: moment(user.last_logged_in).format('Do MMMM YYYY, h:mm:ss a'),
+                }));
+                res.render('users', { menu_active_id: 'user', page_title: 'Users', currentUserData, 'allusers': users });
             }
         }
     })
@@ -156,7 +164,7 @@ router.get('/add-user', checkLoggedIn, (req, res) => {
                         if (accountresults.length > 0) {
                             //console.log(results);
                             accounts_response = accountresults;
-                            res.render('add-user', { menu_active_class: 'here show mb-1', page_title: 'Add New User', currentUserData, country_response, accounts_response, auto_password });
+                            res.render('add-user', { menu_active_id: 'user', page_title: 'Add New User', currentUserData, country_response, accounts_response, auto_password });
                             
                         }
                     }
@@ -186,6 +194,6 @@ function generateRandomPassword() {
       password += characters.charAt(randomIndex);
     }
     return password;
-  }
+}
 
 module.exports = router;

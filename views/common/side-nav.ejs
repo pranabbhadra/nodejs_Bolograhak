@@ -46,7 +46,7 @@ data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_aside_mobile_toggle"
                <span class="menu-section text-muted text-uppercase fs-8 ls-1">Dashboard</span>
             </div>
          </div>
-         <div data-kt-menu-trigger="click" class="menu-item menu-accordion <%= menu_active_class %>>">
+         <div data-kt-menu-trigger="click" class="menu-item menu-accordion <% if(menu_active_id=='user'){ %> here show mb-1<% }%>">
             <span class="menu-link">
                <span class="menu-icon">
                   <!--begin::Svg Icon | path: icons/duotune/communication/com013.svg-->

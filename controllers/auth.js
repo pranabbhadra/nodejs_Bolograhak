@@ -1,11 +1,18 @@
 const express = require('express');
 const db = require('../config');
+const mdlconfig = require('../config-module');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const useragent = require('useragent');
+const requestIp = require('request-ip');
 //const cookieParser = require('cookie-parser');
 
 // const app = express();
 // app.use(cookieParser());
+
+
+
+
 
 //-- Register Function--//
 exports.register = (req, res) => {
@@ -20,7 +27,7 @@ exports.register = (req, res) => {
             // })
             return res.send(
                 {
-                    statue: 'err',
+                    status: 'err',
                     data: '',
                     message: 'An error occurred while processing your request' + err
                 }
@@ -33,7 +40,7 @@ exports.register = (req, res) => {
             // })
             return res.send(
                 {
-                    statue: 'err',
+                    status: 'err',
                     data: '',
                     message: 'Email ID or Phone number already exist'
                 }
@@ -60,7 +67,7 @@ exports.register = (req, res) => {
                 // })
                 return res.send(
                     {
-                        statue: 'err',
+                        status: 'err',
                         data: '',
                         message: 'An error occurred while processing your request' + err
                     }
@@ -71,7 +78,7 @@ exports.register = (req, res) => {
                 db.query('INSERT INTO user_customer_meta SET ?', { user_id: results.insertId, address: '', country: '', state: '', city: '', zip: '', review_count: 0, date_of_birth: '', occupation: '', gender: '', profile_pic: '' }, (err, results) => {
                     return res.send(
                         {
-                            statue: 'ok',
+                            status: 'ok',
                             data: results,
                             message: 'User registered'
                         }
@@ -84,7 +91,11 @@ exports.register = (req, res) => {
 
 //-- Login Function --//
 exports.login = (req, res) => {
-    console.log(req.body);
+    //console.log(req.body);
+    const userAgent = req.headers['user-agent'];
+    const agent = useragent.parse(userAgent);
+    
+    //res.json(deviceInfo);
 
     const { email, password } = req.body;
 
@@ -92,7 +103,7 @@ exports.login = (req, res) => {
         if (err) {
             return res.send(
                 {
-                    statue: 'err',
+                    status: 'err',
                     data: '',
                     message: 'An error occurred while processing your request' + err
                 }
@@ -100,13 +111,13 @@ exports.login = (req, res) => {
         } else {
             if (results.length > 0) {
                 const user = results[0];
-                console.log(user);
+                //console.log(user);
                 // Compare the provided password with the stored hashed password
                 bcrypt.compare(password, user.password, (err, result) => {
                     if (err) {
                         return res.send(
                             {
-                                statue: 'err',
+                                status: 'err',
                                 data: '',
                                 message: 'Error: ' + err
                             }
@@ -123,6 +134,7 @@ exports.login = (req, res) => {
                                         WHERE user_id = ?
                                         `;
                             db.query(query, [user.user_id], async (err, results) => {
+                                let userData = {};
                                 if (results.length > 0) {
                                     const user_meta = results[0];
                                     //console.log(user_meta,'aaaaaaaa');
@@ -131,7 +143,7 @@ exports.login = (req, res) => {
                                     const date_of_birth_date = new Date(dateString);
                                     const formattedDate = date_of_birth_date.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
 
-                                    const userData = {
+                                    let userData = {
                                         user_id: user.user_id,
                                         first_name: user.first_name,
                                         last_name: user.last_name,
@@ -153,17 +165,10 @@ exports.login = (req, res) => {
                                     };
                                     const encodedUserData = JSON.stringify(userData);
                                     res.cookie('user', encodedUserData);
-                                    console.log(encodedUserData, 'login user data');
-                                    return res.send(
-                                        {
-                                            statue: 'ok',
-                                            data: userData,
-                                            message: 'Login Successfull'
-                                        }
-                                    )
+                                    //console.log(encodedUserData, 'login user data');
                                 } else {
                                     // Set a cookie
-                                    const userData = {
+                                    let userData = {
                                         user_id: user.user_id,
                                         first_name: user.first_name,
                                         last_name: user.last_name,
@@ -173,14 +178,51 @@ exports.login = (req, res) => {
                                     };
                                     const encodedUserData = JSON.stringify(userData);
                                     res.cookie('user', encodedUserData);
-                                    return res.send(
-                                        {
-                                            statue: 'ok',
-                                            data: userData,
-                                            message: 'Login Successfull'
-                                        }
-                                    )
                                 }
+                                //console.log(userData, 'User data');
+                                //-- check last Login Info-----//
+                                const device_query = "SELECT * FROM user_device_info WHERE user_id = ?";
+                                db.query(device_query, [user.user_id], async (err, device_query_results) => {
+                                    const currentDate = new Date();
+                                    const year = currentDate.getFullYear();
+                                    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+                                    const day = String(currentDate.getDate()).padStart(2, '0');
+                                    const hours = String(currentDate.getHours()).padStart(2, '0');
+                                    const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+                                    const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+                                    const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+                                    if (device_query_results.length > 0) {
+                                        // User exist update info
+                                        const device_update_query = 'UPDATE user_device_info SET device_id = ?, IP_address = ?, last_logged_in = ? WHERE user_id = ?';
+                                        const values = [agent.toAgent()+' '+agent.os.toString(), requestIp.getClientIp(req), formattedDate, user.user_id];
+                                        db.query(device_update_query, values, (err, device_update_query_results) => {
+                                            return res.send(
+                                                {
+                                                    status: 'ok',
+                                                    data: userData,
+                                                    message: 'Login Successfull'
+                                                }
+                                            )
+                                        })
+                                    }else{
+                                        // User doesnot exist Insert New Row.
+
+                                        const device_insert_query = 'INSERT INTO user_device_info (user_id, device_id, device_token, imei_no, model_name, make_name, IP_address, last_logged_in, created_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+                                        const values = [user.user_id, agent.toAgent()+' '+agent.os.toString(), '', '', '', '', requestIp.getClientIp(req), formattedDate, formattedDate];
+
+                                        db.query(device_insert_query, values, (err, device_insert_query_results) => {
+                                            return res.send(
+                                                {
+                                                    status: 'ok',
+                                                    data: userData,
+                                                    message: 'Login Successfull'
+                                                }
+                                            )
+                                        })
+
+                                    }
+                                })
                             })
                         } else {
                             let err_msg = '';
@@ -191,7 +233,7 @@ exports.login = (req, res) => {
                             }
                             return res.send(
                                 {
-                                    statue: 'err',
+                                    status: 'err',
                                     data: '',
                                     message: err_msg
                                 }
@@ -200,7 +242,7 @@ exports.login = (req, res) => {
                     } else {
                         return res.send(
                             {
-                                statue: 'err',
+                                status: 'err',
                                 data: '',
                                 message: 'Invalid password'
                             }
@@ -210,7 +252,7 @@ exports.login = (req, res) => {
             } else {
                 return res.send(
                     {
-                        statue: 'err',
+                        status: 'err',
                         data: '',
                         message: 'Invalid Email'
                     }
@@ -222,13 +264,12 @@ exports.login = (req, res) => {
 
 //--- Create New User ----//
 exports.createUser = (req, res) => {
-    console.log(req.body);
-
+    //console.log(req.body);
     db.query('SELECT email FROM users WHERE email = ? OR phone = ?', [req.body.email, req.body.phone], async (err, results) => {
         if (err) {
             return res.send(
                 {
-                    statue: 'err',
+                    status: 'err',
                     data: '',
                     message: 'An error occurred while processing your request' + err
                 }
@@ -239,7 +280,7 @@ exports.createUser = (req, res) => {
             
             return res.send(
                 {
-                    statue: 'err',
+                    status: 'err',
                     data: '',
                     message: 'Email ID or Phone number already exist'
                 }
@@ -273,7 +314,7 @@ exports.createUser = (req, res) => {
             if (err) {
                 return res.send(
                     {
-                        statue: 'err',
+                        status: 'err',
                         data: '',
                         message: 'An error occurred while processing your request' + err
                     }
@@ -281,53 +322,40 @@ exports.createUser = (req, res) => {
             } else {
                 //console.log(results,'User Table');
                 //-- Insert User data to meta table--------//
+                var insert_values = [];
                 if (req.file) {
-                    db.query('INSERT INTO user_customer_meta SET ?',
-                                {
-                                    user_id: results.insertId,
-                                    address: req.body.address,
-                                    country: req.body.country,
-                                    state: req.body.state,
-                                    city: req.body.city,
-                                    zip: req.body.zip,
-                                    review_count: 0,
-                                    date_of_birth: req.body.date_of_birth,
-                                    occupation: req.body.occupation,
-                                    gender: req.body.gender,
-                                    profile_pic: req.file.filename,
-                                }, (err, results) => {
-                        return res.send(
-                            {
-                                statue: 'ok',
-                                data: results,
-                                message: 'New user created'
-                            }
-                        )
-                    })
+                    insert_values = [results.insertId, req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, 0, req.body.date_of_birth, req.body.occupation, req.body.gender, req.file.filename];
                 } else {
-                    db.query('INSERT INTO user_customer_meta SET ?',
-                                {
-                                    user_id: results.insertId,
-                                    address: req.body.address,
-                                    country: req.body.country,
-                                    state: req.body.state,
-                                    city: req.body.city,
-                                    zip: req.body.zip,
-                                    review_count: 0,
-                                    date_of_birth: req.body.date_of_birth,
-                                    occupation: req.body.occupation,
-                                    gender: req.body.gender,
-                                    profile_pic: '',
-                                }, (err, results) => {
+                    insert_values = [results.insertId, req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, 0, req.body.date_of_birth, req.body.occupation, req.body.gender, ''];
+                }
+
+                const insertQuery = 'INSERT INTO user_customer_meta (user_id, address, country, state, city, zip, review_count, date_of_birth, occupation, gender, profile_pic) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+                db.query(insertQuery, insert_values, (error, results, fields) => {
+                    if (err) {
+                        console.log(err);
+                    }else{
+                        var mailOptions = {
+                            from: 'vivek@scwebtech.com',
+                            to: req.body.email,
+                            subject: 'Test Message From Bolo Grahak',
+                            text: 'Test Message bidy'
+                        }
+                        mdlconfig.transporter.sendMail(mailOptions, function(err, info){
+                            if(err){
+                                console.log(err);
+                            }else{
+                                console.log('Mail Send: ', info.response);
+                            }
+                        })
                         return res.send(
                             {
-                                statue: 'ok',
+                                status: 'ok',
                                 data: results,
                                 message: 'New user created'
                             }
                         )
-                    })
-                }
+                    }
+                });
             }
         })
     })

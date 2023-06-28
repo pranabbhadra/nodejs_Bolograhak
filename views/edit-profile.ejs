@@ -876,7 +876,7 @@ $('#select_country').change(function() {
         data: {country_id:country_id},
         ContentType: 'application/json',
         success: function (data) {
-            if (data.statue == 'ok') {
+            if (data.status == 'ok') {
                 $('#dynamic_state_field_wrapper').show();
                 $("#select_state").prop('required',true);
                 $.each(data.data, function (i, item) {
@@ -1026,7 +1026,7 @@ var KTAccountSettingsProfileDetails = function () {
                         processData: false, // Prevent jQuery from processing the data
                         contentType: false, // Let the browser set the content type
                         success: function (data) {
-                            if (data.statue == 'ok') {
+                            if (data.status == 'ok') {
                                 Swal.fire({
                                     text: data.message,
                                     icon: "success",

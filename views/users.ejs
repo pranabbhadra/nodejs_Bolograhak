@@ -284,7 +284,13 @@
                                 <!--end::Role=-->
                                 <!--begin::Last login=-->
                                 <td>
-                                    <div class="badge badge-light fw-bolder">Yesterday</div>
+                                    <div class="badge badge-light fw-bolder">
+                                        <% if(user.registered_date != 'Invalid date'){ %>
+                                            <%= user.registered_date %>
+                                        <% }else{ %>
+                                            Not Logedin
+                                        <% } %>
+                                    </div>
                                 </td>
                                 <!--end::Last login=-->
                                 <!--begin::Two step=-->
@@ -316,9 +322,11 @@
                                         </div>
                                         <!--end::Menu item-->
                                         <!--begin::Menu item-->
+                                        <% if( user.user_type_id != 1 ){ %>
                                         <div class="menu-item px-3">
                                             <a href="#" class="menu-link px-3" data-kt-users-table-filter="delete_row">Delete</a>
                                         </div>
+                                        <% } %>
                                         <!--end::Menu item-->
                                     </div>
                                     <!--end::Menu-->
