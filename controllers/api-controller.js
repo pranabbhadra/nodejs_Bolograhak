@@ -40,7 +40,7 @@ exports.countries = (req, res) => {
 
 //-- States --//
 exports.states = (req, res) => {
-    //console.log(req.body);
+    console.log(req.body);
 
     db.query('SELECT * FROM states WHERE country_id = ?', [req.body.country_id], async (err, results) => {
         if (err) {

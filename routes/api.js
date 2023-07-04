@@ -17,8 +17,8 @@ const storage = multer.diskStorage({
 });
 // Create multer instance
 const upload = multer({ storage: storage });
-router.post('/states', apiController.states );
-router.put('/edit-profile', upload.single('profile_pic'), apiController.editProfile );
+router.post('/states', apiController.states);
+router.put('/edit-profile', upload.single('profile_pic'), apiController.editProfile);
 
 
 

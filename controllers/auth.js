@@ -16,7 +16,7 @@ const requestIp = require('request-ip');
 
 //-- Register Function--//
 exports.register = (req, res) => {
-    console.log(req.body);
+    //console.log(req.body);
 
     const { first_name, last_name, email, phone, password, confirm_password, toc } = req.body;
 
@@ -94,7 +94,7 @@ exports.login = (req, res) => {
     //console.log(req.body);
     const userAgent = req.headers['user-agent'];
     const agent = useragent.parse(userAgent);
-    
+
     //res.json(deviceInfo);
 
     const { email, password } = req.body;
@@ -195,7 +195,7 @@ exports.login = (req, res) => {
                                     if (device_query_results.length > 0) {
                                         // User exist update info
                                         const device_update_query = 'UPDATE user_device_info SET device_id = ?, IP_address = ?, last_logged_in = ? WHERE user_id = ?';
-                                        const values = [agent.toAgent()+' '+agent.os.toString(), requestIp.getClientIp(req), formattedDate, user.user_id];
+                                        const values = [agent.toAgent() + ' ' + agent.os.toString(), requestIp.getClientIp(req), formattedDate, user.user_id];
                                         db.query(device_update_query, values, (err, device_update_query_results) => {
                                             return res.send(
                                                 {
@@ -205,11 +205,11 @@ exports.login = (req, res) => {
                                                 }
                                             )
                                         })
-                                    }else{
+                                    } else {
                                         // User doesnot exist Insert New Row.
 
                                         const device_insert_query = 'INSERT INTO user_device_info (user_id, device_id, device_token, imei_no, model_name, make_name, IP_address, last_logged_in, created_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
-                                        const values = [user.user_id, agent.toAgent()+' '+agent.os.toString(), '', '', '', '', requestIp.getClientIp(req), formattedDate, formattedDate];
+                                        const values = [user.user_id, agent.toAgent() + ' ' + agent.os.toString(), '', '', '', '', requestIp.getClientIp(req), formattedDate, formattedDate];
 
                                         db.query(device_insert_query, values, (err, device_insert_query_results) => {
                                             return res.send(
@@ -277,7 +277,7 @@ exports.createUser = (req, res) => {
         }
 
         if (results.length > 0) {
-            
+
             return res.send(
                 {
                     status: 'err',
@@ -301,62 +301,62 @@ exports.createUser = (req, res) => {
         const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
         db.query('INSERT INTO users SET ?',
-                {
-                    first_name: req.body.first_name,
-                    last_name: req.body.last_name,
-                    email: req.body.email,
-                    phone: req.body.phone,
-                    password: hasPassword,
-                    user_registered: formattedDate,
-                    user_status: 1,
-                    user_type_id: req.body.user_type_id
-                }, (err, results) => {
-            if (err) {
-                return res.send(
-                    {
-                        status: 'err',
-                        data: '',
-                        message: 'An error occurred while processing your request' + err
-                    }
-                )
-            } else {
-                //console.log(results,'User Table');
-                //-- Insert User data to meta table--------//
-                var insert_values = [];
-                if (req.file) {
-                    insert_values = [results.insertId, req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, 0, req.body.date_of_birth, req.body.occupation, req.body.gender, req.file.filename];
-                } else {
-                    insert_values = [results.insertId, req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, 0, req.body.date_of_birth, req.body.occupation, req.body.gender, ''];
-                }
-
-                const insertQuery = 'INSERT INTO user_customer_meta (user_id, address, country, state, city, zip, review_count, date_of_birth, occupation, gender, profile_pic) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-                db.query(insertQuery, insert_values, (error, results, fields) => {
-                    if (err) {
-                        console.log(err);
-                    }else{
-                        var mailOptions = {
-                            from: 'vivek@scwebtech.com',
-                            to: req.body.email,
-                            subject: 'Test Message From Bolo Grahak',
-                            text: 'Test Message bidy'
+            {
+                first_name: req.body.first_name,
+                last_name: req.body.last_name,
+                email: req.body.email,
+                phone: req.body.phone,
+                password: hasPassword,
+                user_registered: formattedDate,
+                user_status: 1,
+                user_type_id: req.body.user_type_id
+            }, (err, results) => {
+                if (err) {
+                    return res.send(
+                        {
+                            status: 'err',
+                            data: '',
+                            message: 'An error occurred while processing your request' + err
                         }
-                        mdlconfig.transporter.sendMail(mailOptions, function(err, info){
-                            if(err){
-                                console.log(err);
-                            }else{
-                                console.log('Mail Send: ', info.response);
-                            }
-                        })
-                        return res.send(
-                            {
-                                status: 'ok',
-                                data: results,
-                                message: 'New user created'
-                            }
-                        )
+                    )
+                } else {
+                    //console.log(results,'User Table');
+                    //-- Insert User data to meta table--------//
+                    var insert_values = [];
+                    if (req.file) {
+                        insert_values = [results.insertId, req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, 0, req.body.date_of_birth, req.body.occupation, req.body.gender, req.file.filename];
+                    } else {
+                        insert_values = [results.insertId, req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, 0, req.body.date_of_birth, req.body.occupation, req.body.gender, ''];
                     }
-                });
-            }
-        })
+
+                    const insertQuery = 'INSERT INTO user_customer_meta (user_id, address, country, state, city, zip, review_count, date_of_birth, occupation, gender, profile_pic) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+                    db.query(insertQuery, insert_values, (error, results, fields) => {
+                        if (err) {
+                            console.log(err);
+                        } else {
+                            var mailOptions = {
+                                from: 'vivek@scwebtech.com',
+                                to: req.body.email,
+                                subject: 'Test Message From Bolo Grahak',
+                                text: 'Test Message bidy'
+                            }
+                            mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
+                                if (err) {
+                                    console.log(err);
+                                } else {
+                                    console.log('Mail Send: ', info.response);
+                                }
+                            })
+                            return res.send(
+                                {
+                                    status: 'ok',
+                                    data: results,
+                                    message: 'New user created'
+                                }
+                            )
+                        }
+                    });
+                }
+            })
     })
 }

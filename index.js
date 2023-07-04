@@ -7,14 +7,14 @@ const cookieParser = require('cookie-parser');
 dotenv.config({ path: './.env' });
 
 const app = express();
-const publicPath = path.join(__dirname,'public');
-const uploadsPath = path.join(__dirname,'uploads');
+const publicPath = path.join(__dirname, 'public');
+const uploadsPath = path.join(__dirname, 'uploads');
 
 
 app.use(cookieParser());
 app.use(express.static(publicPath));
 app.use(express.static(uploadsPath));
-app.set('view engine','ejs');
+app.set('view engine', 'ejs');
 
 
 

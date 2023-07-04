@@ -11,7 +11,7 @@ router.get('', (_, resp) => {
     resp.sendFile(`${publicPath}/index.html`)
 });
 
-router.get('/countries', (req, res) =>{
+router.get('/countries', (req, res) => {
     db.query('SELECT * FROM countries', (err, results) => {
         if (err) {
             return res.send(
@@ -27,7 +27,7 @@ router.get('/countries', (req, res) =>{
                     status: 'ok',
                     data: results,
                     message: 'All countries received',
-                  });
+                });
             }
         }
     })
@@ -58,10 +58,10 @@ router.get('/logout', (req, res) => {
 const checkLoggedIn = (req, res, next) => {
     const encodedUserData = req.cookies.user;
     if (encodedUserData) {
-      // User is logged in, proceed to the next middleware or route handler
-      next();
+        // User is logged in, proceed to the next middleware or route handler
+        next();
     } else {
-      res.redirect('sign-in');
+        res.redirect('sign-in');
     }
 };
 
@@ -89,14 +89,14 @@ router.get('/edit-profile', checkLoggedIn, (req, res) => {
             if (results.length > 0) {
                 //console.log(results);
                 country_response = results;
-                if(!currentUserData.country){
+                if (!currentUserData.country) {
                     res.render('edit-profile', { page_title: 'Account Settings', currentUserData, country_response });
-                }else{
+                } else {
                     // -- send state list --//
                     db.query('SELECT * FROM states WHERE country_id=?', [currentUserData.country], (err, state_results) => {
                         if (err) {
                             console.log(err);
-                        }else{
+                        } else {
                             if (state_results.length > 0) {
                                 state_response = state_results;
                                 res.render('edit-profile', { menu_active_id: 'profile', page_title: 'Account Settings', currentUserData, country_response, state_response });
@@ -104,7 +104,7 @@ router.get('/edit-profile', checkLoggedIn, (req, res) => {
                         }
                     })
                 }
-                
+
             }
         }
     })
@@ -114,7 +114,7 @@ router.get('/users', checkLoggedIn, (req, res) => {
     const encodedUserData = req.cookies.user;
     const currentUserData = JSON.parse(encodedUserData);
     //res.render('users', { menu_active_id: 'user', page_title: 'Users', currentUserData });
-    
+
     const user_query = `
                     SELECT users.*, user_customer_meta.*, user_account_type.role_name, user_device_info.last_logged_in
                     FROM users
@@ -165,11 +165,11 @@ router.get('/add-user', checkLoggedIn, (req, res) => {
                             //console.log(results);
                             accounts_response = accountresults;
                             res.render('add-user', { menu_active_id: 'user', page_title: 'Add New User', currentUserData, country_response, accounts_response, auto_password });
-                            
+
                         }
                     }
                 })
-                
+
             }
         }
     })
@@ -190,8 +190,8 @@ function generateRandomPassword() {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#!^&*()%';
     let password = '';
     for (let i = 0; i < 10; i++) {
-      const randomIndex = Math.floor(Math.random() * characters.length);
-      password += characters.charAt(randomIndex);
+        const randomIndex = Math.floor(Math.random() * characters.length);
+        password += characters.charAt(randomIndex);
     }
     return password;
 }
