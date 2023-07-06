@@ -25,7 +25,11 @@ router.post('/register', authController.register);
 router.post('/login', authController.login);
 
 
+
 //Create New User--------//
 router.post('/create-user', upload.single('profile_pic'), authController.createUser);
+
+//Create New category--------//
+router.post('/create-category', upload.single('cat_image'), authController.createCategory);
 
 module.exports = router;

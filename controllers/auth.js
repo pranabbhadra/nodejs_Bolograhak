@@ -11,9 +11,6 @@ const requestIp = require('request-ip');
 // app.use(cookieParser());
 
 
-
-
-
 //-- Register Function--//
 exports.register = (req, res) => {
     //console.log(req.body);
@@ -359,4 +356,117 @@ exports.createUser = (req, res) => {
                 }
             })
     })
+}
+
+//Create New Category
+exports.createCategory = (req, res) => {
+    console.log('category', req.body);
+    const { cat_name, cat_parent_id, country } = req.body;
+    const cat_sql = "SELECT category_name FROM category WHERE category_name = ?";
+    db.query(cat_sql, cat_name, (cat_err, cat_result) => {
+        if (cat_err) throw cat_err;
+        if (cat_result.length > 0) {
+            return res.send(
+                {
+                    status: 'Not ok',
+                    message: 'Category name already exists '
+                }
+            )
+        } else {
+            if (req.file) {
+                if (cat_parent_id == '') {
+                    const val = [cat_name, 0, req.file.filename];
+                    const sql = 'INSERT INTO category (category_name, parent_id, category_img) VALUES (?, ?, ?)';
+                    db.query(sql, val, async (err, result) => {
+                        if (err) {
+                            console.log(err)
+                        } else {
+                            for (var i = 0; i < country.length; i++) {
+                                db.query(`INSERT INTO category_country_relation (cat_id , country_id) VALUES (${result.insertId}, ${country[i]} )`, await function (err, country_val) {
+                                    if (err) throw err;
+
+                                });
+                            }
+                            return res.send(
+                                {
+                                    status: 'ok',
+                                    data: result,
+                                    message: 'New Category created'
+                                }
+                            )
+                        }
+                    })
+                } else {
+                    const val = [cat_name, cat_parent_id, req.file.filename];
+                    const sql = 'INSERT INTO category (category_name, parent_id, category_img) VALUES (?, ?, ?)';
+                    db.query(sql, val, async (err, result) => {
+                        if (err) {
+                            console.log(err)
+                        } else {
+                            for (var i = 0; i < country.length; i++) {
+                                db.query(`INSERT INTO category_country_relation (cat_id , country_id) VALUES (${result.insertId}, ${country[i]} )`, await function (err, country_val) {
+                                    if (err) throw err;
+
+                                });
+                            }
+                            return res.send(
+                                {
+                                    status: 'ok',
+                                    data: result,
+                                    message: 'New Category created'
+                                }
+                            )
+                        }
+                    })
+                }
+            } else {
+                if (cat_parent_id == '') {
+                    const val = [cat_name, 0, 'NULL'];
+                    const sql = 'INSERT INTO category (category_name, parent_id, category_img) VALUES (?, ?, ?)';
+                    db.query(sql, val, async (err, result) => {
+                        if (err) {
+                            console.log(err)
+                        } else {
+                            for (var i = 0; i < country.length; i++) {
+                                db.query(`INSERT INTO category_country_relation (cat_id , country_id) VALUES (${result.insertId}, ${country[i]} )`, await function (err, country_val) {
+                                    if (err) throw err;
+
+                                });
+                            }
+                            return res.send(
+                                {
+                                    status: 'ok',
+                                    data: result,
+                                    message: 'New Category created'
+                                }
+                            )
+                        }
+                    })
+                } else {
+                    const val = [cat_name, cat_parent_id, 'NULL'];
+                    const sql = 'INSERT INTO category (category_name, parent_id, category_img) VALUES (?, ?, ?)';
+                    db.query(sql, val, async (err, result) => {
+                        if (err) {
+                            console.log(err)
+                        } else {
+                            for (var i = 0; i < country.length; i++) {
+                                db.query(`INSERT INTO category_country_relation (cat_id , country_id) VALUES (${result.insertId}, ${country[i]} )`, await function (err, country_val) {
+                                    if (err) throw err;
+
+                                });
+                            }
+                            return res.send(
+                                {
+                                    status: 'ok',
+                                    data: result,
+                                    message: 'New Category created'
+                                }
+                            )
+                        }
+                    })
+                }
+            }
+        }
+    })
+
 }
