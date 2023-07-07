@@ -32,4 +32,7 @@ router.post('/create-user', upload.single('profile_pic'), authController.createU
 //Create New category--------//
 router.post('/create-category', upload.single('cat_image'), authController.createCategory);
 
+//Update category--------//
+router.post('/update-category', upload.single('cat_image'), authController.updateCategory);
+
 module.exports = router;

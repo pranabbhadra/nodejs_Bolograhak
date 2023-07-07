@@ -58,7 +58,7 @@
                 <!--begin::Wrapper-->
                 <div class="wrapper d-flex flex-column flex-row-fluid" id="kt_wrapper">
                     <!--begin::Header-->
-                    <div id="kt_header" style="" class="header align-items-stretch">
+                    <div id="kt_header" class="header align-items-stretch">
                         <!--begin::Container-->
                         <div class="container-fluid d-flex align-items-stretch justify-content-between">
                             <!--begin::Aside mobile toggle-->
@@ -84,7 +84,7 @@
                             <!--begin::Mobile logo-->
                             <div class="d-flex align-items-center flex-grow-1 flex-lg-grow-0">
                                 <a href="../../demo1/dist/index.html" class="d-lg-none">
-                                    <img alt="Logo" src="assets/media/logos/logo-2.svg" class="h-30px" />
+                                    <img alt="Logo" src="/assets/media/logos/logo-2.svg" class="h-30px" />
                                 </a>
                             </div>
                             <!--end::Mobile logo-->
@@ -1921,10 +1921,10 @@
                                                 data-kt-menu-trigger="click" data-kt-menu-attach="parent"
                                                 data-kt-menu-placement="bottom-end" data-kt-menu-flip="bottom">
                                                 <% if(currentUserData.profile_pic){ %>
-                                                    <img src="<%= currentUserData.profile_pic %>"
+                                                    <img src="/<%= currentUserData.profile_pic %>"
                                                         alt="<%= currentUserData.first_name+' '+currentUserData.last_name %>" />
                                                     <% } else { %>
-                                                        <img src="assets/media/avatars/blank.png"
+                                                        <img src="/assets/media/avatars/blank.png"
                                                             alt="<%= currentUserData.first_name+' '+currentUserData.last_name %>" />
                                                         <% } %>
                                             </div>
@@ -1938,9 +1938,9 @@
                                                         <div class="symbol symbol-50px me-5">
                                                             <% if(currentUserData.profile_pic){ %>
                                                                 <img alt="<%= currentUserData.first_name+' '+currentUserData.last_name %>"
-                                                                    src="<%= currentUserData.profile_pic %>" />
+                                                                    src="/<%= currentUserData.profile_pic %>" />
                                                                 <% } else { %>
-                                                                    <img src="assets/media/avatars/blank.png"
+                                                                    <img src="/assets/media/avatars/blank.png"
                                                                         alt="<%= currentUserData.first_name+' '+currentUserData.last_name %>" />
                                                                     <% } %>
                                                         </div>

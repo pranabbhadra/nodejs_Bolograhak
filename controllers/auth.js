@@ -360,7 +360,7 @@ exports.createUser = (req, res) => {
 
 //Create New Category
 exports.createCategory = (req, res) => {
-    console.log('category', req.body);
+    //console.log('category', req.body);
     const { cat_name, cat_parent_id, country } = req.body;
     const cat_sql = "SELECT category_name FROM category WHERE category_name = ?";
     db.query(cat_sql, cat_name, (cat_err, cat_result) => {
@@ -468,5 +468,154 @@ exports.createCategory = (req, res) => {
             }
         }
     })
+
+}
+
+//Update Category
+exports.updateCategory = (req, res) => {
+    console.log('category', req.body, req.file);
+    const { cat_id, cat_name, cat_parent_id, country } = req.body;
+    const check_arr = [cat_name, cat_id]
+    const cat_sql = "SELECT category_name FROM category WHERE category_name = ? AND ID != ?";
+    db.query(cat_sql, check_arr, (cat_err, cat_result) => {
+        if (cat_err) throw cat_err;
+        if (cat_result.length > 0) {
+            return res.send(
+                {
+                    status: 'Not ok',
+                    message: 'Category name already exists '
+                }
+            )
+        } else {
+            if (req.file) {
+                const file_query = `SELECT category_img FROM category WHERE ID = ${cat_id}`;
+                db.query(file_query, async function (img_err, img_res) {
+                    console.log(img_res);
+                    if (img_res[0].category_img != 'NULL') {
+                        const filename = img_res[0].category_img;
+                        const filePath = `uploads/${filename}`;
+                        console.log(filePath);
+
+                        fs.unlink(filePath, await function () {
+                            console.log('file deleted');
+                        })
+                    }
+                })
+                if (cat_parent_id == '') {
+                    const val = [cat_name, req.file.filename, cat_id];
+                    const sql = `UPDATE category SET category_name = ?, category_img = ? WHERE ID = ?`;
+                    db.query(sql, val, async (err, result) => {
+                        if (err) {
+                            console.log(err)
+                        } else {
+                            const delete_query = `DELETE FROM category_country_relation WHERE cat_id = ${cat_id}`;
+                            db.query(`DELETE FROM category_country_relation WHERE cat_id = ${cat_id}`, await function (del_err, del_res) {
+
+                            });
+                            for (var i = 0; i < country.length; i++) {
+                                db.query(`INSERT INTO category_country_relation (cat_id , country_id) VALUES (${cat_id}, ${country[i]} )`, await function (err, country_val) {
+                                    if (err) throw err;
+
+                                });
+                            }
+                            return res.send(
+                                {
+                                    status: 'ok',
+                                    data: result,
+                                    message: 'Category updated'
+                                }
+                            )
+                        }
+                    })
+                } else {
+                    const val = [cat_name, cat_parent_id, req.file.filename, cat_id];
+
+                    const sql = `UPDATE category SET category_name = ?, parent_id = ?, category_img = ? WHERE ID = ?`;
+                    db.query(sql, val, async (err, result) => {
+                        if (err) {
+                            console.log(err)
+                        } else {
+                            const delete_query = `DELETE FROM category_country_relation WHERE cat_id = ${cat_id}`;
+                            db.query(`DELETE FROM category_country_relation WHERE cat_id = ${cat_id}`, await function (del_err, del_res) {
+
+                            });
+
+                            for (var i = 0; i < country.length; i++) {
+                                db.query(`INSERT INTO category_country_relation (cat_id , country_id) VALUES (${cat_id}, ${country[i]} )`, await function (err, country_val) {
+                                    if (err) throw err;
+
+                                });
+                            }
+                            return res.send(
+                                {
+                                    status: 'ok',
+                                    data: result,
+                                    message: 'Category updated'
+                                }
+                            )
+                        }
+                    })
+                }
+
+            } else {
+                if (cat_parent_id == '') {
+                    const val = [cat_name, cat_id];
+
+                    const sql = `UPDATE category SET category_name = ? WHERE ID = ?`;
+                    db.query(sql, val, async (err, result) => {
+                        if (err) {
+                            console.log(err)
+                        } else {
+                            const delete_query = `DELETE FROM category_country_relation WHERE cat_id = ${cat_id}`;
+                            db.query(`DELETE FROM category_country_relation WHERE cat_id = ${cat_id}`, await function (del_err, del_res) {
+
+                            });
+                            for (var i = 0; i < country.length; i++) {
+                                db.query(`INSERT INTO category_country_relation (cat_id , country_id) VALUES (${cat_id}, ${country[i]} )`, await function (err, country_val) {
+                                    if (err) throw err;
+
+                                });
+                            }
+                            return res.send(
+                                {
+                                    status: 'ok',
+                                    data: result,
+                                    message: 'Category updated'
+                                }
+                            )
+                        }
+                    })
+                } else {
+                    const val = [cat_name, cat_parent_id, cat_id];
+
+                    const sql = `UPDATE category SET category_name = ?, parent_id = ?  WHERE ID = ?`;
+                    db.query(sql, val, async (err, result) => {
+                        if (err) {
+                            console.log(err)
+                        } else {
+                            const delete_query = `DELETE FROM category_country_relation WHERE cat_id = ${cat_id}`;
+                            db.query(`DELETE FROM category_country_relation WHERE cat_id = ${cat_id}`, await function (del_err, del_res) {
+
+                            });
+                            for (var i = 0; i < country.length; i++) {
+                                db.query(`INSERT INTO category_country_relation (cat_id , country_id) VALUES (${cat_id}, ${country[i]} )`, await function (err, country_val) {
+                                    if (err) throw err;
+
+                                });
+                            }
+                            return res.send(
+                                {
+                                    status: 'ok',
+                                    data: result,
+                                    message: 'Category updated'
+                                }
+                            )
+                        }
+                    })
+                }
+            }
+        }
+    })
+
 
 }

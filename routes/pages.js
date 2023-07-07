@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 const db = require('../config');
 var moment = require('moment');
 const { error } = require('console');
@@ -176,14 +177,21 @@ router.get('/add-user', checkLoggedIn, (req, res) => {
     })
 });
 
+
 //View Categories
 router.get('/categories', checkLoggedIn, (req, res) => {
     const encodedUserData = req.cookies.user;
     const currentUserData = JSON.parse(encodedUserData);
     //res.render('users', { menu_active_id: 'user', page_title: 'Users', currentUserData });
 
-    const cat_query = `SELECT * FROM category `;
-    db.query(cat_query, async (err, results) => {
+    const cat_query = `
+                        SELECT category.ID AS category_id,category.category_name AS category_name, category.category_img AS category_img, c.category_name AS parent_name, GROUP_CONCAT(countries.name) AS country_names
+                        FROM category
+                        JOIN category_country_relation ON category.id = category_country_relation.cat_id
+                        JOIN countries ON category_country_relation.country_id = countries.id
+                        LEFT JOIN category AS c ON c.ID = category.parent_id 
+                        GROUP BY category.category_name `;
+    db.query(cat_query, (err, results) => {
         if (err) {
             return res.send(
                 {
@@ -193,78 +201,18 @@ router.get('/categories', checkLoggedIn, (req, res) => {
                 }
             )
         } else {
-            if (results.length > 0) {
-                var countries_details = [];
-                results.forEach((item) => {
-                    const country_sql = `SELECT countries.name FROM category_country_relation 
-                    LEFT JOIN countries ON category_country_relation.country_id = countries.id
-                    WHERE category_country_relation.cat_id = ${item.ID}
-                    `;
-                    db.query(country_sql, async (error, country_res) => {
-                        if (error) {
-                            console.log(error);
-                        }
-                        //var cnt_name = country_res;
-                        //console.log(cnt_name);
-                        // var countries_arr = {
-                        //     category_name: item.category_name,
-                        //     category_img: item.category_img,
-                        //     parent_id: item.parent_id,
-                        //     country_name: cnt_name,
-                        // }
-                        const parent_query = `SELECT category_name FROM category WHERE ID = ${item.parent_id}`;
-                        db.query(parent_query, (parent_err, parent_res) => {
-                            //console.log(parent_res);
-                            var mergedData = {
-                                categoryData: item,
-                                parent_name: parent_res,
-                                countryData: country_res,
-                            };
-                            //console.log(mergedData);
-                        })
-                        //await countries_details.push(countries_arr);
-                    })
-                })
-
-                const categories = results.map((category) => ({
-                    ...category,
-                }));
-                //console.log(categories);
-                res.render('categories', { menu_active_id: 'user', page_title: 'Categories', currentUserData, 'categories': categories });
-            }
+            const categories = results.map((row) => ({
+                categoryId: row.category_id,
+                categoryName: row.category_name,
+                parentName: row.parent_name,
+                categoryImage: row.category_img,
+                countryNames: row.country_names.split(','),
+            }));
+            //console.log(categories);
+            res.render('categories', { menu_active_id: 'category', page_title: 'Categories', currentUserData, 'categories': categories });
         }
     })
 });
-// router.get('/categories', checkLoggedIn, (req, res) => {
-//     const encodedUserData = req.cookies.user;
-//     const currentUserData = JSON.parse(encodedUserData);
-//     //res.render('users', { menu_active_id: 'user', page_title: 'Users', currentUserData });
-
-//     const cat_query = `
-//                         SELECT category.category_name AS category_name, GROUP_CONCAT(countries.name) AS country_names
-//                         FROM category
-//                         JOIN category_country_relation ON category.id = category_country_relation.cat_id
-//                         JOIN countries ON category_country_relation.country_id = countries.id
-//                         GROUP BY category.category_name `;
-//     db.query(cat_query, (err, results) => {
-//         if (err) {
-//             return res.send(
-//                 {
-//                     status: 'err',
-//                     data: '',
-//                     message: 'An error occurred while processing your request' + err
-//                 }
-//             )
-//         } else {
-//             const categories = results.map((row) => ({
-//                 categoryName: row.category_name,
-//                 countryNames: row.country_names.split(','),
-//             }));
-//             console.log(categories);
-//             res.render('categories', { categories });
-//         }
-//     })
-// });
 
 //Add Category
 router.get('/add-category', checkLoggedIn, (req, res) => {
@@ -280,29 +228,18 @@ router.get('/add-category', checkLoggedIn, (req, res) => {
             if (results.length > 0) {
                 //console.log(results);
                 country_response = results;
-                db.query('SELECT * FROM user_account_type', (err, accountresults) => {
-                    if (err) {
-                        console.log(err);
+                let cat_data = [];
+                const sql = "SELECT * FROM category"
+                db.query(sql, (error, cat_result) => {
+                    if (error) {
+                        console.log(error);
                     } else {
-                        if (accountresults.length > 0) {
-                            accounts_response = accountresults;
-                            let cat_data = [];
+                        if (cat_result.length > 0) {
+                            cat_data = cat_result;
+                            res.render('add-category', { menu_active_id: 'category', page_title: 'Add New Category', currentUserData, country_response, cat_data });
 
-                            const sql = "SELECT * FROM category"
-                            db.query(sql, (error, cat_result) => {
-                                if (error) {
-                                    console.log(error);
-                                } else {
-                                    if (cat_result.length > 0) {
-                                        cat_data = cat_result;
-                                        res.render('add-category', { menu_active_id: 'category', page_title: 'Add New Category', currentUserData, country_response, accounts_response, cat_data });
-
-                                    } else {
-                                        res.render('add-category', { menu_active_id: 'category', page_title: 'Add New Category', currentUserData, country_response, accounts_response, cat_data });
-                                    }
-                                }
-                            })
-
+                        } else {
+                            res.render('add-category', { menu_active_id: 'category', page_title: 'Add New Category', currentUserData, country_response, cat_data });
                         }
                     }
                 })
@@ -313,54 +250,117 @@ router.get('/add-category', checkLoggedIn, (req, res) => {
 });
 
 //Edit Category
-router.get('/edit-category/:id?', checkLoggedIn, (req, res, next) => {
-    console.log(req.params.id);
-    // const cat_id = req.params.cat_id;
+router.get('/edit-category', checkLoggedIn, (req, res, next) => {
+
+    console.log(req.query.id);
+    const cat_id = req.query.id;
     const encodedUserData = req.cookies.user;
     const currentUserData = JSON.parse(encodedUserData);
-    // let country_response = [];
-    // let accounts_response = [];
-    // let cat_data = [];
-    // //-- Get Country List --/
-    // db.query('SELECT * FROM countries', (err, results) => {
-    //     if (err) {
-    //         console.log(err);
-    //     } else {
-    //         if (results.length > 0) {
-    //             //console.log(results);
-    //             country_response = results;
-    //             db.query('SELECT * FROM user_account_type', (err, accountresults) => {
-    //                 if (err) {
-    //                     console.log(err);
-    //                 } else {
-    //                     if (accountresults.length > 0) {
-    //                         accounts_response = accountresults;
-    //                         let cat_data = [];
+    let country_response = [];
+    let accounts_response = [];
+    let cat_data = [];
+    let edit_data = [];
+    //-- Get Country List --/
+    db.query('SELECT * FROM countries', (err, results) => {
 
-    //                         const sql = "SELECT * FROM category"
-    //                         db.query(sql, (error, cat_result) => {
-    //                             if (error) {
-    //                                 console.log(error);
-    //                             } else {
-    //                                 console.log(cat_data);
-    //                                 if (cat_result.length > 0) {
-    //                                     cat_data = cat_result;
-    //                                     res.render('edit-category', { menu_active_id: 'category', page_title: 'Add New Category', currentUserData, country_response, accounts_response, cat_data });
+        if (err) {
+            console.log(err);
+        } else {
+            if (results.length > 0) {
+                //console.log(results);
+                country_response = results;
+                const sql = "SELECT * FROM category"
+                db.query(sql, (cat_err, cat_res) => {
 
-    //                                 } else {
-    //                                     res.render('edit-category', { menu_active_id: 'category', page_title: 'Add New Category', currentUserData, country_response, accounts_response, cat_data });
-    //                                 }
-    //                             }
-    //                         })
+                    if (cat_err) {
+                        console.log(cat_err);
+                    } else {
+                        cat_data = cat_res;
+                        const cat_query = `SELECT category.ID AS category_id,category.category_name AS category_name, category.category_img AS category_img, category.parent_id AS parent_id, c.category_name AS parent_name,GROUP_CONCAT(countries.id) AS country_id, GROUP_CONCAT(countries.name) AS country_names
+                        FROM category
+                        JOIN category_country_relation ON category.id = category_country_relation.cat_id
+                        JOIN countries ON category_country_relation.country_id = countries.id
+                        LEFT JOIN category AS c ON c.ID = category.parent_id   WHERE category.ID = ${req.query.id}`;
+                        db.query(cat_query, (cat_error, cat_result) => {
 
-    //                     }
-    //                 }
-    //             })
+                            if (cat_error) {
+                                console.log(cat_error);
+                            } else {
+                                if (cat_result.length > 0) {
+                                    edit_data = cat_result[0];
+                                    const country = edit_data.country_names.split(',');
+                                    const country_id = edit_data.country_id.split(',');
+                                    const country_arr = country;
+                                    //console.log(edit_data);
+                                    //console.log(country, country_id);
+                                    res.render('edit-category', { menu_active_id: 'category', page_title: 'Add New Category', currentUserData, country_response, cat_data, edit_data, country_arr, country_id });
+                                    //res.render('edit-category', { menu_active_id: 'category', page_title: 'Add New Category', currentUserData, 'ids': req.params.id });
+                                }
+                            }
+                        })
 
-    //         }
-    //     }
-    // })
-    res.render('edit-category', { menu_active_id: 'category', page_title: 'Add New Category', currentUserData, 'ids': req.params.id });
+                    }
+                })
+            }
+        }
+    })
+
+});
+
+//Delete Category
+router.get('/delete-category', checkLoggedIn, (req, res, next) => {
+
+    const file_query = `SELECT category_img FROM category WHERE ID = ${req.query.id}`;
+    db.query(file_query, async function (img_err, img_res) {
+        //console.log(img_res);
+        if (img_res[0].category_img != 'NULL') {
+            const filename = img_res[0].category_img;
+            const filePath = `uploads/${filename}`;
+            //console.log(filePath);
+
+            fs.unlink(filePath, await function () {
+                console.log('file deleted');
+            })
+            const sql = `DELETE FROM category WHERE ID = ${req.query.id}`;
+            db.query(sql, (err, result) => {
+                const country_sql = `DELETE FROM category_country_relation WHERE cat_id = ${req.query.id}`;
+                db.query(country_sql, (country_err, country_res) => {
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        return res.send(
+                            {
+                                status: 'ok',
+                                data: result,
+                                message: 'Category deleted'
+                            }
+                        )
+                    }
+                })
+
+            })
+        } else {
+            //console.log("no file");
+            const sql = `DELETE FROM category WHERE ID = ${req.query.id}`;
+            db.query(sql, (err, result) => {
+                const country_sql = `DELETE FROM category_country_relation WHERE cat_id = ${req.query.id}`;
+                db.query(country_sql, (country_err, country_res) => {
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        return res.send(
+                            {
+                                status: 'ok',
+                                data: result,
+                                message: 'Category deleted'
+                            }
+                        )
+                    }
+                })
+            })
+        }
+    })
+
 });
 
 router.get('/help', (_, resp) => {

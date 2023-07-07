@@ -11,8 +11,7 @@
                     class="page-title d-flex align-items-center flex-wrap me-3 mb-5 mb-lg-0">
                     <!--begin::Title-->
                     <h1 class="d-flex align-items-center text-dark fw-bolder fs-3 my-1">
-                        hhhhhhhhhhhhhhhhhhhhhhhh<%= ids %>
-                            <!--end::Description-->
+                        <!--end::Description-->
                     </h1>
                     <!--end::Title-->
                 </div>
@@ -43,6 +42,8 @@
                         <!--begin::Form-->
                         <form id="kt_account_profile_details_form" class="form" action="/auth/create-category"
                             method="POST" enctype="multipart/form-data">
+
+                            <input type="hidden" name="cat_id" value="<%= edit_data.category_id %>" />
                             <!--begin::Card body-->
                             <div class="card-body border-top p-9">
 
@@ -58,7 +59,7 @@
                                     <div class="col-lg-8 fv-row">
                                         <input type="text" name="cat_name"
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="Category Name" value="" />
+                                            value="<%= edit_data.category_name %>" />
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -75,6 +76,8 @@
                                         <input type="file" name="cat_image"
                                             class="form-control form-control-lg form-control-solid"
                                             placeholder="Category Image" value="" />
+                                        <img src="/<%= edit_data.category_img %>" alt="" class="w-30" width="80px"
+                                            height="80px" />
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -91,8 +94,23 @@
                                         <select id="" name="cat_parent_id" aria-label="Select a Parent Category"
                                             data-control="select2" data-placeholder="Select a Parent Category..."
                                             class="form-select form-select-solid form-select-lg fw-bold">
-                                            <option value="">Select a Parent Category...</option>
+                                            <option value="0">Set as a parent category</option>
+                                            <option value="<%= edit_data.parent_id %>" selected>
+                                                <%= edit_data.parent_name %>
+                                            </option>
 
+                                            <% if(cat_data.length>0) { %>
+                                                <% cat_data.forEach( item=> { %>
+                                                    <option
+                                                        data-kt-flag="assets/media/flags/<%= item.category_name.toLowerCase().replace(/\s+/g, '-') %>.svg"
+                                                        value="<%= item.ID %>">
+                                                        <%= item.category_name %>
+                                                    </option>
+                                                    <% }) %>
+                                                        <% } else { %>
+                                                            <option value="">There is no Parent Category
+                                                            </option>
+                                                            <% } %>
                                         </select>
                                     </div>
                                     <!--end::Col-->
@@ -108,9 +126,20 @@
                                     <!--begin::Col-->
                                     <div class="col-lg-8 fv-row">
                                         <select id="select_country" name="country[]" aria-label="Select Country"
-                                            data-control="select2" data-placeholder="Select  country(s)..."
+                                            data-control="select2" data-placeholder="<%= edit_data.country_names %>"
                                             class="form-select form-select-solid form-select-lg fw-bold" multiple>
-                                            <option value="">Select a Country...</option>
+                                            <% country_arr.forEach( (country, key)=> { %>
+                                                <option value="<%= country_id[key] %>" selected>
+                                                    <%= country %>
+                                                </option>
+                                                <% }) %>
+                                                    <% country_response.forEach( item=> { %>
+                                                        <option
+                                                            data-kt-flag="assets/media/flags/<%= item.name.toLowerCase().replace(/\s+/g, '-') %>.svg"
+                                                            value="<%= item.id %>">
+                                                            <%= item.name %>
+                                                        </option>
+                                                        <% }) %>
 
                                         </select>
                                     </div>
@@ -145,3 +174,141 @@
     </div>
     <!--end::Content-->
     <%- include('common/footer') -%>
+
+        <script>
+            /******/ (() => { // webpackBootstrap
+            /******/ 	"use strict";
+                var __webpack_exports__ = {};
+                /*!*********************************************************************************************!*\
+                  !*** ../../../themes/metronic/html/demo1/src/js/custom/account/settings/profile-details.js ***!
+                  \*********************************************************************************************/
+
+
+                // Class definition
+                var KTAccountSettingsProfileDetails = function () {
+                    // Private variables
+                    var form;
+                    var submitButton;
+                    var validation;
+
+                    var handleForm = function () {
+
+                        $("#kt_datepicker_1").flatpickr();
+                        validation = FormValidation.formValidation(
+                            form,
+                            {
+                                fields: {
+                                    'cat_name': {
+                                        validators: {
+                                            notEmpty: {
+                                                message: 'Category name is required'
+                                            }
+                                        }
+                                    },
+                                    'country[]': {
+                                        validators: {
+                                            notEmpty: {
+                                                message: 'Country name is required'
+                                            }
+                                        }
+                                    },
+
+                                },
+                                plugins: {
+                                    trigger: new FormValidation.plugins.Trigger(),
+                                    submitButton: new FormValidation.plugins.SubmitButton(),
+                                    //defaultSubmit: new FormValidation.plugins.DefaultSubmit(), // Uncomment this line to enable normal button submit after form validation
+                                    bootstrap: new FormValidation.plugins.Bootstrap5({
+                                        rowSelector: '.fv-row',
+                                        eleInvalidClass: '',
+                                        eleValidClass: ''
+                                    })
+                                }
+                            }
+                        );
+
+                        // Handle form submit
+                        submitButton.addEventListener('click', function (e) {
+                            e.preventDefault();
+
+                            validation.validate().then(function (status) {
+                                if (status == 'Valid') {
+                                    //$('#kt_account_profile_details_form').submit();
+                                    var formElement = document.getElementById('kt_account_profile_details_form');
+                                    var formData = new FormData(formElement);
+                                    //console.log(formData);
+                                    $.ajax({
+                                        url: '/auth/update-category', // URL for your API endpoint
+                                        type: 'POST',
+                                        data: formData,
+                                        processData: false, // Prevent jQuery from processing the data
+                                        contentType: false, // Let the browser set the content type
+                                        success: function (data) {
+                                            if (data.status == 'ok') {
+                                                Swal.fire({
+                                                    text: data.message,
+                                                    icon: "success",
+                                                    buttonsStyling: false,
+                                                    confirmButtonText: "Ok, got it!",
+                                                    customClass: {
+                                                        confirmButton: "btn btn-primary"
+                                                    }
+                                                }).then(function (result) {
+                                                    if (result.isConfirmed) {
+                                                        window.location.href = "/categories";
+                                                    }
+                                                });
+                                            } else {
+                                                Swal.fire({
+                                                    text: data.message,
+                                                    icon: "error",
+                                                    buttonsStyling: false,
+                                                    confirmButtonText: "Ok, got it!",
+                                                    customClass: {
+                                                        confirmButton: "btn btn-primary"
+                                                    }
+                                                });
+                                            }
+                                        },
+                                        error: function (xhr, status, error) {
+                                            // Handle any errors that occur during the request
+                                            console.log(error);
+                                        }
+                                    });
+                                } else {
+                                    swal.fire({
+                                        text: "Sorry, looks like there are some errors detected, please try again.",
+                                        icon: "error",
+                                        buttonsStyling: false,
+                                        confirmButtonText: "Ok, got it!",
+                                        customClass: {
+                                            confirmButton: "btn fw-bold btn-light-primary"
+                                        }
+                                    });
+                                }
+                            });
+                        });
+
+                    }
+
+
+                    // Public methods
+                    return {
+                        init: function () {
+                            form = document.getElementById('kt_account_profile_details_form');
+                            submitButton = form.querySelector('#kt_account_profile_details_submit');
+
+                            handleForm();
+                        }
+                    }
+                }();
+
+                // On document ready
+                KTUtil.onDOMContentLoaded(function () {
+                    KTAccountSettingsProfileDetails.init();
+                });
+
+            })()
+                ;
+            //# sourceMappingURL=profile-details.js.map
+        </script>

@@ -282,7 +282,7 @@
                                     </th>
                                     <th class="min-w-125px">Category</th>
                                     <th class="min-w-125px">Parent Category</th>
-                                    <th class="min-w-125px">Country</th>
+                                    <th class="min-w-125px">Country(s)</th>
                                     <th class="text-end min-w-100px">Actions</th>
                                 </tr>
                                 <!--end::Table row-->
@@ -306,12 +306,12 @@
                                             <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
                                                 <a href="#">
                                                     <div class="symbol-label">
-                                                        <% if(category.category_img){ %>
-                                                            <img src="<%= category.category_img %>"
+                                                        <% if(category.categoryImage){ %>
+                                                            <img src="<%= category.categoryImage %>"
                                                                 alt="<%= category.category_name %>" class="w-100" />
                                                             <% } else { %>
-                                                                <img src="assets/media/avatars/blank.png"
-                                                                    alt="<%= category.category_name %>" class="w-100" />
+                                                                <img src="/assets/media/avatars/blank.png"
+                                                                    alt="<%= category.categoryName %>" class="w-100" />
                                                                 <% } %>
                                                     </div>
                                                 </a>
@@ -320,7 +320,7 @@
                                             <!--begin::User details-->
                                             <div class="d-flex flex-column">
                                                 <a href="#" class="text-gray-800 text-hover-primary mb-1">
-                                                    <%= category.category_name %>
+                                                    <%= category.categoryName %>
                                                 </a>
                                             </div>
                                             <!--begin::User details-->
@@ -328,18 +328,24 @@
                                         <!--end::User=-->
                                         <!--begin::Role=-->
                                         <td>
-                                            <%= category.parent_id %>
+                                            <% if (category.parentName) { %>
+                                                <%= category.parentName %>
+                                                    <% }else{ %>
+                                                        <%= "-" %>
+                                                            <% } %>
                                         </td>
                                         <!--end::Role=-->
                                         <!--begin::Last login=-->
                                         <td>
-                                            <div class="badge badge-light fw-bolder">
-                                                <% if(category.cat_id==category.ID){ %>
-                                                    <%= category.name %>
-                                                        <% }else{ %>
-                                                            No Country
-                                                            <% } %>
-                                            </div>
+
+                                            <% category.countryNames.forEach((order,index)=> {%>
+                                                <div class="badge badge-light-success fw-bolder">
+                                                    <%= order %>
+                                                </div>
+
+                                                <% });%>
+
+
                                         </td>
                                         <!--end::Last login=-->
 
@@ -363,13 +369,14 @@
                                                 data-kt-menu="true">
                                                 <!--begin::Menu item-->
                                                 <div class="menu-item px-3">
-                                                    <a href="/edit-category/<%= category.ID %>"
+                                                    <a href="/edit-category?id=<%= category.categoryId %>"
                                                         class="menu-link px-3">Edit</a>
                                                 </div>
                                                 <!--end::Menu item-->
                                                 <!--begin::Menu item-->
                                                 <div class="menu-item px-3">
-                                                    <a href="#" class="menu-link px-3"
+                                                    <a href="#" data-cat-id="<%= category.categoryId %>"
+                                                        class="menu-link px-3 category-id"
                                                         data-kt-users-table-filter="delete_row">Delete</a>
                                                 </div>
                                                 <!--end::Menu item-->
@@ -723,5 +730,50 @@
                 ;
 //# sourceMappingURL=table.js.map    
         </script>
+        <script>
+            $(document).ready(function () {
+                $('.category-id').click(function (e) {
+                    e.preventDefault();
+                    //alert('delete')
+                    const cat_id = $(this).attr('data-cat-id');
+                    console.log(cat_id);
+                    $.ajax({
+                        url: '/delete-category?id=' + cat_id,
+                        type: 'GET',
+                        success: function (data) {
+                            if (data.status == 'ok') {
+                                Swal.fire({
+                                    text: data.message,
+                                    icon: "success",
+                                    buttonsStyling: false,
+                                    confirmButtonText: "Ok, got it!",
+                                    customClass: {
+                                        confirmButton: "btn btn-primary"
+                                    }
+                                }).then(function (result) {
+                                    if (result.isConfirmed) {
+                                        window.location.href = "/categories";
+                                    }
+                                });
+                            } else {
+                                Swal.fire({
+                                    text: data.message,
+                                    icon: "error",
+                                    buttonsStyling: false,
+                                    confirmButtonText: "Ok, got it!",
+                                    customClass: {
+                                        confirmButton: "btn btn-primary"
+                                    }
+                                });
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            // Handle any errors that occur during the request
+                            console.log(error);
+                        }
+                    });
+                });
+            });
 
+        </script>
         <script src="assets/js/custom/apps/user-management/users/list/export-users.js"></script>
