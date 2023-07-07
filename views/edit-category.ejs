@@ -94,11 +94,10 @@
                                         <select id="" name="cat_parent_id" aria-label="Select a Parent Category"
                                             data-control="select2" data-placeholder="Select a Parent Category..."
                                             class="form-select form-select-solid form-select-lg fw-bold">
-                                            <option value="0">Set as a parent category</option>
                                             <option value="<%= edit_data.parent_id %>" selected>
                                                 <%= edit_data.parent_name %>
                                             </option>
-
+                                            <option value="0">Set as a parent category</option>
                                             <% if(cat_data.length>0) { %>
                                                 <% cat_data.forEach( item=> { %>
                                                     <option

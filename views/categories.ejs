@@ -82,22 +82,38 @@
                                     <div class="px-7 py-5" data-kt-user-table-filter="form">
                                         <!--begin::Input group-->
                                         <div class="mb-10">
-                                            <label class="form-label fs-6 fw-bold">Role:</label>
+                                            <label class="form-label fs-6 fw-bold">Parent Category:</label>
                                             <select class="form-select form-select-solid fw-bolder"
                                                 data-kt-select2="true" data-placeholder="Select option"
                                                 data-allow-clear="true" data-kt-user-table-filter="role"
                                                 data-hide-search="true">
                                                 <option></option>
-                                                <option value="Administrator">Administrator</option>
-                                                <option value="Analyst">Analyst</option>
-                                                <option value="Developer">Developer</option>
-                                                <option value="Support">Support</option>
-                                                <option value="Trial">Trial</option>
+                                                <% const uniqueValues=new Set(); %>
+
+                                                    <% categories.forEach( category=> { %>
+                                                        <% if (category.parentName) { %>
+                                                            <% if (!uniqueValues.has(category.parentName)) { %>
+                                                                <option value="<%= category.parentName %>">
+                                                                    <%= category.parentName %>
+                                                                </option>
+                                                                <% uniqueValues.add(category.parentName); %>
+                                                                    <% } %>
+
+                                                                        </option>
+                                                                        <% }else{ %>
+                                                                            <% if (!uniqueValues.has("-")) { %>
+                                                                                <option value="<%= " -" %>"><%= "-" %>
+                                                                                </option>
+                                                                                <% uniqueValues.add("-"); %>
+                                                                                    <% } %>
+                                                                                        <% } %>
+                                                                                            <% }) %>
+
                                             </select>
                                         </div>
                                         <!--end::Input group-->
                                         <!--begin::Input group-->
-                                        <div class="mb-10">
+                                        <!-- <div class="mb-10">
                                             <label class="form-label fs-6 fw-bold">Two Step Verification:</label>
                                             <select class="form-select form-select-solid fw-bolder"
                                                 data-kt-select2="true" data-placeholder="Select option"
@@ -106,7 +122,7 @@
                                                 <option></option>
                                                 <option value="Enabled">Enabled</option>
                                             </select>
-                                        </div>
+                                        </div> -->
                                         <!--end::Input group-->
                                         <!--begin::Actions-->
                                         <div class="d-flex justify-content-end">
@@ -402,7 +418,7 @@
     </div>
     <!--end::Content-->
     <%- include('common/footer') -%>
-        <script src="assets/plugins/custom/datatables/datatables.bundle.js"></script>
+        <script src="/assets/plugins/custom/datatables/datatables.bundle.js"></script>
         <script>
 /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
@@ -425,40 +441,40 @@
                         // Set date data order
                         const tableRows = table.querySelectorAll('tbody tr');
 
-                        tableRows.forEach(row => {
-                            const dateRow = row.querySelectorAll('td');
-                            const lastLogin = dateRow[3].innerText.toLowerCase(); // Get last login time
-                            let timeCount = 0;
-                            let timeFormat = 'minutes';
+                        // tableRows.forEach(row => {
+                        //     const dateRow = row.querySelectorAll('td');
+                        //     const lastLogin = dateRow[3].innerText.toLowerCase(); // Get last login time
+                        //     let timeCount = 0;
+                        //     let timeFormat = 'minutes';
 
-                            // Determine date & time format -- add more formats when necessary
-                            if (lastLogin.includes('yesterday')) {
-                                timeCount = 1;
-                                timeFormat = 'days';
-                            } else if (lastLogin.includes('mins')) {
-                                timeCount = parseInt(lastLogin.replace(/\D/g, ''));
-                                timeFormat = 'minutes';
-                            } else if (lastLogin.includes('hours')) {
-                                timeCount = parseInt(lastLogin.replace(/\D/g, ''));
-                                timeFormat = 'hours';
-                            } else if (lastLogin.includes('days')) {
-                                timeCount = parseInt(lastLogin.replace(/\D/g, ''));
-                                timeFormat = 'days';
-                            } else if (lastLogin.includes('weeks')) {
-                                timeCount = parseInt(lastLogin.replace(/\D/g, ''));
-                                timeFormat = 'weeks';
-                            }
+                        // Determine date & time format -- add more formats when necessary
+                        // if (lastLogin.includes('yesterday')) {
+                        //     timeCount = 1;
+                        //     timeFormat = 'days';
+                        // } else if (lastLogin.includes('mins')) {
+                        //     timeCount = parseInt(lastLogin.replace(/\D/g, ''));
+                        //     timeFormat = 'minutes';
+                        // } else if (lastLogin.includes('hours')) {
+                        //     timeCount = parseInt(lastLogin.replace(/\D/g, ''));
+                        //     timeFormat = 'hours';
+                        // } else if (lastLogin.includes('days')) {
+                        //     timeCount = parseInt(lastLogin.replace(/\D/g, ''));
+                        //     timeFormat = 'days';
+                        // } else if (lastLogin.includes('weeks')) {
+                        //     timeCount = parseInt(lastLogin.replace(/\D/g, ''));
+                        //     timeFormat = 'weeks';
+                        // }
 
-                            // Subtract date/time from today -- more info on moment datetime subtraction: https://momentjs.com/docs/#/durations/subtract/
-                            const realDate = moment().subtract(timeCount, timeFormat).format();
+                        // Subtract date/time from today -- more info on moment datetime subtraction: https://momentjs.com/docs/#/durations/subtract/
+                        //const realDate = moment().subtract(timeCount, timeFormat).format();
 
-                            // Insert real date to last login attribute
-                            dateRow[3].setAttribute('data-order', realDate);
+                        // Insert real date to last login attribute
+                        //dateRow[3].setAttribute('data-order', realDate);
 
-                            // Set real date for joined column
-                            const joinedDate = moment(dateRow[5].innerHTML, "DD MMM YYYY, LT").format(); // select date from 5th column in table
-                            dateRow[5].setAttribute('data-order', joinedDate);
-                        });
+                        // Set real date for joined column
+                        //const joinedDate = moment(dateRow[5].innerHTML, "DD MMM YYYY, LT").format(); // select date from 5th column in table
+                        //dateRow[5].setAttribute('data-order', joinedDate);
+                        //});
 
                         // Init datatable --- more info on datatables: https://datatables.net/manual/
                         datatable = $(table).DataTable({
@@ -468,7 +484,7 @@
                             "lengthChange": false,
                             'columnDefs': [
                                 { orderable: false, targets: 0 }, // Disable ordering on column 0 (checkbox)
-                                { orderable: false, targets: 6 }, // Disable ordering on column 6 (actions)                
+                                { orderable: false, targets: 4 }, // Disable ordering on column 6 (actions)                
                             ]
                         });
 
@@ -776,4 +792,4 @@
             });
 
         </script>
-        <script src="assets/js/custom/apps/user-management/users/list/export-users.js"></script>
+        <script src="/assets/js/custom/apps/user-management/users/list/export-users.js"></script>
