@@ -4,6 +4,8 @@ const fs = require('fs');
 const db = require('../config');
 var moment = require('moment');
 const { error } = require('console');
+const async = require('async');
+const comFunction = require('../common_function');
 
 const router = express.Router();
 const publicPath = path.join(__dirname, '../public');
@@ -57,15 +59,21 @@ router.get('/logout', (req, res) => {
 // Protected route example
 
 // Middleware function to check if user is logged in
-const checkLoggedIn = (req, res, next) => {
+async function checkLoggedIn(req, res, next) {
     const encodedUserData = req.cookies.user;
-    if (encodedUserData) {
-        // User is logged in, proceed to the next middleware or route handler
-        next();
-    } else {
-        res.redirect('sign-in');
+  
+    try {
+        if (encodedUserData) {
+            // User is logged in, proceed to the next middleware or route handler
+            next();
+        } else {
+            res.redirect('sign-in');
+        }
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('An error occurred');
     }
-};
+}
 
 router.get('/dashboard', checkLoggedIn, (req, res) => {
     const encodedUserData = req.cookies.user;
@@ -107,6 +115,39 @@ router.get('/edit-profile', checkLoggedIn, (req, res) => {
                     })
                 }
 
+            }
+        }
+    })
+});
+
+router.get('/edit-category/:id/:kk', checkLoggedIn, (req, res) => {
+    const encodedUserData = req.cookies.user;
+    const currentUserData = JSON.parse(encodedUserData);
+    let country_response = [];
+    //-- Get Country List --/
+    db.query('SELECT * FROM countries', (err, results) => {
+        if (err) {
+            console.log(err);
+        } else {
+            if (results.length > 0) {
+                //console.log(results);
+                country_response = results;
+                if(!currentUserData.country){
+                    res.render('edit-profile', { page_title: 'Account Settings', currentUserData, country_response });
+                }else{
+                    // -- send state list --//
+                    db.query('SELECT * FROM states WHERE country_id=?', [currentUserData.country], (err, state_results) => {
+                        if (err) {
+                            console.log(err);
+                        }else{
+                            if (state_results.length > 0) {
+                                state_response = state_results;
+                                res.render('edit-category', { menu_active_id: 'profile', page_title: 'Account Settings', currentUserData, country_response, state_response });
+                            }
+                        }
+                    })
+                }
+                
             }
         }
     })
@@ -363,10 +404,316 @@ router.get('/delete-category', checkLoggedIn, (req, res, next) => {
 
 });
 
-router.get('/help', (_, resp) => {
-    resp.sendFile(`${publicPath}/help.html`)
+
+//edit user details 
+// router.get('/edit-user/:id', checkLoggedIn, (req, res) => {
+//     const encodedUserData = req.cookies.user;
+//     const currentUserData = JSON.parse(encodedUserData);
+
+//     const userId = req.params.id;
+
+//     async.parallel(
+//     {
+//         user: function(callback) {
+//         // Fetch user details from the users table
+//         db.query('SELECT * FROM users WHERE user_id = ?', [userId], (err, result) => {
+//             if (err) {
+//             callback(err);
+//             } else {
+//             callback(null, result[0]);
+//             }
+//         });
+//         },
+//         userMeta: function(callback) {
+//         const user_meta_query = `
+//             SELECT user_meta.*, c.name as country_name, s.name as state_name
+//             FROM user_customer_meta user_meta
+//             JOIN countries c ON user_meta.country = c.id
+//             JOIN states s ON user_meta.state = s.id
+//             WHERE user_id = ?
+//         `;
+//         // Fetch user metadata from the user_customer_meta table
+//         db.query(user_meta_query, [userId], (err, result) => {
+//             if (err) {
+//             callback(err);
+//             } else {
+//             callback(null, result[0]);
+//             }
+//         });
+//         },
+//         countries: function(callback) {
+//         // Fetch countries table data
+//         db.query('SELECT * FROM countries', (err, result) => {
+//             if (err) {
+//                 callback(err);
+//             } else {
+//                 callback(null, result);
+//             }
+//         });
+//         },
+//         userRoles: function(callback) {
+//         // Fetch user role from user_account_type table data
+//         db.query('SELECT * FROM user_account_type', (err, result) => {
+//             if (err) {
+//             callback(err);
+//             } else {
+//             callback(null, result);
+//             }
+//         });
+//         }
+//     },
+//     function(err, results) {
+//         if (err) {
+//         // Handle error
+//             console.error(err);
+//             res.status(500).send('An error occurred');
+//         } else {
+//             // Render the 'edit-user' EJS view and pass the data
+//             res.json({
+//                 menu_active_id: 'user',
+//                 page_title: 'Edit User',
+//                 currentUserData,
+//                 user: results.user,
+//                 userMeta: results.userMeta,
+//                 countries: results.countries,
+//                 userRoles: results.userRoles
+//             });
+//             // res.render('edit-user', {
+//             //     menu_active_id: 'user',
+//             //     page_title: 'Edit User',
+//             //     currentUserData,
+//             //     user: results.user,
+//             //     userMeta: results.userMeta,
+//             //     country_response: results.countries,
+//             //     state_response: results.states,
+//             //     userRoles: results.userRoles
+//             // });
+//         }
+//     }
+//     );
+// });
+
+// router.get('/edit-user/:id', checkLoggedIn, (req, res) => {
+//     const encodedUserData = req.cookies.user;
+//     const currentUserData = JSON.parse(encodedUserData);
+
+//     const userId = req.params.id;
+
+//     async.waterfall(
+//     [
+//         function(callback) {
+//             // Fetch user details from the users table
+//             db.query('SELECT * FROM users WHERE user_id = ?', [userId], (err, result) => {
+//                 if (err) {
+//                     callback(err);
+//                 } else {
+//                     callback(null, result[0]);
+//                 }
+//             });
+//         },
+//         function(user, callback) {
+//             const user_meta_query = `
+//                 SELECT user_meta.*, c.name as country_name, s.name as state_name
+//                 FROM user_customer_meta user_meta
+//                 JOIN countries c ON user_meta.country = c.id
+//                 JOIN states s ON user_meta.state = s.id
+//                 WHERE user_id = ?
+//             `;
+//             // Fetch user metadata from the user_customer_meta table
+//             db.query(user_meta_query, [userId], (err, result) => {
+//                 if (err) {
+//                 callback(err);
+//                 } else {
+//                 callback(null, user, result[0]);
+//                 }
+//             });
+//         },
+//         function(user, userMeta, callback) {
+//             // Fetch countries table data
+//             db.query('SELECT * FROM countries', (err, result) => {
+//                 if (err) {
+//                     callback(err);
+//                 } else {
+//                     callback(null, user, userMeta, result);
+//                 }
+//             });
+//         },
+//         function(user, userMeta, countries, callback) {
+//             // Fetch user role from user_account_type table data
+//             db.query('SELECT * FROM user_account_type', (err, result) => {
+//                 if (err) {
+//                 callback(err);
+//                 } else {
+//                 callback(null, user, userMeta, countries, result);
+//                 }
+//             });
+//         },
+//         function(user, userMeta, countries, userRoles, callback) {
+//             // Fetch user country all states data
+//             const userCountryId = userMeta && userMeta.country.toString();
+//             console.log('Value of userCountryId:', userCountryId);
+//             db.query('SELECT * FROM states WHERE country_id = ?', [userCountryId], async (err, result) => {
+//                 if (err) {
+//                     callback(err);
+//                 } else {
+//                     callback(null, user, userMeta, countries, userRoles, result);
+//                 }
+//             });
+//         },
+//     ],
+//     function(err, user, userMeta, countries, userRoles, states) {
+//         if (err) {
+//         // Handle error
+//             console.error(err);
+//             res.status(500).send('An error occurred');
+//         } else {
+//             // Render the 'edit-user' EJS view and pass the data
+//             // res.json({
+//             //     menu_active_id: 'user',
+//             //     page_title: 'Edit User',
+//             //     currentUserData,
+//             //     user: user,
+//             //     userMeta: userMeta,
+//             //     countries: countries,
+//             //     userRoles: userRoles,
+//             //     states: states
+//             // });
+//             console.log('Data successfully retrieved:');
+//             console.log('User:', user);
+//             console.log('User Meta:', userMeta);
+//             console.log('States:', states);
+//             res.render('edit-user', {
+//                 menu_active_id: 'user',
+//                 page_title: 'Edit User',
+//                 currentUserData,
+//                 user: user,
+//                 userMeta: userMeta,
+//                 countries: countries,
+//                 userRoles: userRoles,
+//                 states: states
+//             });
+//         }
+//     }
+//     );
+// });
+
+
+router.get('/edit-user/:id', checkLoggedIn, async (req, res) => {
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+        const userId = req.params.id;
+        console.log('editUserID: ',userId);
+
+        // Fetch all the required data asynchronously
+        const [user, userMeta, countries, userRoles, states] = await Promise.all([
+            comFunction.getUser(userId),
+            comFunction.getUserMeta(userId),
+            comFunction.getCountries(),
+            comFunction.getUserRoles(),
+            comFunction.getStatesByUserID(userId)
+        ]);
+
+        // Render the 'edit-user' EJS view and pass the data
+        res.render('edit-user', {
+            menu_active_id: 'user',
+            page_title: 'Edit User',
+            currentUserData,
+            user: user,
+            userMeta: userMeta,
+            countries: countries,
+            userRoles: userRoles,
+            states: states            
+        });
+    }catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
 });
 
+
+//---Company--//
+router.get('/add-company', checkLoggedIn, async (req, res) => {
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+
+        // Fetch all the required data asynchronously
+        const [company_category] = await Promise.all([
+            comFunction.getCompanyCategory()
+        ]);
+
+        // Render the 'edit-user' EJS view and pass the data
+        res.json({
+            menu_active_id: 'company',
+            page_title: 'Add Company',
+            currentUserData,
+            company_categories : company_category
+        });
+    }catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+
+router.get('/companies', checkLoggedIn, async (req, res) => {
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+
+        // Fetch all the required data asynchronously
+        const [allcompany] = await Promise.all([
+            comFunction.getAllCompany(),
+        ]);
+
+        // Render the 'edit-user' EJS view and pass the data
+        res.render('companies', {
+            menu_active_id: 'company',
+            page_title: 'Companies',
+            currentUserData,
+            allcompany: allcompany          
+        });
+    }catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+
+router.get('/edit-company/:id', checkLoggedIn, async (req, res) => {
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+        const companyId = req.params.id;
+
+        // Fetch all the required data asynchronously
+        const [company] = await Promise.all([
+            comFunction.getCompany(companyId),
+            //comFunction.getCompanyMeta(userId),
+            //comFunction.getCountries(),
+            //comFunction.getStatesByUserID(userId)
+        ]);
+
+        // Render the 'edit-user' EJS view and pass the data
+        res.render('edit-company', {
+            menu_active_id: 'company',
+            page_title: 'Edit Company',
+            currentUserData,
+            company: company,
+            //userMeta: companyMeta,
+            //countries: countries,
+            //states: states            
+        });
+    }catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+
+
+
+router.get('/help/:id', (_, resp) => {
+    resp.sendFile(`${publicPath}/help.html`)
+});
 router.get('*', (_, resp) => {
     resp.sendFile(`${publicPath}/nopage.html`)
 });

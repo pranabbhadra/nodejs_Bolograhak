@@ -21,5 +21,4 @@ router.post('/states', apiController.states);
 router.put('/edit-profile', upload.single('profile_pic'), apiController.editProfile);
 
 
-
 module.exports = router;

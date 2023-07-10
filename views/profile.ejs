@@ -35,7 +35,7 @@
                             <% if(currentUserData.profile_pic){ %>
                                 <img src="<%= currentUserData.profile_pic %>" alt="<%= currentUserData.first_name+' '+currentUserData.last_name %>" />
                             <% } else { %>
-                                <img src="assets/media/avatars/blank.png" alt="<%= currentUserData.first_name+' '+currentUserData.last_name %>" />
+                                <img src="/assets/media/avatars/blank.png" alt="<%= currentUserData.first_name+' '+currentUserData.last_name %>" />
                             <% } %>
                             <div class="position-absolute translate-middle bottom-0 start-100 mb-6 bg-success rounded-circle border border-4 border-white h-20px w-20px"></div>
                         </div>
@@ -241,7 +241,7 @@
                     <!--begin::Col-->
                     <div class="col-lg-8">
                         <% if(currentUserData.country_name){ %>
-                        <span class="fw-bolder fs-6 text-gray-800"><span class="symbol symbol-20px me-4"><img src="assets/media/flags/<%= currentUserData.country_name.toLowerCase().replace(/\s+/g, '-') %>.svg"></span><%= currentUserData.country_name %></span>
+                        <span class="fw-bolder fs-6 text-gray-800"><span class="symbol symbol-20px me-4"><img src="/assets/media/flags/<%= currentUserData.country_name.toLowerCase().replace(/\s+/g, '-') %>.svg"></span><%= currentUserData.country_name %></span>
                         <% } %>
                     </div>
                     <!--end::Col-->

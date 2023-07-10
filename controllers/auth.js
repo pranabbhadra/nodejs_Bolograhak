@@ -5,6 +5,8 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const useragent = require('useragent');
 const requestIp = require('request-ip');
+const fs = require('fs');
+const comFunction = require('../common_function');
 //const cookieParser = require('cookie-parser');
 
 // const app = express();
@@ -616,6 +618,184 @@ exports.updateCategory = (req, res) => {
             }
         }
     })
+}
+
+//-- User Profile Edit --//
+exports.editUserData = (req, res) => {
+    //console.log(req.body);
+    const userId = req.body.user_id;
+
+    const checkQuery = 'SELECT user_id FROM users WHERE phone = ? AND user_id <> ?';
+    db.query(checkQuery, [req.body.phone, userId], (checkError, checkResults) => {
+        if (checkError) {
+            //console.log(checkError)
+            return res.send(
+                {
+                    status: 'err',
+                    data: '',
+                    message: 'An error occurred while processing your request' + checkError
+                }
+            )
+        }
+
+        if (checkResults.length > 0) {
+            // Phone number already exists for another user
+            return res.send(
+                {
+                    status: 'err',
+                    data: '',
+                    message: 'Phone number already exists for another user'
+                }
+            )
+        } else {
+            // Update the user's data
+            const updateQuery = 'UPDATE users SET first_name = ?, last_name = ?, phone = ?, user_type_id = ? WHERE user_id = ?';
+            db.query(updateQuery, [req.body.first_name, req.body.last_name, req.body.phone, req.body.user_type_id, userId], (updateError, updateResults) => {
+
+                if (updateError) {
+                    //console.log(updateError);
+                    return res.send(
+                        {
+                            status: 'err',
+                            data: '',
+                            message: 'An error occurred while processing your request' + updateError
+                        }
+                    )
+                } else {
+                    // Update the user's meta data
+
+                    if (req.file) {
+                        // Unlink (delete) the previous file
+                        const unlinkprofilePicture = "uploads/"+req.body.previous_profile_pic;
+                        fs.unlink(unlinkprofilePicture, (err) => {
+                            if (err) {
+                                //console.error('Error deleting file:', err);
+                              } else {
+                                //console.log('Previous file deleted');
+                              }
+                        });
+                        //const profilePicture = req.file;
+                        //console.log(profilePicture);
+
+                        const updateQueryMeta = 'UPDATE user_customer_meta SET address = ?, country = ?, state = ?, city = ?, zip = ?, date_of_birth = ?, occupation = ?, gender = ?, profile_pic = ? WHERE user_id = ?';
+                        db.query(updateQueryMeta, [req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, req.body.date_of_birth, req.body.occupation, req.body.gender, req.file.filename, userId], (updateError, updateResults) => {
+                            if (updateError){
+                                return res.send(
+                                    {
+                                        status: 'err',
+                                        data: userId,
+                                        message: 'An error occurred while processing your request' + updateError
+                                    }
+                                )
+                            }else{
+                                return res.send(
+                                    {
+                                        status: 'ok',
+                                        data: userId,
+                                        message: 'Update Successfull'
+                                    }
+                                )
+                            }
+                        });
+
+                    } else {
+                        const updateQueryMeta = 'UPDATE user_customer_meta SET address = ?, country = ?, state = ?, city = ?, zip = ?, date_of_birth = ?, occupation = ?, gender = ? WHERE user_id = ?';
+                        db.query(updateQueryMeta, [req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, req.body.date_of_birth, req.body.occupation, req.body.gender, userId], (updateError, updateResults) => {
+                            if (updateError){
+                                return res.send(
+                                    {
+                                        status: 'err',
+                                        data: '',
+                                        message: 'An error occurred while processing your request' + updateError
+                                    }
+                                )
+                            }else{
+                                return res.send(
+                                    {
+                                        status: 'ok',
+                                        data: userId,
+                                        message: 'Update Successfull'
+                                    }
+                                )
+                            }
+                        });
+                    }
+
+                }
 
 
+
+            });
+        }
+    });
+}
+
+//--- Create New Company ----//
+exports.createCompany = (req, res) => {
+    //console.log(req.body);
+    const encodedUserData = req.cookies.user;
+    const currentUserData = JSON.parse(encodedUserData);
+
+    db.query('SELECT comp_email FROM company WHERE comp_email = ? OR comp_phone = ?', [req.body.comp_email, req.body.comp_phone], async (err, results) => {
+        if (err) {
+            return res.send(
+                {
+                    status: 'err',
+                    data: '',
+                    message: 'An error occurred while processing your request' + err
+                }
+            )
+        }
+
+        if (results.length > 0) {
+            
+            return res.send(
+                {
+                    status: 'err',
+                    data: '',
+                    message: 'Email ID or Phone number already exist for another Company'
+                }
+            )
+        }
+
+        const currentDate = new Date();
+
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+        const day = String(currentDate.getDate()).padStart(2, '0');
+        const hours = String(currentDate.getHours()).padStart(2, '0');
+        const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+        const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+
+        const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+        var insert_values = [];
+        if (req.file) {
+            insert_values = [ currentUserData.user_id, req.body.company_name, req.file.filename, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, formattedDate, formattedDate ];
+        } else {
+            insert_values = [ currentUserData.user_id, req.body.company_name, '', req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, formattedDate, formattedDate ];
+        }
+
+        const insertQuery = 'INSERT INTO company (user_created_by, company_name, logo, comp_phone, comp_email, comp_registration_id, created_date, updated_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+        db.query(insertQuery, insert_values, (err, results, fields) => {
+            if (err) {
+                return res.send(
+                    {
+                        status: 'err',
+                        data: '',
+                        message: 'An error occurred while processing your request' + err
+                    }
+                )
+            } else {
+                
+                return res.send(
+                    {
+                        status: 'ok',
+                        data: results,
+                        message: 'New company created'
+                    }
+                )
+            }
+        })
+    })
 }

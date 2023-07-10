@@ -14,7 +14,10 @@ const storage = multer.diskStorage({
         cb(null, 'uploads/');
     },
     filename: function (req, file, cb) {
-        cb(null, Date.now() + '-' + file.originalname);
+        const originalname = file.originalname;
+        const sanitizedFilename = originalname.replace(/[^a-zA-Z0-9\-\_\.]/g, ''); // Remove symbols and spaces
+        const filename = Date.now() + '-' + sanitizedFilename;
+        cb(null, filename);
     }
 });
 // Create multer instance
@@ -25,14 +28,17 @@ router.post('/register', authController.register);
 router.post('/login', authController.login);
 
 
-
-//Create New User--------//
-router.post('/create-user', upload.single('profile_pic'), authController.createUser);
-
 //Create New category--------//
 router.post('/create-category', upload.single('cat_image'), authController.createCategory);
 
 //Update category--------//
 router.post('/update-category', upload.single('cat_image'), authController.updateCategory);
+
+//Create New User--------//
+router.post('/create-user', upload.single('profile_pic'), authController.createUser );
+router.put('/edit-user-data', upload.single('profile_pic'), authController.editUserData );
+
+//---Company--------//
+router.post('/create-company', upload.single('logo'), authController.createCompany );
 
 module.exports = router;

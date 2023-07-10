@@ -10,7 +10,7 @@
             <!--begin::Title-->
             <h1
                 class="d-flex align-items-center text-dark fw-bolder fs-3 my-1">
-                <%= page_title %>
+                User Details
                 <!--end::Description-->
             </h1>
             <!--end::Title-->
@@ -27,10 +27,10 @@
         <!--begin::Basic info-->
         <div class="card mb-5 mb-xl-10">
             <!--begin::Card header-->
-            <div class="card-header border-0 cursor-pointer" role="button" data-bs-target="#kt_account_profile_details" aria-expanded="true" aria-controls="kt_account_profile_details">
+            <div class="card-header border-0 cursor-pointer" role="button" data-bs-toggle="collapse" data-bs-target="#kt_account_profile_details" aria-expanded="true" aria-controls="kt_account_profile_details">
                 <!--begin::Card title-->
                 <div class="card-title m-0">
-                    <h3 class="fw-bolder m-0">Profile Details</h3>
+                    <h3 class="fw-bolder m-0">Edit Profile Details</h3>
                 </div>
                 <!--end::Card title-->
             </div>
@@ -38,7 +38,7 @@
             <!--begin::Content-->
             <div id="kt_account_profile_details" class="collapse show">
                 <!--begin::Form-->
-                <form id="kt_account_profile_details_form" class="form" action="/auth/create-user" method="POST" enctype="multipart/form-data">
+                <form id="kt_account_profile_details_form" class="form" action="/auth/edit-user-data" method="POST" enctype="multipart/form-data">
                     <!--begin::Card body-->
                     <div class="card-body border-top p-9">
                         <!--begin::Input group-->
@@ -51,7 +51,11 @@
                                 <!--begin::Image input-->
                                 <div class="image-input image-input-outline" data-kt-image-input="true" style="background-image: url(/assets/media/avatars/blank.png)">
                                     <!--begin::Preview existing avatar-->
+                                    <% if(userMeta && userMeta.profile_pic){ %>
+                                    <div class="image-input-wrapper w-125px h-125px" style="background-image: url(/<%= userMeta.profile_pic %>)" ></div>
+                                    <% }else{ %>
                                     <div class="image-input-wrapper w-125px h-125px" style="background-image: url(/assets/media/avatars/blank.png)" ></div>
+                                    <% } %>
                                     <!--end::Preview existing avatar-->
                                     <!--begin::Label-->
                                     <label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="change" data-bs-toggle="tooltip" title="Change avatar">
@@ -59,6 +63,7 @@
                                         <!--begin::Inputs-->
                                         <input type="file" name="profile_pic" accept=".png, .jpg, .jpeg" />
                                         <input type="hidden" name="avatar_remove" />
+                                        <input type="hidden" name="previous_profile_pic" value="<%= userMeta.profile_pic %>">
                                         <!--end::Inputs-->
                                     </label>
                                     <!--end::Label-->
@@ -92,12 +97,12 @@
                                 <div class="row">
                                     <!--begin::Col-->
                                     <div class="col-lg-6 fv-row">
-                                        <input type="text" name="first_name" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0" placeholder="First name" value="" />
+                                        <input type="text" name="first_name" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0" placeholder="First name" value="<%= user.first_name %>" />
                                     </div>
                                     <!--end::Col-->
                                     <!--begin::Col-->
                                     <div class="col-lg-6 fv-row">
-                                        <input type="text" name="last_name" class="form-control form-control-lg form-control-solid" placeholder="Last name" value="" />
+                                        <input type="text" name="last_name" class="form-control form-control-lg form-control-solid" placeholder="Last name" value="<%= user.last_name %>" />
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -115,7 +120,7 @@
                             <!--end::Label-->
                             <!--begin::Col-->
                             <div class="col-lg-8 fv-row">
-                                <input type="email" name="email" class="form-control form-control-lg form-control-solid" placeholder="Email" value="" />
+                                <input type="email" name="" class="form-control form-control-lg form-control-solid" placeholder="Email" value="<%= user.email %>" readonly/>
                             </div>
                             <!--end::Col-->
                         </div>
@@ -129,7 +134,7 @@
                             <!--end::Label-->
                             <!--begin::Col-->
                             <div class="col-lg-8 fv-row">
-                                <input type="tel" name="phone" class="form-control form-control-lg form-control-solid" placeholder="Phone number" value="" />
+                                <input type="tel" name="phone" class="form-control form-control-lg form-control-solid" placeholder="Phone number" value="<%= user.phone %>" />
                             </div>
                             <!--end::Col-->
                         </div>
@@ -138,12 +143,12 @@
                         <div class="row mb-6">
                             <!--begin::Label-->
                             <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                <span class="">Occupation</span>
+                                <span>Occupation</span>
                             </label>
                             <!--end::Label-->
                             <!--begin::Col-->
                             <div class="col-lg-8 fv-row">
-                                <input type="text" name="occupation" class="form-control form-control-lg form-control-solid" placeholder="Occupation" value="" />
+                                <input type="text" name="occupation" class="form-control form-control-lg form-control-solid" placeholder="Occupation" value="<%= userMeta.occupation %>" />
                             </div>
                             <!--end::Col-->
                         </div>
@@ -157,7 +162,7 @@
                             <!--end::Label-->
                             <!--begin::Col-->
                             <div class="col-lg-8 fv-row">
-                                <input type="text" name="address" class="form-control form-control-lg form-control-solid" placeholder="Address" value="" />
+                                <input type="text" name="address" class="form-control form-control-lg form-control-solid" placeholder="Address" value="<%= userMeta.address %>" />
                             </div>
                             <!--end::Col-->
                         </div>
@@ -173,8 +178,8 @@
                             <div class="col-lg-8 fv-row">
                                 <select id="select_country" name="country" aria-label="Select a Country" data-control="select2" data-placeholder="Select a country..." class="form-select form-select-solid form-select-lg fw-bold">
                                     <option value="">Select a Country...</option>
-                                    <% country_response.forEach( item => { %>
-                                    <option data-kt-flag="/assets/media/flags/<%= item.name.toLowerCase().replace(/\s+/g, '-') %>.svg" value="<%= item.id %>" ><%= item.name %></option>
+                                    <% countries.forEach( item => { %>
+                                    <option data-kt-flag="assets/media/flags/<%= item.name.toLowerCase().replace(/\s+/g, '-') %>.svg" value="<%= item.id %>" <% if(item.id==userMeta.country){ %>selected <% } %> ><%= item.name %></option>
                                     <% }) %>
                                 </select>
                             </div>
@@ -182,7 +187,7 @@
                         </div>
                         <!--end::Input group-->
                         <!--begin::Input group-->
-                        <div class="row mb-6" id="dynamic_state_field_wrapper" style="display: none;">
+                        <div class="row mb-6" id="dynamic_state_field_wrapper"  <% if(!userMeta.state){ %>style="display: none;" <% } %>>
                             <!--begin::Label-->
                             <label class="col-lg-4 col-form-label fw-bold fs-6">
                                 <span class="required">State</span>
@@ -192,6 +197,9 @@
                             <div class="col-lg-8 fv-row">
                                 <select id="select_state" name="state" aria-label="Select a State" data-control="select2" data-placeholder="Select a State..." class="form-select form-select-solid form-select-lg fw-bold">
                                     <option value="">Select a State...</option>
+                                    <% states.forEach( item => { %>
+                                    <option value="<%= item.id %>" <% if(item.id==userMeta.state){ %>selected <% } %> ><%= item.name %></option>
+                                    <% }) %>
                                 </select>
                             </div>
                             <!--end::Col-->
@@ -206,7 +214,7 @@
                             <!--end::Label-->
                             <!--begin::Col-->
                             <div class="col-lg-8 fv-row">
-                                <input type="text" name="city" class="form-control form-control-lg form-control-solid" placeholder="City" value="" />
+                                <input type="text" name="city" class="form-control form-control-lg form-control-solid" placeholder="City" value="<%= userMeta.city %>" />
                             </div>
                             <!--end::Col-->
                         </div>
@@ -220,7 +228,7 @@
                             <!--end::Label-->
                             <!--begin::Col-->
                             <div class="col-lg-8 fv-row">
-                                <input type="text" name="zip" class="form-control form-control-lg form-control-solid" placeholder="Zip" value="" />
+                                <input type="text" name="zip" class="form-control form-control-lg form-control-solid" placeholder="Zip" value="<%= userMeta.zip %>" />
                             </div>
                             <!--end::Col-->
                         </div>
@@ -233,7 +241,7 @@
                             <!--end::Label-->
                             <!--begin::Col-->
                             <div class="col-lg-8 fv-row">
-                                <!--<input type="text" name="date_of_birth" id="kt_daterangepicker_3" class="form-control form-control-lg form-control-solid" placeholder="Date Of Birth" value=""  />-->
+                                <!--<input type="text" name="date_of_birth" id="kt_daterangepicker_3" class="form-control form-control-lg form-control-solid" placeholder="Date Of Birth" <% if(userMeta.date_of_birth!='Invalid date'){ %>value="<%= userMeta.date_of_birth %>"<% } %>  />-->
                                 <div class="position-relative d-flex align-items-center">
                                     <!--begin::Svg Icon | path: icons/duotune/general/gen014.svg-->
                                     <span class="svg-icon position-absolute ms-4 mb-1 svg-icon-2">
@@ -244,7 +252,14 @@
                                         </svg>
                                     </span>
                                     <!--end::Svg Icon-->
-                                    <input class="form-control form-control-solid ps-12" name="date_of_birth" placeholder="Date Of Birth" id="kt_datepicker_1" value=""/>
+                                    <%
+                                    const date = new Date(userMeta.date_of_birth);
+                                    const year = date.getFullYear();
+                                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                                    const day = String(date.getDate()).padStart(2, '0');
+                                    const formattedDate = `${year}-${month}-${day}`;
+                                    %>
+                                    <input class="form-control form-control-solid ps-12" name="date_of_birth" placeholder="Date Of Birth" id="kt_datepicker_1" <% if(userMeta.date_of_birth!='Invalid date'){ %>value="<%= formattedDate %>"<% } %>/>
                                 </div>
                             </div>
                             <!--end::Col-->
@@ -262,19 +277,19 @@
                                 <div class="d-flex align-items-center mt-3">
                                     <!--begin::Option-->
                                     <label class="form-check form-check-inline form-check-solid me-5">
-                                        <input class="form-check-input" name="gender" type="radio" value="male" />
+                                        <input class="form-check-input" name="gender" type="radio" value="male" <% if(userMeta.gender == 'male'){ %>checked <% } %>/>
                                         <span class="fw-bold ps-2 fs-6">Male</span>
                                     </label>
                                     <!--end::Option-->
                                     <!--begin::Option-->
                                     <label class="form-check form-check-inline form-check-solid">
-                                        <input class="form-check-input" name="gender" type="radio" value="female" />
+                                        <input class="form-check-input" name="gender" type="radio" value="female" <% if(userMeta.gender == 'female'){ %>checked <% } %> />
                                         <span class="fw-bold ps-2 fs-6">Female</span>
                                     </label>
                                     <!--end::Option-->
                                     <!--begin::Option-->
                                     <label class="form-check form-check-inline form-check-solid">
-                                        <input class="form-check-input" name="gender" type="radio" value="unisex" />
+                                        <input class="form-check-input" name="gender" type="radio" value="unisex" <% if(userMeta.gender == 'unisex'){ %>checked <% } %> />
                                         <span class="fw-bold ps-2 fs-6">Unisex</span>
                                     </label>
                                     <!--end::Option-->
@@ -295,45 +310,10 @@
                             <div class="col-lg-8 fv-row">
                                 <select name="user_type_id" aria-label="Select a Role" data-placeholder="Select a Role..." class="form-select form-select-solid form-select-lg fw-bold">
                                     <option value="">Select a Role</option>
-                                    <% accounts_response.forEach( item => { %>
-                                    <option value="<%= item.ID %>" ><%= item.role_name %></option>
+                                    <% userRoles.forEach( item => { %>
+                                    <option value="<%= item.ID %>" <% if(item.ID==user.user_type_id){ %>selected <% } %> ><%= item.role_name %></option>
                                     <% }) %>
                                 </select>
-                            </div>
-                            <!--end::Col-->
-                        </div>
-                        <!--end::Input group-->
-                        <!--begin::Input group-->
-                        <div class="row mb-6">
-                            <!--begin::Label-->
-                            <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                <span class="required">Password</span>
-                            </label>
-                            <!--end::Label-->
-                            <!--begin::Col-->
-                            <div class="col-lg-8 fv-row">
-                                <div class="mb-10 fv-row" data-kt-password-meter="true">
-                                    <!--begin::Wrapper-->
-                                    <div class="mb-1">
-                                        <!--begin::Input wrapper-->
-                                        <div class="position-relative mb-3">
-                                            <input class="form-control form-control-lg form-control-solid" type="password"
-                                                placeholder="" name="password" autocomplete="off" value="<%= auto_password %>" />
-                                            <span
-                                                class="btn btn-sm btn-icon position-absolute translate-middle top-50 end-0 me-n2"
-                                                data-kt-password-meter-control="visibility">
-                                                <i class="bi bi-eye-slash fs-2"></i>
-                                                <i class="bi bi-eye fs-2 d-none"></i>
-                                            </span>
-                                        </div>
-                                        <!--end::Input wrapper-->
-                                    </div>
-                                    <!--end::Wrapper-->
-                                    <!--begin::Hint-->
-                                    <div class="text-muted">Use 8 or more characters with a mix of letters, numbers &amp;
-                                        symbols.</div>
-                                    <!--end::Hint-->
-                                </div>
                             </div>
                             <!--end::Col-->
                         </div>
@@ -342,8 +322,9 @@
                     <!--end::Card body-->
                     <!--begin::Actions-->
                     <div class="card-footer d-flex justify-content-end py-6 px-9">
-                        <input type="hidden" name="country_name" value="" id="country_name">
-                        <input type="hidden" name="state_name" value="" id="state_name">
+                        <input type="hidden" name="user_id" value="<%= user.user_id %>">
+                        <input type="hidden" name="country_name" value="<%= userMeta.country_name %>" id="country_name">
+                        <input type="hidden" name="state_name" value="<%= userMeta.state_name %>" id="state_name">
                         <button type="reset" class="btn btn-light btn-active-light-primary me-2">Discard</button>
                         <button type="submit" class="btn btn-primary" id="kt_account_profile_details_submit">Save Changes</button>
                     </div>
@@ -354,8 +335,130 @@
             <!--end::Content-->
         </div>
         <!--end::Basic info-->
-        
-        <!--end::Modals-->
+        <%#
+        <!--begin::Notifications-->
+        <div class="card mb-5 mb-xl-10">
+            <!--begin::Card header-->
+            <div class="card-header border-0 cursor-pointer" role="button" data-bs-toggle="collapse" data-bs-target="#kt_account_notifications" aria-expanded="true" aria-controls="kt_account_notifications">
+                <div class="card-title m-0">
+                    <h3 class="fw-bolder m-0">Notifications</h3>
+                </div>
+            </div>
+            <!--begin::Card header-->
+            <!--begin::Content-->
+            <div id="kt_account_notifications" class="collapse show">
+                <!--begin::Form-->
+                <form class="form">
+                    <!--begin::Card body-->
+                    <div class="card-body border-top px-9 pt-3 pb-4">
+                        <!--begin::Table-->
+                        <div class="table-responsive">
+                            <table class="table table-row-dashed border-gray-300 align-middle gy-6">
+                                <tbody class="fs-6 fw-bold">
+                                    <!--begin::Table row-->
+                                    <tr>
+                                        <td class="min-w-250px fs-4 fw-bolder">Notifications</td>
+                                        <td class="w-125px">
+                                            <div class="form-check form-check-solid">
+                                                <input class="form-check-input" type="checkbox" value="" id="kt_settings_notification_email" checked="checked" data-kt-check="true" data-kt-check-target="[data-kt-settings-notification=email]" />
+                                                <label class="form-check-label ps-2" for="kt_settings_notification_email">Email</label>
+                                            </div>
+                                        </td>
+                                        <td class="w-125px">
+                                            <div class="form-check form-check-solid">
+                                                <input class="form-check-input" type="checkbox" value="" id="kt_settings_notification_phone" checked="checked" data-kt-check="true" data-kt-check-target="[data-kt-settings-notification=phone]" />
+                                                <label class="form-check-label ps-2" for="kt_settings_notification_phone">Phone</label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <!--begin::Table row-->
+                                    <!--begin::Table row-->
+                                    <tr>
+                                        <td>Billing Updates</td>
+                                        <td>
+                                            <div class="form-check form-check-solid">
+                                                <input class="form-check-input" type="checkbox" value="1" id="billing1" checked="checked" data-kt-settings-notification="email" />
+                                                <label class="form-check-label ps-2" for="billing1"></label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-check form-check-solid">
+                                                <input class="form-check-input" type="checkbox" value="" id="billing2" checked="checked" data-kt-settings-notification="phone" />
+                                                <label class="form-check-label ps-2" for="billing2"></label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <!--begin::Table row-->
+                                    <!--begin::Table row-->
+                                    <tr>
+                                        <td>New Team Members</td>
+                                        <td>
+                                            <div class="form-check form-check-solid">
+                                                <input class="form-check-input" type="checkbox" value="" id="team1" checked="checked" data-kt-settings-notification="email" />
+                                                <label class="form-check-label ps-2" for="team1"></label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-check form-check-solid">
+                                                <input class="form-check-input" type="checkbox" value="" id="team2" data-kt-settings-notification="phone" />
+                                                <label class="form-check-label ps-2" for="team2"></label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <!--begin::Table row-->
+                                    <!--begin::Table row-->
+                                    <tr>
+                                        <td>Completed Projects</td>
+                                        <td>
+                                            <div class="form-check form-check-solid">
+                                                <input class="form-check-input" type="checkbox" value="" id="project1" data-kt-settings-notification="email" />
+                                                <label class="form-check-label ps-2" for="project1"></label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-check form-check-solid">
+                                                <input class="form-check-input" type="checkbox" value="" id="project2" checked="checked" data-kt-settings-notification="phone" />
+                                                <label class="form-check-label ps-2" for="project2"></label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <!--begin::Table row-->
+                                    <!--begin::Table row-->
+                                    <tr>
+                                        <td class="border-bottom-0">Newsletters</td>
+                                        <td class="border-bottom-0">
+                                            <div class="form-check form-check-solid">
+                                                <input class="form-check-input" type="checkbox" value="" id="newsletter1" data-kt-settings-notification="email" />
+                                                <label class="form-check-label ps-2" for="newsletter1"></label>
+                                            </div>
+                                        </td>
+                                        <td class="border-bottom-0">
+                                            <div class="form-check form-check-solid">
+                                                <input class="form-check-input" type="checkbox" value="" id="newsletter2" data-kt-settings-notification="phone" />
+                                                <label class="form-check-label ps-2" for="newsletter2"></label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <!--begin::Table row-->
+                                </tbody>
+                            </table>
+                        </div>
+                        <!--end::Table-->
+                    </div>
+                    <!--end::Card body-->
+                    <!--begin::Card footer-->
+                    <div class="card-footer d-flex justify-content-end py-6 px-9">
+                        <button class="btn btn-light btn-active-light-primary me-2">Discard</button>
+                        <button class="btn btn-primary px-6">Save Changes</button>
+                    </div>
+                    <!--end::Card footer-->
+                </form>
+                <!--end::Form-->
+            </div>
+            <!--end::Content-->
+        </div>
+        <!--end::Notifications-->
+        #%>
     </div>
     <!--end::Container-->
     </div>
@@ -422,7 +525,6 @@ var KTAccountSettingsProfileDetails = function () {
     var form;
     var submitButton;
     var validation;
-    var passwordMeter;
 
     var handleForm = function () {
 
@@ -442,16 +544,6 @@ var KTAccountSettingsProfileDetails = function () {
                         validators: {
                             notEmpty: {
                                 message: 'Last name is required'
-                            }
-                        }
-                    },
-                    email: {
-                        validators: {
-                            notEmpty: {
-                                message: 'Email address is required'
-                            },
-                            emailAddress: {
-                                message: 'The value is not a valid email address'
                             }
                         }
                     },
@@ -508,20 +600,6 @@ var KTAccountSettingsProfileDetails = function () {
                             }
                         }
                     },
-                    user_type_id: {
-                        validators: {
-                            notEmpty: {
-                                message: 'User role is required'
-                            }
-                        }
-                    },
-                    'password': {
-                        validators: {
-                            notEmpty: {
-                                message: 'The password is required'
-                            }
-                        }
-                    },
                 },
                 plugins: {
                     trigger: new FormValidation.plugins.Trigger(),
@@ -539,15 +617,14 @@ var KTAccountSettingsProfileDetails = function () {
         // Handle form submit
         submitButton.addEventListener('click', function (e) {
             e.preventDefault();
-
             validation.validate().then(function (status) {
                 if (status == 'Valid') {
                     //$('#kt_account_profile_details_form').submit();
                     var formElement = document.getElementById('kt_account_profile_details_form');
                     var formData = new FormData(formElement);
                     $.ajax({
-                        url: '/auth/create-user', // URL for your API endpoint
-                        type: 'POST',
+                        url: '/auth/edit-user-data', // URL for your API endpoint
+                        type: 'PUT',
                         data: formData,
                         processData: false, // Prevent jQuery from processing the data
                         contentType: false, // Let the browser set the content type
@@ -563,7 +640,7 @@ var KTAccountSettingsProfileDetails = function () {
                                     }
                                 }).then(function (result) {
                                     if (result.isConfirmed) {
-                                        window.location.href="/users";
+                                        window.location.href="/edit-user/"+data.data;
                                     }
                                 });
                             } else {
@@ -596,9 +673,7 @@ var KTAccountSettingsProfileDetails = function () {
                 }
             });
         });
-
     }
-
 
     // Public methods
     return {
