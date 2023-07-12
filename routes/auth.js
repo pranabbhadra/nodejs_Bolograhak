@@ -40,5 +40,6 @@ router.put('/edit-user-data', upload.single('profile_pic'), authController.editU
 
 //---Company--------//
 router.post('/create-company', upload.single('logo'), authController.createCompany );
+router.put('/edit-company-data', upload.single('logo'), authController.editCompany );
 
 module.exports = router;

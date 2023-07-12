@@ -313,7 +313,7 @@
                                         <td class="d-flex align-items-center">
                                             <!--begin:: Avatar -->
                                             <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
-                                                <a href="/user">
+                                                <a href="/edit-user/<%= user.ID %>">
                                                     <div class="symbol-label">
                                                         <% if(user.profile_pic){ %>
                                                             <img src="<%= user.profile_pic %>"
@@ -330,7 +330,7 @@
                                             <!--end::Avatar-->
                                             <!--begin::User details-->
                                             <div class="d-flex flex-column">
-                                                <a href="/user" class="text-gray-800 text-hover-primary mb-1">
+                                                <a href="/edit-user/<%= user.ID %>" class="text-gray-800 text-hover-primary mb-1">
                                                     <%= user.first_name+' '+user.last_name %></a>
                                         <span><%= user.email %></span>
                                     </div>
@@ -384,7 +384,7 @@
                                                         data-kt-menu="true">
                                                         <!--begin::Menu item-->
                                                         <div class="menu-item px-3">
-                                                            <a href="../../demo1/dist/apps/user-management/users/view.html"
+                                                            <a href="/edit-user/<%= user.ID %>"
                                                                 class="menu-link px-3">Edit</a>
                                                         </div>
                                                         <!--end::Menu item-->

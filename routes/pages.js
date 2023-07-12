@@ -250,6 +250,7 @@ router.get('/categories', checkLoggedIn, (req, res) => {
                 countryNames: row.country_names.split(','),
             }));
             //console.log(categories);
+            //res.json({ menu_active_id: 'category', page_title: 'Categories', currentUserData, 'categories': categories });
             res.render('categories', { menu_active_id: 'category', page_title: 'Categories', currentUserData, 'categories': categories });
         }
     })
@@ -639,16 +640,16 @@ router.get('/add-company', checkLoggedIn, async (req, res) => {
         const currentUserData = JSON.parse(encodedUserData);
 
         // Fetch all the required data asynchronously
-        const [company_category] = await Promise.all([
+        const [company_all_categories] = await Promise.all([
             comFunction.getCompanyCategory()
         ]);
 
         // Render the 'edit-user' EJS view and pass the data
-        res.json({
+        res.render('add-company',{
             menu_active_id: 'company',
             page_title: 'Add Company',
             currentUserData,
-            company_categories : company_category
+            company_categories : company_all_categories,
         });
     }catch (err) {
         console.error(err);
@@ -686,20 +687,30 @@ router.get('/edit-company/:id', checkLoggedIn, async (req, res) => {
         const companyId = req.params.id;
 
         // Fetch all the required data asynchronously
-        const [company] = await Promise.all([
+        const [company, company_all_categories] = await Promise.all([
             comFunction.getCompany(companyId),
+            comFunction.getCompanyCategoryBuID(companyId)
             //comFunction.getCompanyMeta(userId),
             //comFunction.getCountries(),
             //comFunction.getStatesByUserID(userId)
         ]);
 
         // Render the 'edit-user' EJS view and pass the data
+        // res.json({
+        //     menu_active_id: 'company',
+        //     page_title: 'Edit Company',
+        //     currentUserData,
+        //     company: company,
+        //     company_all_categories : company_all_categories,
+        //     //countries: countries,
+        //     //states: states            
+        // });
         res.render('edit-company', {
             menu_active_id: 'company',
             page_title: 'Edit Company',
             currentUserData,
             company: company,
-            //userMeta: companyMeta,
+            company_all_categories : company_all_categories,
             //countries: countries,
             //states: states            
         });

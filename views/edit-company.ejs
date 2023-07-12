@@ -30,7 +30,7 @@
             <div class="card-header border-0 cursor-pointer" role="button" data-bs-toggle="collapse" data-bs-target="#kt_account_profile_details" aria-expanded="true" aria-controls="kt_account_profile_details">
                 <!--begin::Card title-->
                 <div class="card-title m-0">
-                    <h3 class="fw-bolder m-0">Edit Profile Details</h3>
+                    <h3 class="fw-bolder m-0">Edit Company Details</h3>
                 </div>
                 <!--end::Card title-->
             </div>
@@ -52,9 +52,9 @@
                                 <div class="image-input image-input-outline" data-kt-image-input="true" style="background-image: url(/assets/media/avatars/blank.png)">
                                     <!--begin::Preview existing avatar-->
                                     <% if(company && company.logo){ %>
-                                    <div class="image-input-wrapper w-125px h-125px" style="background-image: url(/<%= company.logo %>)" ></div>
+                                    <div class="image-input-wrapper w-125px h-125px" style="background-image: url('/<%= company.logo %>')" ></div>
                                     <% }else{ %>
-                                    <div class="image-input-wrapper w-125px h-125px" style="background-image: url(/assets/media/avatars/blank.png)" ></div>
+                                    <div class="image-input-wrapper w-125px h-125px" style="background-image: url('/assets/media/avatars/blank.png')" ></div>
                                     <% } %>
                                     <!--end::Preview existing avatar-->
                                     <!--begin::Label-->
@@ -63,7 +63,7 @@
                                         <!--begin::Inputs-->
                                         <input type="file" name="logo" accept=".png, .jpg, .jpeg" />
                                         <input type="hidden" name="avatar_remove" />
-                                        <input type="hidden" name="previous_profile_pic" value="<%= company.logo %>">
+                                        <input type="hidden" name="previous_logo" value="<%= company.logo %>">
                                         <!--end::Inputs-->
                                     </label>
                                     <!--end::Label-->
@@ -115,7 +115,7 @@
                             <!--end::Label-->
                             <!--begin::Col-->
                             <div class="col-lg-8 fv-row">
-                                <input type="comp_email" name="" class="form-control form-control-lg form-control-solid" placeholder="Email" value="<%= company.comp_email %>" readonly/>
+                                <input type="email" name="comp_email" class="form-control form-control-lg form-control-solid" placeholder="Email" value="<%= company.comp_email %>"/>
                             </div>
                             <!--end::Col-->
                         </div>
@@ -148,11 +148,25 @@
                             <!--end::Col-->
                         </div>
                         <!--end::Input group-->
+                        <!--begin::Input group-->
+                        <div class="row mb-6">
+                            <!--begin::Label-->
+                            <label class="col-lg-4 col-form-label fw-bold fs-6">
+                                <span class="required">Select Category</span>
+                            </label>
+                            <!--end::Label-->
+                            <!--begin::Col-->
+                            <div class="col-lg-8 fv-row">
+                                <%- company_all_categories %>                  
+                            </div>
+                            <!--end::Col-->
+                        </div>
+                        <!--end::Input group-->
                     </div>
                     <!--end::Card body-->
                     <!--begin::Actions-->
                     <div class="card-footer d-flex justify-content-end py-6 px-9">
-                        
+                        <input type="hidden" name="company_id" value="<%= company.ID %>">
                         <button type="reset" class="btn btn-light btn-active-light-primary me-2">Discard</button>
                         <button type="submit" class="btn btn-primary" id="kt_account_profile_details_submit">Save Changes</button>
                     </div>
@@ -283,26 +297,28 @@ var KTAccountSettingsProfileDetails = function () {
 
     var handleForm = function () {
 
-        $("#kt_datepicker_1").flatpickr();
         validation = FormValidation.formValidation(
             form,
             {
                 fields: {
-                    first_name: {
+                    company_name: {
                         validators: {
                             notEmpty: {
-                                message: 'First name is required'
+                                message: 'Company name is required'
                             }
                         }
                     },
-                    last_name: {
+                    comp_email: {
                         validators: {
                             notEmpty: {
-                                message: 'Last name is required'
+                                message: 'Email address is required'
+                            },
+                            emailAddress: {
+                                message: 'The value is not a valid email address'
                             }
                         }
                     },
-                    phone: {
+                    comp_phone: {
                         validators: {
                             notEmpty: {
                                 message: 'Contact phone number is required'
@@ -313,48 +329,13 @@ var KTAccountSettingsProfileDetails = function () {
                             }
                         }
                     },
-                    address: {
+                    comp_registration_id: {
                         validators: {
                             notEmpty: {
-                                message: 'Address is required'
+                                message: 'Registration ID is required'
                             }
                         }
-                    },
-                    country: {
-                        validators: {
-                            notEmpty: {
-                                message: 'Please select a country'
-                            }
-                        }
-                    },
-                    city: {
-                        validators: {
-                            notEmpty: {
-                                message: 'City is required'
-                            }
-                        }
-                    },
-                    zip: {
-                        validators: {
-                            notEmpty: {
-                                message: 'Zip is required'
-                            }
-                        }
-                    },
-                    date_of_birth: {
-                        validators: {
-                            notEmpty: {
-                                message: 'Date of birth is required'
-                            }
-                        }
-                    },
-                    gender: {
-                        validators: {
-                            notEmpty: {
-                                message: 'Gender is required'
-                            }
-                        }
-                    },
+                    }
                 },
                 plugins: {
                     trigger: new FormValidation.plugins.Trigger(),
@@ -377,44 +358,42 @@ var KTAccountSettingsProfileDetails = function () {
                     //$('#kt_account_profile_details_form').submit();
                     var formElement = document.getElementById('kt_account_profile_details_form');
                     var formData = new FormData(formElement);
-                    $.ajax({
-                        url: '/auth/edit-company-data', // URL for your API endpoint
-                        type: 'PUT',
-                        data: formData,
-                        processData: false, // Prevent jQuery from processing the data
-                        contentType: false, // Let the browser set the content type
-                        success: function (data) {
-                            if (data.status == 'ok') {
-                                Swal.fire({
-                                    text: data.message,
-                                    icon: "success",
-                                    buttonsStyling: false,
-                                    confirmButtonText: "Ok, got it!",
-                                    customClass: {
-                                        confirmButton: "btn btn-primary"
-                                    }
-                                }).then(function (result) {
-                                    if (result.isConfirmed) {
-                                        window.location.href="/edit-company/"+data.data;
-                                    }
-                                });
-                            } else {
-                                Swal.fire({
-                                    text: data.message,
-                                    icon: "error",
-                                    buttonsStyling: false,
-                                    confirmButtonText: "Ok, got it!",
-                                    customClass: {
-                                        confirmButton: "btn btn-primary"
-                                    }
-                                });
-                            }
-                        },
-                        error: function (xhr, status, error) {
-                            // Handle any errors that occur during the request
-                            console.log(error);
+                    fetch('/auth/edit-company-data', {
+                        method: 'PUT',
+                        body: formData
+                      })
+                      .then(response => response.json())
+                      .then(data => {
+                        if (data.status == 'ok') {
+                            Swal.fire({
+                                text: data.message,
+                                icon: "success",
+                                buttonsStyling: false,
+                                confirmButtonText: "Ok, got it!",
+                                customClass: {
+                                    confirmButton: "btn btn-primary"
+                                }
+                            }).then(function (result) {
+                                if (result.isConfirmed) {
+                                    window.location.href="/edit-company/"+data.data;
+                                }
+                            });
+                        } else {
+                            Swal.fire({
+                                text: data.message,
+                                icon: "error",
+                                buttonsStyling: false,
+                                confirmButtonText: "Ok, got it!",
+                                customClass: {
+                                    confirmButton: "btn btn-primary"
+                                }
+                            });
                         }
-                    });
+                      })
+                      .catch(error => {
+                        // Handle any errors that occurred during the AJAX request
+                        console.error(error);
+                      });                    
                 } else {
                     swal.fire({
                         text: "Sorry, looks like there are some errors detected, please try again.",

@@ -122,69 +122,16 @@ async function getCompanyCategory() {
       });
   
       const [categories] = await connection.query('SELECT * FROM category');
-      console.log(categories);
+      //console.log(categories);
       connection.end();
-    //   const categories = [
-    //     { id: 1, name: 'Electronics', parentId: 0 },
-    //     { id: 2, name: 'Mobile Phones', parentId: 1 },
-    //     { id: 3, name: 'Laptops', parentId: 1 },
-    //     { id: 4, name: 'Clothing', parentId: 0 },
-    //     { id: 5, name: 'Men\'s Clothing', parentId: 4 },
-    //     { id: 6, name: 'Women\'s Clothing', parentId: 4 },
-    //     // Add more categories and subcategories as needed
-    //   ];
-      const nestedCategories = buildCategoryTree(categories);
-      return nestedCategories;
+      const nestedCategories = buildCategoryTree(categories);   // This is the Json Format Of All Categories
+      const nestedCategoriesHTML = renderCategoryTreeHTML(nestedCategories);
+
+      return nestedCategoriesHTML;
     } catch (error) {
       throw new Error('Error fetching company categories');
     }
 }
-  
-// function constructNestedCategories(categories) {
-//     const nestedCategoriesMap = {};
-//     const nestedCategories = [];
-  
-//     categories.forEach((category) => {
-//       const categoryId = category.ID;
-//       const parentId = category.parent_id;
-  
-//       const newCategory = {
-//         id: categoryId,
-//         category_name: category.category_name,
-//         category_img: category.category_img,
-//         children: [],
-//       };
-//       console.log(newCategory);
-
-//       if (!parentId || parentId === 0) {
-//         nestedCategories.push(newCategory);
-//         console.log('aaa');
-//       } else {
-//         if (!nestedCategoriesMap[parentId]) {
-//           nestedCategoriesMap[parentId] = [];
-//         }
-//         nestedCategoriesMap[parentId].push(newCategory);
-//         console.log('kkk',nestedCategoriesMap);
-//       }
-
-//       if (nestedCategoriesMap[categoryId]) {
-//         newCategory.children = nestedCategoriesMap[categoryId];
-//       }
-//     });
-  
-//     categories.forEach((category) => {
-//       const categoryId = category.id;
-//       const parentId = category.parent_id;
-  
-//       if (parentId && nestedCategoriesMap[categoryId]) {
-//         nestedCategoriesMap[parentId].forEach((parentCategory) => {
-//           parentCategory.children.push(...nestedCategoriesMap[categoryId]);
-//         });
-//       }
-//     });
-  
-//     return nestedCategories;
-//   }
   
 function buildCategoryTree(categories, parentId = 0) {
     const categoryTree = [];
@@ -192,14 +139,70 @@ function buildCategoryTree(categories, parentId = 0) {
     categories.forEach((category) => {
       if (category.parent_id === parentId) {
         const children = buildCategoryTree(categories, category.ID);
-        const categoryNode = { id: category.ID, name: category.category_name, children };
+        const categoryNode = { id: category.ID, name: category.category_name, img: category.category_img, children };
         categoryTree.push(categoryNode);
       }
     });
     
     return categoryTree;
 }
+
+function renderCategoryTreeHTML(categories) {
+    let html = '<ul>';
+    categories.forEach(function(category) {
+      html += '<li class="mt-5"><div class="mb-5"><div class="form-check"><input type="checkbox" name="category" class="form-check-input" value="'+ category.id +'"><label class="form-check-label" for="flexCheckDefault">'+ category.name +'</label>';
+      if (category.children.length > 0) {
+        html += renderCategoryTreeHTML(category.children);
+      }
+      html += '</div></div></li>';
+    });
+    html += '</ul>';
+    return html;
+}
+
+async function getCompanyCategoryBuID(compID) {
+    try {
+      const connection = await mysql.createConnection({
+        host: process.env.DATABASE_HOST,
+        user: process.env.DATABASE_USER,
+        password: process.env.DATABASE_PASSWORD,
+        database: process.env.DATABASE
+      });
   
+      const [categories] = await connection.query('SELECT * FROM category');
+
+      const [com_categories] = await connection.query('SELECT category_id FROM company_cactgory_relation WHERE company_id = ?', [compID]);
+      
+      const com_category_array = com_categories.map( (category) => category.category_id );
+
+      //console.log(com_category_array);
+      connection.end();
+      const nestedCategories = buildCategoryTree(categories);   // This is the Json Format Of All Categories
+      const nestedCategoriesHTMLwithChecked = renderCategoryTreeHTMLforCompany(nestedCategories, com_category_array);
+
+      return nestedCategoriesHTMLwithChecked;
+    } catch (error) {
+      throw new Error('Error fetching company categories');
+    }
+}
+
+function renderCategoryTreeHTMLforCompany(categories, com_category_array) {
+    let html = '<ul>';
+    categories.forEach(function(category) {
+      if(com_category_array.includes(category.id)){
+        var  inputchecked = 'checked';
+      }else{
+        var inputchecked = '';
+      }
+      html += '<li class="mt-5"><div class="mb-5"><div class="form-check"><input type="checkbox" name="category" class="form-check-input" value="'+ category.id +'" '+ inputchecked +'><label class="form-check-label" for="flexCheckDefault">'+ category.name +'</label>';
+      if (category.children.length > 0) {
+        html += renderCategoryTreeHTMLforCompany(category.children, com_category_array);
+      }
+      html += '</div></div></li>';
+    });
+    html += '</ul>';
+    return html;
+}
 
 module.exports = {
     getUser,
@@ -209,5 +212,7 @@ module.exports = {
     getStatesByUserID,
     getAllCompany,
     getCompany,
-    getCompanyCategory
+    getCompanyCategory,
+    renderCategoryTreeHTML,
+    getCompanyCategoryBuID
 };
