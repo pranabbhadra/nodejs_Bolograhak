@@ -113,83 +113,52 @@
 <section class="main-content landing-blog-content">
   <div class="container">
     <h2 class="main-head text-center">Did You <span>Know?</span></h2>
+    <% if (homePosts.length > 0) { %>
     <div class="row">
       <div class="col-md-6">
-        <?php
-          $args = array(
-              'posts_per_page'  => 1,
-              'post_status' => 'publish',
-          );
-          query_posts($args);
-          if (have_posts()) : while (have_posts()) : the_post();
-          $ID = get_the_ID();
-          $thumbnail = wp_get_attachment_image_src( get_post_thumbnail_id( $ID ), 'home-blog-thumb' );
-          $alt_text = get_post_meta(get_post_thumbnail_id( $ID ), '_wp_attachment_image_alt', true);
-          ?>            
+        <!--First post-->       
         <div class="blog-left position-relative">
-          <img src="<?php echo $thumbnail['0']; ?>" alt="<?php echo $alt_text;?>" loading="lazy" width="564" height="387" class="w-100">
+          <img src="<%= homePosts[0].thumbnail %>" alt="<%= homePosts[0].thumbnail_alt %>" loading="lazy" width="564" height="387" class="w-100">
           <div class="blog-overlay-caption">
-            <span class="date-tag"><?php the_time(__('M d, Y', 'kubrick')) ?></span>
-            <h3 title="<?php the_title(); ?>"><a href="<?php the_permalink(); ?>">
-              <?php 
-                $title = get_the_title();
-                $the_title = strip_tags($title);
-                if(strlen($the_title)>45){
-                $the_title = substr($the_title,0,45).'..';
-                echo $the_title;
-                }else{
-                echo $the_title;
-                }     
-                ?>
-              </a> <span><a href="<?php the_permalink(); ?>"><i class="fa-solid fa-angle-right"></i></a></span>
+            <span class="date-tag"><%= homePosts[0].publish_date %></span>
+            <h3 title="<%= homePosts[0].title %>"><a href="<%= homePosts[0].permalink %>">
+              <%= homePosts[0].title %>
+              </a> <span><a href="<%= homePosts[0].permalink %>"><i class="fa-solid fa-angle-right"></i></a></span>
             </h3>
           </div>
         </div>
-        <?php endwhile; endif; wp_reset_query(); ?>
+        <!--First post End-->    
       </div>
       <div class="col-md-6">
+        <% if (homePosts.length > 1) { %>
         <div class="blog-right position-relative">
-          <?php
-            $args = array(
-                'posts_per_page'  => 2,
-                'post_status' => 'publish',
-                'offset'  => 1,
-            );
-            query_posts($args);
-            if (have_posts()) : while (have_posts()) : the_post();
-            $ID = get_the_ID();
-            $thumbnail = wp_get_attachment_image_src( get_post_thumbnail_id( $ID ), 'trending-blog-thumb' );
-            $alt_text = get_post_meta(get_post_thumbnail_id( $ID ), '_wp_attachment_image_alt', true);
-            ?> 
+          <% let counter = 0; %>
+          <% homePosts.forEach((post) => { %>
+          <% if (counter > 0) { %>
           <div class="row">
             <div class="col-6 my-auto">
               <div class="small-blog-img">
-                <img src="<?php echo $thumbnail['0']; ?>" alt="<?php echo $alt_text;?>" loading="lazy" width="264" height="215">
+                <img src="<%= post.thumbnail %>" alt="<%= post.thumbnail_alt %>" loading="lazy" width="264" height="215">
               </div>
             </div>
             <div class="col-6 my-auto">
               <div class="small-blog-text">
-                <span class="date-tag"><?php the_time(__('M d, Y', 'kubrick')) ?></span>
-                <h4 title="<?php the_title(); ?>" class="m-0"><a href="<?php the_permalink(); ?>">
-                  <?php 
-                    $title = get_the_title();
-                    $the_title = strip_tags($title);
-                    if(strlen($the_title)>45){
-                    $the_title = substr($the_title,0,45).'..';
-                    echo $the_title;
-                    }else{
-                    echo $the_title;
-                    }     
-                    ?>
+                <span class="date-tag"><%= post.publish_date %></span>
+                <h4 title="<%= post.title %>" class="m-0"><a href="<%= post.permalink %>">
+                  <%= post.title %>
                   </a>
                 </h4>
               </div>
             </div>
           </div>
-          <?php endwhile; endif; wp_reset_query(); ?>
+          <% } %>
+          <% counter++; %>
+          <% }); %>
         </div>
+        <% } %>
       </div>
     </div>
+    <% } %>
     <div class="text-center">
       <a href="http://localhost/bolo-grahak/blog/" class="view-more"><span class="position-relative"><i class="fa-solid fa-angle-right"></i>View All</span></a>
     </div>
@@ -493,3 +462,58 @@
 </section>
 <!-- ============== Map Content End =============== -->
 <%- include('common/footer') -%>
+<script>
+  jQuery(document).ready(function($) {
+    // /////////////////////////////////////// Auto Field Dropdown Start
+    var timer;
+    $("#search-input").keyup(function(){
+      clearTimeout(timer);
+      var keyword = $(this).val();
+      if (keyword.length >= 3) {
+        timer = setTimeout(function() {
+          performSearch(keyword);
+        }, 500);
+      } else {
+        $('.autofield-dropdown').html(''); // Clear search results if less than three letters
+      }
+    })
+    // Function to perform the AJAX search
+    function performSearch(keyword) {
+      const url = "http://localhost/bolo-grahak/blog/api/home-search.php";
+      const data = {
+        keyword: keyword,
+      };
+
+      fetch(url, {
+        method: "POST", // Use the appropriate HTTP method
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      })
+      .then(response => response.json())
+      .then(posts_html => {
+        console.log(posts_html);
+        $('.autofield-dropdown').html(posts_html);
+        $('.autofield-dropdown').show();
+      })
+      .catch(error => {
+        console.error("Error loading posts:", error);
+      });
+    }
+    });
+    
+    $("body").on('click', ".autofield-dropdown ul > li", function(e){
+      e.preventDefault();
+      var resulttitle = $(this).find('a').attr('data-resulttitle');
+      var resultexcerpt = $(this).find('a').attr('data-resultexcerpt');
+      var resultpermalink = $(this).find('a').attr('data-resultpermalink');
+      console.log(resulttitle+' '+resultexcerpt+' '+resultpermalink);
+      $('#dynamic-search-title').text(resulttitle);
+      $('#dynamic-search-content').text(resultexcerpt);
+      $('#dynamic-search-link').attr("href", resultpermalink);
+  
+      $(".custom-modal").fadeIn();
+  
+    });
+</script>

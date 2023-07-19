@@ -37,9 +37,9 @@ $(window).scroll(function(){
 // /////////////////////////////////////// Fixed Top End
 
 // /////////////////////////////////////// Auto Field Dropdown Start
-$(".search-area input").keyup(function(){
-  $(".autofield-dropdown").show();
-})
+// $(".search-area input").keyup(function(){
+//   $(".autofield-dropdown").show();
+// })
 
 $(window).click(function(){
   $(".autofield-dropdown").hide();

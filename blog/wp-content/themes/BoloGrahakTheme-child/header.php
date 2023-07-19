@@ -33,7 +33,7 @@
    <link href="<?php echo get_stylesheet_directory_uri();?>/default-style.css" rel="stylesheet" type="text/css">
    <link href="<?php echo get_stylesheet_directory_uri();?>/header-banner-style.css" rel="stylesheet" type="text/css">
    <?php if ( is_front_page() ) { ?>
-   <link href="<?php echo get_stylesheet_directory_uri();?>/landing-page-style.css" rel="stylesheet" type="text/css">
+   <link href="<?php echo get_stylesheet_directory_uri();?>/blog-listing-style.css" rel="stylesheet" type="text/css">
    <?php }else if ( is_single() ) { ?>
    <link href="<?php echo get_stylesheet_directory_uri();?>/blog-details-style.css" rel="stylesheet" type="text/css">
    <?php }else{ ?>
@@ -49,13 +49,13 @@
 	<?php wp_head(); ?>
 </head>
 
-<body <?php body_class(); ?>>
+<body>
    <!-- ============== Header Start =============== -->
-   <header class="main_header <?php if ( ! is_front_page() ) { ?>inner_header <?php } ?>">
+   <header class="main_header inner_header">
       <div class="container">
          <div class="header-wrapper">
             <div class="logo">
-               <a href="<?php echo site_url(); ?>">
+               <a href="http://localhost:5000/">
                <svg width="139" height="99" viewBox="0 0 139 99" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M93.6277 48.4705C94.2081 48.4705 94.8298 48.4291 95.4931 48.3256C96.1563 48.2428 96.6744 48.1601 97.0268 48.1187C98.3118 47.891 99.2652 47.3943 99.9077 46.6079C100.529 45.8214 100.84 44.6624 100.84 43.0895C100.84 41.3097 100.654 40.13 100.281 39.5505C99.9077 38.971 99.3273 38.6813 98.5812 38.6813C98.1874 38.7226 97.8144 38.7847 97.4827 38.8468C97.1511 38.9089 96.8195 38.9503 96.5086 38.9503C95.4723 38.9503 94.6433 38.5778 94.0008 37.812C93.3583 37.0463 93.0267 35.8459 93.0267 34.2109V6.02286C93.0267 4.05673 92.5085 2.56661 91.4515 1.55251C90.4152 0.538398 88.923 0.0209961 87.0162 0.0209961C85.1509 0.0209961 83.7001 0.538398 82.6845 1.55251C81.6689 2.56661 81.1508 4.07743 81.1508 6.02286V34.6248C81.1508 39.2607 82.1664 42.717 84.1975 45.0143C86.1872 47.3115 89.3375 48.4705 93.6277 48.4705Z" fill="#FCCB06"/>
                   <path d="M56.4663 34.9352C58.1244 34.335 59.8239 33.9832 61.5856 33.9211C61.8343 33.9211 62.083 33.8383 62.1038 33.5693C62.1245 33.2588 61.8343 33.2381 61.6064 33.2175C61.3576 33.1968 61.0882 33.2175 60.8395 33.2175C59.2229 33.2175 57.7099 33.7142 56.1969 34.2523C55.9482 34.335 55.6373 34.4385 55.7409 34.749C55.8446 35.1215 56.1969 35.0387 56.4663 34.9352Z" fill="#FCCB06"/>
@@ -144,9 +144,9 @@
                <nav class="nav_sec">
                   <ul>
                      <li class="active"><a href="<?php echo get_the_permalink(10); ?>">Did You Know?</a></li>
-                     <li><a href="#">About Us</a></li>
-                     <li><a href="#">Business</a></li>
-                     <li><a href="#">Contact</a></li>
+                     <li><a href="http://localhost:5000/about-us">About Us</a></li>
+                     <li><a href="http://localhost:5000/business">Business</a></li>
+                     <li><a href="http://localhost:5000/contact-us">Contact</a></li>
                      <li class="mbl-show-link"><a href="#" class="btn-default btn-outline-warning">For business</a></li>
                      <li class="mbl-show-link"><a href="#" class="btn-default btn-outline-warning login">Log in</a></li>
                   </ul>

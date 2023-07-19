@@ -5,17 +5,48 @@ const db = require('../config');
 var moment = require('moment');
 const { error } = require('console');
 const async = require('async');
+const axios = require('axios');
 const comFunction = require('../common_function');
 
 const router = express.Router();
 const publicPath = path.join(__dirname, '../public');
 
 // Front-End Page Routes
-router.get('', (req, res) => {
+router.get('', async (req, res) => {
     //resp.sendFile(`${publicPath}/index.html`)
-    const encodedUserData = req.cookies.user;
-    const currentUserData = JSON.parse(encodedUserData);
-    res.render('front-end/landing', { menu_active_id: 'landing', page_title: 'Home', currentUserData });
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+
+        // Make API request to fetch blog posts
+        const apiUrl = 'http://localhost/bolo-grahak/blog/api/home-blog-api.php';
+        const response = await axios.get(apiUrl);
+        const blogPosts = response.data;
+        if(blogPosts.status == 'ok'){
+            res.render('front-end/landing', { 
+                menu_active_id: 'landing', 
+                page_title: 'Home', 
+                currentUserData,
+                homePosts: blogPosts.data  // Pass the blogPosts data to the view
+            });
+        }else{
+            res.render('front-end/landing', { 
+                menu_active_id: 'landing', 
+                page_title: 'Home', 
+                currentUserData,
+                homePosts:[]  // Pass the blogPosts data to the view
+            });
+        }
+    } catch {
+        console.error('Error fetching blog posts:', error);
+        res.render('front-end/landing', {
+            menu_active_id: 'landing',
+            page_title: 'Home',
+            currentUserData,
+            homePosts:[]  // Provide empty array if API request fails
+        });
+    }
+
 });
 
 router.get('/contact-us', (req, res) => {
@@ -80,7 +111,7 @@ router.get('/logout', (req, res) => {
 // Middleware function to check if user is logged in
 async function checkLoggedIn(req, res, next) {
     const encodedUserData = req.cookies.user;
-  
+
     try {
         if (encodedUserData) {
             // User is logged in, proceed to the next middleware or route handler
@@ -89,8 +120,8 @@ async function checkLoggedIn(req, res, next) {
             res.redirect('sign-in');
         }
     } catch (err) {
-      console.error(err);
-      res.status(500).send('An error occurred');
+        console.error(err);
+        res.status(500).send('An error occurred');
     }
 }
 
@@ -151,14 +182,14 @@ router.get('/edit-category/:id/:kk', checkLoggedIn, (req, res) => {
             if (results.length > 0) {
                 //console.log(results);
                 country_response = results;
-                if(!currentUserData.country){
+                if (!currentUserData.country) {
                     res.render('edit-profile', { page_title: 'Account Settings', currentUserData, country_response });
-                }else{
+                } else {
                     // -- send state list --//
                     db.query('SELECT * FROM states WHERE country_id=?', [currentUserData.country], (err, state_results) => {
                         if (err) {
                             console.log(err);
-                        }else{
+                        } else {
                             if (state_results.length > 0) {
                                 state_response = state_results;
                                 res.render('edit-category', { menu_active_id: 'profile', page_title: 'Account Settings', currentUserData, country_response, state_response });
@@ -166,7 +197,7 @@ router.get('/edit-category/:id/:kk', checkLoggedIn, (req, res) => {
                         }
                     })
                 }
-                
+
             }
         }
     })
@@ -623,7 +654,7 @@ router.get('/edit-user/:id', checkLoggedIn, async (req, res) => {
         const encodedUserData = req.cookies.user;
         const currentUserData = JSON.parse(encodedUserData);
         const userId = req.params.id;
-        console.log('editUserID: ',userId);
+        console.log('editUserID: ', userId);
 
         // Fetch all the required data asynchronously
         const [user, userMeta, countries, userRoles, states] = await Promise.all([
@@ -643,9 +674,9 @@ router.get('/edit-user/:id', checkLoggedIn, async (req, res) => {
             userMeta: userMeta,
             countries: countries,
             userRoles: userRoles,
-            states: states            
+            states: states
         });
-    }catch (err) {
+    } catch (err) {
         console.error(err);
         res.status(500).send('An error occurred');
     }
@@ -664,13 +695,13 @@ router.get('/add-company', checkLoggedIn, async (req, res) => {
         ]);
 
         // Render the 'edit-user' EJS view and pass the data
-        res.render('add-company',{
+        res.render('add-company', {
             menu_active_id: 'company',
             page_title: 'Add Company',
             currentUserData,
-            company_categories : company_all_categories,
+            company_categories: company_all_categories,
         });
-    }catch (err) {
+    } catch (err) {
         console.error(err);
         res.status(500).send('An error occurred');
     }
@@ -691,9 +722,9 @@ router.get('/companies', checkLoggedIn, async (req, res) => {
             menu_active_id: 'company',
             page_title: 'Companies',
             currentUserData,
-            allcompany: allcompany          
+            allcompany: allcompany
         });
-    }catch (err) {
+    } catch (err) {
         console.error(err);
         res.status(500).send('An error occurred');
     }
@@ -729,11 +760,11 @@ router.get('/edit-company/:id', checkLoggedIn, async (req, res) => {
             page_title: 'Edit Company',
             currentUserData,
             company: company,
-            company_all_categories : company_all_categories,
+            company_all_categories: company_all_categories,
             //countries: countries,
             //states: states            
         });
-    }catch (err) {
+    } catch (err) {
         console.error(err);
         res.status(500).send('An error occurred');
     }
