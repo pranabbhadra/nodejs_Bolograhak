@@ -10,10 +10,29 @@ const comFunction = require('../common_function');
 const router = express.Router();
 const publicPath = path.join(__dirname, '../public');
 
-
-router.get('', (_, resp) => {
-    resp.sendFile(`${publicPath}/index.html`)
+// Front-End Page Routes
+router.get('', (req, res) => {
+    //resp.sendFile(`${publicPath}/index.html`)
+    const encodedUserData = req.cookies.user;
+    const currentUserData = JSON.parse(encodedUserData);
+    res.render('front-end/landing', { menu_active_id: 'landing', page_title: 'Home', currentUserData });
 });
+
+router.get('/contact-us', (req, res) => {
+    //resp.sendFile(`${publicPath}/index.html`)
+    const encodedUserData = req.cookies.user;
+    const currentUserData = JSON.parse(encodedUserData);
+    res.render('front-end/contact', { menu_active_id: 'contact', page_title: 'Contact Us', currentUserData });
+});
+
+router.get('/faq', (req, res) => {
+    //resp.sendFile(`${publicPath}/index.html`)
+    const encodedUserData = req.cookies.user;
+    const currentUserData = JSON.parse(encodedUserData);
+    res.render('front-end/faq', { menu_active_id: 'faq', page_title: 'FAQ', currentUserData });
+});
+
+
 
 router.get('/countries', (req, res) => {
     db.query('SELECT * FROM countries', (err, results) => {
