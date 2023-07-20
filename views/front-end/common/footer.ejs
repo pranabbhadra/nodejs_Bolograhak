@@ -117,30 +117,7 @@
      </svg>
   </a>
   </div> -->
-<div class="modal fade pe-0" tabindex="-1" id="quickloginmodal">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header justify-content-center">
-        <h4 class="modal-title fw-bold">Quick Login</h4>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="fa-solid fa-circle-xmark"></i></button>
-      </div>
-      <div class="modal-body text-center">
-        <a href="#" target="_blank" class="quick-login">
-        <span><i class="fa-brands fa-google"></i></span>
-        <span>Log in with google</span>
-        </a>
-        <a href="#" target="_blank" class="quick-login">
-        <span><i class="fa-brands fa-facebook-f"></i></span>
-        <span>Log in with facebook</span>
-        </a>
-        <a href="#" target="_blank" class="quick-login">
-        <span><i class="fa-brands fa-apple"></i></span>
-        <span>Log in with apple</span>
-        </a>
-      </div>
-    </div>
-  </div>
-</div>
+
 <!-- Css -->
 <link href="/front-end/css/footer-style.css" rel="stylesheet" type="text/css">
 <!-- Responsive Css -->
@@ -150,5 +127,142 @@
 <script src="/front-end/js/bootstrap.min.js"> </script>
 <script src="/front-end/js/component.js"> </script>
 <script src="/front-end/js/edit-js.js"> </script>
+<script>
+  $( document ).ready(function() {
+    $("#user-signup").submit(function(e){
+      e.preventDefault();
+
+      $('.frm-loading').show();
+      $('#kt_sign_up_submit').prop('disabled', true);
+      $('.frm-error-message').text('').hide();
+      var error_message = '';
+      var password = $("input[name='register_password']").val();
+      var confirmPassword = $("input[name='register_confirm_password']").val();
+
+      // Password strength check
+      var passwordStrength = checkPasswordStrength(password);
+      if (passwordStrength === 'weak') {
+        error_message = "Password is weak. It should be at least 8 characters long and contain a combination of letters, numbers, and special characters.";
+      }  else{
+        if (password !== confirmPassword) {
+          error_message = "Password and Confirm Password do not match.";
+        }else{
+          // Call ajax..
+          const formData = $('#user-signup').serializeArray();
+          const jsonData = {};
+          $(formData).each(function (index, field) {
+            jsonData[field.name] = field.value;
+          });
+          //console.log(jsonData);
+          $.ajax({
+            url: '/auth/frontend-user-register',
+            method: 'POST',
+            data: jsonData,
+            ContentType: 'application/json',
+            success: function (data) {
+              if (data.status == 'ok') {
+                $('.frm-loading').hide();
+                $('.frm-error-message').text(data.message).show();
+                $('#user-signup').trigger('reset');
+              } else {
+                $('.frm-loading').hide();
+                $('.frm-error-message').text(data.message).show();
+                $('#kt_sign_up_submit').prop('disabled', false);
+              }
+            },
+            error: function (error) {
+              $('.frm-loading').hide();
+              $('.frm-error-message').text(error).show();
+              $('#kt_sign_up_submit').prop('disabled', false);
+            }
+          });          
+          
+        }
+      }
+      if(error_message){
+        $('.frm-loading').hide();
+        $('.frm-error-message').text(error_message).show();
+        $('#kt_sign_up_submit').prop('disabled', false);
+      }
+
+    }); 
+
+    const storedEmail = localStorage.getItem('rememberedEmail');
+    const storedPass = localStorage.getItem('rememberedPass');
+    const storedRememberMe = localStorage.getItem('rememberMe') === 'true';
+    if (storedEmail) {
+      $('#login-email').val(storedEmail);
+      $('#login-pass').val(storedPass);
+    }
+    if (storedRememberMe) {
+      $('#exampleCheck1').prop('checked', true);
+    }
+
+    $("#user-signin").submit(function(e){
+      e.preventDefault();
+      const rememberMe = $('#exampleCheck1').is(':checked');
+      if (rememberMe) {
+        localStorage.setItem('rememberedEmail', $('#login-email').val());
+        localStorage.setItem('rememberedPass', $('#login-pass').val());
+        localStorage.setItem('rememberMe', true);
+      } else {
+        localStorage.removeItem('rememberedEmail');
+        localStorage.removeItem('rememberedPass');
+        localStorage.removeItem('rememberMe');
+      }
+
+      $('.frm-loading').show();
+      $('#kt_sign_in_submit').prop('disabled', true);
+      $('.frm-error-message').text('').hide();
+
+      // Call ajax..
+      const formData = $('#user-signin').serializeArray();
+      const jsonData = {};
+      $(formData).each(function (index, field) {
+        jsonData[field.name] = field.value;
+      });
+      //console.log(jsonData);
+      $.ajax({
+        url: '/auth/frontend-user-login',
+        method: 'POST',
+        data: jsonData,
+        ContentType: 'application/json',
+        success: function (data) {
+          if (data.status == 'ok') {
+            $('.frm-loading').hide();
+            $('.frm-error-message').text(data.message).show();
+            $('#user-signin').trigger('reset');
+            window.location.href="/";
+          } else {
+            $('.frm-loading').hide();
+            $('.frm-error-message').text(data.message).show();
+            $('#kt_sign_in_submit').prop('disabled', false);
+          }
+        },
+        error: function (error) {
+          $('.frm-loading').hide();
+          $('.frm-error-message').text(error).show();
+          $('#kt_sign_in_submit').prop('disabled', false);
+        }
+      }); 
+
+    }); 
+    
+    // Function to check password strength
+    function checkPasswordStrength(password) {
+      var strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");
+      var mediumRegex = new RegExp("^(?=.*[a-zA-Z])(?=.*[0-9])(?=.{6,})");
+
+      if (strongRegex.test(password)) {
+        return 'strong';
+      } else if (mediumRegex.test(password)) {
+        return 'medium';
+      } else {
+        return 'weak';
+      }
+    }
+    
+  });    
+</script>
 </body>
 </html>

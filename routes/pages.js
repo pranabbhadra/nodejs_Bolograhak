@@ -6,6 +6,9 @@ var moment = require('moment');
 const { error } = require('console');
 const async = require('async');
 const axios = require('axios');
+const dotenv = require('dotenv');
+dotenv.config({ path: './.env' });
+
 const comFunction = require('../common_function');
 
 const router = express.Router();
@@ -13,40 +16,35 @@ const publicPath = path.join(__dirname, '../public');
 
 // Front-End Page Routes
 router.get('', async (req, res) => {
-    //resp.sendFile(`${publicPath}/index.html`)
+    let currentUserData = null;
     try {
         const encodedUserData = req.cookies.user;
-        const currentUserData = JSON.parse(encodedUserData);
+        currentUserData = JSON.parse(encodedUserData);
+    } catch (error) {
+        console.error('Error parsing user data:', error);
+    }
 
+    try {
         // Make API request to fetch blog posts
-        const apiUrl = 'http://localhost/bolo-grahak/blog/api/home-blog-api.php';
+        const apiUrl = process.env.BLOG_API_ENDPOINT + '/home-blog';
         const response = await axios.get(apiUrl);
         const blogPosts = response.data;
-        if(blogPosts.status == 'ok'){
-            res.render('front-end/landing', { 
-                menu_active_id: 'landing', 
-                page_title: 'Home', 
-                currentUserData,
-                homePosts: blogPosts.data  // Pass the blogPosts data to the view
-            });
-        }else{
-            res.render('front-end/landing', { 
-                menu_active_id: 'landing', 
-                page_title: 'Home', 
-                currentUserData,
-                homePosts:[]  // Pass the blogPosts data to the view
-            });
-        }
-    } catch {
+
+        res.render('front-end/landing', {
+            menu_active_id: 'landing',
+            page_title: 'Home',
+            currentUserData: currentUserData,
+            homePosts: blogPosts.status === 'ok' ? blogPosts.data : []
+        });
+    } catch (error) {
         console.error('Error fetching blog posts:', error);
         res.render('front-end/landing', {
             menu_active_id: 'landing',
             page_title: 'Home',
-            currentUserData,
-            homePosts:[]  // Provide empty array if API request fails
+            currentUserData: currentUserData,
+            homePosts: []
         });
     }
-
 });
 
 router.get('/contact-us', (req, res) => {
@@ -102,9 +100,18 @@ router.get('/sign-up', (req, res) => {
 });
 
 router.get('/logout', (req, res) => {
-    res.clearCookie('user');
-    res.redirect('/sign-in');
+    const encodedUserData = req.cookies.user;
+    const currentUserData = JSON.parse(encodedUserData);
+    if(currentUserData.user_type_id == 2){
+        res.clearCookie('user');
+        res.redirect('/');
+    }else{
+        res.clearCookie('user');
+        res.redirect('/sign-in');
+    }
+    
 });
+
 
 // Protected route example
 

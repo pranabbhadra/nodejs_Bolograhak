@@ -102,4 +102,170 @@ function blog_search_action_callback() {
 }
 add_action('wp_ajax_blog_search_action', 'blog_search_action_callback');
 add_action('wp_ajax_nopriv_blog_search_action', 'blog_search_action_callback');
+
+
+//----------Custom User Registration -----------------//
+function custom_user_registration_init() {
+    register_rest_route('custom/v1', '/register', array(
+        'methods' => 'POST',
+        'callback' => 'custom_user_registration_handler',
+    ));
+}
+add_action('rest_api_init', 'custom_user_registration_init');
+
+function custom_user_registration_handler($request) {
+    $parameters = $request->get_params();
+
+    // Validate user input here (e.g., check required fields, email format, etc.)
+
+    // Example validation for required fields
+    if (empty($parameters['username']) || empty($parameters['email']) || empty($parameters['password'])) {
+        return new WP_Error('registration_failed', __('Username, email, and password are required.', 'text-domain'), array('status' => 400));
+    }
+
+    // Example validation for password strength (customize as needed)
+    if (strlen($parameters['password']) < 6) {
+        return new WP_Error('weak_password', __('Password should be at least 6 characters long.', 'text-domain'), array('status' => 400));
+    }
+
+    // Create the new user
+    $user_id = wp_create_user($parameters['username'], $parameters['password'], $parameters['email']);
+
+    if (is_wp_error($user_id)) {
+        return new WP_Error('registration_failed', __('User registration failed.', 'text-domain'), array('status' => 500));
+    }
+
+    // Set custom user meta (first name and last name)
+    update_user_meta($user_id, 'first_name', $parameters['first_name']);
+    update_user_meta($user_id, 'last_name', $parameters['last_name']);
+
+    // Return a success response with the user ID
+    return array('user_id' => $user_id);
+}
+
+//----------Custom User Login -----------------//
+// Custom User Login Endpoint
+function custom_user_login_init() {
+    register_rest_route('custom/v1', '/login', array(
+        'methods' => 'POST',
+        'callback' => 'custom_user_login_handler',
+    ));
+}
+add_action('rest_api_init', 'custom_user_login_init');
+
+// Custom User Login Handler
+function custom_user_login_handler($request) {
+    $parameters = $request->get_params();
+
+    // Validate user input here (e.g., check required fields, email format, etc.)
+
+    // Example validation for required fields
+    if (empty($parameters['email']) || empty($parameters['password'])) {
+        return new WP_Error('login_failed', __('Email and password are required.', 'text-domain'), array('status' => 400));
+    }
+
+    // Attempt to log in the user
+    $creds = array(
+        'user_login' => $parameters['email'],
+        'user_password' => $parameters['password'],
+        'remember' => true
+    );
+    $user = wp_signon($creds, false);
+
+    if (is_wp_error($user)) {
+        return new WP_Error('login_failed', __('Invalid email or password.', 'text-domain'), array('status' => 401));
+    } else {
+        // Return the user data if login is successful
+        wp_set_current_user($user->ID);//Set current user
+        wp_set_auth_cookie( $user->ID, true );
+        return array(
+            'status' => 'ok',
+            'data' => $user->ID,
+            'message' => 'Login successful.'
+        );
+    }
+}
+
+
+//----------Home Latest Blog API -----------------//
+function home_latest_blog_api_init() {
+    register_rest_route('custom/v1', '/home-blog', array(
+        'methods' => 'GET',
+        'callback' => 'home_latest_blog_api_handler',
+    ));
+}
+add_action('rest_api_init', 'home_latest_blog_api_init');
+
+function home_latest_blog_api_handler($request) {
+    $post_items = [];
+    $args = array(
+        'posts_per_page'  => 1,
+        'post_status' => 'publish',
+    );
+    query_posts($args);
+    if (have_posts()) : while (have_posts()) : the_post();
+    $ID = get_the_ID();
+    $thumbnail = wp_get_attachment_image_src( get_post_thumbnail_id( $ID ), 'home-blog-thumb' );
+    $alt_text = get_post_meta(get_post_thumbnail_id( $ID ), '_wp_attachment_image_alt', true);
+    $title = get_the_title();
+    $the_title = strip_tags($title);
+    if(strlen($the_title)>45){
+      $the_title = substr($the_title,0,45).'..';
+    }
+      $post_items[] = array(
+                        'id' =>  $ID,
+                        'title'  =>  $title,
+                        'publish_date'  =>  get_the_time(__('M d, Y', 'kubrick')),
+                        'thumbnail'  =>  $thumbnail['0'],
+                        'thumbnail_alt'  =>  $alt_text,
+                        'thumbnail_alt'  =>  $alt_text,
+                        'permalink' => get_the_permalink()
+                      );
+    endwhile; endif; wp_reset_query();
+    
+    
+    $args = array(
+        'posts_per_page'  => 2,
+        'post_status' => 'publish',
+        'offset'  => 1,
+    );
+    query_posts($args);
+    if (have_posts()) : while (have_posts()) : the_post();
+    $ID = get_the_ID();
+    $thumbnail = wp_get_attachment_image_src( get_post_thumbnail_id( $ID ), 'trending-blog-thumb' );
+    $alt_text = get_post_meta(get_post_thumbnail_id( $ID ), '_wp_attachment_image_alt', true);
+    $title = get_the_title();
+    $the_title = strip_tags($title);
+    if(strlen($the_title)>45){
+      $the_title = substr($the_title,0,45).'..';
+    }
+      $post_items[] = array(
+                        'id' =>  $ID,
+                        'title'  =>  $title,
+                        'publish_date'  =>  get_the_time(__('M d, Y', 'kubrick')),
+                        'thumbnail'  =>  $thumbnail['0'],
+                        'thumbnail_alt'  =>  $alt_text,
+                        'thumbnail_alt'  =>  $alt_text,
+                        'permalink' => get_the_permalink()
+                      );
+    endwhile; endif; wp_reset_query();
+
+    if(count($post_items)>0){
+        $data = array(
+            'status' => 'ok',
+            'data' => $post_items,
+            'success_message' => 'All posts for home page',
+            'error_message' => ''
+            );        
+        return $data;
+    }else{
+        $data = array(
+            'status' => 'err',
+            'data' => '',
+            'success_message' => '',
+            'error_message' => 'No result found'
+            );
+        return $data;
+    }
+}
 ?>

@@ -6,7 +6,11 @@ const bcrypt = require('bcryptjs');
 const useragent = require('useragent');
 const requestIp = require('request-ip');
 const fs = require('fs');
+const dotenv = require('dotenv');
+dotenv.config({ path: './.env' });
+
 const comFunction = require('../common_function');
+const axios = require('axios');
 //const cookieParser = require('cookie-parser');
 
 // const app = express();
@@ -87,6 +91,106 @@ exports.register = (req, res) => {
         })
     })
 }
+
+//-- Frontend User Register Function--//
+exports.frontendUserRegister = async (req, res) => {
+    //console.log(req.body);
+
+    const { first_name, last_name, email, register_password, register_confirm_password } = req.body;
+
+    // Validation: Check if passwords match
+    if (register_password !== register_confirm_password) {
+        return res.status(400).json({ status: 'err', message: 'Passwords do not match.' });
+    }
+
+    try {
+        // Check if the email already exists in the "users" table
+        const emailExists = await new Promise((resolve, reject) => {
+        db.query('SELECT email FROM users WHERE email = ?', [email], (err, results) => {
+            if (err) reject(err);
+                resolve(results.length > 0);
+            });
+        });
+        if (emailExists) {
+            return res.status(400).json({ message: 'Email ID already exists.' });
+        }
+
+        // Hash the password asynchronously
+        const hashedPassword = await bcrypt.hash(register_password, 8);
+        const currentDate = new Date();
+
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+        const day = String(currentDate.getDate()).padStart(2, '0');
+        const hours = String(currentDate.getHours()).padStart(2, '0');
+        const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+        const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+
+        const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+        const userInsertQuery = 'INSERT INTO users (first_name, last_name, email, password, user_registered, user_status, user_type_id) VALUES (?, ?, ?, ?, ?, ?, ?)';
+        db.query(userInsertQuery, [first_name, last_name, email, hashedPassword, formattedDate, 1, 2], (err, userResults) => {
+            if (err) {
+                console.error('Error inserting user into "users" table:', err);
+                return res.send(
+                    {
+                        status: 'err',
+                        data: '',
+                        message: 'An error occurred while processing your request' + err
+                    }
+                )
+            }
+
+            // Insert the user into the "user_customer_meta" table
+            const userMetaInsertQuery = 'INSERT INTO user_customer_meta (user_id, address, country, state, city, zip, review_count, date_of_birth, occupation, gender, profile_pic) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+            db.query(userMetaInsertQuery, [userResults.insertId, '', '', '', '', '', 0, '', '', '', ''], (err, metaResults) => {
+                if (err) {
+                    return res.send(
+                        {
+                            status: 'err',
+                            data: '',
+                            message: 'An error occurred while processing your request' + err
+                        }
+                    )
+                }
+
+                const userRegistrationData = {
+                    username: email,
+                    email: email,
+                    password: register_password,
+                    first_name: first_name,
+                    last_name: last_name,
+                };
+                axios.post( process.env.BLOG_API_ENDPOINT+'/register', userRegistrationData)
+                .then((response) => {
+                    //console.log('User registration successful. User ID:', response.data.user_id);
+                    return res.send(
+                        {
+                            status: 'ok',
+                            data: response.data.user_id,
+                            message: 'User registration successful'
+                        }
+                    )                  
+                })
+                .catch((error) => {
+                    //console.error('User registration failed:', );
+                    return res.send(
+                        {
+                            status: 'err',
+                            data: '',
+                            message: error.response.data
+                        }
+                    )                   
+                }); 
+            })
+        })
+    }
+    catch (error) {
+        console.error('Error during user registration:', error);
+        return res.status(500).json({ status: 'err', message: 'An error occurred while processing your request.' });
+    }
+}
+
 
 //-- Login Function --//
 exports.login = (req, res) => {
@@ -260,6 +364,197 @@ exports.login = (req, res) => {
         }
     })
 }
+
+//-- Frontend User Login Function--//
+exports.frontendUserLogin = (req, res) => {
+    //console.log(req.body);
+    const userAgent = req.headers['user-agent'];
+    const agent = useragent.parse(userAgent);
+
+    //res.json(deviceInfo);
+
+    const { email, password } = req.body;
+
+    db.query('SELECT * FROM users WHERE email = ?', [email], async (err, results) => {
+        if (err) {
+            return res.send(
+                {
+                    status: 'err',
+                    data: '',
+                    message: 'An error occurred while processing your request' + err
+                }
+            )
+        } else {
+            if (results.length > 0) {
+                const user = results[0];
+                //console.log(user);
+                // Compare the provided password with the stored hashed password
+                bcrypt.compare(password, user.password, (err, result) => {
+                    if (err) {
+                        return res.send(
+                            {
+                                status: 'err',
+                                data: '',
+                                message: 'Error: ' + err
+                            }
+                        )
+                    }
+                    if (result) {
+                        //check Customer Login
+                        if (user.user_type_id == 2 && user.user_status == 1) {
+                            const query = `
+                                        SELECT user_meta.*, c.name as country_name, s.name as state_name
+                                        FROM user_customer_meta user_meta
+                                        JOIN countries c ON user_meta.country = c.id
+                                        JOIN states s ON user_meta.state = s.id
+                                        WHERE user_id = ?
+                                        `;
+                            db.query(query, [user.user_id], async (err, results) => {
+                                let userData = {};
+                                if (results.length > 0) {
+                                    const user_meta = results[0];
+                                    //console.log(user_meta,'aaaaaaaa');
+                                    // Set a cookie
+                                    const dateString = user_meta.date_of_birth;
+                                    const date_of_birth_date = new Date(dateString);
+                                    const formattedDate = date_of_birth_date.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+
+                                    let userData = {
+                                        user_id: user.user_id,
+                                        first_name: user.first_name,
+                                        last_name: user.last_name,
+                                        email: user.email,
+                                        phone: user.phone,
+                                        user_type_id: user.user_type_id,
+                                        address: user_meta.address,
+                                        country: user_meta.country,
+                                        country_name: user_meta.country_name,
+                                        state: user_meta.state,
+                                        state_name: user_meta.state_name,
+                                        city: user_meta.city,
+                                        zip: user_meta.zip,
+                                        review_count: user_meta.review_count,
+                                        date_of_birth: formattedDate,
+                                        occupation: user_meta.occupation,
+                                        gender: user_meta.gender,
+                                        profile_pic: user_meta.profile_pic
+                                    };
+                                    //const encodedUserData = JSON.stringify(userData);
+                                    res.cookie('user', encodedUserData);
+                                    console.log(encodedUserData, 'login user data');
+                                } else {
+                                    // Set a cookie
+                                    let userData = {
+                                        user_id: user.user_id,
+                                        first_name: user.first_name,
+                                        last_name: user.last_name,
+                                        email: user.email,
+                                        phone: user.phone,
+                                        user_type_id: user.user_type_id
+                                    };
+                                    const encodedUserData = JSON.stringify(userData);
+                                    res.cookie('user', encodedUserData);
+                                }
+                                
+
+                                //---- Login to Wordpress Blog-----//
+                                const userLoginData = {
+                                    email: email,
+                                    password: password,
+                                };
+                                axios.post(process.env.BLOG_API_ENDPOINT + '/login', userLoginData)
+                                .then((response) => {
+                                    console.log('User login successful. Response data:', response.data);
+                                })
+                                .catch((error) => {
+                                    console.error('User login failed. Error:', error);
+                                    if (error.response && error.response.data) {
+                                    console.log('Error response data:', error.response.data);
+                                    }
+                                });
+
+                                //-- check last Login Info-----//
+                                const device_query = "SELECT * FROM user_device_info WHERE user_id = ?";
+                                db.query(device_query, [user.user_id], async (err, device_query_results) => {
+                                    const currentDate = new Date();
+                                    const year = currentDate.getFullYear();
+                                    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+                                    const day = String(currentDate.getDate()).padStart(2, '0');
+                                    const hours = String(currentDate.getHours()).padStart(2, '0');
+                                    const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+                                    const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+                                    const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+                                    if (device_query_results.length > 0) {
+                                        // User exist update info
+                                        const device_update_query = 'UPDATE user_device_info SET device_id = ?, IP_address = ?, last_logged_in = ? WHERE user_id = ?';
+                                        const values = [agent.toAgent() + ' ' + agent.os.toString(), requestIp.getClientIp(req), formattedDate, user.user_id];
+                                        db.query(device_update_query, values, (err, device_update_query_results) => {
+                                            return res.send(
+                                                {
+                                                    status: 'ok',
+                                                    data: userData,
+                                                    message: 'Login Successfull'
+                                                }
+                                            )
+                                        })
+                                    } else {
+                                        // User doesnot exist Insert New Row.
+
+                                        const device_insert_query = 'INSERT INTO user_device_info (user_id, device_id, device_token, imei_no, model_name, make_name, IP_address, last_logged_in, created_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+                                        const values = [user.user_id, agent.toAgent() + ' ' + agent.os.toString(), '', '', '', '', requestIp.getClientIp(req), formattedDate, formattedDate];
+
+                                        db.query(device_insert_query, values, (err, device_insert_query_results) => {
+                                            return res.send(
+                                                {
+                                                    status: 'ok',
+                                                    data: userData,
+                                                    message: 'Login Successfull'
+                                                }
+                                            )
+                                        })
+
+                                    }
+                                })
+                            })
+                        } else {
+                            let err_msg = '';
+                            if (user.user_status == 0) {
+                                err_msg = 'your account is inactive, please contact with administrator.';
+                            } else {
+                                err_msg = 'Do you want to login as administrator, then please go to proper route';
+                            }
+                            return res.send(
+                                {
+                                    status: 'err',
+                                    data: '',
+                                    message: err_msg
+                                }
+                            )
+                        }
+                    } else {
+                        return res.send(
+                            {
+                                status: 'err',
+                                data: '',
+                                message: 'Invalid password'
+                            }
+                        )
+                    }
+                });
+            } else {
+                return res.send(
+                    {
+                        status: 'err',
+                        data: '',
+                        message: 'Invalid Email'
+                    }
+                )
+            }
+        }
+    })
+}
+
 
 //--- Create New User ----//
 exports.createUser = (req, res) => {

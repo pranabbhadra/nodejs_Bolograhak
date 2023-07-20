@@ -27,6 +27,9 @@ const upload = multer({ storage: storage });
 router.post('/register', authController.register);
 router.post('/login', authController.login);
 
+router.post('/frontend-user-register', authController.frontendUserRegister);
+
+router.post('/frontend-user-login', authController.frontendUserLogin);
 
 //Create New category--------//
 router.post('/create-category', upload.single('cat_image'), authController.createCategory);
