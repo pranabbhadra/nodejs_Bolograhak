@@ -14,15 +14,23 @@ const comFunction = require('../common_function');
 const router = express.Router();
 const publicPath = path.join(__dirname, '../public');
 
-// Front-End Page Routes
-router.get('', async (req, res) => {
-    let currentUserData = null;
-    try {
-        const encodedUserData = req.cookies.user;
-        currentUserData = JSON.parse(encodedUserData);
-    } catch (error) {
-        console.error('Error parsing user data:', error);
+// Middleware function to check if user CookieValue Exist
+const checkCookieValue = (req, res, next) => {
+    // Check if the 'userData' cookie exists and has a value
+    if (req.cookies.user) {
+      // If it exists, set the 'userData' property on the request object to the cookie value
+      req.userData = req.cookies.user;
+    } else {
+      // If the cookie doesn't exist or has no value, set 'userData' to null
+      req.userData = null;
     }
+    // Call the next middleware or route handler
+    next();
+  };
+
+// Front-End Page Routes Start--------------------//
+router.get('', checkCookieValue, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
 
     try {
         // Make API request to fetch blog posts
@@ -47,20 +55,16 @@ router.get('', async (req, res) => {
     }
 });
 
-router.get('/contact-us', (req, res) => {
-    //resp.sendFile(`${publicPath}/index.html`)
-    const encodedUserData = req.cookies.user;
-    const currentUserData = JSON.parse(encodedUserData);
+router.get('/contact-us', checkCookieValue, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
     res.render('front-end/contact', { menu_active_id: 'contact', page_title: 'Contact Us', currentUserData });
 });
 
-router.get('/faq', (req, res) => {
-    //resp.sendFile(`${publicPath}/index.html`)
-    const encodedUserData = req.cookies.user;
-    const currentUserData = JSON.parse(encodedUserData);
+router.get('/faq', checkCookieValue, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
     res.render('front-end/faq', { menu_active_id: 'faq', page_title: 'FAQ', currentUserData });
 });
-
+// Front-End Page Routes End--------------------//
 
 
 router.get('/countries', (req, res) => {
@@ -84,7 +88,6 @@ router.get('/countries', (req, res) => {
         }
     })
 });
-
 
 router.get('/sign-in', (req, res) => {
     const encodedUserData = req.cookies.user;

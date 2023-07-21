@@ -127,7 +127,14 @@
                   </div>
                </span>
                <span class="mbl-hide-link"><a href="#" class="btn-default btn-outline-warning">For Business</a></span>
+               <?php if (is_user_logged_in()) {
+                     $home_url = 'http://localhost:5000/';
+                     $logout_url = wp_logout_url($home_url);   
+               ?>
+               <span class="mbl-hide-link"><a href="<?php echo esc_url($logout_url);?>" class="btn-default btn-outline-warning">Log out</a></span>
+               <?php }else{?>
                <span class="mbl-hide-link"><a href="#" class="btn-default btn-outline-warning login">Log in</a></span>
+               <?php }?>
                <span class="toggle-menu">
                   <div class="menu-circles">
                     <div class="circle-ball"></div> 
@@ -148,7 +155,14 @@
                      <li><a href="http://localhost:5000/business">Business</a></li>
                      <li><a href="http://localhost:5000/contact-us">Contact</a></li>
                      <li class="mbl-show-link"><a href="#" class="btn-default btn-outline-warning">For business</a></li>
+                     <?php if (is_user_logged_in()) {
+                           $home_url = 'http://localhost:5000/';
+                           $logout_url = wp_logout_url($home_url);   
+                     ?>
+                     <li class="mbl-show-link"><a href="<?php echo esc_url($logout_url);?>" class="btn-default btn-outline-warning">Log out</a></li>
+                     <?php }else{?>
                      <li class="mbl-show-link"><a href="#" class="btn-default btn-outline-warning login">Log in</a></li>
+                     <?php }?>
                   </ul>
                </nav>
             </div>
@@ -156,7 +170,7 @@
       </div>
    </header>
    <!-- ============== Header End =============== -->
-
+   <?php if ( ! is_user_logged_in()) {?>
    <!-- ============== Login Modal Start =============== -->
    <div class="login-modal">
       <div class="modal-logo text-center">
@@ -229,7 +243,7 @@
                  <div class="login-browse">
                     <div class="log-bowse-content">
                        <span><i class="fa-brands fa-google"></i></span>
-                       <span><a href="#" target="btn-default">Log in with google</a></span>
+                       <span><a href="" target="btn-default">Log in with google</a></span>
                     </div>
                     <div class="log-bowse-content">
                        <span><i class="fa-brands fa-facebook-f"></i></span>
@@ -299,3 +313,28 @@
       <div class="login-overlay2"><img src="<?php echo get_stylesheet_directory_uri();?>/images/login-overlay2.png" alt="img" width="164" height="314"></div>
    </div>
    <!-- ============== Login Modal End =============== -->
+   <div class="modal fade pe-0" tabindex="-1" id="quickloginmodal">
+     <div class="modal-dialog">
+       <div class="modal-content">
+         <div class="modal-header justify-content-center">
+           <h4 class="modal-title fw-bold">Quick Login</h4>
+           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="fa-solid fa-circle-xmark"></i></button>
+         </div>
+         <div class="modal-body text-center">
+           <a href="#" target="_blank" class="quick-login">
+              <span><i class="fa-brands fa-google"></i></span>
+              <span>Log in with google</span>
+           </a>
+           <a href="#" target="_blank" class="quick-login">
+              <span><i class="fa-brands fa-facebook-f"></i></span>
+              <span>Log in with facebook</span>
+           </a>
+           <a href="#" target="_blank" class="quick-login">
+              <span><i class="fa-brands fa-apple"></i></span>
+              <span>Log in with apple</span>
+           </a>
+         </div>
+       </div>
+     </div>
+   </div>   
+   <?php } ?>

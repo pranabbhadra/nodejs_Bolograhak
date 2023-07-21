@@ -121,31 +121,6 @@
             </svg>
          </a>
       </div> -->
-
-      <div class="modal fade pe-0" tabindex="-1" id="quickloginmodal">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header justify-content-center">
-              <h4 class="modal-title fw-bold">Quick Login</h4>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="fa-solid fa-circle-xmark"></i></button>
-            </div>
-            <div class="modal-body text-center">
-              <a href="#" target="_blank" class="quick-login">
-                 <span><i class="fa-brands fa-google"></i></span>
-                 <span>Log in with google</span>
-              </a>
-              <a href="#" target="_blank" class="quick-login">
-                 <span><i class="fa-brands fa-facebook-f"></i></span>
-                 <span>Log in with facebook</span>
-              </a>
-              <a href="#" target="_blank" class="quick-login">
-                 <span><i class="fa-brands fa-apple"></i></span>
-                 <span>Log in with apple</span>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
       <!-- Css -->
       <link href="<?php echo get_stylesheet_directory_uri();?>/footer-style.css" rel="stylesheet" type="text/css">
       <!-- Responsive Css -->

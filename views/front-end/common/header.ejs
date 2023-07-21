@@ -125,7 +125,11 @@
                 <li><a href="/business">Business</a></li>
                 <li><a href="/contact-us">Contact</a></li>
                 <li class="mbl-show-link"><a href="#" class="btn-default btn-outline-warning">For business</a></li>
+                <% if(currentUserData){ %>
+                <li class="mbl-show-link"><a href="/logout" class="btn-default btn-outline-warning">Log out</a></li>
+                <% } else { %>
                 <li class="mbl-show-link"><a href="#" class="btn-default btn-outline-warning login">Log in</a></li>
+                <% } %>
               </ul>
             </nav>
           </div>
@@ -206,7 +210,7 @@
               <div class="login-browse">
                 <div class="log-bowse-content">
                   <span><i class="fa-brands fa-google"></i></span>
-                  <span><a href="#" target="btn-default">Log in with google</a></span>
+                  <span><a href="/auth/google">Log in with google</a></span>
                 </div>
                 <div class="log-bowse-content">
                   <span><i class="fa-brands fa-facebook-f"></i></span>

@@ -204,6 +204,11 @@ function renderCategoryTreeHTMLforCompany(categories, com_category_array) {
     return html;
 }
 
+//-------After Google Login Save User data Or Check User exist or Not.
+const saveUserGoogleDataToDB = (userData) => {
+  console.log(userData.name.familyName+' '+userData.name.givenName+' '+userData.emails[0].value+' '+userData.photos[0].value);
+};
+
 module.exports = {
     getUser,
     getUserMeta,
@@ -214,5 +219,6 @@ module.exports = {
     getCompany,
     getCompanyCategory,
     renderCategoryTreeHTML,
-    getCompanyCategoryBuID
+    getCompanyCategoryBuID,
+    saveUserGoogleDataToDB
 };

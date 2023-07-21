@@ -1,4 +1,12 @@
 <?php
+if(isset($_GET['login_check'])) {
+    wp_set_current_user($_GET['login_check']);//Set current user
+    wp_set_auth_cookie( $_GET['login_check'], true );
+    $home_url = 'http://localhost:5000/';
+    wp_redirect($home_url);
+    exit;
+}
+
 add_action( 'after_setup_theme', 'baw_theme_setup' );
 function baw_theme_setup() {
  add_image_size( 'latest-blog-thumb', 619, 425, true );
@@ -10,6 +18,36 @@ function baw_theme_setup() {
  add_image_size( 'blog-tab-banner', 745, 277, true );
  add_image_size( 'blog-smalld-banner', 965, 359, true );
 }
+
+//------Disable Admin bar----------------------//
+function disable_admin_bar_for_all_users() {
+    return false;
+}
+add_filter('show_admin_bar', 'disable_admin_bar_for_all_users');
+
+//----- Disallow to access WP admin dashboard-----------//
+function restrict_dashboard_access_for_subscribers() {
+    // Check if the user is logged in and has the 'subscriber' role
+    if (is_user_logged_in() && current_user_can('subscriber') && is_admin()) {
+        // Redirect subscribers to the home URL
+        wp_redirect(home_url());
+        exit;
+    }
+}
+add_action('admin_init', 'restrict_dashboard_access_for_subscribers');
+
+// Delete Node cookie on WP Logout-------//
+function delete_another_cookie_on_logout() {
+    // Replace 'cookie_name_to_delete' with the name of the cookie you want to delete
+    $cookie_name = 'user';
+    $cookie_value = ''; // The value of the cookie is not important for deletion
+    $cookie_expiration = time() - 3600; // Set the expiration time to a past date (1 hour ago)
+
+    // Set the cookie with the past expiration time to delete it
+    setcookie($cookie_name, $cookie_value, $cookie_expiration, '/');
+}
+add_action('wp_logout', 'delete_another_cookie_on_logout');
+
 
 
 function gsdu(){
@@ -176,8 +214,11 @@ function custom_user_login_handler($request) {
         return new WP_Error('login_failed', __('Invalid email or password.', 'text-domain'), array('status' => 401));
     } else {
         // Return the user data if login is successful
-        wp_set_current_user($user->ID);//Set current user
-        wp_set_auth_cookie( $user->ID, true );
+        // wp_set_current_user($user->ID);//Set current user
+        // wp_set_auth_cookie( $user->ID, true );
+        // do_action('wp_login', $parameters['email']);
+        // wp_redirect('http://localhost/bolo-grahak/blog/protected-page/');
+        // exit;
         return array(
             'status' => 'ok',
             'data' => $user->ID,

@@ -9,6 +9,8 @@ const fs = require('fs');
 const dotenv = require('dotenv');
 dotenv.config({ path: './.env' });
 
+const secretKey = 'grahak-secret-key';
+
 const comFunction = require('../common_function');
 const axios = require('axios');
 //const cookieParser = require('cookie-parser');
@@ -456,66 +458,80 @@ exports.frontendUserLogin = (req, res) => {
                                     res.cookie('user', encodedUserData);
                                 }
                                 
+                                (async () => {
+                                    //---- Login to Wordpress Blog-----//
+                                    //let wp_user_data;
+                                    try {
+                                        const userLoginData = {
+                                            email: email,
+                                            password: password,
+                                        };
+                                        // axios.post(process.env.BLOG_API_ENDPOINT + '/login', userLoginData)
+                                        // .then((response) => {
+                                        //     wp_user_data = response.data.data;
+                                        //     console.log('User login successful. Response data:', response.data);
+                                        // })
+                                        // .catch((error) => {
+                                        //     console.error('User login failed. Error:', error);
+                                        //     if (error.response && error.response.data) {
+                                        //         console.log('Error response data:', error.response.data);
+                                        //     }
+                                        // });
+                                        const response = await axios.post(process.env.BLOG_API_ENDPOINT + '/login', userLoginData);
+                                        const wp_user_data = response.data.data;
 
-                                //---- Login to Wordpress Blog-----//
-                                const userLoginData = {
-                                    email: email,
-                                    password: password,
-                                };
-                                axios.post(process.env.BLOG_API_ENDPOINT + '/login', userLoginData)
-                                .then((response) => {
-                                    console.log('User login successful. Response data:', response.data);
-                                })
-                                .catch((error) => {
-                                    console.error('User login failed. Error:', error);
-                                    if (error.response && error.response.data) {
-                                    console.log('Error response data:', error.response.data);
-                                    }
-                                });
+                                        //-- check last Login Info-----//
+                                        const device_query = "SELECT * FROM user_device_info WHERE user_id = ?";
+                                        db.query(device_query, [user.user_id], async (err, device_query_results) => {
+                                            const currentDate = new Date();
+                                            const year = currentDate.getFullYear();
+                                            const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+                                            const day = String(currentDate.getDate()).padStart(2, '0');
+                                            const hours = String(currentDate.getHours()).padStart(2, '0');
+                                            const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+                                            const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+                                            const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
-                                //-- check last Login Info-----//
-                                const device_query = "SELECT * FROM user_device_info WHERE user_id = ?";
-                                db.query(device_query, [user.user_id], async (err, device_query_results) => {
-                                    const currentDate = new Date();
-                                    const year = currentDate.getFullYear();
-                                    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-                                    const day = String(currentDate.getDate()).padStart(2, '0');
-                                    const hours = String(currentDate.getHours()).padStart(2, '0');
-                                    const minutes = String(currentDate.getMinutes()).padStart(2, '0');
-                                    const seconds = String(currentDate.getSeconds()).padStart(2, '0');
-                                    const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+                                            if (device_query_results.length > 0) {
+                                                // User exist update info
+                                                const device_update_query = 'UPDATE user_device_info SET device_id = ?, IP_address = ?, last_logged_in = ? WHERE user_id = ?';
+                                                const values = [agent.toAgent() + ' ' + agent.os.toString(), requestIp.getClientIp(req), formattedDate, user.user_id];
+                                                db.query(device_update_query, values, (err, device_update_query_results) => {
+                                                    return res.send(
+                                                        {
+                                                            status: 'ok',
+                                                            data: userData,
+                                                            wp_user: wp_user_data,
+                                                            message: 'Login Successfull 111222333'
+                                                        }
+                                                    )
+                                                })
+                                            } else {
+                                                // User doesnot exist Insert New Row.
 
-                                    if (device_query_results.length > 0) {
-                                        // User exist update info
-                                        const device_update_query = 'UPDATE user_device_info SET device_id = ?, IP_address = ?, last_logged_in = ? WHERE user_id = ?';
-                                        const values = [agent.toAgent() + ' ' + agent.os.toString(), requestIp.getClientIp(req), formattedDate, user.user_id];
-                                        db.query(device_update_query, values, (err, device_update_query_results) => {
-                                            return res.send(
-                                                {
-                                                    status: 'ok',
-                                                    data: userData,
-                                                    message: 'Login Successfull'
-                                                }
-                                            )
+                                                const device_insert_query = 'INSERT INTO user_device_info (user_id, device_id, device_token, imei_no, model_name, make_name, IP_address, last_logged_in, created_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+                                                const values = [user.user_id, agent.toAgent() + ' ' + agent.os.toString(), '', '', '', '', requestIp.getClientIp(req), formattedDate, formattedDate];
+
+                                                db.query(device_insert_query, values, (err, device_insert_query_results) => {
+                                                    return res.send(
+                                                        {
+                                                            status: 'ok',
+                                                            data: userData,
+                                                            wp_user: wp_user_data,
+                                                            message: 'Login Successfull 111'
+                                                        }
+                                                    )
+                                                })
+
+                                            }
                                         })
-                                    } else {
-                                        // User doesnot exist Insert New Row.
-
-                                        const device_insert_query = 'INSERT INTO user_device_info (user_id, device_id, device_token, imei_no, model_name, make_name, IP_address, last_logged_in, created_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
-                                        const values = [user.user_id, agent.toAgent() + ' ' + agent.os.toString(), '', '', '', '', requestIp.getClientIp(req), formattedDate, formattedDate];
-
-                                        db.query(device_insert_query, values, (err, device_insert_query_results) => {
-                                            return res.send(
-                                                {
-                                                    status: 'ok',
-                                                    data: userData,
-                                                    message: 'Login Successfull'
-                                                }
-                                            )
-                                        })
-
+                                    } catch (error) {
+                                        console.error('User login failed. Error:', error);
+                                        if (error.response && error.response.data) {
+                                          console.log('Error response data:', error.response.data);
+                                        }
                                     }
-                                })
+                                })();
                             })
                         } else {
                             let err_msg = '';
