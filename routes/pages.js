@@ -18,15 +18,15 @@ const publicPath = path.join(__dirname, '../public');
 const checkCookieValue = (req, res, next) => {
     // Check if the 'userData' cookie exists and has a value
     if (req.cookies.user) {
-      // If it exists, set the 'userData' property on the request object to the cookie value
-      req.userData = req.cookies.user;
+        // If it exists, set the 'userData' property on the request object to the cookie value
+        req.userData = req.cookies.user;
     } else {
-      // If the cookie doesn't exist or has no value, set 'userData' to null
-      req.userData = null;
+        // If the cookie doesn't exist or has no value, set 'userData' to null
+        req.userData = null;
     }
     // Call the next middleware or route handler
     next();
-  };
+};
 
 // Front-End Page Routes Start--------------------//
 router.get('', checkCookieValue, async (req, res) => {
@@ -55,10 +55,27 @@ router.get('', checkCookieValue, async (req, res) => {
     }
 });
 
-router.get('/contact-us', checkCookieValue, async (req, res) => {
-    let currentUserData = JSON.parse(req.userData);
-    res.render('front-end/contact', { menu_active_id: 'contact', page_title: 'Contact Us', currentUserData });
+router.get('/contact-us', (req, res) => {
+    //resp.sendFile(`${publicPath}/index.html`)
+    const encodedUserData = req.cookies.user;
+    const currentUserData = JSON.parse(encodedUserData);
+
+    const sql = `SELECT * FROM contacts`;
+    db.query(sql, (err, results, fields) => {
+        if (err) throw err;
+        const social_sql = `SELECT * FROM socials`;
+        db.query(social_sql, (error, social_results, fields) => {
+            //console.log(results[0], social_results[0]);
+            const contacts = results[0];
+            const page_title = results[0].title;
+            const socials = social_results[0];
+            res.render('front-end/contact', { menu_active_id: 'contact', page_title: page_title, currentUserData, contacts, socials });
+
+        })
+    })
+
 });
+
 
 router.get('/faq', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
@@ -105,14 +122,14 @@ router.get('/sign-up', (req, res) => {
 router.get('/logout', (req, res) => {
     const encodedUserData = req.cookies.user;
     const currentUserData = JSON.parse(encodedUserData);
-    if(currentUserData.user_type_id == 2){
+    if (currentUserData.user_type_id == 2) {
         res.clearCookie('user');
         res.redirect('/');
-    }else{
+    } else {
         res.clearCookie('user');
         res.redirect('/sign-in');
     }
-    
+
 });
 
 
@@ -774,6 +791,85 @@ router.get('/edit-company/:id', checkLoggedIn, async (req, res) => {
             //countries: countries,
             //states: states            
         });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+
+//Add FAQ
+router.get('/add-faq', checkLoggedIn, (req, res) => {
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+        // Render the 'add-page' EJS view and pass the data
+        res.render('faq/add-faq', {
+            menu_active_id: 'faq',
+            page_title: 'FAQs ',
+            currentUserData
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+
+//Edit Contacts
+router.get('/edit-contacts', checkLoggedIn, (req, res) => {
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+        // const contacts = comFunction.getContacts();
+        // const socials = comFunction.getSocials();
+        // console.log(contacts, socials);
+        const sql = `SELECT * FROM contacts`;
+        db.query(sql, (err, results, fields) => {
+            if (err) throw err;
+            const social_sql = `SELECT * FROM socials`;
+            db.query(social_sql, (error, social_results, fields) => {
+                //console.log(results[0], social_results[0]);
+                const contacts = results[0];
+                const socials = social_results[0];
+                //console.log(contacts, socials);
+                //Render the 'update-contact' EJS view and pass the data
+                res.render('pages/update-contact', {
+                    menu_active_id: 'pages',
+                    page_title: 'Update Contacts',
+                    currentUserData,
+                    contacts,
+                    socials
+                });
+            })
+        })
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+
+//Edit Contacts
+router.get('/edit-home', checkLoggedIn, (req, res) => {
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+        // const contacts = comFunction.getContacts();
+        // const socials = comFunction.getSocials();
+        // console.log(contacts, socials);
+        const sql = `SELECT * FROM home_page`;
+        db.query(sql, (err, results, fields) => {
+            if (err) throw err;
+            const home = results[0];
+            //console.log(contacts, socials);
+            //Render the 'update-contact' EJS view and pass the data
+            res.render('pages/update-home', {
+                menu_active_id: 'pages',
+                page_title: 'Update Contacts',
+                currentUserData,
+                home
+            });
+        })
+
     } catch (err) {
         console.error(err);
         res.status(500).send('An error occurred');

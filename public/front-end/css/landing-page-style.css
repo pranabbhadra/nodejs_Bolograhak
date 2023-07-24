@@ -14,12 +14,12 @@
 }
 
 .business-left {
-	background: url(images/business-left-bg.jpg) no-repeat center;
+	background: url(../images/business-left-bg.jpg) no-repeat center;
 	background-size: cover;
 }
 
 .business-right {
-	background: url(images/business-right-bg.jpg) no-repeat center;
+	background: url(../images/business-right-bg.jpg) no-repeat center;
 	background-size: cover;
 }
 
@@ -145,11 +145,173 @@
 
 /*=============== Blog End ==============*/
 
-/*=============== About Start ==============*/
-.about-content {
-	background-color: #161616;
+/*=============== Review Content Start ==============*/
+.review-content {
+	background: #161616;
 	color: #ffffff;
 }
+
+.review-content:before {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 0;
+	background: url(../images/overlay-object5.png) no-repeat left top;
+	background-size: 100%;
+	width: 118px;
+	height: 315px;
+}
+
+.review-left img {
+	margin: 0 auto;
+}
+
+.review-left h5 {
+	margin-top: 30px;
+}
+
+.review-left h5 a {
+	color: #FCCB06;
+	font-size: 22px;
+	font-weight: 700;
+	line-height: normal;
+	text-decoration-line: underline !important;
+}
+
+.review-left h5 a:hover {
+	color: #ffffff;
+}
+
+.review-right .form-control, 
+.review-right .form-select {
+    border: 1px solid #3F3F3F;
+    background-color: #1D1D1D;
+    height: 50px;
+    border-radius: 8px;
+    color: #808080;
+}
+
+.review-right .form-control:focus {
+    background-color: transparent;
+    border-color: #fccb06;
+    color: #808080;
+}
+
+.review-right .custom-form textarea {
+	height: 80px;
+	border-radius: 15px;
+}
+
+.review-right .custom-form,
+.rating-slider,
+.range-tag-wrap {
+    margin-bottom: 19px;
+}
+
+.rating-slider {
+	position: relative;
+	padding-top: 45px;
+}
+
+.rating-slider label {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 149.4%;
+    position: absolute;
+    left: 0;
+    top: 34px;
+}
+
+#ratingRange {
+    background-color: transparent;
+    color: #ffffff;
+    max-width: 50px;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    font-weight: 400;
+    position: absolute;
+    right: 0;
+    top: 38px;
+    font-weight: 700;
+    text-align: center;
+}
+
+#rating-range {
+    margin-top: 57px;
+    border-radius: 150px;
+    height: 12px;
+    position: relative;
+    width: 72%;
+    margin: 0 auto;
+}
+
+#rating-range  span.ui-slider-handle:last-child  {
+	display: none;
+}
+
+.rating-slider .ui-slider .ui-slider-range {
+    background: #f2f2f2;
+}
+
+.rating-slider span.ui-slider-handle.ui-state-default.ui-corner-all {
+    background: #FCCB06;
+    border: 5px #FFEFB0 solid;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    top: -11px;
+    outline: none;
+}
+
+.rating-slider .ui-widget-content {
+    border-color: transparent;
+    background: #fccb06;
+}
+
+#selected-range-text {
+    text-align: center;
+    font-size: 17px;
+    font-weight: 700;
+    margin-top: 12px;
+    display: inline-block;
+}
+
+span#selected-range-emojis {
+    position: absolute;
+    top: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 30px;
+}
+
+.tag-label {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 149.4%;
+    margin-bottom: 7px;
+}
+
+.review-submit .view-more {
+	color: #ffffff;
+}
+
+.review-submit .view-more:hover {
+	color: #000000;
+}
+
+.under-input-text {
+    font-size: 12px;
+    color: #fccb06;
+    margin-top: 3px;
+}
+/*=============== Review Content End ==============*/
+
+/*=============== About Start ==============*/
+/*.about-content {
+	background-color: #161616;
+	color: #ffffff;
+}*/
 
 .about-left-slider {
 	max-width: 612px;
@@ -225,16 +387,16 @@
 	line-height: 200%;
 }
 
-.about-content .view-more {
+/*.about-content .view-more {
 	color: #ffffff;
-}
+}*/
 
 .about-content .view-more:hover {
 	color: #000000;
 }
 
 .about-content .common-ul ul li {
-	background-image: url(images/li-icon2.png);
+	background-image: url(../images/li-icon2.png);
 }
 
 .about-content2 {
@@ -252,14 +414,12 @@
     right: 8px;
     bottom: 22px;
     max-width: 280px;
-    background: rgb(88,88,88);
-    background: -moz-linear-gradient(left, rgba(88,88,88,1) 0%, rgba(36,36,36,1) 100%);
-    background: -webkit-linear-gradient(left, rgba(88,88,88,1) 0%,rgba(36,36,36,1) 100%);
-    background: linear-gradient(to right, rgba(88,88,88,1) 0%,rgba(36,36,36,1) 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#585858', endColorstr='#242424',GradientType=1 );
+    background: url(../images/tooltip-bg1.jpg) no-repeat center;
+    background-size: cover;
+    filter: drop-shadow(0px 0px 2px rgba(0, 0, 0, 0.90));
+    border: none;
     border-radius: 10px;
     font-size: 22px;
-    color: #ffffff;
     font-weight: 700;
     display: none;
     padding: 10px 8px;
@@ -286,7 +446,7 @@
 
 .tooltip-pop:after {
     content: '';
-    border-top: 18px solid #4b4b4b;
+    border-top: 18px solid #f5f5f5;
     border-left: 18px solid transparent;
     position: absolute;
     right: 22px;
@@ -296,16 +456,14 @@
 .about-content2 .tooltip-pop {
     right: auto;
     left: 8px;
-    background: url(images/tooltip-bg.jpg) no-repeat center;
+    background: url(../images/tooltip-bg.jpg) no-repeat center;
     background-size: cover;
-    color: #000000;
     filter: drop-shadow(0px 0px 2px rgba(0, 0, 0, 0.90));
     border: none;
 }
 .about-content2 .tooltip-pop:after {
     right: auto;
     left: 18px;
-    border-top: 18px solid #F5F5F5;
     border-right: 19px solid transparent;
     border-left: none;
 }
@@ -397,7 +555,7 @@
 }
 
 .led-bg {
-    background: url(images/led-img.png) no-repeat center;
+    background: url(../images/led-img.png) no-repeat center;
     background-size: cover;
 /*    padding: 25px 0px 50px 29px;*/
     width: 674px;
@@ -474,6 +632,32 @@
 }
 /*=============== Social Widgets End ==============*/
 
+/*=============== Featured Content Start ==============*/
+.featured-content {
+    background: #161616;
+    padding: 65px 0;
+}
+
+.feature-box {
+	font-size: 14px;
+	line-height: 138.4%;
+	border-radius: 16px;
+    background: #FFF;
+    padding: 50px 25px;
+}
+
+.feature-box h5 {
+	font-size: 18px;
+	font-weight: 400;
+	line-height: 60%; 
+	margin-top: 14px;
+	margin-bottom: 11px;
+}
+.featured-slider .item {
+	margin: 0 12px;
+}
+/*=============== Featured Content End ==============*/
+
 /*=============== Bottom main Content Start ==============*/
 .bottom-main-content .about-right p {
 	font-size: 18px;
@@ -488,13 +672,13 @@
     z-index: 9;
 }
 
-.overlay-object3 {
+.overlay-object5 {
     position: absolute;
     left: 0;
     top: 0;
 }
 
-.overlay-object4 {
+.overlay-object6 {
     position: absolute;
     right: 0;
     bottom: 115px;

@@ -1,178 +1,255 @@
 <!--begin::Aside-->
-<div id="kt_aside" class="aside aside-dark aside-hoverable" data-kt-drawer="true"
-data-kt-drawer-name="aside" data-kt-drawer-activate="{default: true, lg: false}"
-data-kt-drawer-overlay="true" data-kt-drawer-width="{default:'200px', '300px': '250px'}"
-data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_aside_mobile_toggle">
-<!--begin::Brand-->
-<div class="aside-logo flex-column-auto" id="kt_aside_logo">
-   <!--begin::Logo-->
-   <a href="/dashboard">
-   <img alt="Logo" src="/assets/media/logos/logo.png" class="h-40px logo" />
-   </a>
-   <!--end::Logo-->
-   <!--begin::Aside toggler-->
-   <div id="kt_aside_toggle" class="btn btn-icon w-auto px-0 btn-active-color-primary aside-toggle"
-      data-kt-toggle="true" data-kt-toggle-state="active" data-kt-toggle-target="body"
-      data-kt-toggle-name="aside-minimize">
-      <!--begin::Svg Icon | path: icons/duotune/arrows/arr079.svg-->
-      <span class="svg-icon svg-icon-1 rotate-180">
-         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-            fill="none">
-            <path opacity="0.5"
-               d="M14.2657 11.4343L18.45 7.25C18.8642 6.83579 18.8642 6.16421 18.45 5.75C18.0358 5.33579 17.3642 5.33579 16.95 5.75L11.4071 11.2929C11.0166 11.6834 11.0166 12.3166 11.4071 12.7071L16.95 18.25C17.3642 18.6642 18.0358 18.6642 18.45 18.25C18.8642 17.8358 18.8642 17.1642 18.45 16.75L14.2657 12.5657C13.9533 12.2533 13.9533 11.7467 14.2657 11.4343Z"
-               fill="black" />
-            <path
-               d="M8.2657 11.4343L12.45 7.25C12.8642 6.83579 12.8642 6.16421 12.45 5.75C12.0358 5.33579 11.3642 5.33579 10.95 5.75L5.40712 11.2929C5.01659 11.6834 5.01659 12.3166 5.40712 12.7071L10.95 18.25C11.3642 18.6642 12.0358 18.6642 12.45 18.25C12.8642 17.8358 12.8642 17.1642 12.45 16.75L8.2657 12.5657C7.95328 12.2533 7.95328 11.7467 8.2657 11.4343Z"
-               fill="black" />
-         </svg>
-      </span>
-      <!--end::Svg Icon-->
+<div id="kt_aside" class="aside aside-dark aside-hoverable" data-kt-drawer="true" data-kt-drawer-name="aside"
+   data-kt-drawer-activate="{default: true, lg: false}" data-kt-drawer-overlay="true"
+   data-kt-drawer-width="{default:'200px', '300px': '250px'}" data-kt-drawer-direction="start"
+   data-kt-drawer-toggle="#kt_aside_mobile_toggle">
+   <!--begin::Brand-->
+   <div class="aside-logo flex-column-auto" id="kt_aside_logo">
+      <!--begin::Logo-->
+      <a href="/dashboard">
+         <img alt="Logo" src="/assets/media/logos/logo.png" class="h-40px logo" />
+      </a>
+      <!--end::Logo-->
+      <!--begin::Aside toggler-->
+      <div id="kt_aside_toggle" class="btn btn-icon w-auto px-0 btn-active-color-primary aside-toggle"
+         data-kt-toggle="true" data-kt-toggle-state="active" data-kt-toggle-target="body"
+         data-kt-toggle-name="aside-minimize">
+         <!--begin::Svg Icon | path: icons/duotune/arrows/arr079.svg-->
+         <span class="svg-icon svg-icon-1 rotate-180">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+               <path opacity="0.5"
+                  d="M14.2657 11.4343L18.45 7.25C18.8642 6.83579 18.8642 6.16421 18.45 5.75C18.0358 5.33579 17.3642 5.33579 16.95 5.75L11.4071 11.2929C11.0166 11.6834 11.0166 12.3166 11.4071 12.7071L16.95 18.25C17.3642 18.6642 18.0358 18.6642 18.45 18.25C18.8642 17.8358 18.8642 17.1642 18.45 16.75L14.2657 12.5657C13.9533 12.2533 13.9533 11.7467 14.2657 11.4343Z"
+                  fill="black" />
+               <path
+                  d="M8.2657 11.4343L12.45 7.25C12.8642 6.83579 12.8642 6.16421 12.45 5.75C12.0358 5.33579 11.3642 5.33579 10.95 5.75L5.40712 11.2929C5.01659 11.6834 5.01659 12.3166 5.40712 12.7071L10.95 18.25C11.3642 18.6642 12.0358 18.6642 12.45 18.25C12.8642 17.8358 12.8642 17.1642 12.45 16.75L8.2657 12.5657C7.95328 12.2533 7.95328 11.7467 8.2657 11.4343Z"
+                  fill="black" />
+            </svg>
+         </span>
+         <!--end::Svg Icon-->
+      </div>
+      <!--end::Aside toggler-->
    </div>
-   <!--end::Aside toggler-->
-</div>
-<!--end::Brand-->
-<!--begin::Aside menu-->
-<div class="aside-menu flex-column-fluid">
-   <!--begin::Aside Menu-->
-   <div class="hover-scroll-overlay-y my-5 my-lg-5" id="kt_aside_menu_wrapper" data-kt-scroll="true"
-      data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-height="auto"
-      data-kt-scroll-dependencies="#kt_aside_logo, #kt_aside_footer"
-      data-kt-scroll-wrappers="#kt_aside_menu" data-kt-scroll-offset="0">
-      <!--begin::Menu-->
-      <div class="menu menu-column menu-title-gray-800 menu-state-title-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-500"
-         id="#kt_aside_menu" data-kt-menu="true">
-         <div class="menu-item">
-            <div class="menu-content pb-2">
-               <span class="menu-section text-muted text-uppercase fs-8 ls-1">Dashboard</span>
-            </div>
-         </div>
-         <div data-kt-menu-trigger="click" class="menu-item menu-accordion <% if(menu_active_id=='user'){ %> here show mb-1<% }%>">
-            <span class="menu-link">
-               <span class="menu-icon">
-                  <!--begin::Svg Icon | path: icons/duotune/communication/com013.svg-->
-                  <span class="svg-icon svg-icon-2">
-                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                        viewBox="0 0 24 24" fill="none">
-                        <path
-                           d="M6.28548 15.0861C7.34369 13.1814 9.35142 12 11.5304 12H12.4696C14.6486 12 16.6563 13.1814 17.7145 15.0861L19.3493 18.0287C20.0899 19.3618 19.1259 21 17.601 21H6.39903C4.87406 21 3.91012 19.3618 4.65071 18.0287L6.28548 15.0861Z"
-                           fill="black" />
-                        <rect opacity="0.3" x="8" y="3" width="8" height="8" rx="4"
-                           fill="black" />
-                     </svg>
-                  </span>
-                  <!--end::Svg Icon-->
-               </span>
-               <span class="menu-title">Users</span>
-               <span class="menu-arrow"></span>
-            </span>
-            <div class="menu-sub menu-sub-accordion menu-active-bg">
-               <div class="menu-item">
-                  <a class="menu-link" href="/users">
-                  <span class="menu-bullet">
-                  <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">Users</span>
-                  </a>
-               </div>
-               <div class="menu-item">
-                  <a class="menu-link" href="/add-user">
-                  <span class="menu-bullet">
-                  <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">Add User</span>
-                  </a>
+   <!--end::Brand-->
+   <!--begin::Aside menu-->
+   <div class="aside-menu flex-column-fluid">
+      <!--begin::Aside Menu-->
+      <div class="hover-scroll-overlay-y my-5 my-lg-5" id="kt_aside_menu_wrapper" data-kt-scroll="true"
+         data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-height="auto"
+         data-kt-scroll-dependencies="#kt_aside_logo, #kt_aside_footer" data-kt-scroll-wrappers="#kt_aside_menu"
+         data-kt-scroll-offset="0">
+         <!--begin::Menu-->
+         <div
+            class="menu menu-column menu-title-gray-800 menu-state-title-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-500"
+            id="#kt_aside_menu" data-kt-menu="true">
+            <div class="menu-item">
+               <div class="menu-content pb-2">
+                  <span class="menu-section text-muted text-uppercase fs-8 ls-1">Dashboard</span>
                </div>
             </div>
-         </div>
-         
-         
-         
-         <div class="menu-item">
-            <div class="menu-content pt-8 pb-2">
-               <span class="menu-section text-muted text-uppercase fs-8 ls-1">Company</span>
-            </div>
-         </div>
-         <div data-kt-menu-trigger="click" class="menu-item menu-accordion <% if(menu_active_id=='company'){ %> here show mb-1<% }%>">
-            <span class="menu-link">
-               <span class="menu-icon">
-                  <!--begin::Svg Icon | path: assets/media/icons/duotune/abstract/abs022.svg-->
+            <div data-kt-menu-trigger="click"
+               class="menu-item menu-accordion <% if(menu_active_id=='user'){ %> here show mb-1<% }%>">
+               <span class="menu-link">
+                  <span class="menu-icon">
+                     <!--begin::Svg Icon | path: icons/duotune/communication/com013.svg-->
                      <span class="svg-icon svg-icon-2">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                           <path opacity="0.3" d="M11.425 7.325C12.925 5.825 15.225 5.825 16.725 7.325C18.225 8.825 18.225 11.125 16.725 12.625C15.225 14.125 12.925 14.125 11.425 12.625C9.92501 11.225 9.92501 8.825 11.425 7.325ZM8.42501 4.325C5.32501 7.425 5.32501 12.525 8.42501 15.625C11.525 18.725 16.625 18.725 19.725 15.625C22.825 12.525 22.825 7.425 19.725 4.325C16.525 1.225 11.525 1.225 8.42501 4.325Z" fill="black"/>
-                           <path d="M11.325 17.525C10.025 18.025 8.425 17.725 7.325 16.725C5.825 15.225 5.825 12.925 7.325 11.425C8.825 9.92498 11.125 9.92498 12.625 11.425C13.225 12.025 13.625 12.925 13.725 13.725C14.825 13.825 15.925 13.525 16.725 12.625C17.125 12.225 17.425 11.825 17.525 11.325C17.125 10.225 16.525 9.22498 15.625 8.42498C12.525 5.32498 7.425 5.32498 4.325 8.42498C1.225 11.525 1.225 16.625 4.325 19.725C7.425 22.825 12.525 22.825 15.625 19.725C16.325 19.025 16.925 18.225 17.225 17.325C15.425 18.125 13.225 18.225 11.325 17.525Z" fill="black"/>
+                           <path
+                              d="M6.28548 15.0861C7.34369 13.1814 9.35142 12 11.5304 12H12.4696C14.6486 12 16.6563 13.1814 17.7145 15.0861L19.3493 18.0287C20.0899 19.3618 19.1259 21 17.601 21H6.39903C4.87406 21 3.91012 19.3618 4.65071 18.0287L6.28548 15.0861Z"
+                              fill="black" />
+                           <rect opacity="0.3" x="8" y="3" width="8" height="8" rx="4" fill="black" />
                         </svg>
                      </span>
-                  <!--end::Svg Icon-->
+                     <!--end::Svg Icon-->
+                  </span>
+                  <span class="menu-title">Users</span>
+                  <span class="menu-arrow"></span>
                </span>
-               <span class="menu-title">Company</span>
-               <span class="menu-arrow"></span>
-            </span>
-            <div class="menu-sub menu-sub-accordion menu-active-bg">
-               <div class="menu-item">
-                  <a class="menu-link" href="/companies">
-                  <span class="menu-bullet">
-                  <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">All Company</span>
-                  </a>
-               </div>
-               <div class="menu-item">
-                  <a class="menu-link" href="/add-company">
-                  <span class="menu-bullet">
-                  <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">Add Company</span>
-                  </a>
+               <div class="menu-sub menu-sub-accordion menu-active-bg">
+                  <div class="menu-item">
+                     <a class="menu-link" href="/users">
+                        <span class="menu-bullet">
+                           <span class="bullet bullet-dot"></span>
+                        </span>
+                        <span class="menu-title">Users</span>
+                     </a>
+                  </div>
+                  <div class="menu-item">
+                     <a class="menu-link" href="/add-user">
+                        <span class="menu-bullet">
+                           <span class="bullet bullet-dot"></span>
+                        </span>
+                        <span class="menu-title">Add User</span>
+                     </a>
+                  </div>
                </div>
             </div>
-         </div>
-         <div data-kt-menu-trigger="click"
-         class="menu-item menu-accordion <% if(menu_active_id=='category'){ %> here show mb-1<% }%>">
-         <span class="menu-link">
-            <span class="menu-icon">
-               <span class="svg-icon svg-icon-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path opacity="0.3" d="M17 10H11C10.4 10 10 9.6 10 9V8C10 7.4 10.4 7 11 7H17C17.6 7 18 7.4 18 8V9C18 9.6 17.6 10 17 10ZM22 4V3C22 2.4 21.6 2 21 2H11C10.4 2 10 2.4 10 3V4C10 4.6 10.4 5 11 5H21C21.6 5 22 4.6 22 4ZM22 15V14C22 13.4 21.6 13 21 13H11C10.4 13 10 13.4 10 14V15C10 15.6 10.4 16 11 16H21C21.6 16 22 15.6 22 15ZM18 20V19C18 18.4 17.6 18 17 18H11C10.4 18 10 18.4 10 19V20C10 20.6 10.4 21 11 21H17C17.6 21 18 20.6 18 20Z" fill="black"/>
-                  <path d="M8 5C8 6.7 6.7 8 5 8C3.3 8 2 6.7 2 5C2 3.3 3.3 2 5 2C6.7 2 8 3.3 8 5ZM5 4C4.4 4 4 4.4 4 5C4 5.6 4.4 6 5 6C5.6 6 6 5.6 6 5C6 4.4 5.6 4 5 4ZM8 16C8 17.7 6.7 19 5 19C3.3 19 2 17.7 2 16C2 14.3 3.3 13 5 13C6.7 13 8 14.3 8 16ZM5 15C4.4 15 4 15.4 4 16C4 16.6 4.4 17 5 17C5.6 17 6 16.6 6 16C6 15.4 5.6 15 5 15Z" fill="black"/>
-                  </svg>
-               </span>
-               <!--end::Svg Icon-->
-            </span>
-            <span class="menu-title">Categories</span>
-            <span class="menu-arrow"></span>
-         </span>
-         <div class="menu-sub menu-sub-accordion menu-active-bg">
+
+
+
             <div class="menu-item">
-               <a class="menu-link" href="/categories">
-                  <span class="menu-bullet">
-                     <span class="bullet bullet-dot"></span>
+               <div class="menu-content pt-8 pb-2">
+                  <span class="menu-section text-muted text-uppercase fs-8 ls-1">Company</span>
+               </div>
+            </div>
+            <div data-kt-menu-trigger="click"
+               class="menu-item menu-accordion <% if(menu_active_id=='company'){ %> here show mb-1<% }%>">
+               <span class="menu-link">
+                  <span class="menu-icon">
+                     <!--begin::Svg Icon | path: assets/media/icons/duotune/abstract/abs022.svg-->
+                     <span class="svg-icon svg-icon-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                           <path opacity="0.3"
+                              d="M11.425 7.325C12.925 5.825 15.225 5.825 16.725 7.325C18.225 8.825 18.225 11.125 16.725 12.625C15.225 14.125 12.925 14.125 11.425 12.625C9.92501 11.225 9.92501 8.825 11.425 7.325ZM8.42501 4.325C5.32501 7.425 5.32501 12.525 8.42501 15.625C11.525 18.725 16.625 18.725 19.725 15.625C22.825 12.525 22.825 7.425 19.725 4.325C16.525 1.225 11.525 1.225 8.42501 4.325Z"
+                              fill="black" />
+                           <path
+                              d="M11.325 17.525C10.025 18.025 8.425 17.725 7.325 16.725C5.825 15.225 5.825 12.925 7.325 11.425C8.825 9.92498 11.125 9.92498 12.625 11.425C13.225 12.025 13.625 12.925 13.725 13.725C14.825 13.825 15.925 13.525 16.725 12.625C17.125 12.225 17.425 11.825 17.525 11.325C17.125 10.225 16.525 9.22498 15.625 8.42498C12.525 5.32498 7.425 5.32498 4.325 8.42498C1.225 11.525 1.225 16.625 4.325 19.725C7.425 22.825 12.525 22.825 15.625 19.725C16.325 19.025 16.925 18.225 17.225 17.325C15.425 18.125 13.225 18.225 11.325 17.525Z"
+                              fill="black" />
+                        </svg>
+                     </span>
+                     <!--end::Svg Icon-->
+                  </span>
+                  <span class="menu-title">Company</span>
+                  <span class="menu-arrow"></span>
+               </span>
+               <div class="menu-sub menu-sub-accordion menu-active-bg">
+                  <div class="menu-item">
+                     <a class="menu-link" href="/companies">
+                        <span class="menu-bullet">
+                           <span class="bullet bullet-dot"></span>
+                        </span>
+                        <span class="menu-title">All Company</span>
+                     </a>
+                  </div>
+                  <div class="menu-item">
+                     <a class="menu-link" href="/add-company">
+                        <span class="menu-bullet">
+                           <span class="bullet bullet-dot"></span>
+                        </span>
+                        <span class="menu-title">Add Company</span>
+                     </a>
+                  </div>
+               </div>
+            </div>
+            <div data-kt-menu-trigger="click"
+               class="menu-item menu-accordion <% if(menu_active_id=='category'){ %> here show mb-1<% }%>">
+               <span class="menu-link">
+                  <span class="menu-icon">
+                     <span class="svg-icon svg-icon-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                           <path opacity="0.3"
+                              d="M17 10H11C10.4 10 10 9.6 10 9V8C10 7.4 10.4 7 11 7H17C17.6 7 18 7.4 18 8V9C18 9.6 17.6 10 17 10ZM22 4V3C22 2.4 21.6 2 21 2H11C10.4 2 10 2.4 10 3V4C10 4.6 10.4 5 11 5H21C21.6 5 22 4.6 22 4ZM22 15V14C22 13.4 21.6 13 21 13H11C10.4 13 10 13.4 10 14V15C10 15.6 10.4 16 11 16H21C21.6 16 22 15.6 22 15ZM18 20V19C18 18.4 17.6 18 17 18H11C10.4 18 10 18.4 10 19V20C10 20.6 10.4 21 11 21H17C17.6 21 18 20.6 18 20Z"
+                              fill="black" />
+                           <path
+                              d="M8 5C8 6.7 6.7 8 5 8C3.3 8 2 6.7 2 5C2 3.3 3.3 2 5 2C6.7 2 8 3.3 8 5ZM5 4C4.4 4 4 4.4 4 5C4 5.6 4.4 6 5 6C5.6 6 6 5.6 6 5C6 4.4 5.6 4 5 4ZM8 16C8 17.7 6.7 19 5 19C3.3 19 2 17.7 2 16C2 14.3 3.3 13 5 13C6.7 13 8 14.3 8 16ZM5 15C4.4 15 4 15.4 4 16C4 16.6 4.4 17 5 17C5.6 17 6 16.6 6 16C6 15.4 5.6 15 5 15Z"
+                              fill="black" />
+                        </svg>
+                     </span>
+                     <!--end::Svg Icon-->
                   </span>
                   <span class="menu-title">Categories</span>
-               </a>
+                  <span class="menu-arrow"></span>
+               </span>
+               <div class="menu-sub menu-sub-accordion menu-active-bg">
+                  <div class="menu-item">
+                     <a class="menu-link" href="/categories">
+                        <span class="menu-bullet">
+                           <span class="bullet bullet-dot"></span>
+                        </span>
+                        <span class="menu-title">Categories</span>
+                     </a>
+                  </div>
+                  <div class="menu-item">
+                     <a class="menu-link" href="/add-category">
+                        <span class="menu-bullet">
+                           <span class="bullet bullet-dot"></span>
+                        </span>
+                        <span class="menu-title">Add Category</span>
+                     </a>
+                  </div>
+               </div>
             </div>
-            <div class="menu-item">
-               <a class="menu-link" href="/add-category">
-                  <span class="menu-bullet">
-                     <span class="bullet bullet-dot"></span>
+            <div data-kt-menu-trigger="click"
+               class="menu-item menu-accordion <% if(menu_active_id=='faq'){ %> here show mb-1<% }%>">
+               <span class="menu-link">
+                  <span class="menu-icon">
+                     <span class="svg-icon svg-icon-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                           <path opacity="0.3"
+                              d="M17 10H11C10.4 10 10 9.6 10 9V8C10 7.4 10.4 7 11 7H17C17.6 7 18 7.4 18 8V9C18 9.6 17.6 10 17 10ZM22 4V3C22 2.4 21.6 2 21 2H11C10.4 2 10 2.4 10 3V4C10 4.6 10.4 5 11 5H21C21.6 5 22 4.6 22 4ZM22 15V14C22 13.4 21.6 13 21 13H11C10.4 13 10 13.4 10 14V15C10 15.6 10.4 16 11 16H21C21.6 16 22 15.6 22 15ZM18 20V19C18 18.4 17.6 18 17 18H11C10.4 18 10 18.4 10 19V20C10 20.6 10.4 21 11 21H17C17.6 21 18 20.6 18 20Z"
+                              fill="black" />
+                           <path
+                              d="M8 5C8 6.7 6.7 8 5 8C3.3 8 2 6.7 2 5C2 3.3 3.3 2 5 2C6.7 2 8 3.3 8 5ZM5 4C4.4 4 4 4.4 4 5C4 5.6 4.4 6 5 6C5.6 6 6 5.6 6 5C6 4.4 5.6 4 5 4ZM8 16C8 17.7 6.7 19 5 19C3.3 19 2 17.7 2 16C2 14.3 3.3 13 5 13C6.7 13 8 14.3 8 16ZM5 15C4.4 15 4 15.4 4 16C4 16.6 4.4 17 5 17C5.6 17 6 16.6 6 16C6 15.4 5.6 15 5 15Z"
+                              fill="black" />
+                        </svg>
+                     </span>
+                     <!--end::Svg Icon-->
                   </span>
-                  <span class="menu-title">Add Category</span>
-               </a>
+                  <span class="menu-title">FAQ</span>
+                  <span class="menu-arrow"></span>
+               </span>
+               <div class="menu-sub menu-sub-accordion menu-active-bg">
+                  <div class="menu-item">
+                     <a class="menu-link" href="/add-faq">
+                        <span class="menu-bullet">
+                           <span class="bullet bullet-dot"></span>
+                        </span>
+                        <span class="menu-title">Add FAQ</span>
+                     </a>
+                  </div>
+
+               </div>
             </div>
-         </div>
-         </div>
-         <%#
-         <div class="menu-item">
-            <div class="menu-content pt-8 pb-2">
-               <span class="menu-section text-muted text-uppercase fs-8 ls-1">Apps</span>
+            <div data-kt-menu-trigger="click"
+               class="menu-item menu-accordion <% if(menu_active_id=='pages'){ %> here show mb-1<% }%>">
+               <span class="menu-link">
+                  <span class="menu-icon">
+                     <span class="svg-icon svg-icon-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                           <path opacity="0.3"
+                              d="M17 10H11C10.4 10 10 9.6 10 9V8C10 7.4 10.4 7 11 7H17C17.6 7 18 7.4 18 8V9C18 9.6 17.6 10 17 10ZM22 4V3C22 2.4 21.6 2 21 2H11C10.4 2 10 2.4 10 3V4C10 4.6 10.4 5 11 5H21C21.6 5 22 4.6 22 4ZM22 15V14C22 13.4 21.6 13 21 13H11C10.4 13 10 13.4 10 14V15C10 15.6 10.4 16 11 16H21C21.6 16 22 15.6 22 15ZM18 20V19C18 18.4 17.6 18 17 18H11C10.4 18 10 18.4 10 19V20C10 20.6 10.4 21 11 21H17C17.6 21 18 20.6 18 20Z"
+                              fill="black" />
+                           <path
+                              d="M8 5C8 6.7 6.7 8 5 8C3.3 8 2 6.7 2 5C2 3.3 3.3 2 5 2C6.7 2 8 3.3 8 5ZM5 4C4.4 4 4 4.4 4 5C4 5.6 4.4 6 5 6C5.6 6 6 5.6 6 5C6 4.4 5.6 4 5 4ZM8 16C8 17.7 6.7 19 5 19C3.3 19 2 17.7 2 16C2 14.3 3.3 13 5 13C6.7 13 8 14.3 8 16ZM5 15C4.4 15 4 15.4 4 16C4 16.6 4.4 17 5 17C5.6 17 6 16.6 6 16C6 15.4 5.6 15 5 15Z"
+                              fill="black" />
+                        </svg>
+                     </span>
+                     <!--end::Svg Icon-->
+                  </span>
+                  <span class="menu-title">Pages</span>
+                  <span class="menu-arrow"></span>
+               </span>
+               <div class="menu-sub menu-sub-accordion menu-active-bg">
+                  <div class="menu-item">
+                     <a class="menu-link" href="/edit-home">
+                        <span class="menu-bullet">
+                           <span class="bullet bullet-dot"></span>
+                        </span>
+                        <span class="menu-title">Edit Home</span>
+                     </a>
+                  </div>
+               </div>
+               <div class="menu-sub menu-sub-accordion menu-active-bg">
+                  <div class="menu-item">
+                     <a class="menu-link" href="/edit-contacts">
+                        <span class="menu-bullet">
+                           <span class="bullet bullet-dot"></span>
+                        </span>
+                        <span class="menu-title">Edit Contacts</span>
+                     </a>
+                  </div>
+               </div>
             </div>
+            <%# <div class="menu-item">
+               <div class="menu-content pt-8 pb-2">
+                  <span class="menu-section text-muted text-uppercase fs-8 ls-1">Apps</span>
+               </div>
          </div>
          <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
             <span class="menu-link">
                <span class="menu-icon">
                   <!--begin::Svg Icon | path: icons/duotune/finance/fin006.svg-->
                   <span class="svg-icon svg-icon-2">
-                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                        viewBox="0 0 24 24" fill="none">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                         <path opacity="0.3"
                            d="M20 15H4C2.9 15 2 14.1 2 13V7C2 6.4 2.4 6 3 6H21C21.6 6 22 6.4 22 7V13C22 14.1 21.1 15 20 15ZM13 12H11C10.5 12 10 12.4 10 13V16C10 16.5 10.4 17 11 17H13C13.6 17 14 16.6 14 16V13C14 12.4 13.6 12 13 12Z"
                            fill="black" />
@@ -188,28 +265,27 @@ data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_aside_mobile_toggle"
             </span>
             <div class="menu-sub menu-sub-accordion">
                <div class="menu-item">
-                  <a class="menu-link"
-                     href="../../demo1/dist/apps/customers/getting-started.html">
-                  <span class="menu-bullet">
-                  <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">Getting Started</span>
+                  <a class="menu-link" href="../../demo1/dist/apps/customers/getting-started.html">
+                     <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                     </span>
+                     <span class="menu-title">Getting Started</span>
                   </a>
                </div>
                <div class="menu-item">
                   <a class="menu-link" href="../../demo1/dist/apps/customers/list.html">
-                  <span class="menu-bullet">
-                  <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">Customer Listing</span>
+                     <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                     </span>
+                     <span class="menu-title">Customer Listing</span>
                   </a>
                </div>
                <div class="menu-item">
                   <a class="menu-link" href="../../demo1/dist/apps/customers/view.html">
-                  <span class="menu-bullet">
-                  <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">Customer Details</span>
+                     <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                     </span>
+                     <span class="menu-title">Customer Details</span>
                   </a>
                </div>
             </div>
@@ -219,8 +295,7 @@ data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_aside_mobile_toggle"
                <span class="menu-icon">
                   <!--begin::Svg Icon | path: icons/duotune/ecommerce/ecm002.svg-->
                   <span class="svg-icon svg-icon-2">
-                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                        viewBox="0 0 24 24" fill="none">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                         <path
                            d="M21 10H13V11C13 11.6 12.6 12 12 12C11.4 12 11 11.6 11 11V10H3C2.4 10 2 10.4 2 11V13H22V11C22 10.4 21.6 10 21 10Z"
                            fill="black" />
@@ -239,36 +314,35 @@ data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_aside_mobile_toggle"
             </span>
             <div class="menu-sub menu-sub-accordion">
                <div class="menu-item">
-                  <a class="menu-link"
-                     href="../../demo1/dist/apps/subscriptions/getting-started.html">
-                  <span class="menu-bullet">
-                  <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">Getting Started</span>
+                  <a class="menu-link" href="../../demo1/dist/apps/subscriptions/getting-started.html">
+                     <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                     </span>
+                     <span class="menu-title">Getting Started</span>
                   </a>
                </div>
                <div class="menu-item">
                   <a class="menu-link" href="../../demo1/dist/apps/subscriptions/list.html">
-                  <span class="menu-bullet">
-                  <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">Subscription List</span>
+                     <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                     </span>
+                     <span class="menu-title">Subscription List</span>
                   </a>
                </div>
                <div class="menu-item">
                   <a class="menu-link" href="../../demo1/dist/apps/subscriptions/add.html">
-                  <span class="menu-bullet">
-                  <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">Add Subscription</span>
+                     <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                     </span>
+                     <span class="menu-title">Add Subscription</span>
                   </a>
                </div>
                <div class="menu-item">
                   <a class="menu-link" href="../../demo1/dist/apps/subscriptions/view.html">
-                  <span class="menu-bullet">
-                  <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">View Subscription</span>
+                     <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                     </span>
+                     <span class="menu-title">View Subscription</span>
                   </a>
                </div>
             </div>
@@ -278,8 +352,7 @@ data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_aside_mobile_toggle"
                <span class="menu-icon">
                   <!--begin::Svg Icon | path: icons/duotune/finance/fin002.svg-->
                   <span class="svg-icon svg-icon-2">
-                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                        viewBox="0 0 24 24" fill="none">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                         <path d="M22 7H2V11H22V7Z" fill="black" />
                         <path opacity="0.3"
                            d="M21 19H3C2.4 19 2 18.6 2 18V6C2 5.4 2.4 5 3 5H21C21.6 5 22 5.4 22 6V18C22 18.6 21.6 19 21 19ZM14 14C14 13.4 13.6 13 13 13H5C4.4 13 4 13.4 4 14C4 14.6 4.4 15 5 15H13C13.6 15 14 14.6 14 14ZM16 15.5C16 16.3 16.7 17 17.5 17H18.5C19.3 17 20 16.3 20 15.5C20 14.7 19.3 14 18.5 14H17.5C16.7 14 16 14.7 16 15.5Z"
@@ -294,39 +367,37 @@ data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_aside_mobile_toggle"
             <div class="menu-sub menu-sub-accordion">
                <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
                   <span class="menu-link">
-                  <span class="menu-bullet">
-                  <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">View Invoices</span>
-                  <span class="menu-arrow"></span>
+                     <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                     </span>
+                     <span class="menu-title">View Invoices</span>
+                     <span class="menu-arrow"></span>
                   </span>
                   <div class="menu-sub menu-sub-accordion menu-active-bg">
                      <div class="menu-item">
-                        <a class="menu-link"
-                           href="../../demo1/dist/apps/invoices/view/invoice-1.html">
-                        <span class="menu-bullet">
-                        <span class="bullet bullet-dot"></span>
-                        </span>
-                        <span class="menu-title">Invoice 1</span>
+                        <a class="menu-link" href="../../demo1/dist/apps/invoices/view/invoice-1.html">
+                           <span class="menu-bullet">
+                              <span class="bullet bullet-dot"></span>
+                           </span>
+                           <span class="menu-title">Invoice 1</span>
                         </a>
                      </div>
                      <div class="menu-item">
-                        <a class="menu-link"
-                           href="../../demo1/dist/apps/invoices/view/invoice-2.html">
-                        <span class="menu-bullet">
-                        <span class="bullet bullet-dot"></span>
-                        </span>
-                        <span class="menu-title">Invoice 2</span>
+                        <a class="menu-link" href="../../demo1/dist/apps/invoices/view/invoice-2.html">
+                           <span class="menu-bullet">
+                              <span class="bullet bullet-dot"></span>
+                           </span>
+                           <span class="menu-title">Invoice 2</span>
                         </a>
                      </div>
                   </div>
                </div>
                <div class="menu-item">
                   <a class="menu-link" href="../../demo1/dist/apps/invoices/create.html">
-                  <span class="menu-bullet">
-                  <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">Create Invoice</span>
+                     <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                     </span>
+                     <span class="menu-title">Create Invoice</span>
                   </a>
                </div>
             </div>
@@ -336,8 +407,7 @@ data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_aside_mobile_toggle"
                <span class="menu-icon">
                   <!--begin::Svg Icon | path: icons/duotune/general/gen051.svg-->
                   <span class="svg-icon svg-icon-2">
-                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                        viewBox="0 0 24 24" fill="none">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                         <path opacity="0.3"
                            d="M20.5543 4.37824L12.1798 2.02473C12.0626 1.99176 11.9376 1.99176 11.8203 2.02473L3.44572 4.37824C3.18118 4.45258 3 4.6807 3 4.93945V13.569C3 14.6914 3.48509 15.8404 4.4417 16.984C5.17231 17.8575 6.18314 18.7345 7.446 19.5909C9.56752 21.0295 11.6566 21.912 11.7445 21.9488C11.8258 21.9829 11.9129 22 12.0001 22C12.0872 22 12.1744 21.983 12.2557 21.9488C12.3435 21.912 14.4326 21.0295 16.5541 19.5909C17.8169 18.7345 18.8277 17.8575 19.5584 16.984C20.515 15.8404 21 14.6914 21 13.569V4.93945C21 4.6807 20.8189 4.45258 20.5543 4.37824Z"
                            fill="black" />
@@ -354,69 +424,64 @@ data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_aside_mobile_toggle"
             <div class="menu-sub menu-sub-accordion">
                <div data-kt-menu-trigger="click" class="menu-item menu-accordion mb-1">
                   <span class="menu-link">
-                  <span class="menu-bullet">
-                  <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">Users</span>
-                  <span class="menu-arrow"></span>
+                     <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                     </span>
+                     <span class="menu-title">Users</span>
+                     <span class="menu-arrow"></span>
                   </span>
                   <div class="menu-sub menu-sub-accordion">
                      <div class="menu-item">
-                        <a class="menu-link"
-                           href="../../demo1/dist/apps/user-management/users/list.html">
-                        <span class="menu-bullet">
-                        <span class="bullet bullet-dot"></span>
-                        </span>
-                        <span class="menu-title">Users List</span>
+                        <a class="menu-link" href="../../demo1/dist/apps/user-management/users/list.html">
+                           <span class="menu-bullet">
+                              <span class="bullet bullet-dot"></span>
+                           </span>
+                           <span class="menu-title">Users List</span>
                         </a>
                      </div>
                      <div class="menu-item">
-                        <a class="menu-link"
-                           href="../../demo1/dist/apps/user-management/users/view.html">
-                        <span class="menu-bullet">
-                        <span class="bullet bullet-dot"></span>
-                        </span>
-                        <span class="menu-title">View User</span>
+                        <a class="menu-link" href="../../demo1/dist/apps/user-management/users/view.html">
+                           <span class="menu-bullet">
+                              <span class="bullet bullet-dot"></span>
+                           </span>
+                           <span class="menu-title">View User</span>
                         </a>
                      </div>
                   </div>
                </div>
                <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
                   <span class="menu-link">
-                  <span class="menu-bullet">
-                  <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">Roles</span>
-                  <span class="menu-arrow"></span>
+                     <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                     </span>
+                     <span class="menu-title">Roles</span>
+                     <span class="menu-arrow"></span>
                   </span>
                   <div class="menu-sub menu-sub-accordion">
                      <div class="menu-item">
-                        <a class="menu-link"
-                           href="../../demo1/dist/apps/user-management/roles/list.html">
-                        <span class="menu-bullet">
-                        <span class="bullet bullet-dot"></span>
-                        </span>
-                        <span class="menu-title">Roles List</span>
+                        <a class="menu-link" href="../../demo1/dist/apps/user-management/roles/list.html">
+                           <span class="menu-bullet">
+                              <span class="bullet bullet-dot"></span>
+                           </span>
+                           <span class="menu-title">Roles List</span>
                         </a>
                      </div>
                      <div class="menu-item">
-                        <a class="menu-link"
-                           href="../../demo1/dist/apps/user-management/roles/view.html">
-                        <span class="menu-bullet">
-                        <span class="bullet bullet-dot"></span>
-                        </span>
-                        <span class="menu-title">View Role</span>
+                        <a class="menu-link" href="../../demo1/dist/apps/user-management/roles/view.html">
+                           <span class="menu-bullet">
+                              <span class="bullet bullet-dot"></span>
+                           </span>
+                           <span class="menu-title">View Role</span>
                         </a>
                      </div>
                   </div>
                </div>
                <div class="menu-item">
-                  <a class="menu-link"
-                     href="../../demo1/dist/apps/user-management/permissions.html">
-                  <span class="menu-bullet">
-                  <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">Permissions</span>
+                  <a class="menu-link" href="../../demo1/dist/apps/user-management/permissions.html">
+                     <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                     </span>
+                     <span class="menu-title">Permissions</span>
                   </a>
                </div>
             </div>
@@ -426,8 +491,7 @@ data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_aside_mobile_toggle"
                <span class="menu-icon">
                   <!--begin::Svg Icon | path: icons/duotune/graphs/gra006.svg-->
                   <span class="svg-icon svg-icon-2">
-                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                        viewBox="0 0 24 24" fill="none">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                         <path
                            d="M13 5.91517C15.8 6.41517 18 8.81519 18 11.8152C18 12.5152 17.9 13.2152 17.6 13.9152L20.1 15.3152C20.6 15.6152 21.4 15.4152 21.6 14.8152C21.9 13.9152 22.1 12.9152 22.1 11.8152C22.1 7.01519 18.8 3.11521 14.3 2.01521C13.7 1.91521 13.1 2.31521 13.1 3.01521V5.91517H13Z"
                            fill="black" />
@@ -444,92 +508,88 @@ data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_aside_mobile_toggle"
             <div class="menu-sub menu-sub-accordion">
                <div class="menu-item">
                   <a class="menu-link" href="../../demo1/dist/apps/support-center/overview.html">
-                  <span class="menu-bullet">
-                  <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">Overview</span>
+                     <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                     </span>
+                     <span class="menu-title">Overview</span>
                   </a>
                </div>
                <div data-kt-menu-trigger="click" class="menu-item menu-accordion mb-1">
                   <span class="menu-link">
-                  <span class="menu-bullet">
-                  <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">Tickets</span>
-                  <span class="menu-arrow"></span>
+                     <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                     </span>
+                     <span class="menu-title">Tickets</span>
+                     <span class="menu-arrow"></span>
                   </span>
                   <div class="menu-sub menu-sub-accordion">
                      <div class="menu-item">
-                        <a class="menu-link"
-                           href="../../demo1/dist/apps/support-center/tickets/list.html">
-                        <span class="menu-bullet">
-                        <span class="bullet bullet-dot"></span>
-                        </span>
-                        <span class="menu-title">Tickets List</span>
+                        <a class="menu-link" href="../../demo1/dist/apps/support-center/tickets/list.html">
+                           <span class="menu-bullet">
+                              <span class="bullet bullet-dot"></span>
+                           </span>
+                           <span class="menu-title">Tickets List</span>
                         </a>
                      </div>
                      <div class="menu-item">
-                        <a class="menu-link"
-                           href="../../demo1/dist/apps/support-center/tickets/view.html">
-                        <span class="menu-bullet">
-                        <span class="bullet bullet-dot"></span>
-                        </span>
-                        <span class="menu-title">View Ticket</span>
+                        <a class="menu-link" href="../../demo1/dist/apps/support-center/tickets/view.html">
+                           <span class="menu-bullet">
+                              <span class="bullet bullet-dot"></span>
+                           </span>
+                           <span class="menu-title">View Ticket</span>
                         </a>
                      </div>
                   </div>
                </div>
                <div data-kt-menu-trigger="click" class="menu-item menu-accordion mb-1">
                   <span class="menu-link">
-                  <span class="menu-bullet">
-                  <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">Tutorials</span>
-                  <span class="menu-arrow"></span>
+                     <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                     </span>
+                     <span class="menu-title">Tutorials</span>
+                     <span class="menu-arrow"></span>
                   </span>
                   <div class="menu-sub menu-sub-accordion">
                      <div class="menu-item">
-                        <a class="menu-link"
-                           href="../../demo1/dist/apps/support-center/tutorials/list.html">
-                        <span class="menu-bullet">
-                        <span class="bullet bullet-dot"></span>
-                        </span>
-                        <span class="menu-title">Tutorials List</span>
+                        <a class="menu-link" href="../../demo1/dist/apps/support-center/tutorials/list.html">
+                           <span class="menu-bullet">
+                              <span class="bullet bullet-dot"></span>
+                           </span>
+                           <span class="menu-title">Tutorials List</span>
                         </a>
                      </div>
                      <div class="menu-item">
-                        <a class="menu-link"
-                           href="../../demo1/dist/apps/support-center/tutorials/post.html">
-                        <span class="menu-bullet">
-                        <span class="bullet bullet-dot"></span>
-                        </span>
-                        <span class="menu-title">Tutorial Post</span>
+                        <a class="menu-link" href="../../demo1/dist/apps/support-center/tutorials/post.html">
+                           <span class="menu-bullet">
+                              <span class="bullet bullet-dot"></span>
+                           </span>
+                           <span class="menu-title">Tutorial Post</span>
                         </a>
                      </div>
                   </div>
                </div>
                <div class="menu-item">
                   <a class="menu-link" href="../../demo1/dist/apps/support-center/faq.html">
-                  <span class="menu-bullet">
-                  <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">FAQ</span>
+                     <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                     </span>
+                     <span class="menu-title">FAQ</span>
                   </a>
                </div>
                <div class="menu-item">
                   <a class="menu-link" href="../../demo1/dist/apps/support-center/licenses.html">
-                  <span class="menu-bullet">
-                  <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">Licenses</span>
+                     <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                     </span>
+                     <span class="menu-title">Licenses</span>
                   </a>
                </div>
                <div class="menu-item">
                   <a class="menu-link" href="../../demo1/dist/apps/support-center/contact.html">
-                  <span class="menu-bullet">
-                  <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">Contact Us</span>
+                     <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                     </span>
+                     <span class="menu-title">Contact Us</span>
                   </a>
                </div>
             </div>
@@ -539,8 +599,7 @@ data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_aside_mobile_toggle"
                <span class="menu-icon">
                   <!--begin::Svg Icon | path: icons/duotune/general/gen014.svg-->
                   <span class="svg-icon svg-icon-2">
-                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                        viewBox="0 0 24 24" fill="none">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                         <path opacity="0.3"
                            d="M21 22H3C2.4 22 2 21.6 2 21V5C2 4.4 2.4 4 3 4H21C21.6 4 22 4.4 22 5V21C22 21.6 21.6 22 21 22Z"
                            fill="black" />
@@ -562,8 +621,7 @@ data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_aside_mobile_toggle"
                <span class="menu-icon">
                   <!--begin::Svg Icon | path: icons/duotune/communication/com012.svg-->
                   <span class="svg-icon svg-icon-2">
-                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                        viewBox="0 0 24 24" fill="none">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                         <path opacity="0.3"
                            d="M20 3H4C2.89543 3 2 3.89543 2 5V16C2 17.1046 2.89543 18 4 18H4.5C5.05228 18 5.5 18.4477 5.5 19V21.5052C5.5 22.1441 6.21212 22.5253 6.74376 22.1708L11.4885 19.0077C12.4741 18.3506 13.6321 18 14.8167 18H20C21.1046 18 22 17.1046 22 16V5C22 3.89543 21.1046 3 20 3Z"
                            fill="black" />
@@ -579,26 +637,26 @@ data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_aside_mobile_toggle"
             <div class="menu-sub menu-sub-accordion">
                <div class="menu-item">
                   <a class="menu-link" href="../../demo1/dist/apps/chat/private.html">
-                  <span class="menu-bullet">
-                  <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">Private Chat</span>
+                     <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                     </span>
+                     <span class="menu-title">Private Chat</span>
                   </a>
                </div>
                <div class="menu-item">
                   <a class="menu-link" href="../../demo1/dist/apps/chat/group.html">
-                  <span class="menu-bullet">
-                  <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">Group Chat</span>
+                     <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                     </span>
+                     <span class="menu-title">Group Chat</span>
                   </a>
                </div>
                <div class="menu-item">
                   <a class="menu-link" href="../../demo1/dist/apps/chat/drawer.html">
-                  <span class="menu-bullet">
-                  <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">Drawer Chat</span>
+                     <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                     </span>
+                     <span class="menu-title">Drawer Chat</span>
                   </a>
                </div>
             </div>
@@ -613,8 +671,7 @@ data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_aside_mobile_toggle"
                <span class="menu-icon">
                   <!--begin::Svg Icon | path: icons/duotune/abstract/abs042.svg-->
                   <span class="svg-icon svg-icon-2">
-                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                        viewBox="0 0 24 24" fill="none">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                         <path
                            d="M18 21.6C16.6 20.4 9.1 20.3 6.3 21.2C5.7 21.4 5.1 21.2 4.7 20.8L2 18C4.2 15.8 10.8 15.1 15.8 15.8C16.2 18.3 17 20.5 18 21.6ZM18.8 2.8C18.4 2.4 17.8 2.20001 17.2 2.40001C14.4 3.30001 6.9 3.2 5.5 2C6.8 3.3 7.4 5.5 7.7 7.7C9 7.9 10.3 8 11.7 8C15.8 8 19.8 7.2 21.5 5.5L18.8 2.8Z"
                            fill="black" />
@@ -631,42 +688,42 @@ data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_aside_mobile_toggle"
             <div class="menu-sub menu-sub-accordion menu-active-bg">
                <div class="menu-item">
                   <a class="menu-link" href="../../demo1/dist/layouts/toolbars/toolbar-1.html">
-                  <span class="menu-bullet">
-                  <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">Toolbar 1</span>
+                     <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                     </span>
+                     <span class="menu-title">Toolbar 1</span>
                   </a>
                </div>
                <div class="menu-item">
                   <a class="menu-link" href="../../demo1/dist/layouts/toolbars/toolbar-2.html">
-                  <span class="menu-bullet">
-                  <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">Toolbar 2</span>
+                     <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                     </span>
+                     <span class="menu-title">Toolbar 2</span>
                   </a>
                </div>
                <div class="menu-item">
                   <a class="menu-link" href="../../demo1/dist/layouts/toolbars/toolbar-3.html">
-                  <span class="menu-bullet">
-                  <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">Toolbar 3</span>
+                     <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                     </span>
+                     <span class="menu-title">Toolbar 3</span>
                   </a>
                </div>
                <div class="menu-item">
                   <a class="menu-link" href="../../demo1/dist/layouts/toolbars/toolbar-4.html">
-                  <span class="menu-bullet">
-                  <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">Toolbar 4</span>
+                     <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                     </span>
+                     <span class="menu-title">Toolbar 4</span>
                   </a>
                </div>
                <div class="menu-item">
                   <a class="menu-link" href="../../demo1/dist/layouts/toolbars/toolbar-5.html">
-                  <span class="menu-bullet">
-                  <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">Toolbar 5</span>
+                     <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                     </span>
+                     <span class="menu-title">Toolbar 5</span>
                   </a>
                </div>
             </div>
@@ -676,8 +733,7 @@ data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_aside_mobile_toggle"
                <span class="menu-icon">
                   <!--begin::Svg Icon | path: icons/duotune/general/gen009.svg-->
                   <span class="svg-icon svg-icon-2">
-                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                        viewBox="0 0 24 24" fill="none">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                         <path opacity="0.3"
                            d="M21 22H14C13.4 22 13 21.6 13 21V3C13 2.4 13.4 2 14 2H21C21.6 2 22 2.4 22 3V21C22 21.6 21.6 22 21 22Z"
                            fill="black" />
@@ -694,40 +750,37 @@ data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_aside_mobile_toggle"
             <div class="menu-sub menu-sub-accordion menu-active-bg">
                <div class="menu-item">
                   <a class="menu-link" href="../../demo1/dist/layouts/aside/light.html">
-                  <span class="menu-bullet">
-                  <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">Light Skin</span>
+                     <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                     </span>
+                     <span class="menu-title">Light Skin</span>
                   </a>
                </div>
                <div class="menu-item">
                   <a class="menu-link" href="../../demo1/dist/layouts/aside/font-icons.html">
-                  <span class="menu-bullet">
-                  <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">Font Icons</span>
+                     <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                     </span>
+                     <span class="menu-title">Font Icons</span>
                   </a>
                </div>
                <div class="menu-item">
                   <a class="menu-link" href="../../demo1/dist/layouts/aside/minimized.html">
-                  <span class="menu-bullet">
-                  <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">Minimized</span>
+                     <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                     </span>
+                     <span class="menu-title">Minimized</span>
                   </a>
                </div>
             </div>
          </div>
          <div class="menu-item">
-            <a class="menu-link"
-               href="https://preview.keenthemes.com/metronic8/demo1/layout-builder.html"
-               data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-dismiss="click"
-               data-bs-placement="right">
+            <a class="menu-link" href="https://preview.keenthemes.com/metronic8/demo1/layout-builder.html"
+               data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-dismiss="click" data-bs-placement="right">
                <span class="menu-icon">
                   <!--begin::Svg Icon | path: icons/duotune/general/gen019.svg-->
                   <span class="svg-icon svg-icon-2">
-                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                        viewBox="0 0 24 24" fill="none">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                         <path
                            d="M17.5 11H6.5C4 11 2 9 2 6.5C2 4 4 2 6.5 2H17.5C20 2 22 4 22 6.5C22 9 20 11 17.5 11ZM15 6.5C15 7.9 16.1 9 17.5 9C18.9 9 20 7.9 20 6.5C20 5.1 18.9 4 17.5 4C16.1 4 15 5.1 15 6.5Z"
                            fill="black" />
@@ -750,10 +803,9 @@ data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_aside_mobile_toggle"
 <!--end::Aside menu-->
 <!--begin::Footer-->
 <div class="aside-footer flex-column-auto pt-5 pb-7 px-5" id="kt_aside_footer">
-   <a href="/logout"
-      class="btn btn-custom btn-primary w-100" data-bs-toggle="tooltip" data-bs-trigger="hover"
+   <a href="/logout" class="btn btn-custom btn-primary w-100" data-bs-toggle="tooltip" data-bs-trigger="hover"
       data-bs-dismiss-="click">
-   Sign Out
+      Sign Out
    </a>
 </div>
 <!--end::Footer-->

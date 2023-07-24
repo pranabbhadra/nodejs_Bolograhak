@@ -46,4 +46,16 @@ router.put('/edit-user-data', upload.single('profile_pic'), authController.editU
 router.post('/create-company', upload.single('logo'), authController.createCompany );
 router.put('/edit-company-data', upload.single('logo'), authController.editCompany );
 
+// Add FAQ
+router.post('/create-faq', authController.createFAQ);
+
+// Update Contacts
+router.post('/update-contact', authController.updateContacts);
+
+// Contacts Feedback
+router.post('/contact-feedback', authController.contactFeedback);
+
+// Home
+router.post('/update-home', authController.createHome);
+
 module.exports = router;
