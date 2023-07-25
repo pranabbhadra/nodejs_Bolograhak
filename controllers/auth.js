@@ -1343,3 +1343,189 @@ exports.editRatingTags = (req, res) => {
         });
     })
 }
+
+
+
+// Update Contacts
+exports.updateContacts = async (req, res) => {
+    //const formdata = JSON.parse(req.body.formData);
+    console.log('Request Form DATA:', req.body.whatsapp_no);
+    const { contacts_id, social_id, whatsapp_no, phone_no, email, title, meta_title, meta_desc, meta_keyword, fb_link, twitter_link, linkedin_link, instagram_link, youtube_link } = req.body
+    const contact_sql = `UPDATE contacts SET whatsapp_no=?,phone_no=?,email=?,title=?,meta_title=?,meta_desc=?,meta_keyword=? WHERE id = ?`;
+    const contact_data = [whatsapp_no, phone_no, email, title, meta_title, meta_desc, meta_keyword, contacts_id];
+    db.query(contact_sql, contact_data, (err, result) => {
+        const socials_sql = `UPDATE socials SET facabook=?,linkedin=?,instagram=?,youtube=?,twitter=? WHERE id=?`;
+        const socials_data = [fb_link, linkedin_link, instagram_link, youtube_link, twitter_link, social_id];
+        db.query(socials_sql, socials_data, (socials_err, socials_result) => {
+            // Return success response
+            return res.send({
+                status: 'ok',
+                message: 'Contact details and social links updated successfully'
+            });
+        })
+    })
+}
+
+// Contacts Feedback
+exports.contactFeedback = (req, res) => {
+    const phone = req.body.phone_no;
+    const message = req.body.message;
+    console.log(__dirname);
+    var mailOptions = {
+        from: 'vivek@scwebtech.com',
+        to: 'pranab@scwebtech.com',
+        subject: 'Feedback Mail From Contact',
+        //html: ejs.renderFile(path.join(process.env.BASE_URL, '/views/email-template/', 'feedback.ejs'), { phone: phone, message: message })
+        html: `<div style="padding- bottom: 30px; font - size: 17px; ">
+            <strong> Bolo Grahok Team </strong>
+                        </div >
+        <div style=padding-bottom: 30px">
+            <h3>Client Feedback</h3><br>
+                <p><strong>Phone No:</strong>
+                    ${phone}
+                </p>
+                <p><strong>Feedback:</strong></p>
+                    <p>
+                        ${message}
+                    </p>
+                </div>`
+    }
+    mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log('Mail Send: ', info.response);
+            return res.send({
+                status: 'ok',
+                message: 'Thank you for your feedback'
+            });
+        }
+    })
+}
+
+// Create FAQ
+exports.createFAQ = (req, res) => {
+    console.log(JSON.parse(req.body.formData));
+
+    //console.log('FAQ', req.body.formData.FAQ);
+    //JSON.parse(req.body.formData)
+}
+
+// Create Home
+exports.createHome = async (req, res) => {
+    // console.log('home', req.body);
+    // console.log('file', req.files);
+    const form_data = req.body;
+
+    const { home_id, title, meta_title, meta_desc, meta_keyword, bannner_content, for_business,
+        for_customer, cus_right_content, cus_right_button_link, cus_right_button_text,
+        youtube_1, youtube_2, youtube_3, youtube_4, fb_widget, twitter_widget,
+        org_responsibility_content, org_responsibility_buttton_link, org_responsibility_buttton_text,
+        about_us_content, about_us_button_link, about_us_button_text } = req.body;
+
+    const { banner_img_1, banner_img_2, banner_img_3, cus_right_img_1, cus_right_img_2, cus_right_img_3, cus_right_img_4, cus_right_img_5,
+        cus_right_img_6, cus_right_img_7, cus_right_img_8, org_responsibility_img_1, org_responsibility_img_2, org_responsibility_img_3,
+        org_responsibility_img_4, org_responsibility_img_5, org_responsibility_img_6, org_responsibility_img_7, org_responsibility_img_8,
+        about_us_img } = req.files;
+
+    const meta_value = [bannner_content, for_business,
+        for_customer, cus_right_content, cus_right_button_link, cus_right_button_text,
+        youtube_1, youtube_2, youtube_3, youtube_4, fb_widget, twitter_widget,
+        org_responsibility_content, org_responsibility_buttton_link, org_responsibility_buttton_text,
+        about_us_content, about_us_button_link, about_us_button_text];
+
+    const meta_key = ['bannner_content', 'for_business',
+        'for_customer', 'cus_right_content', 'cus_right_button_link', 'cus_right_button_text',
+        'youtube_1', 'youtube_2', 'youtube_3', 'youtube_4', 'fb_widget', 'twitter_widget',
+        'org_responsibility_content', 'org_responsibility_buttton_link', 'org_responsibility_buttton_text',
+        'about_us_content', 'about_us_button_link', 'about_us_button_text'];
+
+    await meta_value.forEach((element, index) => {
+        //console.log(element, index);
+        const check_sql = `SELECT * FROM page_meta WHERE page_id = ? AND page_meta_key = ?`;
+        const check_data = [home_id, meta_key[index]];
+        db.query(check_sql, check_data, (check_err, check_result) => {
+            if (check_err) {
+                return res.send(
+                    {
+                        status: 'err',
+                        data: '',
+                        message: 'An error occurred while processing your request'
+                    }
+                )
+            } else {
+                if (check_result.length > 0) {
+                    const update_sql = `UPDATE page_meta SET page_meta_value = ? WHERE page_id = ? AND page_meta_key = ?`;
+                    const update_data = [element, home_id, meta_key[index]];
+                    db.query(update_sql, update_data, (update_err, update_result) => {
+                        if (update_err) throw update_err;
+                    })
+                } else {
+                    const insert_sql = `INSERT INTO page_meta (page_id , page_meta_key, page_meta_value) VALUES (?,?,?)`;
+                    const insert_data = [home_id, meta_key[index], element];
+                    db.query(insert_sql, insert_data, (insert_err, insert_result) => {
+                        if (insert_err) throw insert_err;
+                    })
+                }
+            }
+        });
+    });
+
+    const file_meta_value = [banner_img_1, banner_img_2, banner_img_3, cus_right_img_1, cus_right_img_2, cus_right_img_3, cus_right_img_4, cus_right_img_5,
+        cus_right_img_6, cus_right_img_7, cus_right_img_8, org_responsibility_img_1, org_responsibility_img_2, org_responsibility_img_3,
+        org_responsibility_img_4, org_responsibility_img_5, org_responsibility_img_6, org_responsibility_img_7, org_responsibility_img_8,
+        about_us_img];
+
+    const file_meta_key = ['banner_img_1', 'banner_img_2', 'banner_img_3', 'cus_right_img_1', 'cus_right_img_2', 'cus_right_img_3', 'cus_right_img_4', 'cus_right_img_5',
+        'cus_right_img_6', 'cus_right_img_7', 'cus_right_img_8', 'org_responsibility_img_1', 'org_responsibility_img_2', 'org_responsibility_img_3',
+        'org_responsibility_img_4', 'org_responsibility_img_5', 'org_responsibility_img_6', 'org_responsibility_img_7', 'org_responsibility_img_8',
+        'about_us_img'];
+
+    await file_meta_key.forEach((item, key) => {
+        //console.log(item, key);
+        if (req.files[item]) {
+            //console.log(file_meta_value[key][0].filename);
+            const check_sql = `SELECT * FROM page_meta WHERE page_id = ? AND page_meta_key = ?`;
+            const check_data = [home_id, item];
+            db.query(check_sql, check_data, (check_err, check_result) => {
+                if (check_err) {
+                    return res.send(
+                        {
+                            status: 'err',
+                            data: '',
+                            message: 'An error occurred while processing your request'
+                        }
+                    )
+                } else {
+                    if (check_result.length > 0) {
+                        const update_sql = `UPDATE page_meta SET page_meta_value = ? WHERE page_id = ? AND page_meta_key = ?`;
+                        const update_data = [file_meta_value[key][0].filename, home_id, item];
+                        db.query(update_sql, update_data, (update_err, update_result) => {
+                            if (update_err) throw update_err;
+                        })
+                    } else {
+                        const insert_sql = `INSERT INTO page_meta (page_id , page_meta_key, page_meta_value) VALUES (?,?,?)`;
+                        const insert_data = [home_id, item, file_meta_value[key][0].filename];
+                        db.query(insert_sql, insert_data, (insert_err, insert_result) => {
+                            if (insert_err) throw insert_err;
+                        })
+                    }
+                }
+            });
+        }
+
+    });
+
+    const title_sql = `UPDATE page_info SET title = ?, meta_title = ?, meta_desc = ?, meta_keyword = ? WHERE id  = ?`;
+    const title_data = [title, meta_title, meta_desc, meta_keyword, home_id];
+    console.log(title_data);
+    db.query(title_sql, title_data, (title_err, title_result) => {
+        return res.send(
+            {
+                status: 'ok',
+                data: '',
+                message: 'Title update successfully'
+            }
+        )
+    })
+}

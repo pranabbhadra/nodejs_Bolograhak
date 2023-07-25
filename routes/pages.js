@@ -55,9 +55,25 @@ router.get('', checkCookieValue, async (req, res) => {
     }
 });
 
-router.get('/contact-us', checkCookieValue, async (req, res) => {
-    let currentUserData = JSON.parse(req.userData);
-    res.render('front-end/contact', { menu_active_id: 'contact', page_title: 'Contact Us', currentUserData });
+router.get('/contact-us', (req, res) => {
+    //resp.sendFile(`${publicPath}/index.html`)
+    const encodedUserData = req.cookies.user;
+    const currentUserData = JSON.parse(encodedUserData);
+
+    const sql = `SELECT * FROM contacts`;
+    db.query(sql, (err, results, fields) => {
+        if (err) throw err;
+        const social_sql = `SELECT * FROM socials`;
+        db.query(social_sql, (error, social_results, fields) => {
+            //console.log(results[0], social_results[0]);
+            const contacts = results[0];
+            const page_title = results[0].title;
+            const socials = social_results[0];
+            res.render('front-end/contact', { menu_active_id: 'contact', page_title: page_title, currentUserData, contacts, socials });
+
+        })
+    })
+
 });
 
 router.get('/about', checkCookieValue, async (req, res) => {
@@ -115,14 +131,14 @@ router.get('/sign-up', (req, res) => {
 router.get('/logout', (req, res) => {
     const encodedUserData = req.cookies.user;
     const currentUserData = JSON.parse(encodedUserData);
-    if(currentUserData.user_type_id == 2){
+    if (currentUserData.user_type_id == 2) {
         res.clearCookie('user');
         res.redirect('/');
-    }else{
+    } else {
         res.clearCookie('user');
         res.redirect('/sign-in');
     }
-    
+
 });
 
 
@@ -669,6 +685,105 @@ router.get('/edit-rating-tag/:id', checkLoggedIn, async (req, res) => {
         res.status(500).send('An error occurred');
     }
 });
+
+
+
+//Add FAQ Page
+router.get('/add-faq', checkLoggedIn, (req, res) => {
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+        // Render the 'add-page' EJS view and pass the data
+        res.render('faq/add-faq', {
+            menu_active_id: 'faq',
+            page_title: 'FAQs ',
+            currentUserData
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+
+//Edit Contact Page
+router.get('/edit-contacts', checkLoggedIn, (req, res) => {
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+        // const contacts = comFunction.getContacts();
+        // const socials = comFunction.getSocials();
+        // console.log(contacts, socials);
+        const sql = `SELECT * FROM contacts`;
+        db.query(sql, (err, results, fields) => {
+            if (err) throw err;
+            const social_sql = `SELECT * FROM socials`;
+            db.query(social_sql, (error, social_results, fields) => {
+                //console.log(results[0], social_results[0]);
+                const contacts = results[0];
+                const socials = social_results[0];
+                //console.log(contacts, socials);
+                //Render the 'update-contact' EJS view and pass the data
+                res.render('pages/update-contact', {
+                    menu_active_id: 'pages',
+                    page_title: 'Update Contacts',
+                    currentUserData,
+                    contacts,
+                    socials
+                });
+            })
+        })
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+
+//Edit Home Page
+router.get('/edit-home', checkLoggedIn, (req, res) => {
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+        const sql = `SELECT * FROM page_info where secret_Key = 'home' `;
+        db.query(sql, (err, results, fields) => {
+            if (err) throw err;
+            const home = results[0];
+            const meta_sql = `SELECT * FROM page_meta where page_id = ${home.id}`;
+            db.query(meta_sql, async (meta_err, _meta_result) => {
+                if (meta_err) throw meta_err;
+
+                const meta_values = _meta_result;
+                let meta_values_array = {};
+                await meta_values.forEach((item) => {
+                    meta_values_array[item.page_meta_key] = item.page_meta_value;
+                })
+                //console.log(meta_values_array);
+                res.render('pages/update-home', {
+                    menu_active_id: 'pages',
+                    page_title: 'Update Home',
+                    currentUserData,
+                    home,
+                    meta_values_array
+                });
+                //comFunction.getMetaValue(home.id, 'about_us_button_link');
+
+                // res.json({
+                //     menu_active_id: 'pages',
+                //     page_title: 'Update Home',
+                //     currentUserData,
+                //     home,
+                //     meta_values_array
+                // });
+            })
+
+        })
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+
 
 router.get('/help/:id', (_, resp) => {
     resp.sendFile(`${publicPath}/help.html`)
