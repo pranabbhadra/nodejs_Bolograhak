@@ -38,12 +38,44 @@ router.get('', checkCookieValue, async (req, res) => {
         const response = await axios.get(apiUrl);
         const blogPosts = response.data;
 
-        res.render('front-end/landing', {
-            menu_active_id: 'landing',
-            page_title: 'Home',
-            currentUserData: currentUserData,
-            homePosts: blogPosts.status === 'ok' ? blogPosts.data : []
-        });
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+
+        const sql = `SELECT * FROM page_info where secret_Key = 'home' `;
+        db.query(sql, (err, results, fields) => {
+            if (err) throw err;
+            const home = results[0];
+            const meta_sql = `SELECT * FROM page_meta where page_id = ${home.id}`;
+            db.query(meta_sql, async (meta_err, meta_result) => {
+                if (meta_err) throw meta_err;
+
+                const meta_values = meta_result;
+                let meta_values_array = {};
+                await meta_values.forEach((item) => {
+                    meta_values_array[item.page_meta_key] = item.page_meta_value;
+                })
+                console.log(meta_values_array);
+                res.render('front-end/landing', {
+                    menu_active_id: 'landing',
+                    page_title: home.title,
+                    currentUserData: currentUserData,
+                    homePosts: blogPosts.status === 'ok' ? blogPosts.data : [],
+                    home,
+                    meta_values_array
+                });
+                // res.render('pages/update-home', {
+                //     menu_active_id: 'pages',
+                //     page_title: 'Update Home',
+                //     currentUserData,
+                //     home,
+                //     meta_values_array
+                // });
+
+            })
+
+        })
+
+
     } catch (error) {
         console.error('Error fetching blog posts:', error);
         res.render('front-end/landing', {
@@ -853,21 +885,38 @@ router.get('/edit-home', checkLoggedIn, (req, res) => {
     try {
         const encodedUserData = req.cookies.user;
         const currentUserData = JSON.parse(encodedUserData);
-        // const contacts = comFunction.getContacts();
-        // const socials = comFunction.getSocials();
-        // console.log(contacts, socials);
-        const sql = `SELECT * FROM home_page`;
+        const sql = `SELECT * FROM page_info where secret_Key = 'home' `;
         db.query(sql, (err, results, fields) => {
             if (err) throw err;
             const home = results[0];
-            //console.log(contacts, socials);
-            //Render the 'update-contact' EJS view and pass the data
-            res.render('pages/update-home', {
-                menu_active_id: 'pages',
-                page_title: 'Update Contacts',
-                currentUserData,
-                home
-            });
+            const meta_sql = `SELECT * FROM page_meta where page_id = ${home.id}`;
+            db.query(meta_sql, async (meta_err, _meta_result) => {
+                if (meta_err) throw meta_err;
+
+                const meta_values = _meta_result;
+                let meta_values_array = {};
+                await meta_values.forEach((item) => {
+                    meta_values_array[item.page_meta_key] = item.page_meta_value;
+                })
+                //console.log(meta_values_array);
+                res.render('pages/update-home', {
+                    menu_active_id: 'pages',
+                    page_title: 'Update Home',
+                    currentUserData,
+                    home,
+                    meta_values_array
+                });
+                //comFunction.getMetaValue(home.id, 'about_us_button_link');
+
+                // res.json({
+                //     menu_active_id: 'pages',
+                //     page_title: 'Update Home',
+                //     currentUserData,
+                //     home,
+                //     meta_values_array
+                // });
+            })
+
         })
 
     } catch (err) {

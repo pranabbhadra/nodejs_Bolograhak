@@ -33,8 +33,10 @@
                     <!--begin::Content-->
                     <div id="kt_account_profile_details" class="collapse show">
                         <!--begin::Form-->
-                        <form id="kt_account_profile_details_form" class="form" action="#" method="POST">
+                        <form id="kt_account_profile_details_form" class="form" action="auth/update-home" method="POST"
+                            enctype="multipart/form-data">
                             <!--begin::Card body-->
+                            <input type="hidden" name="home_id" id="home_id" value="<%= home.id %>" />
                             <div class="card-header border-0 cursor-pointer" role="button"
                                 data-bs-target="#kt_account_profile_details" aria-expanded="true"
                                 aria-controls="kt_account_profile_details">
@@ -45,8 +47,6 @@
                                 <!--end::Card title-->
                             </div>
                             <div class="card-body border-top p-9">
-                                <input type="hidden" name="contacts_id" id="contacts_id" value="" />
-                                <input type="hidden" name="social_id" id="social_id" value="" />
                                 <div class="row mb-6">
                                     <!--begin::Label-->
                                     <label class="col-lg-4 col-form-label fw-bold fs-6">
@@ -132,7 +132,7 @@
                                     <div class="col-lg-8 fv-row">
                                         <textarea name="bannner_content" id="bannner_content"
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="Banner Content"><%= home.title %></textarea>
+                                            placeholder="Banner Content"><%= meta_values_array.bannner_content %></textarea>
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -146,7 +146,7 @@
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-8 fv-row">
-                                        <input type="file" name="banner_img-1" id="banner_img-1	"
+                                        <input type="file" name="banner_img_1" id="banner_img_1	"
                                             class="form-control form-control-lg form-control-solid" placeholder=""
                                             value="" />
                                     </div>
@@ -160,7 +160,7 @@
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-8 fv-row">
-                                        <input type="file" name="banner_img-2" id="banner_img-2"
+                                        <input type="file" name="banner_img_2" id="banner_img_2"
                                             class="form-control form-control-lg form-control-solid" placeholder=""
                                             value="" />
                                     </div>
@@ -174,7 +174,7 @@
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-8 fv-row">
-                                        <input type="file" name="banner_img-3" id="banner_img-3"
+                                        <input type="file" name="banner_img_3" id="banner_img_3"
                                             class="form-control form-control-lg form-control-solid" placeholder=""
                                             value="" />
                                     </div>
@@ -202,7 +202,7 @@
                                     <div class="col-lg-8 fv-row">
                                         <textarea name="for_business" id="for_business"
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="Joing Reason For Business"><%= home.title %></textarea>
+                                            placeholder="Joing Reason For Business"><%= meta_values_array.for_business %></textarea>
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -216,7 +216,7 @@
                                     <div class="col-lg-8 fv-row">
                                         <textarea name="for_customer" id="for_customer"
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="Joing Reason For Customer"><%= home.title %></textarea>
+                                            placeholder="Joing Reason For Customer"><%= meta_values_array.for_customer %></textarea>
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -240,9 +240,9 @@
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-8 fv-row">
-                                        <textarea name="about_content" id="about_content"
+                                        <textarea name="cus_right_content" id="cus_right_content"
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="Joing Reason For Business"><%= home.title %></textarea>
+                                            placeholder="Joing Reason For Business"><%= meta_values_array.cus_right_content %></textarea>
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -254,7 +254,7 @@
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-8 fv-row">
-                                        <input type="file" name="about_img_1" id="about_img_1"
+                                        <input type="file" name="cus_right_img_1" id="about_img_1"
                                             class="form-control form-control-lg form-control-solid" placeholder=""
                                             value="" />
                                     </div>
@@ -268,7 +268,7 @@
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-8 fv-row">
-                                        <input type="file" name="about_img_2" id="about_img_2"
+                                        <input type="file" name="cus_right_img_2" id="cus_right_img_2"
                                             class="form-control form-control-lg form-control-solid" placeholder=""
                                             value="" />
                                     </div>
@@ -282,7 +282,7 @@
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-8 fv-row">
-                                        <input type="file" name="about_img_3" id="about_img_3"
+                                        <input type="file" name="cus_right_img_3" id="cus_right_img_3"
                                             class="form-control form-control-lg form-control-solid" placeholder=""
                                             value="" />
                                     </div>
@@ -296,7 +296,7 @@
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-8 fv-row">
-                                        <input type="file" name="about_img_4" id="about_img_4"
+                                        <input type="file" name="cus_right_img_4" id="cus_right_img_4"
                                             class="form-control form-control-lg form-control-solid" placeholder=""
                                             value="" />
                                     </div>
@@ -310,7 +310,7 @@
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-8 fv-row">
-                                        <input type="file" name="about_img_5" id="about_img_5"
+                                        <input type="file" name="cus_right_img_5" id="cus_right_img_5"
                                             class="form-control form-control-lg form-control-solid" placeholder=""
                                             value="" />
                                     </div>
@@ -324,7 +324,7 @@
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-8 fv-row">
-                                        <input type="file" name="about_img_6" id="about_img_6"
+                                        <input type="file" name="cus_right_img_6" id="cus_right_img_6"
                                             class="form-control form-control-lg form-control-solid" placeholder=""
                                             value="" />
                                     </div>
@@ -338,7 +338,7 @@
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-8 fv-row">
-                                        <input type="file" name="about_img_7" id="about_img_7"
+                                        <input type="file" name="cus_right_img_7" id="cus_right_img_7"
                                             class="form-control form-control-lg form-control-solid" placeholder=""
                                             value="" />
                                     </div>
@@ -352,7 +352,7 @@
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-8 fv-row">
-                                        <input type="file" name="about_img_8" id="about_img_8"
+                                        <input type="file" name="cus_right_img_8" id="cus_right_img_8"
                                             class="form-control form-control-lg form-control-solid" placeholder=""
                                             value="" />
                                     </div>
@@ -366,9 +366,10 @@
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-8 fv-row">
-                                        <input type="text" name="about_button_link" id="about_button_link"
+                                        <input type="text" name="cus_right_button_link" id="cus_right_button_link"
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="Grahak Rights Button Link" value="<%= home.title %>" />
+                                            placeholder="Grahak Rights Button Link"
+                                            value="<%= home.cus_right_button_link %>" />
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -380,9 +381,10 @@
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-8 fv-row">
-                                        <input type="text" name="about_button_text" id="about_button_text"
+                                        <input type="text" name="cus_right_button_text" id="cus_right_button_text"
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="Grahak Rights Button Text" value="<%= home.title %>" />
+                                            placeholder="Grahak Rights Button Text"
+                                            value="<%= home.cus_right_button_text %>" />
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -408,7 +410,7 @@
                                     <div class="col-lg-8 fv-row">
                                         <textarea name="youtube_1" id="youtube_1"
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="YouTube Video Link 1"><%= home.title %></textarea>
+                                            placeholder="YouTube Video Link 1"><%= meta_values_array.youtube_1 %></textarea>
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -422,7 +424,7 @@
                                     <div class="col-lg-8 fv-row">
                                         <textarea name="youtube_2" id="youtube_2"
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="YouTube Video Link 2"><%= home.title %></textarea>
+                                            placeholder="YouTube Video Link 2"><%= meta_values_array.youtube_2 %></textarea>
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -436,7 +438,7 @@
                                     <div class="col-lg-8 fv-row">
                                         <textarea name="youtube_3" id="youtube_3"
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="YouTube Video Link 3"><%= home.title %></textarea>
+                                            placeholder="YouTube Video Link 3"><%= meta_values_array.youtube_3 %></textarea>
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -450,7 +452,7 @@
                                     <div class="col-lg-8 fv-row">
                                         <textarea name="youtube_4" id="youtube_4"
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="YouTube Video Link 4"><%= home.title %></textarea>
+                                            placeholder="YouTube Video Link 4"><%= meta_values_array.youtube_4 %></textarea>
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -462,9 +464,9 @@
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-8 fv-row">
-                                        <textarea name="fb-widget" id="fb-widget"
+                                        <textarea name="fb_widget" id="fb_widget"
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="Facebook Widget"><%= home.title %></textarea>
+                                            placeholder="Facebook Widget"><%= meta_values_array.fb_widget %></textarea>
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -476,9 +478,9 @@
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-8 fv-row">
-                                        <textarea name="twitter-widget	" id="twitter-widget	"
+                                        <textarea name="twitter_widget" id="twitter_widget"
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="Twitter Widget"><%= home.title %></textarea>
+                                            placeholder="Twitter Widget"><%= meta_values_array.twitter_widget %></textarea>
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -504,7 +506,7 @@
                                     <div class="col-lg-8 fv-row">
                                         <textarea name="org_responsibility_content" id="org_responsibility_content"
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="Organization Responsibility Content"><%= home.title %></textarea>
+                                            placeholder="Organization Responsibility Content"><%= meta_values_array.org_responsibility_content %></textarea>
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -632,7 +634,7 @@
                                             id="org_responsibility_buttton_link"
                                             class="form-control form-control-lg form-control-solid"
                                             placeholder="Organization Responsibility Button Link"
-                                            value="<%= home.title %>" />
+                                            value="<%= meta_values_array.org_responsibility_buttton_link %>" />
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -648,7 +650,7 @@
                                             id="org_responsibility_buttton_text"
                                             class="form-control form-control-lg form-control-solid"
                                             placeholder="Organization Responsibility Button Text"
-                                            value="<%= home.title %>" />
+                                            value="<%= meta_values_array.org_responsibility_buttton_text %>" />
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -675,7 +677,7 @@
                                     <div class="col-lg-8 fv-row">
                                         <textarea name="about_us_content" id="about_us_content"
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="Organization Responsibility Content"><%= home.title %></textarea>
+                                            placeholder="Organization Responsibility Content"><%= meta_values_array.about_us_content %></textarea>
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -703,7 +705,8 @@
                                     <div class="col-lg-8 fv-row">
                                         <input type="text" name="about_us_button_link" id="about_us_button_link"
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="About Us Button Link" value="<%= home.title %>" />
+                                            placeholder="About Us Button Link"
+                                            value="<%= meta_values_array.about_us_button_link %>" />
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -717,7 +720,8 @@
                                     <div class="col-lg-8 fv-row">
                                         <input type="text" name="about_us_button_text" id="about_us_button_text"
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="About Us Button Text" value="<%= home.title %> " />
+                                            placeholder="About Us Button Text"
+                                            value="<%= meta_values_array.about_us_button_text %>" />
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -788,11 +792,8 @@
 
                             validation.validate().then(function (status) {
                                 if (status == 'Valid') {
-                                    const formData = $('#kt_account_profile_details_form').serializeArray();
-                                    const jsonData = {};
-                                    $(formData).each(function (index, field) {
-                                        jsonData[field.name] = field.value;
-                                    });
+                                    const form = document.getElementById('kt_account_profile_details_form');
+                                    const formData = new FormData(form);
                                     console.log(formData);
                                     //return false;
 
@@ -800,7 +801,8 @@
                                         url: '/auth/update-home', // URL for your API endpoint
                                         type: 'POST',
                                         data: formData,
-                                        //ContentType: 'application/json',
+                                        processData: false,
+                                        contentType: false,
                                         success: function (data) {
                                             if (data.status == 'ok') {
                                                 Swal.fire({
@@ -813,7 +815,7 @@
                                                     }
                                                 }).then(function (result) {
                                                     if (result.isConfirmed) {
-                                                        window.location.href = "/edit-contacts";
+                                                        window.location.href = "/edit-home";
                                                     }
                                                 });
                                             } else {
