@@ -13,10 +13,7 @@
     <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.4.0/css/all.css">
     <link href="/front-end/default-style.css" rel="stylesheet" type="text/css">
     <link href="/front-end/css/header-banner-style.css" rel="stylesheet" type="text/css">
-    <link href="/front-end/css/landing-page-style.css" rel="stylesheet" type="text/css">
-    
     <!-- Responsive css -->
-    <link href="/front-end/responsive/style-responsive.css" rel="stylesheet" media='screen and (max-width:1440.98px)' type="text/css">
     <link href="/front-end/responsive/header-banner-responsive-style.css" rel="stylesheet" media='screen and (max-width:1440.98px)' type="text/css">
     <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -90,7 +87,7 @@
             </a>
           </div>
           <div class="header-right-content">
-            <span class="language-select">
+            <!-- <span class="language-select">
               <span class="lang-change">Eng</span> <a href="" class="lang-arw"><i class="fa-solid fa-angle-down"></i></a>
               <div class="lang-dropdown">
                 <ul class="p-0 m-0">
@@ -98,7 +95,7 @@
                   <li><a href="">Ben</a></li>
                 </ul>
               </div>
-            </span>
+            </span> -->
             <span class="mbl-hide-link"><a href="#" class="btn-default btn-outline-warning">For Business</a></span>
             <% if(currentUserData){ %>
             <span class="mbl-hide-link"><a href="/logout" class="btn-default btn-outline-warning">Log out</a></span>
@@ -120,7 +117,7 @@
             </span>
             <nav class="nav_sec">
               <ul>
-                <li class="active"><a href="http://localhost/bolo-grahak/blog/">Did You Know?</a></li>
+                <li class="active"><a href="http://localhost/bolograhak/blog/">Did You Know?</a></li>
                 <li><a href="/about-us">About Us</a></li>
                 <li><a href="/business">Business</a></li>
                 <li><a href="/contact-us">Contact</a></li>
@@ -206,7 +203,7 @@
         <div class="row">
           <div class="col-md-6">
             <div class="login-left">
-              <h4 class="text-center">Dive In</h4>
+              <h4 class="text-center">Existing User</h4>
               <div class="login-browse">
                 <div class="log-bowse-content">
                   <span><i class="fa-brands fa-google"></i></span>
@@ -233,7 +230,7 @@
                   <div class="remember">
                     <div class="custom-form form-check m-0">
                       <input type="checkbox" class="form-check-input" id="exampleCheck1" name="login-remember" value="1">
-                      <label class="form-check-label" for="exampleCheck1">Remember me <i class="fa-solid fa-circle-info"></i></label>
+                      <label class="form-check-label" for="exampleCheck1">Remember me <a href="" data-bs-toggle="tooltip" data-bs-placement="top" title="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."><i class="fa-solid fa-circle-info"></i></a></label>
                     </div>
                   </div>
                   <div class="forget-psw">
@@ -252,7 +249,17 @@
           </div>
           <div class="col-md-6">
             <div class="signup-right mt-md-0 mt-4">
-              <h4 class="text-center">Sign Up</h4>
+              <h4 class="text-center">New User</h4>
+              <div class="login-browse">
+                <div class="log-bowse-content">
+                  <span><i class="fa-brands fa-google"></i></span>
+                  <span><a href="/auth/google">Log in with google</a></span>
+                </div>
+                <div class="log-bowse-content">
+                  <span><i class="fa-brands fa-facebook-f"></i></span>
+                  <span><a href="#" target="btn-default">Log in with facebook</a></span>
+                </div>
+              </div>
               <form id="user-signup" name="user-signup-frm" method="post">
                 <div class="custom-form">
                   <label><span>First Name</span></label>
@@ -297,26 +304,26 @@
     <!-- ============== Quick Login Modal Start =============== -->
     <div class="modal fade pe-0" tabindex="-1" id="quickloginmodal">
       <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header justify-content-center">
-            <h4 class="modal-title fw-bold">Quick Login</h4>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="fa-solid fa-circle-xmark"></i></button>
-          </div>
-          <div class="modal-body text-center">
-            <a href="#" target="_blank" class="quick-login">
-            <span><i class="fa-brands fa-google"></i></span>
-            <span>Log in with google</span>
-            </a>
-            <a href="#" target="_blank" class="quick-login">
-            <span><i class="fa-brands fa-facebook-f"></i></span>
-            <span>Log in with facebook</span>
-            </a>
-            <a href="#" target="_blank" class="quick-login">
-            <span><i class="fa-brands fa-apple"></i></span>
-            <span>Log in with apple</span>
-            </a>
-          </div>
-        </div>
+         <div class="modal-content">
+            <div class="modal-header justify-content-center">
+               <h4 class="modal-title fw-bold">Quick Login</h4>
+               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="fa-solid fa-circle-xmark"></i></button>
+            </div>
+            <div class="modal-body text-center">
+               <a href="#" target="_blank" class="quick-login">
+               <span><i class="fa-brands fa-google"></i></span>
+               <span>Log in with Google</span>
+               </a>
+               <a href="#" target="_blank" class="quick-login">
+               <span><i class="fa-brands fa-facebook-f"></i></span>
+               <span>Log in with Facebook</span>
+               </a>
+               <div style="clear: both;"></div>
+               <span class="my-3 d-inline-block">Or</span>
+               <div style="clear: both;"></div>
+               <a href="#" class="fw-bold quicklog">Log In</a>
+            </div>
+         </div>
       </div>
-    </div>
+   </div>
     <% } %>

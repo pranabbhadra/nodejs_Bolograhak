@@ -60,6 +60,16 @@ router.get('/contact-us', checkCookieValue, async (req, res) => {
     res.render('front-end/contact', { menu_active_id: 'contact', page_title: 'Contact Us', currentUserData });
 });
 
+router.get('/about', checkCookieValue, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
+    res.render('front-end/about', { menu_active_id: 'about', page_title: 'About Us', currentUserData });
+});
+
+router.get('/review', checkCookieValue, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
+    res.render('front-end/review', { menu_active_id: 'review', page_title: 'All Review', currentUserData });
+});
+
 router.get('/faq', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
     res.render('front-end/faq', { menu_active_id: 'faq', page_title: 'FAQ', currentUserData });

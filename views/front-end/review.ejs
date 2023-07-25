@@ -1,0 +1,42 @@
+<%- include('common/header') -%>
+<link href="/front-end/css/review-style.css" rel="stylesheet" type="text/css">
+<%- include('common/header-banner') -%>
+
+<!-- ============== Section1 Start =============== -->
+<section class="main-content bottom-main-content">
+    <div class="container">
+      <div class="review-search-select-area">
+         <div class="review-search-box position-relative">
+            <form>
+               <input type="text" class="form-control" placeholder="Search for Organization/Institution/Place of Interest" required="">
+            </form>
+            <input type="submit">
+         </div>
+         <div class="short-by-select">
+            <div class="custom-select-box">
+               <div class="custom-select-label">Sort By</div>
+               <div class="custom-select-change">Select</div>
+               <div class="custom-select-dropdown">
+                  <ul class="m-0 p-0">
+                     <li><a href="#">Date</a></li>
+                     <li><a href="#">City</a></li>
+                  </ul>
+               </div>
+            </div>
+         </div>
+
+         <!-- <span class="language-select">
+            <span class="lang-change">ENG</span> <a href="" class="lang-arw"><i class="fa-solid fa-angle-down"></i></a>
+            <div class="lang-dropdown">
+               <ul class="p-0 m-0">
+                  <li><a href="">ENG</a></li>
+                  <li><a href="">BEN</a></li>
+               </ul>
+            </div>
+         </span> -->
+      </div>
+    </div>
+ </section>
+ <!-- ============== Section1 End =============== -->
+
+ <%- include('common/footer') -%>

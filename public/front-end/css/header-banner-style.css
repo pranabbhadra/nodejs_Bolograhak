@@ -349,27 +349,35 @@ span.toggle-menu {
     padding-top: 137px;
 }
 
-.main-banner h4 {
-    color: #FCCB06;
-}
-
-.main-banner h4 span {
-    display: inline-block;
-    background: #fccb06;
-    padding: 5px 10px 6px;
-    border-radius: 6px;
-    color: #000;
-}
-
 .main-banner h1 {
-    color: #FFF;
-    font-size: 64px;
-    font-weight: 700;
-    line-height: 110.4%;
+    color: #FCCB06;
+    font-size: 46px;
+    font-weight: 800;
+    line-height: 38px; 
 }
 
-.main-banner h1 span {
-    color: #FCCB06;
+.main-banner h2 {
+    color: #FFF;
+    font-family: var(--nunito);
+    font-size: 38px;
+    font-weight: 600;
+    line-height: 46px;
+}
+
+.main-banner h3 {
+    color: #0B0603;
+    font-family: var(--nunito);
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 29px;
+    margin-top: 30px;
+}
+
+.main-banner h3 span {
+    border-radius: 8px;
+    background: #FCCB06;
+    padding: 12px 8px;
+    display: inline-block;
 }
 
 .main-banner:after {
@@ -588,6 +596,10 @@ span.toggle-menu {
     align-items: center;
     justify-content: space-between;
     text-align: center;
+}
+
+.signup-right .login-browse {
+    margin-bottom: 26px;
 }
 
 .log-bowse-content {

@@ -21,9 +21,10 @@
 	    padding-top: 125px;
 	}
 
-	.main-banner h1 {
-		font-size: 44px;
+	.main-banner h2 {
+		font-size: 33px;
 	}
+
 }
 
 @media only screen and (max-width:991.98px) {
@@ -44,12 +45,18 @@
 		min-height: 650px;
 	}
 
-	.main-banner h1 {
-		font-size: 38px;
-	}
-
 	.banner-right {
 		height: 462px;
+	}
+
+	.main-banner h1 {
+		font-size: 38px;
+		line-height: 28px;
+	}
+
+	.main-banner h2 {
+		font-size: 30px;
+		line-height: 34px;
 	}
 }
 
@@ -87,13 +94,31 @@
 		display: none;
 	}
 
-	.main-banner h1 {
-		font-size: 30px;
+	.main-banner h1,
+	.main-banner h2,
+	.main-banner h3 {
 		text-align: center;
+	}
+
+	.main-banner h1 {
+		font-size: 32px;
+	}
+
+	.main-banner h2 {
+		font-size: 26px;
 	}
 
 	.main-banner h4 {
 	    font-size: 20px;
+	}
+
+	.main-banner h3 {
+		font-size: 18px;
+		line-height: 27px;
+	}
+
+	.main-banner h3 span {
+		padding: 9px 8px;
 	}
 
 	.banner-left {
@@ -128,15 +153,18 @@
 @media only screen and (max-width:575.98px) {
 
 	.main-banner h1 {
-		font-size: 25px;
+		font-size: 26px;
+		line-height: 18px;
 	}
 
-	.main-banner h4 {
-	    font-size: 16px;
+	.main-banner h2 {
+		font-size: 22px;
 	}
 
-	.main-banner h4 span {
-	    padding: 3px 10px 4px;
+	.main-banner h3 {
+		font-size: 16px;
+		line-height: 22px;
+		margin-top: 18px;
 	}
 
 	.mbl-show-link {

@@ -42,25 +42,25 @@
 
 /** The name of the database for WordPress */
 
-define( 'DB_NAME', 'bolograhak' );
+define( 'DB_NAME', 'bolo-grahak' );
 
 
 
 /** Database username */
 
-define( 'DB_USER', 'admin' );
+define( 'DB_USER', 'root' );
 
 
 
 /** Database password */
 
-define( 'DB_PASSWORD', 'bGdbPa55w0rD' );
+define( 'DB_PASSWORD', '' );
 
 
 
 /** Database hostname */
 
-define( 'DB_HOST', 'bolograhakdb.cb41jdmx4rqo.us-east-1.rds.amazonaws.com' );
+define( 'DB_HOST', 'localhost' );
 
 
 
