@@ -209,6 +209,31 @@ const saveUserGoogleDataToDB = (userData) => {
   console.log(userData.name.familyName+' '+userData.name.givenName+' '+userData.emails[0].value+' '+userData.photos[0].value);
 };
 
+// Fetch all Review Rating Tags
+function getAllRatingTags() {
+  return new Promise((resolve, reject) => {
+      db.query('SELECT * FROM review_rating_tags', (err, result) => {
+          if (err) {
+              reject(err);
+          } else {
+              resolve(result);
+          }
+      });
+  });
+}
+
+function getReviewRatingData(review_rating_Id) {
+  return new Promise((resolve, reject) => {
+      db.query('SELECT * FROM review_rating_tags WHERE id = ?', [review_rating_Id], (err, result) => {
+          if (err) {
+              reject(err);
+          } else {
+              resolve(result[0]);
+          }
+      });
+  });
+}
+
 module.exports = {
     getUser,
     getUserMeta,
@@ -220,5 +245,7 @@ module.exports = {
     getCompanyCategory,
     renderCategoryTreeHTML,
     getCompanyCategoryBuID,
-    saveUserGoogleDataToDB
+    saveUserGoogleDataToDB,
+    getAllRatingTags,
+    getReviewRatingData,
 };

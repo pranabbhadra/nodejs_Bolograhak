@@ -1230,3 +1230,116 @@ exports.editCompany = (req, res) => {
         })
     })
 }
+
+exports.createRatingTags = (req, res) => {
+    console.log(req.body);
+    const ratingTagsArray = JSON.parse(req.body.rating_tags);
+    // Extract the "value" property from each object in the array
+    const ratingValues = ratingTagsArray.map(tag => tag.value);
+    // Join the values with the "|" separator
+    const formattedRatingTags = ratingValues.join('|');
+
+    console.log('rating_tags:', formattedRatingTags);
+
+    //-- Checking review_rating_value already exist or Not
+    db.query('SELECT * FROM review_rating_tags WHERE review_rating_value = ?', [req.body.review_rating_value], async (err, results) => {
+        if (err) {
+            return res.send(
+                {
+                    status: 'err',
+                    data: '',
+                    message: 'An error occurred while processing your request' + err
+                }
+            )
+        }
+
+        if (results.length > 0) {
+            
+            return res.send(
+                {
+                    status: 'err',
+                    data: '',
+                    message: 'Tag already added for this rating value.'
+                }
+            )
+        }
+
+        insert_values = [ req.body.review_rating_value, req.file.filename, formattedRatingTags ];
+        var insert_values = [];
+        if (req.file) {
+            insert_values = [ req.body.review_rating_value, req.file.filename, formattedRatingTags ];
+        } else {
+            insert_values = [ req.body.review_rating_value, '', formattedRatingTags ];
+        }
+
+        const insertQuery = 'INSERT INTO review_rating_tags (review_rating_value, rating_image, rating_tags) VALUES (?, ?, ?)';
+        db.query(insertQuery, insert_values, (err, results, fields) => {
+            if (err) {
+                return res.send(
+                    {
+                        status: 'err',
+                        data: '',
+                        message: 'An error occurred while processing your request' + err
+                    }
+                )
+            } else {
+                const rowID = results.insertId;
+                return res.send(
+                    {
+                        status: 'ok',
+                        data: rowID,
+                        message: 'Tag successfully added'
+                    }
+                )
+            }
+        })
+    })
+}
+
+exports.editRatingTags = (req, res) => {
+    //console.log(req.body);
+    const row_id = req.body.row_id;
+
+    const ratingTagsArray = JSON.parse(req.body.rating_tags);
+    // Extract the "value" property from each object in the array
+    const ratingValues = ratingTagsArray.map(tag => tag.value);
+    // Join the values with the "|" separator
+    const formattedRatingTags = ratingValues.join('|');
+
+    // Update company details in the company table
+    const updateQuery = 'UPDATE review_rating_tags SET rating_image = ?, rating_tags = ? WHERE id = ?';
+
+    var updateValues = [];
+    if (req.file) {
+        // Unlink (delete) the previous file
+        const unlinkcompanylogo = "uploads/"+req.body.previous_rating_image;
+        fs.unlink(unlinkcompanylogo, (err) => {
+            if (err) {
+                //console.error('Error deleting file:', err);
+                } else {
+                //console.log('Previous file deleted');
+                }
+        });
+        updateValues = [ req.file.filename, formattedRatingTags, row_id ];
+    } else {
+        updateValues = [ req.body.previous_rating_image, formattedRatingTags, row_id ];
+    }
+    
+    db.query(updateQuery, updateValues, (err, results) => {
+        if (err) {
+            // Handle the error
+            return res.send({
+                status: 'err',
+                data: '',
+                message: 'An error occurred while updating the company details: ' + err
+            });
+        }
+
+        // Return success response
+        return res.send({
+            status: 'ok',
+            data: '',
+            message: 'Tags updated successfully'
+        });
+    })
+}

@@ -46,4 +46,8 @@ router.put('/edit-user-data', upload.single('profile_pic'), authController.editU
 router.post('/create-company', upload.single('logo'), authController.createCompany );
 router.put('/edit-company-data', upload.single('logo'), authController.editCompany );
 
+//---Rating Tags--------//
+router.post('/add-rating-tags', upload.single('rating_image'), authController.createRatingTags );
+router.put('/edit-rating-tags', upload.single('rating_image'), authController.editRatingTags );
+
 module.exports = router;
