@@ -42,7 +42,8 @@ router.get('', checkCookieValue, async (req, res) => {
             menu_active_id: 'landing',
             page_title: 'Home',
             currentUserData: currentUserData,
-            homePosts: blogPosts.status === 'ok' ? blogPosts.data : []
+            homePosts: blogPosts.status === 'ok' ? blogPosts.data : [],
+            AddressapiKey: process.env.ADDRESS_GOOGLE_API_Key
         });
     } catch (error) {
         console.error('Error fetching blog posts:', error);
@@ -50,7 +51,8 @@ router.get('', checkCookieValue, async (req, res) => {
             menu_active_id: 'landing',
             page_title: 'Home',
             currentUserData: currentUserData,
-            homePosts: []
+            homePosts: [],
+            AddressapiKey: process.env.ADDRESS_GOOGLE_API_Key
         });
     }
 });

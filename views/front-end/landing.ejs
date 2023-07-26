@@ -190,8 +190,9 @@
                  <div class="row">
                     <div class="col-md-12">
                        <div class="custom-form">
-                          <input type="text" class="form-control" placeholder="Business, Institute Establishment Name" required>
+                          <input type="text" class="form-control" id="autocomplete" placeholder="Business, Institute Establishment Name" required>
                        </div>
+                       <div id="map"></div>
                     </div>
                     <div class="col-md-12">
                        <div class="custom-form">
@@ -866,3 +867,31 @@
   
     });
 </script>
+<script>
+  // Function to handle Google Maps API initialization
+  function initMap() {
+    // Your JavaScript code that interacts with the Maps API should be placed here,
+    // after the API has been initialized.
+    // For example, you can initialize the Autocomplete service and map here.
+    
+    // Initialize the Autocomplete service
+    const autocomplete = new google.maps.places.Autocomplete(
+      document.getElementById('autocomplete'),
+      { types: ['geocode'] }
+    );
+    
+    // Initialize the map (optional, just for illustration purposes)
+    const map = new google.maps.Map(document.getElementById('map'), {
+      center: { lat: -34.397, lng: 150.644 },
+      zoom: 8
+    });
+    
+    // Optional: Listen for the "place_changed" event to get the selected place details
+    autocomplete.addListener('place_changed', () => {
+      const place = autocomplete.getPlace();
+      console.log('Selected place:', place);
+    });
+  }
+</script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=<%= AddressapiKey %>&libraries=places&callback=initMap" async defer></script>

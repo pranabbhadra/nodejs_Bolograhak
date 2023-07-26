@@ -42,7 +42,7 @@
 
 /** The name of the database for WordPress */
 
-define( 'DB_NAME', 'bolo-grahak' );
+define( 'DB_NAME', 'bolograhak' );
 
 
 

@@ -8,6 +8,8 @@ const requestIp = require('request-ip');
 const fs = require('fs');
 const dotenv = require('dotenv');
 dotenv.config({ path: './.env' });
+const bodyParser = require('body-parser');
+const querystring = require('querystring');
 
 const secretKey = 'grahak-secret-key';
 
@@ -15,7 +17,8 @@ const comFunction = require('../common_function');
 const axios = require('axios');
 //const cookieParser = require('cookie-parser');
 
-// const app = express();
+const app = express();
+app.use(bodyParser.urlencoded({ extended: true }));
 // app.use(cookieParser());
 
 
@@ -1404,12 +1407,11 @@ exports.contactFeedback = (req, res) => {
 }
 
 // Create FAQ
-exports.createFAQ = (req, res) => {
-    console.log(JSON.parse(req.body.formData));
-
-    //console.log('FAQ', req.body.formData.FAQ);
-    //JSON.parse(req.body.formData)
+exports.createFAQ = async  (req, res) => {
+    console.log(req.body);
+ 
 }
+
 
 // Create Home
 exports.createHome = async (req, res) => {
