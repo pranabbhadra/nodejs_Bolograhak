@@ -119,6 +119,7 @@
 
 .about-bottom-img img {
     border-radius: 27px;
+    width: 100%;
 }
 
 .about-bottom-text p:last-child {

@@ -90,6 +90,16 @@ router.get('/faq', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
     res.render('front-end/faq', { menu_active_id: 'faq', page_title: 'FAQ', currentUserData });
 });
+
+router.get('/contact', checkCookieValue, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
+    res.render('front-end/contact', { menu_active_id: 'contact', page_title: 'Contact Us', currentUserData });
+});
+
+router.get('/business', checkCookieValue, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
+    res.render('front-end/business', { menu_active_id: 'business', page_title: 'Business', currentUserData });
+});
 // Front-End Page Routes End--------------------//
 
 

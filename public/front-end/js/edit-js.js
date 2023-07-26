@@ -265,6 +265,45 @@ jQuery(function($){
       // instead of a settings object
     ]
   });
+
+  $('.review-slider').slick({
+    slidesToShow: 4,
+    slidesToScroll: 1,
+    autoplay: true,
+    arrows:true,
+    prevArrow: '<i class="fa-solid fa-chevron-left slick-arrow-left"></i>',
+    nextArrow: '<i class="fa-solid fa-chevron-right slick-arrow-right"></i>',
+    dots:false,
+    autoplaySpeed: 3000,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 1,
+          infinite: true,
+          dots: false
+        }
+      },
+      {
+        breakpoint: 767,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1
+        }
+      },
+      {
+        breakpoint: 575,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1
+        }
+      }
+      // You can unslick at a given breakpoint now by adding:
+      // settings: "unslick"
+      // instead of a settings object
+    ]
+  });
   
   
   
@@ -526,6 +565,18 @@ jQuery(function($){
       $("#ratingRange").val($("#rating-range").slider("values", 0) + " / " + $("#rating-range").slider("values", 1));
   
   ////////////////////////////// Range Slider End
+
+  // /////////////////////////////  read more read less script
+  $(".read-review").click(function(e){
+    e.preventDefault();
+    $(this).parents(".user-review-text") .find(".review-full-description").slideToggle();
+    if($(this).text() == "View More"){
+       $(this).text("View Less").addClass("arrowup");
+    }else{
+      $(this).text("View More").removeClass("arrowup");
+    }
+    });
+  // /////////////////////////////  read more read less script
   
   
   });

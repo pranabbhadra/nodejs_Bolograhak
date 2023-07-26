@@ -183,6 +183,10 @@
 	    width: 67%;
 	}
 
+	.review-box h3 {
+		font-size: 18px;
+	}
+
 }
 
 @media only screen and (max-width:1040.98px) {
@@ -484,6 +488,10 @@
 
 	.mission-right {
 		font-size: 16px;
+	}
+
+	.custom-select-label {
+		font-size: 17px;
 	}
 
 }
@@ -805,12 +813,30 @@
 		text-decoration-line: underline !important;
 	}
 
+	.review-search-box {
+		max-width: 390px;
+	}	
+
 }
 
 @media only screen and (max-width:660.98px) {
     .custom-modal-content {
 	    margin: 1.75rem 2%;
 	    width: 96%;
+	}
+
+	.review-search-select-area {
+		display: block;
+	}
+
+	.custom-select-box {
+		max-width: 230px;
+		margin: 0 auto;
+	}
+	
+
+	.review-search-box {
+		margin: 0 auto 10px;
 	}
 }
 
@@ -966,7 +992,8 @@
 		margin-bottom: 6px;
 	}
 
-	.post-slider .slick-arrow-right {
+	.post-slider .slick-arrow-right,
+	.review-slider .slick-arrow-right {
 		width: 40px;
 		height: 40px;
 		font-size: 16px;
@@ -974,12 +1001,21 @@
 		top: -58px;
 	}
 
-	.post-slider .slick-arrow-left {
+	.review-slider .slick-arrow-right {
+		top: -40px;
+	}
+
+	.post-slider .slick-arrow-left,
+	.review-slider .slick-arrow-left  {
 		width: 36px;
 		height: 36px;
 		top: -55px;
 		padding: 12px 0;
 		right: 70px;
+	}
+
+	.review-slider .slick-arrow-left  {
+		top: -37px;
 	}
 
 	.post-right {
@@ -1121,6 +1157,10 @@
 
 	.review-content:before {
 		background-size: 35%;
+	}
+
+	.review-slider-wrap {
+		margin-top: 40px;
 	}
 
 }

@@ -337,6 +337,7 @@ span.toggle-menu {
     font-size: 36px;
     font-weight: 800;
     line-height: 110.4%;
+    font-family: var(--inter)
 }
 
 /*===================== Banner =====================*/
