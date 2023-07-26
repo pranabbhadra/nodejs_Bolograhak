@@ -18,15 +18,15 @@ const publicPath = path.join(__dirname, '../public');
 const checkCookieValue = (req, res, next) => {
     // Check if the 'userData' cookie exists and has a value
     if (req.cookies.user) {
-      // If it exists, set the 'userData' property on the request object to the cookie value
-      req.userData = req.cookies.user;
+        // If it exists, set the 'userData' property on the request object to the cookie value
+        req.userData = req.cookies.user;
     } else {
-      // If the cookie doesn't exist or has no value, set 'userData' to null
-      req.userData = null;
+        // If the cookie doesn't exist or has no value, set 'userData' to null
+        req.userData = null;
     }
     // Call the next middleware or route handler
     next();
-  };
+};
 
 // Front-End Page Routes Start--------------------//
 router.get('', checkCookieValue, async (req, res) => {
@@ -37,25 +37,126 @@ router.get('', checkCookieValue, async (req, res) => {
         const apiUrl = process.env.BLOG_API_ENDPOINT + '/home-blog';
         const response = await axios.get(apiUrl);
         const blogPosts = response.data;
+        const sql = `SELECT * FROM page_info where secret_Key = 'home' `;
+        db.query(sql, (err, results, fields) => {
+            if (err) throw err;
+            const home = results[0];
+            const meta_sql = `SELECT * FROM page_meta where page_id = ${home.id}`;
+            db.query(meta_sql, async (meta_err, _meta_result) => {
+                if (meta_err) throw meta_err;
 
-        res.render('front-end/landing', {
-            menu_active_id: 'landing',
-            page_title: 'Home',
-            currentUserData: currentUserData,
-            homePosts: blogPosts.status === 'ok' ? blogPosts.data : []
-        });
+                const meta_values = _meta_result;
+                let meta_values_array = {};
+                await meta_values.forEach((item) => {
+                    meta_values_array[item.page_meta_key] = item.page_meta_value;
+                })
+                // res.render('front-end/landing', {
+                //     menu_active_id: 'landing',
+                //     page_title: 'Home',
+                //     currentUserData: currentUserData,
+                //     homePosts: blogPosts.status === 'ok' ? blogPosts.data : [],
+                //     home,
+                //     meta_values_array
+                // });
+
+                res.render('front-end/landing', {
+                    menu_active_id: 'landing',
+                    page_title: home.title,
+                    currentUserData: currentUserData,
+                    homePosts: blogPosts.status === 'ok' ? blogPosts.data : [],
+                    home,
+                    meta_values_array
+                });
+
+                // res.render('pages/update-home', {
+                //     menu_active_id: 'pages',
+                //     page_title: 'Update Home',
+                //     currentUserData,
+                //     home,
+                //     meta_values_array
+                // });
+                //comFunction.getMetaValue(home.id, 'about_us_button_link');
+
+                // res.json({
+                //     menu_active_id: 'pages',
+                //     page_title: 'Update Home',
+                //     currentUserData,
+                //     home,
+                //     meta_values_array
+                // });
+            })
+
+        })
+
+        // res.render('front-end/landing', {
+        //     menu_active_id: 'landing',
+        //     page_title: 'Home',
+        //     currentUserData: currentUserData,
+        //     homePosts: blogPosts.status === 'ok' ? blogPosts.data : []
+        // });
     } catch (error) {
         console.error('Error fetching blog posts:', error);
-        res.render('front-end/landing', {
-            menu_active_id: 'landing',
-            page_title: 'Home',
-            currentUserData: currentUserData,
-            homePosts: []
-        });
+        const sql = `SELECT * FROM page_info where secret_Key = 'home' `;
+        db.query(sql, (err, results, fields) => {
+            if (err) throw err;
+            const home = results[0];
+            const meta_sql = `SELECT * FROM page_meta where page_id = ${home.id}`;
+            db.query(meta_sql, async (meta_err, _meta_result) => {
+                if (meta_err) throw meta_err;
+
+                const meta_values = _meta_result;
+                let meta_values_array = {};
+                await meta_values.forEach((item) => {
+                    meta_values_array[item.page_meta_key] = item.page_meta_value;
+                })
+                console.log(meta_values_array);
+                // res.render('front-end/landing', {
+                //     menu_active_id: 'landing',
+                //     page_title: 'Home',
+                //     currentUserData: currentUserData,
+                //     homePosts: blogPosts.status === 'ok' ? blogPosts.data : [],
+                //     home,
+                //     meta_values_array
+                // });
+
+                // res.json('front-end/landing', {
+                //     menu_active_id: 'landing',
+                //     page_title: 'Home',
+                //     currentUserData: currentUserData,
+                //     //homePosts: blogPosts.status === 'ok' ? blogPosts.data : [],
+                //     home,
+                //     meta_values_array
+                // });
+
+                // res.render('pages/update-home', {
+                //     menu_active_id: 'pages',
+                //     page_title: 'Update Home',
+                //     currentUserData,
+                //     home,
+                //     meta_values_array
+                // });
+                //comFunction.getMetaValue(home.id, 'about_us_button_link');
+
+                // res.json({
+                //     menu_active_id: 'pages',
+                //     page_title: 'Update Home',
+                //     currentUserData,
+                //     home,
+                //     meta_values_array
+                // });
+            })
+
+        })
+        // res.render('front-end/landing', {
+        //     menu_active_id: 'landing',
+        //     page_title: 'Home',
+        //     currentUserData: currentUserData,
+        //     homePosts: []
+        // });
     }
 });
 
-router.get('/contact-us', (req, res) => {
+router.get('/contact-us', checkCookieValue, (req, res) => {
     //resp.sendFile(`${publicPath}/index.html`)
     const encodedUserData = req.cookies.user;
     const currentUserData = JSON.parse(encodedUserData);
@@ -710,18 +811,13 @@ router.get('/edit-contacts', checkLoggedIn, (req, res) => {
     try {
         const encodedUserData = req.cookies.user;
         const currentUserData = JSON.parse(encodedUserData);
-        // const contacts = comFunction.getContacts();
-        // const socials = comFunction.getSocials();
-        // console.log(contacts, socials);
         const sql = `SELECT * FROM contacts`;
         db.query(sql, (err, results, fields) => {
             if (err) throw err;
             const social_sql = `SELECT * FROM socials`;
             db.query(social_sql, (error, social_results, fields) => {
-                //console.log(results[0], social_results[0]);
                 const contacts = results[0];
                 const socials = social_results[0];
-                //console.log(contacts, socials);
                 //Render the 'update-contact' EJS view and pass the data
                 res.render('pages/update-contact', {
                     menu_active_id: 'pages',
