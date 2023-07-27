@@ -23,6 +23,19 @@ jQuery(function($){
   $('.nav_sec ul > li > .arw-nav').on('click',subMenu);
   
   // /////////////////////////////////////// Nav Menu End
+
+  // ///////////////// Aos Animation Start ////////////////////////////
+  AOS.init({
+    offset: 200,
+    delay: 100,
+    duration: 800,
+  });
+
+  //refresh animations
+  $(window).on('load', function() {
+    AOS.refresh();
+  });
+  // ///////////////// Aos Animation End ////////////////////////////
   
   // /////////////////////////////////////// Fixed Top Start
   $(window).scroll(function(){
@@ -46,7 +59,7 @@ jQuery(function($){
   });
   // /////////////////////////////////////// Auto Field Dropdown End
   
-  
+
   // /////////////////////////////////////// Slick Slider start
   $('.banner-slider1').slick({
     dots:false,
@@ -299,13 +312,8 @@ jQuery(function($){
           slidesToScroll: 1
         }
       }
-      // You can unslick at a given breakpoint now by adding:
-      // settings: "unslick"
-      // instead of a settings object
     ]
   });
-  
-  
   
   // /////////////////////////////////////// Slick Slider end
   
@@ -499,15 +507,15 @@ jQuery(function($){
     });
   // /////////////////////////////////////// Password eye hide show End
   
-    ////////////////////////////// Accordion Start
+  ////////////////////////////// Accordion Start
   
   $(".custom-accordion").on("click", ".acc_heading", function() {
-      $(this).toggleClass("active").next().slideToggle();
-      $(this).parent(".c_accordion_wrap").addClass("yellow-border");
-      $(".acc_contents").not($(this).next()).slideUp(300);
-      $(".acc_contents").not($(this).next()).parent(".c_accordion_wrap").removeClass("yellow-border");
-      $(this).parents('.accordion-repeat').siblings().find('.acc_heading').removeClass("active");
-    });
+    $(this).toggleClass("active").next().slideToggle();
+    $(this).parent(".c_accordion_wrap").addClass("yellow-border");
+    $(".acc_contents").not($(this).next()).slideUp(300);
+    $(".acc_contents").not($(this).next()).parent(".c_accordion_wrap").removeClass("yellow-border");
+    $(this).parents('.accordion-repeat').siblings().find('.acc_heading').removeClass("active");
+  });
   
   ////////////////////////////// Accordion End
   
@@ -577,7 +585,29 @@ jQuery(function($){
     }
     });
   // /////////////////////////////  read more read less script
-  
+
+
+  // /////////////////////////////  Text typing script start start
+  function randomIntFromInterval(min,max) {
+    return Math.floor(Math.random()*(max-min+1)+min);
+  }
+
+  function typeWrite(span){
+    var text = $('#'+span).text();
+    var randInt = 0
+    for (var i = 0; i < text.length; i++) {
+      randInt += parseInt(randomIntFromInterval(1,100));
+      var typing = setTimeout(function(y){
+        $('#'+span).append(text.charAt(y));
+      },randInt, i);
+    };
+  }
+
+  $(document).ready(function(){
+    typeWrite('type-writing');
+  });
+
+  // /////////////////////////////  Text typing script end
   
   });
     

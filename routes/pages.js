@@ -100,6 +100,11 @@ router.get('/business', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
     res.render('front-end/business', { menu_active_id: 'business', page_title: 'Business', currentUserData });
 });
+
+router.get('/myprofile', checkCookieValue, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
+    res.render('front-end/myprofile', { menu_active_id: 'myprofile', page_title: 'My Profile', currentUserData });
+});
 // Front-End Page Routes End--------------------//
 
 

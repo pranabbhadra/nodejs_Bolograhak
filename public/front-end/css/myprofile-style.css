@@ -1,0 +1,95 @@
+.my-profile-wrapper {
+    padding: 100px 38px;
+    border-radius: 20px;
+    background: #FFF;
+    font-family: var(--inter);
+    box-shadow: 0px 14px 84px 0px rgba(0, 0, 0, 0.22);
+}
+
+.profile-img {
+    max-width: 189px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.profile-img img {
+    border-radius: 50%;
+    border: 13px #F4A835 solid;
+}
+
+input.camera-icon {
+    font-size: 0;
+    position: absolute;
+    right: 22px;
+    bottom: 0;
+    border: none;
+    width: 47px;
+    height: 47px;
+    background: #F4DD35;
+    text-align: center;
+    border-radius: 50%;
+}
+
+input.camera-icon:after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 47px;
+    height: 47px;
+    background:url(../images/camera-img.png) no-repeat center #F4DD35;
+    cursor: pointer;
+}
+
+.myprofile-info {
+    margin-top: 50px;
+}
+
+.myprofile-info h4 {
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 110.4%; 
+    margin-bottom: 28px;
+}
+
+.myprofile-info p a {
+    color: #525252;
+    font-size: 17px;
+    font-weight: 400;
+    line-height: 110.4%; 
+}
+
+.myprofile-info p {
+    margin-bottom: 10px;
+}
+
+.myprofile-info p a:hover {
+    color: #f1ae00;
+}
+
+.about-me-area {
+    border-radius: 12px;
+    background: #FFFCF2;
+    overflow: hidden;
+    margin-top: 30px;;
+}
+
+.about-me-head {
+    font-weight: 500;
+    line-height: 110.4%; 
+    background: #FFF6D1; 
+    padding: 15px 24px;
+}
+
+.about-me-body {
+    padding: 22px 24px;
+}
+
+.about-me-body-inner {
+    padding: 25px 40px 25px 16px;
+    border-radius: 13px;
+    border: 1px solid #C1C1C1;
+    background: #FFFCF2;
+    height: 157px;
+    overflow-y: auto;
+}

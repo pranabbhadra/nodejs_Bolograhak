@@ -5,7 +5,7 @@
   <div class="container">
     <div class="row flex-md-row-reverse">
       <div class="col-md-6 my-auto">
-        <div class="banner-right">
+        <div class="banner-right" data-aos="fade-left">
           <div class="row">
             <div class="col-6">
               <div class="banner-mas-img banner-mas-img1">
@@ -45,7 +45,7 @@
         </div>
       </div>
       <div class="col-md-6 my-auto">
-        <div class="banner-left">
+        <div class="banner-left" data-aos="fade-right">
           <h1>World's Premier</h1>
           <h2>Customer Experience Platform</h2>
           <div class="search-area position-relative">
@@ -79,7 +79,7 @@
     <div class="form-check form-switch d-flex justify-content-center p-0 mb-3">
       <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" data-bs-toggle="tooltip" data-bs-placement="top" title="Toogle to change">
     </div>
-    <div class="row">
+    <div class="row" data-aos="fade-up">
       <div class="col-md-12">
         <div class="business-left">
           <h2 class="main-head"><small>Why join Bolo Grahak</small> <br>For Business/Organisaton</h2>
@@ -120,7 +120,7 @@
     <div class="row">
       <div class="col-md-6">
         <!--First post-->       
-        <div class="blog-left position-relative">
+        <div class="blog-left position-relative" data-aos="fade-right">
           <img src="<%= homePosts[0].thumbnail %>" alt="<%= homePosts[0].thumbnail_alt %>" loading="lazy" width="564" height="387" class="w-100">
           <div class="blog-overlay-caption">
             <span class="date-tag"><%= homePosts[0].publish_date %></span>
@@ -134,7 +134,7 @@
       </div>
       <div class="col-md-6">
         <% if (homePosts.length > 1) { %>
-        <div class="blog-right position-relative">
+        <div class="blog-right position-relative" data-aos="fade-left">
           <% let counter = 0; %>
           <% homePosts.forEach((post) => { %>
           <% if (counter > 0) { %>
@@ -174,7 +174,7 @@
   <div class="container">
      <div class="row">
         <div class="col-md-6">
-           <div class="review-left text-center">
+           <div class="review-left text-center" data-aos="fade-right">
               <h2 class="main-head mb-md-5 mb-4">Submit Your <span>Review</span></h2>
               <picture>
                  <source media="(max-width:575px)" srcset="/front-end/images/review-img-mbl-screen.png" width="300" height="253">
@@ -185,7 +185,7 @@
            </div>
         </div>
         <div class="col-md-6">
-           <div class="review-right mt-md-0 mt-5">
+           <div class="review-right mt-md-0 mt-5" data-aos="fade-left">
               <form>
                  <div class="row">
                     <div class="col-md-12">
@@ -635,7 +635,7 @@
   <div class="container">
     <div class="row">
       <div class="col-md-6 my-auto">
-        <div class="about-left-slider my-3">
+        <div class="about-left-slider my-3" data-aos="fade-right">
           <div class="about-50-left">
             <div class="gr-slider1">
               <div class="item">
@@ -676,7 +676,7 @@
         </div>
       </div>
       <div class="col-md-6 my-auto">
-        <div class="about-right my-3">
+        <div class="about-right my-3" data-aos="fade-left">
           <h2 class="main-head"><small>Know more About</small> <br> Grahak <span>Rights</span></h2>
           <p>Nunc vel risus commodo viverra maecenas accumsan. Nam aliquam sem et tortor consequat id porta. Mus mauris vitae ultricies leo integer malesuada nunc vel arcu dui vivamus arcu felis.</p>
           <div class="ul-50 common-ul">
@@ -694,7 +694,7 @@
       </div>
     </div>
   </div>
-  <div class="tooltip-pop">
+  <div class="tooltip-pop" data-aos="zoom-in-left">
     <h4><span>Facts</span></h4>
     <p class="m-0">Nunc vel risus commodo viverra maecenas accumsan. Nam aliquam sem et tortor consequat id porta. Mus mauris vitae ultricies leo integer malesuada nunc vel arcu dui vivamus arcu felis.</p>
   </div>
@@ -706,7 +706,7 @@
   <div class="container">
     <div class="row flex-md-row-reverse">
       <div class="col-md-6 my-auto">
-        <div class="about-left-slider my-3">
+        <div class="about-left-slider my-3" data-aos="fade-left">
           <div class="about-50-right">
             <div class="gr-slider3">
               <div class="item">
@@ -747,7 +747,7 @@
         </div>
       </div>
       <div class="col-md-6 my-auto">
-        <div class="about-right my-3">
+        <div class="about-right my-3" data-aos="fade-right">
           <h2 class="main-head"><small>Know more About</small> <br>Organization <span>Responsibility</span></h2>
           <p>Nunc vel risus commodo viverra maecenas accumsan. Nam aliquam sem et tortor consequat id porta. Mus mauris vitae ultricies leo integer malesuada nunc vel arcu dui vivamus arcu felis.</p>
           <div class="ul-50 common-ul">
@@ -765,7 +765,7 @@
       </div>
     </div>
   </div>
-  <div class="tooltip-pop">
+  <div class="tooltip-pop" data-aos="zoom-in-right">
     <h4>Facts</h4>
     <p class="m-0">Nunc vel risus commodo viverra maecenas accumsan. Nam aliquam sem et tortor consequat id porta. Mus mauris vitae ultricies leo integer malesuada nunc vel arcu dui vivamus arcu felis.</p>
   </div>
@@ -774,7 +774,7 @@
   <div class="container">
     <div class="row flex-md-row-reverse">
       <div class="col-md-6 my-auto">
-        <div class="about-right my-3 text-md-start text-center">
+        <div class="about-right my-3 text-md-start text-center" data-aos="fade-left">
           <h2 class="main-head"><span>About</span> Us</h2>
           <p><strong>When businesses pay attention to customer feedback and take action to address their concerns, it leads to increased customer satisfaction and loyalty.</strong> </p>
           <p><strong>So spend way less on advertisements and still increase sales and customer loyalty.</strong></p>
@@ -782,7 +782,7 @@
         </div>
       </div>
       <div class="col-md-6 my-auto">
-        <div class="about-left my-md-0 mt-3 mb-0">
+        <div class="about-left my-md-0 mt-3 mb-0" data-aos="fade-right">
           <picture>
             <source media="(max-width:575px)" srcset="/front-end/images/about-img3-mbl.png" width="280" height="338">
             <source media="(max-width:767px)" srcset="/front-end/images/about-img3-tab.png" width="390" height="471">
@@ -808,7 +808,7 @@
 </section>
 <!-- ============== Map Content End =============== -->
 <div class="floating-emoji">
-  <a href="" data-bs-toggle="tooltip" data-bs-placement="left" title="May I Help You?"><img src="/front-end/images/emoji-gif.gif" alt="img" width="77" height="77"></a>
+  <a href="http://localhost:5000/faq" data-bs-toggle="tooltip" data-bs-placement="left" title="May I Help You?"><img src="/front-end/images/emoji-gif.gif" alt="img" width="77" height="77"></a>
 </div>
 <%- include('common/footer') -%>
 <script>

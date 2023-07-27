@@ -451,7 +451,6 @@ span#selected-range-emojis {
     border-radius: 10px;
     font-size: 22px;
     font-weight: 700;
-    display: none;
     padding: 10px 8px;
     border: 2px #c4c4c494 solid;
     z-index: 9;

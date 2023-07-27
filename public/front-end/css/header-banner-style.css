@@ -340,6 +340,23 @@ span.toggle-menu {
     font-family: var(--inter)
 }
 
+.back-browser {
+    display: inline-block;
+    vertical-align: middle;
+    color: #828282;
+    margin-right: 8px;
+    font-size: 23px;
+}
+
+.back-browser:hover {
+    color: #f1ae00;
+}
+
+.inner-page-heading-in h1 {
+    display: inline-block;
+    vertical-align: middle;
+}
+
 /*===================== Banner =====================*/
 .main-banner {
     background-size: cover;

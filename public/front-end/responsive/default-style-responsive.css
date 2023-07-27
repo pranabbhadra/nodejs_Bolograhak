@@ -187,6 +187,25 @@
 		font-size: 18px;
 	}
 
+	.business-bottom-tagline h3 {
+		font-size: 32px;
+	}
+
+	.advantage-content:after {
+		background-size: 46%;
+	}
+
+	.business-feature-content:before {
+		background-size: 55%;
+	}
+
+	.business-feature-content:after {
+		background-size: 70%;
+	}
+
+	.business-didyou-know-content:after {
+		background-size: 60%;
+	}
 }
 
 @media only screen and (max-width:1040.98px) {
@@ -494,6 +513,29 @@
 		font-size: 17px;
 	}
 
+	.dont-forget-box {
+		padding: 40px 30px 40px 30px;
+	}
+
+	.busi-did-left-text {
+		min-height: 128px;
+		width: 593px;
+		font-size: 16px;
+		line-height: 150.4%;
+	}
+
+	.busi-did-left-text:last-child {
+		width: 530px;
+	}
+
+	.business-bottom-tagline h3 {
+		font-size: 26px;
+	}
+
+	.business-cur-head {
+		font-size: 30px;
+	}
+
 }
 
 @media only screen and (max-width:840.98px) {
@@ -784,6 +826,12 @@
 	    font-size: 22px;
 	}
 
+	.about-bottom-img,
+	.busi-did-right {
+		max-width: 526px;
+		margin: 0 auto;
+	}
+
 	.about-bottom-img img {
 	    margin: 0 auto;
 	}
@@ -816,6 +864,56 @@
 	.review-search-box {
 		max-width: 390px;
 	}	
+
+	.busi-did-left-text {
+		min-height: auto;
+		width: 100%;
+		max-width: 455px;
+		margin: 0 auto;
+		border-left: none;
+		border-top: 10px #FCCB06 solid;
+		max-width: 455px;
+		font-size: 16px;
+		padding: 20px 20px;
+		border-radius: 20px;
+	}
+
+	.busi-did-left-text:last-child {
+		width: 100%;
+		margin-bottom: -50px;
+		margin-top: 15px;
+		margin-left: auto;
+	}
+
+	.business-didyou-know-content h2.inner-main-head {
+		text-align: center;
+	}
+
+	.upcoming-feature-step {
+		font-size: 16px;
+	}
+
+	.business-bottom-tagline {
+		margin-top: 22px;
+	}
+
+	.business-bottom-tagline h3 {
+		font-size: 22px;
+	}
+
+	.business-bottom-tagline:after {
+		display: none;
+	}
+
+	.dont-forget-box {
+		padding: 30px 20px 30px 20px;
+		border-width: 10px;
+	}
+
+	.business-feature-step {
+		font-size: 16px;
+		line-height: 145%;
+	}
 
 }
 
@@ -1163,6 +1261,41 @@
 		margin-top: 40px;
 	}
 
+	.business-bottom-tagline {
+		padding: 28px 15px;
+	}
+
+	.business-bottom-tagline h3 {
+		font-size: 20px;
+	}
+
+	.upcoming-feature-step span {
+		top: 20px;
+		font-size: 28px;
+	}
+
+	.business-feature-icon svg {
+		width: 35px;
+		margin-right: 14px;
+	}
+
+	.advantage-content:after {
+		background-size: 32%;
+	}
+
+	.business-didyou-know-content:after {
+		background-size: 42%;
+	}
+
+	.business-feature-content:after {
+		background-size: 42%;
+		background-position: bottom right;
+	}
+
+	.business-cur-head {
+		font-size: 26px;
+	}
+
 }
 
 @media only screen and (max-width:540.98px) {
@@ -1260,6 +1393,15 @@
 
 	.about-overlay-object1 {
 		left: 150px;
+	}
+
+	.business-feature-step {
+		text-align: center;
+		display: block;
+	}
+
+	.business-feature-icon svg {
+		margin-right: 0;
 	}
 
 }
