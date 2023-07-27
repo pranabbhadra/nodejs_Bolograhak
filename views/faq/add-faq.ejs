@@ -259,6 +259,7 @@
                         // Handle form submit
                         submitButton.addEventListener('click', function (e) {
                             e.preventDefault();
+                            tinymce.get('content-editor').save();
                             //alert("aaaaaaaa");
                             validation.validate().then(function (status) {
                                 //alert("aaaaaaaa");
@@ -297,10 +298,8 @@
                                     }
                                     });
 
-                                    console.log(transformedResponse);                                    
-
-
-
+                                    console.log(transformedResponse);  
+                                    
                                     $.ajax({
                                         url: '/auth/create-faq',
                                         method: 'POST',
@@ -416,6 +415,14 @@
                 // };
                 // initCKEditor();
 
-                CKEDITOR.replace('content-editor');
+                //CKEDITOR.replace('content-editor');
+                tinymce.init({
+                    selector: "#content-editor",
+                    menubar: false,
+                    toolbar: ["styleselect fontselect fontsizeselect",
+                        "undo redo | cut copy paste | bold italic | link image | alignleft aligncenter alignright alignjustify",
+                        "bullist numlist | outdent indent | blockquote subscript superscript | advlist | autolink | lists charmap | print preview |  code"],
+                    plugins : "advlist autolink link image lists charmap print preview code"
+                });
             });
         </script>

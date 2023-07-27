@@ -2,6 +2,7 @@
 
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const FacebookStrategy = require('passport-facebook').Strategy;
 
 // Configure the Google Strategy
 passport.use(new GoogleStrategy({
@@ -13,3 +14,19 @@ passport.use(new GoogleStrategy({
     // You can use the `profile` object to access user data
     return done(null, profile);
 }));
+
+passport.use(
+    new FacebookStrategy(
+      {
+        clientID: '2000796626944022',
+        clientSecret: 'c83b03c2fbcd7dd57a117ce0fe8fa78b',
+        callbackURL: 'http://localhost:5000/auth/facebook/callback',
+        profileFields: ['id', 'displayName', 'email', 'picture'],
+      },
+      (accessToken, refreshToken, profile, done) => {
+        // You can save or retrieve user data from your database here.
+        // For demo purposes, we'll just pass the profile to the done() function.
+        return done(null, profile);
+      }
+    )
+  );

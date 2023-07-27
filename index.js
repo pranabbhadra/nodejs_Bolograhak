@@ -6,6 +6,9 @@ const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const session = require('express-session');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
+
+const FacebookStrategy = require('passport-facebook').Strategy;
+
 const comFunction = require('./common_function');
 
 dotenv.config({ path: './.env' });
@@ -54,6 +57,8 @@ app.get('/auth/google',
     passport.authenticate('google', { scope: ['profile', 'email'] })
 );
 
+app.get('/auth/facebook', passport.authenticate('facebook'));
+
 // Google login callback
 app.get('/auth/google/callback',
     passport.authenticate('google', { failureRedirect: '/login' }),
@@ -62,11 +67,31 @@ app.get('/auth/google/callback',
         //res.redirect('/profile');
         
         const user = req.user;
-        //res.json({ user });
-        comFunction.saveUserGoogleDataToDB(user);
+        res.json({ user });
+        //comFunction.saveUserGoogleLoginDataToDB(user);
         res.redirect('/');
     }
 );
+
+// FB Login Callback
+app.get(
+    '/auth/facebook/callback',
+    passport.authenticate('facebook', {
+      successRedirect: '/facebook-user-data',
+      failureRedirect: '/',
+    })
+);
+
+app.get('/facebook-user-data', async (req, res) => {
+    const user = req.user;
+    try {
+      await comFunction.saveUserFacebookLoginDataToDB(user); // Replace 'saveUserDataToDatabase' with your custom function
+      return res.redirect('/');
+    } catch (error) {
+      console.error('Error saving user data:', error);
+      return res.redirect('/error');
+    }
+});
 
 // Define Routes
 app.use('/', require('./routes/pages'));

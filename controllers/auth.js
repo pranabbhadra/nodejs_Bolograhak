@@ -1408,8 +1408,36 @@ exports.contactFeedback = (req, res) => {
 
 // Create FAQ
 exports.createFAQ = async  (req, res) => {
-    console.log(req.body);
- 
+    //console.log(req.body);
+    const faqArray = req.body.FAQ;   
+    //console.log(faqArray[0]);  
+    //console.log(faqArray[1]);
+
+    const Faq_Page_insert_values = [
+        req.body.title,
+        req.body.content,
+        req.body.meta_title,
+        req.body.meta_desc,
+        req.body.keyword,
+    ];
+    try {
+        const faqPageId = await comFunction.insertIntoFaqPages(Faq_Page_insert_values);
+        console.log('ID:',faqPageId);
+        await comFunction.insertIntoFaqCategories(faqArray);
+        return res.send(
+            {
+                status: 'ok',
+                data: faqPageId,
+                message: 'FAQ Content successfully added'
+            }
+        )
+    } catch (error) {
+        console.error('Error during insertion:', error);
+        return res.status(500).send({
+            status: 'error',
+            message: 'An error occurred while inserting FAQ data',
+        });
+    }    
 }
 
 

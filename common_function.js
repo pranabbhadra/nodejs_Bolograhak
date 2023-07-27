@@ -1,8 +1,10 @@
+const util = require('util');
 const db = require('./config');
 const mysql = require('mysql2/promise');
 const dotenv = require('dotenv');
 
 dotenv.config({ path: './.env' });
+const query = util.promisify(db.query).bind(db);
 // Fetch user details from the users table
 function getUser(userId) {
   return new Promise((resolve, reject) => {
@@ -205,8 +207,14 @@ function renderCategoryTreeHTMLforCompany(categories, com_category_array) {
 }
 
 //-------After Google Login Save User data Or Check User exist or Not.
-const saveUserGoogleDataToDB = (userData) => {
+const saveUserGoogleLoginDataToDB = (userData) => {
   console.log(userData.name.familyName + ' ' + userData.name.givenName + ' ' + userData.emails[0].value + ' ' + userData.photos[0].value);
+};
+
+//-------After Facebook Login Save User data Or Check User exist or Not.
+const saveUserFacebookLoginDataToDB = (userData) => {
+  //console.log(userData);
+  console.log(userData.id + ' ' + userData.displayName + ' ' + userData.photos[0].value);
 };
 
 // Fetch all Review Rating Tags
@@ -251,6 +259,61 @@ function getMetaValue(pageID, page_meta_key) {
 
 }
 
+// Function to insert data into 'faq_pages' table
+async function insertIntoFaqPages(data) {
+  try {
+    const insertQuery = 'INSERT INTO faq_pages (title, content, meta_title, meta_desc, keyword) VALUES (?, ?, ?, ?, ?)';
+    const results = await query(insertQuery, data);
+    return results.insertId;
+    
+  } catch (error) {
+    console.error('Error inserting data into faq_pages table:', error);
+    throw error;
+  }
+}
+
+// Function to insert data into 'faq_categories' table
+async function insertIntoFaqCategories(categoryArray) {
+  if (Array.isArray(categoryArray) && categoryArray.length > 0) {
+    for (const categoryData of categoryArray) {
+
+      try {
+        const categoryTitle = Object.keys(categoryData)[0];
+        const CatinsertQuery = `INSERT INTO faq_categories (category) VALUES (?)`;
+        const Catinsertvalues = [categoryTitle];
+        const results = await query(CatinsertQuery, Catinsertvalues);
+        const categoryId = results.insertId;
+        console.log('Data inserted into faq_categories table:', categoryId);
+
+        // Insert data into 'faq_item' table for the current category
+        if (categoryData[categoryTitle].length > 0) {
+          await insertIntoFaqItems(categoryData[categoryTitle], categoryId);
+        }
+      } catch (error) {
+        console.error('Error inserting data into faq_categories table:', error);
+        throw error;
+      }
+    }
+  }
+}
+
+// Function to insert data into 'faq_item' table
+async function insertIntoFaqItems(faqItemsArray, categoryId) {
+  if (Array.isArray(faqItemsArray) && faqItemsArray.length > 0) {
+    for (const faqItemData of faqItemsArray) {
+      try {
+        const FAQItenInsertquery = `INSERT INTO faq_item (category_id, question, answer) VALUES (?, ?, ?)`;
+        const FAQItenInsertvalues = [categoryId, faqItemData.Q, faqItemData.A];
+
+        const results = await query(FAQItenInsertquery, FAQItenInsertvalues);
+        console.log('Data inserted into faq_item table:', results.insertId);
+      } catch (error) {
+        console.error('Error inserting data into faq_item table:', error);
+        throw error;
+      }
+    }
+  }
+}
 
 module.exports = {
     getUser,
@@ -263,8 +326,12 @@ module.exports = {
     getCompanyCategory,
     renderCategoryTreeHTML,
     getCompanyCategoryBuID,
-    saveUserGoogleDataToDB,
+    saveUserGoogleLoginDataToDB,
+    saveUserFacebookLoginDataToDB,
     getAllRatingTags,
     getReviewRatingData,
-    getMetaValue
+    getMetaValue,
+    insertIntoFaqPages,
+    insertIntoFaqCategories,
+    insertIntoFaqItems
 };
