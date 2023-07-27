@@ -55,7 +55,7 @@ router.post('/update-contact', authController.updateContacts);
 // Contacts Feedback
 router.post('/contact-feedback', authController.contactFeedback);
 
-// Home
+// Home Page
 router.post('/update-home', upload.fields([
     { name: 'banner_img_1', maxCount: 1 },
     { name: 'banner_img_2', maxCount: 1 },
@@ -80,10 +80,39 @@ router.post('/update-home', upload.fields([
     { name: 'org_responsibility_img_8', maxCount: 1 },
 
     { name: 'about_us_img', maxCount: 1 },
-]), authController.createHome);
+]), authController.updateHome);
+
+// About Page
+router.post('/update-about', upload.fields([
+    { name: 'banner_img_1', maxCount: 1 },
+    { name: 'banner_img_2', maxCount: 1 },
+    { name: 'banner_img_3', maxCount: 1 },
+    { name: 'banner_img_4', maxCount: 1 },
+    { name: 'banner_img_5', maxCount: 1 },
+    { name: 'banner_img_6', maxCount: 1 },
+    { name: 'banner_img_7', maxCount: 1 },
+    { name: 'banner_img_8', maxCount: 1 },
+
+    { name: 'platform_img_1', maxCount: 1 },
+    { name: 'platform_img_2', maxCount: 1 },
+    { name: 'platform_img_3', maxCount: 1 },
+    { name: 'platform_img_4', maxCount: 1 },
+    { name: 'platform_img_5', maxCount: 1 },
+    { name: 'platform_img_6', maxCount: 1 },
+    { name: 'platform_img_7', maxCount: 1 },
+    { name: 'platform_img_8', maxCount: 1 },
+
+    { name: 'right_img_1', maxCount: 1 },
+    { name: 'right_img_2', maxCount: 1 },
+
+]), authController.updateAbout);
 
 //---Rating Tags--------//
-router.post('/add-rating-tags', upload.single('rating_image'), authController.createRatingTags );
-router.put('/edit-rating-tags', upload.single('rating_image'), authController.editRatingTags );
+router.post('/add-rating-tags', upload.single('rating_image'), authController.createRatingTags);
+router.put('/edit-rating-tags', upload.single('rating_image'), authController.editRatingTags);
+
+
+//Create Featured Company
+router.post('/create-featured-company', upload.single('logo'), authController.creatFeaturedCompany);
 
 module.exports = router;

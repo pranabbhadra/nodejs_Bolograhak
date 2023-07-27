@@ -29,6 +29,7 @@ const checkCookieValue = (req, res, next) => {
 };
 
 // Front-End Page Routes Start--------------------//
+//Home Page
 router.get('', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
 
@@ -37,6 +38,7 @@ router.get('', checkCookieValue, async (req, res) => {
         const apiUrl = process.env.BLOG_API_ENDPOINT + '/home-blog';
         const response = await axios.get(apiUrl);
         const blogPosts = response.data;
+
         const sql = `SELECT * FROM page_info where secret_Key = 'home' `;
         db.query(sql, (err, results, fields) => {
             if (err) throw err;
@@ -50,15 +52,6 @@ router.get('', checkCookieValue, async (req, res) => {
                 await meta_values.forEach((item) => {
                     meta_values_array[item.page_meta_key] = item.page_meta_value;
                 })
-                // res.render('front-end/landing', {
-                //     menu_active_id: 'landing',
-                //     page_title: 'Home',
-                //     currentUserData: currentUserData,
-                //     homePosts: blogPosts.status === 'ok' ? blogPosts.data : [],
-                //     home,
-                //     meta_values_array
-                // });
-
                 res.render('front-end/landing', {
                     menu_active_id: 'landing',
                     page_title: home.title,
@@ -67,95 +60,20 @@ router.get('', checkCookieValue, async (req, res) => {
                     home,
                     meta_values_array
                 });
-
-                // res.render('pages/update-home', {
-                //     menu_active_id: 'pages',
-                //     page_title: 'Update Home',
-                //     currentUserData,
-                //     home,
-                //     meta_values_array
-                // });
-                //comFunction.getMetaValue(home.id, 'about_us_button_link');
-
-                // res.json({
-                //     menu_active_id: 'pages',
-                //     page_title: 'Update Home',
-                //     currentUserData,
-                //     home,
-                //     meta_values_array
-                // });
             })
 
         })
-
-        // res.render('front-end/landing', {
-        //     menu_active_id: 'landing',
-        //     page_title: 'Home',
-        //     currentUserData: currentUserData,
-        //     homePosts: blogPosts.status === 'ok' ? blogPosts.data : []
-        // });
     } catch (error) {
         console.error('Error fetching blog posts:', error);
-        const sql = `SELECT * FROM page_info where secret_Key = 'home' `;
-        db.query(sql, (err, results, fields) => {
-            if (err) throw err;
-            const home = results[0];
-            const meta_sql = `SELECT * FROM page_meta where page_id = ${home.id}`;
-            db.query(meta_sql, async (meta_err, _meta_result) => {
-                if (meta_err) throw meta_err;
-
-                const meta_values = _meta_result;
-                let meta_values_array = {};
-                await meta_values.forEach((item) => {
-                    meta_values_array[item.page_meta_key] = item.page_meta_value;
-                })
-                console.log(meta_values_array);
-                // res.render('front-end/landing', {
-                //     menu_active_id: 'landing',
-                //     page_title: 'Home',
-                //     currentUserData: currentUserData,
-                //     homePosts: blogPosts.status === 'ok' ? blogPosts.data : [],
-                //     home,
-                //     meta_values_array
-                // });
-
-                // res.json('front-end/landing', {
-                //     menu_active_id: 'landing',
-                //     page_title: 'Home',
-                //     currentUserData: currentUserData,
-                //     //homePosts: blogPosts.status === 'ok' ? blogPosts.data : [],
-                //     home,
-                //     meta_values_array
-                // });
-
-                // res.render('pages/update-home', {
-                //     menu_active_id: 'pages',
-                //     page_title: 'Update Home',
-                //     currentUserData,
-                //     home,
-                //     meta_values_array
-                // });
-                //comFunction.getMetaValue(home.id, 'about_us_button_link');
-
-                // res.json({
-                //     menu_active_id: 'pages',
-                //     page_title: 'Update Home',
-                //     currentUserData,
-                //     home,
-                //     meta_values_array
-                // });
-            })
-
-        })
-        // res.render('front-end/landing', {
-        //     menu_active_id: 'landing',
-        //     page_title: 'Home',
-        //     currentUserData: currentUserData,
-        //     homePosts: []
-        // });
+        res.render('front-end/landing', {
+            menu_active_id: 'landing',
+            page_title: 'Home',
+            currentUserData: currentUserData,
+            homePosts: []
+        });
     }
 });
-
+//view Contact Us Page
 router.get('/contact-us', checkCookieValue, (req, res) => {
     //resp.sendFile(`${publicPath}/index.html`)
     const encodedUserData = req.cookies.user;
@@ -177,9 +95,44 @@ router.get('/contact-us', checkCookieValue, (req, res) => {
 
 });
 
-router.get('/about', checkCookieValue, async (req, res) => {
+//View About us Page
+router.get('/about-us', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
-    res.render('front-end/about', { menu_active_id: 'about', page_title: 'About Us', currentUserData });
+    try {
+        const sql = `SELECT * FROM page_info where secret_Key = 'about' `;
+        db.query(sql, (err, results, fields) => {
+            if (err) throw err;
+            const common = results[0];
+            const meta_sql = `SELECT * FROM page_meta where page_id = ${common.id}`;
+            db.query(meta_sql, async (meta_err, _meta_result) => {
+                if (meta_err) throw meta_err;
+
+                const meta_values = _meta_result;
+                let meta_values_array = {};
+                await meta_values.forEach((item) => {
+                    meta_values_array[item.page_meta_key] = item.page_meta_value;
+                })
+                res.render('front-end/about', {
+                    menu_active_id: 'about',
+                    page_title: common.title,
+                    currentUserData: currentUserData,
+                    common,
+                    meta_values_array
+                });
+            })
+
+        })
+    } catch (error) {
+        console.error('Error fetching blog posts:', error);
+        res.render('front-end/about', {
+            menu_active_id: 'about',
+            page_title: common.title,
+            currentUserData: currentUserData,
+            common,
+            meta_values_array
+        });
+    }
+    //res.render('front-end/about', { menu_active_id: 'about', page_title: 'About Us', currentUserData });
 });
 
 router.get('/review', checkCookieValue, async (req, res) => {
@@ -861,6 +814,42 @@ router.get('/edit-home', checkLoggedIn, (req, res) => {
                     home,
                     meta_values_array
                 });
+            })
+
+        })
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+
+//Edit About Page
+router.get('/edit-about', checkLoggedIn, (req, res) => {
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+        const sql = `SELECT * FROM page_info where secret_Key = 'about' `;
+        db.query(sql, (err, results, fields) => {
+            if (err) throw err;
+            const about_info = results[0];
+            const meta_sql = `SELECT * FROM page_meta where page_id = ${about_info.id}`;
+            db.query(meta_sql, async (meta_err, _meta_result) => {
+                if (meta_err) throw meta_err;
+
+                const meta_values = _meta_result;
+                let meta_values_array = {};
+                await meta_values.forEach((item) => {
+                    meta_values_array[item.page_meta_key] = item.page_meta_value;
+                })
+                //console.log(meta_values_array);
+                res.render('pages/update-about', {
+                    menu_active_id: 'pages',
+                    page_title: 'Update About',
+                    currentUserData,
+                    about_info,
+                    meta_values_array
+                });
                 //comFunction.getMetaValue(home.id, 'about_us_button_link');
 
                 // res.json({
@@ -880,6 +869,23 @@ router.get('/edit-home', checkLoggedIn, (req, res) => {
     }
 });
 
+//---Add Featured Company--//
+router.get('/add-featured-company', checkLoggedIn, async (req, res) => {
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+
+        // Render the 'edit-user' EJS view and pass the data
+        res.render('pages/add-featured-company', {
+            menu_active_id: 'pages',
+            page_title: 'Add Featured Company',
+            currentUserData,
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
 
 router.get('/help/:id', (_, resp) => {
     resp.sendFile(`${publicPath}/help.html`)

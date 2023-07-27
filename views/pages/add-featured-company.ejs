@@ -1,4 +1,4 @@
-<%- include('common/header') -%>
+<%- include('../common/header') -%>
     <!--begin::Content-->
     <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
         <!--begin::Toolbar-->
@@ -41,14 +41,14 @@
                     <!--begin::Content-->
                     <div id="kt_account_profile_details" class="collapse show">
                         <!--begin::Form-->
-                        <form id="kt_account_profile_details_form" class="form" action="/auth/create-company"
+                        <form id="kt_account_profile_details_form" class="form" action="/auth/create-featured-company"
                             method="POST" enctype="multipart/form-data">
                             <!--begin::Card body-->
                             <div class="card-body border-top p-9">
                                 <!--begin::Input group-->
                                 <div class="row mb-6">
                                     <!--begin::Label-->
-                                    <label class="col-lg-4 col-form-label fw-bold fs-6">Upload Logo</label>
+                                    <label class="col-lg-4 col-form-label fw-bold fs-6">Logo</label>
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-8">
@@ -68,7 +68,6 @@
                                                 <i class="bi bi-pencil-fill fs-7"></i>
                                                 <!--begin::Inputs-->
                                                 <input type="file" name="logo" accept=".png, .jpg, .jpeg" />
-                                                <input type="hidden" name="avatar_remove" />
                                                 <!--end::Inputs-->
                                             </label>
                                             <!--end::Label-->
@@ -100,7 +99,8 @@
                                 <!--begin::Input group-->
                                 <div class="row mb-6">
                                     <!--begin::Label-->
-                                    <label class="col-lg-4 col-form-label required fw-bold fs-6">Company Name</label>
+                                    <label class="col-lg-4 col-form-label required fw-bold fs-6">Short
+                                        Description</label>
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-8">
@@ -108,9 +108,9 @@
                                         <div class="row">
                                             <!--begin::Col-->
                                             <div class="col-lg-12 fv-row">
-                                                <input type="text" name="company_name"
+                                                <input type="text" name="comp_short_desc"
                                                     class="form-control form-control-lg form-control-solid mb-3 mb-lg-0"
-                                                    placeholder="Company Name" value="" />
+                                                    placeholder="Company Short Description" value="" />
                                             </div>
                                             <!--end::Col-->
                                         </div>
@@ -123,86 +123,17 @@
                                 <div class="row mb-6">
                                     <!--begin::Label-->
                                     <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span class="required">Email</span>
+                                        <span class="required">URL</span>
                                     </label>
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-8 fv-row">
-                                        <input type="email" name="comp_email"
-                                            class="form-control form-control-lg form-control-solid" placeholder="Email"
-                                            value="" />
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <!--end::Input group-->
-                                <!--begin::Input group-->
-                                <div class="row mb-6">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span class="required">Contact Phone</span>
-                                    </label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-8 fv-row">
-                                        <input type="tel" name="comp_phone"
+                                        <input type="text" name="comp_url"
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="Phone number" value="" />
+                                            placeholder="Company URL" value="" />
                                     </div>
                                     <!--end::Col-->
                                 </div>
-                                <!--end::Input group-->
-                                <!--begin::Input group-->
-                                <div class="row mb-6">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span class="required">Company Registration Number</span>
-                                    </label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-8 fv-row">
-                                        <input type="text" name="comp_registration_id"
-                                            class="form-control form-control-lg form-control-solid"
-                                            placeholder="Registration Number" value="" />
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <!--end::Input group-->
-                                <!--begin::Input group-->
-                                <div class="row mb-6">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span class="required">Select Category</span>
-                                    </label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-8 fv-row">
-                                        <%- company_categories %>
-                                            <!-- <ul id="myUL">
-                                    <li><span class="box">Beverages</span>
-                                      <ul class="nested">
-                                        <li>Water</li>
-                                        <li>Coffee</li>
-                                        <li><span class="box">Tea</span>
-                                          <ul class="nested">
-                                            <li>Black Tea</li>
-                                            <li>White Tea</li>
-                                            <li><span class="box">Green Tea</span>
-                                              <ul class="nested">
-                                                <li>Sencha</li>
-                                                <li>Gyokuro</li>
-                                                <li>Matcha</li>
-                                                <li>Pi Lo Chun</li>
-                                              </ul>
-                                            </li>
-                                          </ul>
-                                        </li>  
-                                      </ul>
-                                    </li>
-                                </ul>-->
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <!--end::Input group-->
 
                             </div>
                             <!--end::Card body-->
@@ -211,7 +142,7 @@
                                 <button type="reset"
                                     class="btn btn-light btn-active-light-primary me-2">Discard</button>
                                 <button type="submit" class="btn btn-primary"
-                                    id="kt_account_profile_details_submit">Save Changes</button>
+                                    id="kt_account_profile_details_submit">Save</button>
                             </div>
                             <!--end::Actions-->
                         </form>
@@ -228,53 +159,9 @@
         <!--end::Post-->
     </div>
     <!--end::Content-->
-    <%- include('common/footer') -%>
+    <%- include('../common/footer') -%>
 
         <script>
-            $('#select_country').change(function () {
-                $('#select_state').empty();
-                $("#select_state").prop('required', false);
-                $('#dynamic_state_field_wrapper').hide();
-                var country_id = $(this).val();
-                $('#country_name').val(this.options[this.selectedIndex].text);
-                $.ajax({
-                    url: '/api/states',
-                    method: 'POST',
-                    data: { country_id: country_id },
-                    ContentType: 'application/json',
-                    success: function (data) {
-                        if (data.status == 'ok') {
-                            $('#dynamic_state_field_wrapper').show();
-                            $("#select_state").prop('required', true);
-                            $.each(data.data, function (i, item) {
-                                $('#select_state').append($('<option>', {
-                                    value: item.id,
-                                    text: item.name
-                                }));
-                            });
-                        } else {
-                            $('#dynamic_state_field_wrapper').hide();
-                            $("#select_state").prop('required', false);
-                        }
-                    },
-                    error: function (error) {
-                        // Handle any errors
-                        Swal.fire({
-                            text: error,
-                            icon: "error",
-                            buttonsStyling: false,
-                            confirmButtonText: "Ok, got it!",
-                            customClass: {
-                                confirmButton: "btn btn-primary"
-                            }
-                        });
-                        submitButton.disabled = false;
-                    }
-                });
-            });
-            $('#select_state').change(function () {
-                $('#state_name').val(this.options[this.selectedIndex].text);
-            });
 /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
                 var __webpack_exports__ = {};
@@ -298,38 +185,17 @@
                             form,
                             {
                                 fields: {
-                                    company_name: {
+                                    comp_short_desc: {
                                         validators: {
                                             notEmpty: {
-                                                message: 'Company name is required'
+                                                message: 'Company short description is required'
                                             }
                                         }
                                     },
-                                    comp_email: {
+                                    comp_url: {
                                         validators: {
                                             notEmpty: {
-                                                message: 'Email address is required'
-                                            },
-                                            emailAddress: {
-                                                message: 'The value is not a valid email address'
-                                            }
-                                        }
-                                    },
-                                    comp_phone: {
-                                        validators: {
-                                            notEmpty: {
-                                                message: 'Contact phone number is required'
-                                            },
-                                            regexp: {
-                                                regexp: /^\d{10}$/, // Regular expression pattern for a 10-digit phone number
-                                                message: 'The phone number is not valid'
-                                            }
-                                        }
-                                    },
-                                    comp_registration_id: {
-                                        validators: {
-                                            notEmpty: {
-                                                message: 'Registration ID is required'
+                                                message: 'Company URL is required'
                                             }
                                         }
                                     }
@@ -357,7 +223,7 @@
                                     var formElement = document.getElementById('kt_account_profile_details_form');
                                     var formData = new FormData(formElement);
                                     $.ajax({
-                                        url: '/auth/create-company', // URL for your API endpoint
+                                        url: '/auth/create-featured-company', // URL for your API endpoint
                                         type: 'POST',
                                         data: formData,
                                         processData: false, // Prevent jQuery from processing the data
@@ -428,7 +294,7 @@
                 });
 
                 /******/
-})()
+            })()
                 ;
 //# sourceMappingURL=profile-details.js.map    
         </script>
