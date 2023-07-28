@@ -2,6 +2,10 @@ const util = require('util');
 const db = require('./config');
 const mysql = require('mysql2/promise');
 const dotenv = require('dotenv');
+const bcrypt = require('bcryptjs');
+const useragent = require('useragent');
+const requestIp = require('request-ip');
+const axios = require('axios');
 
 dotenv.config({ path: './.env' });
 const query = util.promisify(db.query).bind(db);
@@ -207,13 +211,70 @@ function renderCategoryTreeHTMLforCompany(categories, com_category_array) {
 }
 
 //-------After Google Login Save User data Or Check User exist or Not.
-const saveUserGoogleLoginDataToDB = (userData) => {
-  console.log(userData.name.familyName + ' ' + userData.name.givenName + ' ' + userData.emails[0].value + ' ' + userData.photos[0].value);
+const saveUserGoogleLoginDataToDB = async (userData) => {
+  //console.log(userData);
+  //console.log(userData.name.familyName + ' ' + userData.name.givenName + ' ' + userData.emails[0].value + ' ' + userData.photos[0].value+ ' ' + userData.id);
+
+  try {
+    // Hash the password asynchronously
+    const hashedPassword = await bcrypt.hash(userData.emails[0].value, 8);
+    const currentDate = new Date();
+
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+    const day = String(currentDate.getDate()).padStart(2, '0');
+    const hours = String(currentDate.getHours()).padStart(2, '0');
+    const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+    const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+
+    const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+    const insertUser = (query, values) => {
+      return new Promise((resolve, reject) => {
+        db.query(query, values, (err, results) => {
+          if (err) reject(err);
+          resolve(results);
+        });
+      });
+    };
+
+    const userInsertQuery = 'INSERT INTO users (first_name, last_name, email, password, register_from, external_registration_id, user_registered, user_status, user_type_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    const userResults = await insertUser(userInsertQuery, [userData.name.givenName, userData.name.familyName, userData.emails[0].value, hashedPassword, 'google', userData.id, formattedDate, 1, 2]);
+
+    const registeredUserID = userResults.insertId;
+
+    // Insert the user into the "user_customer_meta" table
+    const userMetaInsertQuery = 'INSERT INTO user_customer_meta (user_id, address, country, state, city, zip, review_count, date_of_birth, occupation, gender, profile_pic) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    await insertUser(userMetaInsertQuery, [registeredUserID, '', '', '', '', '', 0, '', '', '', userData.photos[0].value]);
+
+    const userRegistrationData = {
+      username: userData.emails[0].value,
+      email: userData.emails[0].value,
+      password: userData.emails[0].value,
+      first_name: userData.name.givenName,
+      last_name: userData.name.familyName,
+      node_userID: registeredUserID,
+      profile_pic: userData.photos[0].value
+    };
+
+    try {
+      const response = await axios.post(process.env.BLOG_API_ENDPOINT + '/register', userRegistrationData);
+      console.log(userRegistrationData);
+      return userRegistrationData;
+    } catch (error) {
+      console.error('Error during user registration:', error);
+      throw error; // Re-throw the error to be caught in the calling function if needed
+    }
+  } catch (error) {
+    console.error('Error during user registration:', error);
+    throw error; // Re-throw the error to be caught in the calling function if needed
+  }
+
 };
 
 //-------After Facebook Login Save User data Or Check User exist or Not.
 const saveUserFacebookLoginDataToDB = (userData) => {
-  //console.log(userData);
+  console.log(userData);
   console.log(userData.id + ' ' + userData.displayName + ' ' + userData.photos[0].value);
 };
 

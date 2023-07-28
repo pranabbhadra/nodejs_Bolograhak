@@ -1,0 +1,4 @@
+28-07-2023:
+------------------------------------
+## Added 2 new fields for 'users' Table:
+=> ALTER TABLE `users` ADD `register_from` VARCHAR(50) NOT NULL AFTER `password`, ADD `external_registration_id` VARCHAR(255) NOT NULL AFTER `register_from`;

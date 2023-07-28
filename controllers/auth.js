@@ -444,7 +444,7 @@ exports.frontendUserLogin = (req, res) => {
                                         gender: user_meta.gender,
                                         profile_pic: user_meta.profile_pic
                                     };
-                                    //const encodedUserData = JSON.stringify(userData);
+                                    const encodedUserData = JSON.stringify(userData);
                                     res.cookie('user', encodedUserData);
                                     console.log(encodedUserData, 'login user data');
                                 } else {
@@ -1559,3 +1559,5 @@ exports.createHome = async (req, res) => {
         )
     })
 }
+
+
