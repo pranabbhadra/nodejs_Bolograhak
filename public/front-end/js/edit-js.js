@@ -280,7 +280,7 @@ jQuery(function($){
   });
 
   $('.review-slider').slick({
-    slidesToShow: 4,
+    slidesToShow: 3,
     slidesToScroll: 1,
     autoplay: true,
     arrows:true,
@@ -596,7 +596,7 @@ jQuery(function($){
     var text = $('#'+span).text();
     var randInt = 0
     for (var i = 0; i < text.length; i++) {
-      randInt += parseInt(randomIntFromInterval(1,100));
+      randInt += parseInt(randomIntFromInterval(1,50));
       var typing = setTimeout(function(y){
         $('#'+span).append(text.charAt(y));
       },randInt, i);

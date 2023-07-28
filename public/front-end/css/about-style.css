@@ -122,6 +122,11 @@
     width: 100%;
 }
 
+h3.grahak-sanskrit {
+    font-size: 18px;
+    font-weight: 400;
+}
+
 .about-bottom-text p:last-child {
     margin-bottom: 0;
 }
@@ -132,6 +137,12 @@
 
 .mission-right {
     font-size: 20px;
+}
+
+.about-bottom-text ul li {
+    list-style-type: none;
+    background: url(../images/check-icon.png) no-repeat top 2px left;
+    padding-left: 35px;
 }
 
 /*=============== About End ==============*/

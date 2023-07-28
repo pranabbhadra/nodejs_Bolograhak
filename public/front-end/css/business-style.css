@@ -1,5 +1,5 @@
 .business-cur-head {
-    font-family: 'Cookie', cursive;
+    font-family: 'Edu SA Beginner', cursive;
     font-size: 35px;
     position: relative;
     font-weight: 400;
@@ -176,6 +176,10 @@
     height: 100%;
     position: relative;
     z-index: 9;
+}
+
+.dont-forget-box h4 {
+    font-size: 18px;
 }
 
 .dont-forget-content:before {

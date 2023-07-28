@@ -83,7 +83,7 @@ router.get('/about', checkCookieValue, async (req, res) => {
 
 router.get('/review', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
-    res.render('front-end/review', { menu_active_id: 'review', page_title: 'All Review', currentUserData });
+    res.render('front-end/review', { menu_active_id: 'review', page_title: 'Customer Reviews', currentUserData });
 });
 
 router.get('/faq', checkCookieValue, async (req, res) => {
