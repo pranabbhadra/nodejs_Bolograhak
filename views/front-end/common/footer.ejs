@@ -75,7 +75,7 @@
           <ul class="menu">
             <li><a href="/about-us">About Us</a></li>
             <li><a href="/careers">Careers</a></li>
-            <li><a href="http://ec2-44-203-151-109.compute-1.amazonaws.com/blog/blog/">Blogs</a></li>
+            <li><a href="http://ec2-44-203-151-109.compute-1.amazonaws.com/blog/">Blogs</a></li>
             <li><a href="/faq">Help</a></li>
           </ul>
         </div>
@@ -233,7 +233,7 @@
             $('.frm-error-message').text(data.message).show();
             $('#user-signin').trigger('reset');
             if(data.wp_user){
-              window.location.href="http://localhost/bolo-grahak/blog/?login_check="+data.wp_user;
+              window.location.href="http://ec2-44-203-151-109.compute-1.amazonaws.com/blog/?login_check="+data.wp_user;
             }else{
               window.location.href="/";
             }
