@@ -186,43 +186,48 @@
         </div>
         <div class="col-md-6">
            <div class="review-right mt-md-0 mt-5">
-              <form>
+              <form id="review_submit_frm" name="review_submit_frm" action="" method="post">
                  <div class="row">
-                    <div class="col-md-12">
+                    <!--<div class="col-md-12">
                        <div class="custom-form">
-                          <input type="text" class="form-control" id="autocomplete" placeholder="Business, Institute Establishment Name" required>
+                          <input type="text" class="form-control" id="autocomplete" name="address" placeholder="Business, Institute Establishment Name" required>
                        </div>
                        <div id="map"></div>
+                    </div>-->
+                    <div class="col-md-12">
+                      <div class="custom-form">
+                         <input type="text" class="form-control" name="company" placeholder="Business/Institute/Establishment Name" required>
+                      </div>
                     </div>
                     <div class="col-md-12">
                        <div class="custom-form">
-                          <input type="text" class="form-control" placeholder="Location" required>
+                          <input type="text" class="form-control" name="address" placeholder="Location" required>
                           <div class="under-input-text">India, Westbengal, Kolkata, 5330</div>
                        </div>
                     </div>
-                    <!-- <div class="col-sm-6">
+                    <div class="col-sm-6">
                        <div class="custom-form">
-                          <input type="text" class="form-control" placeholder="Country" required>
+                          <input type="text" class="form-control" placeholder="Country" name="country" required>
                        </div>
                     </div>
                     <div class="col-sm-6">
                        <div class="custom-form">
-                          <input type="text" class="form-control" placeholder="State" required>
+                          <input type="text" class="form-control" placeholder="State" name="state" required>
                        </div>
                     </div>
                     <div class="col-sm-6">
                        <div class="custom-form">
-                          <input type="text" class="form-control" placeholder="City" required>
+                          <input type="text" class="form-control" placeholder="City" name="city" required>
                        </div>
                     </div>
                     <div class="col-sm-6">
                        <div class="custom-form">
-                          <input type="text" class="form-control" placeholder="Pin Code" required>
+                          <input type="text" class="form-control" placeholder="Pin Code" name="zip" required>
                        </div>
-                    </div> -->
+                    </div>
                     <div class="col-md-12">
                        <div class="custom-form">
-                          <input type="text" class="form-control" placeholder="Product/Division Name" required>
+                          <input type="text" class="form-control" placeholder="Product/Division Name" name="review_title" required>
                        </div>
                     </div>
                     <div class="col-md-12">
@@ -231,6 +236,7 @@
                           <label>Rating</label>
                           <div id="rating-range" class="rating"></div>
                           <input type="text" id="ratingRange" readonly>
+                          <input  type="hidden" id="ratingvalue" name="rating" value="">
                           <div id="slider-values" class="text-center">
                              <span id="selected-range-text"></span>
                           </div>
@@ -241,63 +247,64 @@
                        <div class="range-tag-wrap">
                           <div class="range-tag1">
                              <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="" checked>
+                               <input class="form-check-input" type="checkbox" name="tags" value="" id="" checked>
                                <label class="form-check-label" for="flexCheckDefault">
                                  Praesent rutrum
                                </label>
                              </div>
                              <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
+                               <input class="form-check-input" type="checkbox" name="tags" value="" id="">
                                <label class="form-check-label" for="flexCheckDefault">
                                  Phasellus
                                </label>
                              </div>
                              <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
+                               <input class="form-check-input" type="checkbox" value="" name="tags" id="">
                                <label class="form-check-label" for="flexCheckDefault">
                                  faucibus
                                </label>
                              </div>
                              <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
+                               <input class="form-check-input" type="checkbox" value="" name="tags" id="">
                                <label class="form-check-label" for="flexCheckDefault">
                                  Morbi Tristique
                                </label>
                              </div>
                              <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
+                               <input class="form-check-input" type="checkbox" value="" name="tags" id="">
                                <label class="form-check-label" for="flexCheckDefault">
                                  Morbi Tristique Senectus
                                </label>
                              </div>
                              <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
+                               <input class="form-check-input" type="checkbox" value="" name="tags" id="">
                                <label class="form-check-label" for="flexCheckDefault">
                                  faucibus
                                </label>
                              </div>
                              <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
+                               <input class="form-check-input" type="checkbox" value="" name="tags" id="">
                                <label class="form-check-label" for="flexCheckDefault">
                                  Phasellus
                                </label>
                              </div>
                           </div>
+                          <!--
                           <div class="range-tag2 d-none">
                              <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="" checked>
+                               <input class="form-check-input" type="checkbox" value="" id="" name="tags" checked>
                                <label class="form-check-label" for="flexCheckDefault">
                                  Praesent rutrum
                                </label>
                              </div>
                              <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
+                               <input class="form-check-input" type="checkbox" value="" name="tags" id="">
                                <label class="form-check-label" for="flexCheckDefault">
                                  Phasellus
                                </label>
                              </div>
                              <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
+                               <input class="form-check-input" type="checkbox" value="" name="tags" id="">
                                <label class="form-check-label" for="flexCheckDefault">
                                  faucibus
                                </label>
@@ -423,22 +430,23 @@
                                </label>
                              </div>
                           </div>
+                          -->
                        </div>
                     </div>
                     <div class="col-md-12">
                        <div class="custom-form">
-                          <textarea type="comments" rows="4" class="form-control" placeholder="Review/Feedback" required></textarea>
+                          <textarea name="review_content" rows="4" class="form-control" placeholder="Review/Feedback" required></textarea>
                        </div>
                     </div>
                     <div class="col-md-12">
                        <div class="custom-form">
                           <span class="fw-bold d-inline-block me-2">Show your name?</span>
                           <div class="form-check form-check-inline">
-                             <input class="form-check-input" type="radio" name="inlineRadioOptions" checked id="inlineRadio1" value="option1">
+                             <input class="form-check-input" type="radio" name="user_privacy" checked id="inlineRadio1" value="1">
                              <label class="form-check-label" for="inlineRadio1">Yes</label>
                           </div>
                           <div class="form-check form-check-inline">
-                             <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+                             <input class="form-check-input" type="radio" name="user_privacy" id="inlineRadio2" value="0">
                              <label class="form-check-label" for="inlineRadio2">No</label>
                           </div>
                        </div>
@@ -892,6 +900,32 @@
       console.log('Selected place:', place);
     });
   }
+
+  //-------Review Form Submit-----------------//
+  $( "#review_submit_frm" ).on( "submit", function( event ) {
+    event.preventDefault();
+    const formData = $('#review_submit_frm').serializeArray();
+    const jsonData = {};
+    $(formData).each(function (index, field) {
+      jsonData[field.name] = field.value;
+    });
+    $.ajax({
+      url: '/auth/add-review',
+      method: 'POST',
+      data: jsonData,
+      ContentType: 'application/json',
+      success: function (data) {
+        if (data.status == 'ok') {
+          console.log('aaa');
+        } else {
+          console.log('bbb');
+        }
+      },
+      error: function (error) {
+        console.log(error);
+      }
+    });
+  });
 </script>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=<%= AddressapiKey %>&libraries=places&callback=initMap" async defer></script>

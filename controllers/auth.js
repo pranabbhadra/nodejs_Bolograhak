@@ -1561,3 +1561,20 @@ exports.createHome = async (req, res) => {
 }
 
 
+//--Submit Review----//
+
+exports.submitReview= async (req, res) => {
+    const encodedUserData = req.cookies.user;
+    //console.log(currentUserData);
+    try {
+        if (encodedUserData) {
+            const currentUserData = JSON.parse(encodedUserData);
+            console.log(currentUserData);
+        } else {
+            //res.redirect('sign-in');
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }    
+}    

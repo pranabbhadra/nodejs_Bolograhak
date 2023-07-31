@@ -2,3 +2,15 @@
 ------------------------------------
 ## Added 2 new fields for 'users' Table:
 => ALTER TABLE `users` ADD `register_from` VARCHAR(50) NOT NULL AFTER `password`, ADD `external_registration_id` VARCHAR(255) NOT NULL AFTER `register_from`;
+
+
+31-07-2023
+-------------------------------------
+## Update rating type in review table
+ALTER TABLE `reviews` CHANGE `rating` `rating` FLOAT NOT NULL;
+
+## Add New field company_location_id
+ALTER TABLE `reviews` ADD `company_location_id` BIGINT(20) NOT NULL AFTER `company_location`;
+
+## Add New Field review_status
+ALTER TABLE `reviews` ADD `review_status` ENUM('1', '0') NOT NULL AFTER `user_privacy`;

@@ -82,6 +82,8 @@ router.post('/update-home', upload.fields([
     { name: 'about_us_img', maxCount: 1 },
 ]), authController.createHome);
 
+router.post('/add-review', authController.submitReview);
+
 //---Rating Tags--------//
 router.post('/add-rating-tags', upload.single('rating_image'), authController.createRatingTags );
 router.put('/edit-rating-tags', upload.single('rating_image'), authController.editRatingTags );
