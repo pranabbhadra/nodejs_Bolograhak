@@ -365,6 +365,7 @@ span.toggle-menu {
     min-height: 757px;
     position: relative;
     padding-top: 137px;
+    background: #000000;
 }
 
 .main-banner h1 {

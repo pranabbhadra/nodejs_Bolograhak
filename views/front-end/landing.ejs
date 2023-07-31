@@ -1,7 +1,7 @@
 <%- include('common/header') -%>
 <link href="/front-end/css/landing-page-style.css" rel="stylesheet" type="text/css">
 <!-- ============== Banner Start =============== -->
-<section class="main-banner landing-banner" style="background-image: url(/front-end/images/banner-bg.jpg);">
+<section class="main-banner landing-banner">
   <div class="container">
     <div class="row flex-md-row-reverse">
       <div class="col-md-6 my-auto">
@@ -76,8 +76,13 @@
 <!-- ============== Business Start =============== -->
 <section class="main-content business-content pt-md-0">
   <div class="container">
-    <div class="form-check form-switch d-flex justify-content-center p-0 mb-3">
-      <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" data-bs-toggle="tooltip" data-bs-placement="top" title="Toogle to change">
+    <div class="toggle-blink text-center">
+      <div class="toogle-pointer-blink">
+        Toogle to change <i class="fa-light fa-hand-point-down"></i>
+      </div>
+      <div class="form-check form-switch d-flex justify-content-center p-0 mb-3">
+        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked">
+      </div>
     </div>
     <div class="row" data-aos="fade-up">
       <div class="col-md-12">

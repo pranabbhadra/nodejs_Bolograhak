@@ -290,12 +290,35 @@ jQuery(function($){
     autoplaySpeed: 3000,
     responsive: [
       {
-        breakpoint: 1024,
+        breakpoint: 767,
         settings: {
-          slidesToShow: 3,
-          slidesToScroll: 1,
-          infinite: true,
-          dots: false
+          slidesToShow: 2,
+          slidesToScroll: 1
+        }
+      },
+      {
+        breakpoint: 575,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1
+        }
+      }
+    ]
+  });
+
+  $('.review-slider2').slick({
+    slidesToShow: 2,
+    slidesToScroll: 1,
+    autoplay: true,
+    arrows:false,
+    dots:false,
+    autoplaySpeed: 3000,
+    responsive: [
+      {
+        breakpoint: 840,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1
         }
       },
       {
@@ -309,6 +332,52 @@ jQuery(function($){
         breakpoint: 575,
         settings: {
           slidesToShow: 1,
+          slidesToScroll: 1
+        }
+      }
+    ]
+  });
+
+  $('.review-company-slider').slick({
+    slidesToShow: 6,
+    slidesToScroll: 1,
+    autoplay: true,
+    arrows:false,
+    dots:false,
+    autoplaySpeed: 3000,
+    responsive: [
+      {
+        breakpoint: 991,
+        settings: {
+          slidesToShow: 5,
+          slidesToScroll: 1
+        }
+      },
+      {
+        breakpoint: 840,
+        settings: {
+          slidesToShow: 4,
+          slidesToScroll: 1
+        }
+      },
+      {
+        breakpoint: 767,
+        settings: {
+          slidesToShow: 5,
+          slidesToScroll: 1
+        }
+      },
+      {
+        breakpoint: 575,
+        settings: {
+          slidesToShow: 4,
+          slidesToScroll: 1
+        }
+      },
+      {
+        breakpoint: 440,
+        settings: {
+          slidesToShow: 3,
           slidesToScroll: 1
         }
       }
@@ -417,19 +486,6 @@ jQuery(function($){
     }
   });
   // /////////////////////////////////////// search Box open end
-  
-   // /////////////////////////////////////// Tooltip Start
-    // var a = 0;
-    //   $(window).scroll(function() {
-  
-    //     var oTop = $('.about-content').offset().top - window.innerHeight;
-    //     // Md.Asaduzzaman Muhid
-    //     if (a == 0 && $(window).scrollTop() > oTop) {
-    //       $(".tooltip-pop").fadeIn();
-    //       a = 1;// Md.Asaduzzaman Muhid
-    //     }
-    //   });
-   // /////////////////////////////////////// Tooltip End
 
 // /////////////////////////////////////// Switch Toggle business show start
   $(document).ready(function() {
@@ -608,6 +664,17 @@ jQuery(function($){
   });
 
   // /////////////////////////////  Text typing script end
+
+   // /////////////////////////////  Dashboard page review slide script end
+  $('.profile-menu-list ul > li > ul').parent().prepend('<i class="arw-down"></i>');
+  function subMenu(){
+      $(this).parent('li').find('> ul').stop(true, true).slideToggle();
+      $(this).parents('li').siblings().find('ul').stop(true, true).slideUp();
+      $(this).toggleClass('actv');
+      $(this).parent().siblings().find('.arw-down').removeClass('actv');
+  }
+  $('.profile-menu-list ul > li > .arw-down').on('click',subMenu);
+   // /////////////////////////////  Dashboard page review slide end
   
   });
     

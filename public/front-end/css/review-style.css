@@ -146,6 +146,7 @@
     display: inline-block;
     color: #000000;
     position: relative;
+    margin-right: 10px;
 }
 
 .read-review:after {
@@ -153,7 +154,7 @@
     font-family: "Font Awesome 6 Pro";
     font-weight: 900;
     position: absolute;
-    right: -18px;
+    right: -14px;
     top: 0;
     font-style: normal;
 }

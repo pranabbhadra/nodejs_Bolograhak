@@ -67,6 +67,26 @@
     background-image: none !important;
 }
 
+.toogle-pointer-blink {
+    text-decoration: blink;
+	animation-name: blinker;
+	animation-duration: 0.6s;
+	animation-iteration-count:infinite;
+	animation-timing-function:ease-in-out;
+	animation-direction: alternate;
+    background-color: #000000;
+    color: #fff;
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-left: -30px;
+}
+
+@keyframes blinker {
+	from {opacity: 1.0;}
+	to {opacity: 0.05;}
+  }
+
 
 /*=============== Business End ==============*/
 

@@ -536,6 +536,44 @@
 		font-size: 30px;
 	}
 
+	.dashboard-head-panel h2 {
+		font-size: 22px;
+	}
+
+	.total-reviews-box h3 {
+		font-size: 45px;
+	}
+
+	.total-reviews-box {
+		background-size: 20%;
+	}
+
+	.my-profile-wrapper {
+		padding: 30px 20px;
+	}
+
+	.myprofile-info {
+		margin-top: 30px;
+	}
+
+	.myprofile-info h4 {
+		font-size: 22px;
+		margin-bottom: 18px;
+	}
+
+	.profile-menu ul li a {
+		font-size: 16px;
+	}
+
+	.review-level span {
+		font-size: 16px;
+	}
+
+	.my-profile-content {
+		background-size: 10%;
+	}
+	
+
 }
 
 @media only screen and (max-width:840.98px) {
@@ -913,6 +951,33 @@
 	.business-feature-step {
 		font-size: 16px;
 		line-height: 145%;
+	}
+
+	.review-slider-wrap, 
+	.review-company-wrap {
+		margin-top: 20px;
+	}
+
+	.about-me-area {
+		padding: 25px 20px;
+	}
+
+	.about-me-area h2 {
+		padding-left: 25px;
+	}
+
+	.about-me-area {
+		margin-top: 20px;
+	}
+
+	.interset-curricular {
+		margin-top: 2px;
+		margin-bottom: 2px;
+		margin-right: 2px;
+	}
+
+	.profile-right-content {
+		margin-top: 15px;
 	}
 
 }
@@ -1296,6 +1361,69 @@
 		font-size: 26px;
 	}
 
+	.dashboard-head-panel h2 {
+		font-size: 18px;
+	}
+
+	.total-reviews-box h4 {
+		font-size: 16px;
+	}
+
+	.total-reviews-box h3 {
+		font-size: 32px;
+	}
+
+	.review-rewards .row>* {
+		padding: 0 5px;
+	}
+
+	.profile-img {
+		width: 150px;
+		height: 150px;
+	}
+
+	.profile-img img {
+		border: 10px #F4A835 solid;
+	}
+
+	input.camera-icon {
+		right: 10px;
+	}
+
+	.dashboard-head-panel .btn-default {
+		font-size: 14px;
+		padding: 8px 18px;
+		min-width: 102px;
+	}
+
+	.profile-info-table table td, 
+	.profile-info-table table th {
+		padding: 22px 15px;
+		font-size: 14px;
+	}
+
+	.my-profile-wrapper {
+		padding: 30px 15px;
+	}
+
+	.interset-curricular {
+		min-height: 35px;
+		padding: 7px 18px;
+		font-size: 13px;
+	}
+
+	.myprofile-info h4 {
+		font-size: 18px;
+	}
+
+	.myprofile-info p a {
+		font-size: 14px;
+	}
+
+	.about-me-area h2 {
+		font-size: 20px;
+	}
+
 }
 
 @media only screen and (max-width:540.98px) {
@@ -1359,6 +1487,12 @@
 	.business-left, .business-right {
 		padding: 30px 18px;
 	}
+
+	.profile-info-table table td, 
+	.profile-info-table table th {
+		padding: 18px 9px;
+		font-size: 12px;
+	}
 }
 
 @media only screen and (max-width:480.98px) {
@@ -1368,6 +1502,19 @@
 
 	.envelope-inner-social-info .app-info a img {
 	    width: 115px;
+	}
+
+	.total-reviews-box {
+		padding: 22px 10px;
+		border-radius: 10px;
+	}
+
+	.total-reviews-box h4 {
+		font-size: 12px;
+	}
+
+	.total-reviews-box h3 {
+		font-size: 26px;
 	}
 
 }

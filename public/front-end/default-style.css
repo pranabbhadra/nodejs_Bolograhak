@@ -2385,7 +2385,7 @@ a.quick-login span + span {
       transform: scale(1, 1);
     }
     50% {
-      transform: scale(1.1, 1.1);
+      transform: scale(1.04, 1.04);
     }
     100% {
       transform: scale(1, 1);
