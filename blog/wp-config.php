@@ -160,7 +160,7 @@ $table_prefix = 'bg_';
 
  */
 
-define( 'WP_DEBUG', false );
+define( 'WP_DEBUG', true );
 
 
 
