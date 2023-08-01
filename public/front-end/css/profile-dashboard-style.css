@@ -454,6 +454,13 @@ span.user-select-tag {
 
 .review-company-slider .item {
     padding: 15px;
+    text-align: center;
+}
+
+.review-company-slider .item h6 {
+    margin-top: 13px;
+    font-size: 12px;
+    font-weight: 700;
 }
 
 .review-company-slider img {

@@ -663,6 +663,25 @@ jQuery(function($){
     typeWrite('type-writing');
   });
 
+  function randomIntFromInterval(min,max) {
+    return Math.floor(Math.random()*(max-min+1)+min);
+  }
+
+  function typeWrite(span){
+    var text = $('#'+span).text();
+    var randInt = 0
+    for (var i = 0; i < text.length; i++) {
+      randInt += parseInt(randomIntFromInterval(1,50));
+      var typing = setTimeout(function(y){
+        $('#'+span).append(text.charAt(y));
+      },randInt, i);
+    };
+  }
+
+  $(document).ready(function(){
+    typeWrite('type-writing2');
+  });
+
   // /////////////////////////////  Text typing script end
 
    // /////////////////////////////  Dashboard page review slide script end

@@ -438,6 +438,11 @@ span#selected-range-emojis {
 	line-height: 200%;
 }
 
+.about-right h4 {
+	color: #fccb07;
+    text-shadow: 1px 1px 0px rgb(0 0 0 / 68%);
+}
+
 /*.about-content .view-more {
 	color: #ffffff;
 }*/
@@ -468,15 +473,15 @@ span#selected-range-emojis {
     max-width: 200px;
     min-height: 100px;
     background-size: cover;
-    border: 1px #cdcbcb solid;
+    border: 1px #fccb06 solid;
     border-radius: 50%;
     font-size: 22px;
     font-weight: 700;
     padding: 16px 15px;
     z-index: 9;
-    background: #fff;
+    background: #000;
+    color: #fff;
 }
-
 .tooltip-pop h4 {
     font-size: 15px;
     font-weight: 800;
@@ -497,43 +502,42 @@ span#selected-range-emojis {
 .tooltip-pop:before {
     content: '';
     position: absolute;
-    right: 22px;
+    left: 22px;
     bottom: 0;
     width: 30px;
     height: 15px;
-    border: 1px #cdcbcb solid;
+    border: 1px #fac906 solid;
     border-radius: 50%;
-	background-color: #ffffff;
+    background-color: #fccb06;
 }
 
 .tooltip-pop:after {
     content: '';
     position: absolute;
-    right: 9px;
+    left: 9px;
     bottom: -7px;
     width: 16px;
     height: 8px;
-    border: 1px #cdcbcb solid;
+    border: 1px #fccb06 solid;
     border-radius: 50%;
-	background-color: #ffffff;
+    background-color: #fccb06;
 }
 
 .about-content2 .tooltip-pop {
     right: auto;
     left: 8px;
-    background: url(../images/tooltip-bg.jpg) no-repeat center;
-    background-size: cover;
+    /* background: url(../images/tooltip-bg.jpg) no-repeat center; */
+	background: #000;
+    /* background-size: cover; */
 }
 .about-content2 .tooltip-pop:before {
-    right: auto;
-    left: 18px;
-	background-color: #f5f5f5;
+    right: 18px;
+	left: auto;
 }
 
 .about-content2 .tooltip-pop:after {
-    right: auto;
-    left: 7px;
-	background-color: #f5f5f5;
+    left: auto;
+	right: 9px;
 }
 
 /*=============== About End ==============*/
