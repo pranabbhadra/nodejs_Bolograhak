@@ -14,3 +14,9 @@ ALTER TABLE `reviews` ADD `company_location_id` BIGINT(20) NOT NULL AFTER `compa
 
 ## Add New Field review_status
 ALTER TABLE `reviews` ADD `review_status` ENUM('1', '0') NOT NULL AFTER `user_privacy`;
+
+
+1-08-2023
+-------------------------------------
+## company table add new column 
+ALTER TABLE `company` ADD `status` ENUM('0', '1') NOT NULL AFTER `comp_registration_id`;

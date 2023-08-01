@@ -1570,6 +1570,20 @@ exports.submitReview= async (req, res) => {
         if (encodedUserData) {
             const currentUserData = JSON.parse(encodedUserData);
             console.log(currentUserData);
+            
+            const userId = currentUserData.user_id;
+            const [company] = await Promise.all([
+                comFunction.createCompany(req.body, userId)
+            ]);
+
+            // Render the 'edit-user' EJS view and pass the data
+            return res.send(
+                {
+                    status: 'ok',
+                    data: company,
+                    message: ''
+                }
+            );
         } else {
             //res.redirect('sign-in');
         }

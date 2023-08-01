@@ -470,6 +470,26 @@ async function insertIntoFaqItems(faqItemsArray, categoryId) {
   }
 }
 
+//-- Create New Company ----------//
+async function createCompany(comInfo, userId) {
+  console.log(comInfo, userId);
+  try {
+    // Check if the company Name already exists in the "company" table
+    const company_name_checking_query = "SELECT ID FROM company WHERE company_name = ?";
+    const company_name_checking_results = await query(company_name_checking_query, [comInfo.company_name]);
+    if (company_name_checking_results.length > 0) {
+        //company exist return company ID
+        return company_name_checking_results[0].ID;
+    }else{
+      // Create New Company
+      
+    }
+  }
+  catch (error) {
+    console.error('Error during user registration:', error);
+  }
+};
+
 module.exports = {
     getUser,
     getUserMeta,
@@ -488,5 +508,6 @@ module.exports = {
     getMetaValue,
     insertIntoFaqPages,
     insertIntoFaqCategories,
-    insertIntoFaqItems
+    insertIntoFaqItems,
+    createCompany
 };
