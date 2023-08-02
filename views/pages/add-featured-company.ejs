@@ -42,56 +42,39 @@
                     <div id="kt_account_profile_details" class="collapse show">
                         <!--begin::Form-->
                         <form id="kt_account_profile_details_form" class="form" action="/auth/create-featured-company"
-                            method="POST" enctype="multipart/form-data">
+                            method="post">
                             <!--begin::Card body-->
                             <div class="card-body border-top p-9">
                                 <!--begin::Input group-->
                                 <div class="row mb-6">
                                     <!--begin::Label-->
-                                    <label class="col-lg-4 col-form-label fw-bold fs-6">Logo</label>
-                                    <!--end::Label-->
+                                    <label class="col-lg-4 col-form-label fw-bold fs-6"><span class="required">Select a
+                                            company</span></label>
                                     <!--begin::Col-->
                                     <div class="col-lg-8">
-                                        <!--begin::Image input-->
-                                        <div class="image-input image-input-outline" data-kt-image-input="true"
-                                            style="background-image: url(/assets/media/icons/duotune/abstract/abs013.svg)">
-                                            <!--begin::Preview existing avatar-->
-                                            <div class="image-input-wrapper w-125px h-125px"
-                                                style="background-image: url(/assets/media/icons/duotune/abstract/abs013.svg)">
+                                        <!--begin::Row-->
+                                        <div class="row">
+                                            <!--begin::Col-->
+                                            <div class="col-lg-12 fv-row">
+                                                <select id="" name="featured_company_id" data-control="select2"
+                                                    data-placeholder="Select a Featured company..."
+                                                    class="form-select form-select-solid form-select-lg fw-bold">
+                                                    <option value="">Select a Featured company...</option>
+                                                    <% if(companies.length>0) { %>
+                                                        <% companies.forEach( company=> { %>
+                                                            <option value="<%= company.ID%>">
+                                                                <%= company.company_name %>
+                                                            </option>
+                                                            <% }) %>
+                                                                <% } else { %>
+                                                                    <option value="">There is no such Company
+                                                                    </option>
+                                                                    <% } %>
+                                                </select>
                                             </div>
-                                            <!--end::Preview existing avatar-->
-                                            <!--begin::Label-->
-                                            <label
-                                                class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
-                                                data-kt-image-input-action="change" data-bs-toggle="tooltip"
-                                                title="Change avatar">
-                                                <i class="bi bi-pencil-fill fs-7"></i>
-                                                <!--begin::Inputs-->
-                                                <input type="file" name="logo" accept=".png, .jpg, .jpeg" />
-                                                <!--end::Inputs-->
-                                            </label>
-                                            <!--end::Label-->
-                                            <!--begin::Cancel-->
-                                            <span
-                                                class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
-                                                data-kt-image-input-action="cancel" data-bs-toggle="tooltip"
-                                                title="Cancel avatar">
-                                                <i class="bi bi-x fs-2"></i>
-                                            </span>
-                                            <!--end::Cancel-->
-                                            <!--begin::Remove-->
-                                            <span
-                                                class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
-                                                data-kt-image-input-action="remove" data-bs-toggle="tooltip"
-                                                title="Remove avatar">
-                                                <i class="bi bi-x fs-2"></i>
-                                            </span>
-                                            <!--end::Remove-->
+                                            <!--end::Col-->
                                         </div>
-                                        <!--end::Image input-->
-                                        <!--begin::Hint-->
-                                        <div class="form-text">Allowed file types: png, jpg, jpeg.</div>
-                                        <!--end::Hint-->
+                                        <!--end::Row-->
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -131,6 +114,38 @@
                                         <input type="text" name="comp_url"
                                             class="form-control form-control-lg form-control-solid"
                                             placeholder="Company URL" value="" />
+                                    </div>
+                                    <!--end::Col-->
+                                </div>
+                                <div class="row mb-6">
+                                    <!--begin::Label-->
+                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
+                                        <span class="required">Status</span>
+                                    </label>
+                                    <!--end::Label-->
+                                    <!--begin::Col-->
+                                    <div class="col-lg-8 fv-row">
+                                        <label class="col-lg-1 col-form-label fw-bold fs-6">Active
+                                        </label>
+                                        <input type="radio" name="status" value="active"
+                                            checked />&nbsp;&nbsp;&ensp;&ensp;&ensp;&ensp;
+                                        <label class="col-lg-1.5 col-form-label fw-bold fs-6">Inactive
+                                        </label>&nbsp;
+                                        <input type="radio" name="status" value="inactive" />
+                                    </div>
+                                    <!--end::Col-->
+                                </div>
+                                <div class="row mb-6">
+                                    <!--begin::Label-->
+                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
+                                        <span class="required">Set Order</span>
+                                    </label>
+                                    <!--end::Label-->
+                                    <!--begin::Col-->
+                                    <div class="col-lg-8 fv-row">
+                                        <input type="number"
+                                            class="form-control form-control-lg form-control-solid mb-3 mb-lg-0"
+                                            name="order" value="" />&nbsp;
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -185,6 +200,13 @@
                             form,
                             {
                                 fields: {
+                                    featured_company_id: {
+                                        validators: {
+                                            notEmpty: {
+                                                message: 'Company Name is required'
+                                            }
+                                        }
+                                    },
                                     comp_short_desc: {
                                         validators: {
                                             notEmpty: {
@@ -198,7 +220,14 @@
                                                 message: 'Company URL is required'
                                             }
                                         }
-                                    }
+                                    },
+                                    order: {
+                                        validators: {
+                                            notEmpty: {
+                                                message: 'Ordering is required'
+                                            }
+                                        }
+                                    },
                                 },
                                 plugins: {
                                     trigger: new FormValidation.plugins.Trigger(),
@@ -219,15 +248,17 @@
 
                             validation.validate().then(function (status) {
                                 if (status == 'Valid') {
-                                    //$('#kt_account_profile_details_form').submit();
-                                    var formElement = document.getElementById('kt_account_profile_details_form');
-                                    var formData = new FormData(formElement);
+                                    const formData = $('#kt_account_profile_details_form').serializeArray();
+                                    const jsonData = {};
+                                    $(formData).each(function (index, field) {
+                                        jsonData[field.name] = field.value;
+                                    });
                                     $.ajax({
                                         url: '/auth/create-featured-company', // URL for your API endpoint
-                                        type: 'POST',
-                                        data: formData,
-                                        processData: false, // Prevent jQuery from processing the data
-                                        contentType: false, // Let the browser set the content type
+                                        method: 'POST',
+                                        data: jsonData,
+                                        //processData: false, // Prevent jQuery from processing the data
+                                        ContentType: 'application / json', // Let the browser set the content type
                                         success: function (data) {
                                             if (data.status == 'ok') {
                                                 Swal.fire({
@@ -240,7 +271,7 @@
                                                     }
                                                 }).then(function (result) {
                                                     if (result.isConfirmed) {
-                                                        window.location.href = "/edit-company/" + data.data;
+                                                        window.location.href = "/view-featured-companies";
                                                     }
                                                 });
                                             } else {

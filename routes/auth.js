@@ -113,6 +113,12 @@ router.put('/edit-rating-tags', upload.single('rating_image'), authController.ed
 
 
 //Create Featured Company
-router.post('/create-featured-company', upload.single('logo'), authController.creatFeaturedCompany);
+router.post('/create-featured-company', authController.creatFeaturedCompany);
+
+//Update Featured Company
+router.post('/update-featured-company', authController.updateFeaturedCompany);
+
+//Delete Featured Company
+router.get('/delete-featured-companies/:id', authController.deleteFeaturedCompany);
 
 module.exports = router;

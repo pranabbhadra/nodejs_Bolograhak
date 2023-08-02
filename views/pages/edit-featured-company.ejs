@@ -1,4 +1,4 @@
-<%- include('common/header') -%>
+<%- include('../common/header') -%>
     <!--begin::Content-->
     <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
         <!--begin::Toolbar-->
@@ -33,7 +33,7 @@
                         aria-controls="kt_account_profile_details">
                         <!--begin::Card title-->
                         <div class="card-title m-0">
-                            <h3 class="fw-bolder m-0">Category Details</h3>
+                            <h3 class="fw-bolder m-0">Company Details</h3>
                         </div>
                         <!--end::Card title-->
                     </div>
@@ -41,100 +41,108 @@
                     <!--begin::Content-->
                     <div id="kt_account_profile_details" class="collapse show">
                         <!--begin::Form-->
-                        <form id="kt_account_profile_details_form" class="form" action="/auth/create-category"
-                            method="POST" enctype="multipart/form-data">
+                        <form id="kt_account_profile_details_form" class="form" action="/auth/create-featured-company"
+                            method="post">
                             <!--begin::Card body-->
                             <div class="card-body border-top p-9">
+                                <!--begin::Input group-->
+                                <div class="row mb-6">
+                                    <!--begin::Label-->
+                                    <label class="col-lg-4 col-form-label fw-bold fs-6"><span class="required">Select a
+                                            company</span></label>
+                                    <!--begin::Col-->
+                                    <div class="col-lg-8">
+                                        <!--begin::Row-->
+                                        <div class="row">
+                                            <!--begin::Col-->
+                                            <div class="col-lg-12 fv-row">
+                                                <input type="hidden" name="comp_id" value="<%= f_company.id %>" />
 
-
+                                                <input type="text" name="comp_name"
+                                                    class="form-control form-control-lg form-control-solid mb-3 mb-lg-0"
+                                                    placeholder="Company Short Description"
+                                                    value="<%= f_company.company_name %>" readonly />
+                                            </div>
+                                            <!--end::Col-->
+                                        </div>
+                                        <!--end::Row-->
+                                    </div>
+                                    <!--end::Col-->
+                                </div>
+                                <!--end::Input group-->
+                                <!--begin::Input group-->
+                                <div class="row mb-6">
+                                    <!--begin::Label-->
+                                    <label class="col-lg-4 col-form-label required fw-bold fs-6">Short
+                                        Description</label>
+                                    <!--end::Label-->
+                                    <!--begin::Col-->
+                                    <div class="col-lg-8">
+                                        <!--begin::Row-->
+                                        <div class="row">
+                                            <!--begin::Col-->
+                                            <div class="col-lg-12 fv-row">
+                                                <input type="text" name="comp_short_desc"
+                                                    class="form-control form-control-lg form-control-solid mb-3 mb-lg-0"
+                                                    placeholder="Company Short Description"
+                                                    value="<%= f_company.short_desc %>" />
+                                            </div>
+                                            <!--end::Col-->
+                                        </div>
+                                        <!--end::Row-->
+                                    </div>
+                                    <!--end::Col-->
+                                </div>
+                                <!--end::Input group-->
                                 <!--begin::Input group-->
                                 <div class="row mb-6">
                                     <!--begin::Label-->
                                     <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span class="required">Category Name</span>
+                                        <span class="required">URL</span>
                                     </label>
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-8 fv-row">
-                                        <input type="text" name="cat_name"
+                                        <input type="text" name="comp_url"
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="Category Name" value="" />
+                                            placeholder="Company URL" value="<%= f_company.link %>" />
                                     </div>
                                     <!--end::Col-->
                                 </div>
-                                <!--end::Input group-->
-                                <!--begin::Input group-->
                                 <div class="row mb-6">
                                     <!--begin::Label-->
                                     <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span class="">Category Image</span>
+                                        <span class="required">Status</span>
                                     </label>
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-8 fv-row">
-                                        <input type="file" name="cat_image"
-                                            class="form-control form-control-lg form-control-solid"
-                                            placeholder="Category Image" value="" />
+                                        <label class="col-lg-1 col-form-label fw-bold fs-6">Active
+                                        </label>
+                                        <input type="radio" name="status" value="active" <%- f_company.status=='active'
+                                            ? 'checked' : '' %>
+                                        />&nbsp;&nbsp;&ensp;&ensp;&ensp;&ensp;
+                                        <label class="col-lg-1.5 col-form-label fw-bold fs-6">Inactive
+                                        </label>&nbsp;
+                                        <input type="radio" name="status" value="inactive" <%-
+                                            f_company.status=='inactive' ? 'checked' : '' %>/>
                                     </div>
                                     <!--end::Col-->
                                 </div>
-                                <!--end::Input group-->
-                                <!--begin::Input group-->
                                 <div class="row mb-6">
                                     <!--begin::Label-->
                                     <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span class="">Parent Name</span>
+                                        <span class="required">Set Order</span>
                                     </label>
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-8 fv-row">
-                                        <select id="" name="cat_parent_id" aria-label="Select a Parent Category"
-                                            data-control="select2" data-placeholder="Select a Parent Category..."
-                                            class="form-select form-select-solid form-select-lg fw-bold">
-                                            <option value="">Select a Parent Category...</option>
-                                            <% if(cat_data.length>0) { %>
-                                                <% cat_data.forEach( item=> { %>
-                                                    <option
-                                                        data-kt-flag="assets/media/flags/<%= item.category_name.toLowerCase().replace(/\s+/g, '-') %>.svg"
-                                                        value="<%= item.ID %>">
-                                                        <%= item.category_name %>
-                                                    </option>
-                                                    <% }) %>
-                                                        <% } else { %>
-                                                            <option value="">There is no Parent Category</option>
-                                                            <% } %>
-                                        </select>
+                                        <input type="number"
+                                            class="form-control form-control-lg form-control-solid mb-3 mb-lg-0"
+                                            name="order" value="<%= f_company.ordering %>" />&nbsp;
                                     </div>
                                     <!--end::Col-->
                                 </div>
-                                <!--end::Input group-->
-                                <!--begin::Input group-->
-                                <div class="row mb-6">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span class="required">Country</span>
-                                    </label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-8 fv-row">
-                                        <select id="select_country" name="country[]" aria-label="Select Country"
-                                            data-control="select2" data-placeholder="Select  country(s)..."
-                                            class="form-select form-select-solid form-select-lg fw-bold" multiple>
-                                            <option value="">Select a Country...</option>
-                                            <% country_response.forEach( item=> { %>
-                                                <option
-                                                    data-kt-flag="assets/media/flags/<%= item.name.toLowerCase().replace(/\s+/g, '-') %>.svg"
-                                                    value="<%= item.id %>">
-                                                    <%= item.name %>
-                                                </option>
-                                                <% }) %>
-                                        </select>
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <!--end::Input group-->
-
-
 
                             </div>
                             <!--end::Card body-->
@@ -143,7 +151,7 @@
                                 <button type="reset"
                                     class="btn btn-light btn-active-light-primary me-2">Discard</button>
                                 <button type="submit" class="btn btn-primary"
-                                    id="kt_account_profile_details_submit">Submit</button>
+                                    id="kt_account_profile_details_submit">Save</button>
                             </div>
                             <!--end::Actions-->
                         </form>
@@ -160,7 +168,8 @@
         <!--end::Post-->
     </div>
     <!--end::Content-->
-    <%- include('common/footer') -%>
+    <%- include('../common/footer') -%>
+
         <script>
 /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
@@ -176,6 +185,7 @@
                     var form;
                     var submitButton;
                     var validation;
+                    var passwordMeter;
 
                     var handleForm = function () {
 
@@ -184,21 +194,34 @@
                             form,
                             {
                                 fields: {
-                                    'cat_name': {
+                                    featured_company_id: {
                                         validators: {
                                             notEmpty: {
-                                                message: 'Category name is required'
+                                                message: 'Company Name is required'
                                             }
                                         }
                                     },
-                                    'country[]': {
+                                    comp_short_desc: {
                                         validators: {
                                             notEmpty: {
-                                                message: 'Country name is required'
+                                                message: 'Company short description is required'
                                             }
                                         }
                                     },
-
+                                    comp_url: {
+                                        validators: {
+                                            notEmpty: {
+                                                message: 'Company URL is required'
+                                            }
+                                        }
+                                    },
+                                    order: {
+                                        validators: {
+                                            notEmpty: {
+                                                message: 'Ordering is required'
+                                            }
+                                        }
+                                    },
                                 },
                                 plugins: {
                                     trigger: new FormValidation.plugins.Trigger(),
@@ -219,16 +242,17 @@
 
                             validation.validate().then(function (status) {
                                 if (status == 'Valid') {
-                                    //$('#kt_account_profile_details_form').submit();
-                                    var formElement = document.getElementById('kt_account_profile_details_form');
-                                    var formData = new FormData(formElement);
-                                    console.log(formData);
+                                    const formData = $('#kt_account_profile_details_form').serializeArray();
+                                    const jsonData = {};
+                                    $(formData).each(function (index, field) {
+                                        jsonData[field.name] = field.value;
+                                    });
                                     $.ajax({
-                                        url: '/auth/create-category', // URL for your API endpoint
-                                        type: 'POST',
-                                        data: formData,
-                                        processData: false, // Prevent jQuery from processing the data
-                                        contentType: false, // Let the browser set the content type
+                                        url: '/auth/update-featured-company', // URL for your API endpoint
+                                        method: 'POST',
+                                        data: jsonData,
+                                        //processData: false, // Prevent jQuery from processing the data
+                                        ContentType: 'application / json', // Let the browser set the content type
                                         success: function (data) {
                                             if (data.status == 'ok') {
                                                 Swal.fire({
@@ -241,7 +265,7 @@
                                                     }
                                                 }).then(function (result) {
                                                     if (result.isConfirmed) {
-                                                        window.location.href = "/categories";
+                                                        window.location.href = "/view-featured-companies";
                                                     }
                                                 });
                                             } else {
@@ -294,6 +318,7 @@
                     KTAccountSettingsProfileDetails.init();
                 });
 
+                /******/
             })()
                 ;
 //# sourceMappingURL=profile-details.js.map    

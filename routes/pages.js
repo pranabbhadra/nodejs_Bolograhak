@@ -38,7 +38,6 @@ router.get('', checkCookieValue, async (req, res) => {
         const apiUrl = process.env.BLOG_API_ENDPOINT + '/home-blog';
         const response = await axios.get(apiUrl);
         const blogPosts = response.data;
-
         const sql = `SELECT * FROM page_info where secret_Key = 'home' `;
         db.query(sql, (err, results, fields) => {
             if (err) throw err;
@@ -52,14 +51,24 @@ router.get('', checkCookieValue, async (req, res) => {
                 await meta_values.forEach((item) => {
                     meta_values_array[item.page_meta_key] = item.page_meta_value;
                 })
-                res.render('front-end/landing', {
-                    menu_active_id: 'landing',
-                    page_title: home.title,
-                    currentUserData: currentUserData,
-                    homePosts: blogPosts.status === 'ok' ? blogPosts.data : [],
-                    home,
-                    meta_values_array
-                });
+
+                const featured_sql = `SELECT featured_companies.id,featured_companies.company_id,featured_companies.short_desc,featured_companies.link,company.logo,company.company_name FROM featured_companies 
+                        JOIN company ON featured_companies.company_id = company.ID 
+                        WHERE featured_companies.status = 'active' 
+                        ORDER BY featured_companies.ordering ASC `;
+                db.query(featured_sql, (featured_err, featured_result) => {
+                    var featured_comps = featured_result;
+                    res.render('front-end/landing', {
+                        menu_active_id: 'landing',
+                        page_title: home.title,
+                        currentUserData: currentUserData,
+                        homePosts: blogPosts.status === 'ok' ? blogPosts.data : [],
+                        home,
+                        meta_values_array,
+                        featured_comps
+                    });
+                })
+
             })
 
         })
@@ -874,13 +883,97 @@ router.get('/add-featured-company', checkLoggedIn, async (req, res) => {
     try {
         const encodedUserData = req.cookies.user;
         const currentUserData = JSON.parse(encodedUserData);
-
-        // Render the 'edit-user' EJS view and pass the data
-        res.render('pages/add-featured-company', {
-            menu_active_id: 'pages',
-            page_title: 'Add Featured Company',
-            currentUserData,
+        const sql = `SELECT * FROM company where 1 `;
+        db.query(sql, (err, companies, fields) => {
+            // Render the 'edit-user' EJS view and pass the data
+            //console.log(companies);
+            res.render('pages/add-featured-company', {
+                menu_active_id: 'pages',
+                page_title: 'Add Featured Company',
+                currentUserData,
+                companies
+            });
         });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+
+//---Edit Featured Company--//
+router.get('/edit-featured-company/:id', checkLoggedIn, async (req, res) => {
+    try {
+        const comp_id = req.params.id;
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+        const sql = `SELECT featured_companies.id,featured_companies.company_id,featured_companies.status,featured_companies.ordering,featured_companies.short_desc,featured_companies.link,company.logo,company.company_name FROM featured_companies 
+                        JOIN company ON featured_companies.company_id = company.ID 
+                        WHERE featured_companies.id = ${comp_id} `;
+        db.query(sql, (err, company, fields) => {
+            // Render the 'edit-user' EJS view and pass the data
+            //console.log(company);
+            const f_company = company[0];
+            res.render('pages/edit-featured-company', {
+                menu_active_id: 'pages',
+                page_title: 'Update Featured Company',
+                currentUserData,
+                f_company
+            });
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+
+//---Edit Featured Company--//
+router.get('/delete-featured-companies/:id', checkLoggedIn, async (req, res) => {
+    try {
+        const comp_id = req.params.id;
+        sql = `DELETE FROM featured_companies WHERE id = ?`;
+        const data = [comp_id];
+        db.query(sql, data, (err, result) => {
+            if (err) {
+                return res.send({
+                    status: 'not ok',
+                    message: 'Something went wrong'
+                });
+            } else {
+                return res.send({
+                    status: 'ok',
+                    message: 'Featured Company Deleted Successfully'
+                });
+            }
+
+        })
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+
+
+//---View Featured Company--//
+router.get('/view-featured-companies', checkLoggedIn, async (req, res) => {
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+        const featured_sql = `SELECT featured_companies.id,featured_companies.company_id,featured_companies.status,featured_companies.ordering,featured_companies.short_desc,featured_companies.link,company.logo,company.company_name FROM featured_companies 
+                        JOIN company ON featured_companies.company_id = company.ID 
+                        ORDER BY featured_companies.ordering ASC `;
+
+        db.query(featured_sql, (err, companies, fields) => {
+            res.render('pages/view-featured-companies', {
+                menu_active_id: 'pages',
+                page_title: 'Featured Companies',
+                currentUserData,
+                companies
+            });
+        });
+
     } catch (err) {
         console.error(err);
         res.status(500).send('An error occurred');

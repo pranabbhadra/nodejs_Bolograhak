@@ -8,6 +8,11 @@ const requestIp = require('request-ip');
 const fs = require('fs');
 const dotenv = require('dotenv');
 dotenv.config({ path: './.env' });
+const bodyParser = require('body-parser');
+const app = express();
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 const secretKey = 'grahak-secret-key';
 
@@ -1642,17 +1647,63 @@ exports.updateAbout = async (req, res) => {
 
 // Create Featured Company
 exports.creatFeaturedCompany = (req, res) => {
-    console.log(req.body);
-    console.log(req.file);
-    const { comp_short_desc, comp_url } = req.body;
-    const { logo } = req.file;
-    console.log(logo);
-    sql = `INSERT INTO featured_companies ( company_logo, short_desc, link) VALUES (?,?,?)`;
-    const data = [req.file.logo, comp_short_desc, comp_url];
+    const { featured_company_id, comp_short_desc, comp_url, status, order } = req.body;
+    sql = `INSERT INTO featured_companies ( company_id, short_desc, link, status, ordering) VALUES (?,?,?,?,?)`;
+    const data = [featured_company_id, comp_short_desc, comp_url, status, order];
     db.query(sql, data, (err, result) => {
-        return res.send({
-            status: 'ok',
-            message: 'Featured Company Inserted successfully'
-        });
+        if (err) {
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong'
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Featured Company Created successfully'
+            });
+        }
+
+    })
+}
+
+// Update Featured Company
+exports.updateFeaturedCompany = (req, res) => {
+    const { comp_id, comp_name, comp_short_desc, comp_url, status, order } = req.body;
+    sql = `UPDATE featured_companies SET  short_desc = ?, link = ?, status = ?, ordering = ? WHERE id = ?`;
+    const data = [comp_short_desc, comp_url, status, order, comp_id];
+    db.query(sql, data, (err, result) => {
+        if (err) {
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong'
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Featured Company Updated Successfully'
+            });
+        }
+
+    })
+}
+
+// Delete Featured Company
+exports.deleteFeaturedCompany = (req, res) => {
+    // const { comp_id, comp_name, comp_short_desc, comp_url, status, order } = req.body;
+    sql = `DELETE FROM featured_companies WHERE id = ?`;
+    const data = [comp_short_desc, comp_url, status, order, comp_id];
+    db.query(sql, data, (err, result) => {
+        if (err) {
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong'
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Featured Company Updated Successfully'
+            });
+        }
+
     })
 }

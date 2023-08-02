@@ -660,54 +660,25 @@
     <div class="container">
       <h2 class="main-head text-light mb-4">Featured <span>Companies</span></h2>
       <div class="featured-slider">
-        <div class="item">
-          <div class="feature-box">
-            <a href="#"><img src="/front-end/images/feature-logo1.png" alt="img" width="118" height="45"
-                class="mx-auto"></a>
-            <h5>Samsung</h5>
-            <p class="m-0">Amet minim mollit non deserunt ullamco est...</p>
-          </div>
-        </div>
-        <div class="item">
-          <div class="feature-box">
-            <a href="#"><img src="/front-end/images/feature-logo2.png" alt="img" width="118" height="45"
-                class="mx-auto"></a>
-            <h5>Coca Cola</h5>
-            <p class="m-0">Amet minim mollit non deserunt ullamco est...</p>
-          </div>
-        </div>
-        <div class="item">
-          <div class="feature-box">
-            <a href="#"><img src="/front-end/images/feature-logo3.png" alt="img" width="118" height="45"
-                class="mx-auto"></a>
-            <h5>Adidas</h5>
-            <p class="m-0">Amet minim mollit non deserunt ullamco est...</p>
-          </div>
-        </div>
-        <div class="item">
-          <div class="feature-box">
-            <a href="#"><img src="/front-end/images/feature-logo1.png" alt="img" width="118" height="45"
-                class="mx-auto"></a>
-            <h5>Samsung</h5>
-            <p class="m-0">Amet minim mollit non deserunt ullamco est...</p>
-          </div>
-        </div>
-        <div class="item">
-          <div class="feature-box">
-            <a href="#"><img src="/front-end/images/feature-logo1.png" alt="img" width="118" height="45"
-                class="mx-auto"></a>
-            <h5>Samsung</h5>
-            <p class="m-0">Amet minim mollit non deserunt ullamco est...</p>
-          </div>
-        </div>
-        <div class="item">
-          <div class="feature-box">
-            <a href="#"><img src="/front-end/images/feature-logo1.png" alt="img" width="118" height="45"
-                class="mx-auto"></a>
-            <h5>Samsung</h5>
-            <p class="m-0">Amet minim mollit non deserunt ullamco est...</p>
-          </div>
-        </div>
+        <% if(featured_comps.length>0) { %>
+          <% featured_comps.forEach( company=> { %>
+            <div class="item">
+              <div class="feature-box">
+                <a href="<%= company.link %>"><img src="/<%= company.logo %>" alt="img" width="118" height="45"
+                    class="mx-auto"></a>
+                <h5>
+                  <%= company.company_name %>
+                </h5>
+                <p class="m-0">
+                  <%= company.short_desc %>
+                </p>
+              </div>
+            </div>
+            <% }) %>
+              <% } else { %>
+                <h1>There is no such Company</h1>
+                <% } %>
+
       </div>
     </div>
   </section>
