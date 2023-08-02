@@ -60,6 +60,9 @@ router.post('/update-home', upload.fields([
     { name: 'banner_img_1', maxCount: 1 },
     { name: 'banner_img_2', maxCount: 1 },
     { name: 'banner_img_3', maxCount: 1 },
+    { name: 'banner_img_4', maxCount: 1 },
+    { name: 'banner_img_5', maxCount: 1 },
+    { name: 'banner_img_6', maxCount: 1 },
 
     { name: 'cus_right_img_1', maxCount: 1 },
     { name: 'cus_right_img_2', maxCount: 1 },

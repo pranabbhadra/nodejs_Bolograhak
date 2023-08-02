@@ -87,7 +87,19 @@
 	  }
 	}
 	
+.business-left-cartoon {
+	position: absolute;
+	left: 30px;
+	bottom: 0;
+	z-index: -9;
+}
 
+.business-right-cartoon {
+	position: absolute;
+	right: 30px;
+	bottom: 0;
+	z-index: -9;
+}
 
 /*=============== Business End ==============*/
 
@@ -198,8 +210,9 @@
 
 /*=============== Review Content Start ==============*/
 .review-content {
-	background: #161616;
-	color: #ffffff;
+    background: #161616;
+    color: #ffffff;
+    padding: 80px 0 127px;
 }
 
 .review-content:before {
@@ -706,8 +719,37 @@ span#selected-range-emojis {
 
 /*=============== Featured Content Start ==============*/
 .featured-content {
-    background: #161616;
-    padding: 65px 0;
+    padding: 80px 0 0 0;
+}
+
+.featured-content:before {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 40px;
+	background: url(../images/feature-shape1.png) no-repeat;
+	width: 102px;
+	height: 187px;
+}
+
+.featured-content:after {
+	content: '';
+	position: absolute;
+	right: 0;
+	top: 85px;
+	background: url(../images/feature-shape2.png) no-repeat;
+	width:62px;
+	height: 92px;
+}
+
+.featured-content h2.main-head {
+	margin-bottom: 30px;
+}
+
+.featured-object-wrap {
+	padding: 46px 36px 68px;
+	background: #FFF;
+    box-shadow: 0px 4px 94px 0px rgba(0, 0, 0, 0.14);
 }
 
 .feature-box {
@@ -715,7 +757,13 @@ span#selected-range-emojis {
 	line-height: 138.4%;
 	border-radius: 16px;
     background: #FFF;
-    padding: 50px 25px;
+    padding: 22px 10px;
+	border: 1px solid #333;
+}
+
+.feature-box img {
+    height: 50px !important;
+    width: auto;
 }
 
 .feature-box h5 {
@@ -727,6 +775,30 @@ span#selected-range-emojis {
 }
 .featured-slider .item {
 	margin: 0 12px;
+}
+
+.feature-man1 {
+    position: absolute;
+    left: 130px;
+    top: -130px;
+}
+
+.feature-man2 {
+    position: absolute;
+    right: 130px;
+    top: -146px;
+}
+
+.feature-man3 {
+    position: absolute;
+    left: -125px;
+    bottom: 0;
+}
+
+.feature-man4 {
+    position: absolute;
+    right: -115px;
+    bottom: -1px;
 }
 /*=============== Featured Content End ==============*/
 
