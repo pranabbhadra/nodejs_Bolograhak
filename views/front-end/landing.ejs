@@ -241,43 +241,43 @@
                        <div class="range-tag-wrap">
                           <div class="range-tag1">
                              <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" name="tags" value="" id="" checked>
+                               <input class="form-check-input" type="checkbox" name="tags" value="Praesent rutrum" id="" checked>
                                <label class="form-check-label" for="flexCheckDefault">
                                  Praesent rutrum
                                </label>
                              </div>
                              <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" name="tags" value="" id="">
+                               <input class="form-check-input" type="checkbox" name="tags" value="Phasellus" id="">
                                <label class="form-check-label" for="flexCheckDefault">
                                  Phasellus
                                </label>
                              </div>
                              <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" name="tags" id="">
+                               <input class="form-check-input" type="checkbox" value="faucibus" name="tags" id="">
                                <label class="form-check-label" for="flexCheckDefault">
                                  faucibus
                                </label>
                              </div>
                              <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" name="tags" id="">
+                               <input class="form-check-input" type="checkbox" value="Morbi Tristique" name="tags" id="">
                                <label class="form-check-label" for="flexCheckDefault">
                                  Morbi Tristique
                                </label>
                              </div>
                              <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" name="tags" id="">
+                               <input class="form-check-input" type="checkbox" value="Morbi Tristique Senectus" name="tags" id="">
                                <label class="form-check-label" for="flexCheckDefault">
                                  Morbi Tristique Senectus
                                </label>
                              </div>
                              <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" name="tags" id="">
+                               <input class="form-check-input" type="checkbox" value="faucibus" name="tags" id="">
                                <label class="form-check-label" for="flexCheckDefault">
                                  faucibus
                                </label>
                              </div>
                              <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" name="tags" id="">
+                               <input class="form-check-input" type="checkbox" value="Phasellus" name="tags" id="">
                                <label class="form-check-label" for="flexCheckDefault">
                                  Phasellus
                                </label>
@@ -945,7 +945,14 @@
     const formData = $('#review_submit_frm').serializeArray();
     const jsonData = {};
     $(formData).each(function (index, field) {
-      jsonData[field.name] = field.value;
+      if(field.name==='tags'){
+        if (!jsonData.tags) {
+          jsonData.tags = [];
+        }
+        jsonData.tags.push(field.value);;
+      }else{
+        jsonData[field.name] = field.value;
+      }
     });
     $.ajax({
       url: '/auth/add-review',
@@ -953,11 +960,11 @@
       data: jsonData,
       ContentType: 'application/json',
       success: function (data) {
-        if (data.status == 'ok') {
-          console.log('aaa');
-        } else {
-          console.log('bbb');
-        }
+      // if (data.status == 'ok') {
+      //   console.log('aaa');
+      // } else {
+      //   console.log('bbb');
+      // }
         console.log(data);
       },
       error: function (error) {

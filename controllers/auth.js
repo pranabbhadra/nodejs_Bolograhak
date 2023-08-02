@@ -1568,21 +1568,32 @@ exports.submitReview= async (req, res) => {
     try {
         if (encodedUserData) {
             const currentUserData = JSON.parse(encodedUserData);
-            console.log(currentUserData);
+            //console.log(currentUserData);
             
             const userId = currentUserData.user_id;
-            const [company] = await Promise.all([
-                comFunction.createCompany(req.body, userId)
-            ]);
-
+            const company = await comFunction.createCompany(req.body, userId);
+            const review = comFunction.createReview(req.body, userId, company);
             // Render the 'edit-user' EJS view and pass the data
-            return res.send(
-                {
-                    status: 'ok',
-                    data: company,
-                    message: ''
-                }
-            );
+            if(company && review){
+                return res.send(
+                    {
+                        status: 'ok',
+                        data: {
+                                company,
+                                review
+                        },
+                        message: 'Review posted successfully'
+                    }
+                );
+            }else{
+                return res.send(
+                    {
+                        status: 'error',
+                        data: '',
+                        message: 'Error occurred please try again'
+                    }
+                );
+            }
         } else {
             //res.redirect('sign-in');
         }
