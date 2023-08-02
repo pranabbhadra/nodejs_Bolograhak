@@ -113,7 +113,7 @@
             </span>
             <nav class="nav_sec">
               <ul>
-                <li class="active"><a href="http://localhost/bolograhak/blog/">Did You Know?</a></li>
+                <li class="active"><a href="<%= globalData.BLOG_URL %>">Did You Know?</a></li>
                 <li><a href="/about-us">About Us</a></li>
                 <li><a href="/business">Business</a></li>
                 <li><a href="/contact-us">Contact</a></li>
@@ -207,7 +207,7 @@
                 </div>
                 <div class="log-bowse-content">
                   <span><i class="fa-brands fa-facebook-f"></i></span>
-                  <span><a href="#" target="btn-default">Log in with facebook</a></span>
+                  <span><a href="/auth/facebook" target="btn-default">Log in with facebook</a></span>
                 </div>
               </div>
               <div class="or-connect"><span>Or continue with</span></div>
@@ -253,7 +253,7 @@
                 </div>
                 <div class="log-bowse-content">
                   <span><i class="fa-brands fa-facebook-f"></i></span>
-                  <span><a href="#" target="btn-default">Log in with facebook</a></span>
+                  <span><a href="/auth/facebook" target="btn-default">Log in with facebook</a></span>
                 </div>
               </div>
               <form id="user-signup" name="user-signup-frm" method="post">
@@ -306,11 +306,11 @@
                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="fa-solid fa-circle-xmark"></i></button>
             </div>
             <div class="modal-body text-center">
-               <a href="#" target="_blank" class="quick-login">
+               <a href="/auth/google" target="_blank" class="quick-login">
                <span><i class="fa-brands fa-google"></i></span>
                <span>Log in with Google</span>
                </a>
-               <a href="#" target="_blank" class="quick-login">
+               <a href="/auth/facebook" target="_blank" class="quick-login">
                <span><i class="fa-brands fa-facebook-f"></i></span>
                <span>Log in with Facebook</span>
                </a>

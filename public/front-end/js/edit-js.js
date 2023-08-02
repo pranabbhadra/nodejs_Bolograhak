@@ -621,6 +621,7 @@ jQuery(function($){
       slide: function(event, ui)
       {
         $("#ratingRange").val(ui.values[0] + " / " + ui.values[1]);
+        $("#ratingvalue").val(ui.values[0]);
         // When slider values change, update the text
         $("#selected-range-text").text(rangeTexts[ui.values[0]]);
         $("#selected-range-emojis").text(rangeEmojis[ui.values[0]]);

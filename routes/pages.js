@@ -17,6 +17,10 @@ const publicPath = path.join(__dirname, '../public');
 // Middleware function to check if user CookieValue Exist
 const checkCookieValue = (req, res, next) => {
     // Check if the 'userData' cookie exists and has a value
+    res.locals.globalData = {
+        BLOG_URL: process.env.BLOG_URL,
+        // Add other variables as needed
+    };
     if (req.cookies.user) {
       // If it exists, set the 'userData' property on the request object to the cookie value
       req.userData = req.cookies.user;
@@ -42,7 +46,8 @@ router.get('', checkCookieValue, async (req, res) => {
             menu_active_id: 'landing',
             page_title: 'Home',
             currentUserData: currentUserData,
-            homePosts: blogPosts.status === 'ok' ? blogPosts.data : []
+            homePosts: blogPosts.status === 'ok' ? blogPosts.data : [],
+            AddressapiKey: process.env.ADDRESS_GOOGLE_API_Key
         });
     } catch (error) {
         console.error('Error fetching blog posts:', error);
@@ -50,7 +55,8 @@ router.get('', checkCookieValue, async (req, res) => {
             menu_active_id: 'landing',
             page_title: 'Home',
             currentUserData: currentUserData,
-            homePosts: []
+            homePosts: [],
+            AddressapiKey: process.env.ADDRESS_GOOGLE_API_Key
         });
     }
 });

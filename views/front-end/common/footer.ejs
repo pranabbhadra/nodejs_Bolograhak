@@ -235,7 +235,7 @@
             $('.frm-error-message').text(data.message).show();
             $('#user-signin').trigger('reset');
             if(data.wp_user){
-              window.location.href="http://localhost/bolograhak/blog/?login_check="+data.wp_user;
+              window.location.href="<%= globalData.BLOG_URL %>?login_check="+data.wp_user;
             }else{
               window.location.href="/";
             }

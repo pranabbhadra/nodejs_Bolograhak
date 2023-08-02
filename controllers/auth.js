@@ -8,6 +8,8 @@ const requestIp = require('request-ip');
 const fs = require('fs');
 const dotenv = require('dotenv');
 dotenv.config({ path: './.env' });
+const bodyParser = require('body-parser');
+const querystring = require('querystring');
 
 const secretKey = 'grahak-secret-key';
 
@@ -15,7 +17,8 @@ const comFunction = require('../common_function');
 const axios = require('axios');
 //const cookieParser = require('cookie-parser');
 
-// const app = express();
+const app = express();
+app.use(bodyParser.urlencoded({ extended: true }));
 // app.use(cookieParser());
 
 
@@ -441,7 +444,7 @@ exports.frontendUserLogin = (req, res) => {
                                         gender: user_meta.gender,
                                         profile_pic: user_meta.profile_pic
                                     };
-                                    //const encodedUserData = JSON.stringify(userData);
+                                    const encodedUserData = JSON.stringify(userData);
                                     res.cookie('user', encodedUserData);
                                     console.log(encodedUserData, 'login user data');
                                 } else {
@@ -1404,12 +1407,39 @@ exports.contactFeedback = (req, res) => {
 }
 
 // Create FAQ
-exports.createFAQ = (req, res) => {
-    console.log(JSON.parse(req.body.formData));
+exports.createFAQ = async  (req, res) => {
+    //console.log(req.body);
+    const faqArray = req.body.FAQ;   
+    //console.log(faqArray[0]);  
+    //console.log(faqArray[1]);
 
-    //console.log('FAQ', req.body.formData.FAQ);
-    //JSON.parse(req.body.formData)
+    const Faq_Page_insert_values = [
+        req.body.title,
+        req.body.content,
+        req.body.meta_title,
+        req.body.meta_desc,
+        req.body.keyword,
+    ];
+    try {
+        const faqPageId = await comFunction.insertIntoFaqPages(Faq_Page_insert_values);
+        console.log('ID:',faqPageId);
+        await comFunction.insertIntoFaqCategories(faqArray);
+        return res.send(
+            {
+                status: 'ok',
+                data: faqPageId,
+                message: 'FAQ Content successfully added'
+            }
+        )
+    } catch (error) {
+        console.error('Error during insertion:', error);
+        return res.status(500).send({
+            status: 'error',
+            message: 'An error occurred while inserting FAQ data',
+        });
+    }    
 }
+
 
 // Create Home
 exports.createHome = async (req, res) => {
@@ -1529,3 +1559,36 @@ exports.createHome = async (req, res) => {
         )
     })
 }
+
+
+//--Submit Review----//
+
+exports.submitReview= async (req, res) => {
+    const encodedUserData = req.cookies.user;
+    //console.log(currentUserData);
+    try {
+        if (encodedUserData) {
+            const currentUserData = JSON.parse(encodedUserData);
+            console.log(currentUserData);
+            
+            const userId = currentUserData.user_id;
+            const [company] = await Promise.all([
+                comFunction.createCompany(req.body, userId)
+            ]);
+
+            // Render the 'edit-user' EJS view and pass the data
+            return res.send(
+                {
+                    status: 'ok',
+                    data: company,
+                    message: ''
+                }
+            );
+        } else {
+            //res.redirect('sign-in');
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }    
+}    
