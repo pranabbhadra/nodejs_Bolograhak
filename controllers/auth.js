@@ -10,16 +10,16 @@ const dotenv = require('dotenv');
 dotenv.config({ path: './.env' });
 const bodyParser = require('body-parser');
 const querystring = require('querystring');
+const app = express();
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 const secretKey = 'grahak-secret-key';
 
 const comFunction = require('../common_function');
 const axios = require('axios');
 //const cookieParser = require('cookie-parser');
-
-const app = express();
-app.use(bodyParser.urlencoded({ extended: true }));
-// app.use(cookieParser());
 
 
 //-- Register Function--//
@@ -111,8 +111,8 @@ exports.frontendUserRegister = async (req, res) => {
     try {
         // Check if the email already exists in the "users" table
         const emailExists = await new Promise((resolve, reject) => {
-        db.query('SELECT email FROM users WHERE email = ?', [email], (err, results) => {
-            if (err) reject(err);
+            db.query('SELECT email FROM users WHERE email = ?', [email], (err, results) => {
+                if (err) reject(err);
                 resolve(results.length > 0);
             });
         });
@@ -166,27 +166,27 @@ exports.frontendUserRegister = async (req, res) => {
                     first_name: first_name,
                     last_name: last_name,
                 };
-                axios.post( process.env.BLOG_API_ENDPOINT+'/register', userRegistrationData)
-                .then((response) => {
-                    //console.log('User registration successful. User ID:', response.data.user_id);
-                    return res.send(
-                        {
-                            status: 'ok',
-                            data: response.data.user_id,
-                            message: 'User registration successful'
-                        }
-                    )                  
-                })
-                .catch((error) => {
-                    //console.error('User registration failed:', );
-                    return res.send(
-                        {
-                            status: 'err',
-                            data: '',
-                            message: error.response.data
-                        }
-                    )                   
-                }); 
+                axios.post(process.env.BLOG_API_ENDPOINT + '/register', userRegistrationData)
+                    .then((response) => {
+                        //console.log('User registration successful. User ID:', response.data.user_id);
+                        return res.send(
+                            {
+                                status: 'ok',
+                                data: response.data.user_id,
+                                message: 'User registration successful'
+                            }
+                        )
+                    })
+                    .catch((error) => {
+                        //console.error('User registration failed:', );
+                        return res.send(
+                            {
+                                status: 'err',
+                                data: '',
+                                message: error.response.data
+                            }
+                        )
+                    });
             })
         })
     }
@@ -460,7 +460,7 @@ exports.frontendUserLogin = (req, res) => {
                                     const encodedUserData = JSON.stringify(userData);
                                     res.cookie('user', encodedUserData);
                                 }
-                                
+
                                 (async () => {
                                     //---- Login to Wordpress Blog-----//
                                     //let wp_user_data;
@@ -531,7 +531,7 @@ exports.frontendUserLogin = (req, res) => {
                                     } catch (error) {
                                         console.error('User login failed. Error:', error);
                                         if (error.response && error.response.data) {
-                                          console.log('Error response data:', error.response.data);
+                                            console.log('Error response data:', error.response.data);
                                         }
                                     }
                                 })();
@@ -980,20 +980,20 @@ exports.editUserData = (req, res) => {
 
                     if (req.file) {
                         // Unlink (delete) the previous file
-                        const unlinkprofilePicture = "uploads/"+req.body.previous_profile_pic;
+                        const unlinkprofilePicture = "uploads/" + req.body.previous_profile_pic;
                         fs.unlink(unlinkprofilePicture, (err) => {
                             if (err) {
                                 //console.error('Error deleting file:', err);
-                              } else {
+                            } else {
                                 //console.log('Previous file deleted');
-                              }
+                            }
                         });
                         //const profilePicture = req.file;
                         //console.log(profilePicture);
 
                         const updateQueryMeta = 'UPDATE user_customer_meta SET address = ?, country = ?, state = ?, city = ?, zip = ?, date_of_birth = ?, occupation = ?, gender = ?, profile_pic = ? WHERE user_id = ?';
                         db.query(updateQueryMeta, [req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, req.body.date_of_birth, req.body.occupation, req.body.gender, req.file.filename, userId], (updateError, updateResults) => {
-                            if (updateError){
+                            if (updateError) {
                                 return res.send(
                                     {
                                         status: 'err',
@@ -1001,7 +1001,7 @@ exports.editUserData = (req, res) => {
                                         message: 'An error occurred while processing your request' + updateError
                                     }
                                 )
-                            }else{
+                            } else {
                                 return res.send(
                                     {
                                         status: 'ok',
@@ -1015,7 +1015,7 @@ exports.editUserData = (req, res) => {
                     } else {
                         const updateQueryMeta = 'UPDATE user_customer_meta SET address = ?, country = ?, state = ?, city = ?, zip = ?, date_of_birth = ?, occupation = ?, gender = ? WHERE user_id = ?';
                         db.query(updateQueryMeta, [req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, req.body.date_of_birth, req.body.occupation, req.body.gender, userId], (updateError, updateResults) => {
-                            if (updateError){
+                            if (updateError) {
                                 return res.send(
                                     {
                                         status: 'err',
@@ -1023,7 +1023,7 @@ exports.editUserData = (req, res) => {
                                         message: 'An error occurred while processing your request' + updateError
                                     }
                                 )
-                            }else{
+                            } else {
                                 return res.send(
                                     {
                                         status: 'ok',
@@ -1062,7 +1062,7 @@ exports.createCompany = (req, res) => {
         }
 
         if (results.length > 0) {
-            
+
             return res.send(
                 {
                     status: 'err',
@@ -1085,9 +1085,9 @@ exports.createCompany = (req, res) => {
 
         var insert_values = [];
         if (req.file) {
-            insert_values = [ currentUserData.user_id, req.body.company_name, req.file.filename, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, formattedDate, formattedDate ];
+            insert_values = [currentUserData.user_id, req.body.company_name, req.file.filename, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, formattedDate, formattedDate];
         } else {
-            insert_values = [ currentUserData.user_id, req.body.company_name, '', req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, formattedDate, formattedDate ];
+            insert_values = [currentUserData.user_id, req.body.company_name, '', req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, formattedDate, formattedDate];
         }
 
         const insertQuery = 'INSERT INTO company (user_created_by, company_name, logo, comp_phone, comp_email, comp_registration_id, created_date, updated_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
@@ -1102,14 +1102,14 @@ exports.createCompany = (req, res) => {
                 )
             } else {
                 const companyId = results.insertId;
-                const companyCategoryData = req.body.category.map((categoryID) => [companyId, categoryID]); 
-                db.query('INSERT INTO company_cactgory_relation (company_id, category_id) VALUES ?', [companyCategoryData], function (error, results) { 
-                    if (error) {                     
-                        console.log(error);                     
-                        res.status(400).json({                         
-                            status: 'err',                         
-                            message: 'Error while creating company category'                     
-                        });                 
+                const companyCategoryData = req.body.category.map((categoryID) => [companyId, categoryID]);
+                db.query('INSERT INTO company_cactgory_relation (company_id, category_id) VALUES ?', [companyCategoryData], function (error, results) {
+                    if (error) {
+                        console.log(error);
+                        res.status(400).json({
+                            status: 'err',
+                            message: 'Error while creating company category'
+                        });
                     }
                     else {
                         return res.send(
@@ -1160,9 +1160,9 @@ exports.editCompany = (req, res) => {
         if (results.length > 0) {
             // Email ID or phone number already exist for another company
             return res.send({
-              status: 'err',
-              data: '',
-              message: 'Email ID or phone number already exist for another company'
+                status: 'err',
+                data: '',
+                message: 'Email ID or phone number already exist for another company'
             });
         }
 
@@ -1172,13 +1172,13 @@ exports.editCompany = (req, res) => {
 
         if (req.file) {
             // Unlink (delete) the previous file
-            const unlinkcompanylogo = "uploads/"+req.body.previous_logo;
+            const unlinkcompanylogo = "uploads/" + req.body.previous_logo;
             fs.unlink(unlinkcompanylogo, (err) => {
                 if (err) {
                     //console.error('Error deleting file:', err);
-                  } else {
+                } else {
                     //console.log('Previous file deleted');
-                  }
+                }
             });
 
             updateValues[1] = req.file.filename;
@@ -1187,9 +1187,9 @@ exports.editCompany = (req, res) => {
             if (err) {
                 // Handle the error
                 return res.send({
-                  status: 'err',
-                  data: '',
-                  message: 'An error occurred while updating the company details: ' + err
+                    status: 'err',
+                    data: '',
+                    message: 'An error occurred while updating the company details: ' + err
                 });
             }
 
@@ -1199,9 +1199,9 @@ exports.editCompany = (req, res) => {
                 if (err) {
                     // Handle the error
                     return res.send({
-                      status: 'err',
-                      data: '',
-                      message: 'An error occurred while deleting existing company categories: ' + err
+                        status: 'err',
+                        data: '',
+                        message: 'An error occurred while deleting existing company categories: ' + err
                     });
                 }
 
@@ -1216,12 +1216,12 @@ exports.editCompany = (req, res) => {
                     if (err) {
                         // Handle the error
                         return res.send({
-                          status: 'err',
-                          data: '',
-                          message: 'An error occurred while updating company categories: ' + err
+                            status: 'err',
+                            data: '',
+                            message: 'An error occurred while updating company categories: ' + err
                         });
                     }
-                    
+
                     // Return success response
                     return res.send({
                         status: 'ok',
@@ -1257,7 +1257,7 @@ exports.createRatingTags = (req, res) => {
         }
 
         if (results.length > 0) {
-            
+
             return res.send(
                 {
                     status: 'err',
@@ -1267,12 +1267,12 @@ exports.createRatingTags = (req, res) => {
             )
         }
 
-        insert_values = [ req.body.review_rating_value, req.file.filename, formattedRatingTags ];
+        insert_values = [req.body.review_rating_value, req.file.filename, formattedRatingTags];
         var insert_values = [];
         if (req.file) {
-            insert_values = [ req.body.review_rating_value, req.file.filename, formattedRatingTags ];
+            insert_values = [req.body.review_rating_value, req.file.filename, formattedRatingTags];
         } else {
-            insert_values = [ req.body.review_rating_value, '', formattedRatingTags ];
+            insert_values = [req.body.review_rating_value, '', formattedRatingTags];
         }
 
         const insertQuery = 'INSERT INTO review_rating_tags (review_rating_value, rating_image, rating_tags) VALUES (?, ?, ?)';
@@ -1315,19 +1315,19 @@ exports.editRatingTags = (req, res) => {
     var updateValues = [];
     if (req.file) {
         // Unlink (delete) the previous file
-        const unlinkcompanylogo = "uploads/"+req.body.previous_rating_image;
+        const unlinkcompanylogo = "uploads/" + req.body.previous_rating_image;
         fs.unlink(unlinkcompanylogo, (err) => {
             if (err) {
                 //console.error('Error deleting file:', err);
-                } else {
+            } else {
                 //console.log('Previous file deleted');
-                }
+            }
         });
-        updateValues = [ req.file.filename, formattedRatingTags, row_id ];
+        updateValues = [req.file.filename, formattedRatingTags, row_id];
     } else {
-        updateValues = [ req.body.previous_rating_image, formattedRatingTags, row_id ];
+        updateValues = [req.body.previous_rating_image, formattedRatingTags, row_id];
     }
-    
+
     db.query(updateQuery, updateValues, (err, results) => {
         if (err) {
             // Handle the error
@@ -1440,9 +1440,8 @@ exports.createFAQ = async  (req, res) => {
     }    
 }
 
-
-// Create Home
-exports.createHome = async (req, res) => {
+// Update Home
+exports.updateHome = async (req, res) => {
     // console.log('home', req.body);
     // console.log('file', req.files);
     const form_data = req.body;
@@ -1548,7 +1547,7 @@ exports.createHome = async (req, res) => {
 
     const title_sql = `UPDATE page_info SET title = ?, meta_title = ?, meta_desc = ?, meta_keyword = ? WHERE id  = ?`;
     const title_data = [title, meta_title, meta_desc, meta_keyword, home_id];
-    console.log(title_data);
+    //console.log(title_data);
     db.query(title_sql, title_data, (title_err, title_result) => {
         return res.send(
             {
@@ -1592,3 +1591,175 @@ exports.submitReview= async (req, res) => {
         res.status(500).send('An error occurred');
     }    
 }    
+// Upadte About
+exports.updateAbout = async (req, res) => {
+    // console.log('home', req.body);
+    // console.log('file', req.files);
+    const form_data = req.body;
+
+    const { about_id, title, meta_title, meta_desc, meta_keyword, banner_content, mission_title,
+        mission_content, platform_content, bolograhak_would_content, customers_content,
+        service_providers_content } = req.body;
+
+    const { banner_img_1, banner_img_2, banner_img_3, banner_img_4, banner_img_5, banner_img_6, banner_img_7, banner_img_8,
+        platform_img_1, platform_img_2, platform_img_3, platform_img_4, platform_img_5, platform_img_6, platform_img_7,
+        platform_img_8, right_img_1, right_img_2 } = req.files;
+
+    const meta_value = [banner_content, mission_title,
+        mission_content, platform_content, bolograhak_would_content, customers_content,
+        service_providers_content];
+
+    const meta_key = ['banner_content', 'mission_title',
+        'mission_content', 'platform_content', 'bolograhak_would_content', 'customers_content',
+        'service_providers_content'];
+
+    await meta_value.forEach((element, index) => {
+        //console.log(element, index);
+        const check_sql = `SELECT * FROM page_meta WHERE page_id = ? AND page_meta_key = ?`;
+        const check_data = [about_id, meta_key[index]];
+        db.query(check_sql, check_data, (check_err, check_result) => {
+            if (check_err) {
+                return res.send(
+                    {
+                        status: 'err',
+                        data: '',
+                        message: 'An error occurred while processing your request'
+                    }
+                )
+            } else {
+                if (check_result.length > 0) {
+                    const update_sql = `UPDATE page_meta SET page_meta_value = ? WHERE page_id = ? AND page_meta_key = ?`;
+                    const update_data = [element, about_id, meta_key[index]];
+                    db.query(update_sql, update_data, (update_err, update_result) => {
+                        if (update_err) throw update_err;
+                    })
+                } else {
+                    const insert_sql = `INSERT INTO page_meta (page_id , page_meta_key, page_meta_value) VALUES (?,?,?)`;
+                    const insert_data = [about_id, meta_key[index], element];
+                    db.query(insert_sql, insert_data, (insert_err, insert_result) => {
+                        if (insert_err) throw insert_err;
+                    })
+                }
+            }
+        });
+    });
+
+    const file_meta_value = [banner_img_1, banner_img_2, banner_img_3, banner_img_4, banner_img_5, banner_img_6, banner_img_7, banner_img_8,
+        platform_img_1, platform_img_2, platform_img_3, platform_img_4, platform_img_5, platform_img_6, platform_img_7,
+        platform_img_8, right_img_1, right_img_2];
+
+    const file_meta_key = ['banner_img_1', 'banner_img_2', 'banner_img_3', 'banner_img_4', 'banner_img_5', 'banner_img_6', 'banner_img_7', 'banner_img_8',
+        'platform_img_1', 'platform_img_2', 'platform_img_3', 'platform_img_4', 'platform_img_5', 'platform_img_6', 'platform_img_7',
+        'platform_img_8', 'right_img_1', 'right_img_2'];
+
+    await file_meta_key.forEach((item, key) => {
+        //console.log(item, key);
+        if (req.files[item]) {
+            //console.log(file_meta_value[key][0].filename);
+            const check_sql = `SELECT * FROM page_meta WHERE page_id = ? AND page_meta_key = ?`;
+            const check_data = [about_id, item];
+            db.query(check_sql, check_data, (check_err, check_result) => {
+                if (check_err) {
+                    return res.send(
+                        {
+                            status: 'err',
+                            data: '',
+                            message: 'An error occurred while processing your request'
+                        }
+                    )
+                } else {
+                    if (check_result.length > 0) {
+                        const update_sql = `UPDATE page_meta SET page_meta_value = ? WHERE page_id = ? AND page_meta_key = ?`;
+                        const update_data = [file_meta_value[key][0].filename, about_id, item];
+                        db.query(update_sql, update_data, (update_err, update_result) => {
+                            if (update_err) throw update_err;
+                        })
+                    } else {
+                        const insert_sql = `INSERT INTO page_meta (page_id , page_meta_key, page_meta_value) VALUES (?,?,?)`;
+                        const insert_data = [about_id, item, file_meta_value[key][0].filename];
+                        db.query(insert_sql, insert_data, (insert_err, insert_result) => {
+                            if (insert_err) throw insert_err;
+                        })
+                    }
+                }
+            });
+        }
+
+    });
+
+    const title_sql = `UPDATE page_info SET title = ?, meta_title = ?, meta_desc = ?, meta_keyword = ? WHERE id  = ?`;
+    const title_data = [title, meta_title, meta_desc, meta_keyword, about_id];
+    //console.log(title_data);
+    db.query(title_sql, title_data, (title_err, title_result) => {
+        return res.send(
+            {
+                status: 'ok',
+                data: '',
+                message: 'Title update successfully'
+            }
+        )
+    })
+}
+
+// Create Featured Company
+exports.creatFeaturedCompany = (req, res) => {
+    const { featured_company_id, comp_short_desc, comp_url, status, order } = req.body;
+    sql = `INSERT INTO featured_companies ( company_id, short_desc, link, status, ordering) VALUES (?,?,?,?,?)`;
+    const data = [featured_company_id, comp_short_desc, comp_url, status, order];
+    db.query(sql, data, (err, result) => {
+        if (err) {
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong'
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Featured Company Created successfully'
+            });
+        }
+
+    })
+}
+
+// Update Featured Company
+exports.updateFeaturedCompany = (req, res) => {
+    const { comp_id, comp_name, comp_short_desc, comp_url, status, order } = req.body;
+    sql = `UPDATE featured_companies SET  short_desc = ?, link = ?, status = ?, ordering = ? WHERE id = ?`;
+    const data = [comp_short_desc, comp_url, status, order, comp_id];
+    db.query(sql, data, (err, result) => {
+        if (err) {
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong'
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Featured Company Updated Successfully'
+            });
+        }
+
+    })
+}
+
+// Delete Featured Company
+exports.deleteFeaturedCompany = (req, res) => {
+    // const { comp_id, comp_name, comp_short_desc, comp_url, status, order } = req.body;
+    sql = `DELETE FROM featured_companies WHERE id = ?`;
+    const data = [comp_short_desc, comp_url, status, order, comp_id];
+    db.query(sql, data, (err, result) => {
+        if (err) {
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong'
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Featured Company Updated Successfully'
+            });
+        }
+
+    })
+}

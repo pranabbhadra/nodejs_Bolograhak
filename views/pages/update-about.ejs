@@ -33,10 +33,10 @@
                     <!--begin::Content-->
                     <div id="kt_account_profile_details" class="collapse show">
                         <!--begin::Form-->
-                        <form id="kt_account_profile_details_form" class="form" action="auth/update-home" method="POST"
+                        <form id="kt_account_profile_details_form" class="form" action="auth/update-about" method="POST"
                             enctype="multipart/form-data">
                             <!--begin::Card body-->
-                            <input type="hidden" name="home_id" id="home_id" value="<%= home.id %>" />
+                            <input type="hidden" name="about_id" id="" value="<%= about_info.id %>" />
                             <div class="card-header border-0 cursor-pointer" role="button"
                                 data-bs-target="#kt_account_profile_details" aria-expanded="true"
                                 aria-controls="kt_account_profile_details">
@@ -57,7 +57,7 @@
                                     <div class="col-lg-8 fv-row">
                                         <input type="text" name="title" id="title"
                                             class="form-control form-control-lg form-control-solid" placeholder="Title"
-                                            value="<%= home.title %>" />
+                                            value="<%= about_info.title %>" />
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -73,7 +73,7 @@
                                     <div class="col-lg-8 fv-row">
                                         <input type="text" name="meta_title" id="meta_title"
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="Mata Title" value="<%= home.meta_title %>" />
+                                            placeholder="Mata Title" value="<%= about_info.meta_title %>" />
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -89,7 +89,7 @@
                                     <div class="col-lg-8 fv-row">
                                         <input type="text" name="meta_desc" id="meta_desc"
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="Meta Description" value="<%= home.meta_desc %>" />
+                                            placeholder="Meta Description" value="<%= about_info.meta_desc %>" />
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -105,7 +105,7 @@
                                     <div class="col-lg-8 fv-row">
                                         <input type="text" name="meta_keyword" id="meta_keyword"
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="Meta Keyword" value="<%= home.meta_keyword %>" />
+                                            placeholder="Meta Keyword" value="<%= about_info.meta_keyword %>" />
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -130,14 +130,12 @@
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-8 fv-row">
-                                        <textarea name="bannner_content" id="bannner_content"
+                                        <textarea name="banner_content" id=""
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="Banner Content"><%= meta_values_array.bannner_content %></textarea>
+                                            placeholder="Joing Reason For Business"><%= meta_values_array.banner_content %></textarea>
                                     </div>
                                     <!--end::Col-->
                                 </div>
-                                <!--end::Input group-->
-                                <!--begin::Input group-->
                                 <div class="row mb-6">
                                     <!--begin::Label-->
                                     <label class="col-lg-4 col-form-label fw-bold fs-6">
@@ -146,7 +144,7 @@
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-7 fv-row">
-                                        <input type="file" name="banner_img_1" id="banner_img_1	"
+                                        <input type="file" name="banner_img_1" id=""
                                             class="form-control form-control-lg form-control-solid" placeholder=""
                                             value="" />
                                     </div>
@@ -164,7 +162,7 @@
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-7 fv-row">
-                                        <input type="file" name="banner_img_2" id="banner_img_2"
+                                        <input type="file" name="banner_img_2" id=""
                                             class="form-control form-control-lg form-control-solid" placeholder=""
                                             value="" />
                                     </div>
@@ -182,7 +180,7 @@
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-7 fv-row">
-                                        <input type="file" name="banner_img_3" id="banner_img_3"
+                                        <input type="file" name="banner_img_3" id=""
                                             class="form-control form-control-lg form-control-solid" placeholder=""
                                             value="" />
                                     </div>
@@ -192,86 +190,20 @@
                                     </div>
                                     <!--end::Col-->
                                 </div>
-                            </div>
-                            <div class="card-header border-0 cursor-pointer" role="button"
-                                data-bs-target="#kt_account_profile_details" aria-expanded="true"
-                                aria-controls="kt_account_profile_details">
-                                <!--begin::Card title-->
-                                <div class="card-title m-0">
-                                    <h3 class="fw-bolder m-0">Joing Reason</h3>
-                                </div>
-                                <!--end::Card title-->
-                            </div>
-                            <div class="card-body border-top p-9">
-
                                 <div class="row mb-6">
                                     <!--begin::Label-->
                                     <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span>Joing Reason For Business</span>
-                                    </label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-8 fv-row">
-                                        <textarea name="for_business" id="for_business"
-                                            class="form-control form-control-lg form-control-solid"
-                                            placeholder="Joing Reason For Business"><%= meta_values_array.for_business %></textarea>
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <div class="row mb-6">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span>Joing Reason For Customer</span>
-                                    </label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-8 fv-row">
-                                        <textarea name="for_customer" id="for_customer"
-                                            class="form-control form-control-lg form-control-solid"
-                                            placeholder="Joing Reason For Customer"><%= meta_values_array.for_customer %></textarea>
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                            </div>
-                            <div class="card-header border-0 cursor-pointer" role="button"
-                                data-bs-target="#kt_account_profile_details" aria-expanded="true"
-                                aria-controls="kt_account_profile_details">
-                                <!--begin::Card title-->
-                                <div class="card-title m-0">
-                                    <h3 class="fw-bolder m-0">About Grahak Rights</h3>
-                                </div>
-                                <!--end::Card title-->
-                            </div>
-                            <div class="card-body border-top p-9">
-
-                                <div class="row mb-6">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span>Grahak Rights Content</span>
-                                    </label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-8 fv-row">
-                                        <textarea name="cus_right_content" id="cus_right_content"
-                                            class="form-control form-control-lg form-control-solid"
-                                            placeholder="Joing Reason For Business"><%= meta_values_array.cus_right_content %></textarea>
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <div class="row mb-6">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span class="">Grahak Rights Image 1</span>
+                                        <span class="">Banner Image 4</span>
                                     </label>
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-7 fv-row">
-                                        <input type="file" name="cus_right_img_1" id="about_img_1"
+                                        <input type="file" name="banner_img_4" id=""
                                             class="form-control form-control-lg form-control-solid" placeholder=""
                                             value="" />
                                     </div>
                                     <div class="col-lg-1 fv-row">
-                                        <img src="/<%= meta_values_array.cus_right_img_1 %>" alt="img" width="50"
+                                        <img src="/<%= meta_values_array.banner_img_4 %>" alt="img" width="50"
                                             height="50" loading="">
                                     </div>
                                     <!--end::Col-->
@@ -279,17 +211,17 @@
                                 <div class="row mb-6">
                                     <!--begin::Label-->
                                     <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span class="">Grahak Rights Image 2</span>
+                                        <span class="">Banner Image 5</span>
                                     </label>
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-7 fv-row">
-                                        <input type="file" name="cus_right_img_2" id="cus_right_img_2"
+                                        <input type="file" name="banner_img_5" id=""
                                             class="form-control form-control-lg form-control-solid" placeholder=""
                                             value="" />
                                     </div>
                                     <div class="col-lg-1 fv-row">
-                                        <img src="/<%= meta_values_array.cus_right_img_2 %>" alt="img" width="50"
+                                        <img src="/<%= meta_values_array.banner_img_5 %>" alt="img" width="50"
                                             height="50" loading="">
                                     </div>
                                     <!--end::Col-->
@@ -297,17 +229,17 @@
                                 <div class="row mb-6">
                                     <!--begin::Label-->
                                     <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span class="">Grahak Rights Image 3</span>
+                                        <span class="">Banner Image 6</span>
                                     </label>
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-7 fv-row">
-                                        <input type="file" name="cus_right_img_3" id="cus_right_img_3"
+                                        <input type="file" name="banner_img_6" id=""
                                             class="form-control form-control-lg form-control-solid" placeholder=""
                                             value="" />
                                     </div>
                                     <div class="col-lg-1 fv-row">
-                                        <img src="/<%= meta_values_array.cus_right_img_3 %>" alt="img" width="50"
+                                        <img src="/<%= meta_values_array.banner_img_6 %>" alt="img" width="50"
                                             height="50" loading="">
                                     </div>
                                     <!--end::Col-->
@@ -315,17 +247,17 @@
                                 <div class="row mb-6">
                                     <!--begin::Label-->
                                     <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span class="">Grahak Rights Image 4</span>
+                                        <span class="">Banner Image 7</span>
                                     </label>
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-7 fv-row">
-                                        <input type="file" name="cus_right_img_4" id="cus_right_img_4"
+                                        <input type="file" name="banner_img_7" id=""
                                             class="form-control form-control-lg form-control-solid" placeholder=""
                                             value="" />
                                     </div>
                                     <div class="col-lg-1 fv-row">
-                                        <img src="/<%= meta_values_array.cus_right_img_4 %>" alt="img" width="50"
+                                        <img src="/<%= meta_values_array.banner_img_7 %>" alt="img" width="50"
                                             height="50" loading="">
                                     </div>
                                     <!--end::Col-->
@@ -333,198 +265,18 @@
                                 <div class="row mb-6">
                                     <!--begin::Label-->
                                     <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span class="">Grahak Rights Image 5</span>
+                                        <span class="">Banner Image 8</span>
                                     </label>
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-7 fv-row">
-                                        <input type="file" name="cus_right_img_5" id="cus_right_img_5"
+                                        <input type="file" name="banner_img_8" id=""
                                             class="form-control form-control-lg form-control-solid" placeholder=""
                                             value="" />
                                     </div>
                                     <div class="col-lg-1 fv-row">
-                                        <img src="/<%= meta_values_array.cus_right_img_5 %>" alt="img" width="50"
+                                        <img src="/<%= meta_values_array.banner_img_8 %>" alt="img" width="50"
                                             height="50" loading="">
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <div class="row mb-6">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span class="">Grahak Rights Image 6</span>
-                                    </label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-7 fv-row">
-                                        <input type="file" name="cus_right_img_6" id="cus_right_img_6"
-                                            class="form-control form-control-lg form-control-solid" placeholder=""
-                                            value="" />
-                                    </div>
-                                    <div class="col-lg-1 fv-row">
-                                        <img src="/<%= meta_values_array.cus_right_img_6 %>" alt="img" width="50"
-                                            height="50" loading="">
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <div class="row mb-6">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span class="">Grahak Rights Image 7</span>
-                                    </label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-7 fv-row">
-                                        <input type="file" name="cus_right_img_7" id="cus_right_img_7"
-                                            class="form-control form-control-lg form-control-solid" placeholder=""
-                                            value="" />
-                                    </div>
-                                    <div class="col-lg-1 fv-row">
-                                        <img src="/<%= meta_values_array.cus_right_img_7 %>" alt="img" width="50"
-                                            height="50" loading="">
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <div class="row mb-6">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span class="">Grahak Rights Image 8</span>
-                                    </label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-7 fv-row">
-                                        <input type="file" name="cus_right_img_8" id="cus_right_img_8"
-                                            class="form-control form-control-lg form-control-solid" placeholder=""
-                                            value="" />
-                                    </div>
-                                    <div class="col-lg-1 fv-row">
-                                        <img src="/<%= meta_values_array.cus_right_img_8 %>" alt="img" width="50"
-                                            height="50" loading="">
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <div class="row mb-6">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span class="">Grahak Rights Button Link</span>
-                                    </label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-8 fv-row">
-                                        <input type="text" name="cus_right_button_link" id="cus_right_button_link"
-                                            class="form-control form-control-lg form-control-solid"
-                                            placeholder="Grahak Rights Button Link"
-                                            value="<%= meta_values_array.cus_right_button_link %>" />
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <div class="row mb-6">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span class="">Grahak Rights Button Text</span>
-                                    </label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-8 fv-row">
-                                        <input type="text" name="cus_right_button_text" id="cus_right_button_text"
-                                            class="form-control form-control-lg form-control-solid"
-                                            placeholder="Grahak Rights Button Text"
-                                            value="<%= meta_values_array.cus_right_button_text %>" />
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-
-                            </div>
-                            <div class="card-header border-0 cursor-pointer" role="button"
-                                data-bs-target="#kt_account_profile_details" aria-expanded="true"
-                                aria-controls="kt_account_profile_details">
-                                <!--begin::Card title-->
-                                <div class="card-title m-0">
-                                    <h3 class="fw-bolder m-0">Socials</h3>
-                                </div>
-                                <!--end::Card title-->
-                            </div>
-                            <div class="card-body border-top p-9">
-                                <div class="row mb-6">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span>YouTube Video Link 1</span>
-                                    </label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-8 fv-row">
-                                        <textarea name="youtube_1" id="youtube_1"
-                                            class="form-control form-control-lg form-control-solid"
-                                            placeholder="YouTube Video Link 1"><%= meta_values_array.youtube_1 %></textarea>
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <div class="row mb-6">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span>YouTube Video Link 2</span>
-                                    </label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-8 fv-row">
-                                        <textarea name="youtube_2" id="youtube_2"
-                                            class="form-control form-control-lg form-control-solid"
-                                            placeholder="YouTube Video Link 2"><%= meta_values_array.youtube_2 %></textarea>
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <div class="row mb-6">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span>YouTube Video Link 3</span>
-                                    </label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-8 fv-row">
-                                        <textarea name="youtube_3" id="youtube_3"
-                                            class="form-control form-control-lg form-control-solid"
-                                            placeholder="YouTube Video Link 3"><%= meta_values_array.youtube_3 %></textarea>
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <div class="row mb-6">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span>YouTube Video Link 4</span>
-                                    </label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-8 fv-row">
-                                        <textarea name="youtube_4" id="youtube_4"
-                                            class="form-control form-control-lg form-control-solid"
-                                            placeholder="YouTube Video Link 4"><%= meta_values_array.youtube_4 %></textarea>
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <div class="row mb-6">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span>Facebook Widget</span>
-                                    </label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-8 fv-row">
-                                        <textarea name="fb_widget" id="fb_widget"
-                                            class="form-control form-control-lg form-control-solid"
-                                            placeholder="Facebook Widget"><%= meta_values_array.fb_widget %></textarea>
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <div class="row mb-6">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span>Twitter Widget</span>
-                                    </label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-8 fv-row">
-                                        <textarea name="twitter_widget" id="twitter_widget"
-                                            class="form-control form-control-lg form-control-solid"
-                                            placeholder="Twitter Widget"><%= meta_values_array.twitter_widget %></textarea>
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -534,7 +286,7 @@
                                 aria-controls="kt_account_profile_details">
                                 <!--begin::Card title-->
                                 <div class="card-title m-0">
-                                    <h3 class="fw-bolder m-0">About Organization Responsibility</h3>
+                                    <h3 class="fw-bolder m-0">Our Mission Section</h3>
                                 </div>
                                 <!--end::Card title-->
                             </div>
@@ -543,190 +295,198 @@
                                 <div class="row mb-6">
                                     <!--begin::Label-->
                                     <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span>Organization Responsibility Content</span>
+                                        <span>Mission Title</span>
                                     </label>
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-8 fv-row">
-                                        <textarea name="org_responsibility_content" id="org_responsibility_content"
-                                            class="form-control form-control-lg form-control-solid"
-                                            placeholder="Organization Responsibility Content"><%= meta_values_array.org_responsibility_content %></textarea>
+                                        <input type="text" name="mission_title" id=""
+                                            class="form-control form-control-lg form-control-solid" placeholder="Title"
+                                            value="<%= meta_values_array.mission_title %>" />
                                     </div>
                                     <!--end::Col-->
                                 </div>
                                 <div class="row mb-6">
                                     <!--begin::Label-->
                                     <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span class="">Organization Responsibility Image 1</span>
-                                    </label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-7 fv-row">
-                                        <input type="file" name="org_responsibility_img_1" id="org_responsibility_img_1"
-                                            class="form-control form-control-lg form-control-solid" placeholder=""
-                                            value="" />
-                                    </div>
-                                    <div class="col-lg-1 fv-row">
-                                        <img src="/<%= meta_values_array.org_responsibility_img_1 %>" alt="img"
-                                            width="50" height="50" loading="">
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <div class="row mb-6">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span class="">Organization Responsibility Image 2</span>
-                                    </label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-7 fv-row">
-                                        <input type="file" name="org_responsibility_img_2" id="org_responsibility_img_2"
-                                            class="form-control form-control-lg form-control-solid" placeholder=""
-                                            value="" />
-                                    </div>
-                                    <div class="col-lg-1 fv-row">
-                                        <img src="/<%= meta_values_array.org_responsibility_img_2 %>" alt="img"
-                                            width="50" height="50" loading="">
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <div class="row mb-6">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span class="">Organization Responsibility Image 3</span>
-                                    </label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-7 fv-row">
-                                        <input type="file" name="org_responsibility_img_3" id="org_responsibility_img_3"
-                                            class="form-control form-control-lg form-control-solid" placeholder=""
-                                            value="" />
-                                    </div>
-                                    <div class="col-lg-1 fv-row">
-                                        <img src="/<%= meta_values_array.org_responsibility_img_3 %>" alt="img"
-                                            width="50" height="50" loading="">
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <div class="row mb-6">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span class="">Organization Responsibility Image 4</span>
-                                    </label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-7 fv-row">
-                                        <input type="file" name="org_responsibility_img_4" id="org_responsibility_img_4"
-                                            class="form-control form-control-lg form-control-solid" placeholder=""
-                                            value="" />
-                                    </div>
-                                    <div class="col-lg-1 fv-row">
-                                        <img src="/<%= meta_values_array.org_responsibility_img_4 %>" alt="img"
-                                            width="50" height="50" loading="">
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <div class="row mb-6">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span class="">Organization Responsibility Image 5</span>
-                                    </label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-7 fv-row">
-                                        <input type="file" name="org_responsibility_img_5" id="org_responsibility_img_5"
-                                            class="form-control form-control-lg form-control-solid" placeholder=""
-                                            value="" />
-                                    </div>
-                                    <div class="col-lg-1 fv-row">
-                                        <img src="/<%= meta_values_array.org_responsibility_img_5 %>" alt="img"
-                                            width="50" height="50" loading="">
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <div class="row mb-6">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span class="">Organization Responsibility Image 6</span>
-                                    </label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-7 fv-row">
-                                        <input type="file" name="org_responsibility_img_6" id="org_responsibility_img_6"
-                                            class="form-control form-control-lg form-control-solid" placeholder=""
-                                            value="" />
-                                    </div>
-                                    <div class="col-lg-1 fv-row">
-                                        <img src="/<%= meta_values_array.org_responsibility_img_6 %>" alt="img"
-                                            width="50" height="50" loading="">
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <div class="row mb-6">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span class="">Organization Responsibility Image 7</span>
-                                    </label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-7 fv-row">
-                                        <input type="file" name="org_responsibility_img_7" id="org_responsibility_img_7"
-                                            class="form-control form-control-lg form-control-solid" placeholder=""
-                                            value="" />
-                                    </div>
-                                    <div class="col-lg-1 fv-row">
-                                        <img src="/<%= meta_values_array.org_responsibility_img_7 %>" alt="img"
-                                            width="50" height="50" loading="">
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <div class="row mb-6">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span class="">Organization Responsibility Image 8</span>
-                                    </label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-7 fv-row">
-                                        <input type="file" name="org_responsibility_img_8" id="org_responsibility_img_8"
-                                            class="form-control form-control-lg form-control-solid" placeholder=""
-                                            value="" />
-                                    </div>
-                                    <div class="col-lg-1 fv-row">
-                                        <img src="/<%= meta_values_array.org_responsibility_img_8 %>" alt="img"
-                                            width="50" height="50" loading="">
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <div class="row mb-6">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span class="">Organization Responsibility Button Link</span>
+                                        <span>Mission Content</span>
                                     </label>
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-8 fv-row">
-                                        <input type="text" name="org_responsibility_buttton_link"
-                                            id="org_responsibility_buttton_link"
+                                        <textarea name="mission_content" id=""
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="Organization Responsibility Button Link"
-                                            value="<%= meta_values_array.org_responsibility_buttton_link %>" />
+                                            placeholder="Joing Reason For Customer"><%= meta_values_array.mission_content %></textarea>
+                                    </div>
+                                    <!--end::Col-->
+                                </div>
+                            </div>
+                            <div class="card-header border-0 cursor-pointer" role="button"
+                                data-bs-target="#kt_account_profile_details" aria-expanded="true"
+                                aria-controls="kt_account_profile_details">
+                                <!--begin::Card title-->
+                                <div class="card-title m-0">
+                                    <h3 class="fw-bolder m-0">About Platform</h3>
+                                </div>
+                                <!--end::Card title-->
+                            </div>
+                            <div class="card-body border-top p-9">
+
+                                <div class="row mb-6">
+                                    <!--begin::Label-->
+                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
+                                        <span>Platform Content</span>
+                                    </label>
+                                    <!--end::Label-->
+                                    <!--begin::Col-->
+                                    <div class="col-lg-8 fv-row">
+                                        <textarea name="platform_content" id=""
+                                            class="form-control form-control-lg form-control-solid"
+                                            placeholder="Organization Responsibility Content"><%= meta_values_array.platform_content %></textarea>
                                     </div>
                                     <!--end::Col-->
                                 </div>
                                 <div class="row mb-6">
                                     <!--begin::Label-->
                                     <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span class="">Organization Responsibility Button Text</span>
+                                        <span class="">Platform Image 1</span>
                                     </label>
                                     <!--end::Label-->
                                     <!--begin::Col-->
-                                    <div class="col-lg-8 fv-row">
-                                        <input type="text" name="org_responsibility_buttton_text"
-                                            id="org_responsibility_buttton_text"
-                                            class="form-control form-control-lg form-control-solid"
-                                            placeholder="Organization Responsibility Button Text"
-                                            value="<%= meta_values_array.org_responsibility_buttton_text %>" />
+                                    <div class="col-lg-7 fv-row">
+                                        <input type="file" name="platform_img_1" id=""
+                                            class="form-control form-control-lg form-control-solid" placeholder=""
+                                            value="" />
+                                    </div>
+                                    <div class="col-lg-1 fv-row">
+                                        <img src="/<%= meta_values_array.platform_img_1 %>" alt="img" width="50"
+                                            height="50" loading="">
+                                    </div>
+                                    <!--end::Col-->
+                                </div>
+                                <div class="row mb-6">
+                                    <!--begin::Label-->
+                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
+                                        <span class="">Platform Image 2</span>
+                                    </label>
+                                    <!--end::Label-->
+                                    <!--begin::Col-->
+                                    <div class="col-lg-7 fv-row">
+                                        <input type="file" name="platform_img_2" id="org_responsibility_img_2"
+                                            class="form-control form-control-lg form-control-solid" placeholder=""
+                                            value="" />
+                                    </div>
+                                    <div class="col-lg-1 fv-row">
+                                        <img src="/<%= meta_values_array.platform_img_2 %>" alt="img" width="50"
+                                            height="50" loading="">
+                                    </div>
+                                    <!--end::Col-->
+                                </div>
+                                <div class="row mb-6">
+                                    <!--begin::Label-->
+                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
+                                        <span class="">Platform Image 3</span>
+                                    </label>
+                                    <!--end::Label-->
+                                    <!--begin::Col-->
+                                    <div class="col-lg-7 fv-row">
+                                        <input type="file" name="platform_img_3" id=""
+                                            class="form-control form-control-lg form-control-solid" placeholder=""
+                                            value="" />
+                                    </div>
+                                    <div class="col-lg-1 fv-row">
+                                        <img src="/<%= meta_values_array.platform_img_3 %>" alt="img" width="50"
+                                            height="50" loading="">
+                                    </div>
+                                    <!--end::Col-->
+                                </div>
+                                <div class="row mb-6">
+                                    <!--begin::Label-->
+                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
+                                        <span class="">Platform Image 4</span>
+                                    </label>
+                                    <!--end::Label-->
+                                    <!--begin::Col-->
+                                    <div class="col-lg-7 fv-row">
+                                        <input type="file" name="platform_img_4" id=""
+                                            class="form-control form-control-lg form-control-solid" placeholder=""
+                                            value="" />
+                                    </div>
+                                    <div class="col-lg-1 fv-row">
+                                        <img src="/<%= meta_values_array.platform_img_4 %>" alt="img" width="50"
+                                            height="50" loading="">
+                                    </div>
+                                    <!--end::Col-->
+                                </div>
+                                <div class="row mb-6">
+                                    <!--begin::Label-->
+                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
+                                        <span class="">Platform Image 5</span>
+                                    </label>
+                                    <!--end::Label-->
+                                    <!--begin::Col-->
+                                    <div class="col-lg-7 fv-row">
+                                        <input type="file" name="platform_img_5" id=""
+                                            class="form-control form-control-lg form-control-solid" placeholder=""
+                                            value="" />
+                                    </div>
+                                    <div class="col-lg-1 fv-row">
+                                        <img src="/<%= meta_values_array.platform_img_5 %>" alt="img" width="50"
+                                            height="50" loading="">
+                                    </div>
+                                    <!--end::Col-->
+                                </div>
+                                <div class="row mb-6">
+                                    <!--begin::Label-->
+                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
+                                        <span class="">Platform Image 6</span>
+                                    </label>
+                                    <!--end::Label-->
+                                    <!--begin::Col-->
+                                    <div class="col-lg-7 fv-row">
+                                        <input type="file" name="platform_img_6" id=""
+                                            class="form-control form-control-lg form-control-solid" placeholder=""
+                                            value="" />
+                                    </div>
+                                    <div class="col-lg-1 fv-row">
+                                        <img src="/<%= meta_values_array.platform_img_6 %>" alt="img" width="50"
+                                            height="50" loading="">
+                                    </div>
+                                    <!--end::Col-->
+                                </div>
+                                <div class="row mb-6">
+                                    <!--begin::Label-->
+                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
+                                        <span class="">Platform Image 7</span>
+                                    </label>
+                                    <!--end::Label-->
+                                    <!--begin::Col-->
+                                    <div class="col-lg-7 fv-row">
+                                        <input type="file" name="platform_img_7" id=""
+                                            class="form-control form-control-lg form-control-solid" placeholder=""
+                                            value="" />
+                                    </div>
+                                    <div class="col-lg-1 fv-row">
+                                        <img src="/<%= meta_values_array.platform_img_7 %>" alt="img" width="50"
+                                            height="50" loading="">
+                                    </div>
+                                    <!--end::Col-->
+                                </div>
+                                <div class="row mb-6">
+                                    <!--begin::Label-->
+                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
+                                        <span class="">Platform Image 8</span>
+                                    </label>
+                                    <!--end::Label-->
+                                    <!--begin::Col-->
+                                    <div class="col-lg-7 fv-row">
+                                        <input type="file" name="platform_img_8" id=""
+                                            class="form-control form-control-lg form-control-solid" placeholder=""
+                                            value="" />
+                                    </div>
+                                    <div class="col-lg-1 fv-row">
+                                        <img src="/<%= meta_values_array.platform_img_8 %>" alt="img" width="50"
+                                            height="50" loading="">
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -737,7 +497,7 @@
                                 aria-controls="kt_account_profile_details">
                                 <!--begin::Card title-->
                                 <div class="card-title m-0">
-                                    <h3 class="fw-bolder m-0">About Us</h3>
+                                    <h3 class="fw-bolder m-0">Customers Rights Section</h3>
                                 </div>
                                 <!--end::Card title-->
                             </div>
@@ -746,31 +506,31 @@
                                 <div class="row mb-6">
                                     <!--begin::Label-->
                                     <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span>About Us Content</span>
+                                        <span>Bolo Grahak would Content</span>
                                     </label>
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-8 fv-row">
-                                        <textarea name="about_us_content" id="about_us_content"
+                                        <textarea name="bolograhak_would_content" id=""
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="Organization Responsibility Content"><%= meta_values_array.about_us_content %></textarea>
+                                            placeholder="Organization Responsibility Content"><%= meta_values_array.bolograhak_would_content %></textarea>
                                     </div>
                                     <!--end::Col-->
                                 </div>
                                 <div class="row mb-6">
                                     <!--begin::Label-->
                                     <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span class="">About Us Image</span>
+                                        <span class="">Customers Rights Image 1</span>
                                     </label>
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-7 fv-row">
-                                        <input type="file" name="about_us_img" id="about_us_img"
+                                        <input type="file" name="right_img_1" id=""
                                             class="form-control form-control-lg form-control-solid" placeholder=""
                                             value="" />
                                     </div>
                                     <div class="col-lg-1 fv-row">
-                                        <img src="/<%= meta_values_array.about_us_img %>" alt="img" width="50"
+                                        <img src="/<%= meta_values_array.right_img_1 %>" alt="img" width="50"
                                             height="50" loading="">
                                     </div>
                                     <!--end::Col-->
@@ -778,30 +538,46 @@
                                 <div class="row mb-6">
                                     <!--begin::Label-->
                                     <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span class="">About Us Button Link</span>
+                                        <span class="">Customers Rights Image 2</span>
                                     </label>
                                     <!--end::Label-->
                                     <!--begin::Col-->
-                                    <div class="col-lg-8 fv-row">
-                                        <input type="text" name="about_us_button_link" id="about_us_button_link"
-                                            class="form-control form-control-lg form-control-solid"
-                                            placeholder="About Us Button Link"
-                                            value="<%= meta_values_array.about_us_button_link %>" />
+                                    <div class="col-lg-7 fv-row">
+                                        <input type="file" name="right_img_2" id=""
+                                            class="form-control form-control-lg form-control-solid" placeholder=""
+                                            value="" />
+                                    </div>
+                                    <div class="col-lg-1 fv-row">
+                                        <img src="/<%= meta_values_array.right_img_2 %>" alt="img" width="50"
+                                            height="50" loading="">
                                     </div>
                                     <!--end::Col-->
                                 </div>
                                 <div class="row mb-6">
                                     <!--begin::Label-->
                                     <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span class="">About Us Button Text</span>
+                                        <span>Customers Content</span>
                                     </label>
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-8 fv-row">
-                                        <input type="text" name="about_us_button_text" id="about_us_button_text"
+                                        <textarea name="customers_content" id=""
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="About Us Button Text"
-                                            value="<%= meta_values_array.about_us_button_text %>" />
+                                            placeholder="Organization Responsibility Content"><%= meta_values_array.customers_content %></textarea>
+                                    </div>
+                                    <!--end::Col-->
+                                </div>
+                                <div class="row mb-6">
+                                    <!--begin::Label-->
+                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
+                                        <span>Service Providers Content</span>
+                                    </label>
+                                    <!--end::Label-->
+                                    <!--begin::Col-->
+                                    <div class="col-lg-8 fv-row">
+                                        <textarea name="service_providers_content" id=""
+                                            class="form-control form-control-lg form-control-solid"
+                                            placeholder="Organization Responsibility Content"><%= meta_values_array.service_providers_content %></textarea>
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -878,7 +654,7 @@
                                     //return false;
 
                                     $.ajax({
-                                        url: '/auth/update-home', // URL for your API endpoint
+                                        url: '/auth/update-about', // URL for your API endpoint
                                         type: 'POST',
                                         data: formData,
                                         processData: false,
@@ -895,7 +671,7 @@
                                                     }
                                                 }).then(function (result) {
                                                     if (result.isConfirmed) {
-                                                        window.location.href = "/edit-home";
+                                                        window.location.href = "/edit-about";
                                                     }
                                                 });
                                             } else {
@@ -950,4 +726,5 @@
 
             })()
                 ;
+//# sourceMappingURL=profile-details.js.map    
         </script>
