@@ -1267,15 +1267,15 @@ exports.createRatingTags = (req, res) => {
             )
         }
 
-        insert_values = [req.body.review_rating_value, req.file.filename, formattedRatingTags];
+        insert_values = [req.body.review_rating_value, req.body.review_rating_name, req.file.filename, formattedRatingTags];
         var insert_values = [];
         if (req.file) {
-            insert_values = [req.body.review_rating_value, req.file.filename, formattedRatingTags];
+            insert_values = [req.body.review_rating_value, req.body.review_rating_name, req.file.filename, formattedRatingTags];
         } else {
-            insert_values = [req.body.review_rating_value, '', formattedRatingTags];
+            insert_values = [req.body.review_rating_value, req.body.review_rating_name, '', formattedRatingTags];
         }
 
-        const insertQuery = 'INSERT INTO review_rating_tags (review_rating_value, rating_image, rating_tags) VALUES (?, ?, ?)';
+        const insertQuery = 'INSERT INTO review_rating_tags (review_rating_value, review_rating_name, rating_image, rating_tags) VALUES (?, ?, ?, ?)';
         db.query(insertQuery, insert_values, (err, results, fields) => {
             if (err) {
                 return res.send(
@@ -1310,7 +1310,7 @@ exports.editRatingTags = (req, res) => {
     const formattedRatingTags = ratingValues.join('|');
 
     // Update company details in the company table
-    const updateQuery = 'UPDATE review_rating_tags SET rating_image = ?, rating_tags = ? WHERE id = ?';
+    const updateQuery = 'UPDATE review_rating_tags SET review_rating_name = ?, rating_image = ?, rating_tags = ? WHERE id = ?';
 
     var updateValues = [];
     if (req.file) {
@@ -1323,9 +1323,9 @@ exports.editRatingTags = (req, res) => {
                 //console.log('Previous file deleted');
             }
         });
-        updateValues = [req.file.filename, formattedRatingTags, row_id];
+        updateValues = [req.body.review_rating_name, req.file.filename, formattedRatingTags, row_id];
     } else {
-        updateValues = [req.body.previous_rating_image, formattedRatingTags, row_id];
+        updateValues = [req.body.review_rating_name, req.body.previous_rating_image, formattedRatingTags, row_id];
     }
 
     db.query(updateQuery, updateValues, (err, results) => {

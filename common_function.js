@@ -492,8 +492,8 @@ async function createCompany(comInfo, userId) {
           }else{
             //create new address for company
             try{
-              const create_company_address_query = 'INSERT INTO company_location (company_id, address, country, state, city, zip) VALUES (?, ?, ?, ?, ?, ?)';
-              const create_company_address_values = [company_name_checking_results[0].ID, comInfo.address, comInfo.country, comInfo.state, comInfo.city, comInfo.zip];
+              const create_company_address_query = 'INSERT INTO company_location (company_id, address, country, state, city, zip, status) VALUES (?, ?, ?, ?, ?, ?, ?)';
+              const create_company_address_values = [company_name_checking_results[0].ID, comInfo.address, comInfo.country, comInfo.state, comInfo.city, comInfo.zip, '0'];
               const create_company_address_results = await query(create_company_address_query, create_company_address_values);
               if (create_company_address_results.insertId) {
                 return_data.companyID = company_name_checking_results[0].ID;
@@ -525,8 +525,8 @@ async function createCompany(comInfo, userId) {
         if (create_company_results.insertId) {
           //create new address for company
           try{
-            const create_company_address_query = 'INSERT INTO company_location (company_id, address, country, state, city, zip) VALUES (?, ?, ?, ?, ?, ?)';
-            const create_company_address_values = [create_company_results.insertId, comInfo.address, comInfo.country, comInfo.state, comInfo.city, comInfo.zip];
+            const create_company_address_query = 'INSERT INTO company_location (company_id, address, country, state, city, zip, status) VALUES (?, ?, ?, ?, ?, ?, ?)';
+            const create_company_address_values = [create_company_results.insertId, comInfo.address, comInfo.country, comInfo.state, comInfo.city, comInfo.zip, '0'];
             const create_company_address_results = await query(create_company_address_query, create_company_address_values);
             if (create_company_address_results.insertId) {
               return_data.companyID = create_company_results.insertId;
@@ -580,6 +580,29 @@ async function createReview(reviewIfo, userId, comInfo){
   }
 }
 
+async function getlatestReviews(reviewCount){
+  const get_latest_review_query = `
+    SELECT r.*, c.company_name, c.logo, cl.address, cl.country, cl.state, cl.city, cl.zip
+      FROM reviews r
+      JOIN company c ON r.company_id = c.ID AND c.status = "1"
+      JOIN company_location cl ON r.company_location_id = cl.ID AND cl.status = "1"
+      WHERE r.review_status = "1"
+      ORDER BY r.created_at DESC
+      LIMIT ${reviewCount};
+  `;
+  try{
+    const get_latest_review_results = await query(get_latest_review_query);
+    if(get_latest_review_results.length > 0 ){
+      //console.log(get_latest_review_results);
+      return get_latest_review_results;
+    }else{
+      return [];
+    }
+  }catch(error){
+    console.error('Error during user get_latest_review_query:', error);
+  }
+  
+}
 
 module.exports = {
     getUser,
@@ -601,5 +624,6 @@ module.exports = {
     insertIntoFaqCategories,
     insertIntoFaqItems,
     createCompany,
-    createReview
+    createReview,
+    getlatestReviews,
 };

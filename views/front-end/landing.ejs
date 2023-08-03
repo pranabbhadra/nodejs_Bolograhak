@@ -226,7 +226,7 @@
                     </div>
                     <div class="col-md-12">
                        <div class="rating-slider">
-                          <span id="selected-range-emojis"></span>
+                          <span><img style="width:50px;" src="" id="selected-range-emojis" /></span>
                           <label>Rating</label>
                           <div id="rating-range" class="rating"></div>
                           <input type="text" id="ratingRange" readonly>
@@ -239,192 +239,19 @@
                     <div class="col-md-12">
                        <div class="tag-label">Tags</div>
                        <div class="range-tag-wrap">
-                          <div class="range-tag1">
+                        <% allRatingTags.forEach( (rev_tag, index) => { %>
+                          <div class="tag-items-wrapper range-tag<%= rev_tag.review_rating_value.replace(/\./g, "") %> <% if(index!=0){ %>d-none<% } %>">
+                            <% const tag_items = rev_tag.rating_tags.split('|'); %>
+                            <% tag_items.forEach(function(tag) { %>
                              <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" name="tags" value="Praesent rutrum" id="" checked>
+                               <input class="form-check-input" type="checkbox" name="tags" value="<%= tag %>" id="">
                                <label class="form-check-label" for="flexCheckDefault">
-                                 Praesent rutrum
+                                <%= tag %>
                                </label>
                              </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" name="tags" value="Phasellus" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 Phasellus
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="faucibus" name="tags" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 faucibus
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="Morbi Tristique" name="tags" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 Morbi Tristique
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="Morbi Tristique Senectus" name="tags" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 Morbi Tristique Senectus
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="faucibus" name="tags" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 faucibus
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="Phasellus" name="tags" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 Phasellus
-                               </label>
-                             </div>
+                             <% }); %> 
                           </div>
-                          <!--
-                          <div class="range-tag2 d-none">
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="" name="tags" checked>
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 Praesent rutrum
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" name="tags" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 Phasellus
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" name="tags" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 faucibus
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 Morbi Tristique
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 Morbi Tristique Senectus
-                               </label>
-                             </div>
-                          </div>
-                          <div class="range-tag3 d-none">
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 Phasellus
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 faucibus
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 Morbi Tristique Senectus
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 faucibus
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 Phasellus
-                               </label>
-                             </div>
-                          </div> 
-                          <div class="range-tag4 d-none">
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="" checked>
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 Praesent rutrum
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 Phasellus
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 faucibus
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 Morbi Tristique
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 Morbi Tristique Senectus
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 faucibus
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 Phasellus
-                               </label>
-                             </div>
-                          </div>
-                          <div class="range-tag5 d-none">
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="" checked>
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 Praesent rutrum
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 Phasellus
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 faucibus
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 Morbi Tristique
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 Phasellus
-                               </label>
-                             </div>
-                          </div>
-                          -->
+                        <% }) %>  
                        </div>
                     </div>
                     <div class="col-md-12">
@@ -448,7 +275,7 @@
                     <div class="col-md-12">
                        <div class="review-submit d-flex justify-content-between align-items-center">
                           <input type="submit" class="btn-default btn-warning" value="Submit">
-                          <a href="#" class="view-more mt-0"><span class="position-relative"><i class="fa-solid fa-angle-right"></i>View All Reviews</span></a>
+                          <a href="/review" class="view-more mt-0"><span class="position-relative"><i class="fa-solid fa-angle-right"></i>View All Reviews</span></a>
                        </div>
                     </div>
                  </div>
@@ -938,6 +765,44 @@
       console.log('Selected place:', place);
     });
   }
+
+  // ////////////////////////////// Range Slider Start
+
+  const rangeTexts = {
+    <% allRatingTags.forEach((rev_tag, index) => { %>
+      "<%= rev_tag.review_rating_value %>": "<%= rev_tag.review_rating_name %>",
+    <% }) %>
+  };
+  const rangeEmojis = {
+    <% allRatingTags.forEach((rev_tag, index) => { %>
+      "<%= rev_tag.review_rating_value %>": "<%= rev_tag.rating_image %>",
+    <% }) %>
+  };
+
+  $("#rating-range").slider({
+      step: 0.5,
+      range: true, 
+      min: 0.5, 
+      max: 5, 
+      values: [0.5, 5], 
+      slide: function(event, ui)
+      {
+        console.log(ui);
+        $("#ratingRange").val(ui.values[0] + " / " + ui.values[1]);
+        $("#ratingvalue").val(ui.values[0]);
+        // When slider values change, update the text
+        var numberAsString = ui.values[0].toString();
+        var classnumber = numberAsString.replace(".", "");
+        $("#selected-range-text").text(rangeTexts[ui.values[0]]);
+        $("#selected-range-emojis").attr('src',rangeEmojis[ui.values[0]]);
+        $('.range-tag'+classnumber).removeClass('d-none');
+        $('.tag-items-wrapper:not(.range-tag'+classnumber+')').addClass("d-none");
+        $('input[type="checkbox"][name="tags"]').prop('checked', false);
+      }
+  });
+  $("#ratingRange").val($("#rating-range").slider("values", 0) + " / " + $("#rating-range").slider("values", 1));
+
+////////////////////////////// Range Slider End
 
   //-------Review Form Submit-----------------//
   $( "#review_submit_frm" ).on( "submit", function( event ) {

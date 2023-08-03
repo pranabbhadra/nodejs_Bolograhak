@@ -35,6 +35,11 @@ const checkCookieValue = (req, res, next) => {
 router.get('', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
 
+    const [allRatingTags] = await Promise.all([
+        comFunction.getAllRatingTags(),
+    ]);
+    const rangeTexts = {};
+
     try {
         // Make API request to fetch blog posts
         const apiUrl = process.env.BLOG_API_ENDPOINT + '/home-blog';
@@ -68,6 +73,7 @@ router.get('', checkCookieValue, async (req, res) => {
                         home,
                         meta_values_array,
                         featured_comps,
+                        allRatingTags: allRatingTags,
                         AddressapiKey: process.env.ADDRESS_GOOGLE_API_Key
                     });
                 })
@@ -149,8 +155,30 @@ router.get('/about-us', checkCookieValue, async (req, res) => {
 });
 
 router.get('/review', checkCookieValue, async (req, res) => {
-    let currentUserData = JSON.parse(req.userData);
-    res.render('front-end/review', { menu_active_id: 'review', page_title: 'Customer Reviews', currentUserData });
+    try {
+        let currentUserData = JSON.parse(req.userData);
+
+        // Fetch all the required data asynchronously
+        const [latestReviews] = await Promise.all([
+            comFunction.getlatestReviews(15),
+        ]);
+
+        // res.render('front-end/review', {
+        //     menu_active_id: 'review',
+        //     page_title: 'Customer Reviews',
+        //     currentUserData,
+        //     latestReviews: latestReviews
+        // });
+        res.json({
+            menu_active_id: 'review',
+            page_title: 'Customer Reviews',
+            currentUserData,
+            latestReviews: latestReviews
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
 });
 
 router.get('/faq', checkCookieValue, async (req, res) => {
