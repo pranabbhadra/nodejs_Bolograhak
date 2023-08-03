@@ -10,6 +10,7 @@ const dotenv = require('dotenv');
 dotenv.config({ path: './.env' });
 
 const comFunction = require('../common_function');
+const comFunction2 = require('../common_function2');
 
 const router = express.Router();
 const publicPath = path.join(__dirname, '../public');
@@ -22,11 +23,11 @@ const checkCookieValue = (req, res, next) => {
         // Add other variables as needed
     };
     if (req.cookies.user) {
-      // If it exists, set the 'userData' property on the request object to the cookie value
-      req.userData = req.cookies.user;
+        // If it exists, set the 'userData' property on the request object to the cookie value
+        req.userData = req.cookies.user;
     } else {
-      // If the cookie doesn't exist or has no value, set 'userData' to null
-      req.userData = null;
+        // If the cookie doesn't exist or has no value, set 'userData' to null
+        req.userData = null;
     }
     // Call the next middleware or route handler
     next();
@@ -785,6 +786,33 @@ router.get('/add-faq', checkLoggedIn, (req, res) => {
             menu_active_id: 'faq',
             page_title: 'FAQs ',
             currentUserData
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+
+//Edit FAQ Page
+router.get('/edit-faq', checkLoggedIn, async (req, res) => {
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+
+        const faqPageData = await comFunction2.getFaqPage();
+        const faqCategoriesData = await comFunction2.getFaqCategories();
+        const faqItemsData = await comFunction2.getFaqItems();
+        // console.log(faqPageData);
+        // console.log(faqCategoriesData);
+        // console.log(faqItemsData);
+        // Render the 'add-page' EJS view and pass the data
+        res.render('faq/edit-faq', {
+            menu_active_id: 'faq',
+            page_title: 'Edit FAQs ',
+            currentUserData,
+            faqPageData,
+            faqCategoriesData,
+            faqItemsData
         });
     } catch (err) {
         console.error(err);

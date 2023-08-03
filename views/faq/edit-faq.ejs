@@ -56,7 +56,7 @@
                                     <div class="col-lg-8 fv-row">
                                         <input type="text" name="title" id="title"
                                             class="form-control form-control-lg form-control-solid" placeholder="Title"
-                                            value="" />
+                                            value="<%= faqPageData.title %>" />
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -71,7 +71,8 @@
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-8 fv-row">
-                                        <textarea name="content" class="content" id="content-editor"></textarea>
+                                        <textarea name="content" class="content"
+                                            id="content-editor"><%= faqPageData.content %></textarea>
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -87,7 +88,7 @@
                                     <div class="col-lg-8 fv-row">
                                         <input type="longtext" name="meta_title" id="meta_title"
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="Meta Title" value="" />
+                                            placeholder="Meta Title" value="<%= faqPageData.meta_title %>" />
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -103,7 +104,7 @@
                                     <div class="col-lg-8 fv-row">
                                         <input type="longtext" name="meta_desc" id="meta_desc"
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="Meta Description" value="" />
+                                            placeholder="Meta Description" value="<%= faqPageData.meta_desc %>" />
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -120,7 +121,7 @@
                                     <div class="col-lg-8 fv-row">
                                         <input type="text" name="keyword" id="keyword"
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="Keyword" value="" />
+                                            placeholder="Keyword" value="<%= faqPageData.keyword %>" />
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -136,58 +137,85 @@
                                 <!--end::Card title-->
                             </div>
                             <div class="card-body border-top p-9 main-repeater" id="main-repeater">
-                                <div class="main_full_area">
-                                    <div class="category-repeter">
-                                        <div class="category_name">
-                                            <div class="row mb-6">
-                                                <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                                    <span class="required">Category Name</span>
-                                                </label>
-                                                <div class="col-lg-8 fv-row">
-                                                    <input type="text" name="category_name" id="category_name"
-                                                        class="form-control form-control-lg form-control-solid"
-                                                        placeholder="Category Name" value="" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="main_question_answer">
-                                            <div class="add_question_answer">
-                                                <div class="each_question_answer">
-                                                    <div class="add_question">
-                                                        <div class="row mb-6">
-                                                            <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                                                <span class="">Question</span>
-                                                            </label>
-                                                            <div class="col-lg-8 fv-row">
-                                                                <input type="text" name="question" id="question"
-                                                                    class="form-control form-control-lg form-control-solid"
-                                                                    placeholder="Question" value="" />
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="add_answer">
-                                                        <div class="row mb-6">
-                                                            <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                                                <span class="">Answer</span>
-                                                            </label>
-                                                            <div class="col-lg-8 fv-row">
-                                                                <textarea name="answer"
-                                                                    class="form-control form-control-lg form-control-solid answer-editor"
-                                                                    id=""></textarea>
-                                                            </div>
-                                                        </div>
+                                <% faqCategoriesData.forEach( (category,index)=> { %>
+                                    <div class="main_full_area" id="full_area_category_id<%= index %>">
+                                        <div class="category-repeter">
+                                            <div class="category_name">
+                                                <div class="row mb-6">
+                                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
+                                                        <span class="required">Category Name</span>
+                                                    </label>
+                                                    <div class="col-lg-8 fv-row">
+                                                        <input type="text" name="category_name" id="category_name"
+                                                            class="form-control form-control-lg form-control-solid"
+                                                            placeholder="Category Name"
+                                                            value="<%= category.category %>" />
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="add_question_answer_btn">
-                                            <a href="#" class="btn btn-primary">Add question answer</a>
+                                            <% var count=0; %>
+                                                <div class="main_question_answer">
+                                                    <% faqItemsData.forEach( (qus_ans, key)=> { %>
+                                                        <% if (qus_ans.category_id==category.id) { %>
+                                                            <% count++ %>
+                                                                <div class="add_question_answer">
+                                                                    <div class="each_question_answer">
+                                                                        <div class="add_question">
+                                                                            <div class="row mb-6">
+                                                                                <label
+                                                                                    class="col-lg-4 col-form-label fw-bold fs-6">
+                                                                                    <span class="">Question</span>
+                                                                                </label>
+                                                                                <div class="col-lg-8 fv-row">
+                                                                                    <input type="text" name="question"
+                                                                                        id="question"
+                                                                                        class="form-control form-control-lg form-control-solid"
+                                                                                        placeholder="Question"
+                                                                                        value="<%= qus_ans.question %>" />
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="add_answer">
+                                                                            <div class="row mb-6">
+                                                                                <label
+                                                                                    class="col-lg-4 col-form-label fw-bold fs-6">
+                                                                                    <span class="">Answer</span>
+                                                                                </label>
+                                                                                <div class="col-lg-8 fv-row">
+                                                                                    <textarea name="answer"
+                                                                                        class="form-control form-control-lg form-control-solid answer-editor"
+                                                                                        id=""><%= qus_ans.answer %></textarea>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <% if(count> 1) { %>
+                                                                            <button type="button"
+                                                                                class="btn btn-danger remove-QA"
+                                                                                class="" id="" style="float: right;"><i
+                                                                                    class="fa fa-minus"></i></button>
+                                                                            <% } %>
+                                                                    </div>
+                                                                </div>
+
+                                                                <% } %>
+                                                                    <% }) %>
+                                                                        <a href="#"
+                                                                            class="btn btn-primary add_question_answer_btn">Add
+                                                                            question
+                                                                            answer</a>
+                                                </div>
+                                                <% if(index !=0) { %>
+                                                    <button type="button" class="btn btn-danger remove-btn" id=""
+                                                        style="float: left;"><i
+                                                            class="fa fa-minus"></i>Category</button>
+                                                    <% } %>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="add_category_btn">
-                                    <a id="add_category_btn" class="btn btn-primary" href="#">Add Category</a>
-                                </div>
+
+                                    <% }) %>
+
+                                        <a id="add_category_btn" class="btn btn-primary" href="#">Add
+                                            Category</a>
                             </div>
                             <!--begin::Actions-->
                             <div class="card-footer d-flex justify-content-end py-6 px-9">
@@ -302,8 +330,8 @@
                                     console.log(transformedResponse);
 
                                     $.ajax({
-                                        url: '/auth/create-faq',
-                                        method: 'POST',
+                                        url: '/auth/update-faq',
+                                        method: 'PUT',
                                         data: JSON.stringify(transformedResponse),
                                         contentType: 'application/json',
                                         success: function (data) {
@@ -318,7 +346,7 @@
                                                     }
                                                 }).then(function (result) {
                                                     if (result.isConfirmed) {
-                                                        window.location.href = "/add-faq";
+                                                        window.location.href = "/edit-faq";
                                                     }
                                                 });
                                             } else {
@@ -376,16 +404,18 @@
 
             $(document).ready(function () {
 
-                $('#add_category_btn').click(function (e) {
+                $(document).on('click', '#add_category_btn', function (e) {
                     e.preventDefault();
-                    $(this).parents('.main-repeater').find('.main_full_area').append('<div class="category-repeter"> <div class="category_name"> <div class="row mb-6"> <label class="col-lg-4 col-form-label fw-bold fs-6"> <span class="required">Category Name</span> </label> <div class="col-lg-8 fv-row"> <input type="text" name="category_name" id="category_name" class="form-control form-control-lg form-control-solid" placeholder="Category Name" value=""/> </div></div></div><div class="main_question_answer"> <div class="add_question_answer"> <div class="add_question"> <div class="row mb-6"> <label class="col-lg-4 col-form-label fw-bold fs-6"> <span class="">Question</span> </label> <div class="col-lg-8 fv-row"> <input type="text" name="question" id="question" class="form-control form-control-lg form-control-solid" placeholder="Question" value=""/> </div></div></div><div class="add_answer"> <div class="row mb-6"> <label class="col-lg-4 col-form-label fw-bold fs-6"> <span class="">Answer</span> </label> <div class="col-lg-8 fv-row"> <textarea name="answer" class="form-control form-control-lg form-control-solid answer-editor" id=""></textarea> </div></div></div></div></div><div class="add_question_answer_btn"> <a href="#" class="btn btn-primary">Add question answer</a> </div><button type="button" class="btn btn-danger remove-btn" id="" style="float: left;"><i class="fa fa-minus"></i>Category</button></div>');
-
+                    $(this).parent().append('<div class="category-repeter"> <div class="category_name"> <div class="row mb-6"> <label class="col-lg-4 col-form-label fw-bold fs-6"> <span class="required">Category Name</span> </label> <div class="col-lg-8 fv-row"> <input type="text" name="category_name" id="category_name" class="form-control form-control-lg form-control-solid" placeholder="Category Name" value=""/> </div></div></div><div class="main_question_answer"> <div class="add_question_answer"> <div class="add_question"> <div class="row mb-6"> <label class="col-lg-4 col-form-label fw-bold fs-6"> <span class="">Question</span> </label> <div class="col-lg-8 fv-row"> <input type="text" name="question" id="question" class="form-control form-control-lg form-control-solid" placeholder="Question" value=""/> </div></div></div><div class="add_answer"> <div class="row mb-6"> <label class="col-lg-4 col-form-label fw-bold fs-6"> <span class="">Answer</span> </label> <div class="col-lg-8 fv-row"> <textarea name="answer" class="form-control form-control-lg form-control-solid answer-editor" id=""></textarea> </div></div></div></div></div><a href="#" class="btn btn-primary add_question_answer_btn">Add question answer</a><button type="button" class="btn btn-danger remove-btn" id="" style="float: left;"><i class="fa fa-minus"></i>Category</button></div>');
+                    $(this).parent().append('<a id="add_category_btn" class="btn btn-primary" href="#">Add Category</a>');
+                    $(this).remove();
                     //initializeCKEditor($(this).parents('.main-repeater'))
                 });
-                $('body').on('click', '.add_question_answer_btn > a', function (e) {
+                $(document).on('click', '.add_question_answer_btn', function (e) {
                     e.preventDefault();
-                    $(this).parents('.category-repeter').find('.main_question_answer').append('<div class="each_question_answer"> <div class="add_question"> <div class="row mb-6"> <label class="col-lg-4 col-form-label fw-bold fs-6"> <span class="">Question</span> </label> <div class="col-lg-8 fv-row"> <input type="text" name="question" id="question" class="form-control form-control-lg form-control-solid" placeholder="Question" value=""/> </div></div></div><div class="add_answer"> <div class="row mb-6"> <label class="col-lg-4 col-form-label fw-bold fs-6"> <span class="">Answer</span> </label> <div class="col-lg-8 fv-row"> <textarea name="answer" class="form-control form-control-lg form-control-solid answer-editor" id=""></textarea> </div></div></div><button type="button" class="btn btn-danger remove-QA" class="" id="" style="float: right;"><i class="fa fa-minus"></i></button></div>');
-
+                    $(this).parent().append('<div class="each_question_answer"> <div class="add_question"> <div class="row mb-6"> <label class="col-lg-4 col-form-label fw-bold fs-6"> <span class="">Question</span> </label> <div class="col-lg-8 fv-row"> <input type="text" name="question" id="question" class="form-control form-control-lg form-control-solid" placeholder="Question" value=""/> </div></div></div><div class="add_answer"> <div class="row mb-6"> <label class="col-lg-4 col-form-label fw-bold fs-6"> <span class="">Answer</span> </label> <div class="col-lg-8 fv-row"> <textarea name="answer" class="form-control form-control-lg form-control-solid answer-editor" id=""></textarea> </div></div></div><button type="button" class="btn btn-danger remove-QA" class="" id="" style="float: right;"><i class="fa fa-minus"></i></button></div>');
+                    $(this).parent().append(' <a href="#" class= "btn btn-primary add_question_answer_btn" >Add question answer</a >');
+                    $(this).remove();
                     //initializeCKEditor($(this).parents('.category-repeter'))
                 });
 
@@ -399,14 +429,14 @@
                     $(this).parent('.each_question_answer').remove();
                 });
 
-                function initializeCKEditor($item) {
-                    $item.find(".answer-editor").each(function () {
-                        if (!$(this).hasClass("ckeditor-initialized")) {
-                            CKEDITOR.replace(this);
-                            $(this).addClass("ckeditor-initialized");
-                        }
-                    });
-                }
+                // function initializeCKEditor($item) {
+                //     $item.find(".answer-editor").each(function () {
+                //         if (!$(this).hasClass("ckeditor-initialized")) {
+                //             CKEDITOR.replace(this);
+                //             $(this).addClass("ckeditor-initialized");
+                //         }
+                //     });
+                // }
 
                 // Initialize CKEditor for nested repeater textareas
                 // const initCKEditor = function () {

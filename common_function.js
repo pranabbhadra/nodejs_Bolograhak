@@ -214,96 +214,96 @@ function renderCategoryTreeHTMLforCompany(categories, com_category_array) {
 const saveUserGoogleLoginDataToDB = async (userData) => {
   //console.log(userData);
   //console.log(userData.name.familyName + ' ' + userData.name.givenName + ' ' + userData.emails[0].value + ' ' + userData.photos[0].value+ ' ' + userData.id);
-  
+
   try {
     // Check if the email already exists in the "users" table
     const emailExists = await new Promise((resolve, reject) => {
-    db.query('SELECT email FROM users WHERE email = ?', [userData.emails[0].value], (err, results) => {
+      db.query('SELECT email FROM users WHERE email = ?', [userData.emails[0].value], (err, results) => {
         if (err) reject(err);
-            resolve(results.length > 0);
-        });
+        resolve(results.length > 0);
+      });
     });
     if (emailExists) {
-        try {
-          const gEmail = userData.emails[0].value;
-          const userSearchQuery = 'SELECT * FROM users WHERE email = ?';
-          const userResults = await query(userSearchQuery, [gEmail]);
-          if (userResults.length > 0) {
-            //console.log('Glogin user data', userResults);
-            const userMatch = userResults[0];
-            try{
-              const matchUserID = userMatch.user_id;
-              const userMetaSearchQuery = `SELECT user_meta.*, c.name as country_name, s.name as state_name
+      try {
+        const gEmail = userData.emails[0].value;
+        const userSearchQuery = 'SELECT * FROM users WHERE email = ?';
+        const userResults = await query(userSearchQuery, [gEmail]);
+        if (userResults.length > 0) {
+          //console.log('Glogin user data', userResults);
+          const userMatch = userResults[0];
+          try {
+            const matchUserID = userMatch.user_id;
+            const userMetaSearchQuery = `SELECT user_meta.*, c.name as country_name, s.name as state_name
                                             FROM user_customer_meta user_meta
                                             JOIN countries c ON user_meta.country = c.id
                                             JOIN states s ON user_meta.state = s.id
                                             WHERE user_id = ?`;
-              const userMetaResults = await query(userMetaSearchQuery, [matchUserID]);
-              let usercookieData = {};
-              if (userMetaResults.length > 0) {
-                const matchUserMetaData = userMetaResults[0];
-                const dateString = matchUserMetaData.date_of_birth;
-                const date_of_birth_date = new Date(dateString);
-                const formattedDate = date_of_birth_date.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
-                usercookieData = {
-                  user_id: matchUserID,
-                  first_name: userMatch.first_name,
-                  last_name: userMatch.last_name,
-                  email: userMatch.email,
-                  phone: userMatch.phone,
-                  user_type_id: userMatch.user_type_id,
-                  address: matchUserMetaData.address,
-                  country: matchUserMetaData.country,
-                  country_name: matchUserMetaData.country_name,
-                  state: matchUserMetaData.state,
-                  state_name: matchUserMetaData.state_name,
-                  city: matchUserMetaData.city,
-                  zip: matchUserMetaData.zip,
-                  review_count: matchUserMetaData.review_count,
-                  date_of_birth: formattedDate,
-                  occupation: matchUserMetaData.occupation,
-                  gender: matchUserMetaData.gender,
-                  profile_pic: matchUserMetaData.profile_pic,
-                  source: 'gmail'
-                };
-                console.log(usercookieData, 'Logedin User All Data 111');
-              }else{
-                usercookieData = {
-                  user_id: matchUserID,
-                  first_name: userMatch.first_name,
-                  last_name: userMatch.last_name,
-                  email: userMatch.email,
-                  phone: userMatch.phone,
-                  user_type_id: userMatch.user_type_id,
-                  profile_pic: userData.photos[0].value,
-                  source: 'gmail'
-                };
-                console.log(usercookieData, 'Logedin User All Data 222');
-              }
-
-              try{
-                const wpUserSearchQuery = 'SELECT ID FROM bg_users WHERE user_login = ?';
-                const wpUserResults = await query(wpUserSearchQuery, [gEmail]);
-                if (wpUserResults.length > 0) {
-                  //console.log(wpUserResults, 'Wp User Query Result');
-                  usercookieData.wp_user_id = wpUserResults[0].ID;
-                }
-                console.log(usercookieData, 'Final Return data');
-                return usercookieData;
-              }catch(error){
-                console.error('Error executing SELECT wpUserSearchQuery:', error);
-              }
-              
-
-            } catch(error){
-              console.error('Error executing SELECT userMetaSearchQuery:', error);
+            const userMetaResults = await query(userMetaSearchQuery, [matchUserID]);
+            let usercookieData = {};
+            if (userMetaResults.length > 0) {
+              const matchUserMetaData = userMetaResults[0];
+              const dateString = matchUserMetaData.date_of_birth;
+              const date_of_birth_date = new Date(dateString);
+              const formattedDate = date_of_birth_date.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+              usercookieData = {
+                user_id: matchUserID,
+                first_name: userMatch.first_name,
+                last_name: userMatch.last_name,
+                email: userMatch.email,
+                phone: userMatch.phone,
+                user_type_id: userMatch.user_type_id,
+                address: matchUserMetaData.address,
+                country: matchUserMetaData.country,
+                country_name: matchUserMetaData.country_name,
+                state: matchUserMetaData.state,
+                state_name: matchUserMetaData.state_name,
+                city: matchUserMetaData.city,
+                zip: matchUserMetaData.zip,
+                review_count: matchUserMetaData.review_count,
+                date_of_birth: formattedDate,
+                occupation: matchUserMetaData.occupation,
+                gender: matchUserMetaData.gender,
+                profile_pic: matchUserMetaData.profile_pic,
+                source: 'gmail'
+              };
+              console.log(usercookieData, 'Logedin User All Data 111');
+            } else {
+              usercookieData = {
+                user_id: matchUserID,
+                first_name: userMatch.first_name,
+                last_name: userMatch.last_name,
+                email: userMatch.email,
+                phone: userMatch.phone,
+                user_type_id: userMatch.user_type_id,
+                profile_pic: userData.photos[0].value,
+                source: 'gmail'
+              };
+              console.log(usercookieData, 'Logedin User All Data 222');
             }
-          }
-        } catch (error) {
-          console.error('Error executing SELECT userSearchQuery:', error);
-        }
 
-    }else{
+            try {
+              const wpUserSearchQuery = 'SELECT ID FROM bg_users WHERE user_login = ?';
+              const wpUserResults = await query(wpUserSearchQuery, [gEmail]);
+              if (wpUserResults.length > 0) {
+                //console.log(wpUserResults, 'Wp User Query Result');
+                usercookieData.wp_user_id = wpUserResults[0].ID;
+              }
+              console.log(usercookieData, 'Final Return data');
+              return usercookieData;
+            } catch (error) {
+              console.error('Error executing SELECT wpUserSearchQuery:', error);
+            }
+
+
+          } catch (error) {
+            console.error('Error executing SELECT userMetaSearchQuery:', error);
+          }
+        }
+      } catch (error) {
+        console.error('Error executing SELECT userSearchQuery:', error);
+      }
+
+    } else {
       try {
         // Hash the password asynchronously
         const hashedPassword = await bcrypt.hash(userData.emails[0].value, 8);
@@ -375,25 +375,25 @@ const saveUserFacebookLoginDataToDB = (userData) => {
 // Fetch all Review Rating Tags
 function getAllRatingTags() {
   return new Promise((resolve, reject) => {
-      db.query('SELECT * FROM review_rating_tags', (err, result) => {
-          if (err) {
-              reject(err);
-          } else {
-              resolve(result);
-          }
-      });
+    db.query('SELECT * FROM review_rating_tags', (err, result) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result);
+      }
+    });
   });
 }
 
 function getReviewRatingData(review_rating_Id) {
   return new Promise((resolve, reject) => {
-      db.query('SELECT * FROM review_rating_tags WHERE id = ?', [review_rating_Id], (err, result) => {
-          if (err) {
-              reject(err);
-          } else {
-              resolve(result[0]);
-          }
-      });
+    db.query('SELECT * FROM review_rating_tags WHERE id = ?', [review_rating_Id], (err, result) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result[0]);
+      }
+    });
   });
 }
 
@@ -417,10 +417,20 @@ function getMetaValue(pageID, page_meta_key) {
 // Function to insert data into 'faq_pages' table
 async function insertIntoFaqPages(data) {
   try {
-    const insertQuery = 'INSERT INTO faq_pages (title, content, meta_title, meta_desc, keyword) VALUES (?, ?, ?, ?, ?)';
-    const results = await query(insertQuery, data);
-    return results.insertId;
-    
+    const checkQuery = `SELECT * FROM faq_pages WHERE 1`;
+    db.query(checkQuery, async (checkErr, checkResult) => {
+      if (checkResult.length > 0) {
+        const updateQuery = `UPDATE faq_pages SET title=?, content = ?, meta_title = ?, meta_desc = ?, keyword = ? WHERE id = ${checkResult[0].id}`;
+        const results = await query(updateQuery, data);
+        return checkResult[0].id;
+      } else {
+        const insertQuery = 'INSERT INTO faq_pages (title, content, meta_title, meta_desc, keyword) VALUES (?, ?, ?, ?, ?)';
+        const results = await query(insertQuery, data);
+        return results.insertId;
+      }
+    })
+
+
   } catch (error) {
     console.error('Error inserting data into faq_pages table:', error);
     throw error;
@@ -478,11 +488,11 @@ async function createCompany(comInfo, userId) {
     const company_name_checking_query = "SELECT ID FROM company WHERE company_name = ?";
     const company_name_checking_results = await query(company_name_checking_query, [comInfo.company_name]);
     if (company_name_checking_results.length > 0) {
-        //company exist return company ID
-        return company_name_checking_results[0].ID;
-    }else{
+      //company exist return company ID
+      return company_name_checking_results[0].ID;
+    } else {
       // Create New Company
-      
+
     }
   }
   catch (error) {
@@ -491,23 +501,23 @@ async function createCompany(comInfo, userId) {
 };
 
 module.exports = {
-    getUser,
-    getUserMeta,
-    getCountries,
-    getUserRoles,
-    getStatesByUserID,
-    getAllCompany,
-    getCompany,
-    getCompanyCategory,
-    renderCategoryTreeHTML,
-    getCompanyCategoryBuID,
-    saveUserGoogleLoginDataToDB,
-    saveUserFacebookLoginDataToDB,
-    getAllRatingTags,
-    getReviewRatingData,
-    getMetaValue,
-    insertIntoFaqPages,
-    insertIntoFaqCategories,
-    insertIntoFaqItems,
-    createCompany
+  getUser,
+  getUserMeta,
+  getCountries,
+  getUserRoles,
+  getStatesByUserID,
+  getAllCompany,
+  getCompany,
+  getCompanyCategory,
+  renderCategoryTreeHTML,
+  getCompanyCategoryBuID,
+  saveUserGoogleLoginDataToDB,
+  saveUserFacebookLoginDataToDB,
+  getAllRatingTags,
+  getReviewRatingData,
+  getMetaValue,
+  insertIntoFaqPages,
+  insertIntoFaqCategories,
+  insertIntoFaqItems,
+  createCompany
 };

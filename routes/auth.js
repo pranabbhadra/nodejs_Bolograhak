@@ -49,6 +49,9 @@ router.put('/edit-company-data', upload.single('logo'), authController.editCompa
 // Add FAQ
 router.post('/create-faq', authController.createFAQ);
 
+// Update FAQ
+router.put('/update-faq', authController.updateFAQ);
+
 // Update Contacts
 router.post('/update-contact', authController.updateContacts);
 

@@ -1407,9 +1407,9 @@ exports.contactFeedback = (req, res) => {
 }
 
 // Create FAQ
-exports.createFAQ = async  (req, res) => {
+exports.createFAQ = async (req, res) => {
     //console.log(req.body);
-    const faqArray = req.body.FAQ;   
+    const faqArray = req.body.FAQ;
     //console.log(faqArray[0]);  
     //console.log(faqArray[1]);
 
@@ -1422,7 +1422,7 @@ exports.createFAQ = async  (req, res) => {
     ];
     try {
         const faqPageId = await comFunction.insertIntoFaqPages(Faq_Page_insert_values);
-        console.log('ID:',faqPageId);
+        console.log('ID:', faqPageId);
         await comFunction.insertIntoFaqCategories(faqArray);
         return res.send(
             {
@@ -1437,7 +1437,48 @@ exports.createFAQ = async  (req, res) => {
             status: 'error',
             message: 'An error occurred while inserting FAQ data',
         });
-    }    
+    }
+}
+
+// Update FAQ
+exports.updateFAQ = async (req, res) => {
+    //console.log(req.body);
+    const faqArray = req.body.FAQ;
+    //console.log(faqArray[0]);  
+    //console.log(faqArray[1]);
+
+    const Faq_Page_insert_values = [
+        req.body.title,
+        req.body.content,
+        req.body.meta_title,
+        req.body.meta_desc,
+        req.body.keyword,
+    ];
+    try {
+        db.query('DELETE  FROM faq_categories', (del_faq_cat_err, del_faq_cat_res) => {
+            db.query('DELETE - FROM faq_item', async (del_faq_item_err, del_faq_item_res) => {
+                const faqPageId = await comFunction.insertIntoFaqPages(Faq_Page_insert_values);
+                console.log('ID:', faqPageId);
+                await comFunction.insertIntoFaqCategories(faqArray);
+                return res.send(
+                    {
+                        status: 'ok',
+                        data: faqPageId,
+                        message: 'FAQ Content successfully added'
+                    }
+                )
+            })
+        });
+
+
+
+    } catch (error) {
+        console.error('Error during insertion:', error);
+        return res.status(500).send({
+            status: 'error',
+            message: 'An error occurred while inserting FAQ data',
+        });
+    }
 }
 
 // Update Home
@@ -1562,14 +1603,14 @@ exports.updateHome = async (req, res) => {
 
 //--Submit Review----//
 
-exports.submitReview= async (req, res) => {
+exports.submitReview = async (req, res) => {
     const encodedUserData = req.cookies.user;
     //console.log(currentUserData);
     try {
         if (encodedUserData) {
             const currentUserData = JSON.parse(encodedUserData);
             console.log(currentUserData);
-            
+
             const userId = currentUserData.user_id;
             const [company] = await Promise.all([
                 comFunction.createCompany(req.body, userId)
@@ -1589,8 +1630,8 @@ exports.submitReview= async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).send('An error occurred');
-    }    
-}    
+    }
+}
 // Upadte About
 exports.updateAbout = async (req, res) => {
     // console.log('home', req.body);
