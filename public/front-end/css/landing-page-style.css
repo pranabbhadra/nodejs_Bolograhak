@@ -802,6 +802,23 @@ span#selected-range-emojis {
 }
 /*=============== Featured Content End ==============*/
 
+/*=============== About Digital content start ==============*/
+.about-digital-content {
+	padding: 156px 0;
+}
+
+.about-digital-wrold {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+}
+
+.about-digital-content .about-right {
+	position: relative;
+	z-index: 9;
+}
+/*=============== About Digital content End ==============*/
+
 /*=============== Bottom main Content Start ==============*/
 .bottom-main-content .about-right p {
 	font-size: 18px;

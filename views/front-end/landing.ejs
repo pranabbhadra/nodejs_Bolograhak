@@ -830,10 +830,10 @@
       <p class="m-0">Ralph Nader, a leading American political activist and author is known as the father of the consumer movement.</p>
     </div>
   </section>
-  <section class="main-content">
+  <section class="main-content about-digital-content">
     <div class="container">
       <div class="row flex-md-row-reverse">
-        <div class="col-md-6 my-auto">
+        <div class="col-md-6 my-auto ms-auto">
           <div class="about-right my-3 text-md-start text-center" data-aos="fade-left">
             <%- meta_values_array.about_us_content %>
               <a href="<%= meta_values_array.about_us_button_link %>" class="view-more mt-3"><span
@@ -842,7 +842,7 @@
                 </span></a>
           </div>
         </div>
-        <div class="col-md-6 my-auto">
+        <!-- <div class="col-md-6 my-auto">
           <div class="about-left my-md-0 mt-3 mb-0" data-aos="fade-right">
             <picture>
               <source media="(max-width:575px)" srcset="/front-end/images/about-dummy-mbl-img.jpg" width="280" height="186">
@@ -850,8 +850,15 @@
               <img src="/<%= meta_values_array.about_us_img %>" alt="img" width="613" height="565" loading="lazy">
             </picture>
           </div>
-        </div>
+        </div> -->
       </div>
+    </div>
+    <div class="about-digital-wrold" data-aos="fade-right">
+      <picture>
+        <source media="(max-width:575px)" srcset="/front-end/images/about-dummy-mbl-img.jpg" width="280" height="186">
+        <source media="(max-width:767px)" srcset="/front-end/images/about-dummy-tab-img.jpg" width="390" height="259">
+        <img src="/<%= meta_values_array.about_us_img %>" alt="img" width="1063" height="763" loading="lazy">
+      </picture>
     </div>
   </section>
   <!-- ============== About End =============== -->
