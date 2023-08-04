@@ -337,6 +337,24 @@ span.toggle-menu {
     font-size: 36px;
     font-weight: 800;
     line-height: 110.4%;
+    font-family: var(--inter)
+}
+
+.back-browser {
+    display: inline-block;
+    vertical-align: middle;
+    color: #828282;
+    margin-right: 8px;
+    font-size: 23px;
+}
+
+.back-browser:hover {
+    color: #f1ae00;
+}
+
+.inner-page-heading-in h1 {
+    display: inline-block;
+    vertical-align: middle;
 }
 
 /*===================== Banner =====================*/
@@ -347,29 +365,39 @@ span.toggle-menu {
     min-height: 757px;
     position: relative;
     padding-top: 137px;
-}
-
-.main-banner h4 {
-    color: #FCCB06;
-}
-
-.main-banner h4 span {
-    display: inline-block;
-    background: #fccb06;
-    padding: 5px 10px 6px;
-    border-radius: 6px;
-    color: #000;
+    background: #000000;
 }
 
 .main-banner h1 {
-    color: #FFF;
-    font-size: 64px;
-    font-weight: 700;
-    line-height: 110.4%;
+    color: #FCCB06;
+    font-size: 46px;
+    font-weight: 800;
+    line-height: 38px; 
 }
 
-.main-banner h1 span {
-    color: #FCCB06;
+.main-banner h2 {
+    color: #FFF;
+    font-family: var(--nunito);
+    font-size: 38px;
+    font-weight: 600;
+    line-height: 46px;
+}
+
+.main-banner h3 {
+    color: #0B0603;
+    font-family: var(--nunito);
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 29px;
+    margin-top: 22px;
+}
+
+.main-banner h3 span {
+    border-radius: 4px;
+    background: #FCCB06;
+    padding: 2px 8px;
+    display: inline-block;
+    font-size: 17px;
 }
 
 .main-banner:after {
@@ -460,6 +488,13 @@ span.toggle-menu {
 
 .autofield-dropdown li:hover {
     background-color: #f2f2f2;
+}
+
+.banner-left p {
+    max-width: 519px; 
+    margin-top: 25px; 
+    font-size: 17px; 
+    min-height: 80px;
 }
 
 .banner-right {
@@ -588,6 +623,10 @@ span.toggle-menu {
     align-items: center;
     justify-content: space-between;
     text-align: center;
+}
+
+.signup-right .login-browse {
+    margin-bottom: 26px;
 }
 
 .log-bowse-content {

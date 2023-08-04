@@ -752,7 +752,7 @@
                     e.preventDefault();
                     //alert('delete')
                     const cat_id = $(this).attr('data-cat-id');
-                    console.log(cat_id);
+                    //console.log(cat_id);
                     $.ajax({
                         url: '/delete-category?id=' + cat_id,
                         type: 'GET',

@@ -6,7 +6,6 @@
  * @subpackage bolo_grahak
  * @since Bolo Grahak 1.0
  */
-
 get_header(); ?>
 <!-- ============== Inner Heading Start =============== -->
 <section class="inner-page-heading">

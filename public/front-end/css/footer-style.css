@@ -123,11 +123,18 @@
 	color: #ffffff;
 }
 
-.floating-chat {
+.floating-chat,
+.floating-emoji {
     position: fixed;
     right: 15px;
-    bottom: 15px;
+    bottom: 50%;
     z-index: 9;
+}
+
+.floating-emoji img {
+    width: 65px;
+    border-radius: 50%;
+    box-shadow: 0px 19px 44px 0px rgba(0, 0, 0, 0.10);
 }
 
 .floating-chat a {

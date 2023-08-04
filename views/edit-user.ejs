@@ -63,7 +63,11 @@
                                         <!--begin::Inputs-->
                                         <input type="file" name="profile_pic" accept=".png, .jpg, .jpeg" />
                                         <input type="hidden" name="avatar_remove" />
-                                        <input type="hidden" name="previous_profile_pic" value="<%= userMeta.profile_pic %>">
+                                        <% if(userMeta && userMeta.profile_pic){ %>
+                                            <input type="hidden" name="previous_profile_pic" value="<%= userMeta.profile_pic %>">
+                                        <% }else{ %>
+                                            <input type="hidden" name="previous_profile_pic" value="">
+                                        <% } %>
                                         <!--end::Inputs-->
                                     </label>
                                     <!--end::Label-->
@@ -148,7 +152,7 @@
                             <!--end::Label-->
                             <!--begin::Col-->
                             <div class="col-lg-8 fv-row">
-                                <input type="text" name="occupation" class="form-control form-control-lg form-control-solid" placeholder="Occupation" value="<%= userMeta.occupation %>" />
+                                <input type="text" name="occupation" class="form-control form-control-lg form-control-solid" placeholder="Occupation" value="<% if(userMeta && userMeta.occupation){ %><%= userMeta.occupation %><% } %>" />
                             </div>
                             <!--end::Col-->
                         </div>
@@ -162,7 +166,7 @@
                             <!--end::Label-->
                             <!--begin::Col-->
                             <div class="col-lg-8 fv-row">
-                                <input type="text" name="address" class="form-control form-control-lg form-control-solid" placeholder="Address" value="<%= userMeta.address %>" />
+                                <input type="text" name="address" class="form-control form-control-lg form-control-solid" placeholder="Address" value="<% if(userMeta && userMeta.address){ %><%= userMeta.address %><% } %>" />
                             </div>
                             <!--end::Col-->
                         </div>
@@ -176,18 +180,27 @@
                             <!--end::Label-->
                             <!--begin::Col-->
                             <div class="col-lg-8 fv-row">
+                                <% if(userMeta && userMeta.country){ %>
                                 <select id="select_country" name="country" aria-label="Select a Country" data-control="select2" data-placeholder="Select a country..." class="form-select form-select-solid form-select-lg fw-bold">
                                     <option value="">Select a Country...</option>
                                     <% countries.forEach( item => { %>
                                     <option data-kt-flag="assets/media/flags/<%= item.name.toLowerCase().replace(/\s+/g, '-') %>.svg" value="<%= item.id %>" <% if(item.id==userMeta.country){ %>selected <% } %> ><%= item.name %></option>
                                     <% }) %>
                                 </select>
+                                <% }else{ %>
+                                <select id="select_country" name="country" aria-label="Select a Country" data-control="select2" data-placeholder="Select a country..." class="form-select form-select-solid form-select-lg fw-bold">
+                                    <option value="">Select a Country...</option>
+                                    <% countries.forEach( item => { %>
+                                    <option data-kt-flag="assets/media/flags/<%= item.name.toLowerCase().replace(/\s+/g, '-') %>.svg" value="<%= item.id %>" ><%= item.name %></option>
+                                    <% }) %>
+                                </select>
+                                <% } %>
                             </div>
                             <!--end::Col-->
                         </div>
                         <!--end::Input group-->
                         <!--begin::Input group-->
-                        <div class="row mb-6" id="dynamic_state_field_wrapper"  <% if(!userMeta.state){ %>style="display: none;" <% } %>>
+                        <div class="row mb-6" id="dynamic_state_field_wrapper"  <% if(userMeta && userMeta.state){ %>style="display: none;" <% }else{%>style="display: block;" <%} %>>
                             <!--begin::Label-->
                             <label class="col-lg-4 col-form-label fw-bold fs-6">
                                 <span class="required">State</span>
@@ -214,7 +227,7 @@
                             <!--end::Label-->
                             <!--begin::Col-->
                             <div class="col-lg-8 fv-row">
-                                <input type="text" name="city" class="form-control form-control-lg form-control-solid" placeholder="City" value="<%= userMeta.city %>" />
+                                <input type="text" name="city" class="form-control form-control-lg form-control-solid" placeholder="City" value="<% if(userMeta && userMeta.city){ %><%= userMeta.city %><% } %>" />
                             </div>
                             <!--end::Col-->
                         </div>
@@ -228,7 +241,7 @@
                             <!--end::Label-->
                             <!--begin::Col-->
                             <div class="col-lg-8 fv-row">
-                                <input type="text" name="zip" class="form-control form-control-lg form-control-solid" placeholder="Zip" value="<%= userMeta.zip %>" />
+                                <input type="text" name="zip" class="form-control form-control-lg form-control-solid" placeholder="Zip" value="<% if(userMeta && userMeta.zip){ %><%= userMeta.zip %><% } %>" />
                             </div>
                             <!--end::Col-->
                         </div>
@@ -241,7 +254,7 @@
                             <!--end::Label-->
                             <!--begin::Col-->
                             <div class="col-lg-8 fv-row">
-                                <!--<input type="text" name="date_of_birth" id="kt_daterangepicker_3" class="form-control form-control-lg form-control-solid" placeholder="Date Of Birth" <% if(userMeta.date_of_birth!='Invalid date'){ %>value="<%= userMeta.date_of_birth %>"<% } %>  />-->
+                                
                                 <div class="position-relative d-flex align-items-center">
                                     <!--begin::Svg Icon | path: icons/duotune/general/gen014.svg-->
                                     <span class="svg-icon position-absolute ms-4 mb-1 svg-icon-2">
@@ -253,13 +266,20 @@
                                     </span>
                                     <!--end::Svg Icon-->
                                     <%
-                                    const date = new Date(userMeta.date_of_birth);
-                                    const year = date.getFullYear();
-                                    const month = String(date.getMonth() + 1).padStart(2, '0');
-                                    const day = String(date.getDate()).padStart(2, '0');
-                                    const formattedDate = `${year}-${month}-${day}`;
+                                    if(userMeta && userMeta.date_of_birth){
+                                        const date = new Date(userMeta.date_of_birth);
+                                        const year = date.getFullYear();
+                                        const month = String(date.getMonth() + 1).padStart(2, '0');
+                                        const day = String(date.getDate()).padStart(2, '0');
+                                        const formattedDate = `${year}-${month}-${day}`;
                                     %>
-                                    <input class="form-control form-control-solid ps-12" name="date_of_birth" placeholder="Date Of Birth" id="kt_datepicker_1" <% if(userMeta.date_of_birth!='Invalid date'){ %>value="<%= formattedDate %>"<% } %>/>
+                                    <input class="form-control form-control-solid ps-12" name="date_of_birth" placeholder="Date Of Birth" id="kt_datepicker_1" value="<%= formattedDate %>"/>
+                                    <%
+                                    }else{
+                                    %>
+                                    <input class="form-control form-control-solid ps-12" name="date_of_birth" placeholder="Date Of Birth" id="kt_datepicker_1" value=""/>
+                                    <% } %>
+                                    
                                 </div>
                             </div>
                             <!--end::Col-->
@@ -273,6 +293,7 @@
                             <!--end::Label-->
                             <!--begin::Col-->
                             <div class="col-lg-8 fv-row">
+                                <% if(userMeta && userMeta.date_of_birth){ %>
                                 <!--begin::Options-->
                                 <div class="d-flex align-items-center mt-3">
                                     <!--begin::Option-->
@@ -295,6 +316,30 @@
                                     <!--end::Option-->
                                 </div>
                                 <!--end::Options-->
+                                <% }else{ %>
+                                <!--begin::Options-->
+                                <div class="d-flex align-items-center mt-3">
+                                    <!--begin::Option-->
+                                    <label class="form-check form-check-inline form-check-solid me-5">
+                                        <input class="form-check-input" name="gender" type="radio" value="male"/>
+                                        <span class="fw-bold ps-2 fs-6">Male</span>
+                                    </label>
+                                    <!--end::Option-->
+                                    <!--begin::Option-->
+                                    <label class="form-check form-check-inline form-check-solid">
+                                        <input class="form-check-input" name="gender" type="radio" value="female" />
+                                        <span class="fw-bold ps-2 fs-6">Female</span>
+                                    </label>
+                                    <!--end::Option-->
+                                    <!--begin::Option-->
+                                    <label class="form-check form-check-inline form-check-solid">
+                                        <input class="form-check-input" name="gender" type="radio" value="unisex" />
+                                        <span class="fw-bold ps-2 fs-6">Unisex</span>
+                                    </label>
+                                    <!--end::Option-->
+                                </div>
+                                <!--end::Options-->
+                                <% } %>
                             </div>
                             <!--end::Col-->
                         </div>
@@ -323,8 +368,16 @@
                     <!--begin::Actions-->
                     <div class="card-footer d-flex justify-content-end py-6 px-9">
                         <input type="hidden" name="user_id" value="<%= user.user_id %>">
+                        <% if(userMeta && userMeta.country_name){ %>
                         <input type="hidden" name="country_name" value="<%= userMeta.country_name %>" id="country_name">
+                        <% }else{ %>
+                        <input type="hidden" name="country_name" value="" id="country_name">
+                        <% } %>
+                        <% if(userMeta && userMeta.state_name){ %>
                         <input type="hidden" name="state_name" value="<%= userMeta.state_name %>" id="state_name">
+                        <% }else{ %>
+                        <input type="hidden" name="state_name" value="" id="state_name">
+                        <% } %>
                         <button type="reset" class="btn btn-light btn-active-light-primary me-2">Discard</button>
                         <button type="submit" class="btn btn-primary" id="kt_account_profile_details_submit">Save Changes</button>
                     </div>
