@@ -1373,10 +1373,10 @@ exports.updateContacts = async (req, res) => {
 exports.contactFeedback = (req, res) => {
     const phone = req.body.phone_no;
     const message = req.body.message;
-    console.log(__dirname);
+    //console.log(req.body);
     var mailOptions = {
         from: 'vivek@scwebtech.com',
-        to: 'pranab@scwebtech.com',
+        to: process.env.MAIL_USER,
         subject: 'Feedback Mail From Contact',
         //html: ejs.renderFile(path.join(process.env.BASE_URL, '/views/email-template/', 'feedback.ejs'), { phone: phone, message: message })
         html: `<div style="padding- bottom: 30px; font - size: 17px; ">
@@ -1464,7 +1464,7 @@ exports.updateFAQ = async (req, res) => {
                     {
                         status: 'ok',
                         data: faqPageId,
-                        message: 'FAQ Content successfully added'
+                        message: 'FAQ Content successfully Updated'
                     }
                 )
             })
