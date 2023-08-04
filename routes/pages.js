@@ -805,15 +805,17 @@ router.get('/edit-rating-tag/:id', checkLoggedIn, async (req, res) => {
 
 
 //Add FAQ Page
-router.get('/add-faq', checkLoggedIn, (req, res) => {
+router.get('/add-faq', checkLoggedIn, async (req, res) => {
     try {
         const encodedUserData = req.cookies.user;
         const currentUserData = JSON.parse(encodedUserData);
+        const faqPageData = await comFunction2.getFaqPage();
         // Render the 'add-page' EJS view and pass the data
         res.render('faq/add-faq', {
             menu_active_id: 'faq',
             page_title: 'FAQs ',
-            currentUserData
+            currentUserData,
+            faqPageData
         });
     } catch (err) {
         console.error(err);
@@ -1053,6 +1055,42 @@ router.get('/view-featured-companies', checkLoggedIn, async (req, res) => {
                 companies
             });
         });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+
+//Edit Businesss Page
+router.get('/edit-business', checkLoggedIn, (req, res) => {
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+        const sql = `SELECT * FROM page_info where secret_Key = 'home' `;
+        db.query(sql, (err, results, fields) => {
+            if (err) throw err;
+            const home = results[0];
+            const meta_sql = `SELECT * FROM page_meta where page_id = ${home.id}`;
+            db.query(meta_sql, async (meta_err, _meta_result) => {
+                if (meta_err) throw meta_err;
+
+                const meta_values = _meta_result;
+                let meta_values_array = {};
+                await meta_values.forEach((item) => {
+                    meta_values_array[item.page_meta_key] = item.page_meta_value;
+                })
+                //console.log(meta_values_array);
+                res.render('pages/update-business', {
+                    menu_active_id: 'pages',
+                    page_title: 'Update Business',
+                    currentUserData,
+                    home,
+                    meta_values_array
+                });
+            })
+
+        })
 
     } catch (err) {
         console.error(err);

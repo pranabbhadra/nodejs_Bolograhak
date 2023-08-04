@@ -56,7 +56,7 @@
                                     <div class="col-lg-8 fv-row">
                                         <input type="text" name="title" id="title"
                                             class="form-control form-control-lg form-control-solid" placeholder="Title"
-                                            value="" />
+                                            value="<%= faqPageData.title %>" />
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -71,7 +71,8 @@
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-8 fv-row">
-                                        <textarea name="content" class="content" id="content-editor"></textarea>
+                                        <textarea name="content" class="content"
+                                            id="content-editor"><%= faqPageData.content %></textarea>
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -87,7 +88,7 @@
                                     <div class="col-lg-8 fv-row">
                                         <input type="longtext" name="meta_title" id="meta_title"
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="Meta Title" value="" />
+                                            placeholder="Meta Title" value="<%= faqPageData.meta_title %>" />
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -103,7 +104,7 @@
                                     <div class="col-lg-8 fv-row">
                                         <input type="longtext" name="meta_desc" id="meta_desc"
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="Meta Description" value="" />
+                                            placeholder="Meta Description" value="<%= faqPageData.meta_desc %>" />
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -120,7 +121,7 @@
                                     <div class="col-lg-8 fv-row">
                                         <input type="text" name="keyword" id="keyword"
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="Keyword" value="" />
+                                            placeholder="Keyword" value="<%= faqPageData.keyword %>" />
                                     </div>
                                     <!--end::Col-->
                                 </div>
