@@ -286,7 +286,7 @@
     top: 34px;
 }
 
-#ratingRange {
+#ratingcounter {
     background-color: transparent;
     color: #ffffff;
     max-width: 50px;
@@ -368,6 +368,13 @@ span#selected-range-emojis {
     font-size: 12px;
     color: #fccb06;
     margin-top: 3px;
+}
+
+.range-tag2,
+.range-tag3,
+.range-tag4,
+.range-tag5 {
+	display: none;
 }
 /*=============== Review Content End ==============*/
 
@@ -649,6 +656,18 @@ span#selected-range-emojis {
     z-index: 1;
 }
 
+.video-man1 {
+    position: absolute;
+    left: -28px;
+    bottom: -40px;
+}
+
+.video-man2 {
+    position: absolute;
+    right: -40px;
+    bottom: -40px;
+}
+
 .v-slider {
     padding: 14px;
 }
@@ -730,6 +749,7 @@ span#selected-range-emojis {
 	background: url(../images/feature-shape1.png) no-repeat;
 	width: 102px;
 	height: 187px;
+	z-index: -9;
 }
 
 .featured-content:after {
@@ -740,6 +760,7 @@ span#selected-range-emojis {
 	background: url(../images/feature-shape2.png) no-repeat;
 	width:62px;
 	height: 92px;
+	z-index: -9;
 }
 
 .featured-content h2.main-head {
@@ -767,11 +788,12 @@ span#selected-range-emojis {
 }
 
 .feature-box h5 {
-	font-size: 18px;
-	font-weight: 400;
-	line-height: 60%; 
-	margin-top: 14px;
-	margin-bottom: 11px;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 100%;
+    margin-top: 14px;
+    margin-bottom: 11px;
+    min-height: 36px;
 }
 .featured-slider .item {
 	margin: 0 12px;
@@ -791,7 +813,7 @@ span#selected-range-emojis {
 
 .feature-man3 {
     position: absolute;
-    left: -125px;
+    left: -122px;
     bottom: 0;
 }
 
@@ -804,7 +826,8 @@ span#selected-range-emojis {
 
 /*=============== About Digital content start ==============*/
 .about-digital-content {
-	padding: 156px 0;
+    padding: 117px 0;
+    overflow: hidden;
 }
 
 .about-digital-wrold {

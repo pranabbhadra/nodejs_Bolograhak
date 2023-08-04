@@ -96,9 +96,18 @@
     line-height: 130.4%;
 }
 
-.about-bottom-text {
-    width: 750px;
-    height: 207px;
+.about-bottom-text1 {
+    display: block;
+    padding-top: 45px;
+    padding-bottom: 45px;
+}
+
+.about-bottom-text1 ul li span {
+    color: #F1AE00;
+}
+
+.about-bottom-text1 ul li:last-child {
+    margin-bottom: 0;
 }
 
 .about-bottom-text2, 

@@ -611,64 +611,45 @@ span.toggle-menu {
     margin: 0 auto;
 }
 
-.login-modal-content h4 {
-    font-size: 32px;
-    font-weight: 700;
-    line-height: 110.4%; 
-    margin-bottom: 30px;
-}
-
-.login-browse {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+.log-browse-content {
     text-align: center;
 }
 
-.signup-right .login-browse {
-    margin-bottom: 26px;
+.signup-right .log-browse-content {
+    margin-bottom: 25px;
 }
 
-.log-bowse-content {
-    position: relative;
+.login-modal-content h4 {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 110.4%;
+    margin-bottom: 8px;
 }
 
-.log-bowse-content + .log-bowse-content:after {
-    content: '';
-    position: absolute;
-    left: -20%;
-    top: 0;
-    width: 1px;
-    height: 27px;
-    background-color: #B9B9B9;
+.login-modal-content h5 {
+    text-align: center;
+    margin-bottom: 12px;
+    font-weight: 400;
+    font-size: 16px;
 }
 
-.log-bowse-content span {
+.log-browse-content a {
     display: inline-block;
-    vertical-align: middle;
+    padding: 0 5px;
 }
 
-.log-bowse-content .fa-google {
+.log-browse-content .fa-google {
     background: conic-gradient(from -45deg, #ea4335 110deg, #4285f4 90deg 180deg, #34a853 180deg 270deg, #fbbc05 270deg) 73% 55%/150% 150% no-repeat;
    -webkit-background-clip: text;
    background-clip: text;
    color: transparent;
    -webkit-text-fill-color: transparent;
 }
-.log-bowse-content .fa-facebook-f {
+.log-browse-content .fa-facebook-f {
     color: #1773EA;
 }
-.log-bowse-content span i {
+.log-browse-content a i {
     font-size: 24px;
-}
-.log-bowse-content span a {
-    color: #595959;
-    line-height: 27px;
-    padding-left: 10px;
-}
-
-.log-bowse-content span a:hover {
-    color: #000000;
 }
 
 .or-connect {

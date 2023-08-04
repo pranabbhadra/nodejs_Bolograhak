@@ -244,7 +244,7 @@ jQuery(function($){
     autoplaySpeed: 3000,
     responsive: [
       {
-        breakpoint: 1024,
+        breakpoint: 1320,
         settings: {
           slidesToShow: 4,
           slidesToScroll: 1,
@@ -253,7 +253,7 @@ jQuery(function($){
         }
       },
       {
-        breakpoint: 890,
+        breakpoint: 991,
         settings: {
           slidesToShow: 3,
           slidesToScroll: 1
@@ -620,14 +620,33 @@ jQuery(function($){
       values: [0, 5], 
       slide: function(event, ui)
       {
-        $("#ratingRange").val(ui.values[0] + " / " + ui.values[1]);
+        $("#ratingcounter").val(ui.values[0] + " / " + ui.values[1]);
         $("#ratingvalue").val(ui.values[0]);
         // When slider values change, update the text
         $("#selected-range-text").text(rangeTexts[ui.values[0]]);
         $("#selected-range-emojis").text(rangeEmojis[ui.values[0]]);
       }
       });
-      $("#ratingRange").val($("#rating-range").slider("values", 0) + " / " + $("#rating-range").slider("values", 1));
+      $("#ratingcounter").val($("#rating-range").slider("values", 0) + " / " + $("#rating-range").slider("values", 1));
+
+    //   $(document).ready(function() {
+    //     const rangeSlider = $('#rating-range');
+    
+    //     rangeSlider.on('input', function() {
+
+    //         // Hide all elements
+    //          $(".range-tag1").hide();
+    
+    //         // Show the appropriate element based on the range
+    //         if (sliderValue >= 0.5 && sliderValue < 1) {
+    //             $('.range-tag1').show();
+    //         } else if (sliderValue >= 1 && sliderValue < 1.5) {
+    //             $('.range-tag2').show();
+    //         } else if (sliderValue >= 1.5 && sliderValue <= 2) {
+    //             $('range-tag3').show();
+    //         }
+    //     });
+    // });
   
   ////////////////////////////// Range Slider End
 
