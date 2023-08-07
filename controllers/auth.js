@@ -1085,12 +1085,12 @@ exports.createCompany = (req, res) => {
 
         var insert_values = [];
         if (req.file) {
-            insert_values = [currentUserData.user_id, req.body.company_name, req.file.filename, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, formattedDate, formattedDate];
+            insert_values = [currentUserData.user_id, req.body.company_name, req.file.filename, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, "1", formattedDate, formattedDate];
         } else {
-            insert_values = [currentUserData.user_id, req.body.company_name, '', req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, formattedDate, formattedDate];
+            insert_values = [currentUserData.user_id, req.body.company_name, '', req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, formattedDate, "1", formattedDate];
         }
 
-        const insertQuery = 'INSERT INTO company (user_created_by, company_name, logo, comp_phone, comp_email, comp_registration_id, created_date, updated_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+        const insertQuery = 'INSERT INTO company (user_created_by, company_name, logo, comp_phone, comp_email, comp_registration_id, status, created_date, updated_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
         db.query(insertQuery, insert_values, (err, results, fields) => {
             if (err) {
                 return res.send(
@@ -1102,7 +1102,8 @@ exports.createCompany = (req, res) => {
                 )
             } else {
                 const companyId = results.insertId;
-                const companyCategoryData = req.body.category.map((categoryID) => [companyId, categoryID]);
+                const categoryArray = Array.isArray(req.body.category) ? req.body.category : [req.body.category];
+                const companyCategoryData = categoryArray.map((categoryID) => [companyId, categoryID]);
                 db.query('INSERT INTO company_cactgory_relation (company_id, category_id) VALUES ?', [companyCategoryData], function (error, results) {
                     if (error) {
                         console.log(error);
@@ -1128,7 +1129,7 @@ exports.createCompany = (req, res) => {
 
 //-- Company Edit --//
 exports.editCompany = (req, res) => {
-    //console.log(req.body);
+    console.log(req.body);
     const companyID = req.body.company_id;
     const currentDate = new Date();
 
@@ -1182,6 +1183,8 @@ exports.editCompany = (req, res) => {
             });
 
             updateValues[1] = req.file.filename;
+        }else{
+            updateValues[1] = req.body.previous_logo;
         }
         db.query(updateQuery, updateValues, (err, results) => {
             if (err) {
@@ -1205,10 +1208,10 @@ exports.editCompany = (req, res) => {
                     });
                 }
 
-                const categories = req.body.category; // Assuming company_categories is an array of category IDs
-
                 // Create an array of arrays for bulk insert
-                const insertValues = categories.map(categoryId => [companyID, categoryId]);
+                
+                const categoryArray = Array.isArray(req.body.category) ? req.body.category : [req.body.category];
+                const insertValues = categoryArray.map((categoryID) => [companyID, categoryID]);
 
                 const insertQuery = 'INSERT INTO company_cactgory_relation (company_id, category_id) VALUES ?';
 

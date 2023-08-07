@@ -367,9 +367,54 @@ const saveUserGoogleLoginDataToDB = async (userData) => {
 };
 
 //-------After Facebook Login Save User data Or Check User exist or Not.
-const saveUserFacebookLoginDataToDB = (userData) => {
+async function saveUserFacebookLoginDataToDB(userData) {
   console.log(userData);
   console.log(userData.id + ' ' + userData.displayName + ' ' + userData.photos[0].value);
+  const currentDate = new Date();
+  const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+
+  //Checking external_registration_id exist or not and register_from facebook or not
+  try{
+    const user_exist_query = 'SELECT * FROM users WHERE register_from = ? AND external_registration_id = ?';
+    const user_exist_values = ["facebook", userData.id];
+    const user_exist_results = await query(user_exist_query, user_exist_values);
+    if (user_exist_results.length > 0) {
+        //console.log(user_exist_results);
+        // checking user status
+        if(user_exist_results[0].user_exist_results == 1){
+          return {first_name:user_exist_results[0].first_name, last_name:user_exist_results[0].last_name, user_id: user_exist_results[0].user_id, status: 1};
+        }else{
+          // return to frontend for registering with email ID
+          return {first_name:user_exist_results[0].first_name, last_name:user_exist_results[0].last_name, user_id: user_exist_results[0].user_id, status: 0};
+        }
+    }else{
+      //user doesnot exist Insert initial data getting from facebook but user status 0
+      const userFullName = userData.displayName;
+      const userFullNameArray = userFullName.split(" ");
+      const user_insert_query = 'INSERT INTO users (first_name, last_name, register_from, external_registration_id, user_registered, user_status, user_type_id) VALUES (?, ?, ?, ?, ?, ?, ?)';
+      const user_insert_values = [userFullNameArray[0], userFullNameArray[1], 'facebook', userData.id, formattedDate, 0, 2];
+      try{
+        const user_insert_results = await query(user_insert_query, user_insert_values);
+        if (user_insert_results.insertId) {
+          const newuserID = user_insert_results.insertId;
+          const user_meta_insert_query = 'INSERT INTO user_customer_meta (user_id, profile_pic) VALUES (?, ?)';
+          const user_meta_insert_values = [newuserID, userData.photos[0].value];
+          try{
+            const user_meta_insert_results = await query(user_meta_insert_query, user_meta_insert_values);
+            // return to frontend for registering with email ID
+            return {first_name:userFullNameArray[0], last_name:userFullNameArray[1], user_id: newuserID, status: 0};
+          }catch(error){
+            console.error('Error during user_meta_insert_query:', error);
+          }
+        }
+      }catch(error){
+        console.error('Error during user_insert_query:', error);
+      }
+    }
+  }catch(error){
+      console.error('Error during user_exist_query:', error);
+  }      
+
 };
 
 // Fetch all Review Rating Tags
@@ -570,7 +615,16 @@ async function createReview(reviewIfo, userId, comInfo){
           const review_tag_relation_values = [create_review_results.insertId, tag];
           const review_tag_relation_results = await query(review_tag_relation_query, review_tag_relation_values);
         }
-        return create_review_results.insertId;
+
+        //-- user review count------//
+        const update_review_count_query = 'UPDATE user_customer_meta SET review_count = review_count + 1 WHERE user_id = ?';
+        try {
+          const [update_review_count_result] = await db.promise().query(update_review_count_query, [userId]);
+          return create_review_results.insertId;
+        }catch (error) {
+          console.error('Error during user update_review_count_query:', error);
+        }
+        
       }catch(error){
         console.error('Error during user review_tag_relation_results:', error);
       }
