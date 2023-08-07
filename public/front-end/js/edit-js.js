@@ -383,6 +383,32 @@ jQuery(function($){
       }
     ]
   });
+
+  $('.review-big-slider1').slick({
+    dots:false,
+    infinite: true,
+    speed:1800,
+    autoplay:true,
+    autoplaySpeed: 4000,
+    pauseOnHover:false,
+    arrows:false,
+    fade:true,
+    slidesToShow:1,
+    slidesToScroll:1
+  });
+
+  $('.review-small-slider2').slick({
+    dots:false,
+    infinite: true,
+    speed:1400,
+    autoplay:true,
+    autoplaySpeed: 2000,
+    pauseOnHover:false,
+    arrows:false,
+    fade:true,
+    slidesToShow:1,
+    slidesToScroll:1
+  });
   
   // /////////////////////////////////////// Slick Slider end
   
@@ -629,13 +655,11 @@ jQuery(function($){
       });
       $("#ratingcounter").val($("#rating-range").slider("values", 0) + " / " + $("#rating-range").slider("values", 1));
 
+
     //   $(document).ready(function() {
-    //     const rangeSlider = $('#rating-range');
+    //     var rangeSlider = $('#rating-range');
     
     //     rangeSlider.on('input', function() {
-
-    //         // Hide all elements
-    //          $(".range-tag1").hide();
     
     //         // Show the appropriate element based on the range
     //         if (sliderValue >= 0.5 && sliderValue < 1) {

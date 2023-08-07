@@ -253,6 +253,11 @@
 		right: -30px;
 		max-width: 95px;
 	}
+
+	.business-left-cartoon,
+	.business-right-cartoon {
+		max-width: 245px;
+	}
 }
 
 @media only screen and (max-width:1040.98px) {
@@ -264,6 +269,10 @@
 @media only screen and (max-width:1020.98px) {
 	.trending-blog .small-blog-text .date-tag {
 		margin-bottom: 4px;
+	}
+
+	.review-small-img {
+		margin-top: -210px;
 	}
 }
 
@@ -628,6 +637,19 @@
 
 	.featured-object-wrap {
 		padding: 46px 15px 68px;
+	}
+
+	.business-left-cartoon, 
+	.business-right-cartoon {
+		max-width: 185px;
+	}
+
+	.business-left-cartoon {
+		left: 10px;
+	}
+
+	.business-right-cartoon {
+		right: 10px;
 	}
 }
 
@@ -1070,6 +1092,16 @@
 
 	.featured-object-wrap {
 		padding: 35px 15px 45px;
+	}
+
+	.review-left-img {
+		max-width: 550px;
+		margin: 0 auto;
+	}
+
+	.business-left-cartoon, 
+	.business-right-cartoon {
+		display: none;
 	}
 
 }
@@ -1554,6 +1586,26 @@
 		max-width: 62px;
 	}
 
+	.default-content-area h2 {
+		font-size: 22px;
+	}
+
+	.default-content-area h3 {
+		font-size: 20px;
+	}
+
+	.default-content-area h4 {
+		font-size: 18px;
+	}
+
+	.default-content-area h5 {
+		font-size: 16px;
+	}
+
+	.default-content-area h6 {
+		font-size: 14px;
+	}
+
 }
 
 @media only screen and (max-width:540.98px) {
@@ -1707,5 +1759,13 @@
 
 	#rating-range {
 	    width: 48%;
+	}
+
+	.review-small-img {
+		margin-top: -165px;
+	}
+
+	.review-left-img:after {
+		left: 35px;
 	}
 }

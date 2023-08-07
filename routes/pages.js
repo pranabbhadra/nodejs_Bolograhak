@@ -177,6 +177,16 @@ router.get('/profile-dashboard', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
     res.render('front-end/profile-dashboard', { menu_active_id: 'profile-dashboard', page_title: 'My Dashboard', currentUserData });
 });
+
+router.get('/privacy-policy', checkCookieValue, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
+    res.render('front-end/privacy-policy', { menu_active_id: 'privacy-policy', page_title: 'Privacy Policy', currentUserData });
+});
+
+router.get('/terms-conditions', checkCookieValue, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
+    res.render('front-end/terms-conditions', { menu_active_id: 'terms-conditions', page_title: 'Terms of Service', currentUserData });
+});
 // Front-End Page Routes End--------------------//
 
 

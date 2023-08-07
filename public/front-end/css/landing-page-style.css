@@ -226,10 +226,6 @@
 	height: 315px;
 }
 
-.review-left img {
-	margin: 0 auto;
-}
-
 .review-left h5 {
 	margin-top: 30px;
 }
@@ -244,6 +240,37 @@
 
 .review-left h5 a:hover {
 	color: #ffffff;
+}
+
+.review-left-img {
+    position: relative;
+    overflow: hidden;
+}
+
+.review-left-img:before {
+    content: '';
+    position: absolute;
+    right: 30px;
+    top: 48px;
+    background: url(../images/review-shape1.png) no-repeat center;
+    width: 74px;
+    height: 174px;
+}
+
+.review-left-img:after {
+    content: '';
+    position: absolute;
+    left: 78px;
+    bottom: 0px;
+    background: url(../images/review-shape2.png) no-repeat center;
+    width: 310px;
+    height: 99px;
+}
+
+.review-small-img {
+    width: 44%;
+    float: right;
+    margin-top: -291px;
 }
 
 .review-right .form-control, 
@@ -370,6 +397,7 @@ span#selected-range-emojis {
     margin-top: 3px;
 }
 
+.range-tag1,
 .range-tag2,
 .range-tag3,
 .range-tag4,
