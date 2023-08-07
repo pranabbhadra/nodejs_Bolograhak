@@ -1067,11 +1067,11 @@ router.get('/edit-business', checkLoggedIn, (req, res) => {
     try {
         const encodedUserData = req.cookies.user;
         const currentUserData = JSON.parse(encodedUserData);
-        const sql = `SELECT * FROM page_info where secret_Key = 'home' `;
+        const sql = `SELECT * FROM page_info where secret_Key = 'business' `;
         db.query(sql, (err, results, fields) => {
             if (err) throw err;
-            const home = results[0];
-            const meta_sql = `SELECT * FROM page_meta where page_id = ${home.id}`;
+            const common = results[0];
+            const meta_sql = `SELECT * FROM page_meta where page_id = ${common.id}`;
             db.query(meta_sql, async (meta_err, _meta_result) => {
                 if (meta_err) throw meta_err;
 
@@ -1085,7 +1085,7 @@ router.get('/edit-business', checkLoggedIn, (req, res) => {
                     menu_active_id: 'pages',
                     page_title: 'Update Business',
                     currentUserData,
-                    home,
+                    common,
                     meta_values_array
                 });
             })

@@ -295,7 +295,7 @@
                                 //alert(CKEDITOR.instances['editor'].getData());
                                 if (status == 'Valid') {
                                     const jsonResponse = $('#kt_account_profile_details_form').serializeArray();
-                                    console.log(jsonResponse);
+                                    //console.log(jsonResponse);
 
                                     // Create an empty object to store the transformed result
                                     const transformedResponse = {};
@@ -327,7 +327,7 @@
                                         }
                                     });
 
-                                    console.log(transformedResponse);
+                                    //console.log(transformedResponse);
 
                                     $.ajax({
                                         url: '/auth/update-faq',
