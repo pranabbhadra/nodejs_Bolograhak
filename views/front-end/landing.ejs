@@ -313,6 +313,7 @@
                           <a href="/review" class="view-more mt-0"><span class="position-relative"><i class="fa-solid fa-angle-right"></i>View All Reviews</span></a>
                        </div>
                     </div>
+                    <div class="submit-message"></div>
                  </div>
               </form>
            </div>
@@ -858,6 +859,7 @@
 
   //-------Review Form Submit-----------------//
   $( "#review_submit_frm" ).on( "submit", function( event ) {
+    $('.submit-message').text('');
     event.preventDefault();
     const formData = $('#review_submit_frm').serializeArray();
     const jsonData = {};
@@ -877,12 +879,13 @@
       data: jsonData,
       ContentType: 'application/json',
       success: function (data) {
-      // if (data.status == 'ok') {
-      //   console.log('aaa');
-      // } else {
-      //   console.log('bbb');
-      // }
-        console.log(data);
+        if (data.status == 'ok') {
+          $('#review_submit_frm')[0].reset();
+          $('.submit-message').text(data.message);
+        } else {
+          $('.submit-message').text(data.message);
+        } 
+        //console.log(data);
       },
       error: function (error) {
         console.log(error);

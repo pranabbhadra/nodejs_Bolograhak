@@ -668,7 +668,7 @@ async function createReview(reviewIfo, userId, comInfo){
   const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
 
   const create_review_query = 'INSERT INTO reviews (company_id, customer_id, company_location, company_location_id, review_title, rating, review_content, user_privacy, review_status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-  const create_review_values = [comInfo.companyID, userId, reviewIfo.address, comInfo.companyLocationID, reviewIfo.review_title, reviewIfo.rating, reviewIfo.review_content, reviewIfo.user_privacy, '1', formattedDate, formattedDate];
+  const create_review_values = [comInfo.companyID, userId, reviewIfo.address, comInfo.companyLocationID, reviewIfo.review_title, reviewIfo.rating, reviewIfo.review_content, reviewIfo.user_privacy, '2', formattedDate, formattedDate];
               
   try {
     const create_review_results = await query(create_review_query, create_review_values);
@@ -723,6 +723,47 @@ async function getlatestReviews(reviewCount){
   
 }
 
+async function editCustomerReview(req){
+  //console.log(req)
+  const ratingTagsArray = JSON.parse(req.rating_tags);
+  const currentDate = new Date();
+  // Format the date in 'YYYY-MM-DD HH:mm:ss' format (adjust the format as needed)
+  const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+
+  const update_review_query = 'UPDATE reviews SET review_title = ?, rating = ?, review_content = ?, user_privacy = ?, review_status = ?, updated_at = ? WHERE id = ?';
+  const update_review_values = [req.review_title, req.rating, req.review_content, req.user_privacy, req.review_status, formattedDate, req.review_id];
+  try {
+    const update_review_result = await query(update_review_query, update_review_values);
+
+      // Remove all tags for the review
+      const delete_tag_relation_query = 'DELETE FROM review_tag_relation WHERE review_id = ?';
+      const delete_tag_relation_values = [req.review_id];
+      try {
+        const delete_tag_relation_result = await query(delete_tag_relation_query, delete_tag_relation_values);
+        console.log('Review deleted:', delete_tag_relation_result);
+      } catch (error) {
+        return 'Error during review delete_tag_relation_query:'+error;
+      }
+
+      //insert review_tag_relation
+      if (ratingTagsArray && ratingTagsArray.length > 0) {
+        const insert_tag_relation_query = 'INSERT INTO review_tag_relation (review_id, tag_name) VALUES (?, ?)';
+        for (const tag of ratingTagsArray) {
+          const insert_tag_relation_values = [req.review_id, tag.value];
+          try {
+            const insert_tag_relation_result = await query(insert_tag_relation_query, insert_tag_relation_values);
+            //console.log('New tag relation inserted:', insert_tag_relation_result);
+          } catch (error) {
+            return 'Error during insert_tag_relation_query:'+error;
+          }
+        }
+      }
+      return true;
+  }catch (error) {
+    return 'Error during user update_review_query:'+error;
+  }  
+}
+
 module.exports = {
     getUser,
     getUserMeta,
@@ -747,5 +788,6 @@ module.exports = {
     getlatestReviews,
     getAllReviews,
     getCustomerReviewData,
-    getCustomerReviewTagRelationData
+    getCustomerReviewTagRelationData,
+    editCustomerReview
 };

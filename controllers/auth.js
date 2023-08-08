@@ -1350,7 +1350,26 @@ exports.editRatingTags = (req, res) => {
     })
 }
 
-
+exports.editCustomerReview = async (req, res) => {
+    //console.log(req.body);
+    // const ratingTagsArray = JSON.parse(req.body.rating_tags);
+    // console.log(ratingTagsArray);
+    const editResponse = await comFunction.editCustomerReview( req.body );
+    if(editResponse == true){
+        // Return success response
+        return res.send({
+            status: 'ok',
+            data: '',
+            message: 'Review updated successfully'
+        });
+    }else{
+        return res.send({
+            status: 'err',
+            data: '',
+            message: editResponse
+        });        
+    }
+}
 
 // Update Contacts
 exports.updateContacts = async (req, res) => {
