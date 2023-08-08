@@ -367,9 +367,54 @@ const saveUserGoogleLoginDataToDB = async (userData) => {
 };
 
 //-------After Facebook Login Save User data Or Check User exist or Not.
-const saveUserFacebookLoginDataToDB = (userData) => {
+async function saveUserFacebookLoginDataToDB(userData) {
   console.log(userData);
   console.log(userData.id + ' ' + userData.displayName + ' ' + userData.photos[0].value);
+  const currentDate = new Date();
+  const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+
+  //Checking external_registration_id exist or not and register_from facebook or not
+  try{
+    const user_exist_query = 'SELECT * FROM users WHERE register_from = ? AND external_registration_id = ?';
+    const user_exist_values = ["facebook", userData.id];
+    const user_exist_results = await query(user_exist_query, user_exist_values);
+    if (user_exist_results.length > 0) {
+        //console.log(user_exist_results);
+        // checking user status
+        if(user_exist_results[0].user_exist_results == 1){
+          return {first_name:user_exist_results[0].first_name, last_name:user_exist_results[0].last_name, user_id: user_exist_results[0].user_id, status: 1};
+        }else{
+          // return to frontend for registering with email ID
+          return {first_name:user_exist_results[0].first_name, last_name:user_exist_results[0].last_name, user_id: user_exist_results[0].user_id, status: 0};
+        }
+    }else{
+      //user doesnot exist Insert initial data getting from facebook but user status 0
+      const userFullName = userData.displayName;
+      const userFullNameArray = userFullName.split(" ");
+      const user_insert_query = 'INSERT INTO users (first_name, last_name, register_from, external_registration_id, user_registered, user_status, user_type_id) VALUES (?, ?, ?, ?, ?, ?, ?)';
+      const user_insert_values = [userFullNameArray[0], userFullNameArray[1], 'facebook', userData.id, formattedDate, 0, 2];
+      try{
+        const user_insert_results = await query(user_insert_query, user_insert_values);
+        if (user_insert_results.insertId) {
+          const newuserID = user_insert_results.insertId;
+          const user_meta_insert_query = 'INSERT INTO user_customer_meta (user_id, profile_pic) VALUES (?, ?)';
+          const user_meta_insert_values = [newuserID, userData.photos[0].value];
+          try{
+            const user_meta_insert_results = await query(user_meta_insert_query, user_meta_insert_values);
+            // return to frontend for registering with email ID
+            return {first_name:userFullNameArray[0], last_name:userFullNameArray[1], user_id: newuserID, status: 0};
+          }catch(error){
+            console.error('Error during user_meta_insert_query:', error);
+          }
+        }
+      }catch(error){
+        console.error('Error during user_insert_query:', error);
+      }
+    }
+  }catch(error){
+      console.error('Error during user_exist_query:', error);
+  }      
+
 };
 
 // Fetch all Review Rating Tags
@@ -472,23 +517,146 @@ async function insertIntoFaqItems(faqItemsArray, categoryId) {
 
 //-- Create New Company ----------//
 async function createCompany(comInfo, userId) {
-  console.log(comInfo, userId);
+  //console.log(comInfo, userId);
+  let return_data = {};
   try {
     // Check if the company Name already exists in the "company" table
     const company_name_checking_query = "SELECT ID FROM company WHERE company_name = ?";
     const company_name_checking_results = await query(company_name_checking_query, [comInfo.company_name]);
     if (company_name_checking_results.length > 0) {
-        //company exist return company ID
-        return company_name_checking_results[0].ID;
+        //company exist
+        try{
+          const company_address_exist_query = 'SELECT * FROM company_location WHERE company_id = ? AND country = ? AND state = ? AND city = ? AND zip = ?';
+          const company_address_exist_values = [company_name_checking_results[0].ID, comInfo.country, comInfo.state, comInfo.city, comInfo.zip];
+          const company_address_exist_results = await query(company_address_exist_query, company_address_exist_values);
+          if (company_address_exist_results.length > 0) {
+            //address exist return location ID
+            return_data.companyID = company_name_checking_results[0].ID;
+            return_data.companyLocationID = company_address_exist_results[0].ID;
+            return return_data;
+          }else{
+            //create new address for company
+            try{
+              const create_company_address_query = 'INSERT INTO company_location (company_id, address, country, state, city, zip, status) VALUES (?, ?, ?, ?, ?, ?, ?)';
+              const create_company_address_values = [company_name_checking_results[0].ID, comInfo.address, comInfo.country, comInfo.state, comInfo.city, comInfo.zip, '0'];
+              const create_company_address_results = await query(create_company_address_query, create_company_address_values);
+              if (create_company_address_results.insertId) {
+                return_data.companyID = company_name_checking_results[0].ID;
+                return_data.companyLocationID = create_company_address_results.insertId;
+                return return_data;
+              }
+            }catch(error){
+              console.error('Error during create_company_address_query:', error);
+            }
+                        
+          }
+        }catch(error){
+            console.error('Error during company_address_exist_query:', error);
+        }        
+        //return company_name_checking_results[0].ID;
     }else{
       // Create New Company
-      
+      // Get the current date
+      const currentDate = new Date();
+
+      // Format the date in 'YYYY-MM-DD HH:mm:ss' format (adjust the format as needed)
+      const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+      try {
+        const create_company_query = 'INSERT INTO company (user_created_by, company_name, status, created_date, updated_date) VALUES (?, ?, ?, ?, ?)';
+        const create_company_values = [userId, comInfo.company_name, '0', formattedDate, formattedDate];
+        const create_company_results = await query(create_company_query, create_company_values);
+        // console.log('New Company:', create_company_results);
+        // console.log('New Company ID:', create_company_results.insertId);
+        if (create_company_results.insertId) {
+          //create new address for company
+          try{
+            const create_company_address_query = 'INSERT INTO company_location (company_id, address, country, state, city, zip, status) VALUES (?, ?, ?, ?, ?, ?, ?)';
+            const create_company_address_values = [create_company_results.insertId, comInfo.address, comInfo.country, comInfo.state, comInfo.city, comInfo.zip, '0'];
+            const create_company_address_results = await query(create_company_address_query, create_company_address_values);
+            if (create_company_address_results.insertId) {
+              return_data.companyID = create_company_results.insertId;
+              return_data.companyLocationID = create_company_address_results.insertId;
+              return return_data;
+            }
+          }catch(error){
+            console.error('Error during create_company_address_query:', error);
+          }
+        }
+      }catch(error){
+        console.error('Error during user create_company_query:', error);
+      }
     }
   }
   catch (error) {
-    console.error('Error during user registration:', error);
+    console.error('Error during user company_name_checking_query:', error);
   }
 };
+
+async function createReview(reviewIfo, userId, comInfo){
+  // console.log('Review Info', reviewIfo);
+  // console.log('Company Info', comInfo);
+  // reviewIfo['tags[]'].forEach((tag) => {
+  //   console.log(tag);
+  // });
+  const currentDate = new Date();
+  // Format the date in 'YYYY-MM-DD HH:mm:ss' format (adjust the format as needed)
+  const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+
+  const create_review_query = 'INSERT INTO reviews (company_id, customer_id, company_location, company_location_id, review_title, rating, review_content, user_privacy, review_status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+  const create_review_values = [comInfo.companyID, userId, reviewIfo.address, comInfo.companyLocationID, reviewIfo.review_title, reviewIfo.rating, reviewIfo.review_content, reviewIfo.user_privacy, '1', formattedDate, formattedDate];
+              
+  try {
+    const create_review_results = await query(create_review_query, create_review_values);
+    if(create_review_results.insertId){
+      //insert review_tag_relation
+      const review_tag_relation_query = 'INSERT INTO review_tag_relation (review_id, tag_name) VALUES (?, ?)';
+      try{
+        for (const tag of reviewIfo['tags[]']) {
+          const review_tag_relation_values = [create_review_results.insertId, tag];
+          const review_tag_relation_results = await query(review_tag_relation_query, review_tag_relation_values);
+        }
+
+        //-- user review count------//
+        const update_review_count_query = 'UPDATE user_customer_meta SET review_count = review_count + 1 WHERE user_id = ?';
+        try {
+          const [update_review_count_result] = await db.promise().query(update_review_count_query, [userId]);
+          return create_review_results.insertId;
+        }catch (error) {
+          console.error('Error during user update_review_count_query:', error);
+        }
+        
+      }catch(error){
+        console.error('Error during user review_tag_relation_results:', error);
+      }
+    }
+  }catch (error) {
+    console.error('Error during user create_review_results:', error);
+  }
+}
+
+async function getlatestReviews(reviewCount){
+  const get_latest_review_query = `
+    SELECT r.*, c.company_name, c.logo, cl.address, cl.country, cl.state, cl.city, cl.zip
+      FROM reviews r
+      JOIN company c ON r.company_id = c.ID AND c.status = "1"
+      JOIN company_location cl ON r.company_location_id = cl.ID AND cl.status = "1"
+      WHERE r.review_status = "1"
+      ORDER BY r.created_at DESC
+      LIMIT ${reviewCount};
+  `;
+  try{
+    const get_latest_review_results = await query(get_latest_review_query);
+    if(get_latest_review_results.length > 0 ){
+      //console.log(get_latest_review_results);
+      return get_latest_review_results;
+    }else{
+      return [];
+    }
+  }catch(error){
+    console.error('Error during user get_latest_review_query:', error);
+  }
+  
+}
 
 module.exports = {
     getUser,
@@ -509,5 +677,7 @@ module.exports = {
     insertIntoFaqPages,
     insertIntoFaqCategories,
     insertIntoFaqItems,
-    createCompany
+    createCompany,
+    createReview,
+    getlatestReviews,
 };

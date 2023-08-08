@@ -11,6 +11,7 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const useragent = require('useragent');
 const requestIp = require('request-ip');
 const FacebookStrategy = require('passport-facebook').Strategy;
+const querystring = require('querystring');
 
 const comFunction = require('./common_function');
 
@@ -150,8 +151,20 @@ app.get(
 app.get('/facebook-user-data', async (req, res) => {
     const user = req.user;
     try {
-      await comFunction.saveUserFacebookLoginDataToDB(user); // Replace 'saveUserDataToDatabase' with your custom function
-      return res.redirect('/');
+        const UserResponse = await comFunction.saveUserFacebookLoginDataToDB(user); // Replace 'saveUserDataToDatabase' with your custom function
+        console.log('aaaa',UserResponse);
+
+        if(UserResponse.status == 1){
+            //login code gose here
+        }else{
+            //Return to register page
+            const queryString = querystring.stringify({
+                menu_active_id: 'register',
+                page_title: 'User Registration',
+                userResponse: JSON.stringify(UserResponse)
+            });
+            res.redirect('/register-user?' + queryString);
+        }
     } catch (error) {
       console.error('Error saving user data:', error);
       return res.redirect('/error');

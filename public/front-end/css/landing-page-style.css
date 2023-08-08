@@ -313,7 +313,7 @@
     top: 34px;
 }
 
-#ratingcounter {
+#ratingRange {
     background-color: transparent;
     color: #ffffff;
     max-width: 50px;
@@ -397,13 +397,6 @@ span#selected-range-emojis {
     margin-top: 3px;
 }
 
-.range-tag1,
-.range-tag2,
-.range-tag3,
-.range-tag4,
-.range-tag5 {
-	display: none;
-}
 /*=============== Review Content End ==============*/
 
 /*=============== About Start ==============*/

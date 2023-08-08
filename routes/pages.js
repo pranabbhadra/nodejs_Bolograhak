@@ -14,6 +14,16 @@ const comFunction = require('../common_function');
 const router = express.Router();
 const publicPath = path.join(__dirname, '../public');
 
+router.get('/register-user', async (req, res) => {
+    console.log(req.query);
+    const userResponse = JSON.parse(req.query.userResponse);
+    res.json({
+        menu_active_id: req.query.menu_active_id,
+        page_title: req.query.page_title,
+        userResponse: userResponse
+    });
+});
+
 // Middleware function to check if user CookieValue Exist
 const checkCookieValue = (req, res, next) => {
     // Check if the 'userData' cookie exists and has a value
@@ -34,6 +44,11 @@ const checkCookieValue = (req, res, next) => {
 
 router.get('', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
+
+    const [allRatingTags] = await Promise.all([
+        comFunction.getAllRatingTags(),
+    ]);
+    const rangeTexts = {};
 
     try {
         // Make API request to fetch blog posts
@@ -68,6 +83,7 @@ router.get('', checkCookieValue, async (req, res) => {
                         home,
                         meta_values_array,
                         featured_comps,
+                        allRatingTags: allRatingTags,
                         AddressapiKey: process.env.ADDRESS_GOOGLE_API_Key
                     });
                 })
@@ -149,8 +165,30 @@ router.get('/about-us', checkCookieValue, async (req, res) => {
 });
 
 router.get('/review', checkCookieValue, async (req, res) => {
-    let currentUserData = JSON.parse(req.userData);
-    res.render('front-end/review', { menu_active_id: 'review', page_title: 'Customer Reviews', currentUserData });
+    try {
+        let currentUserData = JSON.parse(req.userData);
+
+        // Fetch all the required data asynchronously
+        const [latestReviews] = await Promise.all([
+            comFunction.getlatestReviews(15),
+        ]);
+
+        res.render('front-end/review', {
+            menu_active_id: 'review',
+            page_title: 'Customer Reviews',
+            currentUserData,
+            latestReviews: latestReviews
+        });
+        // res.json({
+        //     menu_active_id: 'review',
+        //     page_title: 'Customer Reviews',
+        //     currentUserData,
+        //     latestReviews: latestReviews
+        // });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
 });
 
 router.get('/faq', checkCookieValue, async (req, res) => {
