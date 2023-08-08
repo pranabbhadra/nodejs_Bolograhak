@@ -140,7 +140,6 @@ router.post('/update-business', upload.fields([
     { name: 'banner_img_7', maxCount: 1 },
     { name: 'banner_img_8', maxCount: 1 },
 
-    { name: 'feature_icon', maxCount: 10 },
 
     { name: 'advantage_img_1', maxCount: 1 },
     { name: 'advantage_img_2', maxCount: 1 },

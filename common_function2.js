@@ -64,9 +64,91 @@ async function getFaqItems() {
   }
 };
 
+//Insert Business Fature content
+function insertBusinessFeature(content,image){
+  try {
+      const insert_query = `INSERT INTO business_features ( content, image, existing_or_upcoming) VALUES (?,?,'existing')`;
+      const insert_data = [content,image];
+      query(insert_query,insert_data);
+  } catch (error) {
+    console.error('Error during Inserting Business Fature content:', error);
+  }
+}
+
+//Insert Business Upcoming Fature content
+function insertBusinessUpcomingFeature(content){
+  try {
+      const insert_query = `INSERT INTO business_features ( content,  existing_or_upcoming) VALUES (?,'upcoming')`;
+      const insert_data = [content];
+      query(insert_query,insert_data);
+  } catch (error) {
+    console.error('Error during Inserting Business Fature content:', error);
+  }
+}
+//Delete Business Upcoming Fature content
+function deleteBusinessUpcomingFeature(content){
+  try {
+    const delete_query = `DELETE FROM business_features WHERE existing_or_upcoming = 'upcoming'`;
+    query(delete_query);
+  } catch (error) {
+    console.error('Error during Inserting Business Fature content:', error);
+  }
+}
+
+//Delete Business Fature content
+function deleteBusinessFeature(content){
+  try {
+    const delete_query = `DELETE FROM business_features WHERE existing_or_upcoming = 'existing'`;
+    query(delete_query);
+  } catch (error) {
+    console.error('Error during Inserting Business Fature content:', error);
+  }
+}
+
+//-- Fetch  Business Fature content --------//
+async function getBusinessFeature() {
+  try {
+    // Check if the company Name already exists in the "company" table
+    const faq_items_fetch_query = "SELECT * FROM business_features WHERE existing_or_upcoming = 'existing'";
+    const faq_items__results = await query(faq_items_fetch_query);
+    if (faq_items__results.length > 0) {
+      //return faq_categories info
+      return faq_items__results;
+    } else {
+
+    }
+  }
+  catch (error) {
+    console.error('Error during fetching faq_item:', error);
+  }
+};
+
+//-- Fetch Upcoming Business Fature content --------//
+async function getUpcomingBusinessFeature() {
+  try {
+    // Check if the company Name already exists in the "company" table
+    const faq_items_fetch_query = "SELECT * FROM business_features WHERE existing_or_upcoming = 'upcoming'";
+    const faq_items__results = await query(faq_items_fetch_query);
+    if (faq_items__results.length > 0) {
+      //return faq_categories info
+      return faq_items__results;
+    } else {
+
+    }
+  }
+  catch (error) {
+    console.error('Error during fetching faq_item:', error);
+  }
+};
 
 module.exports = {
   getFaqPage,
   getFaqCategories,
-  getFaqItems
+  getFaqItems,
+  insertBusinessFeature,
+  insertBusinessUpcomingFeature,
+  deleteBusinessFeature,
+  deleteBusinessUpcomingFeature,
+  getBusinessFeature,
+  getUpcomingBusinessFeature
 };

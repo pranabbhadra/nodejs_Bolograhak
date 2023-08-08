@@ -230,8 +230,43 @@ router.get('/contact', checkCookieValue, async (req, res) => {
 });
 
 router.get('/business', checkCookieValue, async (req, res) => {
-    let currentUserData = JSON.parse(req.userData);
-    res.render('front-end/business', { menu_active_id: 'business', page_title: 'Business', currentUserData });
+    
+    try {
+        let currentUserData = JSON.parse(req.userData);
+        const sql = `SELECT * FROM page_info where secret_Key = 'business' `;
+        db.query(sql, (err, results, fields) => {
+            if (err) throw err;
+            const common = results[0];
+            const meta_sql = `SELECT * FROM page_meta where page_id = ${common.id}`;
+            db.query(meta_sql, async (meta_err, _meta_result) => {
+                if (meta_err) throw meta_err;
+
+                const meta_values = _meta_result;
+                let meta_values_array = {};
+                await meta_values.forEach((item) => {
+                    meta_values_array[item.page_meta_key] = item.page_meta_value;
+                })
+
+                const UpcomingBusinessFeature = await comFunction2.getUpcomingBusinessFeature();
+                const BusinessFeature = await comFunction2.getBusinessFeature();
+                //console.log(meta_values_array);
+                res.render('front-end/business', {
+                    menu_active_id: 'pages',
+                    page_title: common.title,
+                    currentUserData,
+                    common,
+                    meta_values_array,
+                    UpcomingBusinessFeature,
+                    BusinessFeature
+                });
+            })
+
+        })
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
 });
 
 router.get('/myprofile', checkCookieValue, async (req, res) => {
@@ -1127,13 +1162,18 @@ router.get('/edit-business', checkLoggedIn, (req, res) => {
                 await meta_values.forEach((item) => {
                     meta_values_array[item.page_meta_key] = item.page_meta_value;
                 })
+
+                const UpcomingBusinessFeature = await comFunction2.getUpcomingBusinessFeature();
+                const BusinessFeature = await comFunction2.getBusinessFeature();
                 //console.log(meta_values_array);
                 res.render('pages/update-business', {
                     menu_active_id: 'pages',
                     page_title: 'Update Business',
                     currentUserData,
                     common,
-                    meta_values_array
+                    meta_values_array,
+                    UpcomingBusinessFeature,
+                    BusinessFeature
                 });
             })
 
