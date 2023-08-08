@@ -442,6 +442,61 @@ function getReviewRatingData(review_rating_Id) {
   });
 }
 
+async function getAllReviews() {
+  const all_review_query = `
+    SELECT r.*, c.company_name, c.logo, c.status as company_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic
+      FROM reviews r
+      JOIN company c ON r.company_id = c.ID
+      JOIN company_location cl ON r.company_location_id = cl.ID
+      JOIN users u ON r.customer_id = u.user_id
+      LEFT JOIN user_customer_meta ucm ON u.user_id = ucm.user_id
+      ORDER BY r.created_at DESC;
+  `;
+  try{
+    const all_review_results = await query(all_review_query);
+    return all_review_results;
+  }
+  catch(error){
+    console.error('Error during all_review_query:', error);
+  }
+}
+async function getCustomerReviewData(review_Id){
+  const select_review_query = `
+    SELECT r.*, c.company_name, c.logo, c.status as company_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic
+      FROM reviews r
+      JOIN company c ON r.company_id = c.ID
+      JOIN company_location cl ON r.company_location_id = cl.ID
+      JOIN users u ON r.customer_id = u.user_id
+      LEFT JOIN user_customer_meta ucm ON u.user_id = ucm.user_id
+      WHERE r.id = ?;
+  `;
+  const select_review_value = [review_Id];
+  try{
+    const select_review_results = await query(select_review_query, select_review_value);
+    return select_review_results[0];
+  }
+  catch(error){
+    console.error('Error during select_review_query:', error);
+  }
+}
+
+async function getCustomerReviewTagRelationData(review_Id){
+  const select_review_tag_query = `
+    SELECT r.id as review_id, rtr.id, rtr.tag_name
+      FROM reviews r
+      JOIN review_tag_relation rtr ON r.id = rtr.review_id
+      WHERE r.id = ?;
+  `;
+  const select_review_tag_value = [review_Id];
+  try{
+    const select_review_tag_results = await query(select_review_tag_query, select_review_tag_value);
+    return select_review_tag_results;
+  }
+  catch(error){
+    console.error('Error during select_review_tag_query:', error);
+  }
+}
+
 function getMetaValue(pageID, page_meta_key) {
   //console.log(pageID + ' ' + page_meta_key);
   db.query(`SELECT page_meta_value FROM page_meta  WHERE page_id  = ${pageID} AND  page_meta_key  =  '${page_meta_key}' `, async (err, result) => {
@@ -690,4 +745,7 @@ module.exports = {
     createCompany,
     createReview,
     getlatestReviews,
+    getAllReviews,
+    getCustomerReviewData,
+    getCustomerReviewTagRelationData
 };

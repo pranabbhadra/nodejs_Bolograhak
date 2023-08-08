@@ -391,7 +391,7 @@ router.get('/edit-category/:id/:kk', checkLoggedIn, (req, res) => {
                         } else {
                             if (state_results.length > 0) {
                                 state_response = state_results;
-                                res.render('edit-category', { menu_active_id: 'profile', page_title: 'Account Settings', currentUserData, country_response, state_response });
+                                res.render('edit-category', { menu_active_id: 'company', page_title: 'Account Settings', currentUserData, country_response, state_response });
                             }
                         }
                     })
@@ -500,7 +500,7 @@ router.get('/categories', checkLoggedIn, (req, res) => {
             }));
             //console.log(categories);
             //res.json({ menu_active_id: 'category', page_title: 'Categories', currentUserData, 'categories': categories });
-            res.render('categories', { menu_active_id: 'category', page_title: 'Categories', currentUserData, 'categories': categories });
+            res.render('categories', { menu_active_id: 'company', page_title: 'Categories', currentUserData, 'categories': categories });
         }
     })
 });
@@ -527,10 +527,10 @@ router.get('/add-category', checkLoggedIn, (req, res) => {
                     } else {
                         if (cat_result.length > 0) {
                             cat_data = cat_result;
-                            res.render('add-category', { menu_active_id: 'category', page_title: 'Add New Category', currentUserData, country_response, cat_data });
+                            res.render('add-category', { menu_active_id: 'company', page_title: 'Add New Category', currentUserData, country_response, cat_data });
 
                         } else {
-                            res.render('add-category', { menu_active_id: 'category', page_title: 'Add New Category', currentUserData, country_response, cat_data });
+                            res.render('add-category', { menu_active_id: 'company', page_title: 'Add New Category', currentUserData, country_response, cat_data });
                         }
                     }
                 })
@@ -584,7 +584,7 @@ router.get('/edit-category', checkLoggedIn, (req, res, next) => {
                                     const country_arr = country;
                                     //console.log(edit_data);
                                     //console.log(country, country_id);
-                                    res.render('edit-category', { menu_active_id: 'category', page_title: 'Add New Category', currentUserData, country_response, cat_data, edit_data, country_arr, country_id });
+                                    res.render('edit-category', { menu_active_id: 'company', page_title: 'Add New Category', currentUserData, country_response, cat_data, edit_data, country_arr, country_id });
                                     //res.render('edit-category', { menu_active_id: 'category', page_title: 'Add New Category', currentUserData, 'ids': req.params.id });
                                 }
                             }
@@ -783,7 +783,7 @@ router.get('/add-rating-tag', checkLoggedIn, async (req, res) => {
         const encodedUserData = req.cookies.user;
         const currentUserData = JSON.parse(encodedUserData);
         res.render('add-rating-tag', {
-            menu_active_id: 'review-rating',
+            menu_active_id: 'rating-tag',
             page_title: 'Add Tag',
             currentUserData
         });
@@ -804,7 +804,7 @@ router.get('/review-rating-tags', checkLoggedIn, async (req, res) => {
         ]);
 
         res.render('review-rating-tags', {
-            menu_active_id: 'review-rating',
+            menu_active_id: 'rating-tag',
             page_title: 'All Tags',
             currentUserData,
             allRatingTags: allRatingTags
@@ -830,13 +830,13 @@ router.get('/edit-rating-tag/:id', checkLoggedIn, async (req, res) => {
 
         // Render the 'edit-user' EJS view and pass the data
         // res.json({
-        //     menu_active_id: 'review-rating',
+        //     menu_active_id: 'rating-tag',
         //     page_title: 'Edit Rating Tag',
         //     currentUserData,
         //     reviewRatingData: reviewRatingData          
         // });
         res.render('edit-rating-tag', {
-            menu_active_id: 'review-rating',
+            menu_active_id: 'rating-tag',
             page_title: 'Edit Rating Tag',
             currentUserData,
             reviewRatingData: reviewRatingData
@@ -849,7 +849,63 @@ router.get('/edit-rating-tag/:id', checkLoggedIn, async (req, res) => {
     }
 });
 
+router.get('/all-review', checkLoggedIn, async (req, res) => {
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
 
+        // Fetch all the required data asynchronously
+        const [allReviews] = await Promise.all([
+            comFunction.getAllReviews(),
+        ]);
+
+        // res.json({
+        //     menu_active_id: 'review',
+        //     page_title: 'All Review',
+        //     currentUserData,
+        //     allReviews: allReviews
+        // });
+        res.render('all-review', {
+            menu_active_id: 'review',
+            page_title: 'All Review',
+            currentUserData,
+            allReviews: allReviews
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+
+router.get('/edit-review/:id', checkLoggedIn, async (req, res) => {
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+        const review_Id = req.params.id;
+
+        // Fetch all the required data asynchronously
+        const [reviewData, reviewTagData] = await Promise.all([
+            comFunction.getCustomerReviewData(review_Id),
+            comFunction.getCustomerReviewTagRelationData(review_Id),
+        ]);
+
+        // Render the 'edit-user' EJS view and pass the data
+        // res.json({
+        //     reviewData: reviewData,
+        //     reviewTagData: reviewTagData,        
+        // });
+        res.render('edit-review', {
+            menu_active_id: 'review',
+            page_title: 'Edit Review',
+            currentUserData,
+            reviewData,
+            reviewTagData: reviewTagData,            
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
 
 //Add FAQ Page
 router.get('/add-faq', checkLoggedIn, async (req, res) => {
@@ -859,7 +915,7 @@ router.get('/add-faq', checkLoggedIn, async (req, res) => {
         const faqPageData = await comFunction2.getFaqPage();
         // Render the 'add-page' EJS view and pass the data
         res.render('faq/add-faq', {
-            menu_active_id: 'faq',
+            menu_active_id: 'pages',
             page_title: 'FAQs ',
             currentUserData,
             faqPageData
@@ -884,7 +940,7 @@ router.get('/edit-faq', checkLoggedIn, async (req, res) => {
         // console.log(faqItemsData);
         // Render the 'add-page' EJS view and pass the data
         res.render('faq/edit-faq', {
-            menu_active_id: 'faq',
+            menu_active_id: 'pages',
             page_title: 'Edit FAQs ',
             currentUserData,
             faqPageData,
@@ -1017,7 +1073,7 @@ router.get('/add-featured-company', checkLoggedIn, async (req, res) => {
             // Render the 'edit-user' EJS view and pass the data
             //console.log(companies);
             res.render('pages/add-featured-company', {
-                menu_active_id: 'pages',
+                menu_active_id: 'company',
                 page_title: 'Add Featured Company',
                 currentUserData,
                 companies
@@ -1044,7 +1100,7 @@ router.get('/edit-featured-company/:id', checkLoggedIn, async (req, res) => {
             //console.log(company);
             const f_company = company[0];
             res.render('pages/edit-featured-company', {
-                menu_active_id: 'pages',
+                menu_active_id: 'company',
                 page_title: 'Update Featured Company',
                 currentUserData,
                 f_company
@@ -1096,7 +1152,7 @@ router.get('/view-featured-companies', checkLoggedIn, async (req, res) => {
 
         db.query(featured_sql, (err, companies, fields) => {
             res.render('pages/view-featured-companies', {
-                menu_active_id: 'pages',
+                menu_active_id: 'company',
                 page_title: 'Featured Companies',
                 currentUserData,
                 companies
