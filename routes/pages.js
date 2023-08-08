@@ -10,6 +10,7 @@ const dotenv = require('dotenv');
 dotenv.config({ path: './.env' });
 
 const comFunction = require('../common_function');
+const comFunction2 = require('../common_function2');
 
 const router = express.Router();
 const publicPath = path.join(__dirname, '../public');
@@ -32,11 +33,11 @@ const checkCookieValue = (req, res, next) => {
         // Add other variables as needed
     };
     if (req.cookies.user) {
-      // If it exists, set the 'userData' property on the request object to the cookie value
-      req.userData = req.cookies.user;
+        // If it exists, set the 'userData' property on the request object to the cookie value
+        req.userData = req.cookies.user;
     } else {
-      // If the cookie doesn't exist or has no value, set 'userData' to null
-      req.userData = null;
+        // If the cookie doesn't exist or has no value, set 'userData' to null
+        req.userData = null;
     }
     // Call the next middleware or route handler
     next();
@@ -93,20 +94,47 @@ router.get('', checkCookieValue, async (req, res) => {
         })
     } catch (error) {
         console.error('Error fetching blog posts:', error);
-        res.render('front-end/landing', {
-            menu_active_id: 'landing',
-            page_title: 'Home',
-            currentUserData: currentUserData,
-            homePosts: [],
-            AddressapiKey: process.env.ADDRESS_GOOGLE_API_Key
-        });
+        const sql = `SELECT * FROM page_info where secret_Key = 'home' `;
+        db.query(sql, (err, results, fields) => {
+            if (err) throw err;
+            const home = results[0];
+            const meta_sql = `SELECT * FROM page_meta where page_id = ${home.id}`;
+            db.query(meta_sql, async (meta_err, _meta_result) => {
+                if (meta_err) throw meta_err;
+
+                const meta_values = _meta_result;
+                let meta_values_array = {};
+                await meta_values.forEach((item) => {
+                    meta_values_array[item.page_meta_key] = item.page_meta_value;
+                })
+
+                const featured_sql = `SELECT featured_companies.id,featured_companies.company_id,featured_companies.short_desc,featured_companies.link,company.logo,company.company_name FROM featured_companies 
+                        JOIN company ON featured_companies.company_id = company.ID 
+                        WHERE featured_companies.status = 'active' 
+                        ORDER BY featured_companies.ordering ASC `;
+                db.query(featured_sql, (featured_err, featured_result) => {
+                    var featured_comps = featured_result;
+                    res.render('front-end/landing', {
+                        menu_active_id: 'landing',
+                        page_title: home.title,
+                        currentUserData: currentUserData,
+                        homePosts: [],
+                        home,
+                        meta_values_array,
+                        featured_comps,
+                        AddressapiKey: process.env.ADDRESS_GOOGLE_API_Key
+                    });
+                })
+
+            })
+
+        })
     }
 });
 //view Contact Us Page
 router.get('/contact-us', checkCookieValue, (req, res) => {
     //resp.sendFile(`${publicPath}/index.html`)
-    const encodedUserData = req.cookies.user;
-    const currentUserData = JSON.parse(encodedUserData);
+    let currentUserData = JSON.parse(req.userData);
 
     const sql = `SELECT * FROM contacts`;
     db.query(sql, (err, results, fields) => {
@@ -824,15 +852,44 @@ router.get('/edit-rating-tag/:id', checkLoggedIn, async (req, res) => {
 
 
 //Add FAQ Page
-router.get('/add-faq', checkLoggedIn, (req, res) => {
+router.get('/add-faq', checkLoggedIn, async (req, res) => {
     try {
         const encodedUserData = req.cookies.user;
         const currentUserData = JSON.parse(encodedUserData);
+        const faqPageData = await comFunction2.getFaqPage();
         // Render the 'add-page' EJS view and pass the data
         res.render('faq/add-faq', {
             menu_active_id: 'faq',
             page_title: 'FAQs ',
-            currentUserData
+            currentUserData,
+            faqPageData
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+
+//Edit FAQ Page
+router.get('/edit-faq', checkLoggedIn, async (req, res) => {
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+
+        const faqPageData = await comFunction2.getFaqPage();
+        const faqCategoriesData = await comFunction2.getFaqCategories();
+        const faqItemsData = await comFunction2.getFaqItems();
+        // console.log(faqPageData);
+        // console.log(faqCategoriesData);
+        // console.log(faqItemsData);
+        // Render the 'add-page' EJS view and pass the data
+        res.render('faq/edit-faq', {
+            menu_active_id: 'faq',
+            page_title: 'Edit FAQs ',
+            currentUserData,
+            faqPageData,
+            faqCategoriesData,
+            faqItemsData
         });
     } catch (err) {
         console.error(err);
@@ -1045,6 +1102,42 @@ router.get('/view-featured-companies', checkLoggedIn, async (req, res) => {
                 companies
             });
         });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+
+//Edit Businesss Page
+router.get('/edit-business', checkLoggedIn, (req, res) => {
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+        const sql = `SELECT * FROM page_info where secret_Key = 'business' `;
+        db.query(sql, (err, results, fields) => {
+            if (err) throw err;
+            const common = results[0];
+            const meta_sql = `SELECT * FROM page_meta where page_id = ${common.id}`;
+            db.query(meta_sql, async (meta_err, _meta_result) => {
+                if (meta_err) throw meta_err;
+
+                const meta_values = _meta_result;
+                let meta_values_array = {};
+                await meta_values.forEach((item) => {
+                    meta_values_array[item.page_meta_key] = item.page_meta_value;
+                })
+                //console.log(meta_values_array);
+                res.render('pages/update-business', {
+                    menu_active_id: 'pages',
+                    page_title: 'Update Business',
+                    currentUserData,
+                    common,
+                    meta_values_array
+                });
+            })
+
+        })
 
     } catch (err) {
         console.error(err);

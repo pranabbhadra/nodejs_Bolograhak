@@ -1376,10 +1376,10 @@ exports.updateContacts = async (req, res) => {
 exports.contactFeedback = (req, res) => {
     const phone = req.body.phone_no;
     const message = req.body.message;
-    console.log(__dirname);
+    //console.log(req.body);
     var mailOptions = {
         from: 'vivek@scwebtech.com',
-        to: 'pranab@scwebtech.com',
+        to: process.env.MAIL_USER,
         subject: 'Feedback Mail From Contact',
         //html: ejs.renderFile(path.join(process.env.BASE_URL, '/views/email-template/', 'feedback.ejs'), { phone: phone, message: message })
         html: `<div style="padding- bottom: 30px; font - size: 17px; ">
@@ -1410,9 +1410,9 @@ exports.contactFeedback = (req, res) => {
 }
 
 // Create FAQ
-exports.createFAQ = async  (req, res) => {
+exports.createFAQ = async (req, res) => {
     //console.log(req.body);
-    const faqArray = req.body.FAQ;   
+    const faqArray = req.body.FAQ;
     //console.log(faqArray[0]);  
     //console.log(faqArray[1]);
 
@@ -1425,7 +1425,7 @@ exports.createFAQ = async  (req, res) => {
     ];
     try {
         const faqPageId = await comFunction.insertIntoFaqPages(Faq_Page_insert_values);
-        console.log('ID:',faqPageId);
+        console.log('ID:', faqPageId);
         await comFunction.insertIntoFaqCategories(faqArray);
         return res.send(
             {
@@ -1440,7 +1440,48 @@ exports.createFAQ = async  (req, res) => {
             status: 'error',
             message: 'An error occurred while inserting FAQ data',
         });
-    }    
+    }
+}
+
+// Update FAQ
+exports.updateFAQ = async (req, res) => {
+    //console.log(req.body);
+    const faqArray = req.body.FAQ;
+    //console.log(faqArray[0]);  
+    //console.log(faqArray[1]);
+
+    const Faq_Page_insert_values = [
+        req.body.title,
+        req.body.content,
+        req.body.meta_title,
+        req.body.meta_desc,
+        req.body.keyword,
+    ];
+    try {
+        db.query('DELETE  FROM faq_categories', (del_faq_cat_err, del_faq_cat_res) => {
+            db.query('DELETE - FROM faq_item', async (del_faq_item_err, del_faq_item_res) => {
+                const faqPageId = await comFunction.insertIntoFaqPages(Faq_Page_insert_values);
+                console.log('ID:', faqPageId);
+                await comFunction.insertIntoFaqCategories(faqArray);
+                return res.send(
+                    {
+                        status: 'ok',
+                        data: faqPageId,
+                        message: 'FAQ Content successfully Updated'
+                    }
+                )
+            })
+        });
+
+
+
+    } catch (error) {
+        console.error('Error during insertion:', error);
+        return res.status(500).send({
+            status: 'error',
+            message: 'An error occurred while inserting FAQ data',
+        });
+    }
 }
 
 // Update Home
@@ -1565,14 +1606,13 @@ exports.updateHome = async (req, res) => {
 
 //--Submit Review----//
 
-exports.submitReview= async (req, res) => {
+exports.submitReview = async (req, res) => {
     const encodedUserData = req.cookies.user;
     //console.log(currentUserData);
     try {
         if (encodedUserData) {
             const currentUserData = JSON.parse(encodedUserData);
             //console.log(currentUserData);
-            
             const userId = currentUserData.user_id;
             const company = await comFunction.createCompany(req.body, userId);
             const review = comFunction.createReview(req.body, userId, company);
@@ -1603,8 +1643,8 @@ exports.submitReview= async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).send('An error occurred');
-    }    
-}    
+    }
+}
 // Upadte About
 exports.updateAbout = async (req, res) => {
     // console.log('home', req.body);
@@ -1776,4 +1816,123 @@ exports.deleteFeaturedCompany = (req, res) => {
         }
 
     })
+}
+
+// Update Business
+exports.updateBusiness = async (req, res) => {
+    console.log('business', req.body);
+    console.log('file', req.files);
+    //const form_data = JSON.parse(req.body.upcoming_features);
+
+    // const { home_id, title, meta_title, meta_desc, meta_keyword, bannner_content, for_business,
+    //     for_customer, cus_right_content, cus_right_button_link, cus_right_button_text,
+    //     youtube_1, youtube_2, youtube_3, youtube_4, fb_widget, twitter_widget,
+    //     org_responsibility_content, org_responsibility_buttton_link, org_responsibility_buttton_text,
+    //     about_us_content, about_us_button_link, about_us_button_text } = req.body;
+
+    // const { banner_img_1, banner_img_2, banner_img_3, cus_right_img_1, cus_right_img_2, cus_right_img_3, cus_right_img_4, cus_right_img_5,
+    //     cus_right_img_6, cus_right_img_7, cus_right_img_8, org_responsibility_img_1, org_responsibility_img_2, org_responsibility_img_3,
+    //     org_responsibility_img_4, org_responsibility_img_5, org_responsibility_img_6, org_responsibility_img_7, org_responsibility_img_8,
+    //     about_us_img } = req.files;
+
+    // const meta_value = [bannner_content, for_business,
+    //     for_customer, cus_right_content, cus_right_button_link, cus_right_button_text,
+    //     youtube_1, youtube_2, youtube_3, youtube_4, fb_widget, twitter_widget,
+    //     org_responsibility_content, org_responsibility_buttton_link, org_responsibility_buttton_text,
+    //     about_us_content, about_us_button_link, about_us_button_text];
+
+    // const meta_key = ['bannner_content', 'for_business',
+    //     'for_customer', 'cus_right_content', 'cus_right_button_link', 'cus_right_button_text',
+    //     'youtube_1', 'youtube_2', 'youtube_3', 'youtube_4', 'fb_widget', 'twitter_widget',
+    //     'org_responsibility_content', 'org_responsibility_buttton_link', 'org_responsibility_buttton_text',
+    //     'about_us_content', 'about_us_button_link', 'about_us_button_text'];
+
+    // await meta_value.forEach((element, index) => {
+    //     //console.log(element, index);
+    //     const check_sql = `SELECT * FROM page_meta WHERE page_id = ? AND page_meta_key = ?`;
+    //     const check_data = [home_id, meta_key[index]];
+    //     db.query(check_sql, check_data, (check_err, check_result) => {
+    //         if (check_err) {
+    //             return res.send(
+    //                 {
+    //                     status: 'err',
+    //                     data: '',
+    //                     message: 'An error occurred while processing your request'
+    //                 }
+    //             )
+    //         } else {
+    //             if (check_result.length > 0) {
+    //                 const update_sql = `UPDATE page_meta SET page_meta_value = ? WHERE page_id = ? AND page_meta_key = ?`;
+    //                 const update_data = [element, home_id, meta_key[index]];
+    //                 db.query(update_sql, update_data, (update_err, update_result) => {
+    //                     if (update_err) throw update_err;
+    //                 })
+    //             } else {
+    //                 const insert_sql = `INSERT INTO page_meta (page_id , page_meta_key, page_meta_value) VALUES (?,?,?)`;
+    //                 const insert_data = [home_id, meta_key[index], element];
+    //                 db.query(insert_sql, insert_data, (insert_err, insert_result) => {
+    //                     if (insert_err) throw insert_err;
+    //                 })
+    //             }
+    //         }
+    //     });
+    // });
+
+    // const file_meta_value = [banner_img_1, banner_img_2, banner_img_3, cus_right_img_1, cus_right_img_2, cus_right_img_3, cus_right_img_4, cus_right_img_5,
+    //     cus_right_img_6, cus_right_img_7, cus_right_img_8, org_responsibility_img_1, org_responsibility_img_2, org_responsibility_img_3,
+    //     org_responsibility_img_4, org_responsibility_img_5, org_responsibility_img_6, org_responsibility_img_7, org_responsibility_img_8,
+    //     about_us_img];
+
+    // const file_meta_key = ['banner_img_1', 'banner_img_2', 'banner_img_3', 'cus_right_img_1', 'cus_right_img_2', 'cus_right_img_3', 'cus_right_img_4', 'cus_right_img_5',
+    //     'cus_right_img_6', 'cus_right_img_7', 'cus_right_img_8', 'org_responsibility_img_1', 'org_responsibility_img_2', 'org_responsibility_img_3',
+    //     'org_responsibility_img_4', 'org_responsibility_img_5', 'org_responsibility_img_6', 'org_responsibility_img_7', 'org_responsibility_img_8',
+    //     'about_us_img'];
+
+    // await file_meta_key.forEach((item, key) => {
+    //     //console.log(item, key);
+    //     if (req.files[item]) {
+    //         //console.log(file_meta_value[key][0].filename);
+    //         const check_sql = `SELECT * FROM page_meta WHERE page_id = ? AND page_meta_key = ?`;
+    //         const check_data = [home_id, item];
+    //         db.query(check_sql, check_data, (check_err, check_result) => {
+    //             if (check_err) {
+    //                 return res.send(
+    //                     {
+    //                         status: 'err',
+    //                         data: '',
+    //                         message: 'An error occurred while processing your request'
+    //                     }
+    //                 )
+    //             } else {
+    //                 if (check_result.length > 0) {
+    //                     const update_sql = `UPDATE page_meta SET page_meta_value = ? WHERE page_id = ? AND page_meta_key = ?`;
+    //                     const update_data = [file_meta_value[key][0].filename, home_id, item];
+    //                     db.query(update_sql, update_data, (update_err, update_result) => {
+    //                         if (update_err) throw update_err;
+    //                     })
+    //                 } else {
+    //                     const insert_sql = `INSERT INTO page_meta (page_id , page_meta_key, page_meta_value) VALUES (?,?,?)`;
+    //                     const insert_data = [home_id, item, file_meta_value[key][0].filename];
+    //                     db.query(insert_sql, insert_data, (insert_err, insert_result) => {
+    //                         if (insert_err) throw insert_err;
+    //                     })
+    //                 }
+    //             }
+    //         });
+    //     }
+
+    // });
+
+    // const title_sql = `UPDATE page_info SET title = ?, meta_title = ?, meta_desc = ?, meta_keyword = ? WHERE id  = ?`;
+    // const title_data = [title, meta_title, meta_desc, meta_keyword, home_id];
+    // //console.log(title_data);
+    // db.query(title_sql, title_data, (title_err, title_result) => {
+    //     return res.send(
+    //         {
+    //             status: 'ok',
+    //             data: '',
+    //             message: 'Title update successfully'
+    //         }
+    //     )
+    // })
 }

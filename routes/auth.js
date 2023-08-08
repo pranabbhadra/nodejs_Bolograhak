@@ -49,6 +49,9 @@ router.put('/edit-company-data', upload.single('logo'), authController.editCompa
 // Add FAQ
 router.post('/create-faq', authController.createFAQ);
 
+// Update FAQ
+router.put('/update-faq', authController.updateFAQ);
+
 // Update Contacts
 router.post('/update-contact', authController.updateContacts);
 
@@ -125,5 +128,31 @@ router.post('/update-featured-company', authController.updateFeaturedCompany);
 
 //Delete Featured Company
 router.get('/delete-featured-companies/:id', authController.deleteFeaturedCompany);
+
+// Home Page
+router.post('/update-business', upload.fields([
+    { name: 'banner_img_1', maxCount: 1 },
+    { name: 'banner_img_2', maxCount: 1 },
+    { name: 'banner_img_3', maxCount: 1 },
+    { name: 'banner_img_4', maxCount: 1 },
+    { name: 'banner_img_5', maxCount: 1 },
+    { name: 'banner_img_6', maxCount: 1 },
+    { name: 'banner_img_7', maxCount: 1 },
+    { name: 'banner_img_8', maxCount: 1 },
+
+    { name: 'feature_icon', maxCount: 10 },
+
+    { name: 'advantage_img_1', maxCount: 1 },
+    { name: 'advantage_img_2', maxCount: 1 },
+    { name: 'advantage_img_3', maxCount: 1 },
+    { name: 'advantage_img_4', maxCount: 1 },
+    { name: 'advantage_img_5', maxCount: 1 },
+    { name: 'advantage_img_6', maxCount: 1 },
+    { name: 'advantage_img_7', maxCount: 1 },
+    { name: 'advantage_img_8', maxCount: 1 },
+
+    { name: 'did_you_know_img', maxCount: 1 },
+
+]), authController.updateBusiness);
 
 module.exports = router;

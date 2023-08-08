@@ -462,10 +462,20 @@ function getMetaValue(pageID, page_meta_key) {
 // Function to insert data into 'faq_pages' table
 async function insertIntoFaqPages(data) {
   try {
-    const insertQuery = 'INSERT INTO faq_pages (title, content, meta_title, meta_desc, keyword) VALUES (?, ?, ?, ?, ?)';
-    const results = await query(insertQuery, data);
-    return results.insertId;
-    
+    const checkQuery = `SELECT * FROM faq_pages WHERE 1`;
+    db.query(checkQuery, async (checkErr, checkResult) => {
+      if (checkResult.length > 0) {
+        const updateQuery = `UPDATE faq_pages SET title=?, content = ?, meta_title = ?, meta_desc = ?, keyword = ? WHERE id = ${checkResult[0].id}`;
+        const results = await query(updateQuery, data);
+        return checkResult[0].id;
+      } else {
+        const insertQuery = 'INSERT INTO faq_pages (title, content, meta_title, meta_desc, keyword) VALUES (?, ?, ?, ?, ?)';
+        const results = await query(insertQuery, data);
+        return results.insertId;
+      }
+    })
+
+
   } catch (error) {
     console.error('Error inserting data into faq_pages table:', error);
     throw error;
