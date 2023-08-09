@@ -58,6 +58,20 @@
                         <div class="row mb-6">
                             <!--begin::Label-->
                             <label class="col-lg-4 col-form-label fw-bold fs-6">
+                                <span class="required">Name</span>
+                            </label>
+                            <!--end::Label-->
+                            <!--begin::Col-->
+                            <div class="col-lg-8 fv-row">
+                                <input type="text" name="review_rating_name" value="<%= reviewRatingData.review_rating_name %>" class="form-control">
+                            </div>
+                            <!--end::Col-->
+                        </div>
+                        <!--end::Input group-->
+                        <!--begin::Input group-->
+                        <div class="row mb-6">
+                            <!--begin::Label-->
+                            <label class="col-lg-4 col-form-label fw-bold fs-6">
                                 <span class="required">Upload Image</span>
                             </label>
                             <!--end::Label-->
@@ -169,6 +183,13 @@
                                 validators: {
                                     notEmpty: {
                                         message: 'Please select rating number'
+                                    }
+                                }
+                            },
+                            'review_rating_name': {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'Name is required'
                                     }
                                 }
                             },

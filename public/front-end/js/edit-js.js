@@ -244,7 +244,7 @@ jQuery(function($){
     autoplaySpeed: 3000,
     responsive: [
       {
-        breakpoint: 1024,
+        breakpoint: 1320,
         settings: {
           slidesToShow: 4,
           slidesToScroll: 1,
@@ -253,7 +253,7 @@ jQuery(function($){
         }
       },
       {
-        breakpoint: 890,
+        breakpoint: 991,
         settings: {
           slidesToShow: 3,
           slidesToScroll: 1
@@ -382,6 +382,32 @@ jQuery(function($){
         }
       }
     ]
+  });
+
+  $('.review-big-slider1').slick({
+    dots:false,
+    infinite: true,
+    speed:1800,
+    autoplay:true,
+    autoplaySpeed: 4000,
+    pauseOnHover:false,
+    arrows:false,
+    fade:true,
+    slidesToShow:1,
+    slidesToScroll:1
+  });
+
+  $('.review-small-slider2').slick({
+    dots:false,
+    infinite: true,
+    speed:1400,
+    autoplay:true,
+    autoplaySpeed: 2000,
+    pauseOnHover:false,
+    arrows:false,
+    fade:true,
+    slidesToShow:1,
+    slidesToScroll:1
   });
   
   // /////////////////////////////////////// Slick Slider end
@@ -584,52 +610,70 @@ jQuery(function($){
   
   // ////////////////////////////// Range Slider Start
   
-   const rangeTexts = {
-      0: "Lowest",
-      0.5: "Low",
-      1: "Not Bad",
-      1.5: "Medium",
-      2: "Average",
-      2.5: "Good",
-      3: "Very Good",
-      3.5: "Awesome",
-      4: "Exellent",
-      4.5: "High",
-      5: "Highest",
-    };
+  //  const rangeTexts = {
+  //     0: "Lowest",
+  //     0.5: "Low",
+  //     1: "Not Bad",
+  //     1.5: "Medium",
+  //     2: "Average",
+  //     2.5: "Good",
+  //     3: "Very Good",
+  //     3.5: "Awesome",
+  //     4: "Exellent",
+  //     4.5: "High",
+  //     5: "Highest",
+  //   };
   
-    const rangeEmojis = {
-      0: "😠",
-      0.5: "😦",
-      1: "☹️",
-      1.5: "🙁",
-      2: "😐",
-      2.5: "🙂",
-      3: "😊",
-      3.5: "😄",
-      4: "😃",
-      4.5: "😍",
-      5: "🤩",
-    };
+  //   const rangeEmojis = {
+  //     0: "😠",
+  //     0.5: "😦",
+  //     1: "☹️",
+  //     1.5: "🙁",
+  //     2: "😐",
+  //     2.5: "🙂",
+  //     3: "😊",
+  //     3.5: "😄",
+  //     4: "😃",
+  //     4.5: "😍",
+  //     5: "🤩",
+  //   };
   
-    $("#rating-range").slider({
-      step: 0.5,
-      range: true, 
-      min: 0, 
-      max: 5, 
-      values: [0, 5], 
-      slide: function(event, ui)
-      {
-        $("#ratingRange").val(ui.values[0] + " / " + ui.values[1]);
-        $("#ratingvalue").val(ui.values[0]);
-        // When slider values change, update the text
-        $("#selected-range-text").text(rangeTexts[ui.values[0]]);
-        $("#selected-range-emojis").text(rangeEmojis[ui.values[0]]);
-      }
-      });
-      $("#ratingRange").val($("#rating-range").slider("values", 0) + " / " + $("#rating-range").slider("values", 1));
+  //   $("#rating-range").slider({
+  //     step: 0.5,
+  //     range: true, 
+  //     min: 0, 
+  //     max: 5, 
+  //     values: [0, 5], 
+  //     slide: function(event, ui)
+  //     {
+  //       $("#ratingcounter").val(ui.values[0] + " / " + ui.values[1]);
+  //       $("#ratingvalue").val(ui.values[0]);
+  //       // When slider values change, update the text
+  //       $("#selected-range-text").text(rangeTexts[ui.values[0]]);
+  //       $("#selected-range-emojis").text(rangeEmojis[ui.values[0]]);
+  //     }
+  //     });
+  //     $("#ratingcounter").val($("#rating-range").slider("values", 0) + " / " + $("#rating-range").slider("values", 1));
+
+
+    //   $(document).ready(function() {
+    //     var rangeSlider = $('#rating-range');
+    
+    //     rangeSlider.on('input', function() {
+    
+    //         // Show the appropriate element based on the range
+    //         if (sliderValue >= 0.5 && sliderValue < 1) {
+    //             $('.range-tag1').show();
+    //         } else if (sliderValue >= 1 && sliderValue < 1.5) {
+    //             $('.range-tag2').show();
+    //         } else if (sliderValue >= 1.5 && sliderValue <= 2) {
+    //             $('range-tag3').show();
+    //         }
+    //     });
+    // });
   
   ////////////////////////////// Range Slider End
+
 
   // /////////////////////////////  read more read less script
   $(".read-review").click(function(e){

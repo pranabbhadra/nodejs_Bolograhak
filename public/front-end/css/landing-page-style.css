@@ -87,7 +87,19 @@
 	  }
 	}
 	
+.business-left-cartoon {
+	position: absolute;
+	left: 30px;
+	bottom: 0;
+	z-index: -9;
+}
 
+.business-right-cartoon {
+	position: absolute;
+	right: 30px;
+	bottom: 0;
+	z-index: -9;
+}
 
 /*=============== Business End ==============*/
 
@@ -198,8 +210,9 @@
 
 /*=============== Review Content Start ==============*/
 .review-content {
-	background: #161616;
-	color: #ffffff;
+    background: #161616;
+    color: #ffffff;
+    padding: 80px 0 127px;
 }
 
 .review-content:before {
@@ -211,10 +224,6 @@
 	background-size: 100%;
 	width: 118px;
 	height: 315px;
-}
-
-.review-left img {
-	margin: 0 auto;
 }
 
 .review-left h5 {
@@ -231,6 +240,37 @@
 
 .review-left h5 a:hover {
 	color: #ffffff;
+}
+
+.review-left-img {
+    position: relative;
+    overflow: hidden;
+}
+
+.review-left-img:before {
+    content: '';
+    position: absolute;
+    right: 30px;
+    top: 48px;
+    background: url(../images/review-shape1.png) no-repeat center;
+    width: 74px;
+    height: 174px;
+}
+
+.review-left-img:after {
+    content: '';
+    position: absolute;
+    left: 78px;
+    bottom: 0px;
+    background: url(../images/review-shape2.png) no-repeat center;
+    width: 310px;
+    height: 99px;
+}
+
+.review-small-img {
+    width: 44%;
+    float: right;
+    margin-top: -291px;
 }
 
 .review-right .form-control, 
@@ -356,6 +396,7 @@ span#selected-range-emojis {
     color: #fccb06;
     margin-top: 3px;
 }
+
 /*=============== Review Content End ==============*/
 
 /*=============== About Start ==============*/
@@ -636,6 +677,18 @@ span#selected-range-emojis {
     z-index: 1;
 }
 
+.video-man1 {
+    position: absolute;
+    left: -28px;
+    bottom: -40px;
+}
+
+.video-man2 {
+    position: absolute;
+    right: -40px;
+    bottom: -40px;
+}
+
 .v-slider {
     padding: 14px;
 }
@@ -706,8 +759,39 @@ span#selected-range-emojis {
 
 /*=============== Featured Content Start ==============*/
 .featured-content {
-    background: #161616;
-    padding: 65px 0;
+    padding: 80px 0 0 0;
+}
+
+.featured-content:before {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 40px;
+	background: url(../images/feature-shape1.png) no-repeat;
+	width: 102px;
+	height: 187px;
+	z-index: -9;
+}
+
+.featured-content:after {
+	content: '';
+	position: absolute;
+	right: 0;
+	top: 85px;
+	background: url(../images/feature-shape2.png) no-repeat;
+	width:62px;
+	height: 92px;
+	z-index: -9;
+}
+
+.featured-content h2.main-head {
+	margin-bottom: 30px;
+}
+
+.featured-object-wrap {
+	padding: 46px 36px 68px;
+	background: #FFF;
+    box-shadow: 0px 4px 94px 0px rgba(0, 0, 0, 0.14);
 }
 
 .feature-box {
@@ -715,20 +799,69 @@ span#selected-range-emojis {
 	line-height: 138.4%;
 	border-radius: 16px;
     background: #FFF;
-    padding: 50px 25px;
+    padding: 22px 10px;
+	border: 1px solid #333;
+}
+
+.feature-box img {
+    height: 50px !important;
+    width: auto;
 }
 
 .feature-box h5 {
-	font-size: 18px;
-	font-weight: 400;
-	line-height: 60%; 
-	margin-top: 14px;
-	margin-bottom: 11px;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 100%;
+    margin-top: 14px;
+    margin-bottom: 11px;
+    min-height: 36px;
 }
 .featured-slider .item {
 	margin: 0 12px;
 }
+
+.feature-man1 {
+    position: absolute;
+    left: 130px;
+    top: -130px;
+}
+
+.feature-man2 {
+    position: absolute;
+    right: 130px;
+    top: -146px;
+}
+
+.feature-man3 {
+    position: absolute;
+    left: -122px;
+    bottom: 0;
+}
+
+.feature-man4 {
+    position: absolute;
+    right: -115px;
+    bottom: -1px;
+}
 /*=============== Featured Content End ==============*/
+
+/*=============== About Digital content start ==============*/
+.about-digital-content {
+    padding: 117px 0;
+    overflow: hidden;
+}
+
+.about-digital-wrold {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+}
+
+.about-digital-content .about-right {
+	position: relative;
+	z-index: 9;
+}
+/*=============== About Digital content End ==============*/
 
 /*=============== Bottom main Content Start ==============*/
 .bottom-main-content .about-right p {

@@ -56,7 +56,7 @@
                                     <div class="col-lg-8 fv-row">
                                         <input type="text" name="title" id="title"
                                             class="form-control form-control-lg form-control-solid" placeholder="Title"
-                                            value="" />
+                                            value="<%= faqPageData.title %>" />
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -71,7 +71,8 @@
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-8 fv-row">
-                                        <textarea name="content" class="content" id="content-editor"></textarea>
+                                        <textarea name="content" class="content"
+                                            id="content-editor"><%= faqPageData.content %></textarea>
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -87,7 +88,7 @@
                                     <div class="col-lg-8 fv-row">
                                         <input type="longtext" name="meta_title" id="meta_title"
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="Meta Title" value="" />
+                                            placeholder="Meta Title" value="<%= faqPageData.meta_title %>" />
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -103,7 +104,7 @@
                                     <div class="col-lg-8 fv-row">
                                         <input type="longtext" name="meta_desc" id="meta_desc"
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="Meta Description" value="" />
+                                            placeholder="Meta Description" value="<%= faqPageData.meta_desc %>" />
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -120,7 +121,7 @@
                                     <div class="col-lg-8 fv-row">
                                         <input type="text" name="keyword" id="keyword"
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="Keyword" value="" />
+                                            placeholder="Keyword" value="<%= faqPageData.keyword %>" />
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -171,7 +172,8 @@
                                                                 <span class="">Answer</span>
                                                             </label>
                                                             <div class="col-lg-8 fv-row">
-                                                                <textarea name="answer" class="answer-editor"
+                                                                <textarea name="answer"
+                                                                    class="form-control form-control-lg form-control-solid answer-editor"
                                                                     id=""></textarea>
                                                             </div>
                                                         </div>
@@ -277,29 +279,29 @@
 
                                     // Loop through the JSON response using forEach
                                     jsonResponse.forEach(item => {
-                                    const { name, value } = item;
+                                        const { name, value } = item;
 
-                                    if (name === 'title' || name === 'content' || name === 'meta_title' || name === 'meta_desc' || name === 'keyword') {
-                                        transformedResponse[name] = value;
-                                    } else if (name === 'category_name') {
-                                        // If a new category is encountered, reset the currentFAQ and start a new one
-                                        if (currentCategory !== value) {
-                                        currentCategory = value;
-                                        currentFAQ = [];
-                                        transformedResponse.FAQ = transformedResponse.FAQ || [];
-                                        transformedResponse.FAQ.push({ [currentCategory]: currentFAQ });
+                                        if (name === 'title' || name === 'content' || name === 'meta_title' || name === 'meta_desc' || name === 'keyword') {
+                                            transformedResponse[name] = value;
+                                        } else if (name === 'category_name') {
+                                            // If a new category is encountered, reset the currentFAQ and start a new one
+                                            if (currentCategory !== value) {
+                                                currentCategory = value;
+                                                currentFAQ = [];
+                                                transformedResponse.FAQ = transformedResponse.FAQ || [];
+                                                transformedResponse.FAQ.push({ [currentCategory]: currentFAQ });
+                                            }
+                                        } else if (name === 'question' && currentCategory) {
+                                            // Add a new FAQ entry to the current category
+                                            currentFAQ.push({ Q: value });
+                                        } else if (name === 'answer' && currentCategory && currentFAQ.length > 0) {
+                                            // Add the answer to the last FAQ entry
+                                            currentFAQ[currentFAQ.length - 1].A = value;
                                         }
-                                    } else if (name === 'question' && currentCategory) {
-                                        // Add a new FAQ entry to the current category
-                                        currentFAQ.push({ Q: value });
-                                    } else if (name === 'answer' && currentCategory && currentFAQ.length > 0) {
-                                        // Add the answer to the last FAQ entry
-                                        currentFAQ[currentFAQ.length - 1].A = value;
-                                    }
                                     });
 
-                                    console.log(transformedResponse);  
-                                    
+                                    console.log(transformedResponse);
+
                                     $.ajax({
                                         url: '/auth/create-faq',
                                         method: 'POST',
@@ -377,13 +379,13 @@
 
                 $('#add_category_btn').click(function (e) {
                     e.preventDefault();
-                    $(this).parents('.main-repeater').find('.main_full_area').append('<div class="category-repeter"> <div class="category_name"> <div class="row mb-6"> <label class="col-lg-4 col-form-label fw-bold fs-6"> <span class="required">Category Name</span> </label> <div class="col-lg-8 fv-row"> <input type="text" name="category_name" id="category_name" class="form-control form-control-lg form-control-solid" placeholder="Category Name" value=""/> </div></div></div><div class="main_question_answer"> <div class="add_question_answer"> <div class="add_question"> <div class="row mb-6"> <label class="col-lg-4 col-form-label fw-bold fs-6"> <span class="">Question</span> </label> <div class="col-lg-8 fv-row"> <input type="text" name="question" id="question" class="form-control form-control-lg form-control-solid" placeholder="Question" value=""/> </div></div></div><div class="add_answer"> <div class="row mb-6"> <label class="col-lg-4 col-form-label fw-bold fs-6"> <span class="">Answer</span> </label> <div class="col-lg-8 fv-row"> <textarea name="answer" class="answer-editor" id=""></textarea> </div></div></div></div></div><div class="add_question_answer_btn"> <a href="#" class="btn btn-primary">Add question answer</a> </div><button type="button" class="btn btn-danger remove-btn" id="" style="float: left;"><i class="fa fa-minus"></i>Category</button></div>');
+                    $(this).parents('.main-repeater').find('.main_full_area').append('<div class="category-repeter"> <div class="category_name"> <div class="row mb-6"> <label class="col-lg-4 col-form-label fw-bold fs-6"> <span class="required">Category Name</span> </label> <div class="col-lg-8 fv-row"> <input type="text" name="category_name" id="category_name" class="form-control form-control-lg form-control-solid" placeholder="Category Name" value=""/> </div></div></div><div class="main_question_answer"> <div class="add_question_answer"> <div class="add_question"> <div class="row mb-6"> <label class="col-lg-4 col-form-label fw-bold fs-6"> <span class="">Question</span> </label> <div class="col-lg-8 fv-row"> <input type="text" name="question" id="question" class="form-control form-control-lg form-control-solid" placeholder="Question" value=""/> </div></div></div><div class="add_answer"> <div class="row mb-6"> <label class="col-lg-4 col-form-label fw-bold fs-6"> <span class="">Answer</span> </label> <div class="col-lg-8 fv-row"> <textarea name="answer" class="form-control form-control-lg form-control-solid answer-editor" id=""></textarea> </div></div></div></div></div><div class="add_question_answer_btn"> <a href="#" class="btn btn-primary">Add question answer</a> </div><button type="button" class="btn btn-danger remove-btn" id="" style="float: left;"><i class="fa fa-minus"></i>Category</button></div>');
 
                     //initializeCKEditor($(this).parents('.main-repeater'))
                 });
                 $('body').on('click', '.add_question_answer_btn > a', function (e) {
                     e.preventDefault();
-                    $(this).parents('.category-repeter').find('.main_question_answer').append('<div class="each_question_answer"> <div class="add_question"> <div class="row mb-6"> <label class="col-lg-4 col-form-label fw-bold fs-6"> <span class="">Question</span> </label> <div class="col-lg-8 fv-row"> <input type="text" name="question" id="question" class="form-control form-control-lg form-control-solid" placeholder="Question" value=""/> </div></div></div><div class="add_answer"> <div class="row mb-6"> <label class="col-lg-4 col-form-label fw-bold fs-6"> <span class="">Answer</span> </label> <div class="col-lg-8 fv-row"> <textarea name="answer" class="answer-editor" id=""></textarea> </div></div></div><button type="button" class="btn btn-danger remove-QA" class="" id="" style="float: right;"><i class="fa fa-minus"></i></button></div>');
+                    $(this).parents('.category-repeter').find('.main_question_answer').append('<div class="each_question_answer"> <div class="add_question"> <div class="row mb-6"> <label class="col-lg-4 col-form-label fw-bold fs-6"> <span class="">Question</span> </label> <div class="col-lg-8 fv-row"> <input type="text" name="question" id="question" class="form-control form-control-lg form-control-solid" placeholder="Question" value=""/> </div></div></div><div class="add_answer"> <div class="row mb-6"> <label class="col-lg-4 col-form-label fw-bold fs-6"> <span class="">Answer</span> </label> <div class="col-lg-8 fv-row"> <textarea name="answer" class="form-control form-control-lg form-control-solid answer-editor" id=""></textarea> </div></div></div><button type="button" class="btn btn-danger remove-QA" class="" id="" style="float: right;"><i class="fa fa-minus"></i></button></div>');
 
                     //initializeCKEditor($(this).parents('.category-repeter'))
                 });
@@ -422,7 +424,7 @@
                     toolbar: ["styleselect fontselect fontsizeselect",
                         "undo redo | cut copy paste | bold italic | link image | alignleft aligncenter alignright alignjustify",
                         "bullist numlist | outdent indent | blockquote subscript superscript | advlist | autolink | lists charmap | print preview |  code"],
-                    plugins : "advlist autolink link image lists charmap print preview code"
+                    plugins: "advlist autolink link image lists charmap print preview code"
                 });
             });
         </script>

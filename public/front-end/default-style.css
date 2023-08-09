@@ -2141,7 +2141,7 @@ h2.inner-main-head small {
     margin-bottom: 20px;
     border-radius: 20px;
 }
-.alignright{
+.alignright {
     float: right;
     margin-left: 40px;
     margin-bottom: 20px;
@@ -2469,4 +2469,21 @@ a.quick-login span + span {
 
 .custom-select-dropdown ul li a:hover {
     background-color: #f2f2f2;
+}
+
+.default-content-area h2,
+.default-content-area h3,
+.default-content-area h4,
+.default-content-area h5,
+.default-content-area h6 {
+    font-weight: 700;
+}
+
+.default-content-area ul li {
+    list-style-type: disc;
+}
+
+.default-content-area ul li + li,
+.default-content-area ol li + li {
+    margin-top: 10px;
 }

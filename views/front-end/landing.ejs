@@ -1,11 +1,11 @@
 <%- include('common/header') -%>
   <link href="/front-end/css/landing-page-style.css" rel="stylesheet" type="text/css">
   <!-- ============== Banner Start =============== -->
-  <section class="main-banner landing-banner" style="background-image: url(/front-end/images/banner-bg.jpg);">
+  <section class="main-banner landing-banner">
     <div class="container">
       <div class="row flex-md-row-reverse">
         <div class="col-md-6 my-auto">
-          <div class="banner-right">
+          <div class="banner-right" data-aos="fade-left">
             <div class="row">
               <div class="col-6">
                 <div class="banner-mas-img banner-mas-img1">
@@ -25,11 +25,11 @@
                 <div class="banner-mas-img banner-mas-img2">
                   <div class="banner-slider2">
                     <div class="item">
-                      <img src="/<%= meta_values_array.banner_img_2 %>" alt="image" loading="lazy" width="262"
+                      <img src="/<%= meta_values_array.banner_img_3 %>" alt="image" loading="lazy" width="262"
                         height="255">
                     </div>
                     <div class="item">
-                      <img src="/<%= meta_values_array.banner_img_3 %>" alt="image" loading="lazy" width="262"
+                      <img src="/<%= meta_values_array.banner_img_4 %>" alt="image" loading="lazy" width="262"
                         height="255">
                     </div>
                   </div>
@@ -37,11 +37,11 @@
                 <div class="banner-mas-img banner-mas-img2">
                   <div class="banner-slider3">
                     <div class="item">
-                      <img src="/<%= meta_values_array.banner_img_3 %>" alt="image" loading="lazy" width="262"
+                      <img src="/<%= meta_values_array.banner_img_5 %>" alt="image" loading="lazy" width="262"
                         height="255">
                     </div>
                     <div class="item">
-                      <img src="/<%= meta_values_array.banner_img_1 %>" alt="image" loading="lazy" width="262"
+                      <img src="/<%= meta_values_array.banner_img_6 %>" alt="image" loading="lazy" width="262"
                         height="255">
                     </div>
                   </div>
@@ -51,7 +51,7 @@
           </div>
         </div>
         <div class="col-md-6 my-auto">
-          <div class="banner-left">
+          <div class="banner-left" data-aos="fade-right">
             <%- meta_values_array.bannner_content -%>
               <div class="search-area position-relative">
                 <form>
@@ -62,7 +62,9 @@
                 <div class="autofield-dropdown">
                 </div>
               </div>
-              <h3><span>#CustomerRightsMatterBG</span></h3>
+            <!-- <h3><span>#CustomerRightsMatterBG</span></h3> -->
+            <p class="text-light"><span id="type-writing"><noscript>A fluid and transparent platform for all consumers, citizens, visitors to share their shopping, vist and every other experiences and give feedback on all products and services.</noscript></span></p>
+            <h3><span id="type-writing2"><noscript>Your Voice Matters !!</noscript></span></h3>
           </div>
         </div>
       </div>
@@ -82,11 +84,16 @@
   <!-- ============== Business Start =============== -->
   <section class="main-content business-content pt-md-0">
     <div class="container">
-      <div class="form-check form-switch d-flex justify-content-center p-0 mb-3">
-        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked"
-          data-bs-toggle="tooltip" data-bs-placement="top" title="Toogle to change">
+      <div class="toggle-blink text-center">
+        <span>Toogle to change</span>
+        <div class="toogle-pointer-blink">
+          <i class="fa-solid fa-arrow-down"></i>
+        </div>
+        <div class="form-check form-switch d-flex justify-content-center p-0 mb-3">
+          <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked">
+        </div>
       </div>
-      <div class="row">
+      <div class="row" data-aos="fade-up">
         <div class="col-md-12">
           <div class="business-left">
             <%- meta_values_array.for_business -%>
@@ -99,6 +106,12 @@
         </div>
       </div>
     </div>
+    <div class="business-left-cartoon" data-aos="zoom-in-right" data-aos-delay="500">
+      <img src="/front-end/images/business-left-cartoon-img.png" alt="img" width="373" height="248" loading="lazy">
+    </div>
+    <div class="business-right-cartoon" data-aos="zoom-in-left" data-aos-delay="1200">
+      <img src="/front-end/images/business-right-cartoon-img.png" alt="img" width="358" height="270" loading="lazy">
+    </div>
   </section>
   <!-- ============== Business End =============== -->
   <!-- ============== Blog Start =============== -->
@@ -108,7 +121,7 @@
       <% if (homePosts.length> 0) { %>
         <div class="row">
           <div class="col-md-6">
-            <div class="blog-left position-relative">
+            <div class="blog-left position-relative" data-aos="fade-right">
               <img src="<%= homePosts[0].thumbnail %>" alt="<%= homePosts[0].thumbnail_alt %>" loading="lazy"
                 width="564" height="387" class="w-100">
               <div class="blog-overlay-caption">
@@ -124,7 +137,7 @@
           </div>
           <div class="col-md-6">
             <% if (homePosts.length> 1) { %>
-              <div class="blog-right position-relative">
+              <div class="blog-right position-relative" data-aos="fade-left">
                 <% let counter=0; %>
                   <% homePosts.forEach((post)=> { %>
                     <% if (counter> 0) { %>
@@ -168,18 +181,40 @@
   <div class="container">
      <div class="row">
         <div class="col-md-6">
-           <div class="review-left text-center">
+           <div class="review-left text-center" data-aos="fade-right">
               <h2 class="main-head mb-md-5 mb-4">Submit Your <span>Review</span></h2>
-              <picture>
+              <!-- <picture>
                  <source media="(max-width:575px)" srcset="/front-end/images/review-img-mbl-screen.png" width="300" height="253">
                  <source media="(max-width:767px)" srcset="/front-end/images/review-img-tab-screen.png" width="410" height="346">
                  <img src="/front-end/images/review-img.png" alt="img" width="542" height="458" loading="lazy">
-              </picture>
+              </picture> -->
+              <div class="review-left-img">
+                <div class="review-big-img">
+                  <div class="review-big-slider1">
+                    <div class="item">
+                      <img src="/front-end/images/review-slider-img1.png" alt="img" width="464" height="535" loading="lazy">
+                    </div>
+                    <div class="item">
+                      <img src="/front-end/images/review-slider-img2.png" alt="img" width="464" height="535" loading="lazy">
+                    </div>
+                  </div>
+                </div>
+                <div class="review-small-img">
+                  <div class="review-small-slider2">
+                    <div class="item">
+                      <img src="/front-end/images/review-small-slider1.png" alt="img" width="246" height="283" loading="lazy">
+                    </div>
+                    <div class="item">
+                      <img src="/front-end/images/review-small-slider2.png" alt="img" width="246" height="283" loading="lazy">
+                    </div>
+                  </div>
+                </div>
+              </div>
               <h5><a href="#" data-bs-toggle="modal" data-bs-target="#reviewers_guidelines">Guidelines for Reviewers</a></h5>
            </div>
         </div>
         <div class="col-md-6">
-           <div class="review-right mt-md-0 mt-5">
+           <div class="review-right mt-md-0 mt-5" data-aos="fade-left">
               <form id="review_submit_frm" name="review_submit_frm" action="" method="post">
                  <div class="row">
                     <!--<div class="col-md-12">
@@ -225,208 +260,35 @@
                        </div>
                     </div>
                     <div class="col-md-12">
-                       <div class="rating-slider">
-                          <span id="selected-range-emojis"></span>
-                          <label>Rating</label>
-                          <div id="rating-range" class="rating"></div>
-                          <input type="text" id="ratingRange" readonly>
-                          <input  type="hidden" id="ratingvalue" name="rating" value="">
-                          <div id="slider-values" class="text-center">
-                             <span id="selected-range-text"></span>
-                          </div>
-                       </div>
-                    </div>
-                    <div class="col-md-12">
-                       <div class="tag-label">Tags</div>
-                       <div class="range-tag-wrap">
-                          <div class="range-tag1">
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" name="tags" value="" id="" checked>
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 Praesent rutrum
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" name="tags" value="" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 Phasellus
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" name="tags" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 faucibus
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" name="tags" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 Morbi Tristique
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" name="tags" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 Morbi Tristique Senectus
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" name="tags" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 faucibus
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" name="tags" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 Phasellus
-                               </label>
-                             </div>
-                          </div>
-                          <!--
-                          <div class="range-tag2 d-none">
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="" name="tags" checked>
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 Praesent rutrum
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" name="tags" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 Phasellus
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" name="tags" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 faucibus
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 Morbi Tristique
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 Morbi Tristique Senectus
-                               </label>
-                             </div>
-                          </div>
-                          <div class="range-tag3 d-none">
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 Phasellus
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 faucibus
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 Morbi Tristique Senectus
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 faucibus
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 Phasellus
-                               </label>
-                             </div>
-                          </div> 
-                          <div class="range-tag4 d-none">
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="" checked>
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 Praesent rutrum
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 Phasellus
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 faucibus
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 Morbi Tristique
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 Morbi Tristique Senectus
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 faucibus
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 Phasellus
-                               </label>
-                             </div>
-                          </div>
-                          <div class="range-tag5 d-none">
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="" checked>
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 Praesent rutrum
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 Phasellus
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 faucibus
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 Morbi Tristique
-                               </label>
-                             </div>
-                             <div class="form-check custom-check position-relative">
-                               <input class="form-check-input" type="checkbox" value="" id="">
-                               <label class="form-check-label" for="flexCheckDefault">
-                                 Phasellus
-                               </label>
-                             </div>
-                          </div>
-                          -->
-                       </div>
-                    </div>
+                      <div class="rating-slider">
+                         <span><img style="width:50px;" src="" id="selected-range-emojis" /></span>
+                         <label>Rating</label>
+                         <div id="rating-range" class="rating"></div>
+                         <input type="text" id="ratingRange" readonly>
+                         <input  type="hidden" id="ratingvalue" name="rating" value="">
+                         <div id="slider-values" class="text-center">
+                            <span id="selected-range-text"></span>
+                         </div>
+                      </div>
+                   </div>
+                   <div class="col-md-12">
+                      <div class="tag-label">Tags</div>
+                      <div class="range-tag-wrap">
+                       <% allRatingTags.forEach( (rev_tag, index) => { %>
+                         <div class="tag-items-wrapper range-tag<%= rev_tag.review_rating_value.replace(/\./g, "") %> <% if(index!=0){ %>d-none<% } %>">
+                           <% const tag_items = rev_tag.rating_tags.split('|'); %>
+                           <% tag_items.forEach(function(tag) { %>
+                            <div class="form-check custom-check position-relative">
+                              <input class="form-check-input" type="checkbox" name="tags" value="<%= tag %>" id="">
+                              <label class="form-check-label" for="flexCheckDefault">
+                               <%= tag %>
+                              </label>
+                            </div>
+                            <% }); %> 
+                         </div>
+                       <% }) %>  
+                      </div>
+                   </div>
                     <div class="col-md-12">
                        <div class="custom-form">
                           <textarea name="review_content" rows="4" class="form-control" placeholder="Review/Feedback" required></textarea>
@@ -448,7 +310,7 @@
                     <div class="col-md-12">
                        <div class="review-submit d-flex justify-content-between align-items-center">
                           <input type="submit" class="btn-default btn-warning" value="Submit">
-                          <a href="#" class="view-more mt-0"><span class="position-relative"><i class="fa-solid fa-angle-right"></i>View All Reviews</span></a>
+                          <a href="/review" class="view-more mt-0"><span class="position-relative"><i class="fa-solid fa-angle-right"></i>View All Reviews</span></a>
                        </div>
                     </div>
                  </div>
@@ -483,6 +345,40 @@
     </div>
   </div>
   <!-- ============== Review section End =============== -->
+
+  <!-- ============== Featured Section Start =============== -->
+  <section class="main-content featured-content text-center">
+    <div class="container">
+      <div class="featured-object-wrap position-relative">
+        <h2 class="main-head">Featured <span>Companies</span></h2>
+        <div class="featured-slider">
+          <% if(featured_comps.length>0) { %>
+            <% featured_comps.forEach( company=> { %>
+              <div class="item">
+                <div class="feature-box">
+                  <a href="<%= company.link %>"><img src="/<%= company.logo %>" alt="img" width="118" height="45"
+                      class="mx-auto"></a>
+                  <h5>
+                    <%= company.company_name %>
+                  </h5>
+                  <p class="m-0">
+                    <%= company.short_desc %>
+                  </p>
+                </div>
+              </div>
+              <% }) %>
+                <% } else { %>
+                  <h1>There is no such Company</h1>
+                  <% } %>
+        </div>
+        <div class="feature-man1" data-aos="fade-down"><img src="/front-end/images/feature-man1.png" alt="img" width="198" height="169"></div>
+        <div class="feature-man2" data-aos="fade-down" data-aos-delay="500"><img src="/front-end/images/feature-man2.png" alt="img" width="202" height="145"></div>
+        <div class="feature-man3" data-aos="fade-right"><img src="/front-end/images/feature-man3.png" alt="img" width="131" height="226"></div>
+        <div class="feature-man4" data-aos="fade-left" data-aos-delay="300"><img src="/front-end/images/feature-man4.png" alt="img" width="253" height="235"></div>
+      </div>
+    </div>
+  </section>
+  <!-- ============== Featured Section End =============== -->
 
   <!-- ============== Social Widgets Start =============== -->
   <section class="main-content social-widgets-content py-0">
@@ -629,6 +525,12 @@
               </div>
             </div>
           </div>
+          <div class="video-man1" data-aos="fade-right">
+            <img src="/front-end/images/youtube-man1.png" alt="img" width="208" height="152">
+          </div>
+          <div class="video-man2" data-aos="fade-up" data-aos-delay="500">
+            <img src="/front-end/images/youtube-man2.png" alt="img" width="127" height="155">
+          </div>
         </div>
       </div>
       <div>
@@ -656,41 +558,13 @@
     </div>
   </section>
   <!-- ============== Social Widgets End =============== -->
-  <!-- ============== Featured Section Start =============== -->
-  <section class="main-content featured-content text-center">
-    <div class="container">
-      <h2 class="main-head text-light mb-4">Featured <span>Companies</span></h2>
-      <div class="featured-slider">
-        <% if(featured_comps.length>0) { %>
-          <% featured_comps.forEach( company=> { %>
-            <div class="item">
-              <div class="feature-box">
-                <a href="<%= company.link %>"><img src="/<%= company.logo %>" alt="img" width="118" height="45"
-                    class="mx-auto"></a>
-                <h5>
-                  <%= company.company_name %>
-                </h5>
-                <p class="m-0">
-                  <%= company.short_desc %>
-                </p>
-              </div>
-            </div>
-            <% }) %>
-              <% } else { %>
-                <h1>There is no such Company</h1>
-                <% } %>
-
-      </div>
-    </div>
-  </section>
-  <!-- ============== Featured Section End =============== -->
 
   <!-- ============== About Start =============== -->
   <section class="main-content about-content">
     <div class="container">
       <div class="row">
         <div class="col-md-6 my-auto">
-          <div class="about-left-slider my-3">
+          <div class="about-left-slider my-3" data-aos="fade-right">
             <div class="about-50-left">
               <div class="gr-slider1">
                 <div class="item">
@@ -732,7 +606,7 @@
           </div>
         </div>
         <div class="col-md-6 my-auto">
-          <div class="about-right my-3">
+          <div class="about-right my-3" data-aos="fade-left">
             <%- meta_values_array.cus_right_content %>
               <div class="text-sm-start text-center"><a href="<%= meta_values_array.cus_right_button_link %>"
                   class="view-more mt-0"><span class="position-relative"><i class="fa-solid fa-angle-right"></i>
@@ -742,10 +616,9 @@
         </div>
       </div>
     </div>
-    <div class="tooltip-pop">
+    <div class="tooltip-pop" data-aos="zoom-in-left">
       <h4><span>Facts</span></h4>
-      <p class="m-0">Nunc vel risus commodo viverra maecenas accumsan. Nam aliquam sem et tortor consequat id porta. Mus
-        mauris vitae ultricies leo integer malesuada nunc vel arcu dui vivamus arcu felis.</p>
+      <p class="m-0">US President John F. Kennedy first outlined a vision of consumer rights in a special message to Congress on 15 March 1962 (the day we now celebrate World Consumer Rights Day).</p>
     </div>
   </section>
   <!-- ============== About End =============== -->
@@ -755,7 +628,7 @@
     <div class="container">
       <div class="row flex-md-row-reverse">
         <div class="col-md-6 my-auto">
-          <div class="about-left-slider my-3">
+          <div class="about-left-slider my-3" data-aos="fade-left">
             <div class="about-50-right">
               <div class="gr-slider3">
                 <div class="item">
@@ -797,7 +670,7 @@
           </div>
         </div>
         <div class="col-md-6 my-auto">
-          <div class="about-right my-3">
+          <div class="about-right my-3" data-aos="fade-right"> 
             <%- meta_values_array.org_responsibility_content %>
               <div class="text-sm-start text-center"><a href="<%= meta_values_array.org_responsibility_buttton_link %>"
                   class="view-more mt-0"><span class="position-relative"><i class="fa-solid fa-angle-right"></i>
@@ -807,17 +680,16 @@
         </div>
       </div>
     </div>
-    <div class="tooltip-pop">
+    <div class="tooltip-pop" data-aos="zoom-in-right">
       <h4>Facts</h4>
-      <p class="m-0">Nunc vel risus commodo viverra maecenas accumsan. Nam aliquam sem et tortor consequat id porta. Mus
-        mauris vitae ultricies leo integer malesuada nunc vel arcu dui vivamus arcu felis.</p>
+      <p class="m-0">Ralph Nader, a leading American political activist and author is known as the father of the consumer movement.</p>
     </div>
   </section>
-  <section class="main-content pb-0">
+  <section class="main-content about-digital-content">
     <div class="container">
       <div class="row flex-md-row-reverse">
-        <div class="col-md-6 my-auto">
-          <div class="about-right my-3 text-md-start text-center">
+        <div class="col-md-6 my-auto ms-auto">
+          <div class="about-right my-3 text-md-start text-center" data-aos="fade-left">
             <%- meta_values_array.about_us_content %>
               <a href="<%= meta_values_array.about_us_button_link %>" class="view-more mt-3"><span
                   class="position-relative"><i class="fa-solid fa-angle-right"></i>
@@ -825,16 +697,23 @@
                 </span></a>
           </div>
         </div>
-        <div class="col-md-6 my-auto">
-          <div class="about-left my-md-0 mt-3 mb-0">
+        <!-- <div class="col-md-6 my-auto">
+          <div class="about-left my-md-0 mt-3 mb-0" data-aos="fade-right">
             <picture>
-              <source media="(max-width:575px)" srcset="/front-end/images/about-img3-mbl.png" width="280" height="338">
-              <source media="(max-width:767px)" srcset="/front-end/images/about-img3-tab.png" width="390" height="471">
+              <source media="(max-width:575px)" srcset="/front-end/images/about-dummy-mbl-img.jpg" width="280" height="186">
+              <source media="(max-width:767px)" srcset="/front-end/images/about-dummy-tab-img.jpg" width="390" height="259">
               <img src="/<%= meta_values_array.about_us_img %>" alt="img" width="613" height="565" loading="lazy">
             </picture>
           </div>
-        </div>
+        </div> -->
       </div>
+    </div>
+    <div class="about-digital-wrold" data-aos="fade-right">
+      <picture>
+        <source media="(max-width:575px)" srcset="/front-end/images/about-img3-tab.png" width="500" height="296">
+        <source media="(max-width:767px)" srcset="/front-end/images/about-img3-tab.png" width="500" height="296">
+        <img src="/<%= meta_values_array.about_us_img %>" alt="img" width="1063" height="763" loading="lazy">
+      </picture>
     </div>
   </section>
   <!-- ============== About End =============== -->
@@ -939,13 +818,58 @@
     });
   }
 
+  // ////////////////////////////// Range Slider Start
+
+  const rangeTexts = {
+    <% allRatingTags.forEach((rev_tag, index) => { %>
+      "<%= rev_tag.review_rating_value %>": "<%= rev_tag.review_rating_name %>",
+    <% }) %>
+  };
+  const rangeEmojis = {
+    <% allRatingTags.forEach((rev_tag, index) => { %>
+      "<%= rev_tag.review_rating_value %>": "<%= rev_tag.rating_image %>",
+    <% }) %>
+  };
+
+  $("#rating-range").slider({
+      step: 0.5,
+      range: true, 
+      min: 0.5, 
+      max: 5, 
+      values: [0.5, 5], 
+      slide: function(event, ui)
+      {
+        console.log(ui);
+        $("#ratingRange").val(ui.values[0] + " / " + ui.values[1]);
+        $("#ratingvalue").val(ui.values[0]);
+        // When slider values change, update the text
+        var numberAsString = ui.values[0].toString();
+        var classnumber = numberAsString.replace(".", "");
+        $("#selected-range-text").text(rangeTexts[ui.values[0]]);
+        $("#selected-range-emojis").attr('src',rangeEmojis[ui.values[0]]);
+        $('.range-tag'+classnumber).removeClass('d-none');
+        $('.tag-items-wrapper:not(.range-tag'+classnumber+')').addClass("d-none");
+        $('input[type="checkbox"][name="tags"]').prop('checked', false);
+      }
+  });
+  $("#ratingRange").val($("#rating-range").slider("values", 0) + " / " + $("#rating-range").slider("values", 1));
+
+////////////////////////////// Range Slider End
+
   //-------Review Form Submit-----------------//
   $( "#review_submit_frm" ).on( "submit", function( event ) {
     event.preventDefault();
     const formData = $('#review_submit_frm').serializeArray();
     const jsonData = {};
     $(formData).each(function (index, field) {
-      jsonData[field.name] = field.value;
+      if(field.name==='tags'){
+        if (!jsonData.tags) {
+          jsonData.tags = [];
+        }
+        jsonData.tags.push(field.value);;
+      }else{
+        jsonData[field.name] = field.value;
+      }
     });
     $.ajax({
       url: '/auth/add-review',
@@ -953,11 +877,11 @@
       data: jsonData,
       ContentType: 'application/json',
       success: function (data) {
-        if (data.status == 'ok') {
-          console.log('aaa');
-        } else {
-          console.log('bbb');
-        }
+      // if (data.status == 'ok') {
+      //   console.log('aaa');
+      // } else {
+      //   console.log('bbb');
+      // }
         console.log(data);
       },
       error: function (error) {

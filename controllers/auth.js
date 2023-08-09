@@ -1085,12 +1085,12 @@ exports.createCompany = (req, res) => {
 
         var insert_values = [];
         if (req.file) {
-            insert_values = [currentUserData.user_id, req.body.company_name, req.file.filename, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, formattedDate, formattedDate];
+            insert_values = [currentUserData.user_id, req.body.company_name, req.file.filename, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, "1", formattedDate, formattedDate];
         } else {
-            insert_values = [currentUserData.user_id, req.body.company_name, '', req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, formattedDate, formattedDate];
+            insert_values = [currentUserData.user_id, req.body.company_name, '', req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, formattedDate, "1", formattedDate];
         }
 
-        const insertQuery = 'INSERT INTO company (user_created_by, company_name, logo, comp_phone, comp_email, comp_registration_id, created_date, updated_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+        const insertQuery = 'INSERT INTO company (user_created_by, company_name, logo, comp_phone, comp_email, comp_registration_id, status, created_date, updated_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
         db.query(insertQuery, insert_values, (err, results, fields) => {
             if (err) {
                 return res.send(
@@ -1102,7 +1102,8 @@ exports.createCompany = (req, res) => {
                 )
             } else {
                 const companyId = results.insertId;
-                const companyCategoryData = req.body.category.map((categoryID) => [companyId, categoryID]);
+                const categoryArray = Array.isArray(req.body.category) ? req.body.category : [req.body.category];
+                const companyCategoryData = categoryArray.map((categoryID) => [companyId, categoryID]);
                 db.query('INSERT INTO company_cactgory_relation (company_id, category_id) VALUES ?', [companyCategoryData], function (error, results) {
                     if (error) {
                         console.log(error);
@@ -1128,7 +1129,7 @@ exports.createCompany = (req, res) => {
 
 //-- Company Edit --//
 exports.editCompany = (req, res) => {
-    //console.log(req.body);
+    console.log(req.body);
     const companyID = req.body.company_id;
     const currentDate = new Date();
 
@@ -1182,6 +1183,8 @@ exports.editCompany = (req, res) => {
             });
 
             updateValues[1] = req.file.filename;
+        }else{
+            updateValues[1] = req.body.previous_logo;
         }
         db.query(updateQuery, updateValues, (err, results) => {
             if (err) {
@@ -1205,10 +1208,10 @@ exports.editCompany = (req, res) => {
                     });
                 }
 
-                const categories = req.body.category; // Assuming company_categories is an array of category IDs
-
                 // Create an array of arrays for bulk insert
-                const insertValues = categories.map(categoryId => [companyID, categoryId]);
+                
+                const categoryArray = Array.isArray(req.body.category) ? req.body.category : [req.body.category];
+                const insertValues = categoryArray.map((categoryID) => [companyID, categoryID]);
 
                 const insertQuery = 'INSERT INTO company_cactgory_relation (company_id, category_id) VALUES ?';
 
@@ -1267,15 +1270,15 @@ exports.createRatingTags = (req, res) => {
             )
         }
 
-        insert_values = [req.body.review_rating_value, req.file.filename, formattedRatingTags];
+        insert_values = [req.body.review_rating_value, req.body.review_rating_name, req.file.filename, formattedRatingTags];
         var insert_values = [];
         if (req.file) {
-            insert_values = [req.body.review_rating_value, req.file.filename, formattedRatingTags];
+            insert_values = [req.body.review_rating_value, req.body.review_rating_name, req.file.filename, formattedRatingTags];
         } else {
-            insert_values = [req.body.review_rating_value, '', formattedRatingTags];
+            insert_values = [req.body.review_rating_value, req.body.review_rating_name, '', formattedRatingTags];
         }
 
-        const insertQuery = 'INSERT INTO review_rating_tags (review_rating_value, rating_image, rating_tags) VALUES (?, ?, ?)';
+        const insertQuery = 'INSERT INTO review_rating_tags (review_rating_value, review_rating_name, rating_image, rating_tags) VALUES (?, ?, ?, ?)';
         db.query(insertQuery, insert_values, (err, results, fields) => {
             if (err) {
                 return res.send(
@@ -1310,7 +1313,7 @@ exports.editRatingTags = (req, res) => {
     const formattedRatingTags = ratingValues.join('|');
 
     // Update company details in the company table
-    const updateQuery = 'UPDATE review_rating_tags SET rating_image = ?, rating_tags = ? WHERE id = ?';
+    const updateQuery = 'UPDATE review_rating_tags SET review_rating_name = ?, rating_image = ?, rating_tags = ? WHERE id = ?';
 
     var updateValues = [];
     if (req.file) {
@@ -1323,9 +1326,9 @@ exports.editRatingTags = (req, res) => {
                 //console.log('Previous file deleted');
             }
         });
-        updateValues = [req.file.filename, formattedRatingTags, row_id];
+        updateValues = [req.body.review_rating_name, req.file.filename, formattedRatingTags, row_id];
     } else {
-        updateValues = [req.body.previous_rating_image, formattedRatingTags, row_id];
+        updateValues = [req.body.review_rating_name, req.body.previous_rating_image, formattedRatingTags, row_id];
     }
 
     db.query(updateQuery, updateValues, (err, results) => {
@@ -1373,10 +1376,10 @@ exports.updateContacts = async (req, res) => {
 exports.contactFeedback = (req, res) => {
     const phone = req.body.phone_no;
     const message = req.body.message;
-    console.log(__dirname);
+    //console.log(req.body);
     var mailOptions = {
         from: 'vivek@scwebtech.com',
-        to: 'pranab@scwebtech.com',
+        to: process.env.MAIL_USER,
         subject: 'Feedback Mail From Contact',
         //html: ejs.renderFile(path.join(process.env.BASE_URL, '/views/email-template/', 'feedback.ejs'), { phone: phone, message: message })
         html: `<div style="padding- bottom: 30px; font - size: 17px; ">
@@ -1407,9 +1410,9 @@ exports.contactFeedback = (req, res) => {
 }
 
 // Create FAQ
-exports.createFAQ = async  (req, res) => {
+exports.createFAQ = async (req, res) => {
     //console.log(req.body);
-    const faqArray = req.body.FAQ;   
+    const faqArray = req.body.FAQ;
     //console.log(faqArray[0]);  
     //console.log(faqArray[1]);
 
@@ -1422,7 +1425,7 @@ exports.createFAQ = async  (req, res) => {
     ];
     try {
         const faqPageId = await comFunction.insertIntoFaqPages(Faq_Page_insert_values);
-        console.log('ID:',faqPageId);
+        console.log('ID:', faqPageId);
         await comFunction.insertIntoFaqCategories(faqArray);
         return res.send(
             {
@@ -1437,7 +1440,48 @@ exports.createFAQ = async  (req, res) => {
             status: 'error',
             message: 'An error occurred while inserting FAQ data',
         });
-    }    
+    }
+}
+
+// Update FAQ
+exports.updateFAQ = async (req, res) => {
+    //console.log(req.body);
+    const faqArray = req.body.FAQ;
+    //console.log(faqArray[0]);  
+    //console.log(faqArray[1]);
+
+    const Faq_Page_insert_values = [
+        req.body.title,
+        req.body.content,
+        req.body.meta_title,
+        req.body.meta_desc,
+        req.body.keyword,
+    ];
+    try {
+        db.query('DELETE  FROM faq_categories', (del_faq_cat_err, del_faq_cat_res) => {
+            db.query('DELETE - FROM faq_item', async (del_faq_item_err, del_faq_item_res) => {
+                const faqPageId = await comFunction.insertIntoFaqPages(Faq_Page_insert_values);
+                console.log('ID:', faqPageId);
+                await comFunction.insertIntoFaqCategories(faqArray);
+                return res.send(
+                    {
+                        status: 'ok',
+                        data: faqPageId,
+                        message: 'FAQ Content successfully Updated'
+                    }
+                )
+            })
+        });
+
+
+
+    } catch (error) {
+        console.error('Error during insertion:', error);
+        return res.status(500).send({
+            status: 'error',
+            message: 'An error occurred while inserting FAQ data',
+        });
+    }
 }
 
 // Update Home
@@ -1452,7 +1496,7 @@ exports.updateHome = async (req, res) => {
         org_responsibility_content, org_responsibility_buttton_link, org_responsibility_buttton_text,
         about_us_content, about_us_button_link, about_us_button_text } = req.body;
 
-    const { banner_img_1, banner_img_2, banner_img_3, cus_right_img_1, cus_right_img_2, cus_right_img_3, cus_right_img_4, cus_right_img_5,
+    const { banner_img_1, banner_img_2, banner_img_3,banner_img_4, banner_img_5, banner_img_6, cus_right_img_1, cus_right_img_2, cus_right_img_3, cus_right_img_4, cus_right_img_5,
         cus_right_img_6, cus_right_img_7, cus_right_img_8, org_responsibility_img_1, org_responsibility_img_2, org_responsibility_img_3,
         org_responsibility_img_4, org_responsibility_img_5, org_responsibility_img_6, org_responsibility_img_7, org_responsibility_img_8,
         about_us_img } = req.files;
@@ -1500,12 +1544,12 @@ exports.updateHome = async (req, res) => {
         });
     });
 
-    const file_meta_value = [banner_img_1, banner_img_2, banner_img_3, cus_right_img_1, cus_right_img_2, cus_right_img_3, cus_right_img_4, cus_right_img_5,
+    const file_meta_value = [banner_img_1, banner_img_2, banner_img_3,banner_img_4, banner_img_5, banner_img_6, cus_right_img_1, cus_right_img_2, cus_right_img_3, cus_right_img_4, cus_right_img_5,
         cus_right_img_6, cus_right_img_7, cus_right_img_8, org_responsibility_img_1, org_responsibility_img_2, org_responsibility_img_3,
         org_responsibility_img_4, org_responsibility_img_5, org_responsibility_img_6, org_responsibility_img_7, org_responsibility_img_8,
         about_us_img];
 
-    const file_meta_key = ['banner_img_1', 'banner_img_2', 'banner_img_3', 'cus_right_img_1', 'cus_right_img_2', 'cus_right_img_3', 'cus_right_img_4', 'cus_right_img_5',
+    const file_meta_key = ['banner_img_1', 'banner_img_2', 'banner_img_3','banner_img_4', 'banner_img_5', 'banner_img_6', 'cus_right_img_1', 'cus_right_img_2', 'cus_right_img_3', 'cus_right_img_4', 'cus_right_img_5',
         'cus_right_img_6', 'cus_right_img_7', 'cus_right_img_8', 'org_responsibility_img_1', 'org_responsibility_img_2', 'org_responsibility_img_3',
         'org_responsibility_img_4', 'org_responsibility_img_5', 'org_responsibility_img_6', 'org_responsibility_img_7', 'org_responsibility_img_8',
         'about_us_img'];
@@ -1562,35 +1606,45 @@ exports.updateHome = async (req, res) => {
 
 //--Submit Review----//
 
-exports.submitReview= async (req, res) => {
+exports.submitReview = async (req, res) => {
     const encodedUserData = req.cookies.user;
     //console.log(currentUserData);
     try {
         if (encodedUserData) {
             const currentUserData = JSON.parse(encodedUserData);
-            console.log(currentUserData);
-            
+            //console.log(currentUserData);
             const userId = currentUserData.user_id;
-            const [company] = await Promise.all([
-                comFunction.createCompany(req.body, userId)
-            ]);
-
+            const company = await comFunction.createCompany(req.body, userId);
+            const review = comFunction.createReview(req.body, userId, company);
             // Render the 'edit-user' EJS view and pass the data
-            return res.send(
-                {
-                    status: 'ok',
-                    data: company,
-                    message: ''
-                }
-            );
+            if(company && review){
+                return res.send(
+                    {
+                        status: 'ok',
+                        data: {
+                                company,
+                                review
+                        },
+                        message: 'Review posted successfully'
+                    }
+                );
+            }else{
+                return res.send(
+                    {
+                        status: 'error',
+                        data: '',
+                        message: 'Error occurred please try again'
+                    }
+                );
+            }
         } else {
             //res.redirect('sign-in');
         }
     } catch (err) {
         console.error(err);
         res.status(500).send('An error occurred');
-    }    
-}    
+    }
+}
 // Upadte About
 exports.updateAbout = async (req, res) => {
     // console.log('home', req.body);
@@ -1762,4 +1816,123 @@ exports.deleteFeaturedCompany = (req, res) => {
         }
 
     })
+}
+
+// Update Business
+exports.updateBusiness = async (req, res) => {
+    console.log('business', req.body);
+    console.log('file', req.files);
+    //const form_data = JSON.parse(req.body.upcoming_features);
+
+    // const { home_id, title, meta_title, meta_desc, meta_keyword, bannner_content, for_business,
+    //     for_customer, cus_right_content, cus_right_button_link, cus_right_button_text,
+    //     youtube_1, youtube_2, youtube_3, youtube_4, fb_widget, twitter_widget,
+    //     org_responsibility_content, org_responsibility_buttton_link, org_responsibility_buttton_text,
+    //     about_us_content, about_us_button_link, about_us_button_text } = req.body;
+
+    // const { banner_img_1, banner_img_2, banner_img_3, cus_right_img_1, cus_right_img_2, cus_right_img_3, cus_right_img_4, cus_right_img_5,
+    //     cus_right_img_6, cus_right_img_7, cus_right_img_8, org_responsibility_img_1, org_responsibility_img_2, org_responsibility_img_3,
+    //     org_responsibility_img_4, org_responsibility_img_5, org_responsibility_img_6, org_responsibility_img_7, org_responsibility_img_8,
+    //     about_us_img } = req.files;
+
+    // const meta_value = [bannner_content, for_business,
+    //     for_customer, cus_right_content, cus_right_button_link, cus_right_button_text,
+    //     youtube_1, youtube_2, youtube_3, youtube_4, fb_widget, twitter_widget,
+    //     org_responsibility_content, org_responsibility_buttton_link, org_responsibility_buttton_text,
+    //     about_us_content, about_us_button_link, about_us_button_text];
+
+    // const meta_key = ['bannner_content', 'for_business',
+    //     'for_customer', 'cus_right_content', 'cus_right_button_link', 'cus_right_button_text',
+    //     'youtube_1', 'youtube_2', 'youtube_3', 'youtube_4', 'fb_widget', 'twitter_widget',
+    //     'org_responsibility_content', 'org_responsibility_buttton_link', 'org_responsibility_buttton_text',
+    //     'about_us_content', 'about_us_button_link', 'about_us_button_text'];
+
+    // await meta_value.forEach((element, index) => {
+    //     //console.log(element, index);
+    //     const check_sql = `SELECT * FROM page_meta WHERE page_id = ? AND page_meta_key = ?`;
+    //     const check_data = [home_id, meta_key[index]];
+    //     db.query(check_sql, check_data, (check_err, check_result) => {
+    //         if (check_err) {
+    //             return res.send(
+    //                 {
+    //                     status: 'err',
+    //                     data: '',
+    //                     message: 'An error occurred while processing your request'
+    //                 }
+    //             )
+    //         } else {
+    //             if (check_result.length > 0) {
+    //                 const update_sql = `UPDATE page_meta SET page_meta_value = ? WHERE page_id = ? AND page_meta_key = ?`;
+    //                 const update_data = [element, home_id, meta_key[index]];
+    //                 db.query(update_sql, update_data, (update_err, update_result) => {
+    //                     if (update_err) throw update_err;
+    //                 })
+    //             } else {
+    //                 const insert_sql = `INSERT INTO page_meta (page_id , page_meta_key, page_meta_value) VALUES (?,?,?)`;
+    //                 const insert_data = [home_id, meta_key[index], element];
+    //                 db.query(insert_sql, insert_data, (insert_err, insert_result) => {
+    //                     if (insert_err) throw insert_err;
+    //                 })
+    //             }
+    //         }
+    //     });
+    // });
+
+    // const file_meta_value = [banner_img_1, banner_img_2, banner_img_3, cus_right_img_1, cus_right_img_2, cus_right_img_3, cus_right_img_4, cus_right_img_5,
+    //     cus_right_img_6, cus_right_img_7, cus_right_img_8, org_responsibility_img_1, org_responsibility_img_2, org_responsibility_img_3,
+    //     org_responsibility_img_4, org_responsibility_img_5, org_responsibility_img_6, org_responsibility_img_7, org_responsibility_img_8,
+    //     about_us_img];
+
+    // const file_meta_key = ['banner_img_1', 'banner_img_2', 'banner_img_3', 'cus_right_img_1', 'cus_right_img_2', 'cus_right_img_3', 'cus_right_img_4', 'cus_right_img_5',
+    //     'cus_right_img_6', 'cus_right_img_7', 'cus_right_img_8', 'org_responsibility_img_1', 'org_responsibility_img_2', 'org_responsibility_img_3',
+    //     'org_responsibility_img_4', 'org_responsibility_img_5', 'org_responsibility_img_6', 'org_responsibility_img_7', 'org_responsibility_img_8',
+    //     'about_us_img'];
+
+    // await file_meta_key.forEach((item, key) => {
+    //     //console.log(item, key);
+    //     if (req.files[item]) {
+    //         //console.log(file_meta_value[key][0].filename);
+    //         const check_sql = `SELECT * FROM page_meta WHERE page_id = ? AND page_meta_key = ?`;
+    //         const check_data = [home_id, item];
+    //         db.query(check_sql, check_data, (check_err, check_result) => {
+    //             if (check_err) {
+    //                 return res.send(
+    //                     {
+    //                         status: 'err',
+    //                         data: '',
+    //                         message: 'An error occurred while processing your request'
+    //                     }
+    //                 )
+    //             } else {
+    //                 if (check_result.length > 0) {
+    //                     const update_sql = `UPDATE page_meta SET page_meta_value = ? WHERE page_id = ? AND page_meta_key = ?`;
+    //                     const update_data = [file_meta_value[key][0].filename, home_id, item];
+    //                     db.query(update_sql, update_data, (update_err, update_result) => {
+    //                         if (update_err) throw update_err;
+    //                     })
+    //                 } else {
+    //                     const insert_sql = `INSERT INTO page_meta (page_id , page_meta_key, page_meta_value) VALUES (?,?,?)`;
+    //                     const insert_data = [home_id, item, file_meta_value[key][0].filename];
+    //                     db.query(insert_sql, insert_data, (insert_err, insert_result) => {
+    //                         if (insert_err) throw insert_err;
+    //                     })
+    //                 }
+    //             }
+    //         });
+    //     }
+
+    // });
+
+    // const title_sql = `UPDATE page_info SET title = ?, meta_title = ?, meta_desc = ?, meta_keyword = ? WHERE id  = ?`;
+    // const title_data = [title, meta_title, meta_desc, meta_keyword, home_id];
+    // //console.log(title_data);
+    // db.query(title_sql, title_data, (title_err, title_result) => {
+    //     return res.send(
+    //         {
+    //             status: 'ok',
+    //             data: '',
+    //             message: 'Title update successfully'
+    //         }
+    //     )
+    // })
 }
