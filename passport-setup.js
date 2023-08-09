@@ -3,7 +3,9 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const FacebookStrategy = require('passport-facebook').Strategy;
+const dotenv = require('dotenv');
 
+dotenv.config({ path: './.env' });
 // Configure the Google Strategy
 passport.use(new GoogleStrategy({
     clientID: '465603252229-oq6lbk9754nl10vjf3rq20ku2tudatkf.apps.googleusercontent.com',
@@ -20,7 +22,7 @@ passport.use(
       {
         clientID: '2000796626944022',
         clientSecret: 'c83b03c2fbcd7dd57a117ce0fe8fa78b',
-        callbackURL: 'http://localhost:5000/auth/facebook/callback',
+        callbackURL: process.env.MAIN_URL+'auth/facebook/callback',
         profileFields: ['id', 'displayName', 'email', 'picture'],
       },
       (accessToken, refreshToken, profile, done) => {
