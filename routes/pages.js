@@ -1145,6 +1145,122 @@ router.get('/edit-business', checkLoggedIn, (req, res) => {
     }
 });
 
+//get user details
+
+router.get('/getUserDetails/:user_id', async (req, res) => {
+    const { user_id } = req.params;
+    console.log(user_id);
+
+    const query = 'SELECT u.user_id, u.first_name, u.last_name, u.email, u.phone, u.user_status, m.address, m.country, m.state, m.city, m.zip, m.date_of_birth, m.occupation, m.gender, m.profile_pic FROM users u LEFT JOIN user_customer_meta m on u.user_id=m.user_id WHERE u.user_id=?';
+
+    db.query(query, [user_id], (err, results) => {
+        if (err) {
+            return res.status(500).json({
+                status: 'error',
+                message: 'An error occurred while fetching user details',
+            });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({
+                status: 'error',
+                message: 'User not found',
+            });
+        }
+
+        const userDetails = results[0];
+        const countryQuery = 'SELECT name FROM countries WHERE id=?';
+        db.query(countryQuery, [userDetails.country], (countryErr, countryResults) => {
+            if (countryErr) {
+                return res.status(500).json({
+                    status: 'error',
+                    message: 'An error occurred while fetching country details',
+                });
+            }
+
+            if (Array.isArray(countryResults) && countryResults.length > 0) {
+                userDetails.countryname = countryResults[0].name;
+            } else {
+                userDetails.countryname = 'Unknown Country';
+            }
+
+            const stateQuery = 'SELECT name FROM states WHERE id=?';
+            db.query(stateQuery, [userDetails.state], (stateErr, stateResults) => {
+                if (stateErr) {
+                    return res.status(500).json({
+                        status: 'error',
+                        message: 'An error occurred while fetching state details',
+                    });
+                }
+
+                if (Array.isArray(stateResults) && stateResults.length > 0) {
+                    userDetails.statename = stateResults[0].name;
+                } else {
+                    userDetails.statename = 'Unknown State';
+                }
+
+                return res.status(200).json({
+                    status: 'success',
+                    data: userDetails,
+                    message: 'User details fetched successfully',
+                });
+            });
+        });
+    });
+});
+
+
+//get All user details
+
+router.get('/getAllUsersDetails', async (req, res) => {
+    const {user_type_id}=req.query;
+    if(!user_type_id){
+        const userTypeToExclude=1;
+            const query = 'SELECT u.user_id, u.first_name, u.last_name, u.email, u.phone, u.user_type_id , u.user_status, m.address, m.country, m.state, m.city, m.zip, m.date_of_birth, m.occupation, m.gender, m.profile_pic, c.name AS countryname, s.name AS statename FROM users u LEFT JOIN user_customer_meta m ON u.user_id = m.user_id LEFT JOIN countries c ON m.country = c.id LEFT JOIN states s ON m.state = s.id WHERE u.user_type_id != ?';
+            db.query(query, [userTypeToExclude], (err, results) => {
+            if (err) {
+                return res.status(500).json({
+                    status: "error",
+                    message: 'An error occurred while fetching user details ' + err,
+                });
+            }
+            if (results.length === 0) {
+                return res.status(404).json({
+                    status: 'error',
+                    message: 'No users found',
+                });
+            }
+            return res.status(200).json({
+                status: 'success',
+                data: results,
+                message: 'User details fetched successfully',
+            });
+        });
+    }else{
+        const query='SELECT u.user_id,u.first_name,u.last_name,u.email, u.phone, u.user_type_id , u.user_status, m.address, m.country, m.state, m.city, m.zip, m.date_of_birth, m.occupation, m.gender, m.profile_pic, c.name AS countryname, s.name AS statename FROM users u LEFT JOIN user_customer_meta m ON u.user_id = m.user_id LEFT JOIN countries c ON m.country = c.id LEFT JOIN states s ON m.state = s.id WHERE u.user_type_id = ?';
+        db.query(query,[user_type_id],(err,results)=>{
+        if(err){
+            return res.status(200).json({
+                status:'success',
+                data:results,
+                message:'An error ocurred while processing',
+                });
+            }
+            if(results.length===0){
+                return res.status(404).json({
+                    status:'err',
+                    message:'No users found with this user_id '
+                });
+            }
+            return res.status(200).json({
+                status: 'success',
+                data: results,
+                message: 'User details fetched successfully',
+            });
+        })
+    }
+});
+
 router.get('/help/:id', (_, resp) => {
     resp.sendFile(`${publicPath}/help.html`)
 });
