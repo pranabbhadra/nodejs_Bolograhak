@@ -739,7 +739,22 @@ jQuery(function($){
   }
   $('.profile-menu-list ul > li > .arw-down').on('click',subMenu);
    // /////////////////////////////  Dashboard page review slide end
-  
+
+
+  //  ================ Faq page tabination =============
+
+  $('.faq-categories').find('.faq-cat-body ul li a').click(function(e){
+    e.preventDefault();
+    var clickedIndex = $(this).parent().index();
+    $(this).parent().toggleClass('active');
+    $(this).parent().siblings().removeClass('active');
+    $('.custom-accordion').eq(clickedIndex).show().siblings().hide();
+  });
+  $('.faq-categories').find('.faq-cat-body ul li:first a').trigger('click');
+
+  //  ================ Faq page tabination =============   
+
+
   });
     
   

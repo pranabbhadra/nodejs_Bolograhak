@@ -220,14 +220,29 @@ router.get('/review', checkCookieValue, async (req, res) => {
 });
 
 router.get('/faq', checkCookieValue, async (req, res) => {
-    let currentUserData = JSON.parse(req.userData);
-    res.render('front-end/faq', { menu_active_id: 'faq', page_title: 'FAQ', currentUserData });
+    try {
+        let currentUserData = JSON.parse(req.userData);
+        const faqPageData = await comFunction2.getFaqPage();
+        const faqCategoriesData = await comFunction2.getFaqCategories();
+        const faqItemsData = await comFunction2.getFaqItems();
+        // Render the 'add-page' EJS view and pass the data
+        res.render('front-end/faq', {
+            menu_active_id: 'faq',
+            page_title: 'FAQ ',
+            currentUserData,
+            faqPageData,
+            faqCategoriesData,
+            faqItemsData
+        });
+    } catch (error) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+    
+    //res.render('front-end/faq', { menu_active_id: 'faq', page_title: 'FAQ', currentUserData });
 });
 
-router.get('/contact', checkCookieValue, async (req, res) => {
-    let currentUserData = JSON.parse(req.userData);
-    res.render('front-end/contact', { menu_active_id: 'contact', page_title: 'Contact Us', currentUserData });
-});
+
 
 router.get('/business', checkCookieValue, async (req, res) => {
     
@@ -269,15 +284,7 @@ router.get('/business', checkCookieValue, async (req, res) => {
     }
 });
 
-router.get('/myprofile', checkCookieValue, async (req, res) => {
-    let currentUserData = JSON.parse(req.userData);
-    res.render('front-end/myprofile', { menu_active_id: 'myprofile', page_title: 'My Profile', currentUserData });
-});
 
-router.get('/profile-dashboard', checkCookieValue, async (req, res) => {
-    let currentUserData = JSON.parse(req.userData);
-    res.render('front-end/profile-dashboard', { menu_active_id: 'profile-dashboard', page_title: 'My Dashboard', currentUserData });
-});
 
 router.get('/privacy-policy', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
@@ -345,6 +352,7 @@ router.get('/logout', (req, res) => {
 // Middleware function to check if user is logged in
 async function checkLoggedIn(req, res, next) {
     const encodedUserData = req.cookies.user;
+    //const currentUserData = JSON.parse(encodedUserData);
 
     try {
         if (encodedUserData) {
@@ -914,9 +922,6 @@ router.get('/edit-faq', checkLoggedIn, async (req, res) => {
         const faqPageData = await comFunction2.getFaqPage();
         const faqCategoriesData = await comFunction2.getFaqCategories();
         const faqItemsData = await comFunction2.getFaqItems();
-        // console.log(faqPageData);
-        // console.log(faqCategoriesData);
-        // console.log(faqItemsData);
         // Render the 'add-page' EJS view and pass the data
         res.render('faq/edit-faq', {
             menu_active_id: 'faq',
@@ -1184,6 +1189,70 @@ router.get('/edit-business', checkLoggedIn, (req, res) => {
         res.status(500).send('An error occurred');
     }
 });
+
+// Middleware function to check if user is logged in Frontend
+async function checkFrontEndLoggedIn(req, res, next) {
+
+    res.locals.globalData = {
+        BLOG_URL: process.env.BLOG_URL,
+        // Add other variables as needed
+    };
+    const encodedUserData = req.cookies.user;
+    //const currentUserData = JSON.parse(encodedUserData);
+
+    try {
+        if (encodedUserData) {
+            // User is logged in, proceed to the next middleware or route handler
+            next();
+        } else {
+            res.redirect('/');
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+}
+
+router.get('/myprofile', checkFrontEndLoggedIn, async (req, res) => {  
+    
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+        const userId = currentUserData.user_id;
+        console.log('editUserID: ', userId);
+
+        // Fetch all the required data asynchronously
+        const [user, userMeta, countries, userRoles, states] = await Promise.all([
+            comFunction.getUser(userId),
+            comFunction.getUserMeta(userId),
+            comFunction.getCountries(),
+            comFunction.getUserRoles(),
+            comFunction.getStatesByUserID(userId)
+        ]);
+
+        // Render the 'edit-user' EJS view and pass the data
+        res.render('front-end/myprofile', {
+            menu_active_id: 'myprofile',
+            page_title: 'My Profile',
+            currentUserData,
+            user: user,
+            userMeta: userMeta,
+            countries: countries,
+            userRoles: userRoles,
+            states: states
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+    //res.render('front-end/myprofile', { menu_active_id: 'myprofile', page_title: 'My Profile', currentUserData });
+});
+
+router.get('/profile-dashboard', checkFrontEndLoggedIn, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
+    res.render('front-end/profile-dashboard', { menu_active_id: 'profile-dashboard', page_title: 'My Dashboard', currentUserData });
+});
+
 
 router.get('/help/:id', (_, resp) => {
     resp.sendFile(`${publicPath}/help.html`)

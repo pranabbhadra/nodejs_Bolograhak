@@ -10,13 +10,17 @@
            <div class="col-md-4">
               <div class="profile-left-content">
                  <div class="profile-img">
-                    <img src="/front-end/images/profile-img.jpg" alt="img" width="189" height="189">
+                  <% if(userMeta && userMeta.profile_pic){ %>
+                    <img src="/<%= userMeta.profile_pic %>" alt="img" width="189" height="189">
+                <% }else{ %>
+                  <img src="/front-end/images/profile-img.jpg" alt="img" width="189" height="189">
+                <% } %>
                     <input type="file" class="camera-icon">
                  </div>
                  <div class="myprofile-info text-center">
-                    <h4>John Doe</h4>
-                    <p><a href="mailto:johndoe12@gmail.com"><i class="fa-light fa-envelope"></i> johndoe12@gmail.com</a></p>
-                    <p><a href=""><i class="fa-light fa-location-dot"></i> Kolkata</a></p>
+                    <h4><%= user.first_name %> <%= user.last_name %></h4>
+                    <p><a href="mailto:<%= user.email %>"><i class="fa-light fa-envelope"></i> <%= user.email %></a></p>
+                    <p><a href=""><i class="fa-light fa-location-dot"></i> <% if(userMeta && userMeta.city){ %><%= userMeta.city %><% } %></a></p>
                  </div>
                  <div class="review-level">
                     <span>
@@ -63,44 +67,46 @@
                     <tr>
                       <td>Name</td>
                       <td>:</td>
-                      <td>John Doe</td>
+                      <td><%= user.first_name %> <%= user.last_name %></td>
                     </tr>
                     <tr>
                       <td>Email</td>
                       <td>:</td>
-                      <td><a href="mailto:johndoe12@gmail.com">johndoe12@gmail.com</a></td>
+                      <td><a href="mailto:<%= user.email %>"><%= user.email %></a></td>
                     </tr>
                     <tr>
                       <td>Mobile number</td>
                       <td>:</td>
-                      <td><a href="tel:1233456789">123-345-6789</a></td>
+                      <td><a href="tel:<%= user.phone %>"><%= user.phone %></a></td>
                     </tr>
                     <tr>
                       <td>Alternate Number</td>
                       <td>:</td>
-                      <td><a href="tel:0000000000">000-000-0000</a></td>
+                      <td><a href="tel:<% if(userMeta && userMeta.alternate_phone){ %><%= userMeta.alternate_phone %><% } %>"><% if(userMeta && userMeta.alternate_phone){ %><%= userMeta.alternate_phone %><% } %></a></td>
                     </tr>
                     <tr>
                       <td>Address</td>
                       <td>:</td>
-                      <td><a href="#">Pellentesque fermentum, ipsum...</a></td>
+                      <td><a href="#"><% if(userMeta && userMeta.address){ %><%= userMeta.address %><% } %></a></td>
                     </tr>
                     <tr>
                       <td>City</td>
                       <td>:</td>
-                      <td>Kolkata</td>
+                      <td><% if(userMeta && userMeta.city){ %><%= userMeta.city %><% } %></td>
                     </tr>
                     <tr>
                       <td>State</td>
                       <td>:</td>
-                      <td>West Bengal</td>
+                      <% states.forEach( item => { %>
+                        <td><% if(item.id==userMeta.state){ %><%= item.name %> <% } %> </td>
+                      <% }) %>
                     </tr>
                     <tr>
                       <td>PIn Code</td>
                       <td>:</td>
-                      <td>700091</td>
+                      <% if(userMeta && userMeta.zip){ %><td><%= userMeta.zip %></td><% } %>
                     </tr>
-                    <tr>
+                    <!-- <tr>
                       <td colspan="3">Interested in <br>
                         <span class="interset-curricular">
                           <svg width="22" height="18" viewBox="0 0 22 18" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -191,35 +197,54 @@
                           </svg> Fashion & Lifestyle
                         </span>
                       </td>
-                    </tr>
+                    </tr> -->
                     <tr>
                       <td>Country</td>
                       <td>:</td>
-                      <td>India</td>
+                      <% countries.forEach( item => { %>
+                        <% if(item.id==userMeta.country){ %><td><%= item.name %> </td><% } %>
+                      <% }) %>
+                      
                     </tr>
+                    
                     <tr>
+                      <%
+                      if(userMeta && userMeta.date_of_birth){
+                          const date = new Date(userMeta.date_of_birth);
+                          const year = date.getFullYear();
+                          const month = String(date.getMonth() + 1).padStart(2, '0');
+                          const day = String(date.getDate()).padStart(2, '0');
+                          const formattedDate = `${year}/${month}/${day}`;
+                      %>
                       <td>DOB</td>
                       <td>:</td>
-                      <td>DD/MM/YYYY</td>
+                      <td><%= formattedDate %></td>
+                      <%
+                        }else{
+                        %>
+                        <td>DOB</td>
+                      <td>:</td>
+                      <td>0/0/0</td>
+                        <% } %>
                     </tr>
                     <tr>
                       <td>Gender</td>
                       <td>:</td>
-                      <td>Male</td>
+                      <td><%= userMeta.gender %></td>
                     </tr>
                     <tr>
                       <td>Marital Status</td>
                       <td>:</td>
-                      <td>Married</td>
+                      <td><%= userMeta.marital_status %></td>
                     </tr>
                   </tbody>
                 </table>
               </div>
               <div class="about-me-area">
                 <h2>About Me</h2>
-                <p>Donec sit amet hendrerit lectus. Etiam at vulputate metus. Maecenas enim risus, fermentum eu venenatis ut, tincidunt nec lectus. Aenean urna metus, imperdiet sit amet porttitor ac, lacinia in odio. Maecenas enim risus, fermentum eu venenatis ut, tincidunt nec lectus. Aenean urna metus, imperdiet sit amet porttitor ac, lacinia in odio.</p>
+                <p><%= userMeta.about %></p>
              </div>
-             <div class="profile-info-table">
+             <!-- <div class="profile-info-table">
               <table class="table">
                 <tbody>
                   <tr>
@@ -268,7 +293,7 @@
               </table>
             </div>
             <div class="text-end"><a href="" class="btn-default btn-warning">Edit</a></div>
-            </div>
+            </div> -->
             
            </div>
         </div>
