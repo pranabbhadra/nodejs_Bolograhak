@@ -409,6 +409,51 @@ jQuery(function($){
     slidesToShow:1,
     slidesToScroll:1
   });
+
+  $('.promotion-slider').slick({
+    arrows: true,
+    prevArrow: '<div class="slick-prev"><i class="fa fa-angle-left" aria-hidden="true"></i></div>',
+    nextArrow: '<div class="slick-next"><i class="fa fa-angle-right" aria-hidden="true"></i></div>',
+    speed: 2000,
+    dots: false,
+    slidesToShow: 4,
+    slidesToScroll:1,
+    autoplay: false,
+    autoplaySpeed: 5000,
+    responsive: [
+      {
+        breakpoint: 1280,
+        settings: {
+          slidesToShow: 4
+        }
+      },
+      {
+        breakpoint: 1080,
+        settings: {
+          slidesToShow: 1
+        }
+      },
+  
+      {
+        breakpoint: 991,
+        settings: {
+          slidesToShow: 1
+        }
+      },
+      {
+        breakpoint: 768,
+        settings: {
+          slidesToShow: 2
+        }
+      },
+      {
+        breakpoint: 640,
+        settings: {
+          slidesToShow: 1
+        }
+      }
+    ]
+  });
   
   // /////////////////////////////////////// Slick Slider end
   
@@ -482,6 +527,17 @@ jQuery(function($){
          $(".load-slice-btn").hide();
         }
     });
+
+    $(".customer-review-wrap").slice(0,3).show();
+      $(".show-comment-slice").click(function(e){
+        e.preventDefault();
+        $(".customer-review-wrap:hidden").slice(0,3).fadeIn("slow");
+        
+        if($(".customer-review-wrap:hidden").length == 0){
+          $(".show-comment-slice").hide();
+          $(".btn-border-top").hide();
+          }
+      });
   
   // /////////////////////////////////////// Load More Blog slice end
   
@@ -646,32 +702,15 @@ jQuery(function($){
       values: [0, 5], 
       slide: function(event, ui)
       {
-        $("#ratingcounter").val(ui.values[0] + " / " + ui.values[1]);
+        $("#ratingrange").val(ui.values[0] + " / " + ui.values[1]);
         $("#ratingvalue").val(ui.values[0]);
         // When slider values change, update the text
         $("#selected-range-text").text(rangeTexts[ui.values[0]]);
         $("#selected-range-emojis").text(rangeEmojis[ui.values[0]]);
       }
       });
-      $("#ratingcounter").val($("#rating-range").slider("values", 0) + " / " + $("#rating-range").slider("values", 1));
+      $("#ratingrange").val($("#rating-range").slider("values", 0) + " / " + $("#rating-range").slider("values", 1));
 
-
-    //   $(document).ready(function() {
-    //     var rangeSlider = $('#rating-range');
-    
-    //     rangeSlider.on('input', function() {
-    
-    //         // Show the appropriate element based on the range
-    //         if (sliderValue >= 0.5 && sliderValue < 1) {
-    //             $('.range-tag1').show();
-    //         } else if (sliderValue >= 1 && sliderValue < 1.5) {
-    //             $('.range-tag2').show();
-    //         } else if (sliderValue >= 1.5 && sliderValue <= 2) {
-    //             $('range-tag3').show();
-    //         }
-    //     });
-    // });
-  
   ////////////////////////////// Range Slider End
 
   // /////////////////////////////  read more read less script
@@ -738,6 +777,28 @@ jQuery(function($){
   }
   $('.profile-menu-list ul > li > .arw-down').on('click',subMenu);
    // /////////////////////////////  Dashboard page review slide end
+
+  // ///////////////////////////// Fancybox Config start
+    $('[data-fancybox="gallery"]').fancybox({
+      buttons: [
+        "slideShow",
+        "thumbs",
+        "zoom",
+        "fullScreen",
+        "share",
+        "close"
+      ],
+      loop: false,
+      protect: true
+    });
+
+  // ///////////////////////////// Fancybox Config end
+
+  // ///////////////////////////// category page class add start
+  if ($(".category-premium, .category-free").length > 0){
+    $(".inner-page-heading").addClass("category-head");
+   }
+  // ///////////////////////////// category page class add end
   
   });
     
