@@ -64,8 +64,8 @@
             </svg>
           </a>
           <h4>Contact Info</h4>
-          <div class="c-email"><span>Sales:</span> <a href="">Sales@CEchoes.com</a></div>
-          <div class="c-email"><span>Support:</span> <a href="">Support@CEchoes.com</a></div>
+          <div class="c-email"><span>Sales:</span> <a href="mailto:sales@cechoes.com">Sales@CEchoes.com</a></div>
+          <div class="c-email"><span>Support:</span> <a href="mailto:support@cechoes.com">Support@CEchoes.com</a></div>
           <a href="/contact-us" class="c-link"><u>Contact Us</u></a>
         </div>
       </div>
@@ -75,7 +75,7 @@
           <ul class="menu">
             <li><a href="/about-us">About Us</a></li>
             <li><a href="/careers">Careers</a></li>
-            <li><a href="http://ec2-44-203-151-109.compute-1.amazonaws.com/blog/blog/">Blogs</a></li>
+            <li><a href="<%= globalData.BLOG_URL %>">Blogs</a></li>
             <li><a href="/faq">Help</a></li>
           </ul>
         </div>
@@ -121,8 +121,10 @@
 <!-- Css -->
 <link href="/front-end/css/footer-style.css" rel="stylesheet" type="text/css">
 <!-- Responsive Css -->
+<link href="/front-end/responsive/default-style-responsive.css" rel="stylesheet" media='screen and (max-width:1440.98px)' type="text/css">
 <link href="/front-end/responsive/footer-responsive-style.css" media='screen and (max-width:1440.98px)' rel="stylesheet" type="text/css">
 <link href="/front-end/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="/front-end/css/aos.css" rel="stylesheet" type="text/css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 <script src="/front-end/js/bootstrap.min.js"> </script>
 <script src="/front-end/js/component.js"> </script>
@@ -233,7 +235,7 @@
             $('.frm-error-message').text(data.message).show();
             $('#user-signin').trigger('reset');
             if(data.wp_user){
-              window.location.href="http://localhost/bolo-grahak/blog/?login_check="+data.wp_user;
+              window.location.href="<%= globalData.BLOG_URL %>?login_check="+data.wp_user;
             }else{
               window.location.href="/";
             }
