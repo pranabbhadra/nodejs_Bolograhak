@@ -122,6 +122,7 @@ router.get('', checkCookieValue, async (req, res) => {
                         home,
                         meta_values_array,
                         featured_comps,
+                        allRatingTags: allRatingTags,
                         AddressapiKey: process.env.ADDRESS_GOOGLE_API_Key
                     });
                 })

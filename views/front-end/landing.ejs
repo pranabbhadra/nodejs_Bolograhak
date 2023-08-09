@@ -225,7 +225,9 @@
                     </div>-->
                     <div class="col-md-12">
                       <div class="custom-form">
-                         <input type="text" class="form-control" name="company_name" placeholder="Business/Institute/Establishment Name" required>
+                         <input type="text" class="form-control" id="search-input-review" name="company_name" placeholder="Business/Institute/Establishment Name" required autocomplete="off">
+                         <div class="autofield-dropdown-review">
+                         </div>
                       </div>
                     </div>
                     <div class="col-md-12">
@@ -741,42 +743,102 @@
 <script>
   jQuery(document).ready(function($) {
     // /////////////////////////////////////// Auto Field Dropdown Start
-    var timer;
-    $("#search-input").keyup(function(){
-      clearTimeout(timer);
-      var keyword = $(this).val();
-      if (keyword.length >= 3) {
-        timer = setTimeout(function() {
-          performSearch(keyword);
-        }, 500);
-      } else {
-        $('.autofield-dropdown').html(''); // Clear search results if less than three letters
-      }
-    })
-    // Function to perform the AJAX search
-    function performSearch(keyword) {
-      const url = "<%= globalData.BLOG_URL %>api/home-search.php";
-      const data = {
-        keyword: keyword,
-      };
+      var timer;
+      $("#search-input").keyup(function(){
+        clearTimeout(timer);
+        var keyword = $(this).val();
+        if (keyword.length >= 3) {
+          timer = setTimeout(function() {
+            performSearch(keyword);
+          }, 500);
+        } else {
+          $('.autofield-dropdown').html(''); // Clear search results if less than three letters
+        }
+      })
+      $("#search-input-review").keyup(function(){
+        clearTimeout(timer);
+        var keyword = $(this).val();
+        if (keyword.length >= 3) {
+          timer = setTimeout(function() {
+            performSearchForReview(keyword);
+          }, 500);
+        } else {
+          $('.autofield-dropdown-review').html(''); // Clear search results if less than three letters
+        }
+      })
+      // Function to perform the AJAX search
+      function performSearch(keyword) {
+        const data = {
+          keyword: keyword,
+        };
+        $.ajax({
+          url: 'api/search-company',
+          method: 'POST',
+          data: {keyword:keyword},
+          ContentType: 'application/json',
+          success: function (data) {
+            if (data.status == 'ok') {
+              if(data.data.length>0){
+                let respData = data.data;
+                let html = '<ul class="p-0 m-0">';
+                  respData.forEach(company => {
+                    html += '<li><a href="#" data-resulttitle="' + company.company_name + '" data-resultexcerpt="' + company.about_company + '" data-resultpermalink="/company/' + company.ID + '" >' + company.company_name + '</a></li>';
+                  });
+                html += '</ul>';
+                $('.autofield-dropdown').html(html);
+                $('.autofield-dropdown').show();
+              }else{
+                $('.autofield-dropdown').html('');
+                $('.autofield-dropdown').hide();
+              }
+            } else {
+              $('.autofield-dropdown').html('');
+              $('.autofield-dropdown').hide();
+            }
+          },
+          error: function (error) {
+            
+          }
+        });
 
-      fetch(url, {
-        method: "POST", // Use the appropriate HTTP method
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      })
-      .then(response => response.json())
-      .then(posts_html => {
-        console.log(posts_html);
-        $('.autofield-dropdown').html(posts_html);
-        $('.autofield-dropdown').show();
-      })
-      .catch(error => {
-        console.error("Error loading posts:", error);
-      });
-    }
+      }
+      // Company Search For review
+      function performSearchForReview(keyword) {
+        const data = {
+          keyword: keyword,
+        };
+        $.ajax({
+          url: 'api/search-company',
+          method: 'POST',
+          data: {keyword:keyword},
+          ContentType: 'application/json',
+          success: function (data) {
+            if (data.status == 'ok') {
+              if(data.data.length>0){
+                let respData = data.data;
+                let html = '<ul class="p-0 m-0">';
+                  respData.forEach(company => {
+                    html += '<li><a href="#" data-resulttitle="' + company.company_name + '" data-companyID="' + company.ID + '" >' + company.company_name + '</a></li>';
+                  });
+                html += '</ul>';
+                $('.autofield-dropdown-review').html(html);
+                $('.autofield-dropdown-review').show();
+              }else{
+                $('.autofield-dropdown-review').html('');
+                $('.autofield-dropdown-review').hide();
+              }
+            } else {
+              $('.autofield-dropdown-review').html('');
+              $('.autofield-dropdown-review').hide();
+            }
+          },
+          error: function (error) {
+            $('.autofield-dropdown-review').html('');
+            $('.autofield-dropdown-review').hide();
+          }
+        });
+
+      }
     });
     
     $("body").on('click', ".autofield-dropdown ul > li", function(e){
@@ -784,13 +846,19 @@
       var resulttitle = $(this).find('a').attr('data-resulttitle');
       var resultexcerpt = $(this).find('a').attr('data-resultexcerpt');
       var resultpermalink = $(this).find('a').attr('data-resultpermalink');
-      console.log(resulttitle+' '+resultexcerpt+' '+resultpermalink);
       $('#dynamic-search-title').text(resulttitle);
       $('#dynamic-search-content').text(resultexcerpt);
       $('#dynamic-search-link').attr("href", resultpermalink);
   
       $(".custom-modal").fadeIn();
   
+    });
+
+    $("body").on('click', ".autofield-dropdown-review ul > li", function(e){
+      e.preventDefault();
+      var resulttitle = $(this).find('a').attr('data-resulttitle');
+      $('#search-input-review').val(resulttitle);
+      $(".autofield-dropdown-review").fadeOut();
     });
 </script>
 <script>

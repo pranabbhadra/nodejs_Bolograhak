@@ -603,7 +603,7 @@ async function createCompany(comInfo, userId) {
             //create new address for company
             try{
               const create_company_address_query = 'INSERT INTO company_location (company_id, address, country, state, city, zip, status) VALUES (?, ?, ?, ?, ?, ?, ?)';
-              const create_company_address_values = [company_name_checking_results[0].ID, comInfo.address, comInfo.country, comInfo.state, comInfo.city, comInfo.zip, '0'];
+              const create_company_address_values = [company_name_checking_results[0].ID, comInfo.address, comInfo.country, comInfo.state, comInfo.city, comInfo.zip, '2'];
               const create_company_address_results = await query(create_company_address_query, create_company_address_values);
               if (create_company_address_results.insertId) {
                 return_data.companyID = company_name_checking_results[0].ID;
@@ -628,7 +628,7 @@ async function createCompany(comInfo, userId) {
       const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
       try {
         const create_company_query = 'INSERT INTO company (user_created_by, company_name, status, created_date, updated_date) VALUES (?, ?, ?, ?, ?)';
-        const create_company_values = [userId, comInfo.company_name, '0', formattedDate, formattedDate];
+        const create_company_values = [userId, comInfo.company_name, '2', formattedDate, formattedDate];
         const create_company_results = await query(create_company_query, create_company_values);
         // console.log('New Company:', create_company_results);
         // console.log('New Company ID:', create_company_results.insertId);
@@ -636,7 +636,7 @@ async function createCompany(comInfo, userId) {
           //create new address for company
           try{
             const create_company_address_query = 'INSERT INTO company_location (company_id, address, country, state, city, zip, status) VALUES (?, ?, ?, ?, ?, ?, ?)';
-            const create_company_address_values = [create_company_results.insertId, comInfo.address, comInfo.country, comInfo.state, comInfo.city, comInfo.zip, '0'];
+            const create_company_address_values = [create_company_results.insertId, comInfo.address, comInfo.country, comInfo.state, comInfo.city, comInfo.zip, '2'];
             const create_company_address_results = await query(create_company_address_query, create_company_address_values);
             if (create_company_address_results.insertId) {
               return_data.companyID = create_company_results.insertId;
@@ -764,6 +764,27 @@ async function editCustomerReview(req){
   }  
 }
 
+async function searchCompany(keyword){
+  const get_company_query = `
+    SELECT ID, company_name, logo, about_company FROM company
+    WHERE company_name LIKE '%${keyword}%'
+    OR about_company LIKE '%${keyword}%'
+    OR heading LIKE '%${keyword}%'
+    ORDER BY created_date DESC
+  `;
+  try{
+    const get_company_results = await query(get_company_query);
+    if(get_company_results.length > 0 ){
+      console.log(get_company_results);
+      return {status: 'ok', data: get_company_results, message: get_company_results.length+' company data recived'};
+    }else{
+      return {status: 'ok', data: '', message: 'No company data found'};
+    }
+  }catch(error){
+    return {status: 'err', data: '', message: 'No company data found'};
+  }  
+}
+
 module.exports = {
     getUser,
     getUserMeta,
@@ -789,5 +810,6 @@ module.exports = {
     getAllReviews,
     getCustomerReviewData,
     getCustomerReviewTagRelationData,
-    editCustomerReview
+    editCustomerReview,
+    searchCompany
 };

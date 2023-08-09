@@ -290,17 +290,24 @@
                     form,
                     {
                         fields: {
-                            'review_rating_value': {
+                            'rating': {
                                 validators: {
                                     notEmpty: {
                                         message: 'Please select rating number'
                                     }
                                 }
                             },
-                            'review_rating_name': {
+                            'review_title': {
                                 validators: {
                                     notEmpty: {
-                                        message: 'Name is required'
+                                        message: 'Title is required'
+                                    }
+                                }
+                            },
+                            'review_content': {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'Content is required'
                                     }
                                 }
                             },

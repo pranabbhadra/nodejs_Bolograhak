@@ -4,7 +4,11 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const multer = require('multer');
 const fs = require('fs');
+const dotenv = require('dotenv');
+dotenv.config({ path: './.env' });
 
+const comFunction = require('../common_function');
+const axios = require('axios');
 
 // --countries --//
 exports.countries = (req, res) => {
@@ -71,6 +75,19 @@ exports.states = (req, res) => {
             }
         }
     })
+}
+
+// --searchCompany --//
+exports.searchCompany = async (req, res) => {
+    //console.log(req.body);
+    const keyword = req.body.keyword; //Approved Company
+    const CompanyResponse = await comFunction.searchCompany(keyword);
+    if(CompanyResponse.status == 'ok'){
+        res.status(200).json(CompanyResponse);
+    }else{
+        res.status(404).json(CompanyResponse);
+    }
+
 }
 
 //-- Profile Edit --//

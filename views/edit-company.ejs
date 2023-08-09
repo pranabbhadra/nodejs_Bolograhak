@@ -105,6 +105,42 @@
                             </div>
                             <!--end::Col-->
                         </div>
+                        <div class="row mb-6">
+                            <!--begin::Label-->
+                            <label class="col-lg-4 col-form-label fw-bold fs-6">Profile Heading</label>
+                            <!--end::Label-->
+                            <!--begin::Col-->
+                            <div class="col-lg-8">
+                                <!--begin::Row-->
+                                <div class="row">
+                                    <!--begin::Col-->
+                                    <div class="col-lg-12 fv-row">
+                                        <input type="text" name="heading" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0" placeholder="Profile heading" value="<%= company.heading %>" />
+                                    </div>
+                                    <!--end::Col-->
+                                </div>
+                                <!--end::Row-->
+                            </div>
+                            <!--end::Col-->
+                        </div>
+                        <div class="row mb-6">
+                            <!--begin::Label-->
+                            <label class="col-lg-4 col-form-label required fw-bold fs-6">About Company</label>
+                            <!--end::Label-->
+                            <!--begin::Col-->
+                            <div class="col-lg-8">
+                                <!--begin::Row-->
+                                <div class="row">
+                                    <!--begin::Col-->
+                                    <div class="col-lg-12 fv-row">
+                                        <textarea rows="8" name="about_company" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0" placeholder="About Company"><%= company.about_company %></textarea>
+                                    </div>
+                                    <!--end::Col-->
+                                </div>
+                                <!--end::Row-->
+                            </div>
+                            <!--end::Col-->
+                        </div>
                         <!--end::Input group-->
                         <!--begin::Input group-->
                         <div class="row mb-6">
@@ -161,6 +197,62 @@
                             </div>
                             <!--end::Col-->
                         </div>
+                        <div class="row mb-6">
+                            <!--begin::Label-->
+                            <label class="col-lg-4 col-form-label required fw-bold fs-6">Company Status</label>
+                            <!--end::Label-->
+                            <!--begin::Col-->
+                            <div class="col-lg-8 fv-row">
+                                <!--begin::Options-->
+                                <div class="d-flex align-items-center mt-3">
+                                    <!--begin::Option-->
+                                    <label class="form-check form-check-inline form-check-solid me-5">
+                                        <input class="form-check-input mt-1" name="status" type="radio" value="2" <% if(company.status == '2'){ %>checked <% } %>/>
+                                        <span class="fw-bold fs-6 badge badge-light-warning fw-bolder px-4 py-3">Pending</span>
+                                    </label>
+                                    <!--end::Option-->
+                                    <!--begin::Option-->
+                                    <label class="form-check form-check-inline form-check-solid me-5">
+                                        <input class="form-check-input mt-1" name="status" type="radio" value="1" <% if(company.status == '1'){ %>checked <% } %>/>
+                                        <span class="fw-bold fs-6 badge badge-light-success fw-bolder px-4 py-3">Approved</span>
+                                    </label>
+                                    <!--end::Option-->
+                                    <!--begin::Option-->
+                                    <label class="form-check form-check-inline form-check-solid">
+                                        <input class="form-check-input mt-1" name="status" type="radio" value="0" <% if(company.status == '0'){ %>checked <% } %> />
+                                        <span class="fw-bold fs-6 badge badge-light-danger fw-bolder px-4 py-3">Rejected</span>
+                                    </label>
+                                    <!--end::Option-->
+                                </div>
+                                <!--end::Options-->
+                            </div>
+                            <!--end::Col-->
+                        </div>
+                        <div class="row mb-6">
+                            <!--begin::Label-->
+                            <label class="col-lg-4 col-form-label required fw-bold fs-6">Trending</label>
+                            <!--end::Label-->
+                            <!--begin::Col-->
+                            <div class="col-lg-8 fv-row">
+                                <!--begin::Options-->
+                                <div class="d-flex align-items-center mt-3">
+                                    <!--begin::Option-->
+                                    <label class="form-check form-check-inline form-check-solid me-5">
+                                        <input class="form-check-input mt-1" name="trending" type="radio" value="0" <% if(company.trending == '0'){ %>checked <% } %>/>
+                                        <span class="fw-bold fs-6 badge badge-light-danger fw-bolder px-4 py-3">No</span>
+                                    </label>
+                                    <!--end::Option-->
+                                    <!--begin::Option-->
+                                    <label class="form-check form-check-inline form-check-solid me-5">
+                                        <input class="form-check-input mt-1" name="trending" type="radio" value="1" <% if(company.trending == '1'){ %>checked <% } %>/>
+                                        <span class="fw-bold fs-6 badge badge-light-success fw-bolder px-4 py-3">Yes</span>
+                                    </label>
+                                    <!--end::Option-->
+                                </div>
+                                <!--end::Options-->
+                            </div>
+                            <!--end::Col-->
+                        </div>
                         <!--end::Input group-->
                     </div>
                     <!--end::Card body-->
@@ -177,6 +269,7 @@
             <!--end::Content-->
         </div>
         <!--end::Basic info-->
+        <%#
         <div class="card mb-5 mb-xl-10">
             <!--begin::Card header-->
             <div class="card-header">
@@ -228,6 +321,7 @@
             </div>
             <!--end::Card body-->
         </div>
+        %>
     </div>
     <!--end::Container-->
     </div>
@@ -305,6 +399,13 @@ var KTAccountSettingsProfileDetails = function () {
                         validators: {
                             notEmpty: {
                                 message: 'Company name is required'
+                            }
+                        }
+                    },
+                    about_company: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Description is required'
                             }
                         }
                     },

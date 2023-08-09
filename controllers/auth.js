@@ -1085,12 +1085,12 @@ exports.createCompany = (req, res) => {
 
         var insert_values = [];
         if (req.file) {
-            insert_values = [currentUserData.user_id, req.body.company_name, req.file.filename, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, "1", formattedDate, formattedDate];
+            insert_values = [currentUserData.user_id, req.body.company_name, req.body.heading, req.file.filename, req.body.about_company, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, req.body.status, req.body.trending, formattedDate, formattedDate];
         } else {
-            insert_values = [currentUserData.user_id, req.body.company_name, '', req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, formattedDate, "1", formattedDate];
+            insert_values = [currentUserData.user_id, req.body.company_name, req.body.heading, '', req.body.about_company, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, req.body.status, req.body.trending, formattedDate, formattedDate];
         }
 
-        const insertQuery = 'INSERT INTO company (user_created_by, company_name, logo, comp_phone, comp_email, comp_registration_id, status, created_date, updated_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+        const insertQuery = 'INSERT INTO company (user_created_by, company_name, heading, logo, about_company, comp_phone, comp_email, comp_registration_id, status, trending, created_date, updated_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
         db.query(insertQuery, insert_values, (err, results, fields) => {
             if (err) {
                 return res.send(
@@ -1168,8 +1168,8 @@ exports.editCompany = (req, res) => {
         }
 
         // Update company details in the company table
-        const updateQuery = 'UPDATE company SET company_name = ?, logo = ?, comp_phone = ?, comp_email = ?, comp_registration_id = ?, updated_date = ? WHERE ID = ?';
-        const updateValues = [req.body.company_name, '', req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, formattedDate, companyID];
+        const updateQuery = 'UPDATE company SET company_name = ?, heading = ?, logo = ?, about_company = ?, comp_phone = ?, comp_email = ?, comp_registration_id = ?, status = ?, trending = ?, updated_date = ? WHERE ID = ?';
+        const updateValues = [req.body.company_name, req.body.heading, '', req.body.about_company, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, req.body.status, req.body.trending, formattedDate, companyID];
 
         if (req.file) {
             // Unlink (delete) the previous file
@@ -1182,9 +1182,9 @@ exports.editCompany = (req, res) => {
                 }
             });
 
-            updateValues[1] = req.file.filename;
+            updateValues[2] = req.file.filename;
         }else{
-            updateValues[1] = req.body.previous_logo;
+            updateValues[2] = req.body.previous_logo;
         }
         db.query(updateQuery, updateValues, (err, results) => {
             if (err) {
