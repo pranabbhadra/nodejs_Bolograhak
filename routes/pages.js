@@ -268,21 +268,28 @@ router.get('/terms-conditions', checkCookieValue, async (req, res) => {
 
 router.get('/company/:id', checkCookieValue, async (req, res) => {
     const companyID = req.params.id;
-    const [allRatingTags, CompanyInfo] = await Promise.all([
+    const [allRatingTags, CompanyInfo, companyReviewNumbers, getCompanyReviews] = await Promise.all([
         comFunction.getAllRatingTags(),
         comFunction.getCompany(companyID),
+        comFunction.getCompanyReviewNumbers(companyID),
+        comFunction.getCompanyReviews(companyID),
     ]);
     let currentUserData = JSON.parse(req.userData);
     // res.json({
-    //             CompanyInfo
+    //     allRatingTags,
+    //     CompanyInfo,
+    //     companyReviewNumbers,
+    //     getCompanyReviews
     // });
     res.render('front-end/company-details',
     {
         menu_active_id: 'company',
-        page_title: CompanyInfo.company_name,
+        page_title: 'Category Details',
         currentUserData,
         allRatingTags,
-        CompanyInfo
+        CompanyInfo,
+        companyReviewNumbers,
+        getCompanyReviews
     });
 });
 

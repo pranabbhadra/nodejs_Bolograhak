@@ -6,6 +6,7 @@ const bcrypt = require('bcryptjs');
 const useragent = require('useragent');
 const requestIp = require('request-ip');
 const axios = require('axios');
+const { cache } = require('ejs');
 
 dotenv.config({ path: './.env' });
 const query = util.promisify(db.query).bind(db);
@@ -791,6 +792,49 @@ async function searchCompany(keyword){
   }  
 }
 
+async function getCompanyReviewNumbers(companyID){
+  const get_company_rewiew_count_query = `
+    SELECT COUNT(*) AS total_review_count, AVG(rating) AS total_review_average
+    FROM reviews
+    WHERE company_id = ?`;
+  const get_company_rewiew_count_value = [companyID];
+  try{
+    const get_company_rewiew_count_result = await query(get_company_rewiew_count_query, get_company_rewiew_count_value);
+    const get_company_rewiew_rating_count_query = `
+    SELECT rating,count(rating) AS cnt_rat
+    FROM reviews
+    WHERE company_id = ?
+    group by rating ORDER by rating DESC`;
+    try{
+      const get_company_rewiew_rating_count_result = await query(get_company_rewiew_rating_count_query, get_company_rewiew_count_value);
+      return {rewiew_count:get_company_rewiew_count_result[0], rewiew_rating_count: get_company_rewiew_rating_count_result};
+    }catch(error){
+      return 'Error during user get_company_rewiew_rating_count_query:'+error;
+    }
+    
+  }catch(error){
+    return 'Error during user get_company_rewiew_count_query:'+error;
+  }
+}
+
+async function getCompanyReviews(companyID){
+  const get_company_rewiew_query = `
+    SELECT r.*, ur.first_name, ur.last_name, ur.last_name, ucm.profile_pic
+    FROM reviews r
+    JOIN users ur ON r.customer_id = ur.user_id
+    JOIN user_customer_meta ucm ON ur.user_id = ucm.user_id
+    WHERE r.company_id = ? AND r.review_status = "1"
+    ORDER BY r.created_at DESC
+    LIMIT 20`;
+  const get_company_rewiew_value = [companyID];
+  try{
+    const get_company_rewiew_result = await query(get_company_rewiew_query, get_company_rewiew_value);
+    return get_company_rewiew_result;
+  }catch(error){
+    return 'Error during user get_company_rewiew_query:'+error;
+  }
+}
+
 module.exports = {
     getUser,
     getUserMeta,
@@ -817,5 +861,7 @@ module.exports = {
     getCustomerReviewData,
     getCustomerReviewTagRelationData,
     editCustomerReview,
-    searchCompany
+    searchCompany,
+    getCompanyReviewNumbers,
+    getCompanyReviews
 };
