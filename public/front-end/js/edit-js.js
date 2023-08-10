@@ -409,7 +409,50 @@ jQuery(function($){
     slidesToShow:1,
     slidesToScroll:1
   });
+  $('.promotion-slider').slick({
+    arrows: true,
+    prevArrow: '<div class="slick-prev"><i class="fa fa-angle-left" aria-hidden="true"></i></div>',
+    nextArrow: '<div class="slick-next"><i class="fa fa-angle-right" aria-hidden="true"></i></div>',
+    speed: 2000,
+    dots: false,
+    slidesToShow: 4,
+    slidesToScroll:1,
+    autoplay: false,
+    autoplaySpeed: 5000,
+    responsive: [
+      {
+        breakpoint: 1280,
+        settings: {
+          slidesToShow: 4
+        }
+      },
+      {
+        breakpoint: 1080,
+        settings: {
+          slidesToShow: 1
+        }
+      },
   
+      {
+        breakpoint: 991,
+        settings: {
+          slidesToShow: 1
+        }
+      },
+      {
+        breakpoint: 768,
+        settings: {
+          slidesToShow: 2
+        }
+      },
+      {
+        breakpoint: 640,
+        settings: {
+          slidesToShow: 1
+        }
+      }
+    ]
+  });
   // /////////////////////////////////////// Slick Slider end
   
   
@@ -482,7 +525,16 @@ jQuery(function($){
          $(".load-slice-btn").hide();
         }
     });
-  
+    $(".customer-review-wrap").slice(0,3).show();
+      $(".show-comment-slice").click(function(e){
+        e.preventDefault();
+        $(".customer-review-wrap:hidden").slice(0,3).fadeIn("slow");
+        
+        if($(".customer-review-wrap:hidden").length == 0){
+          $(".show-comment-slice").hide();
+          $(".btn-border-top").hide();
+          }
+      });
   // /////////////////////////////////////// Load More Blog slice end
   
   // /////////////////////////////////////// Archive Slide Start
@@ -739,16 +791,25 @@ jQuery(function($){
   }
   $('.profile-menu-list ul > li > .arw-down').on('click',subMenu);
    // /////////////////////////////  Dashboard page review slide end
-  
+          // ///////////////////////////// Fancybox Config start
+    $('[data-fancybox="gallery"]').fancybox({
+      buttons: [
+        "slideShow",
+        "thumbs",
+        "zoom",
+        "fullScreen",
+        "share",
+        "close"
+      ],
+      loop: false,
+      protect: true
+    });
+
+  // ///////////////////////////// Fancybox Config end
+
+  // ///////////////////////////// category page class add start
+  if ($(".category-premium, .category-free").length > 0){
+    $(".inner-page-heading").addClass("category-head");
+   }
+  // ///////////////////////////// category page class add end
   });
-    
-  
-  
-    
-    
-    
-    
-    
-    
-    
-    

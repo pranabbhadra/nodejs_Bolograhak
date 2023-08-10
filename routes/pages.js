@@ -253,6 +253,18 @@ router.get('/terms-conditions', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
     res.render('front-end/terms-conditions', { menu_active_id: 'terms-conditions', page_title: 'Terms of Service', currentUserData });
 });
+router.get('/category-details-free', checkCookieValue, async (req, res) => {
+    const [allRatingTags] = await Promise.all([
+        comFunction.getAllRatingTags(),
+    ]);
+    let currentUserData = JSON.parse(req.userData);
+    res.render('front-end/category-details-free', { menu_active_id: 'category-details-free', page_title: 'Categories Details', currentUserData, allRatingTags });
+});
+
+router.get('/category-details-premium', checkCookieValue, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
+    res.render('front-end/category-details-premium', { menu_active_id: 'category-details-premium', page_title: 'Categories Details', currentUserData });
+});
 // Front-End Page Routes End--------------------//
 
 
