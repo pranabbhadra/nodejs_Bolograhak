@@ -76,7 +76,7 @@ router.get('', checkCookieValue, async (req, res) => {
                         ORDER BY featured_companies.ordering ASC `;
                 db.query(featured_sql, (featured_err, featured_result) => {
                     var featured_comps = featured_result;
-                    res.render('front-end/landing', {
+                    res.render('front-end/landing',{
                         menu_active_id: 'landing',
                         page_title: home.title,
                         currentUserData: currentUserData,
@@ -170,13 +170,20 @@ router.get('/about-us', checkCookieValue, async (req, res) => {
                 await meta_values.forEach((item) => {
                     meta_values_array[item.page_meta_key] = item.page_meta_value;
                 })
-                res.render('front-end/about', {
+                res.json({
                     menu_active_id: 'about',
                     page_title: common.title,
                     currentUserData: currentUserData,
                     common,
                     meta_values_array
                 });
+                // res.render('front-end/about', {
+                //     menu_active_id: 'about',
+                //     page_title: common.title,
+                //     currentUserData: currentUserData,
+                //     common,
+                //     meta_values_array
+                // });
             })
 
         })
