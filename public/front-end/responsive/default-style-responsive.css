@@ -258,6 +258,11 @@
 	.business-right-cartoon {
 		max-width: 245px;
 	}
+
+	.main-content.category-free:before,
+	.main-content.category-premium:before {
+		background-size: 46%;
+	}
 }
 
 @media only screen and (max-width:1040.98px) {
@@ -650,6 +655,34 @@
 
 	.business-right-cartoon {
 		right: 10px;
+	}
+
+	.company-info h3 {
+		font-size: 24px;
+	}
+
+	.rating-review-content {
+		padding: 40px 20px;
+	}
+
+	.rating-review-head {
+		padding: 26px 20px;
+	}
+
+	.company-contact-info span + span {
+		margin-left: 5px;
+	}
+	.company-contact-info,
+	.rating-progress-bar table tbody tr td {
+		font-size: 14px;
+	}
+
+	.company-logo {
+		max-width: 200px;
+	}
+
+	.company-info {
+		margin-left: 15px;
 	}
 }
 
@@ -1102,6 +1135,44 @@
 	.business-left-cartoon, 
 	.business-right-cartoon {
 		display: none;
+	}
+
+	.company-contact-info span {
+		margin: 5px 5px 5px 0 !important;
+	}
+
+	.company-info h3 {
+		font-size: 20px;
+		margin-bottom: 7px;
+	}
+
+	.company-rating-review {
+		font-size: 14px;
+		margin-bottom: 7px;
+	}
+
+	.company-rating-review svg {
+		max-width: 30px;
+	}
+	
+	.company-rating-review span.rating-point {
+		font-size: 18px;
+	}
+
+	.company-contact-info + .company-contact-info {
+		margin-top: 2px;
+	}
+
+	.company-content p {
+		font-size: 16px;
+	}
+
+	.companies-add {
+		text-align: center;
+	}
+
+	.companies-add img {
+		display: inline-block;
 	}
 
 }
@@ -1606,6 +1677,77 @@
 		font-size: 14px;
 	}
 
+	.main-content.category-free:before,
+	.main-content.category-premium:before {
+		background-size: 32%;
+	}
+
+	.company-profile {
+		display: block;
+	}
+
+	.company-logo {
+		margin: 0 auto;
+	}
+
+	.company-info {
+		margin: 15px 0 0 0;
+		text-align: center;
+	}
+
+	.company-info h3 span.verified-tag {
+		margin-left: 4px;
+	}
+
+	.company-info h3 {
+		font-size: 18px;
+	}
+
+	.rating-prog-count h2 {
+		font-size: 25px;
+	}
+
+	.rating-prog-count h2 span svg {
+		max-width: 25px;
+		margin-top: -4px;
+	}
+
+	.rating-prog-count p {
+		font-size: 15px;
+	}
+
+	.rating-prog-count {
+		width: 140px;
+	}
+
+	.rating-progress {
+		padding-left: 136px;
+	}
+
+	.rating-review-head h4 {
+		font-size: 18px;
+	}
+
+	.rating-review-head {
+		padding: 20px 15px;
+	}
+
+	.rating-review-content,
+	.submit-review-box {
+		padding: 25px 15px;
+	}
+
+	.submit-review-box {
+		background-size: 35%;
+	}
+
+	.company-submit-review-form .custom-check .form-check-label {
+		min-width: 105px;
+		padding: 7px 11px;
+		margin: 2px 2px;
+		font-size: 13px;
+	}
+
 }
 
 @media only screen and (max-width:540.98px) {
@@ -1690,6 +1832,15 @@
 
 	.total-reviews-box h3 {
 		font-size: 26px;
+	}
+
+	.rating-prog-count {
+		width: 100%;
+		position: relative;
+	}
+
+	.rating-progress {
+		padding-left: 0;
 	}
 
 }
