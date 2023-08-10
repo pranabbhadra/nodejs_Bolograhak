@@ -117,7 +117,7 @@
                </a>
             </div>
             <div class="header-right-content">
-               <span class="language-select">
+               <!--<span class="language-select">
                   <span class="lang-change">Eng</span> <a href="" class="lang-arw"><i class="fa-solid fa-angle-down"></i></a>
                   <div class="lang-dropdown">
                      <ul class="p-0 m-0">
@@ -125,7 +125,7 @@
                         <li><a href="">Ben</a></li>
                      </ul>
                   </div>
-               </span>
+               </span>-->
                <span class="mbl-hide-link"><a href="#" class="btn-default btn-outline-warning">For Business</a></span>
                <?php if (is_user_logged_in()) {
                      $home_url = 'http://bolograhak.in/';

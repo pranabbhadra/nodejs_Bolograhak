@@ -3130,6 +3130,7 @@ h2.inner-main-head small {
     bottom: 0;
     display: block;
     margin-left: 0;
+    cursor: pointer;
 }
 
 .custom-check input[type="checkbox"]:checked+label, 
@@ -3150,6 +3151,7 @@ h2.inner-main-head small {
     color: #ffffff;
     line-height: 149.4%; 
     text-align: center;
+    cursor: pointer;
 }
 
 
@@ -3336,4 +3338,54 @@ a.quick-login span + span {
 .default-content-area ul li + li,
 .default-content-area ol li + li {
     margin-top: 10px;
+}
+
+
+/*========================= Sandip new CSS add 10.08.2023 ===========================*/
+
+.autofield-dropdown-review {
+    width: 100%;
+    background: #fff;
+    border-radius: 4px;
+    display: none;
+}
+.autofield-dropdown-review ul{
+    width: 100%;
+    display: block;
+    margin:0;
+    padding:0;
+}
+.autofield-dropdown-review ul li{
+    width: 100%;
+    display: block;
+    margin:0;
+    padding:0;
+}
+.autofield-dropdown-review ul li a{
+    padding: 10px;
+    display: block;
+    color: #282828;
+}
+.autofield-dropdown-review ul li a:hover{
+    background-color: #ccc;
+    border-radius: 4px;
+}
+
+.emojisss{
+    position: absolute;
+    top: -12px;
+    left: 0;
+    right: 0;
+    margin: auto;
+    width: 50px;
+    height: 50px;
+}
+.submit-message{
+    width: 100% !important;
+    margin: 18px 0 0;
+    color: white;
+    border: 1px solid #fbce40;
+    padding: 10px;
+    font-size: 17px;
+    display: none;
 }

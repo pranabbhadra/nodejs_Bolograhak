@@ -795,12 +795,13 @@ span#selected-range-emojis {
 }
 
 .feature-box {
-	font-size: 14px;
-	line-height: 138.4%;
-	border-radius: 16px;
+    font-size: 14px;
+    line-height: 138.4%;
+    border-radius: 16px;
     background: #FFF;
     padding: 22px 10px;
-	border: 1px solid #333;
+    border: 1px solid #333;
+    min-height: 280px;
 }
 
 .feature-box img {
