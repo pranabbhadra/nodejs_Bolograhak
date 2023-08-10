@@ -96,7 +96,13 @@ function getStatesByUserID(userId) {
 // Fetch all Company
 function getAllCompany() {
   return new Promise((resolve, reject) => {
-    db.query('SELECT * FROM company', (err, result) => {
+    db.query(
+      `SELECT c.*, GROUP_CONCAT(cat.category_name) AS categories
+      FROM company c
+      LEFT JOIN company_cactgory_relation cr ON c.ID = cr.company_id
+      LEFT JOIN category cat ON cr.category_id = cat.ID
+      GROUP BY c.ID`,
+      async(err, result) => {
       if (err) {
         reject(err);
       } else {

@@ -737,6 +737,9 @@ router.get('/companies', checkLoggedIn, async (req, res) => {
         ]);
 
         // Render the 'edit-user' EJS view and pass the data
+        // res.json({
+        //     allcompany: allcompany
+        // });
         res.render('companies', {
             menu_active_id: 'company',
             page_title: 'Companies',
