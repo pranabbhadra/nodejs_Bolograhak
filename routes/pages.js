@@ -265,12 +265,25 @@ router.get('/terms-conditions', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
     res.render('front-end/terms-conditions', { menu_active_id: 'terms-conditions', page_title: 'Terms of Service', currentUserData });
 });
-router.get('/category-details-free', checkCookieValue, async (req, res) => {
-    const [allRatingTags] = await Promise.all([
+
+router.get('/company/:id', checkCookieValue, async (req, res) => {
+    const companyID = req.params.id;
+    const [allRatingTags, CompanyInfo] = await Promise.all([
         comFunction.getAllRatingTags(),
+        comFunction.getCompany(companyID),
     ]);
     let currentUserData = JSON.parse(req.userData);
-    res.render('front-end/category-details-free', { menu_active_id: 'category-details-free', page_title: 'Categories Details', currentUserData, allRatingTags });
+    // res.json({
+    //             CompanyInfo
+    // });
+    res.render('front-end/company-details',
+    {
+        menu_active_id: 'company',
+        page_title: CompanyInfo.company_name,
+        currentUserData,
+        allRatingTags,
+        CompanyInfo
+    });
 });
 
 router.get('/category-details-premium', checkCookieValue, async (req, res) => {

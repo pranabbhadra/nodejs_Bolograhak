@@ -169,6 +169,42 @@
                             </div>
                             <!--end::Col-->
                         </div>
+                        <div class="row mb-6">
+                            <!--begin::Label-->
+                            <label class="col-lg-4 col-form-label fw-bold fs-6">
+                                <span class="">Toll Free Number</span>
+                            </label>
+                            <!--end::Label-->
+                            <!--begin::Col-->
+                            <div class="col-lg-8 fv-row">
+                                <input type="tel" name="tollfree_number" class="form-control form-control-lg form-control-solid" placeholder="Toll Free Number" value="<%= company.tollfree_number %>" />
+                            </div>
+                            <!--end::Col-->
+                        </div>
+                        <div class="row mb-6">
+                            <!--begin::Label-->
+                            <label class="col-lg-4 col-form-label fw-bold fs-6">
+                                <span class="required">Main Address</span>
+                            </label>
+                            <!--end::Label-->
+                            <!--begin::Col-->
+                            <div class="col-lg-8 fv-row">
+                                <input type="tel" name="main_address" class="form-control form-control-lg form-control-solid" placeholder="Main Address" value="<%= company.main_address %>" />
+                            </div>
+                            <!--end::Col-->
+                        </div>
+                        <div class="row mb-6">
+                            <!--begin::Label-->
+                            <label class="col-lg-4 col-form-label fw-bold fs-6">
+                                <span class="">Address URL</span>
+                            </label>
+                            <!--end::Label-->
+                            <!--begin::Col-->
+                            <div class="col-lg-8 fv-row">
+                                <input type="tel" name="address_map_url" class="form-control form-control-lg form-control-solid" placeholder="Address URL" value="<%= company.address_map_url %>" />
+                            </div>
+                            <!--end::Col-->
+                        </div>
                         <!--end::Input group-->
                         <!--begin::Input group-->
                         <div class="row mb-6">
@@ -427,6 +463,21 @@ var KTAccountSettingsProfileDetails = function () {
                             regexp: {
                                 regexp: /^\d{10}$/, // Regular expression pattern for a 10-digit phone number
                                 message: 'The phone number is not valid'
+                            }
+                        }
+                    },
+                    main_address: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Addres is required'
+                            }
+                        }
+                    },
+                    address_map_url: {
+                        validators: {
+                            regexp: {
+                                regexp: /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/, // Regular expression pattern for URL validation
+                                message: 'The URL is not valid'
                             }
                         }
                     },

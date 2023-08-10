@@ -6,11 +6,16 @@
     <div class="container">
        <div class="company-profile">
           <div class="company-logo">
-             <a href="#"><img src="/front-end/images/company-logo1.png" alt="img" loading="lazy" width="260" height="260"></a>
+             <a><img src="/<%= CompanyInfo.logo %>" alt="img" loading="lazy"></a>
           </div>
           <div class="company-info">
              <h3>
-                Samsung Electronics 
+               <% if(CompanyInfo.heading){ %>
+                  <%= CompanyInfo.heading %>
+               <% }else{ %>
+                  <%= CompanyInfo.company_name %>
+               <% } %>
+               <% if(CompanyInfo.status == 1){ %>
                 <span class="verified-tag">
                    <svg width="21" height="23" viewBox="0 0 21 23" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <g id="Group">
@@ -21,6 +26,7 @@
                    </svg>
                    verified business
                 </span>
+                <% } %>
              </h3>
              <div class="company-rating-review">
                 <span class="rating-point">4.5</span> 
@@ -34,18 +40,28 @@
                 13,066 Ratings & 1,117 Reviews
              </div>
              <div class="company-contact-info">
-                <span><i class="fa-solid fa-envelope"></i><a href="mailto:johndoe12@gmail.com">johndoe12@gmail.com</a></span>
-                <span><i class="fa-solid fa-mobile"></i><a href="tel:9876543210">+9876543210</a></span>
-                <span><i class="fa-regular fa-circle-phone"></i><a href="tel:1234567890">123-456-7890</a> (TOLL-FREE)</span>
+               <% if(CompanyInfo.comp_email){ %>
+                  <span><i class="fa-solid fa-envelope"></i><a href="mailto:<%= CompanyInfo.comp_email %>"><%= CompanyInfo.comp_email %></a></span>
+               <% } %>
+               <% if(CompanyInfo.comp_phone){ %>
+                  <span><i class="fa-solid fa-mobile"></i><a href="tel:<%= CompanyInfo.comp_phone %>"><%= CompanyInfo.comp_phone %></a></span>
+               <% } %>
+               <% if(CompanyInfo.tollfree_number){ %>
+                  <span><i class="fa-regular fa-circle-phone"></i><a href="tel:<%= CompanyInfo.tollfree_number %>"><%= CompanyInfo.tollfree_number %></a> (TOLL-FREE)</span>
+               <% } %>
              </div>
+             <% if(CompanyInfo.main_address){ %>
              <div class="company-contact-info">
-                <span><i class="fa-solid fa-location-dot"></i><a href="https://goo.gl/maps/4FQoMDDjSYM4ZgGh9">EE 91, EE Block, Sector II, Bidhannagar, Kolkata, West Bengal 700091</a></span>
+                <span><i class="fa-solid fa-location-dot"></i><a <% if(CompanyInfo.address_map_url){ %>href="<%= CompanyInfo.address_map_url %>"<% } %> target="_blank"><%= CompanyInfo.main_address %></a></span>
              </div>
+             <% } %>
           </div>
        </div>
+       <% if(CompanyInfo.about_company){ %>
        <div class="company-content">
-          <p>Sed hendrerit vel sapien nec commodo. Curabitur at maximus mauris. Duis vitae blandit lorem, vel posuere ante. Nulla bibendum posuere arcu, non facilisis risus scelerisque eget. Duis a ultrices elit. Fusce eget facilisis turpis. Sed tellus est, viverra porttitor luctus nec, posuere ac sapien. Vestibulum quam ex, convallis ac mi vitae. Sed hendrerit vel sapien nec commodo. Curabitur at maximus mauris. Duis vitae blandit lorem, vel posuere ante. Nulla bibendum posuere arcu, non facilisis risus scelerisque eget. Duis a ultrices elit. Fusce eget facilisis turpis. Sed tellus est, viverra porttitor luctus nec, posuere ac sapien. Vestibulum quam ex, convallis ac mi vitae.</p>
+         <p><%= CompanyInfo.about_company %></p>
        </div>
+       <% } %>
        <div class="rating-add-content">
           <div class="row">
              <div class="col-md-7">
