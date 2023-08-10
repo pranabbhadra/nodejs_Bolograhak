@@ -11,36 +11,36 @@
                      <div class="about-50-right">
                         <div class="gr-slider3">
                            <div class="item">
-                              <img src="/front-end/images/slider-small-9.png" alt="img" width="298" height="434">
+                              <img src="/<%= meta_values_array.banner_img_1 %>" alt="img" width="298" height="434">
                            </div>
                            <div class="item">
-                              <img src="/front-end/images/slider-small-10.png" alt="img" width="298" height="434">
+                              <img src="/<%= meta_values_array.banner_img_2 %>" alt="img" width="298" height="434">
                            </div>
                         </div>
                         <div class="gr-slider4">
                            <div class="item">
-                              <img src="/front-end/images/slider-small-11.png" alt="img" width="252" height="250">
+                              <img src="/<%= meta_values_array.banner_img_3 %>" alt="img" width="252" height="250">
                            </div>
                            <div class="item">
-                              <img src="/front-end/images/slider-small-8.png" alt="img" width="252" height="250">
+                              <img src="/<%= meta_values_array.banner_img_4 %>" alt="img" width="252" height="250">
                            </div>
                         </div>
                      </div>
                      <div class="about-50-left">
                         <div class="gr-slider1">
                            <div class="item">
-                              <img src="/front-end/images/slider-small-14.png" alt="img" width="194" height="228">
+                              <img src="/<%= meta_values_array.banner_img_5 %>" alt="img" width="194" height="228">
                            </div>
                            <div class="item">
-                              <img src="/front-end/images/slider-small-15.png" alt="img" width="194" height="228">
+                              <img src="/<%= meta_values_array.banner_img_6 %>" alt="img" width="194" height="228">
                            </div>
                         </div>
                         <div class="gr-slider2">
                            <div class="item">
-                              <img src="/front-end/images/slider-small-12.png" alt="img" width="212" height="312">
+                              <img src="/<%= meta_values_array.banner_img_7 %>" alt="img" width="212" height="312">
                            </div>
                            <div class="item">
-                              <img src="/front-end/images/slider-small-13.png" alt="img" width="212" height="312">
+                              <img src="/<%= meta_values_array.banner_img_8 %>" alt="img" width="212" height="312">
                            </div>
                         </div>
                      </div>
@@ -50,21 +50,7 @@
                </div>
                <div class="col-md-6 my-auto">
                   <div class="about-right text-md-start text-center my-3" data-aos="fade-right">
-                     <h3 class="business-cur-head mb-3"><sup><i class="fa-solid fa-quote-left"></i></sup>The best
-                        business insights often lie hidden in customer feedback<sup><i
-                              class="fa-solid fa-quote-right"></i></sup></h3>
-                     <p><span id="type-writing"><noscript>But for most companies, comments and feedbacks require too
-                              much of the organization’s resources to dissect and analyse. To make sense of the customer
-                              feedback data across company website, call centre software, Facebook, Google Review,
-                              Twitter and emails at Customer Support, organizations have traditionally employed either
-                              manual analysis processes by outside expensive experts or used siloed text analytics
-                              solutions which does not give the holistic picture. Employees who actually interact with
-                              customers typically aren’t able to effectively capture and report the feedback thereby
-                              leading to customers being lost before the company is able to analyse and do course
-                              correction. With artificial intelligence doing the heavy lifting, BoloGrahak’s fully
-                              integrated, seamless and effortless solution provides real-time trends and insights from
-                              customer feedback, accessible across every customer touchpoint so that your employees can
-                              use this information to improve customer satisfaction and loyalty.</noscript></span></p>
+                     <%- meta_values_array.bannner_content %>
 
                   </div>
                </div>
@@ -76,9 +62,20 @@
       <section class="main-content business-feature-content"
          style="background-image: url(front-end/images/business-feature-bg.jpg);">
          <div class="container">
-            <h2 class="inner-main-head text-center text-light mb-4">Features</h2>
-            <div class="business-feature-step" data-aos="fade-up">
+            <h2 class="inner-main-head text-center text-light mb-4"><%- meta_values_array.features_title %></h2>
+            <% BusinessFeature.forEach( (feature,index)=> { %>
+               <div class="business-feature-step" data-aos="fade-up">
+                  <div class="business-feature-icon">
+                     <%- feature.image %>
+                  </div>
+                  <div class="business-feature-text">
+                     <%= feature.content %>
+                  </div>
+               </div>
+               <% }) %>
+            <!-- <div class="business-feature-step" data-aos="fade-up">
                <div class="business-feature-icon">
+
                   <svg width="43" height="48" viewBox="0 0 43 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                      <path
                         d="M34.0842 33.9946L29.6412 32.5139L28.0462 29.3238C29.4831 27.8612 30.4808 25.926 30.8173 23.9075L31.0162 22.7152H32.7174C34.2637 22.7152 35.5217 21.4572 35.5217 19.9109V14.0217C35.5217 6.29015 29.2316 0 21.5 0C13.7486 0 7.47826 6.27211 7.47826 14.0217V19.9109C7.47826 21.1295 8.25983 22.1686 9.34783 22.5544V23.65C9.34783 25.1963 10.6059 26.4544 12.1522 26.4544H12.9731C13.3772 27.3344 13.9052 28.152 14.5411 28.8824C14.6738 29.0343 14.8111 29.1821 14.953 29.3255L13.3588 32.5139L8.91568 33.9947C3.7496 35.7173 0 41.1558 0 46.9261C0 47.4424 0.418502 47.8609 0.934783 47.8609H42.0652C42.5814 47.8609 43 47.4424 43 46.9261C43 41.1558 39.2505 35.7173 34.0842 33.9946ZM33.6522 19.9109C33.6522 20.4263 33.2328 20.8457 32.7174 20.8457H31.2907C31.5283 19.0051 31.6867 17.0464 31.7504 15.1173C31.7522 15.0629 31.7537 15.01 31.7554 14.9565H33.6522V19.9109ZM10.2826 20.8457C9.76717 20.8457 9.34783 20.4263 9.34783 19.9109V14.9565H11.2452C11.2483 15.054 11.2516 15.152 11.2553 15.2506L11.2556 15.2606V15.2614C11.3211 17.1377 11.4774 19.0455 11.7096 20.8456H10.2826V20.8457ZM12.1522 24.5848C11.6367 24.5848 11.2174 24.1654 11.2174 23.65V22.7152H11.9837L12.1826 23.9079C12.2209 24.1351 12.2671 24.3608 12.3212 24.5848H12.1522ZM11.219 13.087H9.38335C9.85682 6.82195 15.0852 1.86957 21.5 1.86957C27.8862 1.86957 33.1377 6.8213 33.6166 13.087H31.7811C31.7138 7.92443 27.5098 3.73913 22.3367 3.73913H20.6635C15.4905 3.73913 11.2862 7.92443 11.219 13.087ZM20.6634 5.6087H22.3366C26.5253 5.6087 29.9155 9.03477 29.913 13.2188C29.913 13.5129 29.9107 13.7691 29.9058 14.0021L29.9057 14.0113L28.7364 13.8442C25.56 13.3907 22.5609 11.8911 20.2914 9.62163C20.1161 9.44635 19.8783 9.34786 19.6304 9.34783C17.12 9.34783 14.7168 10.4916 13.1283 12.424C13.5198 8.61767 16.7376 5.6087 20.6634 5.6087ZM14.2592 24.5848C13.7912 23.0281 13.2558 18.4477 13.1374 15.5124L14.3956 13.8349C15.551 12.2947 17.3487 11.3378 19.261 11.228C21.7772 13.6225 25.0323 15.2038 28.4721 15.6949L29.8483 15.8916C29.7563 17.8439 29.5683 19.803 29.299 21.6048L29.2987 21.6067C29.2131 22.1859 29.1456 22.5587 28.9732 23.6C28.4782 26.5693 26.2625 29.2545 23.3377 29.9858C22.1311 30.2863 20.8693 30.2863 19.6628 29.9858C17.8365 29.5292 16.1619 28.2656 15.0812 26.4544H16.9869C17.3727 27.5423 18.4118 28.3239 19.6304 28.3239H21.5C23.0494 28.3239 24.3043 27.0691 24.3043 25.5196C24.3043 23.9733 23.0463 22.7152 21.5 22.7152H19.6304C18.3847 22.7152 17.361 23.5199 16.9853 24.5848H14.2592ZM19.5518 31.8776C20.1924 32.0129 20.8453 32.0813 21.5 32.0817C22.0114 32.0817 22.5229 32.0389 23.0287 31.9559L21.3769 33.7028L19.5518 31.8776ZM20.0918 35.0617L17.1268 38.1972C16.3099 36.6335 15.6104 35.0114 15.0339 33.3441L16.1473 31.1172L20.0918 35.0617ZM26.6942 30.8005L27.9659 33.344C27.3894 35.0118 26.6898 36.6345 25.8727 38.1986L22.6993 35.0252L26.6942 30.8005ZM18.6957 25.5196C18.6957 25.0035 19.1142 24.5848 19.6304 24.5848H21.5C22.0154 24.5848 22.4348 25.0041 22.4348 25.5196C22.4348 26.0358 22.0161 26.4544 21.5 26.4544H19.6304C19.115 26.4544 18.6957 26.035 18.6957 25.5196ZM1.90696 45.9913C2.27741 41.3605 5.3593 37.1514 9.50693 35.7682L13.4418 34.4569C14.1637 36.4526 15.0538 38.3833 16.1025 40.2283L16.1077 40.2377L16.1078 40.2379C16.8786 41.5923 17.7332 42.8972 18.6665 44.1452L19.8165 45.9913H1.90696ZM21.5 45.158L20.2322 43.1227C20.2181 43.1 20.2029 43.0778 20.1868 43.0563C19.4295 42.0455 18.7264 40.9951 18.0806 39.9096L21.4143 36.3842L24.927 39.8969C24.2792 40.9869 23.5737 42.0414 22.8134 43.0561C22.7676 43.1171 22.8325 43.0209 21.5 45.158ZM23.1835 45.9913L24.3334 44.1453C25.274 42.8878 26.1346 41.5724 26.9101 40.2069C26.9147 40.1987 26.9191 40.1902 26.9238 40.182L26.9255 40.179C27.9622 38.349 28.8429 36.4349 29.5582 34.4569L33.493 35.7682C37.6407 37.1514 40.7226 41.3605 41.093 45.9913H23.1835Z"
@@ -221,7 +218,7 @@
                   your Offline stores, Experience centres and throughout any of your branding, marketing, investor,
                   customer and employee materials.
                </div>
-            </div>
+            </div> -->
          </div>
       </section>
       <!-- ============== Section2 end =============== -->
@@ -234,36 +231,36 @@
                      <div class="about-50-left">
                         <div class="gr-slider1">
                            <div class="item">
-                              <img src="/front-end/images/slider-small-1.png" alt="img" width="194" height="228">
+                              <img src="/<%= meta_values_array.advantage_img_1 %>" alt="img" width="194" height="228">
                            </div>
                            <div class="item">
-                              <img src="/front-end/images/slider-small-2.png" alt="img" width="194" height="228">
+                              <img src="/<%= meta_values_array.advantage_img_2 %>" alt="img" width="194" height="228">
                            </div>
                         </div>
                         <div class="gr-slider2">
                            <div class="item">
-                              <img src="/front-end/images/slider-small-3.png" alt="img" width="212" height="312">
+                              <img src="/<%= meta_values_array.advantage_img_3 %>" alt="img" width="212" height="312">
                            </div>
                            <div class="item">
-                              <img src="/front-end/images/slider-small-4.png" alt="img" width="212" height="312">
+                              <img src="/<%= meta_values_array.advantage_img_4 %>" alt="img" width="212" height="312">
                            </div>
                         </div>
                      </div>
                      <div class="about-50-right">
                         <div class="gr-slider3">
                            <div class="item">
-                              <img src="/front-end/images/slider-small-5.png" alt="img" width="298" height="434">
+                              <img src="/<%= meta_values_array.advantage_img_5 %>" alt="img" width="298" height="434">
                            </div>
                            <div class="item">
-                              <img src="/front-end/images/slider-small-6.png" alt="img" width="298" height="434">
+                              <img src="/<%= meta_values_array.advantage_img_6 %>" alt="img" width="298" height="434">
                            </div>
                         </div>
                         <div class="gr-slider4">
                            <div class="item">
-                              <img src="/front-end/images/slider-small-7.png" alt="img" width="252" height="250">
+                              <img src="/<%= meta_values_array.advantage_img_7 %>" alt="img" width="252" height="250">
                            </div>
                            <div class="item">
-                              <img src="/front-end/images/slider-small-11.png" alt="img" width="252" height="250">
+                              <img src="/<%= meta_values_array.advantage_img_8 %>" alt="img" width="252" height="250">
                            </div>
                         </div>
                      </div>
@@ -273,25 +270,9 @@
                </div>
                <div class="col-md-6 my-auto">
                   <div class="about-right my-3">
-                     <h2 class="inner-main-head mb-4" data-aos="fade-up">Advantage</h2>
+                     <h2 class="inner-main-head mb-4" data-aos="fade-up"><%- meta_values_array.advantage_title %></h2>
                      <div class="common-ul advantage-list">
-                        <ul class="mb-0">
-                           <li data-aos="fade-up" data-aos-duration="1000">Provide your prospects and customers with a
-                              <strong class="zoom_animation" data-aos-duration="3000">truly</strong> objective review of
-                              the quality of your offerings.
-                           </li>
-                           <li data-aos="fade-up" data-aos-duration="4000">Listen, act and continuously <strong
-                                 class="zoom_animation">improve</strong> your offerings to better meet the needs of your
-                              customers.</li>
-                           <li data-aos="fade-up" data-aos-duration="5000">Retain, Attract, <strong
-                                 class="zoom_animation">Expand</strong> on your Customer base.</li>
-                           <li data-aos="fade-up" data-aos-duration="6000">Easily collect and display <strong
-                                 class="zoom_animation">real</strong> customer reviews across your website, social media
-                              pages, marketing campaigns and even offline locations.</li>
-                           <li data-aos="fade-up" data-aos-duration="7000"><strong
-                                 class="zoom_animation">Increase</strong> conversions and sales by displaying Bolo
-                              Grahak reviews on your website with GrahakTrust widgets.</li>
-                        </ul>
+                        <%- meta_values_array.advantage_content %>
                      </div>
                   </div>
                </div>
@@ -303,22 +284,16 @@
       <!-- ============== Section4 Start =============== -->
       <section class="main-content dont-forget-content" style="background-color: #F5F5F5;">
          <div class="container">
-            <h2 class="inner-main-head text-center mb-md-4">Don’t <span>Forget To</span></h2>
+            <h2 class="inner-main-head text-center mb-md-4"><%- meta_values_array.dont_forget_title %></h2>
             <div class="row">
                <div class="col-md-6 my-3">
                   <div class="dont-forget-box">
-                     <h4 class="zoom_animation"><strong>Keep Customer First - Har Haal mein:</strong></h4>
-                     <p class="m-0" data-aos="fade-up">Upon receiving reviews, your customer service team reads and
-                        responds to each reviewer individually. The one-to-one communication allows you to resolve
-                        issues personally, improve your service and provide affirmation to happy customers.</p>
+                     <%- meta_values_array.dont_forget_content_1 %>
                   </div>
                </div>
                <div class="col-md-6 my-3">
                   <div class="dont-forget-box" data-aos="fade-left" data-aos-delay="2000">
-                     <h4 class="zoom_animation"><strong>Stay Ahead of Disruption:</strong></h4>
-                     <p class="m-0" data-aos="zoom-in-left" data-aos-delay="2500">Your business should especially
-                        appreciate negative reviews because it will allow you to figure out what you are not doing well
-                        enough and improve (or else get disrupted by a competitor).</p>
+                     <%- meta_values_array.dont_forget_content_2 %>
                   </div>
                </div>
             </div>
@@ -332,22 +307,18 @@
             <div class="row">
                <div class="col-md-6 my-auto">
                   <div class="busi-did-left">
-                     <h2 class="inner-main-head mb-4">Did <span>you know?</span></h2>
+                     <h2 class="inner-main-head mb-4"><%- meta_values_array.did_you_know_title %></h2>
                      <div class="busi-did-left-text" data-aos="fade-right">
-                        <p class="m-0">People will choose a product with more reviews but lesser rating over a similar
-                           product with a higher rating but fewer reviews. <br> <span>Study from the Association for
-                              Psychological Science</span></p>
+                        <%- meta_values_array.did_you_know_content_1 %>
                      </div>
                      <div class="busi-did-left-text" data-aos="fade-right">
-                        <p class="m-0">Review stars in search can improve click-through rates up to 35%. <br>
-                           <span>According to an original study by ConversionXL</span>
-                        </p>
+                        <%- meta_values_array.did_you_know_content_2 %>
                      </div>
                   </div>
                </div>
                <div class="col-md-6 my-auto">
                   <div class="busi-did-right" data-aos="fade-left">
-                     <img src="/front-end/images/did-you-know-img.jpg" alt="img" width="526" height="526"
+                     <img src="/<%= meta_values_array.did_you_know_img %>" alt="img" width="526" height="526"
                         loading="lazy">
                   </div>
                </div>
@@ -361,7 +332,15 @@
          <div class="container">
             <h2 class="inner-main-head text-center mb-4">Upcoming <span>Features</span></h2>
             <div class="row">
-               <div class="col-md-6">
+               <% UpcomingBusinessFeature.forEach( (upcoming_feature,index)=> { %>
+                  <div class="col-md-6">
+                     <div class="upcoming-feature-step" data-aos="zoom-in-right" data-aos-duration="2000">
+                        <span><%= index+1 %>.</span>
+                        <%- upcoming_feature.content %>
+                     </div>
+                  </div>
+                  <% }) %>
+               <!-- <div class="col-md-6">
                   <div class="upcoming-feature-step" data-aos="zoom-in-right" data-aos-duration="2000">
                      <span>1.</span>
                      <p class="m-0">Generate an API Link to include in your email service to invite customers to leave a
@@ -419,10 +398,10 @@
                         predictive. Voice, Video and Emotion AI would crystalize insights never seen before thereby
                         giving your organisation a crucial edge at a fraction of the current cost incurred.</p>
                   </div>
-               </div>
+               </div> -->
             </div>
             <div class="business-bottom-tagline" data-aos="fade-in">
-               <h3>Join the Next-Gen Customer Experience revolution !!</h3>
+               <%- meta_values_array.bottom_content %>
             </div>
          </div>
       </section>
