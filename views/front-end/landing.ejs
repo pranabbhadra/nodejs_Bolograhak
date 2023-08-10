@@ -169,7 +169,7 @@
         </div>
         <% } %>
           <div class="text-center">
-            <a href="http://www.bolograhak.in/blog" class="view-more"><span class="position-relative"><i
+            <a href="<%= globalData.BLOG_URL %>" class="view-more"><span class="position-relative"><i
                   class="fa-solid fa-angle-right"></i>View All</span></a>
           </div>
     </div>
@@ -263,7 +263,7 @@
                     </div>
                     <div class="col-md-12">
                       <div class="rating-slider">
-                         <span><img style="width:50px;" src="" id="selected-range-emojis" /></span>
+                         <span class="emojisss"><img style="width:50px;" src="" id="selected-range-emojis" /></span>
                          <label>Rating</label>
                          <div id="rating-range" class="rating"></div>
                          <input type="text" id="ratingRange" readonly>
@@ -311,12 +311,16 @@
                     </div>
                     <div class="col-md-12">
                        <div class="review-submit d-flex justify-content-between align-items-center">
+                        <% if(currentUserData){ %>
                           <input type="submit" class="btn-default btn-warning" value="Submit">
+                        <% } else { %>
+                          <a href="#" class="btn-default btn-outline-warning login">Submit</a>
+                        <% } %>
                           <a href="/review" class="view-more mt-0"><span class="position-relative"><i class="fa-solid fa-angle-right"></i>View All Reviews</span></a>
                        </div>
                     </div>
-                    <div class="submit-message"></div>
                  </div>
+                 <div class="submit-message"></div>
               </form>
            </div>
         </div>
@@ -359,7 +363,7 @@
             <% featured_comps.forEach( company=> { %>
               <div class="item">
                 <div class="feature-box">
-                  <a href="<%= company.link %>"><img src="/<%= company.logo %>" alt="img" width="118" height="45"
+                  <a href="company/<%= company.company_id %>"><img src="/<%= company.logo %>" alt="img" width="118" height="45"
                       class="mx-auto"></a>
                   <h5>
                     <%= company.company_name %>
@@ -544,7 +548,7 @@
                 <h3>Twitter</h3>
               </div>
               <div class="social-widgets">
-                <%- meta_values_array.fb_widget %>
+                <%- meta_values_array.twitter_widget %>
               </div>
             </div>
             <div class="col-6 my-auto">
@@ -927,6 +931,7 @@
 
   //-------Review Form Submit-----------------//
   $( "#review_submit_frm" ).on( "submit", function( event ) {
+    $('.submit-message').hide();
     $('.submit-message').text('');
     event.preventDefault();
     const formData = $('#review_submit_frm').serializeArray();
@@ -950,8 +955,10 @@
         if (data.status == 'ok') {
           $('#review_submit_frm')[0].reset();
           $('.submit-message').text(data.message);
+          $('.submit-message').show();
         } else {
           $('.submit-message').text(data.message);
+          $('.submit-message').show();
         } 
         //console.log(data);
       },

@@ -506,7 +506,7 @@ exports.frontendUserLogin = (req, res) => {
                                                             status: 'ok',
                                                             data: userData,
                                                             wp_user: wp_user_data,
-                                                            message: 'Login Successfull 111222333'
+                                                            message: 'Login Successfull'
                                                         }
                                                     )
                                                 })
@@ -522,7 +522,7 @@ exports.frontendUserLogin = (req, res) => {
                                                             status: 'ok',
                                                             data: userData,
                                                             wp_user: wp_user_data,
-                                                            message: 'Login Successfull 111'
+                                                            message: 'Login Successfull'
                                                         }
                                                     )
                                                 })

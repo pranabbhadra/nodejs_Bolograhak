@@ -22,11 +22,21 @@
 
 .company-logo {
     position: relative;
+    width: 200px;
+    height: 200px;
+    border-radius: 100%;
+    overflow: hidden;
+    box-shadow: rgba(0,0,0,0.2)0 0 10px;
 }
 
 .company-logo img {
-    border: 9px solid #FFF;
-    border-radius: 50%;
+    width: 70%;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    top: 0;
 }
 
 .company-info {
