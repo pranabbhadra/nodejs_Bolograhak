@@ -295,6 +295,16 @@ router.get('/terms-conditions', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
     res.render('front-end/terms-conditions', { menu_active_id: 'terms-conditions', page_title: 'Terms of Service', currentUserData });
 });
+
+router.get('/disclaimer', checkCookieValue, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
+    res.render('front-end/disclaimer', { menu_active_id: 'disclaimer', page_title: 'Disclaimer', currentUserData });
+});
+
+router.get('/terms-of-service', checkCookieValue, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
+    res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
+});
 // Front-End Page Routes End--------------------//
 
 
@@ -1222,12 +1232,9 @@ router.get('/myprofile', checkFrontEndLoggedIn, async (req, res) => {
         console.log('editUserID: ', userId);
 
         // Fetch all the required data asynchronously
-        const [user, userMeta, countries, userRoles, states] = await Promise.all([
+        const [user, userMeta] = await Promise.all([
             comFunction.getUser(userId),
             comFunction.getUserMeta(userId),
-            comFunction.getCountries(),
-            comFunction.getUserRoles(),
-            comFunction.getStatesByUserID(userId)
         ]);
 
         // Render the 'edit-user' EJS view and pass the data
@@ -1236,21 +1243,42 @@ router.get('/myprofile', checkFrontEndLoggedIn, async (req, res) => {
             page_title: 'My Profile',
             currentUserData,
             user: user,
-            userMeta: userMeta,
-            countries: countries,
-            userRoles: userRoles,
-            states: states
+            userMeta: userMeta
         });
     } catch (err) {
         console.error(err);
         res.status(500).send('An error occurred');
     }
-    //res.render('front-end/myprofile', { menu_active_id: 'myprofile', page_title: 'My Profile', currentUserData });
 });
 
 router.get('/profile-dashboard', checkFrontEndLoggedIn, async (req, res) => {
-    let currentUserData = JSON.parse(req.userData);
-    res.render('front-end/profile-dashboard', { menu_active_id: 'profile-dashboard', page_title: 'My Dashboard', currentUserData });
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+        const userId = currentUserData.user_id;
+        console.log('editUserID: ', userId);
+
+        // Fetch all the required data asynchronously
+        const [user, userMeta, ReviewedCompanies] = await Promise.all([
+            comFunction.getUser(userId),
+            comFunction.getUserMeta(userId),
+            comFunction2.getReviewedCompanies(userId)
+        ]);
+        console.log(ReviewedCompanies);
+        // Render the 'edit-user' EJS view and pass the data
+        res.render('front-end/profile-dashboard', {
+            menu_active_id: 'profile-dashboard',
+            page_title: 'My Dashboard',
+            currentUserData,
+            user: user,
+            userMeta: userMeta,
+            ReviewedCompanies: ReviewedCompanies
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+    //res.render('front-end/profile-dashboard', { menu_active_id: 'profile-dashboard', page_title: 'My Dashboard', currentUserData });
 });
 
 

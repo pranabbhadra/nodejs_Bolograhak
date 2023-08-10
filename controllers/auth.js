@@ -1509,7 +1509,7 @@ exports.updateHome = async (req, res) => {
     const form_data = req.body;
 
     const { home_id, title, meta_title, meta_desc, meta_keyword, bannner_content, for_business,
-        for_customer, cus_right_content, cus_right_button_link, cus_right_button_text,
+        for_customer, cus_right_content, cus_right_button_link, cus_right_button_text,youtube_link,
         youtube_1, youtube_2, youtube_3, youtube_4, fb_widget, twitter_widget,
         org_responsibility_content, org_responsibility_buttton_link, org_responsibility_buttton_text,
         about_us_content, about_us_button_link, about_us_button_text } = req.body;
@@ -1520,14 +1520,13 @@ exports.updateHome = async (req, res) => {
         about_us_img } = req.files;
 
     const meta_value = [bannner_content, for_business,
-        for_customer, cus_right_content, cus_right_button_link, cus_right_button_text,
+        for_customer, cus_right_content, cus_right_button_link, cus_right_button_text,youtube_link,
         youtube_1, youtube_2, youtube_3, youtube_4, fb_widget, twitter_widget,
         org_responsibility_content, org_responsibility_buttton_link, org_responsibility_buttton_text,
         about_us_content, about_us_button_link, about_us_button_text];
 
     const meta_key = ['bannner_content', 'for_business',
-        'for_customer', 'cus_right_content', 'cus_right_button_link', 'cus_right_button_text',
-        'youtube_1', 'youtube_2', 'youtube_3', 'youtube_4', 'fb_widget', 'twitter_widget',
+        'for_customer', 'cus_right_content', 'cus_right_button_link', 'cus_right_button_text','youtube_link', 'youtube_1', 'youtube_2', 'youtube_3', 'youtube_4', 'fb_widget', 'twitter_widget',
         'org_responsibility_content', 'org_responsibility_buttton_link', 'org_responsibility_buttton_text',
         'about_us_content', 'about_us_button_link', 'about_us_button_text'];
 

@@ -141,6 +141,26 @@ async function getUpcomingBusinessFeature() {
   }
 };
 
+// Function to fetch user Reviewed Companies from the  reviews table
+function getReviewedCompanies(userId) {
+  return new Promise((resolve, reject) => {
+    const reviewed_companies_query = `
+            SELECT reviews.company_id, reviews.customer_id, c.company_name as company_name, c.logo as logo
+            FROM  reviews 
+            JOIN company c ON reviews.company_id = c.ID
+            WHERE reviews.customer_id = ?
+            GROUP BY  reviews.company_id
+        `;
+    db.query(reviewed_companies_query, [userId], (err, result) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
+
 module.exports = {
   getFaqPage,
   getFaqCategories,
@@ -150,5 +170,6 @@ module.exports = {
   deleteBusinessFeature,
   deleteBusinessUpcomingFeature,
   getBusinessFeature,
-  getUpcomingBusinessFeature
+  getUpcomingBusinessFeature,
+  getReviewedCompanies
 };
