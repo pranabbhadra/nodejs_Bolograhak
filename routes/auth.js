@@ -52,6 +52,18 @@ router.post('/create-faq', authController.createFAQ);
 // Update FAQ
 router.put('/update-faq', authController.updateFAQ);
 
+// Update FAQ Images
+router.post('/faq_images',upload.fields([
+    { name: 'banner_img_1', maxCount: 1 },
+    { name: 'banner_img_2', maxCount: 1 },
+    { name: 'banner_img_3', maxCount: 1 },
+    { name: 'banner_img_4', maxCount: 1 },
+    { name: 'banner_img_5', maxCount: 1 },
+    { name: 'banner_img_6', maxCount: 1 },
+    { name: 'banner_img_7', maxCount: 1 },
+    { name: 'banner_img_8', maxCount: 1 }
+]), authController.updateFAQImages);
+
 // Update Contacts
 router.post('/update-contact', authController.updateContacts);
 
@@ -141,7 +153,6 @@ router.post('/update-business', upload.fields([
     { name: 'banner_img_7', maxCount: 1 },
     { name: 'banner_img_8', maxCount: 1 },
 
-    { name: 'feature_icon', maxCount: 10 },
 
     { name: 'advantage_img_1', maxCount: 1 },
     { name: 'advantage_img_2', maxCount: 1 },

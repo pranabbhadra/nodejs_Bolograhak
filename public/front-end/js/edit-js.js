@@ -812,4 +812,16 @@ jQuery(function($){
     $(".inner-page-heading").addClass("category-head");
    }
   // ///////////////////////////// category page class add end
+  //  ================ Faq page tabination =============
+
+  $('.faq-categories').find('.faq-cat-body ul li a').click(function(e){
+    e.preventDefault();
+    var clickedIndex = $(this).parent().index();
+    $(this).parent().toggleClass('active');
+    $(this).parent().siblings().removeClass('active');
+    $('.custom-accordion').eq(clickedIndex).show().siblings().hide();
+  });
+  $('.faq-categories').find('.faq-cat-body ul li:first a').trigger('click');
+
+  //  ================ Faq page tabination =============     
   });

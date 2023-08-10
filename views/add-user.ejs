@@ -156,6 +156,20 @@
                                     </div>
                                     <!--end::Col-->
                                 </div>
+                                <div class="row mb-6">
+                                    <!--begin::Label-->
+                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
+                                        <span class="">Alternate Number</span>
+                                    </label>
+                                    <!--end::Label-->
+                                    <!--begin::Col-->
+                                    <div class="col-lg-8 fv-row">
+                                        <input type="tel" name="alternate_phone"
+                                            class="form-control form-control-lg form-control-solid"
+                                            placeholder="Alternate Number" value="" />
+                                    </div>
+                                    <!--end::Col-->
+                                </div>
                                 <!--end::Input group-->
                                 <!--begin::Input group-->
                                 <div class="row mb-6">
@@ -330,6 +344,45 @@
                                             <!--end::Option-->
                                         </div>
                                         <!--end::Options-->
+                                    </div>
+                                    <!--end::Col-->
+                                </div>
+                                <div class="row mb-6">
+                                    <!--begin::Label-->
+                                    <label class="col-lg-4 col-form-label required fw-bold fs-6">Marital Status</label>
+                                    <!--end::Label-->
+                                    <!--begin::Col-->
+                                    <div class="col-lg-8 fv-row">
+                                        <!--begin::Options-->
+                                        <div class="d-flex align-items-center mt-3">
+                                            <!--begin::Option-->
+                                            <label class="form-check form-check-inline form-check-solid me-5">
+                                                <input class="form-check-input" name="marital_status" type="radio"
+                                                    value="Married" />
+                                                <span class="fw-bold ps-2 fs-6">Married</span>
+                                            </label>
+                                            <!--end::Option-->
+                                            <!--begin::Option-->
+                                            <label class="form-check form-check-inline form-check-solid">
+                                                <input class="form-check-input" name="marital_status" type="radio"
+                                                    value="Unmarried" />
+                                                <span class="fw-bold ps-2 fs-6">Unmarried</span>
+                                            </label>
+                                        </div>
+                                        <!--end::Options-->
+                                    </div>
+                                    <!--end::Col-->
+                                </div>
+                                <div class="row mb-6">
+                                    <!--begin::Label-->
+                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
+                                        <span class="">About Me</span>
+                                    </label>
+                                    <!--end::Label-->
+                                    <!--begin::Col-->
+                                    <div class="col-lg-8 fv-row">
+                                        <textarea name="about"
+                                        class="form-control form-control-lg form-control-solid" placeholder="Short description about you"></textarea>
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -524,6 +577,14 @@
                                             }
                                         }
                                     },
+                                    alternate_phone: {
+                                        validators: {
+                                            regexp: {
+                                                regexp: /^\d{10}$/, // Regular expression pattern for a 10-digit phone number
+                                                message: 'The phone number is not valid'
+                                            }
+                                        }
+                                    },
                                     address: {
                                         validators: {
                                             notEmpty: {
@@ -563,6 +624,13 @@
                                         validators: {
                                             notEmpty: {
                                                 message: 'Gender is required'
+                                            }
+                                        }
+                                    },
+                                    marital_status: {
+                                        validators: {
+                                            notEmpty: {
+                                                message: 'Marital Status is required'
                                             }
                                         }
                                     },
