@@ -134,8 +134,8 @@ exports.frontendUserRegister = async (req, res) => {
 
         const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
-        const userInsertQuery = 'INSERT INTO users (first_name, last_name, email, password, user_registered, user_status, user_type_id) VALUES (?, ?, ?, ?, ?, ?, ?)';
-        db.query(userInsertQuery, [first_name, last_name, email, hashedPassword, formattedDate, 1, 2], (err, userResults) => {
+        const userInsertQuery = 'INSERT INTO users (first_name, last_name, email, phone, password, register_from, external_registration_id, user_registered, user_status, user_type_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+        db.query(userInsertQuery, [first_name, last_name, email, '', hashedPassword, 'web', '', formattedDate, 1, 2], (err, userResults) => {
             if (err) {
                 console.error('Error inserting user into "users" table:', err);
                 return res.send(
@@ -148,8 +148,8 @@ exports.frontendUserRegister = async (req, res) => {
             }
 
             // Insert the user into the "user_customer_meta" table
-            const userMetaInsertQuery = 'INSERT INTO user_customer_meta (user_id, address, country, state, city, zip, review_count, date_of_birth, occupation, gender, profile_pic) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-            db.query(userMetaInsertQuery, [userResults.insertId, '', '', '', '', '', 0, '', '', '', ''], (err, metaResults) => {
+            const userMetaInsertQuery = 'INSERT INTO user_customer_meta (user_id, address, country, state, city, zip, review_count, date_of_birth, occupation, gender, profile_pic, alternate_phone, marital_status, about) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+            db.query(userMetaInsertQuery, [userResults.insertId, '', '', '', '', '', 0, '', '', '', '', '', '', ''], (err, metaResults) => {
                 if (err) {
                     return res.send(
                         {
