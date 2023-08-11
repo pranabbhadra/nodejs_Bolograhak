@@ -137,7 +137,7 @@ class MO_OAuth_Client_Admin_Menu {
 
 		$mo_oauth_debug = get_option( 'mo_oauth_debug' );
 
-		if ( $mo_log_enable ) {
+		if ( 'on' === $mo_log_enable ) {
 			$key            = 604800;
 			$mo_debug_times = get_option( 'mo_debug_time' );
 			$mo_curr_time   = time();
@@ -155,7 +155,7 @@ class MO_OAuth_Client_Admin_Menu {
 			delete_option( 'mo_oauth_debug' );
 		}
 
-		if ( ( $mo_log_enable && ! $mo_oauth_debug ) || ( $mo_log_enable && ( ! file_exists( $log_file_path ) ) ) ) {
+		if ( ( 'on' === $mo_log_enable && ! $mo_oauth_debug ) || ( 'on' === $mo_log_enable && ( ! file_exists( $log_file_path ) ) ) ) {
 
 				update_option( 'mo_oauth_debug', 'mo_oauth_debug' . uniqid() );
 				$mo_oauth_debugs = get_option( 'mo_oauth_debug' );
@@ -183,23 +183,21 @@ class MO_OAuth_Client_Admin_Menu {
 		</div>
 		<div class="justify-content-end mo_oauth_wrapper">
 			<h1 class="mo_oauth_h1">
-			<a id="license_upgrade" class="add-new-h2 add-new-hover mo_premium-plans-btn mo_oauth_header_link"
+			<a id="license_upgrade" class="mo-add-new-hover mo_premium-plans-btn mo_oauth_header_link"
 			href="<?php echo ! empty( $_SERVER['REQUEST_URI'] ) ? esc_attr( add_query_arg( array( 'tab' => 'licensing' ), sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) ) ) : ''; ?>">
-			<img class="premium-img mo_oauth_header_link_image" style="margin: 0px;" src="<?php echo esc_url( dirname( plugin_dir_url( __FILE__ ) ) ); ?>/images/prem.png" alt="miniOrange Premium Plans Logo">
+			<img class="mo_oauth_header_link_image" style="margin: 0px;" src="<?php echo esc_url( dirname( plugin_dir_url( __FILE__ ) ) ); ?>/images/prem.png" alt="miniOrange Premium Plans Logo">
 			<?php esc_html_e( 'Premium Plans', 'miniorange-login-with-eve-online-google-facebook' ); ?></a>
-			<?php if ( 'troubleshoot' !== $currenttab ) { ?>
-			<a id="faq_button_id" class="add-new-h2 mo_generic-btns-on-top mo_oauth_header_link"
+			<a id="faq_button_id" class="mo_generic-btns-on-top mo_oauth_header_link"
 			href="<?php echo ! empty( $_SERVER['REQUEST_URI'] ) ? esc_attr( add_query_arg( array( 'tab' => 'troubleshoot' ), sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) ) ) : ''; ?>"><span>
-			<img class="premium-img mo_oauth_header_link_image" src="<?php echo esc_url( dirname( plugin_dir_url( __FILE__ ) ) . '/images/troubleshooting.png' ); ?>" alt="miniOrange Troubleshooting Logo"><?php esc_html_e( 'Troubleshooting', 'miniorange-login-with-eve-online-google-facebook' ); ?></span></a>
-			<?php } ?>
-		<a id="form_button_id" class="add-new-h2 mo_generic-btns-on-top mo_oauth_header_link" href="https://wordpress.org/support/plugin/miniorange-login-with-eve-online-google-facebook/"
+			<img class="mo_oauth_header_link_image" src="<?php echo esc_url( dirname( plugin_dir_url( __FILE__ ) ) . '/images/troubleshooting.png' ); ?>" alt="miniOrange Troubleshooting Logo"><?php esc_html_e( 'Troubleshooting', 'miniorange-login-with-eve-online-google-facebook' ); ?></span></a>
+			<a id="form_button_id" class="mo_generic-btns-on-top mo_oauth_header_link" href="https://wordpress.org/support/plugin/miniorange-login-with-eve-online-google-facebook/"
 			target="_blank"><span>
-			<img class="premium-img mo_oauth_header_link_image" src="<?php echo esc_url( dirname( plugin_dir_url( __FILE__ ) ) ); ?>/images/ask-questions.png"
+			<img class="mo_oauth_header_link_image" src="<?php echo esc_url( dirname( plugin_dir_url( __FILE__ ) ) ); ?>/images/ask-questions.png"
 				alt="miniOrange Ask Questions Logo">
 			<?php esc_html_e( 'Ask questions on our forum', 'miniorange-login-with-eve-online-google-facebook' ); ?></span></a>
-		<a id="features_button_id " class="add-new-h2 mo_generic-btns-on-top mo_oauth_header_link"
+			<a id="features_button_id " class="mo_generic-btns-on-top mo_oauth_header_link"
 			href="https://developers.miniorange.com/docs/oauth/wordpress/client" target="_blank"><span>
-			<img class="premium-img mo_oauth_header_link_image" src="<?php echo esc_url( dirname( plugin_dir_url( __FILE__ ) ) . '/images/feature-details.png' ); ?>"
+			<img class="mo_oauth_header_link_image" src="<?php echo esc_url( dirname( plugin_dir_url( __FILE__ ) ) . '/images/feature-details.png' ); ?>"
 				alt="miniOrange Feature Details Logo"><?php esc_html_e( 'Feature Details', 'miniorange-login-with-eve-online-google-facebook' ); ?></span></a>
 	</h1>
 	</div>
@@ -227,7 +225,7 @@ class MO_OAuth_Client_Admin_Menu {
 </div>
 </div>
 <style>
-.add-new-hover:hover {
+.mo-add-new-hover:hover {
 	color: white !important;
 }
 </style>

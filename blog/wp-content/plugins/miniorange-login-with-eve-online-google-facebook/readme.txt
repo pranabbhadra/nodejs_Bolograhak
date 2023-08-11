@@ -2,9 +2,9 @@
 Contributors: cyberlord92
 Tags: SSO, oauth 2.0, login, Single Sign-On, OpenId
 Requires at least: 3.0.1
-Tested up to: 6.2
+Tested up to: 6.3
 Requires PHP: 5.4
-Stable tag: 6.24.7
+Stable tag: 6.24.9
 License: MIT/Expat
 License URI: https://docs.miniorange.com/mit-license
 
@@ -313,6 +313,14 @@ Please email us at <a href="mailto:info@xecurify.com" target="_blank">info@xecur
 7. WordPress Dashboard Login / SSO
 
 == Changelog ==
+= 6.24.9 =
+* Added WP 6.3 Compatibility
+* Added full featured Demo environment
+
+= 6.24.8 =
+* Updated troubleshooting feature
+* UI changes for simpler configuration
+* Updated Onelogin APIs
 
 = 6.24.7 =
 * UI changes for easy configuration

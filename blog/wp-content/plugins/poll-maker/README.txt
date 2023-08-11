@@ -4,7 +4,7 @@ Donate link: https://ays-pro.com/wordpress/poll-maker
 Tags:  poll maker, WordPress Poll, vote, rating, elections, poll plugin, create poll, polls, polling, voting
 Requires at least: 4.0
 Tested up to: 6.2.2
-Stable tag: 4.6.6
+Stable tag: 4.7.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -240,7 +240,7 @@ Searching on *how to make a poll on your website?* Feel free to check out the fo
 * As for the poll, it is time-saving, easy to use, results in more data, anonymous users, and you can custom yourself.
 That is why this way of getting information is more flexible and useful than a survey.
 This *WordPress easy polling plugin* also has a widget possibility, and while installing the plugin, the widget is also installed. Many websites are most likely to place the form on the sidebar keeping it dominant. So your clients do not need to waste their time participating in some elections; they just do it on the spot with one click, which provides a huge amount of results. And also, the dashboard gives information about users' IP addresses which is the most important thing in the modern world nowadays.
-By the way, we have created an awesome [Survey Maker plugin for WordPress](https://ays-pro.com/wordpress/survey-maker?utm_source=wordpress&utm_medium=ays-plugins&utm_campaign=poll).
+By the way, we have created an awesome [Survey Maker plugin for WordPress](https://ays-pro.com/wordpress/survey-maker/).
 
 = Why choose our plugin? =
 * Easy to use and time-saving
@@ -356,8 +356,34 @@ By this, you will save your already created data (quizzes with questions). You c
 
 == Changelog ==
 
+= 4.7.2 =
+* Fixed: Some styles on the admin dashboard
+* Fixed: Security issue on the front page
+
+= 4.7.1 =
+* Improved: Dashboard styles
+* Fixed: Security issue on the admin dashboard
+
+= 4.7.0 =
+* Added: Detailed Popup for the poll each result
+* Changed: The banner style on the admin dashboard
+* Fixed: Some styles on the admin dashboard 
+
+= 4.6.9 =
+* Fixed: Some styles on the admin dashboard
+* Improved: Min/Max values for the Allow multivote option
+
+= 4.6.8 =
+* Added: Status filter on the polls list table
+* Improved: Deactivate popup style on the plugins page
+
+= 4.6.7 =
+* Added: User phone column on the poll results list table
+* Fixed: User name user email and vote reason displaying issue on the poll results list table
+* Fixed: Some issues on the front page
+
 = 4.6.6 =
-* Fixed: Database error  on the polls results page
+* Fixed: Database error on the polls results page
 * Fixed: Some styles on the admin dashboard
 
 = 4.6.5 =

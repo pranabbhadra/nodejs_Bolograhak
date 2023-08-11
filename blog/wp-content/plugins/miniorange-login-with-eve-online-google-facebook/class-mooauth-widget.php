@@ -427,7 +427,7 @@ function mooauth_login_validate() {
 
 				if ( empty( $currentappname ) ) {
 					MOOAuth_Debug::mo_oauth_log( 'ERROR : No request found for this application.' );
-					exit( 'No request found for this application.' );
+					return;
 				}
 
 				$appslist      = get_option( 'mo_oauth_apps_list' );
@@ -607,6 +607,11 @@ function mooauth_handle_user_registration( $username ) {
 		wp_die( 'You are not allowed to login. Please contact your administrator' );
 	}
 
+	if ( preg_match( '/[+,\/~!#$%^&*():={}|;">?\/\\\\\/\\\\\']/', $username ) ) {
+		MOOAuth_Debug::mo_oauth_log( 'ERROR : The username received has a special character' );
+		wp_die( 'You are not allowed to login. Please contact your administrator' );
+	}
+	
 	$user_id = wp_create_user( $username, $random_password );
 	$user    = get_user_by( 'login', $username );
 	wp_update_user( array( 'ID' => $user_id ) );

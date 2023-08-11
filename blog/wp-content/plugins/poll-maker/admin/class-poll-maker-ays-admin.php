@@ -714,6 +714,260 @@ class Poll_Maker_Ays_Admin {
 		wp_die();
 	}
 
+	public function apm_show_results() {
+		global $wpdb;
+		$results_table = $wpdb->prefix . "ayspoll_reports";
+		// $polls_obj     = new Polls_List_Table($this->plugin_name);
+		if (isset($_POST['action']) && $_POST['action'] == 'apm_show_results') {
+
+			$id         = isset($_POST['result']) ? absint($_POST['result']) : 0;
+			$is_details = isset($_POST['is_details']) && absint($_POST['is_details']) > 0 ? true : false;
+			$row        = '';
+			$wpdb->update($results_table,
+				array('unread' => 0),
+				array('id' => $id),
+				array('%d'),
+				array('%d')
+			);
+			if ($id > 0 && $is_details) {
+				$result = $wpdb->get_row("SELECT * FROM $results_table WHERE id=$id", "ARRAY_A");
+				$multivote_res = false;
+				$result['multi_answer_id'] = json_decode($result['multi_answer_ids']);
+				if (isset($result['multi_answer_id']) && count($result['multi_answer_id']) > 1) {
+					$multivote_res = true;
+				}
+				$multivote_answers = array();
+				if ($multivote_res) {
+					foreach ($result['multi_answer_id'] as $m_key => $m_val) {
+						$multi_answer    = $wpdb->get_row("SELECT * FROM {$wpdb->prefix}ayspoll_answers WHERE id=".$m_val, "ARRAY_A");
+						$multivote_answers[] = $multi_answer['answer'];
+					}
+					$answ_poll_id = $multi_answer['poll_id'];
+				} else {
+					$answer     = $wpdb->get_row("SELECT * FROM {$wpdb->prefix}ayspoll_answers WHERE id={$result['answer_id']}", "ARRAY_A");
+					$multivote_answers[] = $answer['answer'];
+					$answ_poll_id = $answer['poll_id'];
+				}
+
+				$poll       = $this->get_poll_by_id($answ_poll_id);
+				$user_ip    = $result['user_ip'];
+				$info = ($result['other_info'] == '' || $result['other_info'] === null || $result['other_info'] === 0) ? array() : json_decode($result['other_info'], true);
+
+				$time       = $result['vote_date'];
+				$user_email = $result['user_email'];
+				$country = '';
+				$region = '';
+				$city = '';
+            	$json    = isset($user_ip) && $user_ip != '' ? json_decode(file_get_contents("http://ipinfo.io/{$user_ip}/json")) : null;
+
+				if ($json !== null) {
+					$country = isset($json->country) && $json->country != '' ? $json->country : '';
+					$region = isset($json->region) && $json->region != '' ? $json->region : '';
+					$city = isset($json->city) && $json->city != '' ? $json->city : '';
+				}
+				$from    = "$city, $region, $country, $user_ip";
+				$row     = '<tr><td colspan="4"><h1>' . __('Poll Information', $this->plugin_name) . "</h1></td></tr>
+                    <tr class='ays_result_element'>
+                        <td>". __('Poll Title', $this->plugin_name)."</td>
+                        <td>{$poll['title']}</td>
+                        <td></td>
+                        <td></td>
+                    </tr>";
+				$row     .= "<tr class='ays_result_element'>
+                        <td>". __('Poll Type', $this->plugin_name)."</td>
+                        <td>" . ucfirst($poll['type']) . "</td>
+                        <td></td>
+                        <td></td>
+                    </tr>";
+				switch ( $poll['type'] ) {
+					case 'choosing':
+					case 'text':
+						$row .= "<tr class='ays_result_element'>
+                        <td>". __('Answer', $this->plugin_name)."</td>
+                        <td>" . (in_array($poll['answers'][0]['answer'], $multivote_answers) ? "<b><em>" . stripslashes($poll['answers'][0]['answer']) . "</em></b>" : stripslashes($poll['answers'][0]['answer'])) . "</td>
+                        <td></td>
+                        <td></td>
+                    </tr>";
+						foreach ( $poll['answers'] as $index => $ans ) {
+							if ($index == 0) {
+								continue;
+							}
+							$row .= "<tr class='ays_result_element'>
+                            <td></td>
+                            <td>" . (in_array($ans['answer'], $multivote_answers) ? "<b><em>" . stripslashes($ans['answer']) . "</em></b>" : stripslashes($ans['answer'])) . "</td>
+                            <td></td>
+                            <td></td>
+                        </tr>";
+						}
+						break;
+					case 'rating':
+						$row .= "<tr class='ays_result_element'>
+                            <td>". __('Answer', $this->plugin_name)."</td>
+                            <td><div class='apm-rating-res'>";
+						if ($poll['view_type'] == 'star') {
+							foreach ( $poll['answers'] as $ans ) {
+								$row .= "<i class='" . ($ans['answer'] <= $answer['answer'] ? "ays_poll_fas" : "ays_poll_far") . " ays_poll_fa-star'></i>";
+							}
+						} elseif ('emoji') {
+							$emoji = array(
+								"ays_poll_fa-dizzy",
+								"ays_poll_fa-smile",
+								"ays_poll_fa-meh",
+								"ays_poll_fa-frown",
+								"ays_poll_fa-tired",
+							);
+							foreach ( $poll['answers'] as $i => $ans ) {
+								$index = (count($poll['answers']) / 2 - $i + 1.5);
+								$row   .= "<i class='" . ($ans['answer'] == $answer['answer'] ? "ays_poll_fas " : "ays_poll_far ") . $emoji[$index] . "'></i>";
+							}
+						}
+						$row .= "</div></td>
+                            <td></td>
+                            <td></td>
+                        </tr>";
+						break;
+					case 'voting':
+						$row   .= "<tr class='ays_result_element'>
+                            <td>". __('Answer', $this->plugin_name)."</td>
+                            <td><div class='apm-rating-res'>";
+						$icons = array(
+							'hand'  => array(
+								"ays_poll_fa-thumbs-up",
+								"ays_poll_fa-thumbs-down",
+							),
+							'emoji' => array(
+								"ays_poll_fa-smile",
+								"ays_poll_fa-frown",
+							),
+						);
+						$view  = $poll['view_type'];
+						$row   .= "<i class='" . (1 == $answer['answer'] ? "ays_poll_fas " : "ays_poll_far ") . $icons[$view][0] . "'></i>
+                        <i class='" . (-1 == $answer['answer'] ? "ays_poll_fas " : "ays_poll_far ") . $icons[$view][1] . "'></i>";
+						$row   .= "</div></td>
+                            <td></td>
+                            <td></td>
+                        </tr>";
+						break;
+				}
+				$row .= "<tr class='ays_result_element'>
+                        <td>". __('Answer Datetime', $this->plugin_name)."</td>
+                        <td>" . (date('H:i:s d.m.Y', strtotime($time))) . "</td>
+                        <td></td>
+                        <td></td>
+                    </tr>";
+				$row .= "<tr class='hr-line'><td colspan='4'><hr></td></tr>";
+				$row .= '<tr><td colspan="4"><h1>' . __('User Information', $this->plugin_name) . "</h1></td></tr>";
+					if ($json !== null) {
+                    	$row .= "<tr class='ays_result_element'>
+		                            <td>". __('User IP', $this->plugin_name)."</td>
+		                            <td>$from</td>
+		                            <td></td>
+		                            <td></td>
+		                        </tr>";
+                    }
+                if(!empty($user_email)){
+                	$row .= "<tr class='ays_result_element'>
+		                        <td>". __('User E-mail', $this->plugin_name)."</td>
+		                        <td>$user_email</td>
+		                        <td></td>
+		                        <td></td>
+		                	 </tr>";
+            	}
+				foreach ( $info as $key => $value ) {
+					if ($key == 'not_show_user_id') {
+						continue;
+					}
+
+					$row .= "<tr class='ays_result_element'>
+                            <td>". $key ."</td>
+                            <td>". $value ."</td>
+                            <td></td>
+                            <td></td>
+                        </tr>";
+				}
+			}
+			ob_end_clean();
+			$ob_get_clean = ob_get_clean();
+			echo json_encode([
+				"status" => true,
+				"rows"   => $row,
+			]);
+			wp_die();
+		}
+	}
+
+	public function get_poll_by_id( $id, $decode = true ) {
+		global $wpdb;
+
+		$sql  = "SELECT * FROM {$wpdb->prefix}ayspoll_polls WHERE id=" . absint(intval($id));
+		$poll = $wpdb->get_row($sql, 'ARRAY_A');
+		if (empty($poll)) {
+			return array();
+		}
+		$sql             = "SELECT * FROM {$wpdb->prefix}ayspoll_answers WHERE poll_id=" . absint(intval($id)) . " ORDER BY id ASC";
+		$poll['answers'] = $wpdb->get_results($sql, 'ARRAY_A');
+
+		if ($decode) {
+			$json               = $poll['styles'];
+			$poll['styles']     = json_decode($json, true);
+			$poll['categories'] = trim($poll['categories'], ',');
+			$cats               = explode(',', $poll['categories']);
+			$poll['categories'] = !empty($cats) ? $cats : [];
+			$all_fields         = $this->get_all_formfields();
+			if (isset($poll['styles']['fields'])) {
+				$poll['fields'] = array();
+				$fields         = explode(',', $poll['styles']['fields']);
+				foreach ( $fields as $field ) {
+					$index = array_search($field, array_column($all_fields, 'slug'));
+					if ($index !== false) {
+						$poll['fields'][] = $all_fields[$index];
+					}
+				}
+			}
+			if (isset($poll['styles']['required_fields'])) {
+				$poll['required_fields'] = array();
+				$fields                  = explode(',', $poll['styles']['required_fields']);
+				foreach ( $fields as $field ) {
+					$index = array_search($field, array_column($all_fields, 'slug'));
+					if ($index !== false) {
+						$poll['required_fields'][] = $all_fields[$index];
+					}
+				}
+			}
+		}
+
+		return $poll;
+	}
+
+	public function get_all_formfields() {
+		global $wpdb;
+		$all = array(
+			array(
+				"id"        => 0,
+				"name"      => "Name",
+				"type"      => "text",
+				"slug"      => "apm-name",
+				"published" => 1,
+			),
+			array(
+				"id"        => 0,
+				"name"      => "E-mail",
+				"type"      => "email",
+				"slug"      => "apm-email",
+				"published" => 1,
+			),
+			array(
+				"id"        => 0,
+				"name"      => "Phone",
+				"type"      => "tel",
+				"slug"      => "apm_phone",
+				"published" => 1,
+			),
+		);
+
+		return $all;
+	}
+
     public function screen_option_settings() {
 		$this->polls_obj = new Polls_List_Table($this->plugin_name);
         $this->settings_obj = new Poll_Maker_Settings_Actions($this->plugin_name);
@@ -1084,7 +1338,7 @@ class Poll_Maker_Ays_Admin {
 					$ays_poll_flag += $ays_poll_two_months_flag;
 					if($ays_poll_flag == 0){
 						$ays_poll_sale_message = 'ays_poll_sale_message_'.$sale;
-						$this->ays_poll_sale_message_mega_bundle_new();
+						$this->ays_poll_sale_message_poll_pro();
 					}
 				}
 			}
@@ -1361,23 +1615,23 @@ class Poll_Maker_Ays_Admin {
 	// 	echo $content;
     // }
 
-	public function ays_poll_sale_message_mega_bundle_new(){
+	public function ays_poll_sale_message_poll_pro(){
 		$content = array();
 		$content[] = '<div id="ays-poll-winter-dicount-main">';
 			$content[] = '<div id="ays-poll-dicount-month-main" class="notice notice-success is-dismissible ays_poll_dicount_info">';
 				$content[] = '<div id="ays-poll-dicount-month" class="ays_poll_dicount_month">';
-					$content[] = '<a href="https://ays-pro.com/mega-bundle" target="_blank" class="ays-poll-sale-banner-link"><img src="' . POLL_MAKER_AYS_ADMIN_URL . '/images/mega_bundle_logo_box.png"></a>';
+					$content[] = '<a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" class="ays-poll-sale-banner-link"><img src="' . POLL_MAKER_AYS_ADMIN_URL . '/images/icons/icon-poll-128x128.png"></a>';
 
 					$content[] = '<div class="ays-poll-dicount-wrap-box">';
 
 						$content[] = '<strong>';
-							$content[] = __( "Limited Time <span style='color:#E85011;'>50%</span> SALE on <br><span><a href='https://ays-pro.com/mega-bundle' target='_blank' style='color:#E85011; text-decoration: underline;'>Mega Bundle</a></span> (Quiz + Survey + Poll)!", POLL_MAKER_AYS_ADMIN_URL );
+							$content[] = __( "Limited Time <span style='color:#E85011;'>20%</span> SALE on <span><a href='https://ays-pro.com/wordpress/poll-maker' target='_blank' style='color:#E85011; text-decoration: underline;'>Poll Maker</a></span>", POLL_MAKER_AYS_ADMIN_URL );
 						$content[] = '</strong>';
 
 						$content[] = '<br>';
 
 						$content[] = '<strong>';
-								$content[] = __( "Hurry up! <a href='https://ays-pro.com/mega-bundle' target='_blank'>Check it out!</a>", POLL_MAKER_AYS_ADMIN_URL );
+								$content[] = __( "Hurry up! <a href='https://ays-pro.com/wordpress/poll-maker' target='_blank'>Check it out!</a>", POLL_MAKER_AYS_ADMIN_URL );
 						$content[] = '</strong>';
 
 						$content[] = '<div style="position: absolute;right: 10px;bottom: 1px;" class="ays-poll-dismiss-buttons-container-for-form">';
@@ -1417,7 +1671,7 @@ class Poll_Maker_Ays_Admin {
                         $content[] = '</div>';                            
                     $content[] = '</div>';
 
-					$content[] = '<a href="https://ays-pro.com/mega-bundle" class="button button-primary ays-button" id="ays-button-top-buy-now" target="_blank" style="height: 32px; display: flex; align-items: center; font-weight: 500; " >' . __( 'Buy Now !', POLL_MAKER_AYS_NAME ) . '</a>';
+					$content[] = '<a href="https://ays-pro.com/wordpress/poll-maker" class="button button-primary ays-button" id="ays-button-top-buy-now" target="_blank" style="height: 32px; display: flex; align-items: center; font-weight: 500; " >' . __( 'Buy Now !', POLL_MAKER_AYS_NAME ) . '</a>';
 				$content[] = '</div>';
 			$content[] = '</div>';
 		$content = implode( '', $content );

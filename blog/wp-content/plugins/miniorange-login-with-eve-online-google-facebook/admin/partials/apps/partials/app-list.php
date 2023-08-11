@@ -111,22 +111,31 @@ function mooauth_client_get_app_list() {
 		} else {
 			foreach ( $appslist as $key => $app ) {
 				$currentapp = $app;
-				echo '<tr style="text-align: center; vertical-align: middle;"><td style="background: #f2f2f2;text-transform: none;">' . esc_html( $key ), ' </td><td style="background: #f2f2f2;text-transform: none;">' . esc_html( $currentapp['apptype'] ) . '</td><td><div class="mo_oauth_dropdown">
+				echo '<tr style="text-align: center; vertical-align: middle;"><td id="mo_oauth_app_nameid" style="background: #f2f2f2;text-transform: none;">' . esc_html( $key ), ' </td><td style="background: #f2f2f2;text-transform: none;">' . esc_html( $currentapp['apptype'] ) . '</td><td><div class="mo_oauth_dropdown">
 					<button class="mo_oauth_dropbtn">Select an Action | &nbsp;<i class="mo_oauth_arrow_down"></i></button>
 					<div class="mo_oauth_dropdown-content">
 					  <a href="admin.php?page=mo_oauth_settings&tab=config&action=update&app=' . esc_attr( $key ) . '">' . esc_html__( 'Edit Application', 'miniorange-login-with-eve-online-google-facebook' ) . '</a>
+					  <a href="" onclick="return mooauth_testConfiguration();">' . esc_html__( 'Test SSO Config', 'miniorange-login-with-eve-online-google-facebook' ) . '</a>
 					  <a href="admin.php?page=mo_oauth_settings&tab=attributemapping&app=' . esc_attr( $key ) . '#attribute-mapping">' . esc_html__( 'Attribute Mapping', 'miniorange-login-with-eve-online-google-facebook' ) . '</a>
 					  <a onclick="return confirm(\'Are you sure you want to delete this Application?\')" href="' . esc_url( wp_nonce_url( 'admin.php?page=mo_oauth_settings&tab=config&action=delete&app=' . esc_attr( $key ), 'mo_oauth_delete_' . esc_attr( $key ) ) ) . '">' . esc_html__( 'Delete', 'miniorange-login-with-eve-online-google-facebook' ) . '</a>
 					</div>
 				  	</div><td> ';
+				?>
+					<script>
+						function mooauth_testConfiguration(){
+							var mo_oauth_app_name = jQuery("#mo_oauth_app_nameid").html();
+							var myWindow = window.open('<?php echo esc_attr( site_url() ); ?>' + '/?option=testattrmappingconfig&app='+mo_oauth_app_name, "Test Attribute Configuration", "width=600, height=600");
+							}
+					</script>
+					<?php
 					$current_app_id = $currentapp['appId'];
 					$refapp         = mooauth_client_get_app( $current_app_id );
 					$ref_app_id     = array( 'other', 'openidconnect' );
 					$tempappname    = ! in_array( $currentapp['appId'], $ref_app_id, true ) ? $currentapp['appId'] : 'customApp';
 					$app            = mooauth_client_get_app( $tempappname );
-				if ( isset( $app->guide ) ) {
-					echo "<a class='mo_oauth_instruction_btn' href='" . esc_attr( $app->guide ) . "' target='_blank' rel='noopener'><button class='mo_oauth_instruction'><img class='mo_oauth_how_2_config' src='" . esc_attr( dirname( plugin_dir_url( __FILE__ ) ) ) . "/images/settings.png'/>" . esc_html__( 'How to Configure?', 'miniorange-login-with-eve-online-google-facebook' ) . '</button></a></td></tr>';
-				}
+					if ( isset( $app->guide ) ) {
+						echo "<a class='mo_oauth_instruction_btn' href='" . esc_attr( $app->guide ) . "' target='_blank' rel='noopener'><button class='mo_oauth_instruction'><img class='mo_oauth_how_2_config' src='" . esc_attr( dirname( plugin_dir_url( __FILE__ ) ) ) . "/images/settings.png'/>" . esc_html__( 'How to Configure?', 'miniorange-login-with-eve-online-google-facebook' ) . '</button></a></td></tr>';
+					}
 			}
 		}
 			echo '</table>';

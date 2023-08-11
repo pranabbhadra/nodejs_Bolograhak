@@ -299,9 +299,9 @@ class MO_OAuth_Wizard_Ajax {
 			update_option( 'mo_debug_check', 1 );
 			MOOAuth_Debug::mo_oauth_log( '' );
 			update_option( 'mo_debug_check', 0 );
-			update_option( 'mo_debug_enable', 1 );
+			update_option( 'mo_debug_enable', 'on' );
 		} else {
-			update_option( 'mo_debug_enable', 0 );
+			update_option( 'mo_debug_enable', 'off' );
 		}
 
 		update_option( 'mo_oauth_setup_wizard_app', wp_json_encode( $wizard_app ) );

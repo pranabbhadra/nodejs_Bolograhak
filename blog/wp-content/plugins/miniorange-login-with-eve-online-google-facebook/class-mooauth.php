@@ -80,11 +80,10 @@ class MOOAuth {
 				$debug_enable = sanitize_text_field( wp_unslash( $_POST['mo_oauth_mo_oauth_debug_check'] ) );
 			}
 			update_option( 'mo_debug_enable', $debug_enable );
-			if ( get_option( 'mo_debug_enable' ) ) {
+			if ( get_option( 'mo_debug_enable' ) === 'on' ) {
 				update_option( 'mo_debug_check', 1 );
 			}
-
-			if ( get_option( 'mo_debug_enable' ) ) {
+			if ( get_option( 'mo_debug_enable' ) === 'on' ) {
 				update_option( 'mo_oauth_debug', 'mo_oauth_debug' . uniqid() );
 				$mo_oauth_debugs = get_option( 'mo_oauth_debug' );
 				$mo_file_addr2   = dirname( __FILE__ ) . DIRECTORY_SEPARATOR . $mo_oauth_debugs . '.log';
@@ -93,6 +92,14 @@ class MOOAuth {
 				update_option( 'mo_debug_check', 1 );
 				MOOAuth_Debug::mo_oauth_log( '' );
 				update_option( 'mo_debug_check', 0 );
+			}
+			if ( get_option( 'mo_debug_enable' ) === 'off' ) {
+				$mo_oauth_debugs = get_option( 'mo_oauth_debug' );
+				$mo_file_addr2   = dirname( __FILE__ ) . DIRECTORY_SEPARATOR . $mo_oauth_debugs . '.log';
+				delete_option( 'mo_oauth_debug' );
+				if ( file_exists( $mo_file_addr2 ) ) {
+					unlink( $mo_file_addr2 );
+				}
 			}
 
 			$switch_status             = get_option( 'mo_debug_enable' );
@@ -399,7 +406,7 @@ class MOOAuth {
 				$fname            = '';
 				$lname            = '';
 				$company          = '';
-				if ( ( empty( $_POST['email'] ) || empty( $_POST['password'] ) || empty( $_POST['confirmPassword'] ) ) || $this->mo_oauth_check_empty_or_null( sanitize_text_field( wp_unslash( $_POST['email'] ) ) ) || $this->mo_oauth_check_empty_or_null( $_POST['password'] ) || $this->mo_oauth_check_empty_or_null( $_POST['confirmPassword'] ) ) { //phpcs:ignore - As we are not storing password in the database, so we can ignore sanitization
+				if ( ( empty( $_POST['email'] ) || empty( $_POST['password'] ) || empty( $_POST['confirmPassword'] ) ) || $this->mo_oauth_check_empty_or_null( sanitize_text_field( wp_unslash( $_POST['email'] ) ) ) || $this->mo_oauth_check_empty_or_null( $_POST['password'] ) || $this->mo_oauth_check_empty_or_null( $_POST['confirmPassword'] ) ) { //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- As we are not storing password in the database, so we can ignore sanitization.
 					update_option( 'message', 'All the fields are required. Please enter valid entries.' );
 					$this->mo_oauth_show_error_message();
 					return;

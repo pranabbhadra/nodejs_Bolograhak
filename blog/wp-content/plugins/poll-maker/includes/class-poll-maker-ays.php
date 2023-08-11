@@ -210,6 +210,10 @@ class Poll_Maker_Ays {
         $this->loader->add_action('wp_ajax_apm_deactivate_plugin_option_pm', $plugin_admin, 'apm_deactivate_plugin_option');
         $this->loader->add_action('wp_ajax_nopriv_apm_deactivate_plugin_option_pm', $plugin_admin, 'apm_deactivate_plugin_option');
 
+        //Results modal
+        $this->loader->add_action('wp_ajax_apm_show_results', $plugin_admin, 'apm_show_results');
+        $this->loader->add_action('wp_ajax_nopriv_apm_show_results', $plugin_admin, 'apm_show_results');
+
         // Add menu item
         $this->loader->add_action('admin_menu', $plugin_admin, 'add_plugin_admin_menu');
 

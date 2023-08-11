@@ -66,7 +66,21 @@
     </div>
     <div id="statistics" class="ays-poll-tab-content ays-poll-tab-content-active">
         <div class="results-apm" id="<?php echo 'pollResultId-' . $poll_id ?>">
-
+        </div>
+    </div>
+    <div id="ays-results-modal" class="ays-modal">
+        <div class="ays-modal-content">
+            <div class="ays-poll-preloader">
+                <img class="loader" src="<?php echo POLL_MAKER_AYS_ADMIN_URL; ?>/images/loaders/tail-spin.svg">
+            </div>
+            <div class="ays-modal-header">
+                <span class="ays-close" id="ays-close-results">&times;</span>
+                <h2><?php echo __("Details report", $this->plugin_name); ?></h2>
+            </div>
+            <div class="ays-modal-body" id="ays-results-body">
+                <table id="ays-results-table">
+                </table>
+            </div>
         </div>
     </div>
 </div>
@@ -77,9 +91,10 @@
             return this.replace(/\\(.)/mg, "$1");
         }
         <?php
-            $chart_data = $this->each_results_obj->get_poll_data_chart($_GET['poll']);
+            $poll_id = absint($_GET['poll']);
+            $chart_data = $this->each_results_obj->get_poll_data_chart($poll_id);
         ?>
-        var pollId = <?php echo $_GET['poll'] ?>;
+        var pollId = <?php echo ($poll_id) ?>;
         var chart_data =  <?= !empty($chart_data) ? json_encode($chart_data) : 0 ?>;
         var resultStatistics = $('#pollResultId-' + pollId);
 
@@ -185,8 +200,8 @@
                         '<i class="ays_poll_far ays_poll_fa-thumbs-down"></i>'
                     ];
                 
-                var percentColor = chart_data[0]['main_color'].replace(/"/g, '');
-                var resultColorsRgba = chart_data[0]['result_in_rgba'];
+                // var percentColor = chart_data[0]['main_color'].replace(/"/g, '');
+                // var resultColorsRgba = chart_data[0]['result_in_rgba'];
                 var pollType = chart_data[0]['type'].replace(/"/g, '');
                 var pollViewType = chart_data[0]['view_type'].replace(/"/g, '');
                 var enableImageShowing = (chart_data[0]['show_answer_images'] != null) ?chart_data[0]['show_answer_images'].replace(/"/g, '') : '';
@@ -194,12 +209,12 @@
                 var answerDiv = $('<div class="answer-title flex-apm"></div>')
                 var answerBar = $('<div class="answer-percent" data-percent="'+widths[i].width+'"></div>');
 
-                if (resultColorsRgba) {
-                    answerBar.attr('style', 'background-color:'+hexToRgba(percentColor)+'  !important; border: 1px solid ' + percentColor +' !important;');
-                }
-                else{
-                    answerBar.attr('style', 'background-color:'+percentColor);
-                }
+                // if (resultColorsRgba) {
+                //     answerBar.attr('style', 'background-color:'+hexToRgba(percentColor)+'  !important; border: 1px solid ' + percentColor +' !important;');
+                // }
+                // else{
+                //     answerBar.attr('style', 'background-color:'+percentColor);
+                // }
 
                 answerBar.css({
                     width: '1%'

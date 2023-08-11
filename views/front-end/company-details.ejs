@@ -29,7 +29,6 @@
           <% } %>
         </h3>
         <div class="company-rating-review">
-          <span class="rating-point">
           <% var average = companyReviewNumbers.rewiew_count.total_review_average %>
           <% if (average >= 1 && average <= 1.25) {
             var avg = 1
@@ -52,16 +51,20 @@
             } else {
             var avg = 0
             }
-            %>
-          <% if(avg!=0){%>
-          <%= avg %>                
+          %>          
+          <% var company_total_review = companyReviewNumbers.rewiew_count.total_review_count %>
+          <% if(company_total_review>10){%>
+              <span class="rating-point">
+              <% if(avg!=0){%>
+              <%= avg %>                
+              <% } %>
+              </span>
+              <% allRatingTags.forEach( tag => { %>
+                <% if(tag.review_rating_value == avg){ %>
+                  <img style="display: inline-block;" src="/<%= tag.rating_image %>" width="55">
+                <% } %>
+              <% }) %>
           <% } %>
-          </span>
-          <% allRatingTags.forEach( tag => { %>
-          <% if(tag.review_rating_value == avg){ %>
-          <img style="display: inline-block;" src="/<%= tag.rating_image %>" width="55">
-          <% } %>
-          <% }) %>  
           <%= companyReviewNumbers.rewiew_count.total_review_count %> Review<% if(companyReviewNumbers.rewiew_count.total_review_count>1){ %>s<% } %>
         </div>
         <div class="company-contact-info">
@@ -99,6 +102,7 @@
               <div class="rating-review-content">
                 <div class="rating-progress">
                   <div class="rating-prog-count">
+                    <% if(company_total_review>10){%>
                     <h2>
                       <%= avg %>
                       <% allRatingTags.forEach( tag => { %>
@@ -107,6 +111,7 @@
                         <% } %>
                       <% }) %> 
                     </h2>
+                    <% } %>
                     <p><%= companyReviewNumbers.rewiew_count.total_review_count %> Review<% if(companyReviewNumbers.rewiew_count.total_review_count>1){ %>s<% } %></p>
                   </div>
                   <div class="rating-progress-bar">
@@ -379,15 +384,27 @@
             <div class="submit-review-box">
               <h2 class="inner-main-head text-center">Submit Your <span>Review</span></h2>
               <div class="company-submit-review-form">
-                <form>
+                <form id="review_submit_frm" name="review_submit_frm" action="" method="post">
                   <div class="custom-form">
-                    <input type="text" class="form-control" name="" placeholder="Business/Institute/Establishment Name" required="">
+                    <input type="hidden" class="form-control" id="search-input-review" name="company_name" placeholder="Business/Institute/Establishment Name" required value="<%= CompanyInfo.company_name %>" readonly>
                   </div>
                   <div class="custom-form">
-                    <input type="text" class="form-control" name="address" placeholder="Location" required="">
+                    <input type="text" class="form-control" name="address" placeholder="Location" required>
                   </div>
                   <div class="custom-form">
-                    <input type="text" class="form-control" name="address" placeholder="Product/Division Name" required="">
+                    <input type="text" class="form-control" placeholder="Country" name="country" required>
+                  </div>
+                  <div class="custom-form">
+                    <input type="text" class="form-control" placeholder="State" name="state" required>
+                  </div>
+                  <div class="custom-form">
+                    <input type="text" class="form-control" placeholder="City" name="city" required>
+                  </div>
+                  <div class="custom-form">
+                    <input type="text" class="form-control" placeholder="Pin Code" name="zip" required>
+                  </div>
+                  <div class="custom-form">
+                    <input type="text" class="form-control" placeholder="Product/Division Name" name="review_title" required>
                   </div>
                   <div class="rating-slider position-relative pt-5">
                     <span class="emojisss"><img style="width:50px;" src="" id="selected-range-emojis" /></span>
@@ -437,6 +454,7 @@
                       <a href="#" class="btn-default btn-outline-warning login">Submit</a>
                     <% } %>
                   </div>
+                  <div class="submit-message"></div>
                 </form>
               </div>
             </div>
@@ -528,6 +546,8 @@
   
   //-------Review Form Submit-----------------//
   $( "#review_submit_frm" ).on( "submit", function( event ) {
+    $('.submit-message').hide();
+    $('.submit-message').text('');
     event.preventDefault();
     const formData = $('#review_submit_frm').serializeArray();
     const jsonData = {};
@@ -547,12 +567,15 @@
       data: jsonData,
       ContentType: 'application/json',
       success: function (data) {
-      // if (data.status == 'ok') {
-      //   console.log('aaa');
-      // } else {
-      //   console.log('bbb');
-      // }
-        console.log(data);
+        if (data.status == 'ok') {
+          $('#review_submit_frm')[0].reset();
+          $('.submit-message').text(data.message);
+          $('.submit-message').show();
+        } else {
+          $('.submit-message').text(data.message);
+          $('.submit-message').show();
+        } 
+        //console.log(data);
       },
       error: function (error) {
         console.log(error);

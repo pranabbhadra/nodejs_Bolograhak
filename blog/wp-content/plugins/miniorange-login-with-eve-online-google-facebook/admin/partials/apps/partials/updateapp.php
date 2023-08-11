@@ -40,6 +40,10 @@ function mooauth_client_update_app_page( $appname ) {
 	$is_valid        = '<i class="fa fa-thumbs-up" style="color:#0080007d; font-size: 30px;"></i>';
 
 	?>
+	<div>
+	<a class = 'mo_oauth_back_button'  href='<?php echo esc_attr( admin_url( 'admin.php?page=mo_oauth_settings&tab=config' ) ); ?>'>&laquo; <?php esc_html_e( ' Back to Applications List', 'miniorange-login-with-eve-online-google-facebook' ); ?></a>
+	</div>
+	<br>
 		<div id="toggle2" class="mo_panel_toggle mo_oauth_configure_header">
 			<div><h3 class="mo_oauth_configure_heading"><?php esc_html_e( 'Configure OAuth Provider', 'miniorange-login-with-eve-online-google-facebook' ); ?></h3></div>
 				<div><span >

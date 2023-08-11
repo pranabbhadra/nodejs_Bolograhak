@@ -136,56 +136,72 @@
         </div>
     </div>
 
-    <div id="tab3" class="ays-poll-tab-content" style="padding-top: 14px;">
-        <div class="col-sm-12" style="padding:20px;">
-            <div class="pro_features" style="justify-content:flex-end;">
-                <div style="margin-right:20px;">
-                    <p style="font-size:20px;">
-                        <?php echo __("This feature is available only in ", $this->plugin_name); ?>
-                        <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" title="DEVELOPER feature"><?php echo __("PRO version!!!", $this->plugin_name); ?></a>
-                    </p>
-                </div>
-            </div>
-            <a href="https://ays-pro.com/wordpress/poll-maker/" target="_blank" title="<?=__('This property available only in PRO version', $this->plugin_name);?>">
-                <img src="<?=plugins_url() . '/poll-maker/admin/images/chart_screen.png';?>" alt="Statistics" style="width:100%" >
-            </a>
-        </div>
-    </div>
-    <div id="tab4" class="ays-poll-tab-content">
-        <div class="col-sm-12" style="padding:20px; margin-top:15px;">
-            <div class="pro_features" style="justify-content:flex-end;">
-                <div style="margin-right:20px;">
-                    <p style="font-size:20px;">
-                        <?php echo __("This feature is available only in ", $this->plugin_name); ?>
-                        <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" title="DEVELOPER feature"><?php echo __("PRO version!!!", $this->plugin_name); ?></a>
-                    </p>
-                </div>
-            </div>
-            <div class='ays_lb_container'>
-                <ul class='ays_lb_ul' style='width: 100%;'>
-                    <li class='ays_lb_li'>
-                        <div class='ays_lb_pos'>Pos.</div>
-                        <div class='ays_lb_user'><?php echo __("Name", $this->plugin_name)?></div>
-                        <div class='ays_lb_score'><?php echo __("Attempts", $this->plugin_name)?></div>
-                    </li>
-                    <li class="ays_lb_li">
-                        <div class="ays_lb_pos">1.</div>
-                        <div class="ays_lb_user">admin</div>
-                        <div class="ays_lb_score">2</div>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-    <div id="tab5" class="ays-poll-tab-content">
-        <div class="col-sm-12" style="padding:15px; margin-top:15px; height:241px;">
+    <div id="tab3" class="ays-poll-tab-content" style="padding-top: 18px;">
+        <div class="form-group row" style="margin: 0px;">
+            <div class="col-sm-12 only_pro" style="padding:10px 0 0 10px;">
                 <div class="pro_features" style="justify-content:flex-end;">
-                    <div style="margin-right:20px;">
-                        <p style="font-size:20px;">
-                            <?php echo __("This feature is available only in ", $this->plugin_name); ?>
-                            <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" title="DEVELOPER feature"><?php echo __("PRO version!!!", $this->plugin_name); ?></a>
-                        </p>
+                </div>
+                <a href="https://ays-pro.com/wordpress/poll-maker/" target="_blank" title="<?=__('This property available only in PRO version', $this->plugin_name);?>">
+                    <img src="<?=plugins_url() . '/poll-maker/admin/images/chart_screen.png';?>" alt="Statistics" style="width:100%" >
+                </a>
+                <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" class="ays-poll-new-upgrade-button-link">
+                    <div class="ays-poll-new-upgrade-button-box">
+                        <div>
+                            <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/locked_24x24.svg'?>">
+                            <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/unlocked_24x24.svg'?>" class="ays-poll-new-upgrade-button-hover">
+                        </div>
+                        <div class="ays-poll-new-upgrade-button"><?php echo __("Upgrade", $this->plugin_name); ?></div>
                     </div>
+                </a>
+                <div class="ays-poll-center-big-main-button-box ays-poll-new-big-button-flex">
+                    <div class="ays-poll-center-big-main-button-box">
+                        <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" class="ays-poll-new-upgrade-button-link">
+                            <div class="ays-poll-center-new-big-upgrade-button">
+                                <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/locked_24x24.svg'?>" class="ays-poll-new-button-img-hide">
+                                <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/unlocked_24x24.svg'?>" class="ays-poll-new-upgrade-button-hover">  
+                                <?php echo __("Upgrade", $this->plugin_name); ?>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="tab4" class="ays-poll-tab-content" style="padding-top: 18px;">
+        <div class="form-group row" style="margin: 0px;">
+            <div class="col-sm-12 only_pro" style="padding:10px 0 0 10px;">
+                <div class="pro_features" style="justify-content:flex-end;">
+                </div>
+                <div class='ays_lb_container'>
+                    <ul class='ays_lb_ul' style='width: 100%;'>
+                        <li class='ays_lb_li'>
+                            <div class='ays_lb_pos'>Pos.</div>
+                            <div class='ays_lb_user'><?php echo __("Name", $this->plugin_name)?></div>
+                            <div class='ays_lb_score'><?php echo __("Attempts", $this->plugin_name)?></div>
+                        </li>
+                        <li class="ays_lb_li">
+                            <div class="ays_lb_pos">1.</div>
+                            <div class="ays_lb_user">admin</div>
+                            <div class="ays_lb_score">2</div>
+                        </li>
+                    </ul>
+                </div>
+                <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" class="ays-poll-new-upgrade-button-link">
+                    <div class="ays-poll-new-upgrade-button-box">
+                        <div>
+                            <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/locked_24x24.svg'?>">
+                            <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/unlocked_24x24.svg'?>" class="ays-poll-new-upgrade-button-hover">
+                        </div>
+                        <div class="ays-poll-new-upgrade-button"><?php echo __("Upgrade", $this->plugin_name); ?></div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div id="tab5" class="ays-poll-tab-content" style="padding-top: 18px;">
+        <div class="form-group row" style="margin: 0px;">
+            <div class="col-sm-12 only_pro" style="padding:10px 0 0 10px;">
+                <div class="pro_features" style="justify-content:flex-end;">
                 </div>
                 <table class="wp-list-table widefat fixed striped table-view-list">
                     <thead>
@@ -276,7 +292,7 @@
                         </tr>
                     </tbody>
                     <tfoot>
-                    <tr>
+                        <tr>
                             <td id="" class="manage-column column-cb check-column">
                                 <label class="screen-reader-text" for="cb-select-all-1">Select All</label>
                                 <input id="" type="checkbox">
@@ -337,7 +353,17 @@
                             </th>
                         </tr>
                     </tfoot>
-            </table>
+                </table>
+                <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" class="ays-poll-new-upgrade-button-link">
+                    <div class="ays-poll-new-upgrade-button-box">
+                        <div>
+                            <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/locked_24x24.svg'?>">
+                            <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/unlocked_24x24.svg'?>" class="ays-poll-new-upgrade-button-hover">
+                        </div>
+                        <div class="ays-poll-new-upgrade-button"><?php echo __("Upgrade", $this->plugin_name); ?></div>
+                    </div>
+                </a>
+            </div>
         </div>  
     </div>
 </div>

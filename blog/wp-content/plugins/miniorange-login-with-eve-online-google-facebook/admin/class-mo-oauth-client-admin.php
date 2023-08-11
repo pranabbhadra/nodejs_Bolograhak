@@ -118,6 +118,13 @@ class MO_OAuth_Client_Admin {
 			'?page=mo_oauth_settings&tab=licensing'
 		);
 		add_submenu_page(
+			'mo_oauth_settings',
+			'Trials',
+			'<div style="color:#fff;display: flex;font-size: 13px;font-weight:500"> ' . __( 'Free Trial', 'miniorange-login-with-eve-online-google-facebook' ) . '</div>',
+			'administrator',
+			'?page=mo_oauth_settings&tab=requestfordemo'
+		);
+		add_submenu_page(
 			$slug,
 			'Add-ons',
 			'Add-ons',

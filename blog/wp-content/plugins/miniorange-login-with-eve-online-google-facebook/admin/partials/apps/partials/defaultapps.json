@@ -39,7 +39,7 @@
 	,"video":"https://youtu.be/veEIAUs_Gwc", "send_header":"1", "send_body":"0", "setup_notice":"Please enter the okta domain in the above endpoints in place of <b><a style='color:#15c !important' href='https://plugins.miniorange.com/okta-single-sign-on-wordpress-sso-oauth-openid-connect#client-id-tenant' target='blank'>{yourOktaDomain}</a></b>."
 	},
 	"onelogin": {
-		"label":"OneLogin", "type":"openidconnect", "image":"onelogin.png", "scope": "openid name", "domain":"", "discovery":"", "authorize": "https://{site-url}.onelogin.com/oidc/auth", "token": "https://{site-url}.onelogin.com/oidc/token", "userinfo": "", "guide":"https://plugins.miniorange.com/onelogin-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"fa fa-lock"
+		"label":"OneLogin", "type":"openidconnect", "image":"onelogin.png", "scope": "openid name", "domain":"", "discovery":"", "authorize": "https://{site-url}.onelogin.com/oidc/2/auth", "token": "https://{site-url}.onelogin.com/oidc/2/token", "userinfo": "", "guide":"https://plugins.miniorange.com/onelogin-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"fa fa-lock"
 	, "video":"https://youtu.be/a4uVuRGaFLA", "send_header":"1", "send_body":"0", "setup_notice":"Please enter the OneLogin site url in the above endpoints in place of <b><a style='color:#15c !important' href='https://plugins.miniorange.com/onelogin-single-sign-on-wordpress-sso-oauth-openid-connect#Callback-url' target='blank'>{site-url}</a></b>."
 	},
 	"ping": {

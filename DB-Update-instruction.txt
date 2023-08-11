@@ -28,3 +28,11 @@ ALTER TABLE `review_rating_tags` ADD `review_rating_name` VARCHAR(100) NOT NULL 
 
 ## Add new column 'status' table : 'company_location'
 ALTER TABLE `company_location` ADD `status` ENUM('0','1') NOT NULL AFTER `zip`;
+
+
+
+**********************
+1. wp-config.php
+2. function.php
+3. .env
+4. 

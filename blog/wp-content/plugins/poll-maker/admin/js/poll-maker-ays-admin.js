@@ -130,7 +130,7 @@
         var _this = this;
 
         $(_this).attr('data-original-title', pollLangObj.clickForCopy);
-        $(_this).attr("title", pollLangObj.clickForCopy);
+        // $(_this).attr("title", pollLangObj.clickForCopy);
     });
 
     // Users limits
@@ -370,6 +370,12 @@
     $(document).on('click', '.delete a[href]', function(){
         return confirm('Do you want to delete?');
     });
+
+    // function ays_youtube_parser(url){
+    //     var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+    //     var match = url.match(regExp);
+    //     return (match&&match[7].length==11)? match[7] : false;
+    // }
     
     function openMediaUploader(e, element) {
         e.preventDefault();
@@ -860,6 +866,14 @@
 
             // Set alignment default value to center
             $(document).find('#apm-dir-center').prop('checked', true);
+        }
+
+        if (type != 'choosing') {
+            $(document).find('.ays_poll_option_only_for_choosing_type').hide();
+            
+            if (type != 'text') {
+                $(document).find('.ays_poll_option_for_choosing_type.ays_poll_option_for_text_type').hide();
+            }
         }
     }
 
@@ -3042,7 +3056,106 @@
             }
         });
         /* Select message vars galleries page | End */
-    
+
+    // Check poll result as read start
+    $(document).find('.ays-show-results').on('click', function (e) {
+        $(document).find('#ays-results-modal').fadeIn();
+        $(document).find('div.ays-poll-preloader').css('display', 'flex');
+
+        var $this = $(this);
+        var readStatus = $this.parents('tr').find("td .unread-result-badge");
+
+        $('li.toplevel_page_poll-maker-ays .apm-badge.badge-danger').each(function () {
+            var $unreadCounter = $(this);
+
+            if ($unreadCounter.text() != 0) {
+                if(readStatus.hasClass('unread-result')){
+                    var counter = +$unreadCounter.text();
+                    counter--;
+                    if(counter == 0){
+                        $unreadCounter.hide();
+                    }
+                    $unreadCounter.text(counter);
+                }
+            }
+            else{
+                $unreadCounter.hide();
+            }
+        });
+        
+        if(readStatus.hasClass('unread-result')){
+            readStatus.removeClass('unread-result');
+        }
+
+        $(this).css('font-weight' , 'normal');
+        $(this).parent().css('font-weight' , 'normal');
+        $(this).parent().siblings().css('font-weight' , 'normal');
+        var result = $(this).data('result');
+        var action = 'apm_show_results';
+        $.ajax({
+            url: poll.ajax,
+            dataType: 'json',
+            method: "post",
+            data: {
+                result: result,
+                action: action,
+                is_details: 1
+            },
+            success: function(response) {
+                if (response.status === true) {
+                    $('table#ays-results-table').html(response.rows);
+                    $(document).find('div.ays-poll-preloader').css('display', 'none');
+                }
+            }
+        });
+        e.preventDefault();
+    });
+    // Check poll result as read end
+
+    // Close results popup start
+    $(document).find('#ays-close-results').on('click', function () {
+        $(document).find('#ays-results-modal').fadeOut();
+    });
+    // Close results popup end
+
+    // Pro features start
+	// 	$(document).on('click', '.ays-form-new-upgrade-button-box.ays-form-new-upgrade-button-box-no-link, .ays-form-center-big-main-button-box.ays-form-new-upgrade-button-box-no-link, .ays-form-new-watch-video-button-box', function(e){
+    //         e.preventDefault();
+    //         var _this      = $(this).parent().find('.pro_features.pro_features_popup');
+    //         var popupModal = $(document).find('#pro-features-popup-modal');
+
+    //         var popupModal_title       = _this.find('.pro-features-popup-title');
+    //         var popupModal_title_text  = popupModal_title.text();
+
+    //         var popupModal_content     = _this.find('.pro-features-popup-content').html();
+    //         var popupModal_video_link  = _this.find('.pro-features-popup-content').attr("data-link");
+
+    //         var popupModal_button      = _this.find('.pro-features-popup-button');
+    //         var popupModal_button_text = popupModal_button.text();
+    //         var popupModal_button_link = popupModal_button.attr("data-link");
+
+
+    //         var leftSection  = popupModal.find('.ays-modal-body .pro-features-popup-modal-left-section');
+    //         var rightSection = popupModal.find('.ays-modal-body .pro-features-popup-modal-right-section');
+
+    //         rightSection.find('.pro-features-popup-modal-right-box-title').text(popupModal_title_text);
+    //         rightSection.find('.pro-features-popup-modal-right-box-content').html(popupModal_content);
+    //         rightSection.find('.pro-features-popup-modal-right-box-content').html(popupModal_content);
+
+    //         rightSection.find('.pro-features-popup-modal-right-box-link').text(popupModal_button_text);
+    //         rightSection.find('.pro-features-popup-modal-right-box-link').attr("href", popupModal_button_link);
+
+    //         if ( typeof popupModal_video_link != "undefined" && popupModal_video_link != "") {
+    //             var videoID = ays_youtube_parser(popupModal_video_link);
+    //             var iframeHTML = '<iframe width="560" height="315" src="https://www.youtube.com/embed/'+ videoID +'" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe>';
+
+    //             leftSection.html(iframeHTML);
+    //         }
+
+    //         popupModal.aysModal('show_flex');
+    //     });
+	// 	// Pro features end
+
 })(jQuery);
 
 

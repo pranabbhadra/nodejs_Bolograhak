@@ -136,3 +136,34 @@ span.ays-dashicons-star-empty:before {
 span.ays-dashicons-star-filled:before {
     content: "\f155";
 }
+
+/* Deactivate popup start */
+.swal2-popup .ays-poll-upgrade-button,
+.swal2-popup .ays-poll-cancel-button {
+    position: relative;
+}
+
+.swal2-popup .ays-poll-upgrade-button.swal2-styled.swal2-confirm:after {
+    content: "(Save Your Data)";
+    position: absolute;
+    color: #878787;
+    bottom: -18px;
+    left: 25px;
+    font-size: 12px;
+}
+
+.swal2-popup .ays-poll-cancel-button.swal2-styled.swal2-cancel:after {
+    content: "(Delete All Data)";
+    position: absolute;
+    color: #878787;
+    bottom: -18px;
+    left: 30px;
+    font-size: 12px;
+}
+
+.swal2-popup .ays-poll-upgrade-button.swal2-styled.swal2-confirm {
+    background-color: #fff !important;
+    color: #3085d6 !important;
+    border: 1px solid #3085d6 !important;
+}
+/* Deactivate popup end */
