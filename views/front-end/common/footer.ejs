@@ -134,9 +134,9 @@
     $("#user-signup").submit(function(e){
       e.preventDefault();
 
-      $('.frm-loading').show();
+      $('.frm-loading-register').show();
       $('#kt_sign_up_submit').prop('disabled', true);
-      $('.frm-error-message').text('').hide();
+      $('.frm-error-message-register').text('').hide();
       var error_message = '';
       var password = $("input[name='register_password']").val();
       var confirmPassword = $("input[name='register_confirm_password']").val();
@@ -163,18 +163,18 @@
             ContentType: 'application/json',
             success: function (data) {
               if (data.status == 'ok') {
-                $('.frm-loading').hide();
-                $('.frm-error-message').text(data.message).show();
+                $('.frm-loading-register').hide();
+                $('.frm-error-message-register').text(data.message).show();
                 $('#user-signup').trigger('reset');
               } else {
-                $('.frm-loading').hide();
-                $('.frm-error-message').text(data.message).show();
+                $('.frm-loading-register').hide();
+                $('.frm-error-message-register').text(data.message).show();
                 $('#kt_sign_up_submit').prop('disabled', false);
               }
             },
             error: function (error) {
-              $('.frm-loading').hide();
-              $('.frm-error-message').text(error).show();
+              $('.frm-loading-register').hide();
+              $('.frm-error-message-register').text(error).show();
               $('#kt_sign_up_submit').prop('disabled', false);
             }
           });          

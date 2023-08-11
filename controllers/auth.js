@@ -134,8 +134,8 @@ exports.frontendUserRegister = async (req, res) => {
 
         const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
-        const userInsertQuery = 'INSERT INTO users (first_name, last_name, email, password, user_registered, user_status, user_type_id) VALUES (?, ?, ?, ?, ?, ?, ?)';
-        db.query(userInsertQuery, [first_name, last_name, email, hashedPassword, formattedDate, 1, 2], (err, userResults) => {
+        const userInsertQuery = 'INSERT INTO users (first_name, last_name, email, password, register_from, user_registered, user_status, user_type_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+        db.query(userInsertQuery, [first_name, last_name, email, hashedPassword, 'web', formattedDate, 1, 2], (err, userResults) => {
             if (err) {
                 console.error('Error inserting user into "users" table:', err);
                 return res.send(
@@ -148,8 +148,8 @@ exports.frontendUserRegister = async (req, res) => {
             }
 
             // Insert the user into the "user_customer_meta" table
-            const userMetaInsertQuery = 'INSERT INTO user_customer_meta (user_id, address, country, state, city, zip, review_count, date_of_birth, occupation, gender, profile_pic) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-            db.query(userMetaInsertQuery, [userResults.insertId, '', '', '', '', '', 0, '', '', '', ''], (err, metaResults) => {
+            const userMetaInsertQuery = 'INSERT INTO user_customer_meta (user_id, review_count) VALUES (?, ?)';
+            db.query(userMetaInsertQuery, [userResults.insertId, 0], (err, metaResults) => {
                 if (err) {
                     return res.send(
                         {
@@ -1085,12 +1085,12 @@ exports.createCompany = (req, res) => {
 
         var insert_values = [];
         if (req.file) {
-            insert_values = [currentUserData.user_id, req.body.company_name, req.body.heading, req.file.filename, req.body.about_company, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, req.body.status, req.body.trending, formattedDate, formattedDate, req.body.tollfree_number, req.body.main_address, req.body.address_map_url];
+            insert_values = [currentUserData.user_id, req.body.company_name, req.body.heading, req.file.filename, req.body.about_company, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, req.body.status, req.body.trending, formattedDate, formattedDate, req.body.tollfree_number, req.body.main_address, req.body.main_address_pin_code, req.body.address_map_url];
         } else {
-            insert_values = [currentUserData.user_id, req.body.company_name, req.body.heading, '', req.body.about_company, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, req.body.status, req.body.trending, formattedDate, formattedDate, req.body.tollfree_number, req.body.main_address, req.body.address_map_url];
+            insert_values = [currentUserData.user_id, req.body.company_name, req.body.heading, '', req.body.about_company, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, req.body.status, req.body.trending, formattedDate, formattedDate, req.body.tollfree_number, req.body.main_address, req.body.main_address_pin_code, req.body.address_map_url];
         }
 
-        const insertQuery = 'INSERT INTO company (user_created_by, company_name, heading, logo, about_company, comp_phone, comp_email, comp_registration_id, status, trending, created_date, updated_date, tollfree_number, main_address, address_map_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+        const insertQuery = 'INSERT INTO company (user_created_by, company_name, heading, logo, about_company, comp_phone, comp_email, comp_registration_id, status, trending, created_date, updated_date, tollfree_number, main_address, main_address_pin_code, address_map_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
         db.query(insertQuery, insert_values, (err, results, fields) => {
             if (err) {
                 return res.send(
@@ -1168,8 +1168,8 @@ exports.editCompany = (req, res) => {
         }
 
         // Update company details in the company table
-        const updateQuery = 'UPDATE company SET company_name = ?, heading = ?, logo = ?, about_company = ?, comp_phone = ?, comp_email = ?, comp_registration_id = ?, status = ?, trending = ?, updated_date = ?, tollfree_number = ?, main_address = ?, address_map_url = ? WHERE ID = ?';
-        const updateValues = [req.body.company_name, req.body.heading, '', req.body.about_company, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, req.body.status, req.body.trending, formattedDate, req.body.tollfree_number, req.body.main_address, req.body.address_map_url, companyID];
+        const updateQuery = 'UPDATE company SET company_name = ?, heading = ?, logo = ?, about_company = ?, comp_phone = ?, comp_email = ?, comp_registration_id = ?, status = ?, trending = ?, updated_date = ?, tollfree_number = ?, main_address = ?, main_address_pin_code = ?, address_map_url = ? WHERE ID = ?';
+        const updateValues = [req.body.company_name, req.body.heading, '', req.body.about_company, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, req.body.status, req.body.trending, formattedDate, req.body.tollfree_number, req.body.main_address, req.body.main_address_pin_code, req.body.address_map_url, companyID];
 
         if (req.file) {
             // Unlink (delete) the previous file

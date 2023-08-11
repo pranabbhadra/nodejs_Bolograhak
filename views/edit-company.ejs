@@ -146,7 +146,7 @@
                         <div class="row mb-6">
                             <!--begin::Label-->
                             <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                <span class="required">Email</span>
+                                <span class="">Email</span>
                             </label>
                             <!--end::Label-->
                             <!--begin::Col-->
@@ -189,7 +189,19 @@
                             <!--end::Label-->
                             <!--begin::Col-->
                             <div class="col-lg-8 fv-row">
-                                <input type="tel" name="main_address" class="form-control form-control-lg form-control-solid" placeholder="Main Address" value="<%= company.main_address %>" />
+                                <input type="text" name="main_address" class="form-control form-control-lg form-control-solid" placeholder="Main Address" value="<%= company.main_address %>" />
+                            </div>
+                            <!--end::Col-->
+                        </div>
+                        <div class="row mb-6">
+                            <!--begin::Label-->
+                            <label class="col-lg-4 col-form-label fw-bold fs-6">
+                                <span class="required">Address Pin Code</span>
+                            </label>
+                            <!--end::Label-->
+                            <!--begin::Col-->
+                            <div class="col-lg-8 fv-row">
+                                <input type="text" name="main_address_pin_code" class="form-control form-control-lg form-control-solid" placeholder="Address Pin Code" value="<%= company.main_address_pin_code %>" />
                             </div>
                             <!--end::Col-->
                         </div>
@@ -201,7 +213,7 @@
                             <!--end::Label-->
                             <!--begin::Col-->
                             <div class="col-lg-8 fv-row">
-                                <input type="tel" name="address_map_url" class="form-control form-control-lg form-control-solid" placeholder="Address URL" value="<%= company.address_map_url %>" />
+                                <input type="text" name="address_map_url" class="form-control form-control-lg form-control-solid" placeholder="Address URL" value="<%= company.address_map_url %>" />
                             </div>
                             <!--end::Col-->
                         </div>
@@ -210,7 +222,7 @@
                         <div class="row mb-6">
                             <!--begin::Label-->
                             <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                <span class="required">Registration ID</span>
+                                <span class="">Registration ID</span>
                             </label>
                             <!--end::Label-->
                             <!--begin::Col-->
@@ -447,9 +459,6 @@ var KTAccountSettingsProfileDetails = function () {
                     },
                     comp_email: {
                         validators: {
-                            notEmpty: {
-                                message: 'Email address is required'
-                            },
                             emailAddress: {
                                 message: 'The value is not a valid email address'
                             }
@@ -473,18 +482,18 @@ var KTAccountSettingsProfileDetails = function () {
                             }
                         }
                     },
+                    main_address_pin_code: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Pin is required'
+                            }
+                        }
+                    },
                     address_map_url: {
                         validators: {
                             regexp: {
                                 regexp: /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/, // Regular expression pattern for URL validation
                                 message: 'The URL is not valid'
-                            }
-                        }
-                    },
-                    comp_registration_id: {
-                        validators: {
-                            notEmpty: {
-                                message: 'Registration ID is required'
                             }
                         }
                     }

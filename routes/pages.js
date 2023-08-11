@@ -30,6 +30,7 @@ const checkCookieValue = (req, res, next) => {
     // Check if the 'userData' cookie exists and has a value
     res.locals.globalData = {
         BLOG_URL: process.env.BLOG_URL,
+        MAIN_URL: process.env.MAIN_URL,
         // Add other variables as needed
     };
     if (req.cookies.user) {
@@ -69,7 +70,7 @@ router.get('', checkCookieValue, async (req, res) => {
                 await meta_values.forEach((item) => {
                     meta_values_array[item.page_meta_key] = item.page_meta_value;
                 })
-                console.log(allRatingTags);
+                //console.log(allRatingTags);
                 const featured_sql = `SELECT featured_companies.id,featured_companies.company_id,featured_companies.short_desc,featured_companies.link,company.logo,company.company_name FROM featured_companies 
                         JOIN company ON featured_companies.company_id = company.ID 
                         WHERE featured_companies.status = 'active' 
@@ -405,13 +406,23 @@ router.get('/logout', (req, res) => {
 
 // Middleware function to check if user is logged in
 async function checkLoggedIn(req, res, next) {
+    res.locals.globalData = {
+        BLOG_URL: process.env.BLOG_URL,
+        MAIN_URL: process.env.MAIN_URL,
+        // Add other variables as needed
+    };    
     const encodedUserData = req.cookies.user;
-    //const currentUserData = JSON.parse(encodedUserData);
-
     try {
         if (encodedUserData) {
+            const UserJsonData = JSON.parse(encodedUserData);
+            console.log(UserJsonData.user_type_id);
             // User is logged in, proceed to the next middleware or route handler
-            next();
+            if( UserJsonData.user_type_id==1 || UserJsonData.user_type_id==3 ){
+                next();
+            }else{
+                res.redirect('/');
+            }
+            
         } else {
             res.redirect('sign-in');
         }
@@ -1309,6 +1320,7 @@ async function checkFrontEndLoggedIn(req, res, next) {
 
     res.locals.globalData = {
         BLOG_URL: process.env.BLOG_URL,
+        MAIN_URL: process.env.MAIN_URL,
         // Add other variables as needed
     };
     const encodedUserData = req.cookies.user;
