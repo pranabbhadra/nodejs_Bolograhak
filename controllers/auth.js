@@ -149,7 +149,7 @@ exports.frontendUserRegister = async (req, res) => {
 
             // Insert the user into the "user_customer_meta" table
             const userMetaInsertQuery = 'INSERT INTO user_customer_meta (user_id, address, country, state, city, zip, review_count, date_of_birth, occupation, gender, profile_pic, alternate_phone, marital_status, about) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-            db.query(userMetaInsertQuery, [userResults.insertId, '', '', '', '', '', 0, '', '', '', '', '', '', ''], (err, metaResults) => {
+            db.query(userMetaInsertQuery, [userResults.insertId, '', 101, 41, '', '', 0, '', '', '', '', '', '', ''], (err, metaResults) => {
                 if (err) {
                     return res.send(
                         {
