@@ -6,6 +6,7 @@ const bcrypt = require('bcryptjs');
 const useragent = require('useragent');
 const requestIp = require('request-ip');
 const axios = require('axios');
+const { cache } = require('ejs');
 
 dotenv.config({ path: './.env' });
 const query = util.promisify(db.query).bind(db);
@@ -96,7 +97,13 @@ function getStatesByUserID(userId) {
 // Fetch all Company
 function getAllCompany() {
   return new Promise((resolve, reject) => {
-    db.query('SELECT * FROM company', (err, result) => {
+    db.query(
+      `SELECT c.*, GROUP_CONCAT(cat.category_name) AS categories
+      FROM company c
+      LEFT JOIN company_cactgory_relation cr ON c.ID = cr.company_id
+      LEFT JOIN category cat ON cr.category_id = cat.ID
+      GROUP BY c.ID`,
+      async(err, result) => {
       if (err) {
         reject(err);
       } else {
@@ -442,6 +449,61 @@ function getReviewRatingData(review_rating_Id) {
   });
 }
 
+async function getAllReviews() {
+  const all_review_query = `
+    SELECT r.*, c.company_name, c.logo, c.status as company_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic
+      FROM reviews r
+      JOIN company c ON r.company_id = c.ID
+      JOIN company_location cl ON r.company_location_id = cl.ID
+      JOIN users u ON r.customer_id = u.user_id
+      LEFT JOIN user_customer_meta ucm ON u.user_id = ucm.user_id
+      ORDER BY r.created_at DESC;
+  `;
+  try{
+    const all_review_results = await query(all_review_query);
+    return all_review_results;
+  }
+  catch(error){
+    console.error('Error during all_review_query:', error);
+  }
+}
+async function getCustomerReviewData(review_Id){
+  const select_review_query = `
+    SELECT r.*, c.company_name, c.logo, c.status as company_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic
+      FROM reviews r
+      JOIN company c ON r.company_id = c.ID
+      JOIN company_location cl ON r.company_location_id = cl.ID
+      JOIN users u ON r.customer_id = u.user_id
+      LEFT JOIN user_customer_meta ucm ON u.user_id = ucm.user_id
+      WHERE r.id = ?;
+  `;
+  const select_review_value = [review_Id];
+  try{
+    const select_review_results = await query(select_review_query, select_review_value);
+    return select_review_results[0];
+  }
+  catch(error){
+    console.error('Error during select_review_query:', error);
+  }
+}
+
+async function getCustomerReviewTagRelationData(review_Id){
+  const select_review_tag_query = `
+    SELECT r.id as review_id, rtr.id, rtr.tag_name
+      FROM reviews r
+      JOIN review_tag_relation rtr ON r.id = rtr.review_id
+      WHERE r.id = ?;
+  `;
+  const select_review_tag_value = [review_Id];
+  try{
+    const select_review_tag_results = await query(select_review_tag_query, select_review_tag_value);
+    return select_review_tag_results;
+  }
+  catch(error){
+    console.error('Error during select_review_tag_query:', error);
+  }
+}
+
 function getMetaValue(pageID, page_meta_key) {
   //console.log(pageID + ' ' + page_meta_key);
   db.query(`SELECT page_meta_value FROM page_meta  WHERE page_id  = ${pageID} AND  page_meta_key  =  '${page_meta_key}' `, async (err, result) => {
@@ -548,7 +610,7 @@ async function createCompany(comInfo, userId) {
             //create new address for company
             try{
               const create_company_address_query = 'INSERT INTO company_location (company_id, address, country, state, city, zip, status) VALUES (?, ?, ?, ?, ?, ?, ?)';
-              const create_company_address_values = [company_name_checking_results[0].ID, comInfo.address, comInfo.country, comInfo.state, comInfo.city, comInfo.zip, '0'];
+              const create_company_address_values = [company_name_checking_results[0].ID, comInfo.address, comInfo.country, comInfo.state, comInfo.city, comInfo.zip, '2'];
               const create_company_address_results = await query(create_company_address_query, create_company_address_values);
               if (create_company_address_results.insertId) {
                 return_data.companyID = company_name_checking_results[0].ID;
@@ -573,7 +635,7 @@ async function createCompany(comInfo, userId) {
       const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
       try {
         const create_company_query = 'INSERT INTO company (user_created_by, company_name, status, created_date, updated_date) VALUES (?, ?, ?, ?, ?)';
-        const create_company_values = [userId, comInfo.company_name, '0', formattedDate, formattedDate];
+        const create_company_values = [userId, comInfo.company_name, '2', formattedDate, formattedDate];
         const create_company_results = await query(create_company_query, create_company_values);
         // console.log('New Company:', create_company_results);
         // console.log('New Company ID:', create_company_results.insertId);
@@ -581,7 +643,7 @@ async function createCompany(comInfo, userId) {
           //create new address for company
           try{
             const create_company_address_query = 'INSERT INTO company_location (company_id, address, country, state, city, zip, status) VALUES (?, ?, ?, ?, ?, ?, ?)';
-            const create_company_address_values = [create_company_results.insertId, comInfo.address, comInfo.country, comInfo.state, comInfo.city, comInfo.zip, '0'];
+            const create_company_address_values = [create_company_results.insertId, comInfo.address, comInfo.country, comInfo.state, comInfo.city, comInfo.zip, '2'];
             const create_company_address_results = await query(create_company_address_query, create_company_address_values);
             if (create_company_address_results.insertId) {
               return_data.companyID = create_company_results.insertId;
@@ -613,7 +675,7 @@ async function createReview(reviewIfo, userId, comInfo){
   const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
 
   const create_review_query = 'INSERT INTO reviews (company_id, customer_id, company_location, company_location_id, review_title, rating, review_content, user_privacy, review_status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-  const create_review_values = [comInfo.companyID, userId, reviewIfo.address, comInfo.companyLocationID, reviewIfo.review_title, reviewIfo.rating, reviewIfo.review_content, reviewIfo.user_privacy, '1', formattedDate, formattedDate];
+  const create_review_values = [comInfo.companyID, userId, reviewIfo.address, comInfo.companyLocationID, reviewIfo.review_title, reviewIfo.rating, reviewIfo.review_content, reviewIfo.user_privacy, '2', formattedDate, formattedDate];
               
   try {
     const create_review_results = await query(create_review_query, create_review_values);
@@ -668,6 +730,111 @@ async function getlatestReviews(reviewCount){
   
 }
 
+async function editCustomerReview(req){
+  //console.log(req)
+  const ratingTagsArray = JSON.parse(req.rating_tags);
+  const currentDate = new Date();
+  // Format the date in 'YYYY-MM-DD HH:mm:ss' format (adjust the format as needed)
+  const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+
+  const update_review_query = 'UPDATE reviews SET review_title = ?, rating = ?, review_content = ?, user_privacy = ?, review_status = ?, updated_at = ? WHERE id = ?';
+  const update_review_values = [req.review_title, req.rating, req.review_content, req.user_privacy, req.review_status, formattedDate, req.review_id];
+  try {
+    const update_review_result = await query(update_review_query, update_review_values);
+
+      // Remove all tags for the review
+      const delete_tag_relation_query = 'DELETE FROM review_tag_relation WHERE review_id = ?';
+      const delete_tag_relation_values = [req.review_id];
+      try {
+        const delete_tag_relation_result = await query(delete_tag_relation_query, delete_tag_relation_values);
+        console.log('Review deleted:', delete_tag_relation_result);
+      } catch (error) {
+        return 'Error during review delete_tag_relation_query:'+error;
+      }
+
+      //insert review_tag_relation
+      if (ratingTagsArray && ratingTagsArray.length > 0) {
+        const insert_tag_relation_query = 'INSERT INTO review_tag_relation (review_id, tag_name) VALUES (?, ?)';
+        for (const tag of ratingTagsArray) {
+          const insert_tag_relation_values = [req.review_id, tag.value];
+          try {
+            const insert_tag_relation_result = await query(insert_tag_relation_query, insert_tag_relation_values);
+            //console.log('New tag relation inserted:', insert_tag_relation_result);
+          } catch (error) {
+            return 'Error during insert_tag_relation_query:'+error;
+          }
+        }
+      }
+      return true;
+  }catch (error) {
+    return 'Error during user update_review_query:'+error;
+  }  
+}
+
+async function searchCompany(keyword){
+  const get_company_query = `
+    SELECT ID, company_name, logo, about_company FROM company
+    WHERE company_name LIKE '%${keyword}%'
+    OR about_company LIKE '%${keyword}%'
+    OR heading LIKE '%${keyword}%'
+    ORDER BY created_date DESC
+  `;
+  try{
+    const get_company_results = await query(get_company_query);
+    if(get_company_results.length > 0 ){
+      console.log(get_company_results);
+      return {status: 'ok', data: get_company_results, message: get_company_results.length+' company data recived'};
+    }else{
+      return {status: 'ok', data: '', message: 'No company data found'};
+    }
+  }catch(error){
+    return {status: 'err', data: '', message: 'No company data found'};
+  }  
+}
+
+async function getCompanyReviewNumbers(companyID){
+  const get_company_rewiew_count_query = `
+    SELECT COUNT(*) AS total_review_count, AVG(rating) AS total_review_average
+    FROM reviews
+    WHERE company_id = ?`;
+  const get_company_rewiew_count_value = [companyID];
+  try{
+    const get_company_rewiew_count_result = await query(get_company_rewiew_count_query, get_company_rewiew_count_value);
+    const get_company_rewiew_rating_count_query = `
+    SELECT rating,count(rating) AS cnt_rat
+    FROM reviews
+    WHERE company_id = ?
+    group by rating ORDER by rating DESC`;
+    try{
+      const get_company_rewiew_rating_count_result = await query(get_company_rewiew_rating_count_query, get_company_rewiew_count_value);
+      return {rewiew_count:get_company_rewiew_count_result[0], rewiew_rating_count: get_company_rewiew_rating_count_result};
+    }catch(error){
+      return 'Error during user get_company_rewiew_rating_count_query:'+error;
+    }
+    
+  }catch(error){
+    return 'Error during user get_company_rewiew_count_query:'+error;
+  }
+}
+
+async function getCompanyReviews(companyID){
+  const get_company_rewiew_query = `
+    SELECT r.*, ur.first_name, ur.last_name, ur.last_name, ucm.profile_pic
+    FROM reviews r
+    JOIN users ur ON r.customer_id = ur.user_id
+    JOIN user_customer_meta ucm ON ur.user_id = ucm.user_id
+    WHERE r.company_id = ? AND r.review_status = "1"
+    ORDER BY r.created_at DESC
+    LIMIT 20`;
+  const get_company_rewiew_value = [companyID];
+  try{
+    const get_company_rewiew_result = await query(get_company_rewiew_query, get_company_rewiew_value);
+    return get_company_rewiew_result;
+  }catch(error){
+    return 'Error during user get_company_rewiew_query:'+error;
+  }
+}
+
 module.exports = {
     getUser,
     getUserMeta,
@@ -690,4 +857,11 @@ module.exports = {
     createCompany,
     createReview,
     getlatestReviews,
+    getAllReviews,
+    getCustomerReviewData,
+    getCustomerReviewTagRelationData,
+    editCustomerReview,
+    searchCompany,
+    getCompanyReviewNumbers,
+    getCompanyReviews
 };

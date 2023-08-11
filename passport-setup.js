@@ -4,7 +4,6 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const FacebookStrategy = require('passport-facebook').Strategy;
 const dotenv = require('dotenv');
-
 dotenv.config({ path: './.env' });
 // Configure the Google Strategy
 passport.use(new GoogleStrategy({

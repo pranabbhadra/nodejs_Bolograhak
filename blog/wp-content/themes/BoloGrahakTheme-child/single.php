@@ -15,8 +15,8 @@ get_header(); ?>
 			<div class="left-inner-head">
 				<div class="bread-crumb">
 					<ul>
-						<li><a href="<?php echo site_url(); ?>">Home</a></li>
-						<li><a href="<?php echo get_the_permalink(10); ?>"><?php echo get_the_title(10); ?></a></li>
+						<li><a href="http://bolograhak.in/">Home</a></li>
+						<li><a href="<?php echo site_url(); ?>"><?php echo get_the_title(10); ?></a></li>
 						<li><?php the_title(); ?></li>
 					</ul>
 				</div>

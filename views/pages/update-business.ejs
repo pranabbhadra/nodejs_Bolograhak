@@ -205,7 +205,7 @@
                                             value="" />
                                     </div>
                                     <div class="col-lg-1 fv-row">
-                                        <img src="/<%= meta_values_array.banner_img_1 %>" alt="img" width="50"
+                                        <img src="/<%= meta_values_array.banner_img_4 %>" alt="img" width="50"
                                             height="50" loading="">
                                     </div>
                                     <!--end::Col-->
@@ -223,7 +223,7 @@
                                             value="" />
                                     </div>
                                     <div class="col-lg-1 fv-row">
-                                        <img src="/<%= meta_values_array.banner_img_2 %>" alt="img" width="50"
+                                        <img src="/<%= meta_values_array.banner_img_5 %>" alt="img" width="50"
                                             height="50" loading="">
                                     </div>
                                     <!--end::Col-->
@@ -241,7 +241,7 @@
                                             value="" />
                                     </div>
                                     <div class="col-lg-1 fv-row">
-                                        <img src="/<%= meta_values_array.banner_img_3 %>" alt="img" width="50"
+                                        <img src="/<%= meta_values_array.banner_img_6 %>" alt="img" width="50"
                                             height="50" loading="">
                                     </div>
                                     <!--end::Col-->
@@ -259,7 +259,7 @@
                                             value="" />
                                     </div>
                                     <div class="col-lg-1 fv-row">
-                                        <img src="/<%= meta_values_array.banner_img_3 %>" alt="img" width="50"
+                                        <img src="/<%= meta_values_array.banner_img_7 %>" alt="img" width="50"
                                             height="50" loading="">
                                     </div>
                                     <!--end::Col-->
@@ -277,7 +277,7 @@
                                             value="" />
                                     </div>
                                     <div class="col-lg-1 fv-row">
-                                        <img src="/<%= meta_values_array.banner_img_3 %>" alt="img" width="50"
+                                        <img src="/<%= meta_values_array.banner_img_8 %>" alt="img" width="50"
                                             height="50" loading="">
                                     </div>
                                     <!--end::Col-->
@@ -303,10 +303,11 @@
                                     <div class="col-lg-8 fv-row">
                                         <input type="text" name="features_title" id=""
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="Features Title" value="" />
+                                            placeholder="Features Title" value="<%= meta_values_array.features_title %>" />
                                     </div>
                                 </div>
                                 <div id="features_main_div">
+                                    <% BusinessFeature.forEach( (feature,index)=> { %>
                                     <div class="features_repeater_div">
                                         <div class="row mb-6">
                                             <!--begin::Label-->
@@ -316,7 +317,7 @@
                                             <div class="col-lg-8 fv-row">
                                                 <textarea name="feature_content" id=""
                                                     class="form-control form-control-lg form-control-solid"
-                                                    placeholder="Feature Content" required></textarea>
+                                                    placeholder="Feature Content" required><%= feature.content %></textarea>
                                             </div>
                                         </div>
 
@@ -328,18 +329,20 @@
                                             <!--end::Label-->
                                             <!--begin::Col-->
                                             <div class="col-lg-7 fv-row">
-                                                <input type="file" name="feature_icon" id=""
+                                                <textarea name="feature_icon" id=""
                                                     class="form-control form-control-lg form-control-solid"
-                                                    placeholder="" value="" required />
+                                                    placeholder="Feature Logo" required><%= feature.image %></textarea>
                                             </div>
                                             <div class="col-lg-1 fv-row">
-                                                <img src="/<%= meta_values_array.banner_img_3 %>" alt="img" width="50"
-                                                    height="50" loading="">
+                                                <%- feature.image %>
                                             </div>
                                             <!--end::Col-->
                                         </div>
-
+                                        <% if(index > 0) { %>
+                                            <button type="button" class="btn btn-danger features_remove_btn" style="float: right;"><i class="fa fa-minus"></i></button>
+                                            <% } %>
                                     </div>
+                                    <% }) %>
                                     <button class="btn btn-primary" id="features_add_more_btn">Add More
                                         Content</button>
                                 </div>
@@ -365,7 +368,7 @@
                                     <div class="col-lg-8 fv-row">
                                         <input type="text" name="advantage_title" id=""
                                             class="form-control form-control-lg form-control-solid" placeholder="Title"
-                                            value="" />
+                                            value="<%= meta_values_array.advantage_title %>" />
                                     </div>
                                 </div>
                                 <div class="row mb-6">
@@ -378,7 +381,7 @@
                                     <div class="col-lg-8 fv-row">
                                         <textarea name="advantage_content" id="advantage_content"
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="Banner Content"><%= meta_values_array.bannner_content %></textarea>
+                                            placeholder="Banner Content"><%= meta_values_array.advantage_content %></textarea>
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -397,7 +400,7 @@
                                             value="" />
                                     </div>
                                     <div class="col-lg-1 fv-row">
-                                        <img src="/<%= meta_values_array.banner_img_1 %>" alt="img" width="50"
+                                        <img src="/<%= meta_values_array.advantage_img_1 %>" alt="img" width="50"
                                             height="50" loading="">
                                     </div>
                                     <!--end::Col-->
@@ -415,7 +418,7 @@
                                             value="" />
                                     </div>
                                     <div class="col-lg-1 fv-row">
-                                        <img src="/<%= meta_values_array.banner_img_2 %>" alt="img" width="50"
+                                        <img src="/<%= meta_values_array.advantage_img_2 %>" alt="img" width="50"
                                             height="50" loading="">
                                     </div>
                                     <!--end::Col-->
@@ -433,7 +436,7 @@
                                             value="" />
                                     </div>
                                     <div class="col-lg-1 fv-row">
-                                        <img src="/<%= meta_values_array.banner_img_3 %>" alt="img" width="50"
+                                        <img src="/<%= meta_values_array.advantage_img_3 %>" alt="img" width="50"
                                             height="50" loading="">
                                     </div>
                                     <!--end::Col-->
@@ -451,7 +454,7 @@
                                             value="" />
                                     </div>
                                     <div class="col-lg-1 fv-row">
-                                        <img src="/<%= meta_values_array.banner_img_1 %>" alt="img" width="50"
+                                        <img src="/<%= meta_values_array.advantage_img_4 %>" alt="img" width="50"
                                             height="50" loading="">
                                     </div>
                                     <!--end::Col-->
@@ -469,7 +472,7 @@
                                             value="" />
                                     </div>
                                     <div class="col-lg-1 fv-row">
-                                        <img src="/<%= meta_values_array.banner_img_2 %>" alt="img" width="50"
+                                        <img src="/<%= meta_values_array.advantage_img_5 %>" alt="img" width="50"
                                             height="50" loading="">
                                     </div>
                                     <!--end::Col-->
@@ -487,7 +490,7 @@
                                             value="" />
                                     </div>
                                     <div class="col-lg-1 fv-row">
-                                        <img src="/<%= meta_values_array.banner_img_3 %>" alt="img" width="50"
+                                        <img src="/<%= meta_values_array.advantage_img_6 %>" alt="img" width="50"
                                             height="50" loading="">
                                     </div>
                                     <!--end::Col-->
@@ -505,7 +508,7 @@
                                             value="" />
                                     </div>
                                     <div class="col-lg-1 fv-row">
-                                        <img src="/<%= meta_values_array.banner_img_3 %>" alt="img" width="50"
+                                        <img src="/<%= meta_values_array.advantage_img_7 %>" alt="img" width="50"
                                             height="50" loading="">
                                     </div>
                                     <!--end::Col-->
@@ -523,7 +526,7 @@
                                             value="" />
                                     </div>
                                     <div class="col-lg-1 fv-row">
-                                        <img src="/<%= meta_values_array.banner_img_3 %>" alt="img" width="50"
+                                        <img src="/<%= meta_values_array.advantage_img_8 %>" alt="img" width="50"
                                             height="50" loading="">
                                     </div>
                                     <!--end::Col-->
@@ -549,7 +552,7 @@
                                     <div class="col-lg-8 fv-row">
                                         <input type="text" name="dont_forget_title" id=""
                                             class="form-control form-control-lg form-control-solid" placeholder="Title"
-                                            value="" />
+                                            value="<%= meta_values_array.dont_forget_title %>" />
                                     </div>
                                 </div>
                                 <div class="row mb-6">
@@ -560,9 +563,9 @@
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-8 fv-row">
-                                        <textarea name="dont_forget_content_1" id="for_business"
+                                        <textarea name="dont_forget_content_1" id=""
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="Content 1"></textarea>
+                                            placeholder="Content 1"><%= meta_values_array.dont_forget_content_1 %></textarea>
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -576,7 +579,7 @@
                                     <div class="col-lg-8 fv-row">
                                         <textarea name="dont_forget_content_2" id="for_business"
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="Content 2"></textarea>
+                                            placeholder="Content 2"><%= meta_values_array.dont_forget_content_2 %></textarea>
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -601,7 +604,7 @@
                                     <div class="col-lg-8 fv-row">
                                         <input type="text" name="did_you_know_title" id=""
                                             class="form-control form-control-lg form-control-solid" placeholder=""
-                                            value="Title" />
+                                            value="<%= meta_values_array.did_you_know_title %>" />
                                     </div>
                                 </div>
                                 <div class="row mb-6">
@@ -614,7 +617,7 @@
                                     <div class="col-lg-8 fv-row">
                                         <textarea name="did_you_know_content_1" id=""
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="Content 1"></textarea>
+                                            placeholder="Content 1"><%= meta_values_array.did_you_know_content_1 %></textarea>
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -628,7 +631,7 @@
                                     <div class="col-lg-8 fv-row">
                                         <textarea name="did_you_know_content_2" id="for_business"
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="Content 2"></textarea>
+                                            placeholder="Content 2"><%= meta_values_array.did_you_know_content_2 %></textarea>
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -645,7 +648,7 @@
                                             value="" />
                                     </div>
                                     <div class="col-lg-1 fv-row">
-                                        <img src="/<%= meta_values_array.banner_img_3 %>" alt="img" width="50"
+                                        <img src="/<%= meta_values_array.did_you_know_img %>" alt="img" width="50"
                                             height="50" loading="">
                                     </div>
                                     <!--end::Col-->
@@ -675,6 +678,7 @@
                                     </div>
                                 </div>
                                 <div id="upcoming_features_main_div">
+                                    <% UpcomingBusinessFeature.forEach( (upcoming_feature,index)=> { %>
                                     <div class="upcoming_features_repeater_div">
                                         <div class="row mb-6">
                                             <!--begin::Label-->
@@ -686,11 +690,15 @@
                                             <div class="col-lg-8 fv-row">
                                                 <textarea name="upcoming_features_content" id=""
                                                     class="form-control form-control-lg form-control-solid"
-                                                    placeholder="Upcomming Feature Content"></textarea>
+                                                    placeholder="Upcomming Feature Content"><%= upcoming_feature.content %></textarea>
                                             </div>
                                             <!--end::Col-->
                                         </div>
+                                        <% if(index > 0) { %>
+                                        <button type="button" class="btn btn-danger upcoming_features_remove_btn" style="float: right;"><i class="fa fa-minus"></i></button>
+                                        <% } %>
                                     </div>
+                                    <% })%>
                                     <button class="btn btn-primary" id="upcoming_features_add_more_btn">Add More
                                         Content</button>
                                 </div>
@@ -715,7 +723,7 @@
                                     <div class="col-lg-8 fv-row">
                                         <textarea name="bottom_content" id=""
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="Bottom Content"></textarea>
+                                            placeholder="Bottom Content"><%= meta_values_array.bottom_content %></textarea>
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -764,7 +772,7 @@
                         validation = FormValidation.formValidation(
                             form,
                             {
-
+                                
                                 plugins: {
                                     trigger: new FormValidation.plugins.Trigger(),
                                     submitButton: new FormValidation.plugins.SubmitButton(),
@@ -827,7 +835,7 @@
                                                     }
                                                 }).then(function (result) {
                                                     if (result.isConfirmed) {
-                                                        window.location.href = "/edit-home";
+                                                        window.location.href = "/edit-business";
                                                     }
                                                 });
                                             } else {
@@ -899,7 +907,7 @@
 
                 $(document).on('click', '#features_add_more_btn', function (e) {
                     e.preventDefault();
-                    $(this).parent().append('<div class="features_repeater_div"> <div class="row mb-6"> <label class="col-lg-4 col-form-label fw-bold fs-6"> <span>Feature Content</span> </label> <div class="col-lg-8 fv-row"> <textarea name="feature_content" id="" class="form-control form-control-lg form-control-solid" placeholder="Feature Content" required></textarea> </div></div><div class="row mb-6"> <label class="col-lg-4 col-form-label fw-bold fs-6"> <span class="">Icon</span> </label> <div class="col-lg-8 fv-row"> <input type="file" name="feature_icon" id="" class="form-control form-control-lg form-control-solid" placeholder="" value="" required /> </div></div><button type="button" class="btn btn-danger features_remove_btn" style="float: right;"><i class="fa fa-minus"></i></button></div>');
+                    $(this).parent().append('<div class="features_repeater_div"> <div class="row mb-6"> <label class="col-lg-4 col-form-label fw-bold fs-6"> <span>Feature Content</span> </label> <div class="col-lg-8 fv-row"> <textarea name="feature_content" id="" class="form-control form-control-lg form-control-solid" placeholder="Feature Content" required></textarea> </div></div><div class="row mb-6"> <label class="col-lg-4 col-form-label fw-bold fs-6"> <span class="">Icon</span> </label> <div class="col-lg-8 fv-row"> <textarea name="feature_icon" class="form-control form-control-lg form-control-solid" placeholder="Feature Logo" ></textarea> </div></div><button type="button" class="btn btn-danger features_remove_btn" style="float: right;"><i class="fa fa-minus"></i></button></div>');
                     $(this).parent().append('<button class="btn btn-primary" id="features_add_more_btn">Add More Content</button>');
                     $(this).remove();
                     //initializeCKEditor($(this).parents('.main-repeater'))

@@ -18,6 +18,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const secretKey = 'grahak-secret-key';
 
 const comFunction = require('../common_function');
+const comFunction2 = require('../common_function2');
 const axios = require('axios');
 //const cookieParser = require('cookie-parser');
 
@@ -133,8 +134,8 @@ exports.frontendUserRegister = async (req, res) => {
 
         const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
-        const userInsertQuery = 'INSERT INTO users (first_name, last_name, email, password, user_registered, user_status, user_type_id) VALUES (?, ?, ?, ?, ?, ?, ?)';
-        db.query(userInsertQuery, [first_name, last_name, email, hashedPassword, formattedDate, 1, 2], (err, userResults) => {
+        const userInsertQuery = 'INSERT INTO users (first_name, last_name, email, phone, password, register_from, external_registration_id, user_registered, user_status, user_type_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+        db.query(userInsertQuery, [first_name, last_name, email, '', hashedPassword, 'web', '', formattedDate, 1, 2], (err, userResults) => {
             if (err) {
                 console.error('Error inserting user into "users" table:', err);
                 return res.send(
@@ -147,8 +148,8 @@ exports.frontendUserRegister = async (req, res) => {
             }
 
             // Insert the user into the "user_customer_meta" table
-            const userMetaInsertQuery = 'INSERT INTO user_customer_meta (user_id, address, country, state, city, zip, review_count, date_of_birth, occupation, gender, profile_pic) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-            db.query(userMetaInsertQuery, [userResults.insertId, '', '', '', '', '', 0, '', '', '', ''], (err, metaResults) => {
+            const userMetaInsertQuery = 'INSERT INTO user_customer_meta (user_id, address, country, state, city, zip, review_count, date_of_birth, occupation, gender, profile_pic, alternate_phone, marital_status, about) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+            db.query(userMetaInsertQuery, [userResults.insertId, '', 101, 41, '', '', 0, '', '', '', '', '', '', ''], (err, metaResults) => {
                 if (err) {
                     return res.send(
                         {
@@ -505,7 +506,7 @@ exports.frontendUserLogin = (req, res) => {
                                                             status: 'ok',
                                                             data: userData,
                                                             wp_user: wp_user_data,
-                                                            message: 'Login Successfull 111222333'
+                                                            message: 'Login Successfull'
                                                         }
                                                     )
                                                 })
@@ -521,7 +522,7 @@ exports.frontendUserLogin = (req, res) => {
                                                             status: 'ok',
                                                             data: userData,
                                                             wp_user: wp_user_data,
-                                                            message: 'Login Successfull 111'
+                                                            message: 'Login Successfull'
                                                         }
                                                     )
                                                 })
@@ -577,7 +578,6 @@ exports.frontendUserLogin = (req, res) => {
 
 //--- Create New User ----//
 exports.createUser = (req, res) => {
-    //console.log(req.body);
     db.query('SELECT email FROM users WHERE email = ? OR phone = ?', [req.body.email, req.body.phone], async (err, results) => {
         if (err) {
             return res.send(
@@ -637,12 +637,12 @@ exports.createUser = (req, res) => {
                     //-- Insert User data to meta table--------//
                     var insert_values = [];
                     if (req.file) {
-                        insert_values = [results.insertId, req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, 0, req.body.date_of_birth, req.body.occupation, req.body.gender, req.file.filename];
+                        insert_values = [results.insertId, req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, 0, req.body.date_of_birth, req.body.occupation, req.body.gender, req.file.filename, req.body.alternate_phone, req.body.marital_status, req.body.about];
                     } else {
-                        insert_values = [results.insertId, req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, 0, req.body.date_of_birth, req.body.occupation, req.body.gender, ''];
+                        insert_values = [results.insertId, req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, 0, req.body.date_of_birth, req.body.occupation, req.body.gender, '', req.body.alternate_phone, req.body.marital_status, req.body.about];
                     }
 
-                    const insertQuery = 'INSERT INTO user_customer_meta (user_id, address, country, state, city, zip, review_count, date_of_birth, occupation, gender, profile_pic) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+                    const insertQuery = 'INSERT INTO user_customer_meta (user_id, address, country, state, city, zip, review_count, date_of_birth, occupation, gender, profile_pic, alternate_phone, marital_status, about) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
                     db.query(insertQuery, insert_values, (error, results, fields) => {
                         if (err) {
                             console.log(err);
@@ -991,8 +991,8 @@ exports.editUserData = (req, res) => {
                         //const profilePicture = req.file;
                         //console.log(profilePicture);
 
-                        const updateQueryMeta = 'UPDATE user_customer_meta SET address = ?, country = ?, state = ?, city = ?, zip = ?, date_of_birth = ?, occupation = ?, gender = ?, profile_pic = ? WHERE user_id = ?';
-                        db.query(updateQueryMeta, [req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, req.body.date_of_birth, req.body.occupation, req.body.gender, req.file.filename, userId], (updateError, updateResults) => {
+                        const updateQueryMeta = 'UPDATE user_customer_meta SET address = ?, country = ?, state = ?, city = ?, zip = ?, date_of_birth = ?, occupation = ?, gender = ?, profile_pic = ?, alternate_phone = ?, marital_status = ?, about = ? WHERE user_id = ?';
+                        db.query(updateQueryMeta, [req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, req.body.date_of_birth, req.body.occupation, req.body.gender, req.file.filename, req.body.alternate_phone, req.body.marital_status, req.body.about, userId], (updateError, updateResults) => {
                             if (updateError) {
                                 return res.send(
                                     {
@@ -1013,8 +1013,8 @@ exports.editUserData = (req, res) => {
                         });
 
                     } else {
-                        const updateQueryMeta = 'UPDATE user_customer_meta SET address = ?, country = ?, state = ?, city = ?, zip = ?, date_of_birth = ?, occupation = ?, gender = ? WHERE user_id = ?';
-                        db.query(updateQueryMeta, [req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, req.body.date_of_birth, req.body.occupation, req.body.gender, userId], (updateError, updateResults) => {
+                        const updateQueryMeta = 'UPDATE user_customer_meta SET address = ?, country = ?, state = ?, city = ?, zip = ?, date_of_birth = ?, occupation = ?, gender = ?, alternate_phone = ?, marital_status = ?, about = ? WHERE user_id = ?';
+                        db.query(updateQueryMeta, [req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, req.body.date_of_birth, req.body.occupation, req.body.gender,req.body.alternate_phone, req.body.marital_status, req.body.about, userId], (updateError, updateResults) => {
                             if (updateError) {
                                 return res.send(
                                     {
@@ -1085,12 +1085,12 @@ exports.createCompany = (req, res) => {
 
         var insert_values = [];
         if (req.file) {
-            insert_values = [currentUserData.user_id, req.body.company_name, req.file.filename, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, "1", formattedDate, formattedDate];
+            insert_values = [currentUserData.user_id, req.body.company_name, req.body.heading, req.file.filename, req.body.about_company, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, req.body.status, req.body.trending, formattedDate, formattedDate, req.body.tollfree_number, req.body.main_address, req.body.address_map_url];
         } else {
-            insert_values = [currentUserData.user_id, req.body.company_name, '', req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, formattedDate, "1", formattedDate];
+            insert_values = [currentUserData.user_id, req.body.company_name, req.body.heading, '', req.body.about_company, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, req.body.status, req.body.trending, formattedDate, formattedDate, req.body.tollfree_number, req.body.main_address, req.body.address_map_url];
         }
 
-        const insertQuery = 'INSERT INTO company (user_created_by, company_name, logo, comp_phone, comp_email, comp_registration_id, status, created_date, updated_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+        const insertQuery = 'INSERT INTO company (user_created_by, company_name, heading, logo, about_company, comp_phone, comp_email, comp_registration_id, status, trending, created_date, updated_date, tollfree_number, main_address, address_map_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
         db.query(insertQuery, insert_values, (err, results, fields) => {
             if (err) {
                 return res.send(
@@ -1168,8 +1168,8 @@ exports.editCompany = (req, res) => {
         }
 
         // Update company details in the company table
-        const updateQuery = 'UPDATE company SET company_name = ?, logo = ?, comp_phone = ?, comp_email = ?, comp_registration_id = ?, updated_date = ? WHERE ID = ?';
-        const updateValues = [req.body.company_name, '', req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, formattedDate, companyID];
+        const updateQuery = 'UPDATE company SET company_name = ?, heading = ?, logo = ?, about_company = ?, comp_phone = ?, comp_email = ?, comp_registration_id = ?, status = ?, trending = ?, updated_date = ?, tollfree_number = ?, main_address = ?, address_map_url = ? WHERE ID = ?';
+        const updateValues = [req.body.company_name, req.body.heading, '', req.body.about_company, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, req.body.status, req.body.trending, formattedDate, req.body.tollfree_number, req.body.main_address, req.body.address_map_url, companyID];
 
         if (req.file) {
             // Unlink (delete) the previous file
@@ -1182,9 +1182,9 @@ exports.editCompany = (req, res) => {
                 }
             });
 
-            updateValues[1] = req.file.filename;
+            updateValues[2] = req.file.filename;
         }else{
-            updateValues[1] = req.body.previous_logo;
+            updateValues[2] = req.body.previous_logo;
         }
         db.query(updateQuery, updateValues, (err, results) => {
             if (err) {
@@ -1350,7 +1350,26 @@ exports.editRatingTags = (req, res) => {
     })
 }
 
-
+exports.editCustomerReview = async (req, res) => {
+    //console.log(req.body);
+    // const ratingTagsArray = JSON.parse(req.body.rating_tags);
+    // console.log(ratingTagsArray);
+    const editResponse = await comFunction.editCustomerReview( req.body );
+    if(editResponse == true){
+        // Return success response
+        return res.send({
+            status: 'ok',
+            data: '',
+            message: 'Review updated successfully'
+        });
+    }else{
+        return res.send({
+            status: 'err',
+            data: '',
+            message: editResponse
+        });        
+    }
+}
 
 // Update Contacts
 exports.updateContacts = async (req, res) => {
@@ -1447,8 +1466,7 @@ exports.createFAQ = async (req, res) => {
 exports.updateFAQ = async (req, res) => {
     //console.log(req.body);
     const faqArray = req.body.FAQ;
-    //console.log(faqArray[0]);  
-    //console.log(faqArray[1]);
+    //console.log(faqArray[0]); 
 
     const Faq_Page_insert_values = [
         req.body.title,
@@ -1484,6 +1502,25 @@ exports.updateFAQ = async (req, res) => {
     }
 }
 
+//Update FAQ Images
+exports.updateFAQImages =async (req,res) => {
+    //console.log('files',req.files);
+    const {banner_img_1,banner_img_2,banner_img_3,banner_img_4,banner_img_5,banner_img_6,banner_img_7,banner_img_8} = req.files;
+    // const img_arr = [banner_img_1,banner_img_2,banner_img_3,banner_img_4,banner_img_5,banner_img_6,banner_img_7,banner_img_8];
+    const field_name = ['banner_img_1','banner_img_2','banner_img_3','banner_img_4','banner_img_5','banner_img_6','banner_img_7','banner_img_8'];
+    await field_name.forEach((item, key) => {
+        //console.log(item, key);
+        if (req.files[item]) {
+             const sql = `UPDATE faq_pages SET ${item} = '${req.files[item][0].filename}' WHERE id = '1' `;
+             db.query(sql, (err, result)=>{
+                if(err) throw err;
+                //console.log(result);
+             })
+        }
+    })
+    res.redirect('/edit-faq');
+
+}
 // Update Home
 exports.updateHome = async (req, res) => {
     // console.log('home', req.body);
@@ -1491,7 +1528,7 @@ exports.updateHome = async (req, res) => {
     const form_data = req.body;
 
     const { home_id, title, meta_title, meta_desc, meta_keyword, bannner_content, for_business,
-        for_customer, cus_right_content, cus_right_button_link, cus_right_button_text,
+        for_customer, cus_right_content, cus_right_button_link, cus_right_button_text,youtube_link,
         youtube_1, youtube_2, youtube_3, youtube_4, fb_widget, twitter_widget,
         org_responsibility_content, org_responsibility_buttton_link, org_responsibility_buttton_text,
         about_us_content, about_us_button_link, about_us_button_text } = req.body;
@@ -1502,14 +1539,13 @@ exports.updateHome = async (req, res) => {
         about_us_img } = req.files;
 
     const meta_value = [bannner_content, for_business,
-        for_customer, cus_right_content, cus_right_button_link, cus_right_button_text,
+        for_customer, cus_right_content, cus_right_button_link, cus_right_button_text,youtube_link,
         youtube_1, youtube_2, youtube_3, youtube_4, fb_widget, twitter_widget,
         org_responsibility_content, org_responsibility_buttton_link, org_responsibility_buttton_text,
         about_us_content, about_us_button_link, about_us_button_text];
 
     const meta_key = ['bannner_content', 'for_business',
-        'for_customer', 'cus_right_content', 'cus_right_button_link', 'cus_right_button_text',
-        'youtube_1', 'youtube_2', 'youtube_3', 'youtube_4', 'fb_widget', 'twitter_widget',
+        'for_customer', 'cus_right_content', 'cus_right_button_link', 'cus_right_button_text','youtube_link', 'youtube_1', 'youtube_2', 'youtube_3', 'youtube_4', 'fb_widget', 'twitter_widget',
         'org_responsibility_content', 'org_responsibility_buttton_link', 'org_responsibility_buttton_text',
         'about_us_content', 'about_us_button_link', 'about_us_button_text'];
 
@@ -1822,80 +1858,163 @@ exports.deleteFeaturedCompany = (req, res) => {
 exports.updateBusiness = async (req, res) => {
     console.log('business', req.body);
     console.log('file', req.files);
-    //const form_data = JSON.parse(req.body.upcoming_features);
 
-    // const { home_id, title, meta_title, meta_desc, meta_keyword, bannner_content, for_business,
-    //     for_customer, cus_right_content, cus_right_button_link, cus_right_button_text,
-    //     youtube_1, youtube_2, youtube_3, youtube_4, fb_widget, twitter_widget,
-    //     org_responsibility_content, org_responsibility_buttton_link, org_responsibility_buttton_text,
-    //     about_us_content, about_us_button_link, about_us_button_text } = req.body;
+    const { business_id, title, meta_title, meta_desc, meta_keyword, bannner_content, features_title,
+        feature_content,feature_icon, advantage_title, advantage_content, dont_forget_title,
+        dont_forget_content_1, dont_forget_content_2, did_you_know_title, did_you_know_content_1, did_you_know_content_2, upcoming_features_title, upcoming_features_content, bottom_content } = req.body;
 
-    // const { banner_img_1, banner_img_2, banner_img_3, cus_right_img_1, cus_right_img_2, cus_right_img_3, cus_right_img_4, cus_right_img_5,
-    //     cus_right_img_6, cus_right_img_7, cus_right_img_8, org_responsibility_img_1, org_responsibility_img_2, org_responsibility_img_3,
-    //     org_responsibility_img_4, org_responsibility_img_5, org_responsibility_img_6, org_responsibility_img_7, org_responsibility_img_8,
-    //     about_us_img } = req.files;
+    const { banner_img_1, banner_img_2, banner_img_3, banner_img_4, banner_img_5, banner_img_6,banner_img_7, banner_img_8,  advantage_img_1, advantage_img_2, advantage_img_3, advantage_img_4, advantage_img_5, advantage_img_6, advantage_img_7, advantage_img_8, did_you_know_img } = req.files;
 
-    // const meta_value = [bannner_content, for_business,
-    //     for_customer, cus_right_content, cus_right_button_link, cus_right_button_text,
-    //     youtube_1, youtube_2, youtube_3, youtube_4, fb_widget, twitter_widget,
-    //     org_responsibility_content, org_responsibility_buttton_link, org_responsibility_buttton_text,
-    //     about_us_content, about_us_button_link, about_us_button_text];
+    const meta_value = [bannner_content, features_title, advantage_title, advantage_content, dont_forget_title,
+        dont_forget_content_1, dont_forget_content_2, did_you_know_title, did_you_know_content_1, did_you_know_content_2, upcoming_features_title, bottom_content];
 
-    // const meta_key = ['bannner_content', 'for_business',
-    //     'for_customer', 'cus_right_content', 'cus_right_button_link', 'cus_right_button_text',
-    //     'youtube_1', 'youtube_2', 'youtube_3', 'youtube_4', 'fb_widget', 'twitter_widget',
-    //     'org_responsibility_content', 'org_responsibility_buttton_link', 'org_responsibility_buttton_text',
-    //     'about_us_content', 'about_us_button_link', 'about_us_button_text'];
+    const meta_key = ['bannner_content', 'features_title', 'advantage_title', 'advantage_content', 'dont_forget_title',
+        'dont_forget_content_1', 'dont_forget_content_2', 'did_you_know_title', 'did_you_know_content_1', 'did_you_know_content_2', 'upcoming_features_title', 'bottom_content'];
 
-    // await meta_value.forEach((element, index) => {
-    //     //console.log(element, index);
-    //     const check_sql = `SELECT * FROM page_meta WHERE page_id = ? AND page_meta_key = ?`;
-    //     const check_data = [home_id, meta_key[index]];
-    //     db.query(check_sql, check_data, (check_err, check_result) => {
-    //         if (check_err) {
-    //             return res.send(
-    //                 {
-    //                     status: 'err',
-    //                     data: '',
-    //                     message: 'An error occurred while processing your request'
-    //                 }
-    //             )
-    //         } else {
-    //             if (check_result.length > 0) {
-    //                 const update_sql = `UPDATE page_meta SET page_meta_value = ? WHERE page_id = ? AND page_meta_key = ?`;
-    //                 const update_data = [element, home_id, meta_key[index]];
-    //                 db.query(update_sql, update_data, (update_err, update_result) => {
-    //                     if (update_err) throw update_err;
-    //                 })
-    //             } else {
-    //                 const insert_sql = `INSERT INTO page_meta (page_id , page_meta_key, page_meta_value) VALUES (?,?,?)`;
-    //                 const insert_data = [home_id, meta_key[index], element];
-    //                 db.query(insert_sql, insert_data, (insert_err, insert_result) => {
-    //                     if (insert_err) throw insert_err;
-    //                 })
-    //             }
-    //         }
-    //     });
-    // });
+    await meta_value.forEach((element, index) => {
+        //console.log(element, index);
+        const check_sql = `SELECT * FROM page_meta WHERE page_id = ? AND page_meta_key = ?`;
+        const check_data = [business_id, meta_key[index]];
+        db.query(check_sql, check_data, (check_err, check_result) => {
+            if (check_err) {
+                return res.send(
+                    {
+                        status: 'err',
+                        data: '',
+                        message: 'An error occurred while processing your request'
+                    }
+                )
+            } else {
+                if (check_result.length > 0) {
+                    const update_sql = `UPDATE page_meta SET page_meta_value = ? WHERE page_id = ? AND page_meta_key = ?`;
+                    const update_data = [element, business_id, meta_key[index]];
+                    db.query(update_sql, update_data, (update_err, update_result) => {
+                        if (update_err) throw update_err;
+                    })
+                } else {
+                    const insert_sql = `INSERT INTO page_meta (page_id , page_meta_key, page_meta_value) VALUES (?,?,?)`;
+                    const insert_data = [business_id, meta_key[index], element];
+                    db.query(insert_sql, insert_data, (insert_err, insert_result) => {
+                        if (insert_err) throw insert_err;
+                    })
+                }
+            }
+        });
+    });
 
-    // const file_meta_value = [banner_img_1, banner_img_2, banner_img_3, cus_right_img_1, cus_right_img_2, cus_right_img_3, cus_right_img_4, cus_right_img_5,
-    //     cus_right_img_6, cus_right_img_7, cus_right_img_8, org_responsibility_img_1, org_responsibility_img_2, org_responsibility_img_3,
-    //     org_responsibility_img_4, org_responsibility_img_5, org_responsibility_img_6, org_responsibility_img_7, org_responsibility_img_8,
-    //     about_us_img];
+    const file_meta_value = [banner_img_1, banner_img_2, banner_img_3, banner_img_4, banner_img_5, banner_img_6,banner_img_7, banner_img_8, advantage_img_1, advantage_img_2, advantage_img_3, advantage_img_4, advantage_img_5,
+        advantage_img_6, advantage_img_7, advantage_img_8, did_you_know_img];
 
-    // const file_meta_key = ['banner_img_1', 'banner_img_2', 'banner_img_3', 'cus_right_img_1', 'cus_right_img_2', 'cus_right_img_3', 'cus_right_img_4', 'cus_right_img_5',
-    //     'cus_right_img_6', 'cus_right_img_7', 'cus_right_img_8', 'org_responsibility_img_1', 'org_responsibility_img_2', 'org_responsibility_img_3',
-    //     'org_responsibility_img_4', 'org_responsibility_img_5', 'org_responsibility_img_6', 'org_responsibility_img_7', 'org_responsibility_img_8',
-    //     'about_us_img'];
+    const file_meta_key = ['banner_img_1', 'banner_img_2', 'banner_img_3', 'banner_img_4', 'banner_img_5', 'banner_img_6','banner_img_7', 'banner_img_8', 'advantage_img_1', 'advantage_img_2', 'advantage_img_3', 'advantage_img_4', 'advantage_img_5', 'advantage_img_6', 'advantage_img_7', 'advantage_img_8', 'did_you_know_img'];
 
-    // await file_meta_key.forEach((item, key) => {
-    //     //console.log(item, key);
-    //     if (req.files[item]) {
-    //         //console.log(file_meta_value[key][0].filename);
-    //         const check_sql = `SELECT * FROM page_meta WHERE page_id = ? AND page_meta_key = ?`;
-    //         const check_data = [home_id, item];
-    //         db.query(check_sql, check_data, (check_err, check_result) => {
-    //             if (check_err) {
+    await file_meta_key.forEach((item, key) => {
+        //console.log(item, key);
+        if (req.files[item]) {
+            //console.log(file_meta_value[key][0].filename);
+            const check_sql = `SELECT * FROM page_meta WHERE page_id = ? AND page_meta_key = ?`;
+            const check_data = [business_id, item];
+            db.query(check_sql, check_data, (check_err, check_result) => {
+                if (check_err) {
+                    return res.send(
+                        {
+                            status: 'err',
+                            data: '',
+                            message: 'An error occurred while processing your request'
+                        }
+                    )
+                } else {
+                    if (check_result.length > 0) {
+                        const update_sql = `UPDATE page_meta SET page_meta_value = ? WHERE page_id = ? AND page_meta_key = ?`;
+                        const update_data = [file_meta_value[key][0].filename, business_id, item];
+                        db.query(update_sql, update_data, (update_err, update_result) => {
+                            if (update_err) throw update_err;
+                        })
+                    } else {
+                        const insert_sql = `INSERT INTO page_meta (page_id , page_meta_key, page_meta_value) VALUES (?,?,?)`;
+                        const insert_data = [business_id, item, file_meta_value[key][0].filename];
+                        db.query(insert_sql, insert_data, (insert_err, insert_result) => {
+                            if (insert_err) throw insert_err;
+                        })
+                    }
+                }
+            });
+        }
+
+    });
+    await comFunction2.deleteBusinessFeature();
+    await comFunction2.deleteBusinessUpcomingFeature();
+    if (typeof feature_content === 'string' ) {
+        const insert_query = `INSERT INTO business_features ( content, image, existing_or_upcoming) VALUES (?, ?,'existing')`;
+        const insert_data = [feature_content, feature_icon];
+        db.query(insert_query,insert_data,(insert_err,insert_res)=>{
+            if (insert_err) {
+                return res.send(
+                    {
+                        status: 'err',
+                        data: '',
+                        message: 'An error occurred while processing your request'
+                    }
+                )
+            }
+        });
+        
+    }else{
+        await feature_content.forEach((value, key) => {
+            const insert_query = `INSERT INTO business_features ( content, image, existing_or_upcoming) VALUES (?, ?,'existing')`;
+            const insert_data = [value, feature_icon[key]];
+            db.query(insert_query,insert_data,(insert_err,insert_res)=>{
+                if (insert_err) {
+                    return res.send(
+                        {
+                            status: 'err',
+                            data: '',
+                            message: 'An error occurred while processing your request'
+                        }
+                    )
+                }
+            });
+        });
+    }
+
+if (typeof upcoming_features_content === 'string' ) {
+    const insert_query = `INSERT INTO business_features ( content, existing_or_upcoming) VALUES (?,'upcoming')`;
+    const insert_data = [upcoming_features_content];
+     db.query(insert_query, insert_data, (insert_err,insert_res) => {
+        if (insert_err) {
+            return res.send(
+                {
+                    status: 'err',
+                    data: '',
+                    message: 'An error occurred while processing your request'
+                }
+            )
+        }
+    });
+}else{
+    await upcoming_features_content.forEach((value, key) => {
+        const insert_query = `INSERT INTO business_features ( content, existing_or_upcoming) VALUES (?,'upcoming')`;
+        const insert_data = [value];
+         db.query(insert_query, insert_data, (insert_err,insert_res) => {
+            if (insert_err) {
+                return res.send(
+                    {
+                        status: 'err',
+                        data: '',
+                        message: 'An error occurred while processing your request'
+                    }
+                )
+            }
+        });
+    })
+}
+    
+    // const delete_query = `DELETE FROM business_features WHERE existing_or_upcoming = 'upcoming'`;
+    // await db.query(delete_query, async (delete_err,delete_res)=>{
+    //     await upcoming_features_content.forEach((value, key) => {
+    //         const insert_query = `INSERT INTO business_features ( content, existing_or_upcoming) VALUES (?,'upcoming')`;
+    //         const insert_data = [content];
+    //          db.query(insert_query,insert_data,(insert_err,insert_res)=>{
+    //             if (insert_err) {
     //                 return res.send(
     //                     {
     //                         status: 'err',
@@ -1903,36 +2022,23 @@ exports.updateBusiness = async (req, res) => {
     //                         message: 'An error occurred while processing your request'
     //                     }
     //                 )
-    //             } else {
-    //                 if (check_result.length > 0) {
-    //                     const update_sql = `UPDATE page_meta SET page_meta_value = ? WHERE page_id = ? AND page_meta_key = ?`;
-    //                     const update_data = [file_meta_value[key][0].filename, home_id, item];
-    //                     db.query(update_sql, update_data, (update_err, update_result) => {
-    //                         if (update_err) throw update_err;
-    //                     })
-    //                 } else {
-    //                     const insert_sql = `INSERT INTO page_meta (page_id , page_meta_key, page_meta_value) VALUES (?,?,?)`;
-    //                     const insert_data = [home_id, item, file_meta_value[key][0].filename];
-    //                     db.query(insert_sql, insert_data, (insert_err, insert_result) => {
-    //                         if (insert_err) throw insert_err;
-    //                     })
-    //                 }
     //             }
     //         });
-    //     }
-
+    //     })
     // });
+    
+    
 
-    // const title_sql = `UPDATE page_info SET title = ?, meta_title = ?, meta_desc = ?, meta_keyword = ? WHERE id  = ?`;
-    // const title_data = [title, meta_title, meta_desc, meta_keyword, home_id];
-    // //console.log(title_data);
-    // db.query(title_sql, title_data, (title_err, title_result) => {
-    //     return res.send(
-    //         {
-    //             status: 'ok',
-    //             data: '',
-    //             message: 'Title update successfully'
-    //         }
-    //     )
-    // })
+    const title_sql = `UPDATE page_info SET title = ?, meta_title = ?, meta_desc = ?, meta_keyword = ? WHERE id  = ?`;
+    const title_data = [title, meta_title, meta_desc, meta_keyword, business_id];
+    //console.log(title_data);
+    db.query(title_sql, title_data, (title_err, title_result) => {
+        return res.send(
+            {
+                status: 'ok',
+                data: '',
+                message: 'Title update successfully'
+            }
+        )
+    })
 }

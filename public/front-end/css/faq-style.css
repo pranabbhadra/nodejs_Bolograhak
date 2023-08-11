@@ -108,13 +108,14 @@
     font-weight: 400;
 }
 
-.faq-cat-body ul li a:hover {
+.faq-cat-body ul li a:hover,
+.faq-cat-body ul li.active a {
     color: #FCCB06;
 }
 
-.accordion-repeat {
+/* .accordion-repeat {
     display: none;
-}
+} */
 
 .c_accordion_wrap {
     border: 2px solid transparent;

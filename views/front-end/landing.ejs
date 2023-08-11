@@ -169,7 +169,7 @@
         </div>
         <% } %>
           <div class="text-center">
-            <a href="http://localhost/bolograhak/blog/" class="view-more"><span class="position-relative"><i
+            <a href="<%= globalData.BLOG_URL %>" class="view-more"><span class="position-relative"><i
                   class="fa-solid fa-angle-right"></i>View All</span></a>
           </div>
     </div>
@@ -225,7 +225,9 @@
                     </div>-->
                     <div class="col-md-12">
                       <div class="custom-form">
-                         <input type="text" class="form-control" name="company_name" placeholder="Business/Institute/Establishment Name" required>
+                         <input type="text" class="form-control" id="search-input-review" name="company_name" placeholder="Business/Institute/Establishment Name" required autocomplete="off">
+                         <div class="autofield-dropdown-review">
+                         </div>
                       </div>
                     </div>
                     <div class="col-md-12">
@@ -261,7 +263,7 @@
                     </div>
                     <div class="col-md-12">
                       <div class="rating-slider">
-                         <span><img style="width:50px;" src="" id="selected-range-emojis" /></span>
+                         <span class="emojisss"><img style="width:50px;" src="" id="selected-range-emojis" /></span>
                          <label>Rating</label>
                          <div id="rating-range" class="rating"></div>
                          <input type="text" id="ratingRange" readonly>
@@ -309,11 +311,16 @@
                     </div>
                     <div class="col-md-12">
                        <div class="review-submit d-flex justify-content-between align-items-center">
+                        <% if(currentUserData){ %>
                           <input type="submit" class="btn-default btn-warning" value="Submit">
+                        <% } else { %>
+                          <a href="#" class="btn-default btn-outline-warning login">Submit</a>
+                        <% } %>
                           <a href="/review" class="view-more mt-0"><span class="position-relative"><i class="fa-solid fa-angle-right"></i>View All Reviews</span></a>
                        </div>
                     </div>
                  </div>
+                 <div class="submit-message"></div>
               </form>
            </div>
         </div>
@@ -356,7 +363,7 @@
             <% featured_comps.forEach( company=> { %>
               <div class="item">
                 <div class="feature-box">
-                  <a href="<%= company.link %>"><img src="/<%= company.logo %>" alt="img" width="118" height="45"
+                  <a href="company/<%= company.company_id %>"><img src="/<%= company.logo %>" alt="img" width="118" height="45"
                       class="mx-auto"></a>
                   <h5>
                     <%= company.company_name %>
@@ -386,7 +393,7 @@
       <div class="video-slider-left">
         <h4>Watch Us on</h4>
         <div class="video-logo d-flex align-items-center">
-          <a href="#">
+          <a href="<%= meta_values_array.youtube_link %>">
             <svg width="178" height="52" viewBox="0 0 178 52" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M56.4054 14.0144C55.7681 11.6693 53.9017 9.82038 51.5346 9.18902C47.2101 8.01651 29.912 8.01651 29.912 8.01651C29.912 8.01651 12.614 8.01651 8.28944 9.14393C5.96786 9.77528 4.05597 11.6693 3.41867 14.0144C2.28064 18.2985 2.28064 27.1826 2.28064 27.1826C2.28064 27.1826 2.28064 36.1117 3.41867 40.3508C4.05597 42.6958 5.92234 44.5448 8.28944 45.1761C12.6595 46.3486 29.912 46.3486 29.912 46.3486C29.912 46.3486 47.2101 46.3486 51.5346 45.2212C53.9017 44.5899 55.7681 42.7409 56.4054 40.3959C57.5434 36.1117 57.5434 27.2277 57.5434 27.2277C57.5434 27.2277 57.5889 18.2985 56.4054 14.0144Z"
@@ -541,7 +548,7 @@
                 <h3>Twitter</h3>
               </div>
               <div class="social-widgets">
-                <%- meta_values_array.fb_widget %>
+                <%- meta_values_array.twitter_widget %>
               </div>
             </div>
             <div class="col-6 my-auto">
@@ -740,42 +747,102 @@
 <script>
   jQuery(document).ready(function($) {
     // /////////////////////////////////////// Auto Field Dropdown Start
-    var timer;
-    $("#search-input").keyup(function(){
-      clearTimeout(timer);
-      var keyword = $(this).val();
-      if (keyword.length >= 3) {
-        timer = setTimeout(function() {
-          performSearch(keyword);
-        }, 500);
-      } else {
-        $('.autofield-dropdown').html(''); // Clear search results if less than three letters
-      }
-    })
-    // Function to perform the AJAX search
-    function performSearch(keyword) {
-      const url = "<%= globalData.BLOG_URL %>api/home-search.php";
-      const data = {
-        keyword: keyword,
-      };
+      var timer;
+      $("#search-input").keyup(function(){
+        clearTimeout(timer);
+        var keyword = $(this).val();
+        if (keyword.length >= 3) {
+          timer = setTimeout(function() {
+            performSearch(keyword);
+          }, 500);
+        } else {
+          $('.autofield-dropdown').html(''); // Clear search results if less than three letters
+        }
+      })
+      $("#search-input-review").keyup(function(){
+        clearTimeout(timer);
+        var keyword = $(this).val();
+        if (keyword.length >= 3) {
+          timer = setTimeout(function() {
+            performSearchForReview(keyword);
+          }, 500);
+        } else {
+          $('.autofield-dropdown-review').html(''); // Clear search results if less than three letters
+        }
+      })
+      // Function to perform the AJAX search
+      function performSearch(keyword) {
+        const data = {
+          keyword: keyword,
+        };
+        $.ajax({
+          url: 'api/search-company',
+          method: 'POST',
+          data: {keyword:keyword},
+          ContentType: 'application/json',
+          success: function (data) {
+            if (data.status == 'ok') {
+              if(data.data.length>0){
+                let respData = data.data;
+                let html = '<ul class="p-0 m-0">';
+                  respData.forEach(company => {
+                    html += '<li><a href="#" data-resulttitle="' + company.company_name + '" data-resultexcerpt="' + company.about_company + '" data-resultpermalink="/company/' + company.ID + '" >' + company.company_name + '</a></li>';
+                  });
+                html += '</ul>';
+                $('.autofield-dropdown').html(html);
+                $('.autofield-dropdown').show();
+              }else{
+                $('.autofield-dropdown').html('');
+                $('.autofield-dropdown').hide();
+              }
+            } else {
+              $('.autofield-dropdown').html('');
+              $('.autofield-dropdown').hide();
+            }
+          },
+          error: function (error) {
+            
+          }
+        });
 
-      fetch(url, {
-        method: "POST", // Use the appropriate HTTP method
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      })
-      .then(response => response.json())
-      .then(posts_html => {
-        console.log(posts_html);
-        $('.autofield-dropdown').html(posts_html);
-        $('.autofield-dropdown').show();
-      })
-      .catch(error => {
-        console.error("Error loading posts:", error);
-      });
-    }
+      }
+      // Company Search For review
+      function performSearchForReview(keyword) {
+        const data = {
+          keyword: keyword,
+        };
+        $.ajax({
+          url: 'api/search-company',
+          method: 'POST',
+          data: {keyword:keyword},
+          ContentType: 'application/json',
+          success: function (data) {
+            if (data.status == 'ok') {
+              if(data.data.length>0){
+                let respData = data.data;
+                let html = '<ul class="p-0 m-0">';
+                  respData.forEach(company => {
+                    html += '<li><a href="#" data-resulttitle="' + company.company_name + '" data-companyID="' + company.ID + '" >' + company.company_name + '</a></li>';
+                  });
+                html += '</ul>';
+                $('.autofield-dropdown-review').html(html);
+                $('.autofield-dropdown-review').show();
+              }else{
+                $('.autofield-dropdown-review').html('');
+                $('.autofield-dropdown-review').hide();
+              }
+            } else {
+              $('.autofield-dropdown-review').html('');
+              $('.autofield-dropdown-review').hide();
+            }
+          },
+          error: function (error) {
+            $('.autofield-dropdown-review').html('');
+            $('.autofield-dropdown-review').hide();
+          }
+        });
+
+      }
     });
     
     $("body").on('click', ".autofield-dropdown ul > li", function(e){
@@ -783,13 +850,19 @@
       var resulttitle = $(this).find('a').attr('data-resulttitle');
       var resultexcerpt = $(this).find('a').attr('data-resultexcerpt');
       var resultpermalink = $(this).find('a').attr('data-resultpermalink');
-      console.log(resulttitle+' '+resultexcerpt+' '+resultpermalink);
       $('#dynamic-search-title').text(resulttitle);
       $('#dynamic-search-content').text(resultexcerpt);
       $('#dynamic-search-link').attr("href", resultpermalink);
   
       $(".custom-modal").fadeIn();
   
+    });
+
+    $("body").on('click', ".autofield-dropdown-review ul > li", function(e){
+      e.preventDefault();
+      var resulttitle = $(this).find('a').attr('data-resulttitle');
+      $('#search-input-review').val(resulttitle);
+      $(".autofield-dropdown-review").fadeOut();
     });
 </script>
 <script>
@@ -858,6 +931,8 @@
 
   //-------Review Form Submit-----------------//
   $( "#review_submit_frm" ).on( "submit", function( event ) {
+    $('.submit-message').hide();
+    $('.submit-message').text('');
     event.preventDefault();
     const formData = $('#review_submit_frm').serializeArray();
     const jsonData = {};
@@ -877,12 +952,15 @@
       data: jsonData,
       ContentType: 'application/json',
       success: function (data) {
-      // if (data.status == 'ok') {
-      //   console.log('aaa');
-      // } else {
-      //   console.log('bbb');
-      // }
-        console.log(data);
+        if (data.status == 'ok') {
+          $('#review_submit_frm')[0].reset();
+          $('.submit-message').text(data.message);
+          $('.submit-message').show();
+        } else {
+          $('.submit-message').text(data.message);
+          $('.submit-message').show();
+        } 
+        //console.log(data);
       },
       error: function (error) {
         console.log(error);
