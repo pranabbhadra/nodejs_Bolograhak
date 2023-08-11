@@ -1050,7 +1050,7 @@ exports.createCompany = (req, res) => {
     const encodedUserData = req.cookies.user;
     const currentUserData = JSON.parse(encodedUserData);
 
-    db.query('SELECT comp_email FROM company WHERE comp_email = ? OR comp_phone = ?', [req.body.comp_email, req.body.comp_phone], async (err, results) => {
+    db.query('SELECT comp_phone FROM company WHERE comp_phone = ?', [req.body.comp_phone], async (err, results) => {
         if (err) {
             return res.send(
                 {
@@ -1067,7 +1067,7 @@ exports.createCompany = (req, res) => {
                 {
                     status: 'err',
                     data: '',
-                    message: 'Email ID or Phone number already exist for another Company'
+                    message: 'Phone number already exist for another Company'
                 }
             )
         }
@@ -1143,8 +1143,8 @@ exports.editCompany = (req, res) => {
     const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
     // Check if the updated email ID or phone number already exist for another company
-    const checkQuery = 'SELECT * FROM company WHERE (comp_email = ? OR comp_phone = ?) AND ID != ?';
-    const checkValues = [req.body.comp_email, req.body.comp_phone, companyID];
+    const checkQuery = 'SELECT * FROM company WHERE comp_phone = ? AND ID != ?';
+    const checkValues = [req.body.comp_phone, companyID];
 
     db.query(checkQuery, checkValues, (err, results) => {
         if (err) {
@@ -1163,7 +1163,7 @@ exports.editCompany = (req, res) => {
             return res.send({
                 status: 'err',
                 data: '',
-                message: 'Email ID or phone number already exist for another company'
+                message: 'Phone number already exist for another company'
             });
         }
 
