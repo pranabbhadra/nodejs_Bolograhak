@@ -1254,6 +1254,8 @@ exports.companyBulkUpload = async (req, res) => {
         )        
     }
     const csvFilePath = path.join(__dirname, '..', 'company-csv', req.file.filename);
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
     
     // Process the uploaded CSV file and insert data into the database
     try {       
@@ -1261,7 +1263,7 @@ exports.companyBulkUpload = async (req, res) => {
         await workbook.csv.readFile(csvFilePath);
 
         const worksheet = workbook.getWorksheet(1);
-        const companies = await processCompanyCSVRows(worksheet);
+        const companies = await processCompanyCSVRows(worksheet, formattedDate);
 
         for (const company of companies) {
             await db.query(
@@ -1310,12 +1312,10 @@ exports.companyBulkUpload = async (req, res) => {
 }
 
 // Define a promise-based function for processing rows
-function processCompanyCSVRows(worksheet) {
+function processCompanyCSVRows(worksheet, formattedDate) {
     return new Promise((resolve, reject) => {
         const companies = [];
-        const currentDate = new Date();
-        // Format the date in 'YYYY-MM-DD HH:mm:ss' format (adjust the format as needed)
-        const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+        
         worksheet.eachRow((row, rowNumber) => {
             if (rowNumber !== 1) { // Skip the header row
                 companies.push([row.values[1], row.values[2], row.values[3], row.values[4], row.values[5], row.values[6], row.values[7], row.values[8], row.values[9], row.values[10], '1', '0', formattedDate]);
