@@ -1301,7 +1301,7 @@ exports.companyBulkUpload = async (req, res) => {
                         comp_registration_id = VALUES(comp_registration_id),
                         status = VALUES(status),
                         trending = VALUES(trending),
-                        created_date = VALUES(created_date)
+                        created_date = VALUES(created_date),
                         updated_date =  VALUES(updated_date)
                     `,
                     cleanedCompany
