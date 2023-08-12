@@ -791,7 +791,8 @@ jQuery(function($){
   }
   $('.profile-menu-list ul > li > .arw-down').on('click',subMenu);
    // /////////////////////////////  Dashboard page review slide end
-          // ///////////////////////////// Fancybox Config start
+
+   // ///////////////////////////// Fancybox Config start
     $('[data-fancybox="gallery"]').fancybox({
       buttons: [
         "slideShow",
@@ -812,6 +813,7 @@ jQuery(function($){
     $(".inner-page-heading").addClass("category-head");
    }
   // ///////////////////////////// category page class add end
+
   //  ================ Faq page tabination =============
 
   $('.faq-categories').find('.faq-cat-body ul li a').click(function(e){
@@ -823,5 +825,12 @@ jQuery(function($){
   });
   $('.faq-categories').find('.faq-cat-body ul li:first a').trigger('click');
 
-  //  ================ Faq page tabination =============     
+  //  ================ Faq page tabination ============= 
+  
+  // ///////////////////////////// Login profile doropdown start
+  $(".user-login-profile-icon").click(function(){
+    $(".user-log-profile-dropdown").slideToggle();
+  });
+  // ///////////////////////////// Login profile doropdown end
+  
   });

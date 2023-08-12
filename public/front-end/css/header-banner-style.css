@@ -44,7 +44,8 @@ header.main_header {
     color: #FCCB06;
 }
 
-.lang-dropdown {
+.lang-dropdown,
+.user-log-profile-dropdown {
     position: absolute;
     background: #fff;
     width: 80px;
@@ -53,7 +54,12 @@ header.main_header {
     display: none;
 }
 
-.lang-dropdown ul li a {
+.user-log-profile-dropdown {
+    width: 120px;
+}
+
+.lang-dropdown ul li a,
+.user-log-profile-dropdown ul li a {
     font-size: 14px;
     color: #000000;
     font-weight: 400;
@@ -61,8 +67,52 @@ header.main_header {
     display: grid;
 }
 
-.lang-dropdown ul li a:hover {
+.user-log-profile-dropdown ul li a {
+    font-size: 16px;
+}
+
+.lang-dropdown ul li a:hover,
+.user-log-profile-dropdown ul li a:hover {
     background: #f2f2f2;
+}
+
+.user-login-profile-icon {
+    font-size: 20px;
+    color: #FCCB06;
+    width: 50px;
+    height: 50px;
+    border: 2px #FCCB06 solid;
+    border-radius: 50%;
+    cursor: pointer;
+    text-align: center;
+}
+
+.user-login-profile-icon i {
+    padding: 12px 0;
+}
+
+.user-login-profile-icon:after {
+    content: "\f107";
+    font-family: "Font Awesome 6 Pro";
+    font-weight: 400;
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    right: -9px;
+    bottom: 15px;
+    color: #000;
+    background: #fccb06;
+    font-size: 14px;
+    border-radius: 50%;
+    padding: 2px 0;
+}
+
+.user-login-profile-icon img {
+    width: 50px;
+    height: 50%;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 50%;
 }
 
 span.toggle-menu {
