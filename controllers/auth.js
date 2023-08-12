@@ -1266,7 +1266,8 @@ exports.companyBulkUpload = async (req, res) => {
             password: process.env.DATABASE_PASSWORD,
             database: process.env.DATABASE,
             connectionLimit: 10  // Adjust the limit as needed
-        });        
+        });
+
         const workbook = new ExcelJS.Workbook();
         await workbook.csv.readFile(csvFilePath);
 
@@ -1323,7 +1324,8 @@ exports.companyBulkUpload = async (req, res) => {
                 {
                     status: 'error',
                     data: companies,
-                    message: process.env
+                    message: connection.state,
+                    error_det: connection._protocol._fatalError
                 }
             )
         }  
@@ -1342,7 +1344,7 @@ exports.companyBulkUpload = async (req, res) => {
         // Delete the uploaded CSV file
         //fs.unlinkSync(csvFilePath);
         if (connection) {
-            connection.end(); // Close the connection if it exists
+            //connection.end(); // Close the connection if it exists
         }
     }
 }
