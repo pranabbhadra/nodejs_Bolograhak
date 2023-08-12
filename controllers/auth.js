@@ -1257,16 +1257,8 @@ exports.companyBulkUpload = async (req, res) => {
     const currentDate = new Date();
     // Format the date in 'YYYY-MM-DD HH:mm:ss' format (adjust the format as needed)
     const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
-    let connection;
     // Process the uploaded CSV file and insert data into the database
-    try {
-        const connection = await mysql.createConnection({
-            host: process.env.DATABASE_HOST,
-            user: process.env.DATABASE_USER,
-            password: process.env.DATABASE_PASSWORD,
-            database: process.env.DATABASE
-          });
-
+    try {       
         const workbook = new ExcelJS.Workbook();
         await workbook.csv.readFile(csvFilePath);
 
@@ -1281,53 +1273,39 @@ exports.companyBulkUpload = async (req, res) => {
             }
         });
 
-        // // Insert data into the table using ON DUPLICATE KEY UPDATE
-        // for (const company of companies) {
-        //     await connection.query(
-        //         `
-        //         INSERT INTO company 
-        //             (company_name, heading, about_company, comp_email, comp_phone, tollfree_number, main_address, main_address_pin_code, address_map_url, comp_registration_id, status, trending, created_date) 
-        //         VALUES 
-        //             (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) 
-        //         ON DUPLICATE KEY UPDATE 
-        //             heading = VALUES(heading), 
-        //             about_company = VALUES(about_company),
-        //             comp_email = VALUES(comp_email),
-        //             comp_phone = VALUES(comp_phone),
-        //             tollfree_number = VALUES(tollfree_number),
-        //             main_address = VALUES(main_address),
-        //             main_address_pin_code = VALUES(main_address_pin_code),
-        //             address_map_url = VALUES(address_map_url),
-        //             comp_registration_id = VALUES(comp_registration_id),
-        //             status = VALUES(status),
-        //             trending = VALUES(trending),
-        //             created_date = VALUES(created_date)
-        //         `,
-        //         company
-        //     );
-        // }
+        // Insert data into the table using ON DUPLICATE KEY UPDATE
+        for (const company of companies) {
+            await db.query(
+                `
+                INSERT INTO company 
+                    (company_name, heading, about_company, comp_email, comp_phone, tollfree_number, main_address, main_address_pin_code, address_map_url, comp_registration_id, status, trending, created_date) 
+                VALUES 
+                    (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) 
+                ON DUPLICATE KEY UPDATE 
+                    heading = VALUES(heading), 
+                    about_company = VALUES(about_company),
+                    comp_email = VALUES(comp_email),
+                    comp_phone = VALUES(comp_phone),
+                    tollfree_number = VALUES(tollfree_number),
+                    main_address = VALUES(main_address),
+                    main_address_pin_code = VALUES(main_address_pin_code),
+                    address_map_url = VALUES(address_map_url),
+                    comp_registration_id = VALUES(comp_registration_id),
+                    status = VALUES(status),
+                    trending = VALUES(trending),
+                    created_date = VALUES(created_date)
+                `,
+                company
+            );
+        }
 
-        // Check if the connection is established successfully
-        if (connection.state === 'authenticated') {
-            console.log('Database connection established.');
-            return res.send(
-                {
-                    status: 'ok',
-                    data: companies,
-                    message: connection.state
-                }
-            )
-
-        } else {
-            return res.send(
-                {
-                    status: 'error',
-                    data: companies,
-                    message: connection.state,
-                    error_det: connection._protocol._fatalError
-                }
-            )
-        }  
+        return res.send(
+            {
+                status: 'ok',
+                data: companies,
+                message: 'File uploaded.'
+            }
+        )  
         
     } catch (error) {
         console.error('Error:', error);
