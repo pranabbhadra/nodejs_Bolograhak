@@ -492,8 +492,8 @@ var KTUsersList = function () {
             // Delete button on click
             d.addEventListener('click', function (e) {
                 e.preventDefault();
-                var companyid = $(this).attr('data-companyid');
-                alert('companyid');
+                var companyid = $(this).attr(data-companyid);
+                console.log(companyid);
                 // Select parent row
                 const parent = e.target.closest('tr');
 
@@ -514,20 +514,42 @@ var KTUsersList = function () {
                     }
                 }).then(function (result) {
                     if (result.value) {
-                        Swal.fire({
-                            text: "You have deleted " + userName + "!.",
-                            icon: "success",
-                            buttonsStyling: false,
-                            confirmButtonText: "Ok, got it!",
-                            customClass: {
-                                confirmButton: "btn fw-bold btn-primary",
+                        $.ajax({
+                            url: '/auth/delete-company', // URL for your API endpoint
+                            method: 'POST',
+                            data: {companyid:companyid},
+                            ContentType: 'application/json',
+                            success: function (data) {
+                                if (data.status == 'ok') {
+                                    Swal.fire({
+                                        text: data.message,
+                                        icon: "success",
+                                        buttonsStyling: false,
+                                        confirmButtonText: "Ok, got it!",
+                                        customClass: {
+                                            confirmButton: "btn btn-primary"
+                                        }
+                                    }).then(function (result) {
+                                        if (result.isConfirmed) {
+                                            location.reload();
+                                        }
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        text: data.message,
+                                        icon: "error",
+                                        buttonsStyling: false,
+                                        confirmButtonText: "Ok, got it!",
+                                        customClass: {
+                                            confirmButton: "btn btn-primary"
+                                        }
+                                    });
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                // Handle any errors that occur during the request
+                                console.log(error);
                             }
-                        }).then(function () {
-                            // Remove current row
-                            datatable.row($(parent)).remove().draw();
-                        }).then(function () {
-                            // Detect checked checkboxes
-                            toggleToolbars();
                         });
                     } else if (result.dismiss === 'cancel') {
                         Swal.fire({

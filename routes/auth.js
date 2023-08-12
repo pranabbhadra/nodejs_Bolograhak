@@ -70,6 +70,7 @@ router.put('/edit-user-data', upload.single('profile_pic'), authController.editU
 router.post('/create-company', upload.single('logo'), authController.createCompany);
 router.put('/edit-company-data', upload.single('logo'), authController.editCompany);
 router.post('/company-bulk-upload', csvupload.single('company_file'), authController.companyBulkUpload);
+router.post('/delete-company', authController.deleteCompany);
 // Add FAQ
 router.post('/create-faq', authController.createFAQ);
 

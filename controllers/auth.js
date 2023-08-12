@@ -1248,7 +1248,7 @@ exports.editCompany = (req, res) => {
     })
 }
 
-//--- Create Bulk Upload ----//
+//--- Create Company Bulk Upload ----//
 exports.companyBulkUpload = async (req, res) => {
     //console.log(req.body);
     if (!req.file) {
@@ -1364,7 +1364,6 @@ exports.companyBulkUpload = async (req, res) => {
         //fs.unlinkSync(csvFilePath);
     }
 }
-
 // Define a promise-based function for processing rows
 function processCompanyCSVRows(worksheet, formattedDate, connection, user_id) {
     return new Promise((resolve, reject) => {
@@ -1378,6 +1377,28 @@ function processCompanyCSVRows(worksheet, formattedDate, connection, user_id) {
 
         resolve(companies);
     });
+}
+
+//--- Delete Company ----//
+exports.deleteCompany = (req, res) => {
+    //console.log(req.body.companyid);
+    sql = `DELETE FROM company WHERE ID = ?`;
+    const data = [req.body.companyid];
+    db.query(sql, data, (err, result) => {
+        if (err) {
+            return res.send({
+                status: 'error',
+                message: 'Something went wrong'
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Company successfully deleted'
+            });
+        }
+
+    })
+
 }
 
 exports.createRatingTags = (req, res) => {
