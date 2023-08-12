@@ -23,6 +23,19 @@ const storage = multer.diskStorage({
 // Create multer instance
 const upload = multer({ storage: storage });
 
+const csv_storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'company-csv/');
+    },
+    filename: function (req, file, cb) {
+        const originalname = file.originalname;
+        const sanitizedFilename = originalname.replace(/[^a-zA-Z0-9\-\_\.]/g, ''); // Remove symbols and spaces
+        const filename = Date.now() + '-' + sanitizedFilename;
+        cb(null, filename);
+    }
+});
+// Create multer instance
+const csvupload = multer({ storage: csv_storage });
 
 
 router.post('/register', authController.register);
@@ -45,7 +58,7 @@ router.put('/edit-user-data', upload.single('profile_pic'), authController.editU
 //---Company--------//
 router.post('/create-company', upload.single('logo'), authController.createCompany);
 router.put('/edit-company-data', upload.single('logo'), authController.editCompany);
-
+router.post('/company-bulk-upload', csvupload.single('company_file'), authController.companyBulkUpload);
 // Add FAQ
 router.post('/create-faq', authController.createFAQ);
 

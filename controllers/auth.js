@@ -6,6 +6,7 @@ const bcrypt = require('bcryptjs');
 const useragent = require('useragent');
 const requestIp = require('request-ip');
 const fs = require('fs');
+const ExcelJS = require('exceljs');
 const dotenv = require('dotenv');
 dotenv.config({ path: './.env' });
 const bodyParser = require('body-parser');
@@ -1235,6 +1236,52 @@ exports.editCompany = (req, res) => {
             })
         })
     })
+}
+
+//--- Create Bulk Upload ----//
+exports.companyBulkUpload = async (req, res) => {
+    //console.log(req.body);
+    const encodedUserData = req.cookies.user;
+    const currentUserData = JSON.parse(encodedUserData);
+    if (!req.file) {
+        return res.send(
+            {
+                status: 'err',
+                data: '',
+                message: 'o file uploaded.'
+            }
+        )        
+    }
+    const csvFilePath = path.join(__dirname, 'company-csv', req.file.filename);
+
+    // Process the uploaded CSV file and insert data into the database
+    try {
+    const workbook = new ExcelJS.Workbook();
+    await workbook.csv.readFile(csvFilePath);
+
+    const worksheet = workbook.getWorksheet(1);
+    const companies = [];
+
+    worksheet.eachRow((row, rowNumber) => {
+        if (rowNumber !== 1) { // Skip the header row
+        const [company_name, heading, about_company, comp_email, comp_phone, tollfree_number, main_address, main_address_pin_code, address_map_url, comp_registration_id, category, status, trending] = row.values;
+        companies.push([company_name, heading, about_company, comp_email, comp_phone, tollfree_number, main_address, main_address_pin_code, address_map_url, comp_registration_id, category, status, trending]);
+        }
+    });
+    console.log(companies);
+    // const query = 'INSERT INTO companies (company_name, heading, about_company, comp_phone, comp_email, comp_registration_id, status, trending, created_date, tollfree_number, main_address, main_address_pin_code, address_map_url) VALUES ?';
+    // const [result] = await db.query(query, [companies]);
+    // console.log(`Inserted ${result.affectedRows} rows`);
+
+
+        //res.send(`Inserted ${result.affectedRows} rows into the database.`);
+    } catch (error) {
+        console.error('Error:', error);
+        //res.status(500).send('An error occurred.');
+    } finally {
+        // Delete the uploaded CSV file
+        //fs.unlinkSync(csvFilePath);
+    }
 }
 
 exports.createRatingTags = (req, res) => {
