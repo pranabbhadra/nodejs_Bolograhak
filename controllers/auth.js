@@ -1,7 +1,7 @@
 const util = require('util');
 const express = require('express');
 const db = require('../config');
-const mysql = require('mysql2/promise');
+
 const mdlconfig = require('../config-module');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
@@ -19,6 +19,13 @@ const path = require('path');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 const query = util.promisify(db.query).bind(db);
+const mysql = require('mysql2/promise');
+const dbConfig = {
+    host: process.env.DATABASE_HOST,
+    user: process.env.DATABASE_USER,
+    password: process.env.DATABASE_PASSWORD,
+    database: process.env.DATABASE
+};
 const secretKey = 'grahak-secret-key';
 
 const comFunction = require('../common_function');
@@ -1258,38 +1265,49 @@ exports.companyBulkUpload = async (req, res) => {
     const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
     
     // Process the uploaded CSV file and insert data into the database
-    try {       
+    try {   
+        const connection = await mysql.createConnection(dbConfig);
+
         const workbook = new ExcelJS.Workbook();
         await workbook.csv.readFile(csvFilePath);
 
         const worksheet = workbook.getWorksheet(1);
-        const companies = await processCompanyCSVRows(worksheet, formattedDate);
+        const companies = await processCompanyCSVRows(worksheet, formattedDate, connection);
 
         for (const company of companies) {
-            await db.query(
-                `
-                INSERT INTO company 
-                    (company_name, heading, about_company, comp_email, comp_phone, tollfree_number, main_address, main_address_pin_code, address_map_url, comp_registration_id, status, trending, created_date) 
-                VALUES 
-                    (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) 
-                ON DUPLICATE KEY UPDATE 
-                    heading = VALUES(heading), 
-                    about_company = VALUES(about_company),
-                    comp_email = VALUES(comp_email),
-                    comp_phone = VALUES(comp_phone),
-                    tollfree_number = VALUES(tollfree_number),
-                    main_address = VALUES(main_address),
-                    main_address_pin_code = VALUES(main_address_pin_code),
-                    address_map_url = VALUES(address_map_url),
-                    comp_registration_id = VALUES(comp_registration_id),
-                    status = VALUES(status),
-                    trending = VALUES(trending),
-                    created_date = VALUES(created_date)
-                `,
-                company
-            );
+            try {
+                await connection.execute(
+                    `
+                    INSERT INTO company 
+                        (company_name, heading, about_company, comp_email, comp_phone, tollfree_number, main_address, main_address_pin_code, address_map_url, comp_registration_id, status, trending, created_date) 
+                    VALUES 
+                        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) 
+                    ON DUPLICATE KEY UPDATE 
+                        heading = VALUES(heading), 
+                        about_company = VALUES(about_company),
+                        comp_email = VALUES(comp_email),
+                        comp_phone = VALUES(comp_phone),
+                        tollfree_number = VALUES(tollfree_number),
+                        main_address = VALUES(main_address),
+                        main_address_pin_code = VALUES(main_address_pin_code),
+                        address_map_url = VALUES(address_map_url),
+                        comp_registration_id = VALUES(comp_registration_id),
+                        status = VALUES(status),
+                        trending = VALUES(trending),
+                        created_date = VALUES(created_date)
+                    `,
+                    company
+                );
+            } catch (error) {
+                console.error('Error:', error);
+                return res.send({
+                    status: 'err',
+                    data: companies,
+                    message: error.message
+                });
+            }
         }
-
+        await connection.end(); // Close the connectio
         return res.send(
             {
                 status: 'ok',
@@ -1312,10 +1330,10 @@ exports.companyBulkUpload = async (req, res) => {
 }
 
 // Define a promise-based function for processing rows
-function processCompanyCSVRows(worksheet, formattedDate) {
+function processCompanyCSVRows(worksheet, formattedDate, connection) {
     return new Promise((resolve, reject) => {
         const companies = [];
-        
+
         worksheet.eachRow((row, rowNumber) => {
             if (rowNumber !== 1) { // Skip the header row
                 companies.push([row.values[1], row.values[2], row.values[3], row.values[4], row.values[5], row.values[6], row.values[7], row.values[8], row.values[9], row.values[10], '1', '0', formattedDate]);
