@@ -97,7 +97,9 @@
                 </ul>
               </div>
             </span> -->
+            <% if(menu_active_id!='business'){%>
             <span class="mbl-hide-link"><a href="/business" class="btn-default btn-outline-warning">For Business</a></span>
+            <% } %>
             <% if(currentUserData){ %>
             <span class="user-log-profile">
               <span class="user-login-profile-icon">

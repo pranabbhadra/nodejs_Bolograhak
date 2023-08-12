@@ -1249,7 +1249,7 @@ exports.companyBulkUpload = async (req, res) => {
             {
                 status: 'err',
                 data: '',
-                message: 'o file uploaded.'
+                message: 'No file uploaded.'
             }
         )        
     }
@@ -1260,12 +1260,12 @@ exports.companyBulkUpload = async (req, res) => {
     let connection;
     // Process the uploaded CSV file and insert data into the database
     try {
-        const connection = await mysql.createConnection({
+        connection = await mysql.createConnection({
             host: process.env.DATABASE_HOST,
             user: process.env.DATABASE_USER,
             password: process.env.DATABASE_PASSWORD,
             database: process.env.DATABASE
-        });
+        });        
         const workbook = new ExcelJS.Workbook();
         await workbook.csv.readFile(csvFilePath);
 
@@ -1274,40 +1274,55 @@ exports.companyBulkUpload = async (req, res) => {
 
         worksheet.eachRow(async (row, rowNumber) => {
             if (rowNumber !== 1) { // Skip the header row
-                const [,company_name, heading, about_company, comp_email, comp_phone, tollfree_number, main_address, main_address_pin_code, address_map_url, comp_registration_id, category, status, trending] = row.values;
                 //console.log([company_name, heading, about_company, comp_email, comp_phone, tollfree_number, main_address, main_address_pin_code, address_map_url, comp_registration_id, category, status, trending]);
-                console.log(row.values);
+                //console.log(row.values);
                 // Check if company already exists by company_name
-                // const existingCompany = await connection.query("SELECT * FROM company WHERE company_name = ?", [company_name]);
-                // if (existingCompany.length > 0) {
-                //     // Update existing company info
-                //     const updateQuery = `
-                //         UPDATE company 
-                //         SET heading = ?, about_company = ?, comp_email = ?, comp_phone = ?, tollfree_number = ?, 
-                //         main_address = ?, main_address_pin_code = ?, address_map_url = ?, comp_registration_id = ?, 
-                //         status = ?, trending = ?, updated_date =?
-                //         WHERE company_name = ?`;
-
-                //     await connection.query(updateQuery, [heading, about_company, comp_email, comp_phone, tollfree_number, 
-                //         main_address, main_address_pin_code, address_map_url, comp_registration_id, 
-                //         status, trending, formattedDate, company_name]);
-                    
-                //     console.log(`Updated company: ${company_name}`);
-                // } else {
-                //     // Insert new company
-                //     companies.push([company_name, heading, about_company, comp_email, comp_phone, tollfree_number, 
-                //         main_address, main_address_pin_code, address_map_url, comp_registration_id, status, trending, formattedDate]);
-                // }
+                try {
+                    const company_name_checking_query = "SELECT ID FROM company WHERE company_name = ?";
+                    const company_name_checking_results = await query(company_name_checking_query, [row.values[1]]);
+                    if (company_name_checking_results.length > 0) {
+                        //company exist update company info
+                        try{
+                            const update_company_query =  `
+                                    UPDATE company 
+                                    SET heading = ?, about_company = ?, comp_email = ?, comp_phone = ?, tollfree_number = ?, 
+                                    main_address = ?, main_address_pin_code = ?, address_map_url = ?, comp_registration_id = ?, updated_date =?
+                                    WHERE company_name = ?`;
+                            const  update_company_values = [row.values[2], row.values[3], row.values[4], row.values[5], row.values[6], row.values[7], row.values[8], row.values[9], row.values[10], formattedDate, company_name_checking_results[0].ID];
+                            try {
+                                const update_company_result = await query(update_company_query, update_company_values);
+                                console.log(`Updated company: `+row.values[1]);
+                            }catch(error){
+                                console.error('Error during user update_company_query:', error);
+                            }
+                        }catch(error){
+                            console.error('Error during user update_company_query:', error);
+                        }
+                    }else{
+                        //companies.push([row.values[1], row.values[2], row.values[3], row.values[4], row.values[5], row.values[6], row.values[7], row.values[8], row.values[9], row.values[10], row.values[11], row.values[12], formattedDate]);
+                        console.log([row.values[1], row.values[2], row.values[3], row.values[4], row.values[5], row.values[6], row.values[7], row.values[8], row.values[9], row.values[10], row.values[11], row.values[12], formattedDate]);
+                        try {
+                            const insertNewCompaniesQuery = 'INSERT INTO company (company_name, heading, about_company, comp_email, comp_phone, tollfree_number, main_address, main_address_pin_code, address_map_url, comp_registration_id, status, trending, created_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+                            const insertNewCompanies_values = [row.values[1], row.values[2], row.values[3], row.values[4], row.values[5], row.values[6], row.values[7], row.values[8], row.values[9], row.values[10], '1', '0', formattedDate];
+                            const insertNewCompanies_results = await query(insertNewCompaniesQuery, insertNewCompanies_values);
+                            console.log(row.values[1]+':'+insertNewCompanies_results.insertId);
+                        }catch(error){
+                            console.error('Error during user company_name_checking_query:', error);   
+                        }
+                    }
+                }catch(error){
+                    console.error('Error during user company_name_checking_query:', error);
+                }
             }
         });
-        if (companies.length > 0) {
-            const company_insert_query = 'INSERT INTO company (company_name, heading, about_company, comp_email, comp_phone, tollfree_number, main_address, main_address_pin_code, address_map_url, comp_registration_id, status, trending, created_date) VALUES ?';
-            const [company_insert_result] = await connection.query(company_insert_query, [companies]);
-            console.log(`Inserted ${company_insert_result.affectedRows} rows`);
-        }
 
-
-        //res.send(`Inserted ${result.affectedRows} rows into the database.`);
+        return res.send(
+            {
+                status: 'ok',
+                data: '',
+                message: 'File uploaded.'
+            }
+        )  
         
     } catch (error) {
         console.error('Error:', error);
@@ -2125,4 +2140,187 @@ if (typeof upcoming_features_content === 'string' ) {
             }
         )
     })
+}
+
+// Update Privacy Policy
+exports.updatePrivacy = (req, res) => {
+    //console.log('Privacy', req.body);
+
+    const { common_id, title, meta_title, meta_desc, keyword, content } = req.body;
+
+    const check_sql = `SELECT * FROM page_meta WHERE page_id = ? AND page_meta_key = ?`;
+    const check_data = [common_id, "content"];
+    db.query(check_sql, check_data, (check_err, check_result) => {
+        if (check_err) {
+            return res.send(
+                {
+                    status: 'err',
+                    data: '',
+                    message: 'An error occurred while processing your request'
+                }
+            )
+        } else {
+            if (check_result.length > 0) {
+                const update_sql = `UPDATE page_meta SET page_meta_value = ? WHERE page_id = ? AND page_meta_key = ?`;
+                const update_data = [content, common_id,'content'];
+                db.query(update_sql, update_data, (update_err, update_result) => {
+                    if (update_err) throw update_err;
+                    const title_sql = `UPDATE page_info SET title = ?, meta_title = ?, meta_desc = ?, meta_keyword = ? WHERE id  = ?`;
+                    const title_data = [title, meta_title, meta_desc, keyword, common_id];
+                    //console.log(title_data);
+                    db.query(title_sql, title_data, (title_err, title_result) => {
+                        return res.send(
+                            {
+                                status: 'ok',
+                                data: '',
+                                message: 'Privacy policy update successfully'
+                            }
+                        )
+                    })
+                })
+            } else {
+                const insert_sql = `INSERT INTO page_meta (page_id , page_meta_key, page_meta_value) VALUES (?,?,?)`;
+                const insert_data = [common_id, 'content', content];
+                db.query(insert_sql, insert_data, (insert_err, insert_result) => {
+                    if (insert_err) throw insert_err;
+                    const title_sql = `UPDATE page_info SET title = ?, meta_title = ?, meta_desc = ?, meta_keyword = ? WHERE id  = ?`;
+                    const title_data = [title, meta_title, meta_desc, keyword, common_id];
+                    //console.log(title_data);
+                    db.query(title_sql, title_data, (title_err, title_result) => {
+                        return res.send(
+                            {
+                                status: 'ok',
+                                data: '',
+                                message: 'Privacy policy update successfully'
+                            }
+                        )
+                    })
+                })
+            }
+        }
+    });
+
+    
+}
+
+// Update Disclaimer
+exports.updateDisclaimer = (req, res) => {
+    //console.log('Privacy', req.body);
+
+    const { common_id, title, meta_title, meta_desc, keyword, content } = req.body;
+
+    const check_sql = `SELECT * FROM page_meta WHERE page_id = ? AND page_meta_key = ?`;
+    const check_data = [common_id, "content"];
+    db.query(check_sql, check_data, (check_err, check_result) => {
+        if (check_err) {
+            return res.send(
+                {
+                    status: 'err',
+                    data: '',
+                    message: 'An error occurred while processing your request'
+                }
+            )
+        } else {
+            if (check_result.length > 0) {
+                const update_sql = `UPDATE page_meta SET page_meta_value = ? WHERE page_id = ? AND page_meta_key = ?`;
+                const update_data = [content, common_id,'content'];
+                db.query(update_sql, update_data, (update_err, update_result) => {
+                    if (update_err) throw update_err;
+                    const title_sql = `UPDATE page_info SET title = ?, meta_title = ?, meta_desc = ?, meta_keyword = ? WHERE id  = ?`;
+                    const title_data = [title, meta_title, meta_desc, keyword, common_id];
+                    //console.log(title_data);
+                    db.query(title_sql, title_data, (title_err, title_result) => {
+                        return res.send(
+                            {
+                                status: 'ok',
+                                data: '',
+                                message: 'Disclaimer update successfully'
+                            }
+                        )
+                    })
+                })
+            } else {
+                const insert_sql = `INSERT INTO page_meta (page_id , page_meta_key, page_meta_value) VALUES (?,?,?)`;
+                const insert_data = [common_id, 'content', content];
+                db.query(insert_sql, insert_data, (insert_err, insert_result) => {
+                    if (insert_err) throw insert_err;
+                    const title_sql = `UPDATE page_info SET title = ?, meta_title = ?, meta_desc = ?, meta_keyword = ? WHERE id  = ?`;
+                    const title_data = [title, meta_title, meta_desc, keyword, common_id];
+                    //console.log(title_data);
+                    db.query(title_sql, title_data, (title_err, title_result) => {
+                        return res.send(
+                            {
+                                status: 'ok',
+                                data: '',
+                                message: 'Disclaimer update successfully'
+                            }
+                        )
+                    })
+                })
+            }
+        }
+    });
+
+    
+}
+
+// Update Terms Of Service
+exports.updateTermsOfService = (req, res) => {
+    //console.log('Privacy', req.body);
+
+    const { common_id, title, meta_title, meta_desc, keyword, content } = req.body;
+
+    const check_sql = `SELECT * FROM page_meta WHERE page_id = ? AND page_meta_key = ?`;
+    const check_data = [common_id, "content"];
+    db.query(check_sql, check_data, (check_err, check_result) => {
+        if (check_err) {
+            return res.send(
+                {
+                    status: 'err',
+                    data: '',
+                    message: 'An error occurred while processing your request'
+                }
+            )
+        } else {
+            if (check_result.length > 0) {
+                const update_sql = `UPDATE page_meta SET page_meta_value = ? WHERE page_id = ? AND page_meta_key = ?`;
+                const update_data = [content, common_id,'content'];
+                db.query(update_sql, update_data, (update_err, update_result) => {
+                    if (update_err) throw update_err;
+                    const title_sql = `UPDATE page_info SET title = ?, meta_title = ?, meta_desc = ?, meta_keyword = ? WHERE id  = ?`;
+                    const title_data = [title, meta_title, meta_desc, keyword, common_id];
+                    //console.log(title_data);
+                    db.query(title_sql, title_data, (title_err, title_result) => {
+                        return res.send(
+                            {
+                                status: 'ok',
+                                data: '',
+                                message: 'Terms Of Service update successfully'
+                            }
+                        )
+                    })
+                })
+            } else {
+                const insert_sql = `INSERT INTO page_meta (page_id , page_meta_key, page_meta_value) VALUES (?,?,?)`;
+                const insert_data = [common_id, 'content', content];
+                db.query(insert_sql, insert_data, (insert_err, insert_result) => {
+                    if (insert_err) throw insert_err;
+                    const title_sql = `UPDATE page_info SET title = ?, meta_title = ?, meta_desc = ?, meta_keyword = ? WHERE id  = ?`;
+                    const title_data = [title, meta_title, meta_desc, keyword, common_id];
+                    //console.log(title_data);
+                    db.query(title_sql, title_data, (title_err, title_result) => {
+                        return res.send(
+                            {
+                                status: 'ok',
+                                data: '',
+                                message: 'Terms Of Service update successfully'
+                            }
+                        )
+                    })
+                })
+            }
+        }
+    });
+
+    
 }

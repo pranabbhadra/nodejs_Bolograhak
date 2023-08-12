@@ -755,7 +755,7 @@ var KTModalExportUsers = function () {
                                             }
                                         }).then(function (result) {
                                             if (result.isConfirmed) {
-                                                window.location.href = "/edit-company/" + data.data;
+                                                location.reload();
                                             }
                                         });
                                     } else {

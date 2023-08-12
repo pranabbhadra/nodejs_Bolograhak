@@ -161,6 +161,128 @@ function getReviewedCompanies(userId) {
   });
 }
 
+// Function to fetch user All Companies Reviews  from the  reviews table
+function getAllCompaniesReviews(userId) {
+  return new Promise((resolve, reject) => {
+    const reviewed_companies_query = `
+            SELECT reviews.id, reviews.company_id, reviews.customer_id, reviews.company_location, reviews.review_title,
+             reviews.review_content, reviews.rating, reviews.created_at, c.company_name as company_name, c.logo as logo
+            FROM  reviews 
+            JOIN company c ON reviews.company_id = c.ID
+            WHERE reviews.customer_id = ?
+            ORDER BY updated_at DESC
+        `;
+    db.query(reviewed_companies_query, [userId], (err, result) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
+
+// Function to fetch user All Companies Reviews tags from the  review_tag_relation table
+function getAllReviewTags() {
+  return new Promise((resolve, reject) => {
+    const reviewed_companies_query = `
+            SELECT review_id,tag_name
+            FROM  review_tag_relation 
+            WHERE 1 `;
+    db.query(reviewed_companies_query,  (err, result) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
+
+//Function to fetch latest Reviews from the  reviews,company,company_location,users,user_customer_meta table
+async function getlatestReviews(reviewCount){
+  const get_latest_review_query = `
+    SELECT r.*, c.company_name, c.logo, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, 
+    u.last_name, u.user_id, u.user_status, ucm.profile_pic
+      FROM reviews r
+      LEFT JOIN company c ON r.company_id = c.ID 
+      LEFT JOIN company_location cl ON r.company_location_id = cl.ID 
+      LEFT JOIN users u ON r.customer_id = u.user_id 
+      LEFT JOIN user_customer_meta ucm ON ucm.user_id = u.user_id 
+      WHERE r.review_status = "1" AND c.status = "1" 
+      ORDER BY r.created_at DESC
+      LIMIT ${reviewCount};
+  `;
+  try{
+    const get_latest_review_results = await query(get_latest_review_query);
+    if(get_latest_review_results.length > 0 ){
+      //console.log(get_latest_review_results);
+      return get_latest_review_results;
+    }else{
+      return [];
+    }
+  }catch(error){
+    console.error('Error during user get_latest_review_query:', error);
+  }
+  
+}
+
+//Function to fetch All Trending Reviews from the  reviews,company,company_location,users,user_customer_meta table
+async function getAllTrendingReviews(){
+  const get_latest_review_query = `
+    SELECT r.*, c.company_name, c.logo, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, 
+    u.last_name, u.user_id, u.user_status, ucm.profile_pic
+      FROM reviews r
+      LEFT JOIN company c ON r.company_id = c.ID 
+      LEFT JOIN company_location cl ON r.company_location_id = cl.ID 
+      LEFT JOIN users u ON r.customer_id = u.user_id 
+      LEFT JOIN user_customer_meta ucm ON ucm.user_id = u.user_id 
+      WHERE r.review_status = "1" AND c.status = "1" AND c.trending = "1"
+      ORDER BY r.created_at DESC
+  `;
+  try{
+    const get_latest_review_results = await query(get_latest_review_query);
+    if(get_latest_review_results.length > 0 ){
+      //console.log(get_latest_review_results);
+      return get_latest_review_results;
+    }else{
+      return [];
+    }
+  }catch(error){
+    console.error('Error during user get_latest_review_query:', error);
+  }
+  
+}
+
+//Function to fetch All  Reviews from the  reviews,company,company_location,users,user_customer_meta table
+async function getAllReviews(){
+  const get_latest_review_query = `
+    SELECT r.*, c.company_name, c.logo, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, 
+    u.last_name, u.user_id, u.user_status, ucm.profile_pic
+      FROM reviews r
+      LEFT JOIN company c ON r.company_id = c.ID 
+      LEFT JOIN company_location cl ON r.company_location_id = cl.ID 
+      LEFT JOIN users u ON r.customer_id = u.user_id 
+      LEFT JOIN user_customer_meta ucm ON ucm.user_id = u.user_id 
+      WHERE r.review_status = "1" AND c.status = "1"
+      ORDER BY r.created_at DESC
+  `;
+  try{
+    const get_latest_review_results = await query(get_latest_review_query);
+    if(get_latest_review_results.length > 0 ){
+      //console.log(get_latest_review_results);
+      return get_latest_review_results;
+    }else{
+      return [];
+    }
+  }catch(error){
+    console.error('Error during user get_latest_review_query:', error);
+  }
+  
+}
+
+
+
 module.exports = {
   getFaqPage,
   getFaqCategories,
@@ -171,5 +293,10 @@ module.exports = {
   deleteBusinessUpcomingFeature,
   getBusinessFeature,
   getUpcomingBusinessFeature,
-  getReviewedCompanies
+  getReviewedCompanies,
+  getAllCompaniesReviews,
+  getAllReviewTags,
+  getlatestReviews,
+  getAllTrendingReviews,
+  getAllReviews
 };

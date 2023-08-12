@@ -191,4 +191,13 @@ router.post('/update-business', upload.fields([
 
 ]), authController.updateBusiness);
 
+//Update Privacy Policy
+router.post('/update-privacy', authController.updatePrivacy);
+
+//Update disclaimer
+router.post('/update-disclaimer', authController.updateDisclaimer);
+
+//Update terms-of-service
+router.post('/update-terms-of-service', authController.updateTermsOfService);
+
 module.exports = router;

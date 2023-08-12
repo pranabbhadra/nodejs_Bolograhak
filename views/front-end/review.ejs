@@ -27,7 +27,102 @@
       <div class="review-slider-wrap">
          <h2 class="inner-main-head">Latest</h2>
          <div class="review-slider">
-            <div class="item">
+            
+            <% if(latestReviews) { %>
+               <% latestReviews.forEach( (latestReview, index)=> {%>
+                  <div class="item">
+                     <div class="review-box">
+                        <h3><%= latestReview.company_name %></h3>
+                        <div class="user-info-panel">
+                           <span><i class="fa-solid fa-location-dot"></i></span>
+                           <p class="m-0">
+                              <strong>Location</strong><br>
+                              <%= latestReview.company_location %> <%= latestReview.city %> <%= latestReview.state %>- <%= latestReview.zip %> <%= latestReview.country %>
+                           </p>
+                        </div>
+                        <% if(latestReview && latestReview.review_title) { %>
+                        <div class="user-info-panel">
+                           <span><i class="fa-solid fa-box"></i></span>
+                           <p class="m-0">
+                              <strong><%= latestReview.review_title %></strong><br>
+                           </p>
+                        </div>
+                        <% } %>
+                        <div class="user-review-text">
+                           <% AllReviewTags.forEach( (tag,index)=> {%>
+                              <% if(tag.review_id == latestReview.id) { %>
+                                 <span class="user-select-tag"><%= tag.tag_name %></span>
+                              <% } %>
+                           <% }) %>
+                           <div class="review-description-wrap">
+                              <%= latestReview.review_content %>
+                              <!-- <div class="review-full-description">
+                                 <%= latestReview.review_content %>
+                              </div>
+                              <a href="" class="read-review">View More</a> -->
+                           </div>
+                        </div>
+                        <div class="user-bio_rating">
+                           <div class="user-profile-info">
+                              <div class="user-name-show position-relative">
+                                 <% if(latestReview.user_privacy == 1) { %>
+                                    <% if(latestReview && latestReview.profile_pic ) { %>
+                                       <span><img src="/<%= latestReview.profile_pic %>" alt="img" width="20px"></span>
+                                       <% } else { %>
+                                          <span><img src="/assets/media/avatars/blank.png" alt="img" width="20px"></span>
+                                          <% } %>
+                                    <span><%= latestReview.first_name %> <%= latestReview.last_name %></span>
+                                    <% } else { %>
+                                       <span><img src="front-end/images/blur-img.png" alt="img"></span>
+                                       <span><img src="front-end/images/blur-name.png" alt="img"></span>
+                                    <% } %>
+                                 
+                              </div>
+                              <% const dateString = latestReview.created_at; %>
+                              <% const date = new Date(dateString); %>
+                              <div class="user-review-date"><%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) %></div>
+                           </div>
+                           <% var average = latestReview.rating %>
+                           <% if (average >= 1 && average <= 1.25) {
+                              var avg = 1
+                              } else if (average > 1.25 && average <= 1.9) {
+                              var avg = 1.5
+                              } else if (average >= 2 && average <= 2.25) {
+                              var avg = 2
+                              } else if (average > 2.25 && average <= 2.9) {
+                              var avg = 2.5
+                              } else if (average >= 3 && average <= 3.25) {
+                              var avg = 3
+                              } else if (average > 3.25 && average <= 3.9) {
+                              var avg = 3.5
+                              } else if (average >= 4 && average <= 4.25) {
+                              var avg = 4
+                              } else if (average > 4.25 && average <= 4.9) {
+                              var avg = 4.5
+                              } else if (average > 4.5) {
+                              var avg = 5
+                              } else {
+                              var avg = 0
+                              }
+                              %>
+                           <div class="user-rating">
+                              <% allRatingTags.forEach( tag => { %>
+                                 <% if(tag.review_rating_value == avg){ %>
+                                    <span><img src="/<%= tag.rating_image %>" alt="" style="display: inline-block;" width="35"></span>
+                                 <% } %>
+                                 <% }) %> 
+                              <span><%= latestReview.rating %>/5</span>
+                           </div>
+                        </div>
+                        <!-- <div class="review-like-dislike">
+                           <span><a href=""><i class="fa-solid fa-thumbs-up"></i> 10</a></span>
+                           <span><a href=""><i class="fa-solid fa-thumbs-down"></i> 8</a></span>
+                        </div> -->
+                     </div>
+                  </div>
+               <% }) %>
+            <% } %>
+            <!-- <div class="item">
                <div class="review-box">
                   <h3>Company Name</h3>
                   <div class="user-info-panel">
@@ -266,258 +361,215 @@
                      <span><a href=""><i class="fa-solid fa-thumbs-down"></i> 8</a></span>
                   </div>
                </div>
-            </div>
+            </div> -->
          </div>
       </div>
       <div class="review-slider-wrap">
          <h2 class="inner-main-head">Trending</h2>
          <div class="review-slider">
-            <div class="item">
-               <div class="review-box">
-                  <h3>Company Name</h3>
-                  <div class="user-info-panel">
-                     <span><i class="fa-solid fa-location-dot"></i></span>
-                     <p class="m-0">
-                        <strong>Location</strong><br>
-                        Akshya Nagar 1st Block 1st Cross, Rammurthy nagar, Bangalore- 560016, India.
-                     </p>
-                  </div>
-                  <div class="user-info-panel">
-                     <span><i class="fa-solid fa-box"></i></span>
-                     <p class="m-0">
-                        <strong>Product/division</strong><br>
-                        Samsung Galaxy
-                     </p>
-                  </div>
-                  <div class="user-review-text">
-                     <span class="user-select-tag">Present Rerum</span>
-                     <span class="user-select-tag">Text 1</span>
-                     <span class="user-select-tag">Text 2</span>
-                     <div class="review-description-wrap">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum eu metus eget...
-                        <div class="review-full-description">
-                           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum eu metus eget. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            <% if(AllTrendingReviews) { %>
+               <% AllTrendingReviews.forEach( (TrendingReview, index)=> {%>
+                  <div class="item">
+                     <div class="review-box">
+                        <h3><%= TrendingReview.company_name %></h3>
+                        <div class="user-info-panel">
+                           <span><i class="fa-solid fa-location-dot"></i></span>
+                           <p class="m-0">
+                              <strong>Location</strong><br>
+                              <%= TrendingReview.company_location %> <%= TrendingReview.city %> <%= TrendingReview.state %>- <%= TrendingReview.zip %> <%= TrendingReview.country %>
+                           </p>
                         </div>
-                        <a href="" class="read-review">View More</a>
-                     </div>
-                  </div>
-                  <div class="user-bio_rating">
-                     <div class="user-profile-info">
-                        <div class="user-name-show position-relative">
-                           <span><img src="front-end/images/user-img.png" alt="img"></span>
-                           <span>Raju Sing</span>
+                        <% if(TrendingReview && TrendingReview.review_title) { %>
+                           <div class="user-info-panel">
+                              <span><i class="fa-solid fa-box"></i></span>
+                              <p class="m-0">
+                                 <strong><%= TrendingReview.review_title %></strong><br>
+                              </p>
+                           </div>
+                           <% } %>
+                        <div class="user-review-text">
+                           <% AllReviewTags.forEach( (tag,index)=> {%>
+                              <% if(tag.review_id == TrendingReview.id) { %>
+                                 <span class="user-select-tag"><%= tag.tag_name %></span>
+                              <% } %>
+                           <% }) %>
+                           <div class="review-description-wrap">
+                              <%= TrendingReview.review_content %>
+                              <!-- Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum eu metus eget...
+                              <div class="review-full-description">
+                                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum eu metus eget. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                              </div>
+                              <a href="" class="read-review">View More</a> -->
+                           </div>
                         </div>
-                        <div class="user-review-date">April 24, 2022</div>
-                     </div>
-                     <div class="user-rating">
-                        <span><img src="front-end/images/rating-emoji.png" alt=""></span>
-                        <span>4/5</span>
-                     </div>
-                  </div>
-                  <div class="review-like-dislike">
-                     <span><a href=""><i class="fa-solid fa-thumbs-up"></i> 10</a></span>
-                     <span><a href=""><i class="fa-solid fa-thumbs-down"></i> 8</a></span>
-                  </div>
-               </div>
-            </div>
-            <div class="item">
-               <div class="review-box">
-                  <h3>Company Name</h3>
-                  <div class="user-info-panel">
-                     <span><i class="fa-solid fa-location-dot"></i></span>
-                     <p class="m-0">
-                        <strong>Location</strong><br>
-                        Akshya Nagar 1st Block 1st Cross, Rammurthy nagar, Bangalore- 560016, India.
-                     </p>
-                  </div>
-                  <div class="user-info-panel">
-                     <span><i class="fa-solid fa-box"></i></span>
-                     <p class="m-0">
-                        <strong>Product/division</strong><br>
-                        Samsung Galaxy
-                     </p>
-                  </div>
-                  <div class="user-review-text">
-                     <span class="user-select-tag">Present Rerum</span>
-                     <span class="user-select-tag">Text 1</span>
-                     <span class="user-select-tag">Text 2</span>
-                     <div class="review-description-wrap">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum eu metus eget...
-                        <div class="review-full-description">
-                           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum eu metus eget. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                        <div class="user-bio_rating">
+                           <div class="user-profile-info">
+                              <div class="user-name-show position-relative">
+                                 <% if(TrendingReview.user_privacy == 1) { %>
+                                    <% if(TrendingReview && TrendingReview.profile_pic ) { %>
+                                       <span><img src="/<%= TrendingReview.profile_pic %>" alt="img" width="20px"></span>
+                                       <% } else { %>
+                                          <span><img src="/assets/media/avatars/blank.png" alt="img" width="20px"></span>
+                                          <% } %>
+                                    <span><%= TrendingReview.first_name %> <%= TrendingReview.last_name %></span>
+                                    <% } else { %>
+                                       <span><img src="front-end/images/blur-img.png" alt="img"></span>
+                                       <span><img src="front-end/images/blur-name.png" alt="img"></span>
+                                    <% } %>
+                              </div>
+                              <% const dateString = TrendingReview.created_at; %>
+                              <% const date = new Date(dateString); %>
+                              <div class="user-review-date"><%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) %></div>
+                           </div>
+                           <% var average = TrendingReview.rating %>
+                           <% if (average >= 1 && average <= 1.25) {
+                              var avg = 1
+                              } else if (average > 1.25 && average <= 1.9) {
+                              var avg = 1.5
+                              } else if (average >= 2 && average <= 2.25) {
+                              var avg = 2
+                              } else if (average > 2.25 && average <= 2.9) {
+                              var avg = 2.5
+                              } else if (average >= 3 && average <= 3.25) {
+                              var avg = 3
+                              } else if (average > 3.25 && average <= 3.9) {
+                              var avg = 3.5
+                              } else if (average >= 4 && average <= 4.25) {
+                              var avg = 4
+                              } else if (average > 4.25 && average <= 4.9) {
+                              var avg = 4.5
+                              } else if (average > 4.5) {
+                              var avg = 5
+                              } else {
+                              var avg = 0
+                              }
+                              %>
+                           <div class="user-rating">
+                              <% allRatingTags.forEach( tag => { %>
+                                 <% if(tag.review_rating_value == avg){ %>
+                                    <span><img src="/<%= tag.rating_image %>" alt="" style="display: inline-block;" width="35"></span>
+                                 <% } %>
+                                 <% }) %> 
+                              <span><%= TrendingReview.rating %>/5</span>
+                           </div>
                         </div>
-                        <a href="" class="read-review">View More</a>
+                        <!-- <div class="review-like-dislike">
+                           <span><a href=""><i class="fa-solid fa-thumbs-up"></i> 10</a></span>
+                           <span><a href=""><i class="fa-solid fa-thumbs-down"></i> 8</a></span>
+                        </div> -->
                      </div>
                   </div>
-                  <div class="user-bio_rating">
-                     <div class="user-profile-info">
-                        <div class="user-name-show position-relative">
-                           <span><img src="front-end/images/user-img.png" alt="img"></span>
-                           <span>Raju Sing</span>
-                        </div>
-                        <div class="user-review-date">April 24, 2022</div>
-                     </div>
-                     <div class="user-rating">
-                        <span><img src="front-end/images/rating-emoji.png" alt=""></span>
-                        <span>4/5</span>
-                     </div>
-                  </div>
-                  <div class="review-like-dislike">
-                     <span><a href=""><i class="fa-solid fa-thumbs-up"></i> 10</a></span>
-                     <span><a href=""><i class="fa-solid fa-thumbs-down"></i> 8</a></span>
-                  </div>
-               </div>
-            </div>
-            <div class="item">
-               <div class="review-box">
-                  <h3>Company Name</h3>
-                  <div class="user-info-panel">
-                     <span><i class="fa-solid fa-location-dot"></i></span>
-                     <p class="m-0">
-                        <strong>Location</strong><br>
-                        Akshya Nagar 1st Block 1st Cross, Rammurthy nagar, Bangalore- 560016, India.
-                     </p>
-                  </div>
-                  <div class="user-info-panel">
-                     <span><i class="fa-solid fa-box"></i></span>
-                     <p class="m-0">
-                        <strong>Product/division</strong><br>
-                        Samsung Galaxy
-                     </p>
-                  </div>
-                  <div class="user-review-text">
-                     <span class="user-select-tag">Present Rerum</span>
-                     <span class="user-select-tag">Text 1</span>
-                     <span class="user-select-tag">Text 2</span>
-                     <div class="review-description-wrap">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum eu metus eget...
-                        <div class="review-full-description">
-                           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum eu metus eget. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                        </div>
-                        <a href="" class="read-review">View More</a>
-                     </div>
-                  </div>
-                  <div class="user-bio_rating">
-                     <div class="user-profile-info">
-                        <div class="user-name-show position-relative">
-                           <span><img src="front-end/images/user-img.png" alt="img"></span>
-                           <span>Raju Sing</span>
-                        </div>
-                        <div class="user-review-date">April 24, 2022</div>
-                     </div>
-                     <div class="user-rating">
-                        <span><img src="front-end/images/rating-emoji.png" alt=""></span>
-                        <span>4/5</span>
-                     </div>
-                  </div>
-                  <div class="review-like-dislike">
-                     <span><a href=""><i class="fa-solid fa-thumbs-up"></i> 10</a></span>
-                     <span><a href=""><i class="fa-solid fa-thumbs-down"></i> 8</a></span>
-                  </div>
-               </div>
-            </div>
-            <div class="item">
-               <div class="review-box">
-                  <h3>Company Name</h3>
-                  <div class="user-info-panel">
-                     <span><i class="fa-solid fa-location-dot"></i></span>
-                     <p class="m-0">
-                        <strong>Location</strong><br>
-                        Akshya Nagar 1st Block 1st Cross, Rammurthy nagar, Bangalore- 560016, India.
-                     </p>
-                  </div>
-                  <div class="user-info-panel">
-                     <span><i class="fa-solid fa-box"></i></span>
-                     <p class="m-0">
-                        <strong>Product/division</strong><br>
-                        Samsung Galaxy
-                     </p>
-                  </div>
-                  <div class="user-review-text">
-                     <span class="user-select-tag">Present Rerum</span>
-                     <span class="user-select-tag">Text 1</span>
-                     <span class="user-select-tag">Text 2</span>
-                     <div class="review-description-wrap">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum eu metus eget...
-                        <div class="review-full-description">
-                           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum eu metus eget. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                        </div>
-                        <a href="" class="read-review">View More</a>
-                     </div>
-                  </div>
-                  <div class="user-bio_rating">
-                     <div class="user-profile-info">
-                        <div class="user-name-show position-relative">
-                           <span><img src="front-end/images/blur-img.png" alt="img"></span>
-                           <span><img src="front-end/images/blur-name.png" alt="img"></span>
-                        </div>
-                        <div class="user-review-date">April 24, 2022</div>
-                     </div>
-                     <div class="user-rating">
-                        <span><img src="front-end/images/rating-emoji.png" alt=""></span>
-                        <span>4/5</span>
-                     </div>
-                  </div>
-                  <div class="review-like-dislike">
-                     <span><a href=""><i class="fa-solid fa-thumbs-up"></i> 10</a></span>
-                     <span><a href=""><i class="fa-solid fa-thumbs-down"></i> 8</a></span>
-                  </div>
-               </div>
-            </div>
-            <div class="item">
-               <div class="review-box">
-                  <h3>Company Name</h3>
-                  <div class="user-info-panel">
-                     <span><i class="fa-solid fa-location-dot"></i></span>
-                     <p class="m-0">
-                        <strong>Location</strong><br>
-                        Akshya Nagar 1st Block 1st Cross, Rammurthy nagar, Bangalore- 560016, India.
-                     </p>
-                  </div>
-                  <div class="user-info-panel">
-                     <span><i class="fa-solid fa-box"></i></span>
-                     <p class="m-0">
-                        <strong>Product/division</strong><br>
-                        Samsung Galaxy
-                     </p>
-                  </div>
-                  <div class="user-review-text">
-                     <span class="user-select-tag">Present Rerum</span>
-                     <span class="user-select-tag">Text 1</span>
-                     <span class="user-select-tag">Text 2</span>
-                     <div class="review-description-wrap">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum eu metus eget...
-                        <div class="review-full-description">
-                           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum eu metus eget. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                        </div>
-                        <a href="" class="read-review">View More</a>
-                     </div>
-                  </div>
-                  <div class="user-bio_rating">
-                     <div class="user-profile-info">
-                        <div class="user-name-show position-relative">
-                           <span><img src="front-end/images/blur-img.png" alt="img"></span>
-                           <span><img src="front-end/images/blur-name.png" alt="img"></span>
-                        </div>
-                        <div class="user-review-date">April 24, 2022</div>
-                     </div>
-                     <div class="user-rating">
-                        <span><img src="front-end/images/rating-emoji.png" alt=""></span>
-                        <span>4/5</span>
-                     </div>
-                  </div>
-                  <div class="review-like-dislike">
-                     <span><a href=""><i class="fa-solid fa-thumbs-up"></i> 10</a></span>
-                     <span><a href=""><i class="fa-solid fa-thumbs-down"></i> 8</a></span>
-                  </div>
-               </div>
-            </div>
+               <% }) %>
+            <% } %>
+           
          </div>
       </div>
       <div class="review-slider-wrap">
          <h2 class="inner-main-head">All</h2>
          <div class="review-slider">
-            <div class="item">
+            <% if(AllReviews) { %>
+               <% AllReviews.forEach( (allReview, index)=> {%>
+                  <div class="item">
+                     <div class="review-box">
+                        <h3><%= allReview.company_name %></h3>
+                        <div class="user-info-panel">
+                           <span><i class="fa-solid fa-location-dot"></i></span>
+                           <p class="m-0">
+                              <strong>Location</strong><br>
+                              <%= allReview.company_location %> <%= allReview.city %> <%= allReview.state %>- <%= allReview.zip %> <%= allReview.country %>
+                           </p>
+                        </div>
+                        <% if(allReview && allReview.review_title) { %>
+                        <div class="user-info-panel">
+                           <span><i class="fa-solid fa-box"></i></span>
+                           <p class="m-0">
+                              <strong><%= allReview.review_title %></strong><br>
+                           </p>
+                        </div>
+                        <% } %>
+                        <div class="user-review-text">
+                           <% AllReviewTags.forEach( (tag,index)=> {%>
+                              <% if(tag.review_id == allReview.id) { %>
+                                 <span class="user-select-tag"><%= tag.tag_name %></span>
+                              <% } %>
+                           <% }) %>
+                           <!-- <span class="user-select-tag">Present Rerum</span>
+                           <span class="user-select-tag">Text 1</span>
+                           <span class="user-select-tag">Text 2</span> -->
+                           <div class="review-description-wrap">
+                              <%= allReview.review_content %>
+                              <!-- Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum eu metus eget... -->
+                              
+                              <!-- <div class="review-full-description">
+                                 <%= allReview.review_content %>
+                                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum eu metus eget. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                              </div>
+                              <a href="" class="read-review">View More</a> -->
+                              
+                           </div>
+                        </div>
+                        <div class="user-bio_rating">
+                           <div class="user-profile-info">
+                              <div class="user-name-show position-relative">
+                                 <% if(allReview.user_privacy == 1) { %>
+                                    <% if(allReview && allReview.profile_pic ) { %>
+                                       <span><img src="/<%= allReview.profile_pic %>" alt="img" width="20px"></span>
+                                       <% } else { %>
+                                          <span><img src="/assets/media/avatars/blank.png" alt="img" width="20px"></span>
+                                          <% } %>
+                                    <span><%= allReview.first_name %> <%= allReview.last_name %></span>
+                                    <% } else { %>
+                                       <span><img src="front-end/images/blur-img.png" alt="img"></span>
+                                       <span><img src="front-end/images/blur-name.png" alt="img"></span>
+                                    <% } %>
+                                 <!-- <span><img src="front-end/images/user-img.png" alt="img"></span>
+                                 <span>Raju Sing</span> -->
+                              </div>
+                              <% const dateString = allReview.created_at; %>
+                              <% const date = new Date(dateString); %>
+                              <div class="user-review-date"><%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) %></div>
+                           </div>
+                           <% var average = allReview.rating %>
+                           <% if (average >= 1 && average <= 1.25) {
+                              var avg = 1
+                              } else if (average > 1.25 && average <= 1.9) {
+                              var avg = 1.5
+                              } else if (average >= 2 && average <= 2.25) {
+                              var avg = 2
+                              } else if (average > 2.25 && average <= 2.9) {
+                              var avg = 2.5
+                              } else if (average >= 3 && average <= 3.25) {
+                              var avg = 3
+                              } else if (average > 3.25 && average <= 3.9) {
+                              var avg = 3.5
+                              } else if (average >= 4 && average <= 4.25) {
+                              var avg = 4
+                              } else if (average > 4.25 && average <= 4.9) {
+                              var avg = 4.5
+                              } else if (average > 4.5) {
+                              var avg = 5
+                              } else {
+                              var avg = 0
+                              }
+                              %>
+                           <div class="user-rating">
+                              <% allRatingTags.forEach( tag => { %>
+                                 <% if(tag.review_rating_value == avg){ %>
+                                    <span><img src="/<%= tag.rating_image %>" alt="" style="display: inline-block;" width="35"></span>
+                                 <% } %>
+                                 <% }) %> 
+                              <span><%= allReview.rating %>/5</span>
+                           </div>
+                        </div>
+                        <!-- <div class="review-like-dislike">
+                           <span><a href=""><i class="fa-solid fa-thumbs-up"></i> 10</a></span>
+                           <span><a href=""><i class="fa-solid fa-thumbs-down"></i> 8</a></span>
+                        </div> -->
+                     </div>
+                  </div>
+               <% }) %>
+            <% } %>
+            <!-- <div class="item">
                <div class="review-box">
                   <h3>Company Name</h3>
                   <div class="user-info-panel">
@@ -756,7 +808,7 @@
                      <span><a href=""><i class="fa-solid fa-thumbs-down"></i> 8</a></span>
                   </div>
                </div>
-            </div>
+            </div> -->
          </div>
       </div>
    </div>
