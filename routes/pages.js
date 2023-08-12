@@ -390,7 +390,7 @@ router.get('/countries', (req, res) => {
     })
 });
 
-router.get('/sign-in', (req, res) => {
+router.get('/admin-login', (req, res) => {
     const encodedUserData = req.cookies.user;
     if (encodedUserData) {
         res.redirect('dashboard');
@@ -399,9 +399,9 @@ router.get('/sign-in', (req, res) => {
     }
 });
 
-router.get('/sign-up', (req, res) => {
-    res.render('sign-up', { message: '' })
-});
+// router.get('/sign-up', (req, res) => {
+//     res.render('sign-up', { message: '' })
+// });
 
 router.get('/logout', (req, res) => {
     const encodedUserData = req.cookies.user;
@@ -411,7 +411,7 @@ router.get('/logout', (req, res) => {
         res.redirect('/');
     } else {
         res.clearCookie('user');
-        res.redirect('/sign-in');
+        res.redirect('/admin-login');
     }
 
 });
@@ -439,7 +439,7 @@ async function checkLoggedIn(req, res, next) {
             }
             
         } else {
-            res.redirect('sign-in');
+            res.redirect('admin-login');
         }
     } catch (err) {
         console.error(err);
