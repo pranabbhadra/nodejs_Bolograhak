@@ -1276,6 +1276,7 @@ exports.companyBulkUpload = async (req, res) => {
             if (rowNumber !== 1) { // Skip the header row
                 //console.log([company_name, heading, about_company, comp_email, comp_phone, tollfree_number, main_address, main_address_pin_code, address_map_url, comp_registration_id, category, status, trending]);
                 //console.log(row.values);
+                companies.push(row.values);
                 // Check if company already exists by company_name
                 try {
                     const company_name_checking_query = "SELECT ID FROM company WHERE company_name = ?";
@@ -1319,7 +1320,7 @@ exports.companyBulkUpload = async (req, res) => {
         return res.send(
             {
                 status: 'ok',
-                data: '',
+                data: companies,
                 message: 'File uploaded.'
             }
         )  
