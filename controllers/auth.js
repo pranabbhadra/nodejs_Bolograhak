@@ -1304,7 +1304,7 @@ exports.companyBulkUpload = async (req, res) => {
         return res.send({
             status: 'err',
             data: [],
-            message: error
+            message: error.message
         });
     } finally {
         // Delete the uploaded CSV file
