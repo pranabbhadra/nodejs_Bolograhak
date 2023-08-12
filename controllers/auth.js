@@ -1260,13 +1260,12 @@ exports.companyBulkUpload = async (req, res) => {
     let connection;
     // Process the uploaded CSV file and insert data into the database
     try {
-        connection = await mysql.createConnection({
+        const connection = await mysql.createConnection({
             host: process.env.DATABASE_HOST,
             user: process.env.DATABASE_USER,
             password: process.env.DATABASE_PASSWORD,
-            database: process.env.DATABASE,
-            connectionLimit: 10  // Adjust the limit as needed
-        });
+            database: process.env.DATABASE
+          });
 
         const workbook = new ExcelJS.Workbook();
         await workbook.csv.readFile(csvFilePath);
