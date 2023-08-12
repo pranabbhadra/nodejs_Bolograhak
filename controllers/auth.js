@@ -1311,7 +1311,7 @@ exports.companyBulkUpload = async (req, res) => {
             {
                 status: 'ok',
                 data: companies,
-                message: 'File uploaded.'
+                message: connection.state
             }
         )  
         
