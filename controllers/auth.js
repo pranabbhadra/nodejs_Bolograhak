@@ -1323,7 +1323,7 @@ exports.companyBulkUpload = async (req, res) => {
                 {
                     status: 'error',
                     data: companies,
-                    message: connection.state
+                    message: process.env
                 }
             )
         }  
