@@ -1307,13 +1307,26 @@ exports.companyBulkUpload = async (req, res) => {
         //     );
         // }
 
-        return res.send(
-            {
-                status: 'ok',
-                data: companies,
-                message: connection.state
-            }
-        )  
+        // Check if the connection is established successfully
+        if (connection.state === 'authenticated') {
+            console.log('Database connection established.');
+            return res.send(
+                {
+                    status: 'ok',
+                    data: companies,
+                    message: connection.state
+                }
+            )
+
+        } else {
+            return res.send(
+                {
+                    status: 'error',
+                    data: companies,
+                    message: connection.state
+                }
+            )
+        }  
         
     } catch (error) {
         console.error('Error:', error);
