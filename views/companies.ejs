@@ -492,7 +492,7 @@ var KTUsersList = function () {
             // Delete button on click
             d.addEventListener('click', function (e) {
                 e.preventDefault();
-                var companyid = $(this).attr(data-companyid);
+                var companyid = $(this).attr("data-companyid");
                 console.log(companyid);
                 // Select parent row
                 const parent = e.target.closest('tr');
