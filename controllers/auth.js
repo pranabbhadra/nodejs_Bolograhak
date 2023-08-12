@@ -1276,6 +1276,9 @@ exports.companyBulkUpload = async (req, res) => {
 
         for (const company of companies) {
             try {
+                // Replace any undefined values with null
+                const cleanedCompany = company.map(value => (value !== undefined ? value : null));
+
                 await connection.execute(
                     `
                     INSERT INTO company 
@@ -1296,7 +1299,7 @@ exports.companyBulkUpload = async (req, res) => {
                         trending = VALUES(trending),
                         created_date = VALUES(created_date)
                     `,
-                    company
+                    cleanedCompany
                 );
             } catch (error) {
                 console.error('Error:', error);
