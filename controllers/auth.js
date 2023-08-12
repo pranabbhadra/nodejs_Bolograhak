@@ -1257,23 +1257,15 @@ exports.companyBulkUpload = async (req, res) => {
     const currentDate = new Date();
     // Format the date in 'YYYY-MM-DD HH:mm:ss' format (adjust the format as needed)
     const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+    let connection;
     // Process the uploaded CSV file and insert data into the database
     try {       
         const workbook = new ExcelJS.Workbook();
         await workbook.csv.readFile(csvFilePath);
 
         const worksheet = workbook.getWorksheet(1);
-        const companies = [];
+        const companies = await processCompanyCSVRows(worksheet);
 
-        worksheet.eachRow( (row, rowNumber) => {
-            if (rowNumber !== 1) { // Skip the header row
-                //console.log([company_name, heading, about_company, comp_email, comp_phone, tollfree_number, main_address, main_address_pin_code, address_map_url, comp_registration_id, category, status, trending]);
-                //console.log(row.values);
-                companies.push([row.values[1], row.values[2], row.values[3], row.values[4], row.values[5], row.values[6], row.values[7], row.values[8], row.values[9], row.values[10], '1', '0', formattedDate]);
-            }
-        });
-
-        // Insert data into the table using ON DUPLICATE KEY UPDATE
         for (const company of companies) {
             await db.query(
                 `
@@ -1309,21 +1301,30 @@ exports.companyBulkUpload = async (req, res) => {
         
     } catch (error) {
         console.error('Error:', error);
-        return res.send(
-            {
-                status: 'err',
-                data: companies,
-                message: error
-            }
-        )
-        //res.status(500).send('An error occurred.');
+        return res.send({
+            status: 'err',
+            data: [],
+            message: error
+        });
     } finally {
         // Delete the uploaded CSV file
         //fs.unlinkSync(csvFilePath);
-        if (connection) {
-            connection.end(); // Close the connection if it exists
-        }
     }
+}
+
+// Define a promise-based function for processing rows
+function processCompanyCSVRows(worksheet) {
+    return new Promise((resolve, reject) => {
+        const companies = [];
+
+        worksheet.eachRow((row, rowNumber) => {
+            if (rowNumber !== 1) { // Skip the header row
+                companies.push([row.values[1], row.values[2], row.values[3], row.values[4], row.values[5], row.values[6], row.values[7], row.values[8], row.values[9], row.values[10], '1', '0', formattedDate]);
+            }
+        });
+
+        resolve(companies);
+    });
 }
 
 exports.createRatingTags = (req, res) => {
