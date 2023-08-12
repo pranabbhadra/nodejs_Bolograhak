@@ -42,6 +42,10 @@
 	    min-height: 580px;
 	}
 
+	.social-widgets-right {
+		padding: 65px 40px 27px 45px;
+	}
+
 }
 
 @media only screen and (max-width:1320.98px) {
@@ -262,6 +266,10 @@
 	.main-content.category-free:before,
 	.main-content.category-premium:before {
 		background-size: 46%;
+	}
+
+	.social-widgets {
+		height: 324px;
 	}
 }
 
@@ -677,12 +685,12 @@
 		font-size: 14px;
 	}
 
-	.company-logo {
-		max-width: 200px;
-	}
-
 	.company-info {
 		margin-left: 15px;
+	}
+
+	.social-widgets {
+		height: 380px;
 	}
 }
 
@@ -1683,13 +1691,16 @@
 	}
 
 	.company-profile {
-		display: block;
+		padding: 10px 0 10px 0;
 	}
 
 	.company-logo {
 		margin: 0 auto;
+		max-width: 200px;
+		position: relative;
+		left: 0;
+		top: 0;
 	}
-
 	.company-info {
 		margin: 15px 0 0 0;
 		text-align: center;
@@ -1746,6 +1757,11 @@
 		padding: 7px 11px;
 		margin: 2px 2px;
 		font-size: 13px;
+	}
+
+	.social-widgets {
+		max-width: 244px;
+		margin: 0 auto;
 	}
 
 }

@@ -736,6 +736,11 @@ span#selected-range-emojis {
     height: 425px;
 }
 
+
+.social-widgets iframe {
+    border-radius: 10px;
+}
+
 .social-widgets::-webkit-scrollbar {
     display: none;
 }
