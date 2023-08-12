@@ -1281,6 +1281,34 @@ exports.companyBulkUpload = async (req, res) => {
             try {
                 // Replace any undefined values with null
                 const cleanedCompany = company.map(value => (value !== undefined ? value : null));
+                
+                if (cleanedCompany[2] === null) {
+                    cleanedCompany[2] = '';
+                }
+                if (cleanedCompany[3] === null) {
+                    cleanedCompany[3] = '';
+                }
+                if (cleanedCompany[4] === null) {
+                    cleanedCompany[4] = '';
+                }
+                if (cleanedCompany[5] === null) {
+                    cleanedCompany[5] = '';
+                }
+                if (cleanedCompany[6] === null) {
+                    cleanedCompany[6] = '';
+                }
+                if (cleanedCompany[7] === null) {
+                    cleanedCompany[7] = '';
+                }
+                if (cleanedCompany[8] === null) {
+                    cleanedCompany[8] = '';
+                }
+                if (cleanedCompany[9] === null) {
+                    cleanedCompany[9] = '';
+                }
+                if (cleanedCompany[10] === null) {
+                    cleanedCompany[10] = '';
+                }
 
                 await connection.execute(
                     `
