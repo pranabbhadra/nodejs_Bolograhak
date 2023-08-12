@@ -1272,50 +1272,12 @@ exports.companyBulkUpload = async (req, res) => {
         const worksheet = workbook.getWorksheet(1);
         const companies = [];
 
-        worksheet.eachRow(async (row, rowNumber) => {
+        worksheet.eachRow((row, rowNumber) => {
             if (rowNumber !== 1) { // Skip the header row
                 //console.log([company_name, heading, about_company, comp_email, comp_phone, tollfree_number, main_address, main_address_pin_code, address_map_url, comp_registration_id, category, status, trending]);
                 //console.log(row.values);
-                
-                // Check if company already exists by company_name
-                try {
-                    const company_name_checking_query = "SELECT ID FROM company WHERE company_name = ?";
-                    const company_name_checking_results = await query(company_name_checking_query, [row.values[1]]);
-                    if (company_name_checking_results.length > 0) {
-                        companies.push("update");
-                        //company exist update company info
-                        try{
-                            const update_company_query =  `
-                                    UPDATE company 
-                                    SET heading = ?, about_company = ?, comp_email = ?, comp_phone = ?, tollfree_number = ?, 
-                                    main_address = ?, main_address_pin_code = ?, address_map_url = ?, comp_registration_id = ?, updated_date =?
-                                    WHERE company_name = ?`;
-                            const  update_company_values = [row.values[2], row.values[3], row.values[4], row.values[5], row.values[6], row.values[7], row.values[8], row.values[9], row.values[10], formattedDate, company_name_checking_results[0].ID];
-                            try {
-                                const update_company_result = await query(update_company_query, update_company_values);
-                                console.log(`Updated company: `+row.values[1]);
-                            }catch(error){
-                                console.error('Error during user update_company_query:', error);
-                            }
-                        }catch(error){
-                            console.error('Error during user update_company_query:', error);
-                        }
-                    }else{
-                        //companies.push([row.values[1], row.values[2], row.values[3], row.values[4], row.values[5], row.values[6], row.values[7], row.values[8], row.values[9], row.values[10], row.values[11], row.values[12], formattedDate]);
-                        console.log([row.values[1], row.values[2], row.values[3], row.values[4], row.values[5], row.values[6], row.values[7], row.values[8], row.values[9], row.values[10], row.values[11], row.values[12], formattedDate]);
-                        try {
-                            companies.push("insert");
-                            const insertNewCompaniesQuery = 'INSERT INTO company (company_name, heading, about_company, comp_email, comp_phone, tollfree_number, main_address, main_address_pin_code, address_map_url, comp_registration_id, status, trending, created_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-                            const insertNewCompanies_values = [row.values[1], row.values[2], row.values[3], row.values[4], row.values[5], row.values[6], row.values[7], row.values[8], row.values[9], row.values[10], '1', '0', formattedDate];
-                            const insertNewCompanies_results = await query(insertNewCompaniesQuery, insertNewCompanies_values);
-                            console.log(row.values[1]+':'+insertNewCompanies_results.insertId);
-                        }catch(error){
-                            console.error('Error during user company_name_checking_query:', error);   
-                        }
-                    }
-                }catch(error){
-                    console.error('Error during user company_name_checking_query:', error);
-                }
+                companies.push([row.values[1], row.values[2], row.values[3], row.values[4], row.values[5], row.values[6], row.values[7], row.values[8], row.values[9], row.values[10], '1', '0', formattedDate]);
+            
             }
         });
 
