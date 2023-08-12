@@ -99,24 +99,24 @@
             </span> -->
             <span class="mbl-hide-link"><a href="/business" class="btn-default btn-outline-warning">For Business</a></span>
             <% if(currentUserData){ %>
-            <span class="mbl-hide-link"><a href="/logout" class="btn-default btn-outline-warning">Log out</a></span>
-            <% } else { %>
-            <span class="mbl-hide-link"><a href="#" class="btn-default btn-outline-warning login">Log in</a></span>
-            <% } %>
             <span class="user-log-profile">
               <span class="user-login-profile-icon">
-                <i class="fa-regular fa-user"></i>
-                <!-- when user login then profile pic show -->
-                <img src="/front-end/images/profile-img.jpg" class="d-none" alt="img" width="189" height="189" loading="lazy">
-                <!-- when user login then profile pic show -->
+                <% if(currentUserData.profile_pic){ %>
+                  <img src="/<%= currentUserData.profile_pic %>" alt="<%= currentUserData.first_name+' '+currentUserData.last_name %>" width="189" height="189" loading="lazy">
+                <% } else { %>
+                  <i class="fa-regular fa-user"></i>
+                <% } %>
               </span>
               <div class="user-log-profile-dropdown">
                 <ul class="p-0 m-0">
-                  <li><a href="">Profile</a></li>
-                  <li><a href="">Logout</a></li>
+                  <li><a href="/profile-dashboard">Profile</a></li>
+                  <li><a href="/logout">Logout</a></li>
                 </ul>
               </div>
             </span>
+            <% } else { %>
+            <span class="mbl-hide-link"><a href="#" class="btn-default btn-outline-warning login">Log in</a></span>
+            <% } %>
             <span class="toggle-menu">
               <div class="menu-circles">
                 <div class="circle-ball"></div>

@@ -1,4 +1,6 @@
+const util = require('util');
 const express = require('express');
+const mysql = require('mysql2/promise');
 const db = require('../config');
 const mdlconfig = require('../config-module');
 const jwt = require('jsonwebtoken');
@@ -12,10 +14,11 @@ dotenv.config({ path: './.env' });
 const bodyParser = require('body-parser');
 const querystring = require('querystring');
 const app = express();
+const path = require('path');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
+const query = util.promisify(db.query).bind(db);
 const secretKey = 'grahak-secret-key';
 
 const comFunction = require('../common_function');
@@ -1241,8 +1244,6 @@ exports.editCompany = (req, res) => {
 //--- Create Bulk Upload ----//
 exports.companyBulkUpload = async (req, res) => {
     //console.log(req.body);
-    const encodedUserData = req.cookies.user;
-    const currentUserData = JSON.parse(encodedUserData);
     if (!req.file) {
         return res.send(
             {
@@ -1252,35 +1253,71 @@ exports.companyBulkUpload = async (req, res) => {
             }
         )        
     }
-    const csvFilePath = path.join(__dirname, 'company-csv', req.file.filename);
-
+    const csvFilePath = path.join(__dirname, '..', 'company-csv', req.file.filename);
+    const currentDate = new Date();
+    // Format the date in 'YYYY-MM-DD HH:mm:ss' format (adjust the format as needed)
+    const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+    let connection;
     // Process the uploaded CSV file and insert data into the database
     try {
-    const workbook = new ExcelJS.Workbook();
-    await workbook.csv.readFile(csvFilePath);
+        const connection = await mysql.createConnection({
+            host: process.env.DATABASE_HOST,
+            user: process.env.DATABASE_USER,
+            password: process.env.DATABASE_PASSWORD,
+            database: process.env.DATABASE
+        });
+        const workbook = new ExcelJS.Workbook();
+        await workbook.csv.readFile(csvFilePath);
 
-    const worksheet = workbook.getWorksheet(1);
-    const companies = [];
+        const worksheet = workbook.getWorksheet(1);
+        const companies = [];
 
-    worksheet.eachRow((row, rowNumber) => {
-        if (rowNumber !== 1) { // Skip the header row
-        const [company_name, heading, about_company, comp_email, comp_phone, tollfree_number, main_address, main_address_pin_code, address_map_url, comp_registration_id, category, status, trending] = row.values;
-        companies.push([company_name, heading, about_company, comp_email, comp_phone, tollfree_number, main_address, main_address_pin_code, address_map_url, comp_registration_id, category, status, trending]);
+        worksheet.eachRow(async (row, rowNumber) => {
+            if (rowNumber !== 1) { // Skip the header row
+                const [,company_name, heading, about_company, comp_email, comp_phone, tollfree_number, main_address, main_address_pin_code, address_map_url, comp_registration_id, category, status, trending] = row.values;
+                //console.log([company_name, heading, about_company, comp_email, comp_phone, tollfree_number, main_address, main_address_pin_code, address_map_url, comp_registration_id, category, status, trending]);
+                console.log(row.values);
+                // Check if company already exists by company_name
+                // const existingCompany = await connection.query("SELECT * FROM company WHERE company_name = ?", [company_name]);
+                // if (existingCompany.length > 0) {
+                //     // Update existing company info
+                //     const updateQuery = `
+                //         UPDATE company 
+                //         SET heading = ?, about_company = ?, comp_email = ?, comp_phone = ?, tollfree_number = ?, 
+                //         main_address = ?, main_address_pin_code = ?, address_map_url = ?, comp_registration_id = ?, 
+                //         status = ?, trending = ?, updated_date =?
+                //         WHERE company_name = ?`;
+
+                //     await connection.query(updateQuery, [heading, about_company, comp_email, comp_phone, tollfree_number, 
+                //         main_address, main_address_pin_code, address_map_url, comp_registration_id, 
+                //         status, trending, formattedDate, company_name]);
+                    
+                //     console.log(`Updated company: ${company_name}`);
+                // } else {
+                //     // Insert new company
+                //     companies.push([company_name, heading, about_company, comp_email, comp_phone, tollfree_number, 
+                //         main_address, main_address_pin_code, address_map_url, comp_registration_id, status, trending, formattedDate]);
+                // }
+            }
+        });
+        if (companies.length > 0) {
+            const company_insert_query = 'INSERT INTO company (company_name, heading, about_company, comp_email, comp_phone, tollfree_number, main_address, main_address_pin_code, address_map_url, comp_registration_id, status, trending, created_date) VALUES ?';
+            const [company_insert_result] = await connection.query(company_insert_query, [companies]);
+            console.log(`Inserted ${company_insert_result.affectedRows} rows`);
         }
-    });
-    console.log(companies);
-    // const query = 'INSERT INTO companies (company_name, heading, about_company, comp_phone, comp_email, comp_registration_id, status, trending, created_date, tollfree_number, main_address, main_address_pin_code, address_map_url) VALUES ?';
-    // const [result] = await db.query(query, [companies]);
-    // console.log(`Inserted ${result.affectedRows} rows`);
 
 
         //res.send(`Inserted ${result.affectedRows} rows into the database.`);
+        
     } catch (error) {
         console.error('Error:', error);
         //res.status(500).send('An error occurred.');
     } finally {
         // Delete the uploaded CSV file
         //fs.unlinkSync(csvFilePath);
+        if (connection) {
+            connection.end(); // Close the connection if it exists
+        }
     }
 }
 
