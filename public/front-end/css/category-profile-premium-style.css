@@ -28,29 +28,37 @@
     background-repeat: no-repeat;
     background-size: cover;
 }
+
 .company-profile {
-    display: flex;
-    align-items: center;
     border-bottom: 1px #B6B6B6 solid;
-    padding: 10px 0;
+    padding: 10px 0 10px 225px;
+    position: relative;
+    min-height: 230px;
 }
 
 .category-premium .company-profile {
-    margin-top: -90px;
+    margin-top: -72px;
 }
 
 .company-logo {
-    position: relative;
+    position: absolute;
+    left: 15px;
+    top: 10px;
 }
 
 .company-logo img {
-    border: 9px solid #FFF;
+    width: 200px;
+    height: 200px!important;
+    object-fit: contain;
     border-radius: 50%;
+    border: 7px #fff solid;
+    box-shadow: rgba(0,0,0,0.2)0 0 10px;
+    background: #fff;
 }
 
 .premium-company-icon {
-    width: 82px;
-    height: 82px;
+    width: 62px;
+    height: 62px;
     border-radius: 50%;
     background: #FCCB06;
     font-size: 34px;
@@ -64,7 +72,7 @@
 }
 
 .company-info {
-    margin-left: 34px;
+    margin-left: 24px;
 }
 
 .company-info h3 {
@@ -139,12 +147,14 @@
     color: #F4A835;
     margin-right: 10px;
     font-size: 18px;
-    display: inline-block;
-    vertical-align: middle;
+    position: absolute;
+    left: 0;
+    top: 0;
 }
-
 .company-contact-info span {
     display: inline-block;
+    position: relative;
+    padding-left: 28px;
 }
 
 .company-contact-info span + span {

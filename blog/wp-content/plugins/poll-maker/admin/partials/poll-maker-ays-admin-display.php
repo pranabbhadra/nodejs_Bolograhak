@@ -39,6 +39,9 @@ $poll_max_id = Poll_Maker_Ays_Admin::get_max_id('polls');
         <div id="post-body" class="metabox-holder">
             <div id="post-body-content">
                 <div class="meta-box-sortables ui-sortable">
+                <?php
+                        $this->polls_obj->views();
+                    ?>
                     <form method="post">
 						<?php
                         $this->polls_obj->prepare_items();

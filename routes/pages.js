@@ -217,15 +217,23 @@ router.get('/review', checkCookieValue, async (req, res) => {
         let currentUserData = JSON.parse(req.userData);
 
         // Fetch all the required data asynchronously
-        const [latestReviews] = await Promise.all([
-            comFunction.getlatestReviews(15),
+        const [latestReviews, AllReviews, AllTrendingReviews, AllReviewTags, allRatingTags] = await Promise.all([
+            comFunction2.getlatestReviews(20),
+            comFunction2.getAllReviews(),
+            comFunction2.getAllTrendingReviews(),
+            comFunction2.getAllReviewTags(),
+            comFunction.getAllRatingTags(),
         ]);
-
+        //console.log(AllTrendingReviews);
         res.render('front-end/review', {
             menu_active_id: 'review',
             page_title: 'Customer Reviews',
             currentUserData,
-            latestReviews: latestReviews
+            latestReviews: latestReviews,
+            AllReviews: AllReviews,
+            allRatingTags: allRatingTags,
+            AllReviewTags: AllReviewTags,
+            AllTrendingReviews: AllTrendingReviews
         });
         // res.json({
         //     menu_active_id: 'review',
@@ -286,7 +294,7 @@ router.get('/business', checkCookieValue, async (req, res) => {
                 const BusinessFeature = await comFunction2.getBusinessFeature();
                 //console.log(meta_values_array);
                 res.render('front-end/business', {
-                    menu_active_id: 'pages',
+                    menu_active_id: 'business',
                     page_title: common.title,
                     currentUserData,
                     common,
@@ -382,7 +390,7 @@ router.get('/countries', (req, res) => {
     })
 });
 
-router.get('/sign-in', (req, res) => {
+router.get('/admin-login', (req, res) => {
     const encodedUserData = req.cookies.user;
     if (encodedUserData) {
         res.redirect('dashboard');
@@ -391,9 +399,9 @@ router.get('/sign-in', (req, res) => {
     }
 });
 
-router.get('/sign-up', (req, res) => {
-    res.render('sign-up', { message: '' })
-});
+// router.get('/sign-up', (req, res) => {
+//     res.render('sign-up', { message: '' })
+// });
 
 router.get('/logout', (req, res) => {
     const encodedUserData = req.cookies.user;
@@ -403,7 +411,7 @@ router.get('/logout', (req, res) => {
         res.redirect('/');
     } else {
         res.clearCookie('user');
-        res.redirect('/sign-in');
+        res.redirect('/admin-login');
     }
 
 });
@@ -431,7 +439,7 @@ async function checkLoggedIn(req, res, next) {
             }
             
         } else {
-            res.redirect('sign-in');
+            res.redirect('admin-login');
         }
     } catch (err) {
         console.error(err);
@@ -1322,6 +1330,109 @@ router.get('/edit-business', checkLoggedIn, (req, res) => {
     }
 });
 
+//Edit privacy-policy Page
+router.get('/edit-privacy-policy', checkLoggedIn, (req, res) => {
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+        const sql = `SELECT * FROM page_info where secret_Key = 'privacy' `;
+        db.query(sql, (err, results, fields) => {
+            if (err) throw err;
+            const common = results[0];
+            const meta_sql = `SELECT * FROM page_meta where page_id = ${common.id}`;
+            db.query(meta_sql, async (meta_err, _meta_result) => {
+                if (meta_err) throw meta_err;
+
+                const meta_values = _meta_result;
+                let meta_values_array = {};
+                await meta_values.forEach((item) => {
+                    meta_values_array[item.page_meta_key] = item.page_meta_value;
+                })
+                console.log(meta_values_array);
+                res.render('pages/update-privacy-policy', {
+                    menu_active_id: 'pages',
+                    page_title: 'Update Privacy Policy',
+                    currentUserData,
+                    common,
+                    meta_values_array,
+                });
+            })
+
+        })
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+//Edit disclaimer Page
+router.get('/edit-disclaimer', checkLoggedIn, (req, res) => {
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+        const sql = `SELECT * FROM page_info where secret_Key = 'disclaimer' `;
+        db.query(sql, (err, results, fields) => {
+            if (err) throw err;
+            const common = results[0];
+            const meta_sql = `SELECT * FROM page_meta where page_id = ${common.id}`;
+            db.query(meta_sql, async (meta_err, _meta_result) => {
+                if (meta_err) throw meta_err;
+
+                const meta_values = _meta_result;
+                let meta_values_array = {};
+                await meta_values.forEach((item) => {
+                    meta_values_array[item.page_meta_key] = item.page_meta_value;
+                })
+                console.log(meta_values_array);
+                res.render('pages/update-disclaimer', {
+                    menu_active_id: 'pages',
+                    page_title: 'Update Disclaimer',
+                    currentUserData,
+                    common,
+                    meta_values_array,
+                });
+            })
+
+        })
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+//Edit terms-of-service Page
+router.get('/edit-terms-of-service', checkLoggedIn, (req, res) => {
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+        const sql = `SELECT * FROM page_info where secret_Key = 'terms_of_service' `;
+        db.query(sql, (err, results, fields) => {
+            if (err) throw err;
+            const common = results[0];
+            const meta_sql = `SELECT * FROM page_meta where page_id = ${common.id}`;
+            db.query(meta_sql, async (meta_err, _meta_result) => {
+                if (meta_err) throw meta_err;
+
+                const meta_values = _meta_result;
+                let meta_values_array = {};
+                await meta_values.forEach((item) => {
+                    meta_values_array[item.page_meta_key] = item.page_meta_value;
+                })
+                console.log(meta_values_array);
+                res.render('pages/update-terms-of-service', {
+                    menu_active_id: 'pages',
+                    page_title: 'Update Terms of Service',
+                    currentUserData,
+                    common,
+                    meta_values_array,
+                });
+            })
+
+        })
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+
 // Middleware function to check if user is logged in Frontend
 async function checkFrontEndLoggedIn(req, res, next) {
 
@@ -1374,6 +1485,7 @@ router.get('/myprofile', checkFrontEndLoggedIn, async (req, res) => {
     }
 });
 
+//FrontEnd profile-dashboard page
 router.get('/profile-dashboard', checkFrontEndLoggedIn, async (req, res) => {
     try {
         const encodedUserData = req.cookies.user;
@@ -1382,12 +1494,15 @@ router.get('/profile-dashboard', checkFrontEndLoggedIn, async (req, res) => {
         console.log('editUserID: ', userId);
 
         // Fetch all the required data asynchronously
-        const [user, userMeta, ReviewedCompanies] = await Promise.all([
+        const [user, userMeta, ReviewedCompanies, AllCompaniesReviews, AllReviewTags, allRatingTags] = await Promise.all([
             comFunction.getUser(userId),
             comFunction.getUserMeta(userId),
-            comFunction2.getReviewedCompanies(userId)
+            comFunction2.getReviewedCompanies(userId),
+            comFunction2.getAllCompaniesReviews(userId),
+            comFunction2.getAllReviewTags(),
+            comFunction.getAllRatingTags(),
         ]);
-        console.log(ReviewedCompanies);
+        //console.log(AllReviewTags);
         // Render the 'edit-user' EJS view and pass the data
         res.render('front-end/profile-dashboard', {
             menu_active_id: 'profile-dashboard',
@@ -1395,7 +1510,10 @@ router.get('/profile-dashboard', checkFrontEndLoggedIn, async (req, res) => {
             currentUserData,
             user: user,
             userMeta: userMeta,
-            ReviewedCompanies: ReviewedCompanies
+            ReviewedCompanies: ReviewedCompanies,
+            AllCompaniesReviews: AllCompaniesReviews,
+            allRatingTags:allRatingTags,
+            AllReviewTags:AllReviewTags
         });
     } catch (err) {
         console.error(err);
@@ -1404,6 +1522,36 @@ router.get('/profile-dashboard', checkFrontEndLoggedIn, async (req, res) => {
     //res.render('front-end/profile-dashboard', { menu_active_id: 'profile-dashboard', page_title: 'My Dashboard', currentUserData });
 });
 
+//FrontEnd profile-dashboard page
+router.get('/my-reviews', checkFrontEndLoggedIn, async (req, res) => {
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+        const userId = currentUserData.user_id;
+        console.log('editUserID: ', userId);
+
+        // Fetch all the required data asynchronously
+        const [ AllCompaniesReviews, AllReviewTags, allRatingTags] = await Promise.all([
+            comFunction2.getAllCompaniesReviews(userId),
+            comFunction2.getAllReviewTags(),
+            comFunction.getAllRatingTags(),
+        ]);
+        //console.log(AllReviewTags);
+        // Render the 'edit-user' EJS view and pass the data
+        res.render('front-end/user-all-reviews', {
+            menu_active_id: 'profile-dashboard',
+            page_title: 'My Reviews',
+            currentUserData,
+            AllCompaniesReviews: AllCompaniesReviews,
+            allRatingTags:allRatingTags,
+            AllReviewTags:AllReviewTags
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+    //res.render('front-end/profile-dashboard', { menu_active_id: 'profile-dashboard', page_title: 'My Dashboard', currentUserData });
+});
 
 router.get('/help/:id', (_, resp) => {
     resp.sendFile(`${publicPath}/help.html`)

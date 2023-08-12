@@ -185,7 +185,7 @@ function mooauth_client_attribite_role_mapping_ui() {
 			<h3 class="mo_oauth_attribute_page_font">' . esc_html__( 'Map Custom Attributes ', 'miniorange-login-with-eve-online-google-facebook' ) . '<div class="mo_oauth_tooltip"  ><span class="mo_oauth_tooltiptext mo_oauth_extra_tooltip"  >PREMIUM</span><a style="text-decoration: none;" target="_blank" href="admin.php?page=mo_oauth_settings&tab=licensing" rel="noopener noreferrer">
 			<span><img class="mo_oauth_premium-label" src="' . esc_url( dirname( plugin_dir_url( __FILE__ ) ) ) . '/images/mo_oauth_premium-label.png" alt="miniOrange Premium Plans Logo"></span></a></div></span></h3></td>
 			<td><span style="float: right;"><div class="mo_oauth_tooltip mo_oauth_tooltip_float_right"><span class="mo_tooltiptext"  >How to map Custom Attributes?</span><a
-                href="https://developers.miniorange.com/docs/oauth/wordpress/client/attribute-mapping" target="_blank"
+                href="https://developers.miniorange.com/docs/oauth/wordpress/client/attribute-mapping#custom-attr-map" target="_blank"
                 rel="noopener"><img class="mo_oauth_guide_img" src="' . esc_url( dirname( plugin_dir_url( __FILE__ ) ) ) . '/images/mo_oauth_info-icon.png" alt="miniOrange Premium Plans Logo" aria-hidden="true"></a></div>
             </span></td>
 			</tr>

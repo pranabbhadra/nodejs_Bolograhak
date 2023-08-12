@@ -61,7 +61,7 @@ function mooauth_client_sign_in_settings_ui() {
 					<td>
 						<font style="font-size:14px;">
 							<?php esc_html_e( 'Keep Existing Users', 'miniorange-login-with-eve-online-google-facebook' ); ?>
-						</font><small class=""><div class="mo_oauth_tooltip"  ><span class="mo_oauth_tooltiptext mo_oauth_extra_tooltip"  >PREMIUM</span> <a href="https://developers.miniorange.com/docs/oauth/wordpress/client/account-linking"
+						</font><small class=""><div class="mo_oauth_tooltip"  ><span class="mo_oauth_tooltiptext mo_oauth_extra_tooltip"  >PREMIUM</span> <a href="https://developers.miniorange.com/docs/oauth/wordpress/client/account-linking#keep-existing-users"
 							target="_blank" rel="noopener"><i class="fa fa-info-circle mo_oauth_info"></i></a></div></small><br><?php esc_html_e( '(If checked, existing users\' attributes will NOT be overwritten when they log-in)', 'miniorange-login-with-eve-online-google-facebook' ); ?>
 						</p>
 					</td>
@@ -71,7 +71,7 @@ function mooauth_client_sign_in_settings_ui() {
 					<td>
 						<font style="font-size:14px;">
 							<?php esc_html_e( 'Keep Existing Email Attribute', 'miniorange-login-with-eve-online-google-facebook' ); ?>
-						</font><small class=""><div class="mo_oauth_tooltip"  ><span class="mo_oauth_tooltiptext mo_oauth_extra_tooltip"  >PREMIUM</span> <a href="https://developers.miniorange.com/docs/oauth/wordpress/client/account-linking"
+						</font><small class=""><div class="mo_oauth_tooltip"  ><span class="mo_oauth_tooltiptext mo_oauth_extra_tooltip"  >PREMIUM</span> <a href="https://developers.miniorange.com/docs/oauth/wordpress/client/account-linking#keep-existing-email-attr"
 							target="_blank" rel="noopener"><i class="fa fa-info-circle mo_oauth_info"></i></a></div></small><br><?php esc_html_e( '(If checked, existing users\' only email attribute will NOT be overwritten when they log-in)', 'miniorange-login-with-eve-online-google-facebook' ); ?>
 						</p>
 					</td>
@@ -135,7 +135,7 @@ function mooauth_client_sign_in_settings_ui() {
 						<font style="font-size:14px;">
 							<?php esc_html_e( 'Confirm when logging out', 'miniorange-login-with-eve-online-google-facebook' ); ?>
 						</font>	<small class=""><div class="mo_oauth_tooltip"  ><span class="mo_oauth_tooltiptext mo_oauth_extra_tooltip"  >STANDARD</span>
-						<i class="fa fa-info-circle mo_oauth_info"></i></div></small><br><?php esc_html_e( '(If checked, users will be ASKED to confirm if they want to log-out, when they click the widget/shortcode logout button', 'miniorange-login-with-eve-online-google-facebook' ); ?>
+						<i class="fa fa-info-circle mo_oauth_info"></i></div></small><br><?php esc_html_e( '(If checked, users will be ASKED to confirm if they want to log-out, when they click the widget/shortcode logout button)', 'miniorange-login-with-eve-online-google-facebook' ); ?>
 						</p>
 					</td>
 					<td><input disabled="true" type="checkbox" class="mo_input_checkbox mo_oauth_input_disabled"></td>
@@ -202,7 +202,6 @@ function mooauth_client_sign_in_settings_ui() {
 						<font style="font-size:14px;">
 							<?php esc_html_e( 'Open login window in Popup', 'miniorange-login-with-eve-online-google-facebook' ); ?>
 						</font><small class=""><div class="mo_oauth_tooltip"  ><span class="mo_oauth_tooltiptext mo_oauth_extra_tooltip"  >STANDARD</span><a
-							href="https://developers.miniorange.com/docs/oauth/wordpress/client/enable-single-sign-in-flow"
 							target="_blank" rel="noopener"><i class="fa fa-info-circle mo_oauth_info"></i></a></div></small>
 								<br><?php esc_html_e( '(Keep blank in case you want users to redirect to page from where SSO originated)', 'miniorange-login-with-eve-online-google-facebook' ); ?>
 						</p>
@@ -230,7 +229,7 @@ function mooauth_client_sign_in_settings_ui() {
 						</h3>
 					</td>
 				</tr>
-				<tr class="mo-divider">
+				<tr>
 					<td>
 						<font style="font-size:14px;">
 							<?php esc_html_e( 'Enable User login reports', 'miniorange-login-with-eve-online-google-facebook' ); ?>
@@ -239,23 +238,6 @@ function mooauth_client_sign_in_settings_ui() {
 							</div></small></p>
 					</td>
 					<td><input disabled="true" type="checkbox" class="mo_input_checkbox mo_oauth_input_disabled"></td>
-				</tr>
-				<tr>
-					<td>
-						<h3 class="mo_oauth_signing_heading" style="font-size:18px;">
-							<?php esc_html_e( 'Other Settings', 'miniorange-login-with-eve-online-google-facebook' ); ?>
-						</h3>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<font style="font-size:14px;">
-							<?php esc_html_e( 'Dynamic Callback URL', 'miniorange-login-with-eve-online-google-facebook' ); ?>
-						</font><small class=""><div class="mo_oauth_tooltip"  ><span class="mo_oauth_tooltiptext mo_oauth_extra_tooltip"  >ENTERPRISE</span><a
-							href="https://developers.miniorange.com/docs/oauth/wordpress/client/dynamic-callback-url"
-							target="_blank" rel="noopener"><i class="fa fa-info-circle mo_oauth_info"></i></a></div></small>
-					</td>
-					<td><input disabled="true" class="mo_oauth_input_disabled" type="text" style="width:100%;"></td>
 				</tr>
 				<tr>
 					<td>&nbsp;</td>

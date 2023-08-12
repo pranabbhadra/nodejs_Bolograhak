@@ -25,69 +25,17 @@ class MO_OAuth_Client_Demo {
 	 */
 	public static function demo_request() {
 		$democss = 'width: 325px; height:35px;';
+
+		// Get WordPress version.
+		global $wp_version;
+
+		$wp_version_trim = substr( $wp_version, 0, 3 );
 		?>
 			<div class="mo_demo_layout mo_oauth_contact_heading mo_oauth_outer_div">
-			<div class="mo_oauth_request_demo_header"><div class="mo_oauth_attribute_map_heading"> <?php esc_html_e( 'Request for Demo/ Trial', 'miniorange-login-with-eve-online-google-facebook' ); ?></div></div>
-		<?php
-			$demo_credentials = get_option( 'mo_oauth_demo_creds' );
-		if ( $demo_credentials && ( strtotime( $demo_credentials['validity'] ) > strtotime( gmdate( 'd F, Y' ) ) ) ) {
-				$site_url           = $demo_credentials['site_url'];
-				$email              = $demo_credentials['email'];
-				$temporary_password = $demo_credentials['temporary_password'];
-				$password_link      = $demo_credentials['password_link'];
-				$validity           = $demo_credentials['validity'];
-			?>
-			<div class="mo_oauth_video_demo_bottom_message">You have successfully availed the trial for the OAuth Client SSO plugin. Please find the details below.</div>
-			<div class="mo_demo_table_layout" style="padding-left: 5px;width: 90%">
-				<table width="50%">
-			<tr>
-				<td>
-				<div><strong class="mo_strong">Trial URL : </strong></div>
-				</td>
-				<td>
-					<p><a href="<?php echo esc_url( $site_url . '/admin.php?page=mo_oauth_settings' ); ?>" target="_blank"><b>[Click Here]</b></a></p>
-				</td>
-			</tr>
-			<tr>
-				<td>
-				<div><strong class="mo_strong">Username : </strong></div>
-				</td>
-				<td>
-					<p>
-						<?php echo esc_html( $email ); ?>
-					</p>
-				</td>
-			</tr>
-			<tr>
-				<td>
-				<div><strong class="mo_strong">Password : </strong></div>
-				</td>
-				<td>
-					<p>
-						<?php echo esc_html( $temporary_password ); ?>
-					</p>
-				</td>
-			</tr>
-			<tr>
-				<td>
-				<div><strong class="mo_strong">Valid Till: </strong></div>
-				</td>
-				<td>
-					<p>
-						<?php echo esc_html( $validity ); ?>
-					</p>
-				</td>
-			</tr>
-			</table>
-			<div class="mo_oauth_video_demo_bottom_message">You can also reset your trial password using this <a href="<?php echo esc_url( $password_link ); ?>" target="_blank"><b>[LINK]</b></a>.<br>
-			<b>Tip:</b> You must have received an email as well for these credentials to access this trial. <br><br>Also, if you face any issues or still not convinced with this trial, don't hesitate to contact us at <b><a href="mailto:oauthsupport@xecurify.com?subject=WP OAuth Client Plugin On Demo - Enquiry">oauthsupport@xecurify.com</a></b>.</div>
-			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<div class="mo_oauth_request_demo_header">
+				<div class="mo_oauth_attribute_map_heading"> <?php esc_html_e( 'Request for Demo/ Trial', 'miniorange-login-with-eve-online-google-facebook' ); ?></div>
 			</div>
-			</div>
-			<?php
-		} else {
-			?>
-			</br><blockquote class="mo_oauth_blackquote mo_oauth_paragraph_div" style="  margin-bottom: 0px;"><?php esc_html_e( 'Want to try out the paid features before purchasing the license? Just let us know which plan you\'re interested in and we will setup a demo for you.', 'miniorange-login-with-eve-online-google-facebook' ); ?></blockquote>
+					</br><blockquote class="mo_oauth_blackquote mo_oauth_paragraph_div" style="  margin-bottom: 0px;"><?php esc_html_e( 'Want to try out the paid features before purchasing the license? Simply complete the form provided below, specify your preferred add-ons, get access to the trial of All-Inclusive plan, giving you unrestricted access to test all our top-tier features.', 'miniorange-login-with-eve-online-google-facebook' ); ?></blockquote>
 					<form method="post" action="">
 					<input type="hidden" name="option" value="mo_oauth_client_demo_request_form" />
 			<?php wp_nonce_field( 'mo_oauth_client_demo_request_form', 'mo_oauth_client_demo_request_field' ); ?>
@@ -96,20 +44,6 @@ class MO_OAuth_Client_Demo {
 						<tr><td>
 							<div><strong class="mo_strong">Email id <p style="display:inline;color:red;">*</p>: </strong></div>
 							<div><input class="mo_oauth_request_demo_inputs" required type="email" style="<?php echo esc_attr( $democss ); ?>" name="mo_auto_create_demosite_email" placeholder="We will use this email to setup the demo for you" value="<?php echo esc_attr( get_option( 'mo_oauth_admin_email' ) ); ?>" /></div></td>
-						</tr>
-						<tr>
-							<td>
-							<div><strong class="mo_strong"><?php esc_html_e( 'Request a demo for', 'miniorange-login-with-eve-online-google-facebook' ); ?> <p style="display:inline;color:red;">*</p>: </strong></div>
-							<div>
-								<select class="mo_oauth_request_demo_inputs" required style="<?php echo esc_attr( $democss ); ?>" name="mo_auto_create_demosite_demo_plan" id="mo_oauth_client_demo_plan_id">
-									<option disabled value="" selected>------------------ Select ------------------</option>
-									<option value="miniorange-oauth-client-standard-common@11.6.1">WP <?php echo esc_html( MO_OAUTH_PLUGIN_NAME ); ?> Standard Plugin</option>
-									<option value="mo-oauth-client-premium@21.5.3">WP <?php echo esc_html( MO_OAUTH_PLUGIN_NAME ); ?> Premium Plugin</option>
-									<option value="miniorange-oauth-client-enterprise@31.5.7">WP <?php echo esc_html( MO_OAUTH_PLUGIN_NAME ); ?> Enterprise Plugin</option>
-									<option value="miniorange-oauth-client-allinclusive@48.3.0">WP <?php echo esc_html( MO_OAUTH_PLUGIN_NAME ); ?> All Inclusive Plugin</option>
-									<option value="Not Sure">Not Sure</option>
-								</select>
-							</div></td>
 						</tr>
 						<tr><td>
 							<div><strong class="mo_strong"><?php esc_html_e( 'Usecase', 'miniorange-login-with-eve-online-google-facebook' ); ?><p style="display:inline;color:red;">*</p> : </strong></div>
@@ -152,19 +86,17 @@ class MO_OAuth_Client_Demo {
 							</td>
 						</tr>	
 							</table></div></div><table style="padding-left:25px">
+						<!-- New WordPress sandbox demo trail -->
 						<tr>
 							<td>
-								<input type="submit" name="submit" value="<?php esc_html_e( 'Submit Demo Request', 'miniorange-login-with-eve-online-google-facebook' ); ?>" class="button button-large mo_oauth_demo_request_btn" />
+								<button id="mo_oauth_sandbox_btn" name="mo_oauth_sandbox_btn" class="button button-large mo_oauth_demo_request_btn">Submit Demo Request</button>
 							</td>
 						</tr>
+
 					</table>
-				<!-- </div> -->
 			</form>
 			</div>
-			<?php
-		}
-		?>
-			<!-- VIDEO DEMO DOWN -->
+						<!-- VIDEO DEMO DOWN -->
 			<div class="mo_demo_layout mo_oauth_contact_heading mo_oauth_outer_div">
 			<div class="mo_oauth_request_demo_header"><div class="mo_oauth_attribute_map_heading"> <?php esc_html_e( 'Request for Video Demo', 'miniorange-login-with-eve-online-google-facebook' ); ?></div></div>
 					<div style="display:flex">
@@ -231,6 +163,45 @@ class MO_OAuth_Client_Demo {
 				var d = new Date();
 				var n = d.getTimezoneOffset();
 				document.getElementById("mo_oauth_video_demo_time_diff").value = n;
+
+				document.addEventListener("DOMContentLoaded", () => {
+					const mo_oauth_sandbox_btn = document.getElementById('mo_oauth_sandbox_btn');
+					mo_oauth_sandbox_btn.addEventListener('click', (e) => {
+						e.preventDefault();
+						// Do the validation for required fields.
+
+						const mo_oauth_sandbox_email = document.querySelector('input[name="mo_auto_create_demosite_email"]').value;
+						const mo_oauth_sandbox_usecase = document.querySelector('textarea[name="mo_auto_create_demosite_usecase"]').value;
+
+						// Get name of all the addons selected.
+						const mo_oauth_sandbox_addons = document.querySelectorAll('.mo_oauth_demo_form_checkbox');
+						let mo_oauth_sandbox_addons_list = '';
+						mo_oauth_sandbox_addons.forEach((addon) => {
+							if (addon.checked) {
+								// mo_oauth_sandbox_addons_list += addon.name + ', ';
+								mo_oauth_sandbox_addons_list += addon.parentElement.innerText + ', ';
+							}
+						});
+
+						// Append the addons list to the usecase.
+						const mo_oauth_sandbox_usecase_with_addons = 'Usecase: \n'
+							+ mo_oauth_sandbox_usecase 
+							+ '\n' 
+							+ 'Addons selected: \n' 
+							+ mo_oauth_sandbox_addons_list;
+
+						// Href to the sandbox demo website.
+						const mo_oauth_sandbox_href = 'https://sandbox.miniorange.com/?email=' + mo_oauth_sandbox_email 
+							+ '&mo_plugin=mo_oauth_client&wordpress_version=<?php echo esc_attr( $wp_version_trim ); ?>&usecase=' 
+							+ encodeURIComponent(mo_oauth_sandbox_usecase_with_addons)
+							+ '&referer=<?php echo esc_url( get_site_url() ); ?>';
+
+						// Open the sandbox demo website in a new tab.
+						window.open(mo_oauth_sandbox_href, '_blank');
+
+					});
+
+				});
 			</script>	
 			<?php
 	}

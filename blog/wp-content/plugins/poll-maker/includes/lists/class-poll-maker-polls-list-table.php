@@ -118,6 +118,47 @@ class Polls_List_Table extends WP_List_Table {
         <?php
     }
 
+    protected function get_views() {
+		$published_count = $this->published_polls_count();
+        $unpublished_count = $this->unpublished_polls_count();
+        $all_count = $this->all_record_count();
+		$selected_all = "";
+        $selected_0 = "";
+        $selected_1 = "";
+		if( isset( $_REQUEST['fstatus'] ) && is_numeric( $_REQUEST['fstatus'] ) && ! is_null( sanitize_text_field( $_REQUEST['fstatus'] ) ) ){
+
+            $fstatus  = absint( $_REQUEST['fstatus'] );
+
+            switch( $fstatus ){
+                case 0:
+                    $selected_0 = " style='font-weight:bold;' ";
+                    break;
+                case 1:
+                    $selected_1 = " style='font-weight:bold;' ";
+                    break;
+                default:
+                    $selected_all = " style='font-weight:bold;' ";
+                    break;
+            }
+        }else{
+            $selected_all = " style='font-weight:bold;' ";
+        }
+
+		$admin_url = get_admin_url( null, 'admin.php' );
+        $get_properties = http_build_query($_GET);
+
+		$status_links_url = $admin_url . "?" . $get_properties;
+		$publish_url = esc_url( add_query_arg('fstatus', 1, $status_links_url) );
+        $unpublish_url = esc_url( add_query_arg('fstatus', 0, $status_links_url) );
+
+		$status_links = array(
+            "all" => "<a ".$selected_all." href='?page=".esc_attr( $_REQUEST['page'] )."'>". __( 'All', $this->plugin_name )." (".$all_count.")</a>",
+            "published" => "<a ".$selected_1." href='". $publish_url ."'>". __( 'Published', $this->plugin_name )." (".$published_count.")</a>",
+            "unpublished"   => "<a ".$selected_0." href='". $unpublish_url ."'>". __( 'Unpublished', $this->plugin_name )." (".$unpublished_count.")</a>"
+        );
+        return $status_links;
+	}
+
 	public function add_or_edit_polls( $data, $id = null, $ays_change_type = "" ) {
 		global $allowedtags;
 		$old_allowedtags = $allowedtags;
@@ -376,7 +417,8 @@ class Polls_List_Table extends WP_List_Table {
 
 			// Allow multivote
 			$poll_allow_multivote   = isset($data['ays_poll_allow_multivote']) && $data['ays_poll_allow_multivote'] == 'on' ? "on" : "off";
-			$poll_multivote_answer_count = (isset($data['ays_poll_multivote_count']) && $data['ays_poll_multivote_count'] != '') ? sanitize_text_field($data['ays_poll_multivote_count']) : '1';
+			$multivote_answer_min_count = (isset($data['ays_poll_multivote_min_count']) && $data['ays_poll_multivote_min_count'] != '') ? sanitize_text_field($data['ays_poll_multivote_min_count']) : '';
+			$poll_multivote_answer_count = (isset($data['ays_poll_multivote_count']) && $data['ays_poll_multivote_count'] != '') ? sanitize_text_field($data['ays_poll_multivote_count']) : '';
 
 			// Allow collect user info
 			$poll_allow_collecting_users_data = (isset($data['ays_allow_collecting_logged_in_users_data']) && $data['ays_allow_collecting_logged_in_users_data'] == 'on') ? 'on' : 'off';
@@ -630,6 +672,7 @@ class Polls_List_Table extends WP_List_Table {
 
 				// Settings tab start
                 "poll_allow_multivote"		        => $poll_allow_multivote,
+				"multivote_answer_min_count"        => $multivote_answer_min_count,
 				"poll_allow_multivote_count"        => $poll_multivote_answer_count,
 				'poll_direction'                    => $poll_direction,
 				'show_create_date'                  => $show_create_date,
@@ -1564,6 +1607,7 @@ class Polls_List_Table extends WP_List_Table {
      */
     public function get_hidden_columns() {
         $hidden_culumns = array(
+			'poll_image',
             'code_include',
         );
         return $hidden_culumns;
@@ -1692,6 +1736,75 @@ class Polls_List_Table extends WP_List_Table {
 		return $wpdb->get_var($sql);
 	}
 
+	public static function all_record_count() {
+        global $wpdb;
+
+        $sql = "SELECT COUNT(*) FROM {$wpdb->prefix}ayspoll_polls";
+
+        if (isset($_GET['filterby']) && absint(intval($_GET['filterby'])) > 0) {
+			$cat_id = absint(intval($_GET['filterby']));
+        	$sql .= " WHERE FIND_IN_SET('{$cat_id}', categories) > 0";
+		}
+
+        return $wpdb->get_var( $sql );
+    }
+
+	public static function published_polls_count() {
+        global $wpdb;
+
+		// Counters
+		$publishedCount = 0;
+
+		$poll_table = esc_sql($wpdb->prefix . "ayspoll_polls");
+		$sql = "SELECT * FROM " . $poll_table;
+
+		if (isset($_GET['filterby']) && absint(intval($_GET['filterby'])) > 0) {
+			$cat_id = absint(intval($_GET['filterby']));
+        	$sql .= " WHERE FIND_IN_SET('{$cat_id}', categories) > 0";
+		}
+
+		$results = $wpdb->get_results($sql, ARRAY_A);
+
+		foreach ($results as $poll) {
+			$options = json_decode($poll['styles'], true);
+			$status = isset($options['published']) ? $options['published'] : 1;
+		
+			if ($status == 1) {
+				$publishedCount++;
+			}
+		}
+
+		return $publishedCount;
+    }
+    
+    public static function unpublished_polls_count() {
+        global $wpdb;
+
+		// Counters
+		$unpublishedCount = 0;
+
+		$poll_table = esc_sql($wpdb->prefix . "ayspoll_polls");
+		$sql = "SELECT * FROM " . $poll_table;
+
+		if (isset($_GET['filterby']) && absint(intval($_GET['filterby'])) > 0) {
+			$cat_id = absint(intval($_GET['filterby']));
+        	$sql .= " WHERE FIND_IN_SET('{$cat_id}', categories) > 0";
+		}
+
+		$results = $wpdb->get_results($sql, ARRAY_A);
+
+		foreach ($results as $poll) {
+			$options = json_decode($poll['styles'], true);
+			$status = isset($options['published']) ? $options['published'] : 1;
+		
+			if ($status == 0) {
+				$unpublishedCount++;
+			}
+		}
+
+		return $unpublishedCount;
+    }
+
 	public static function get_where_condition(){
 		global $wpdb;
 
@@ -1708,6 +1821,13 @@ class Polls_List_Table extends WP_List_Table {
 
             $where[] = sprintf(" categories LIKE('%%,%s,%%') ", esc_sql( $wpdb->esc_like( $cat_id ) ) );
 		}
+
+		if( isset( $_REQUEST['fstatus'] ) && is_numeric( $_REQUEST['fstatus'] ) && ! is_null( sanitize_text_field( $_REQUEST['fstatus'] ) ) ){
+            if( esc_sql( $_REQUEST['fstatus'] ) != '' ){
+                $fstatus  = absint( esc_sql( $_REQUEST['fstatus'] ) );
+                $where[] = " JSON_EXTRACT(styles, '$.published') = " . ($fstatus == 1 ? '1' : '0');
+            }
+        }
 
 		// if(isset( $_REQUEST['filterbyuser'] ) && $_REQUEST['filterbyuser'] > 0 ){
 		// 	$author_id = esc_sql( sanitize_text_field( $_REQUEST['filterbyuser'] ) );
@@ -1747,6 +1867,13 @@ class Polls_List_Table extends WP_List_Table {
 
             $where[] = sprintf(" categories LIKE('%%,%s,%%') ", esc_sql( $wpdb->esc_like( $cat_id ) ) );
 		}
+
+		if( isset( $_REQUEST['fstatus'] ) && is_numeric( $_REQUEST['fstatus'] ) && ! is_null( sanitize_text_field( $_REQUEST['fstatus'] ) ) ){
+            if( esc_sql( $_REQUEST['fstatus'] ) != '' ){
+                $fstatus  = absint( esc_sql( $_REQUEST['fstatus'] ) );
+                $where[] = " JSON_EXTRACT(styles, '$.published') = " . ($fstatus == 1 ? '1' : '0');
+            }
+        }
 
 		if( ! empty($where) ){
             $sql .= " WHERE " . implode( " AND ", $where );

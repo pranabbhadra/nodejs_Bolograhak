@@ -206,7 +206,7 @@ switch ( $action ) {
         $loader_iamge = "<span class='display_none'><img src=".POLL_MAKER_AYS_ADMIN_URL."/images/loaders/loading.gif></span>";
         // Default category
         $poll_default_cat = isset($settings_options['default_category']) && !empty($settings_options['default_category']) ? explode("," , $settings_options['default_category']) : array("1");
-        
+
         $poll['categories'] = $poll_default_cat;
 
         // Default type
@@ -500,7 +500,8 @@ $poll_vote_reason = (isset($options['poll_vote_reason']) && $options['poll_vote_
 // Allow multivote
 $poll_allow_multivote  = isset($options['poll_allow_multivote']) && $options['poll_allow_multivote'] == 'on' ? "checked" : "";
 $poll_enable_multivote_answer = $poll_allow_multivote == "checked" ? true : false;
-$poll_multivote_answer_count = (isset($options['poll_allow_multivote_count']) && $options['poll_allow_multivote_count'] != '') ? $options['poll_allow_multivote_count'] : '1';
+$poll_multivote_min_count = (isset($options['multivote_answer_min_count']) && $options['multivote_answer_min_count'] != '') ? intval(esc_attr($options['multivote_answer_min_count'])) : '1';
+$poll_multivote_answer_count = (isset($options['poll_allow_multivote_count']) && $options['poll_allow_multivote_count'] != '') ? intval(esc_attr($options['poll_allow_multivote_count'])) : '1';
 
 // Allow collect user info
 $poll_allow_collecting_users_data = (isset($options['poll_allow_collecting_users_data']) && $options['poll_allow_collecting_users_data'] == 'on') ? "checked" : "";
@@ -1065,33 +1066,38 @@ $emoji = array(
                     </div> 
                 </div> <!-- Allow custom answer -->
                 <hr>
-                <div class="col-sm-12" style="padding:20px;">
-                    <div class="pro_features" style="justify-content:flex-end;">
-                        <div>
-                            <p style="font-size:12px; margin-right: 0;">
-                                <?php echo __("This feature is available only in ", $this->plugin_name); ?>
-                                <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" title="Developer feature"><?php echo __("PRO version!!!", $this->plugin_name); ?></a>
-                            </p>
+                <div class="form-group row" style="margin: 0px;">
+                    <div class="col-sm-12 only_pro" style="padding:10px 0 0 10px;">
+                        <div class="pro_features" style="justify-content:flex-end;">
                         </div>
+                        <div class="form-group row">
+                            <div class="col-2">
+                                <label for="ays_add_f_votes">
+                                    <?= __('Add fake votes', $this->plugin_name); ?>
+                                    <a class="ays_help" data-toggle="tooltip"
+                                    data-placement="top"
+                                    title="<?= __("Allow users to add their fake votes to each answer.", $this->plugin_name); ?>">
+                                        <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
+                                    </a>
+                                </label>
+                            </div>
+                            <div class="col-10">
+                                <input type="checkbox" name="ays_add_f_votes" id="ays_add_f_votes"
+                                value="on">
+                            </div>
+                        </div>
+                        <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" class="ays-poll-new-upgrade-button-link">
+                            <div class="ays-poll-new-upgrade-button-box">
+                                <div>
+                                    <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/locked_24x24.svg'?>">
+                                    <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/unlocked_24x24.svg'?>" class="ays-poll-new-upgrade-button-hover">
+                                </div>
+                                <div class="ays-poll-new-upgrade-button"><?php echo __("Upgrade", $this->plugin_name); ?></div>
+                            </div>
+                        </a>
                     </div>
-                    <div class="form-group row">
-		                <div class="col-2">
-		                    <label for="ays_add_f_votes">
-		                        <?= __('Add fake votes', $this->plugin_name); ?>
-		                        <a class="ays_help" data-toggle="tooltip"
-		                           data-placement="top"
-		                           title="<?= __("Allow users to add their fake votes to each answer.", $this->plugin_name); ?>">
-		                            <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
-		                        </a>
-		                    </label>
-		                </div>
-		                <div class="col-10">
-		                    <input type="checkbox" name="ays_add_f_votes" id="ays_add_f_votes"
-		                       value="on">
-		                </div>
-		            </div>
 	            </div>
-                <hr class="ays_hr_on" <?php echo $poll['type'] == 'choosing' ? "" : "style='display: none;'"?>/>
+                <hr>
                 <div class="if-choosing poll-type-block form-group ays-poll-type-block">
                     <div class="col-sm-3 ays-poll-type-block">
                         <div class="form-group row ays-poll-type-block">
@@ -1505,49 +1511,54 @@ $emoji = array(
                                    value="2" <?= ($poll['theme_id'] == 2) ? 'checked' : '' ?>>
                         </div>
                         <div class="col">
-	                        <div class="col-sm-12" style="padding:20px;">
-			                    <div class="pro_features ays-poll-themes-pro-features" style="justify-content:flex-end;">
-			                        <div style="margin-right:20px;">
-			                            <p style="font-size:20px;">
-			                                <?php echo __("This feature is available only in ", $this->plugin_name); ?>
-			                                <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" title="Developer feature"><?php echo __("PRO version!!!", $this->plugin_name); ?></a>
-			                            </p>
-			                        </div>
-			                    </div>
-		                        <div class="ays_poll_theme_image_div_pro">
-			                        <div class="ays_poll_theme_image_div col apm-pro-feature">
-			                            <label class="ays-poll-theme-item">
-			                                <p>Light Shape</p>
-			                                <img src="<?= POLL_MAKER_AYS_ADMIN_URL . '/images/themes/LightShape.png' ?>"
-			                                     alt="Light Shape"
-			                                     title="<?= __("It is PRO version feature", $this->plugin_name); ?>">
-			                            </label>
-			                        </div>
-			                        <div class="ays_poll_theme_image_div col apm-pro-feature">
-			                            <label class="ays-poll-theme-item">
-			                                <p>Dark Shape</p>
-			                                <img src="<?= POLL_MAKER_AYS_ADMIN_URL . '/images/themes/DarkShape.png' ?>"
-			                                     alt="Light Shape"
-			                                     title="<?= __("It is PRO version feature", $this->plugin_name); ?>">
-			                            </label>
-			                        </div>
-			                        <div class="ays_poll_theme_image_div col apm-pro-feature">
-			                            <label class="ays-poll-theme-item">
-			                                <p>Coffee Fluid</p>
-			                                <img src="<?= POLL_MAKER_AYS_ADMIN_URL . '/images/themes/CoffeeFluid.png' ?>"
-			                                     alt="Coffee Fluid"
-			                                     title="<?= __("It is PRO version feature", $this->plugin_name); ?>">
-			                            </label>
-			                        </div>
-			                        <div class="ays_poll_theme_image_div col apm-pro-feature">
-			                            <label class="ays-poll-theme-item">
-			                                <p><?= __("Aquamarine", $this->plugin_name) ?></p>
-			                                <img src="<?= POLL_MAKER_AYS_ADMIN_URL . '/images/themes/Aquamarine.png' ?>"
-			                                     alt="Aquamarine"
-			                                     title="<?= __("It is PRO version feature", $this->plugin_name); ?>">
-			                            </label>
-			                        </div>	                        
-		                        </div>
+                            <div class="form-group row" style="margin: 0px;">
+                                <div class="col-sm-12 only_pro" style="padding:10px 0 0 10px;">
+                                    <div class="pro_features" style="justify-content:flex-end;">
+                                    </div>
+                                    <div class="ays_poll_theme_image_div_pro">
+                                        <div class="ays_poll_theme_image_div col apm-pro-feature">
+                                            <label class="ays-poll-theme-item">
+                                                <p>Light Shape</p>
+                                                <img src="<?= POLL_MAKER_AYS_ADMIN_URL . '/images/themes/LightShape.png' ?>"
+                                                    alt="Light Shape"
+                                                    title="<?= __("It is PRO version feature", $this->plugin_name); ?>">
+                                            </label>
+                                        </div>
+                                        <div class="ays_poll_theme_image_div col apm-pro-feature">
+                                            <label class="ays-poll-theme-item">
+                                                <p>Dark Shape</p>
+                                                <img src="<?= POLL_MAKER_AYS_ADMIN_URL . '/images/themes/DarkShape.png' ?>"
+                                                    alt="Light Shape"
+                                                    title="<?= __("It is PRO version feature", $this->plugin_name); ?>">
+                                            </label>
+                                        </div>
+                                        <div class="ays_poll_theme_image_div col apm-pro-feature">
+                                            <label class="ays-poll-theme-item">
+                                                <p>Coffee Fluid</p>
+                                                <img src="<?= POLL_MAKER_AYS_ADMIN_URL . '/images/themes/CoffeeFluid.png' ?>"
+                                                    alt="Coffee Fluid"
+                                                    title="<?= __("It is PRO version feature", $this->plugin_name); ?>">
+                                            </label>
+                                        </div>
+                                        <div class="ays_poll_theme_image_div col apm-pro-feature">
+                                            <label class="ays-poll-theme-item">
+                                                <p><?= __("Aquamarine", $this->plugin_name) ?></p>
+                                                <img src="<?= POLL_MAKER_AYS_ADMIN_URL . '/images/themes/Aquamarine.png' ?>"
+                                                    alt="Aquamarine"
+                                                    title="<?= __("It is PRO version feature", $this->plugin_name); ?>">
+                                            </label>
+                                        </div>	                        
+                                    </div>
+                                    <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" class="ays-poll-new-upgrade-button-link">
+                                        <div class="ays-poll-new-upgrade-button-box">
+                                            <div>
+                                                <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/locked_24x24.svg'?>">
+                                                <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/unlocked_24x24.svg'?>" class="ays-poll-new-upgrade-button-hover">
+                                            </div>
+                                            <div class="ays-poll-new-upgrade-button"><?php echo __("Upgrade", $this->plugin_name); ?></div>
+                                        </div>
+                                    </a>
+                                </div>
 	                        </div>
                         </div>
                     </div>
@@ -2638,120 +2649,130 @@ $emoji = array(
                             </div> <!-- Buttons Styles End -->
                             <hr>
                             <!--PRO ANSWER STYLEs-->
-                            <div class="col-sm-12" style="padding:30px;">
-			                    <div class="pro_features" style="justify-content:flex-end;">
-			                        <div>
-			                            <p style="font-size:15px;">
-			                                <?php echo __("This feature is available only in ", $this->plugin_name); ?>
-			                                <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" title="Developer feature"><?php echo __("PRO version!!!", $this->plugin_name); ?></a>
-			                            </p>
+                            <div class="form-group row" style="margin: 0px;">
+                                <div class="col-sm-12 only_pro" style="padding:10px 20px 0 20px;">
+                                    <div class="pro_features" style="justify-content:flex-end;">
                                     </div>
-                                    <div style="position: absolute; top: 15px;">
-			                            <p style="font-size:15px;">
-			                                <?php echo __("This feature is available only in ", $this->plugin_name); ?>
-			                                <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" title="Developer feature"><?php echo __("PRO version!!!", $this->plugin_name); ?></a>
-			                            </p>
-			                        </div>
-                                </div>
-                                <div class="form-group row">
-                                    <p class="ays-subtitle" style="margin-top:0;"><?php echo __('Answers Styles',$this->plugin_name)?></p>
-                                </div> 
-                                <div class="form-group row">
-                                    <div class="" style="width: 100%;">
-                                        <hr/>
-                                        <div class="form-group row">
-                                            <div class="col-sm-5">
-                                                <label for="ays_answers_border">
-                                                    <?php echo __('Answer border',$this->plugin_name)?>
-                                                    <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" title="<?php echo __('Allow answer border',$this->plugin_name)?>">
-                                                        <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
-                                                    </a>
-                                                </label>
-                                            </div>
-                                            <div class="col-sm-7 ays_divider_left">
-                                                <input type="checkbox" class="ays_toggle ays_toggle_slide" id="ays_answers_border" name="ays_answers_border" value="on"
-                                                    checked/>
-                                                <label for="ays_answers_border" class="ays_switch_toggle">Toggle</label>
-                                                <div class="col-sm-12 ays_toggle_target ays_divider_top" style="margin-top: 10px; padding-top: 10px;">
-                                                    <label for="ays_answers_border_width">
-                                                        <?php echo __('Border width',$this->plugin_name)?> (px)
-                                                        <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" title="<?php echo __('The width of answers border',$this->plugin_name)?>">
+                                    <div class="form-group row">
+                                        <p class="ays-subtitle" style="margin-top:0;"><?php echo __('Answers Styles',$this->plugin_name)?></p>
+                                    </div> 
+                                    <div class="form-group row">
+                                        <div class="" style="width: 100%;">
+                                            <hr/>
+                                            <div class="form-group row">
+                                                <div class="col-sm-5">
+                                                    <label for="ays_answers_border">
+                                                        <?php echo __('Answer border',$this->plugin_name)?>
+                                                        <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" title="<?php echo __('Allow answer border',$this->plugin_name)?>">
                                                             <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
                                                         </a>
                                                     </label>
-                                                    <input type="number" class="ays-text-input" id='ays_answers_border_width' name='ays_answers_border_width'
-                                                        value="" min="0"/>
                                                 </div>
-                                                <div class="col-sm-12 ays_toggle_target ays_divider_top" style="margin-top: 10px; padding-top: 10px;">
-                                                    <label for="ays_answers_border_style">
-                                                        <?php echo __('Border style',$this->plugin_name)?>
-                                                        <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" title="<?php echo __('The style of answers border',$this->plugin_name)?>">
+                                                <div class="col-sm-7 ays_divider_left">
+                                                    <input type="checkbox" class="ays_toggle ays_toggle_slide" id="ays_answers_border" name="ays_answers_border" value="on"
+                                                        checked/>
+                                                    <label for="ays_answers_border" class="ays_switch_toggle">Toggle</label>
+                                                    <div class="col-sm-12 ays_toggle_target ays_divider_top" style="margin-top: 10px; padding-top: 10px;">
+                                                        <label for="ays_answers_border_width">
+                                                            <?php echo __('Border width',$this->plugin_name)?> (px)
+                                                            <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" title="<?php echo __('The width of answers border',$this->plugin_name)?>">
+                                                                <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
+                                                            </a>
+                                                        </label>
+                                                        <input type="number" class="ays-text-input" id='ays_answers_border_width' name='ays_answers_border_width'
+                                                            value="" min="0"/>
+                                                    </div>
+                                                    <div class="col-sm-12 ays_toggle_target ays_divider_top" style="margin-top: 10px; padding-top: 10px;">
+                                                        <label for="ays_answers_border_style">
+                                                            <?php echo __('Border style',$this->plugin_name)?>
+                                                            <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" title="<?php echo __('The style of answers border',$this->plugin_name)?>">
+                                                                <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
+                                                            </a>
+                                                        </label>
+                                                        <select id="ays_answers_border_style" name="ays_answers_border_style" class="ays-text-input">
+                                                            <option>Solid</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-sm-12 ays_toggle_target ays_divider_top" style="margin-top: 10px; padding-top: 10px;">
+                                                        <label for="ays_answers_border_color">
+                                                            <?php echo __('Border color',$this->plugin_name)?>
+                                                            <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" title="<?php echo __('The color of the answers border',$this->plugin_name)?>">
+                                                                <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
+                                                            </a>
+                                                        </label>
+                                                        <input class="ays-text-input wp-color-picker" id="ays_answers_border_color" type="text" data-alpha="true" data-default-color="#000000" value="#000000">
+                                                    </div>
+                                                </div>
+                                            </div> <!-- Answers border -->
+                                            <hr/>
+                                            <div class="form-group row ays_grid_show">
+                                                <div class="col-sm-5">
+                                                    <label for="ays_poll_show_answers_caption">
+                                                        <?php echo __('Show answers caption',$this->plugin_name)?>
+                                                        <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" title="<?php echo __('Show answers caption near the answer image. This option will be work only when answer has image.',$this->plugin_name); ?>">
                                                             <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
                                                         </a>
                                                     </label>
-                                                    <select id="ays_answers_border_style" name="ays_answers_border_style" class="ays-text-input">
-                                                        <option>Solid</option>
+                                                </div>
+                                                <div class="col-sm-7 ays_divider_left">
+                                                    <input type="checkbox" class="ays_toggle ays_toggle_slide" value='on'/>
+                                                    <label for="ays_poll_show_answers_caption" class="ays_switch_toggle">Toggle</label>
+                                                </div>
+                                            </div> <!-- Show answers caption -->
+                                            <hr/>
+                                            <div class="form-group row">
+                                                <div class="col-sm-5">
+                                                    <label for="ays_ans_img_caption_style">
+                                                        <?php echo __('Answers image caption style',$this->plugin_name)?>
+                                                        <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" title="<?php echo __('Height of answers images.',$this->plugin_name)?>">
+                                                        <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
+                                                        </a>
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-7 ays_divider_left">
+                                                    <select class="ays-text-input ays-text-input-short">
+                                                        <option><?php echo __('Outside', $this->plugin_name); ?></option>
                                                     </select>
                                                 </div>
-                                                <div class="col-sm-12 ays_toggle_target ays_divider_top" style="margin-top: 10px; padding-top: 10px;">
-                                                    <label for="ays_answers_border_color">
-                                                        <?php echo __('Border color',$this->plugin_name)?>
-                                                        <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" title="<?php echo __('The color of the answers border',$this->plugin_name)?>">
-                                                            <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
+                                            </div> <!-- Answers image caption style -->
+                                            <hr/>
+                                            <div class="form-group row">
+                                                <div class="col-sm-5">
+                                                    <label for="ays_ans_img_caption_position">
+                                                        <?php echo __('Answers image caption position',$this->plugin_name)?>
+                                                        <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" title="<?php echo __('Height of answers images.',$this->plugin_name)?>">
+                                                        <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
                                                         </a>
                                                     </label>
-                                                    <input class="ays-text-input wp-color-picker" id="ays_answers_border_color" type="text" data-alpha="true" data-default-color="#000000" value="#000000">
                                                 </div>
+                                                <div class="col-sm-7 ays_divider_left">
+                                                    <select class="ays-text-input ays-text-input-short">
+                                                        <option value="top"><?php echo __('Top', $this->plugin_name); ?></option>
+                                                    </select>
+                                                </div>
+                                            </div> <!-- Answers image caption position -->
+                                            <hr>
+                                        </div>
+                                    </div>
+                                    <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" class="ays-poll-new-upgrade-button-link">
+                                        <div class="ays-poll-new-upgrade-button-box">
+                                            <div>
+                                                <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/locked_24x24.svg'?>">
+                                                <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/unlocked_24x24.svg'?>" class="ays-poll-new-upgrade-button-hover">
                                             </div>
-                                        </div> <!-- Answers border -->
-                                        <hr/>
-                                        <div class="form-group row ays_grid_show">
-                                            <div class="col-sm-5">
-                                                <label for="ays_poll_show_answers_caption">
-                                                    <?php echo __('Show answers caption',$this->plugin_name)?>
-                                                    <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" title="<?php echo __('Show answers caption near the answer image. This option will be work only when answer has image.',$this->plugin_name); ?>">
-                                                        <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
-                                                    </a>
-                                                </label>
-                                            </div>
-                                            <div class="col-sm-7 ays_divider_left">
-                                                <input type="checkbox" class="ays_toggle ays_toggle_slide" value='on'/>
-                                                <label for="ays_poll_show_answers_caption" class="ays_switch_toggle">Toggle</label>
-                                            </div>
-                                        </div> <!-- Show answers caption -->
-                                        <hr/>
-                                        <div class="form-group row">
-                                            <div class="col-sm-5">
-                                                <label for="ays_ans_img_caption_style">
-                                                    <?php echo __('Answers image caption style',$this->plugin_name)?>
-                                                    <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" title="<?php echo __('Height of answers images.',$this->plugin_name)?>">
-                                                    <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
-                                                    </a>
-                                                </label>
-                                            </div>
-                                            <div class="col-sm-7 ays_divider_left">
-                                                <select class="ays-text-input ays-text-input-short">
-                                                    <option><?php echo __('Outside', $this->plugin_name); ?></option>
-                                                </select>
-                                            </div>
-                                        </div> <!-- Answers image caption style -->
-                                        <hr/>
-                                        <div class="form-group row">
-                                            <div class="col-sm-5">
-                                                <label for="ays_ans_img_caption_position">
-                                                    <?php echo __('Answers image caption position',$this->plugin_name)?>
-                                                    <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" title="<?php echo __('Height of answers images.',$this->plugin_name)?>">
-                                                    <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
-                                                    </a>
-                                                </label>
-                                            </div>
-                                            <div class="col-sm-7 ays_divider_left">
-                                                <select class="ays-text-input ays-text-input-short">
-                                                    <option value="top"><?php echo __('Top', $this->plugin_name); ?></option>
-                                                </select>
-                                            </div>
-                                        </div> <!-- Answers image caption position -->
-                                        <hr>
+                                            <div class="ays-poll-new-upgrade-button"><?php echo __("Upgrade", $this->plugin_name); ?></div>
+                                        </div>
+                                    </a>
+                                    <div class="ays-poll-center-big-main-button-box ays-poll-new-big-button-flex">
+                                        <div class="ays-poll-center-big-main-button-box">
+                                            <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" class="ays-poll-new-upgrade-button-link">
+                                                <div class="ays-poll-center-new-big-upgrade-button">
+                                                    <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/locked_24x24.svg'?>" class="ays-poll-new-button-img-hide">
+                                                    <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/unlocked_24x24.svg'?>" class="ays-poll-new-upgrade-button-hover">  
+                                                    <?php echo __("Upgrade", $this->plugin_name); ?>
+                                                </div>
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -3096,7 +3117,7 @@ $emoji = array(
                     </div>
                 </div>
                 <hr>
-                <div class="form-group row ays_toggle_parent" style="display:  <?php echo ($poll['type'] == 'choosing') ? 'flex' : 'none' ?>">
+                <div class="form-group row ays_toggle_parent ays_poll_option_only_for_choosing_type" style="display:  <?php echo ($poll['type'] == 'choosing') ? 'flex' : 'none' ?>">
                     <div class="col-sm-3">
                         <label for='ays_poll_allow_multivote'>
                             <?= __('Allow multivote', $this->plugin_name); ?>
@@ -3109,10 +3130,42 @@ $emoji = array(
                         <input type="checkbox" name="ays_poll_allow_multivote" id="ays_poll_allow_multivote" class="ays-enable-timer1 ays_toggle_checkbox" value="on" <?php echo $poll_allow_multivote; ?>>
                     </div>
                     <div class="col-sm-8 ays_toggle_target ays_divider_left <?php echo $poll_enable_multivote_answer ? '' : 'display_none'; ?>">
-                        <input type="number" name="ays_poll_multivote_count" id="ays_poll_multivote_count" class="ays-enable-timerl ays-text-input" value="<?php echo $poll_multivote_answer_count; ?>">
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <label for='ays_poll_multivote_min_count'>
+                                    <?= __('Min', $this->plugin_name); ?>
+                                    <a  class="ays_help" 
+                                        data-toggle="tooltip"
+                                        data-placement="top"
+                                        title="<?= __("Indicate the minimum count of answers.", $this->plugin_name); ?>">
+                                        <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
+                                    </a>
+                                </label>
+                            </div>
+                            <div class="col-sm-9">
+                                <input type="number" name="ays_poll_multivote_min_count" id="ays_poll_multivote_min_count" class="ays-enable-timerl ays-text-input ays-text-input-short" value="<?php echo $poll_multivote_min_count; ?>">
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <label for='ays_poll_multivote_count'>
+                                    <?= __('Max', $this->plugin_name); ?>
+                                    <a  class="ays_help"
+                                        data-toggle="tooltip"
+                                        data-placement="top"
+                                        title="<?= __("Indicate the maximum count of answers.", $this->plugin_name); ?>">
+                                        <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
+                                    </a>
+                                </label>
+                            </div>
+                            <div class="col-sm-9">
+                                <input type="number" name="ays_poll_multivote_count" id="ays_poll_multivote_count" class="ays-enable-timerl ays-text-input ays-text-input-short" value="<?php echo $poll_multivote_answer_count; ?>">
+                            </div> 
+                        </div>
                     </div>
                 </div>
-                <hr style="display:  <?php echo ($poll['type'] == 'choosing') ? 'flex' : 'none' ?>">
+                <hr class="ays_poll_option_only_for_choosing_type" style="display:  <?php echo ($poll['type'] == 'choosing') ? 'flex' : 'none' ?>">
                 <div class="form-group row">
                     <div class="col-sm-3">
                         <label for='show-title'>
@@ -3130,7 +3183,7 @@ $emoji = array(
                     </div>
                 </div>
                 <hr>
-                <div class="form-group row" style="display:  <?php echo ($poll['type'] == 'choosing' || $poll['type'] == 'text') ? 'flex' : 'none' ?>" >
+                <div class="ays_poll_option_for_choosing_type ays_poll_option_for_text_type form-group row" style="display:  <?php echo ($poll['type'] == 'choosing' || $poll['type'] == 'text') ? 'flex' : 'none' ?>" >
                     <div class="col-sm-3">
                         <label>
 							<?= __('Alignment', $this->plugin_name); ?>
@@ -3163,32 +3216,37 @@ $emoji = array(
                         </div>
                     </div>
                 </div>
-                <hr style="display:  <?php echo ($poll['type'] == 'choosing' || $poll['type'] == 'text') ? 'block' : 'none' ?>" >
-                <div class="col-sm-12" style="padding:20px 0;">
-                    <div class="pro_features" style="justify-content:flex-end;">
-                        <div style="margin-right:20px;">
-                            <p style="font-size:20px;">
-                                <?php echo __("This feature is available only in ", $this->plugin_name); ?>
-                                <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" title="Developer feature"><?php echo __("PRO version!!!", $this->plugin_name); ?></a>
-                            </p>
+                <hr class="ays_poll_option_for_choosing_type ays_poll_option_for_text_type" style="display:  <?php echo ($poll['type'] == 'choosing' || $poll['type'] == 'text') ? 'block' : 'none' ?>" >
+                <div class="form-group row" style="margin: 0px;">
+                    <div class="col-sm-12 only_pro" style="padding:10px 0 0 10px;">
+                        <div class="pro_features" style="justify-content:flex-end;">
                         </div>
-                    </div>                
-	                <div class="form-group row">
-	                    <div class="col-sm-3">
-	                        <label for='ays-poll-allow-anonymity'>
-					            <?= __('Allow anonymity', $this->plugin_name); ?>
-	                            <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip"
-	                               data-placement="top"
-	                               title="<?= __("It allows participants to respond to your polls without ever revealing their identities, even if they are registered on your website. After enabling the option, the WP User and User IP will not be stored in the database.", $this->plugin_name); ?>">
-	                                <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
-	                            </a>
-	                        </label>
-	                    </div>
-	                    <div class="col-sm-9">
-	                        <input type="checkbox" name="ays_allow_anonymity" id="ays-poll-allow-anonymity"
-	                               value="1" >
-	                    </div>
-	                </div>
+                        <div class="form-group row">
+                            <div class="col-sm-3">
+                                <label for='ays-poll-allow-anonymity'>
+                                    <?= __('Allow anonymity', $this->plugin_name); ?>
+                                    <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip"
+                                    data-placement="top"
+                                    title="<?= __("It allows participants to respond to your polls without ever revealing their identities, even if they are registered on your website. After enabling the option, the WP User and User IP will not be stored in the database.", $this->plugin_name); ?>">
+                                        <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
+                                    </a>
+                                </label>
+                            </div>
+                            <div class="col-sm-9">
+                                <input type="checkbox" name="ays_allow_anonymity" id="ays-poll-allow-anonymity"
+                                    value="1" >
+                            </div>
+                        </div>
+                        <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" class="ays-poll-new-upgrade-button-link">
+                            <div class="ays-poll-new-upgrade-button-box">
+                                <div>
+                                    <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/locked_24x24.svg'?>">
+                                    <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/unlocked_24x24.svg'?>" class="ays-poll-new-upgrade-button-hover">
+                                </div>
+                                <div class="ays-poll-new-upgrade-button"><?php echo __("Upgrade", $this->plugin_name); ?></div>
+                            </div>
+                        </a>
+                    </div>
 	            </div>
                 <hr>
                 <div class="form-group row">
@@ -3646,7 +3704,7 @@ $emoji = array(
                         <input type="checkbox" id="ays_enable_vote_button" name="ays_enable_vote_button"
                                value="1" <?= (isset($options['enable_vote_btn']) && $options['enable_vote_btn'] == 0) ? '' : 'checked' ?> />
                     </div>
-                    <div class="col-sm-8 if-enable-vote-button ays_toggle_target">
+                    <div class="col-sm-8 if-enable-vote-button ays_toggle_target" style="<?php echo (isset($options['enable_vote_btn']) && $options['enable_vote_btn'] == 0) ? 'display:none;' : '' ?>">
 	                    <div class="row">
 		                    <div class="col-sm-3 ays_divider_left">
 		                        <label for="ays-poll-btn-text_vote">
@@ -3751,15 +3809,9 @@ $emoji = array(
                     </div>
                 </div> <!-- Show answers numbering -->
                 <hr>
-                <div class="form-group row">
-                    <div class="col-sm-12" style="padding:20px;">
-                        <div class="pro_features pro_features_integrations" style="justify-content:flex-end; z-index: 1">
-                            <div style="margin-right:20px;">
-                                <p style="font-size:20px;">
-                                    <?php echo __("This feature is available only in ", $this->plugin_name); ?>
-                                    <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" title="Developer feature"><?php echo __("PRO version!!!", $this->plugin_name); ?></a>
-                                </p>
-                            </div>
+                <div class="form-group row" style="margin: 0px;">
+                    <div class="col-sm-12 only_pro" style="padding:10px 0 0 10px;">
+                        <div class="pro_features" style="justify-content:flex-end;">
                         </div>
                         <div class="form-group row ays_toggle_parent">
                             <div class="col-sm-3">
@@ -3791,6 +3843,15 @@ $emoji = array(
                                 </div>
                             </div>
                         </div> <!-- Status -->
+                        <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" class="ays-poll-new-upgrade-button-link">
+                            <div class="ays-poll-new-upgrade-button-box">
+                                <div>
+                                    <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/locked_24x24.svg'?>">
+                                    <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/unlocked_24x24.svg'?>" class="ays-poll-new-upgrade-button-hover">
+                                </div>
+                                <div class="ays-poll-new-upgrade-button"><?php echo __("Upgrade", $this->plugin_name); ?></div>
+                            </div>
+                        </a>
                     </div> 
                 </div> 
             </div>
@@ -3951,28 +4012,33 @@ $emoji = array(
                                 </div>
                             </div>
                             <hr>
-                            <div class="col-sm-12" style="padding:35px 0;">
-							    <div class="pro_features" style="justify-content:flex-end;">
-							        <div style="margin-right:20px;">
-							            <p style="font-size:13px;">
-							                <?php echo __("This feature is available only in ", $this->plugin_name); ?>
-							                <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" title="Developer feature"><?php echo __("PRO version!!!", $this->plugin_name); ?></a>
-							            </p>
-							        </div>
-							    </div>
-							    <div class="form-group row d-flex">
-					                <div class="col-sm-3">
-					                    <label for="ays_attempts_count">
-					                        <?php echo __('Attempts count',$this->plugin_name)?>
-					                        <a class="ays_help" data-toggle="tooltip" title="<?php echo __('Specify the count of the attempts per user for passing the poll.',$this->plugin_name)?>">
-					                            <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
-					                        </a>
-					                    </label>
-					                </div>
-					                <div class="col-sm-9">
-					                    <input type="number" min="1" name="ays_attempts_count" id="ays_attempts_count" class="ays-enable-timerl ays-text-input">
-					                </div>
-						        </div>
+                            <div class="form-group row" style="margin: 0px;">
+                                <div class="col-sm-12 only_pro" style="padding:10px 0 0 10px;">
+                                    <div class="pro_features" style="justify-content:flex-end;">
+                                    </div>
+                                    <div class="form-group row d-flex">
+                                        <div class="col-sm-3">
+                                            <label for="ays_attempts_count">
+                                                <?php echo __('Attempts count',$this->plugin_name)?>
+                                                <a class="ays_help" data-toggle="tooltip" title="<?php echo __('Specify the count of the attempts per user for passing the poll.',$this->plugin_name)?>">
+                                                    <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
+                                                </a>
+                                            </label>
+                                        </div>
+                                        <div class="col-sm-9">
+                                            <input type="number" min="1" name="ays_attempts_count" id="ays_attempts_count" class="ays-enable-timerl ays-text-input">
+                                        </div>
+                                    </div>
+                                    <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" class="ays-poll-new-upgrade-button-link">
+                                        <div class="ays-poll-new-upgrade-button-box">
+                                            <div>
+                                                <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/locked_24x24.svg'?>">
+                                                <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/unlocked_24x24.svg'?>" class="ays-poll-new-upgrade-button-hover">
+                                            </div>
+                                            <div class="ays-poll-new-upgrade-button"><?php echo __("Upgrade", $this->plugin_name); ?></div>
+                                        </div>
+                                    </a>
+                                </div>
 							</div>
                         </div>
                     </div>
@@ -4171,144 +4237,159 @@ $emoji = array(
                     </div>
 			    </div><!-- Password for passing Poll PRO Feautre-->
                 <hr>
-                <div class="col-sm-12" style="padding:20px 0;">
-				    <div class="pro_features" style="justify-content:flex-end;">
-				        <div style="margin-right:20px;">
-				            <p style="font-size:15px;">
-				                <?php echo __("This feature is available only in ", $this->plugin_name); ?>
-				                <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" title="Developer feature"><?php echo __("PRO version!!!", $this->plugin_name); ?></a>
-				            </p>
-				        </div>
-				    </div>
-	                <div class="form-group row ays_toggle_parent">
-				        <div class="col-sm-3">
-				            <label for="ays_enable_tackers_count">
-				                <?php echo __('Limitation count of takers', $this->plugin_name)?>
-				                <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" title="<?php echo __('You can choose how many users can pass the poll.',$this->plugin_name)?>">
-				                    <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
-				                </a>
-				            </label>
-				        </div>
-				        <div class="col-sm-1">
-				            <input type="checkbox" class="ays-enable-timer1 ays_toggle_checkbox" id="ays_enable_tackers_count"
-				                   name="ays_enable_tackers_count" value="on">
-				        </div>
-				        <div class="col-sm-8 ays_toggle_target ays_divider_left">
-				            <div class="form-group row">
-				                <div class="col-sm-3">
-				                    <label for="ays_tackers_count">
-				                        <?php echo __('Count',$this->plugin_name)?>
-				                        <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" title="<?php echo __('The number of users who can pass the poll.',$this->plugin_name)?>">
-				                            <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
-				                        </a>
-				                    </label>
-				                </div>
-				                <div class="col-sm-9">
-				                    <input type="number" name="ays_tackers_count" id="ays_tackers_count" class="ays-enable-timerl ays-text-input"
-				                           >
-				                </div>
-				            </div>
-				        </div>
-				    </div>
+                <div class="form-group row" style="margin: 0px;">
+                    <div class="col-sm-12 only_pro" style="padding:10px 0 0 10px;">
+                        <div class="pro_features" style="justify-content:flex-end;">
+                        </div>
+                        <div class="form-group row ays_toggle_parent">
+                            <div class="col-sm-3">
+                                <label for="ays_enable_tackers_count">
+                                    <?php echo __('Limitation count of takers', $this->plugin_name)?>
+                                    <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" title="<?php echo __('You can choose how many users can pass the poll.',$this->plugin_name)?>">
+                                        <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
+                                    </a>
+                                </label>
+                            </div>
+                            <div class="col-sm-1">
+                                <input type="checkbox" class="ays-enable-timer1 ays_toggle_checkbox" id="ays_enable_tackers_count"
+                                    name="ays_enable_tackers_count" value="on">
+                            </div>
+                            <div class="col-sm-8 ays_toggle_target ays_divider_left">
+                                <div class="form-group row">
+                                    <div class="col-sm-3">
+                                        <label for="ays_tackers_count">
+                                            <?php echo __('Count',$this->plugin_name)?>
+                                            <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" title="<?php echo __('The number of users who can pass the poll.',$this->plugin_name)?>">
+                                                <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
+                                            </a>
+                                        </label>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <input type="number" name="ays_tackers_count" id="ays_tackers_count" class="ays-enable-timerl ays-text-input"
+                                            >
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" class="ays-poll-new-upgrade-button-link">
+                            <div class="ays-poll-new-upgrade-button-box">
+                                <div>
+                                    <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/locked_24x24.svg'?>">
+                                    <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/unlocked_24x24.svg'?>" class="ays-poll-new-upgrade-button-hover">
+                                </div>
+                                <div class="ays-poll-new-upgrade-button"><?php echo __("Upgrade", $this->plugin_name); ?></div>
+                            </div>
+                        </a>
+                    </div>
 				</div><!-- Limitation count of takers Poll PRO Feautre-->
 	            <hr>
-	            <div class="col-sm-12" style="padding:25px 0;">
-				    <div class="pro_features" style="justify-content:flex-end;">
-				        <div style="margin-right:20px;">
-				            <p style="font-size:16px;">
-				                <?php echo __("This feature is available only in ", $this->plugin_name); ?>
-				                <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" title="Developer feature"><?php echo __("PRO version!!!", $this->plugin_name); ?></a>
-				            </p>
-				        </div>
-				    </div>
-		            <div class="form-group row ays_toggle_parent">
-				        <div class="col-sm-3">
-				            <label for="ays_enable_vote_limitation">
-				                <?php echo __('Allow to vote once per session', $this->plugin_name)?>
-				                <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" title="<?php echo __('If you enable this feature, you can select the frequency the users can have access to the poll after the first attempt. For example, if you give a 1-day value to the session period, the user will have access to the poll once in 1-day.' , $this->plugin_name)?>">
-				                    <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
-				                </a>
-				            </label>
-				        </div>
-				        <div class="col-sm-1">
-				            <input type="checkbox" class="ays-enable-timer1 ays_toggle_checkbox" id="ays_enable_vote_limitation"
-				                   name="ays_enable_vote_limitation" value="on" >
-				        </div>
-				        <div class="col-sm-8 ays_toggle_target ays_divider_left <">
-				            <div class="form-group row">
-				                <div class="col-sm-3">
-				                    <label for="ays_vote_limitation">
-				                        <?php echo __('Session Period' , $this->plugin_name)?>
-				                        <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" title="<?php echo __('Specify the time for one session.' , $this->plugin_name)?>">
-				                            <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
-				                        </a>
-				                    </label>
-				                </div>
-				                <div class="col-sm-7">
-				                    <input type="text" name="ays_vote_limitation" id="ays_vote_limitation" class="ays-enable-timerl ays-text-input">
-	                                
-				                </div>
-				                <div class="col-sm-2">
-	                                <select name="ays_vote_limitation_time_period" id="ays_vote_limitation_period">                           
-	                                    <option>Minute(s)
-	                                    </option>
-	                                </select>
-				                </div>                            
-				            </div>
-	                        <div class="form-group row d-flex w-100">
-	                            <div class="col-sm-3">
-	                                <label for="vote_limit_message">
-						    			<?= __('Message', $this->plugin_name); ?>
-	                                    <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" data-placement="top"
-	                                       title="<?= __('Write the message, which will be shown during the restricted time, when the user has already passed his/her limit for the session.', $this->plugin_name); ?>">
-	                                        <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
-	                                    </a>
-	                                </label>
-	                            </div>
-	                            <div class="col-sm-9">
-						    		<?php		    		
-						    		$editor_id = 'vote_limit_message';
-						    		$settings  = array(
-						    			'editor_height'  => 100,
-						    			'textarea_name'  => 'vote_limit_message',
-						    			'editor_class'   => 'ays-textarea',
-						    			'media_elements' => false
-						    		);
-						    		wp_editor('This feature is available only in PRO version!!!', 'editor_id', $settings);
-						    		?>
-	                            </div>
-	                        </div>    
-				        </div>
-				    </div>
+	            <div class="form-group row" style="margin: 0px;">
+                    <div class="col-sm-12 only_pro" style="padding:10px 0 0 10px;">
+                        <div class="pro_features" style="justify-content:flex-end;">
+                        </div>
+                        <div class="form-group row ays_toggle_parent">
+                            <div class="col-sm-3">
+                                <label for="ays_enable_vote_limitation">
+                                    <?php echo __('Allow to vote once per session', $this->plugin_name)?>
+                                    <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" title="<?php echo __('If you enable this feature, you can select the frequency the users can have access to the poll after the first attempt. For example, if you give a 1-day value to the session period, the user will have access to the poll once in 1-day.' , $this->plugin_name)?>">
+                                        <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
+                                    </a>
+                                </label>
+                            </div>
+                            <div class="col-sm-1">
+                                <input type="checkbox" class="ays-enable-timer1 ays_toggle_checkbox" id="ays_enable_vote_limitation"
+                                    name="ays_enable_vote_limitation" value="on" >
+                            </div>
+                            <div class="col-sm-8 ays_toggle_target ays_divider_left <">
+                                <div class="form-group row">
+                                    <div class="col-sm-3">
+                                        <label for="ays_vote_limitation">
+                                            <?php echo __('Session Period' , $this->plugin_name)?>
+                                            <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" title="<?php echo __('Specify the time for one session.' , $this->plugin_name)?>">
+                                                <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
+                                            </a>
+                                        </label>
+                                    </div>
+                                    <div class="col-sm-7">
+                                        <input type="text" name="ays_vote_limitation" id="ays_vote_limitation" class="ays-enable-timerl ays-text-input">
+                                        
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <select name="ays_vote_limitation_time_period" id="ays_vote_limitation_period">                           
+                                            <option>Minute(s)
+                                            </option>
+                                        </select>
+                                    </div>                            
+                                </div>
+                                <div class="form-group row d-flex w-100">
+                                    <div class="col-sm-3">
+                                        <label for="vote_limit_message">
+                                            <?= __('Message', $this->plugin_name); ?>
+                                            <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" data-placement="top"
+                                            title="<?= __('Write the message, which will be shown during the restricted time, when the user has already passed his/her limit for the session.', $this->plugin_name); ?>">
+                                                <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
+                                            </a>
+                                        </label>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <?php		    		
+                                        $editor_id = 'vote_limit_message';
+                                        $settings  = array(
+                                            'editor_height'  => 100,
+                                            'textarea_name'  => 'vote_limit_message',
+                                            'editor_class'   => 'ays-textarea',
+                                            'media_elements' => false
+                                        );
+                                        wp_editor('This feature is available only in PRO version!!!', 'editor_id', $settings);
+                                        ?>
+                                    </div>
+                                </div>    
+                            </div>
+                        </div>
+                        <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" class="ays-poll-new-upgrade-button-link">
+                            <div class="ays-poll-new-upgrade-button-box">
+                                <div>
+                                    <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/locked_24x24.svg'?>">
+                                    <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/unlocked_24x24.svg'?>" class="ays-poll-new-upgrade-button-hover">
+                                </div>
+                                <div class="ays-poll-new-upgrade-button"><?php echo __("Upgrade", $this->plugin_name); ?></div>
+                            </div>
+                        </a>
+                    </div>
                 </div> <!-- Allow to vote once per session PRO Feautre-->
                 <hr>
-                <div class="col-sm-12" style="padding:25px 0;">
-				    <div class="pro_features" style="justify-content:flex-end;">
-				        <div style="margin-right:20px;">
-				            <p style="font-size:16px;">
-				                <?php echo __("This feature is available only in ", $this->plugin_name); ?>
-				                <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" title="Developer feature"><?php echo __("PRO version!!!", $this->plugin_name); ?></a>
-				            </p>
-				        </div>
+                <div class="form-group row" style="margin: 0px;">
+                    <div class="col-sm-12 only_pro" style="padding:10px 0 0 10px;">
+                        <div class="pro_features" style="justify-content:flex-end;">
+                        </div>
+                        <div class="form-group row ays_toggle_parent">
+                            <div class="col-sm-3">
+                                <label for="enable_limit_by_country">
+                                    <?php echo __('Limit by country', $this->plugin_name)?>
+                                    <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" title="<?php echo __(' After enabling this option, the given poll will not be available in the selected country.' , $this->plugin_name)?>">
+                                        <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
+                                    </a>
+                                </label>
+                            </div>
+                            <div class="col-sm-1">
+                                <input type="checkbox" class="ays-enable-timer1"/>
+                            </div>
+                            <div class="col-sm-8 ays_toggle_target ays_divider_left">
+                                <select class="ays-text-input ays-text-input-short" style="width: 15vw;">                            
+                                        <option>Andorra</option>
+                                </select>
+                            </div>
+                        </div>
+                        <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" class="ays-poll-new-upgrade-button-link">
+                            <div class="ays-poll-new-upgrade-button-box">
+                                <div>
+                                    <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/locked_24x24.svg'?>">
+                                    <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/unlocked_24x24.svg'?>" class="ays-poll-new-upgrade-button-hover">
+                                </div>
+                                <div class="ays-poll-new-upgrade-button"><?php echo __("Upgrade", $this->plugin_name); ?></div>
+                            </div>
+                        </a>
                     </div>
-                    <div class="form-group row ays_toggle_parent">
-                        <div class="col-sm-3">
-                            <label for="enable_limit_by_country">
-                                <?php echo __('Limit by country', $this->plugin_name)?>
-                                <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" title="<?php echo __(' After enabling this option, the given poll will not be available in the selected country.' , $this->plugin_name)?>">
-                                    <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
-                                </a>
-                            </label>
-                        </div>
-                        <div class="col-sm-1">
-                            <input type="checkbox" class="ays-enable-timer1"/>
-                        </div>
-                        <div class="col-sm-8 ays_toggle_target ays_divider_left">
-                            <select class="ays-text-input ays-text-input-short" style="width: 15vw;">                            
-                                    <option>Andorra</option>
-                            </select>
-                        </div>
-                    </div> 
                 </div> <!-- Limit by country PRO Feautre -->
             	<hr>
             </div>
@@ -4438,16 +4519,10 @@ $emoji = array(
                     </div>
                 </div>
                 <hr>
-                <div class="form-group row">
-                	<div class="col-sm-12" style="padding:20px;">
-	                    <div class="pro_features" style="justify-content:flex-end;">
-	                        <div style="margin-right:20px;">
-	                            <p style="font-size:20px;">
-	                                <?php echo __("This feature is available only in ", $this->plugin_name); ?>
-	                                <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" title="Developer feature"><?php echo __("PRO version!!!", $this->plugin_name); ?></a>
-	                            </p>
-	                        </div>
-	                    </div>
+                <div class="form-group row" style="margin: 0px;">
+                    <div class="col-sm-12 only_pro" style="padding:10px 0 0 10px;">
+                        <div class="pro_features" style="justify-content:flex-end;">
+                        </div>
 	                    <div class="form-group row">
 		                    <div class="col-sm-3">
 		                        <label>
@@ -4464,6 +4539,15 @@ $emoji = array(
 		                        </blockquote>
 		                    </div>
 		                </div>
+                        <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" class="ays-poll-new-upgrade-button-link">
+                            <div class="ays-poll-new-upgrade-button-box">
+                                <div>
+                                    <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/locked_24x24.svg'?>">
+                                    <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/unlocked_24x24.svg'?>" class="ays-poll-new-upgrade-button-hover">
+                                </div>
+                                <div class="ays-poll-new-upgrade-button"><?php echo __("Upgrade", $this->plugin_name); ?></div>
+                            </div>
+                        </a>
 	                </div>
                 </div>
                 <hr>
@@ -4504,142 +4588,157 @@ $emoji = array(
                     </div>
                 </div>
                 <hr>
-                <div class="col-sm-12" style="padding:20px;">
-                    <div class="pro_features" style="justify-content:flex-end;">
-                        <div style="margin-right:20px;">
-                            <p style="font-size:20px;">
-                                <?php echo __("This feature is available only in ", $this->plugin_name); ?>
-                                <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" title="Developer feature"><?php echo __("PRO version!!!", $this->plugin_name); ?></a>
-                            </p>
+                <div class="form-group row" style="margin: 0px;">
+                    <div class="col-sm-12 only_pro" style="padding:10px 0 0 10px;">
+                        <div class="pro_features" style="justify-content:flex-end;">
                         </div>
+                        <div class="form-group row" >
+                            <div class="col-sm-3">
+                                <label for="ays_enable_mail_user">
+                                    <?= __('Send Mail to User', $this->plugin_name); ?>
+                                    <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" data-placement="top"
+                                    title="<?= __('Send the message to the emails of the users after the submission of the poll.', $this->plugin_name); ?>">
+                                        <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
+                                    </a>
+                                </label>
+                            </div>
+                            <div class="col-sm-1">                       
+                                    <input type="checkbox" id="ays_enable_mail_user" name="ays_enable_mail_user" value="on" />
+                            </div>
+                            <div class="col-sm-8 if-enable-email_note">
+                            
+                            </div>
+                        </div>
+                        <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" class="ays-poll-new-upgrade-button-link">
+                            <div class="ays-poll-new-upgrade-button-box">
+                                <div>
+                                    <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/locked_24x24.svg'?>">
+                                    <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/unlocked_24x24.svg'?>" class="ays-poll-new-upgrade-button-hover">
+                                </div>
+                                <div class="ays-poll-new-upgrade-button"><?php echo __("Upgrade", $this->plugin_name); ?></div>
+                            </div>
+                        </a>
                     </div>
-					<div class="form-group row" >
-	                    <div class="col-sm-3">
-	                        <label for="ays_enable_mail_user">
-	                            <?= __('Send Mail to User', $this->plugin_name); ?>
-	                            <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" data-placement="top"
-	                            title="<?= __('Send the message to the emails of the users after the submission of the poll.', $this->plugin_name); ?>">
-	                                <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
-	                            </a>
-	                        </label>
-	                    </div>
-	                    <div class="col-sm-1">                       
-	                            <input type="checkbox" id="ays_enable_mail_user" name="ays_enable_mail_user" value="on" />
-	                    </div>
-	                    <div class="col-sm-8 if-enable-email_note">
-	                       
-	                    </div>
-	                </div>
                 </div>
                 <hr>
-                <div class="col-sm-12" style="padding:15px;">
-                    <div class="pro_features" style="justify-content:flex-end;">
-                        <div>
-                            <p style="font-size:15px;">
-                                <?php echo __("This feature is available only in ", $this->plugin_name); ?>
-                                <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" title="Developer feature"><?php echo __("PRO version!!!", $this->plugin_name); ?></a>
-                            </p>
+                <div class="form-group row" style="margin: 0px;">
+                    <div class="col-sm-12 only_pro" style="padding:10px 0 0 10px;">
+                        <div class="pro_features" style="justify-content:flex-end;">
                         </div>
-                        <div style="position: absolute; top: 15px;">
-                            <p style="font-size:15px;">
-                                <?php echo __("This feature is available only in ", $this->plugin_name); ?>
-                                <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" title="Developer feature"><?php echo __("PRO version!!!", $this->plugin_name); ?></a>
-                            </p>
+                        <div class="form-group row">
+                            <div class="col-sm-4">
+                                <label>
+                                    <?php echo __('Email configuration',$this->plugin_name)?>
+                                    <a  class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" title="<?php echo __('Set up the attributes of the sending email.',$this->plugin_name); ?>">
+                                        <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
+                                    </a>
+                                </label>
+                            </div>
+                            <div class="col-sm-8 ays_divider_left">
+                                <div class="form-group row">
+                                    <div class="col-sm-3">
+                                        <label for="ays_poll_email_configuration_from_email">
+                                            <?php echo __('From email',$this->plugin_name)?>
+                                            <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" data-html="true" title="<?php 
+                                                echo htmlspecialchars( sprintf(
+                                                    __('Specify the email address from which the results will be sent. If you leave the field blank, the sending email address will take the default value — %spoll_maker@{your_site_url}%s.',$this->plugin_name),
+                                                    '<em>',
+                                                    '</em>'
+                                                ) );
+                                            ?>">
+                                                <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
+                                            </a>
+                                        </label>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="ays-text-input" />
+                                    </div>
+                                </div> <!-- From email -->
+                                <hr/>
+                                <div class="form-group row">
+                                    <div class="col-sm-3">
+                                        <label for="ays_poll_email_configuration_from_name">
+                                            <?php echo __('From name',$this->plugin_name)?>
+                                            <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" data-html="true" title="<?php 
+                                                echo htmlspecialchars( sprintf(
+                                                    __("Specify the name that will be displayed as the sender of the results. If you don't enter any name, it will be %sPoll Maker%s.",$this->plugin_name),
+                                                    '<em>',
+                                                    '</em>'
+                                                ) );
+                                            ?>">
+                                                <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
+                                            </a>
+                                        </label>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="ays-text-input" >
+                                    </div>
+                                </div><!-- From name -->
+                                <hr/>
+                                <div class="form-group row">
+                                    <div class="col-sm-3">
+                                        <label for="ays_poll_email_configuration_from_subject">
+                                            <?php echo __('Subject',$this->plugin_name)?>
+                                            <a  class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" title="<?php echo __("Fill in the subject field of the message. If you don't, it will take the poll title.",$this->plugin_name); ?>">
+                                                <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
+                                            </a>
+                                        </label>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="ays-text-input">
+                                    </div>
+                                </div> <!-- Subject -->
+                                <hr/>
+                                <div class="form-group row">
+                                    <div class="col-sm-3">
+                                        <label for="ays_poll_email_configuration_replyto_email">
+                                            <?php echo __('Reply to email',$this->plugin_name)?>
+                                            <a  class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" title="<?php echo __("Specify to which email the poll taker can reply. If you leave the field blank, the email address won't be specified.",$this->plugin_name); ?>">
+                                                <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
+                                            </a>
+                                        </label>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="ays-text-input">
+                                    </div>
+                                </div> <!-- Reply to email -->
+                                <hr/>
+                                <div class="form-group row">
+                                    <div class="col-sm-3">
+                                        <label for="ays_poll_email_configuration_replyto_name">
+                                            <?php echo __('Reply to name',$this->plugin_name)?>
+                                            <a  class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" title="<?php echo __("Specify the name of the email address to which the poll taker can reply. If you leave the field blank, the name won't be specified.",$this->plugin_name); ?>">
+                                                <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
+                                            </a>
+                                        </label>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="ays-text-input">
+                                    </div>
+                                </div> <!-- Reply to name -->
+                            </div>
+                        </div> <!-- Email Configuration -->
+                        <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" class="ays-poll-new-upgrade-button-link">
+                            <div class="ays-poll-new-upgrade-button-box">
+                                <div>
+                                    <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/locked_24x24.svg'?>">
+                                    <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/unlocked_24x24.svg'?>" class="ays-poll-new-upgrade-button-hover">
+                                </div>
+                                <div class="ays-poll-new-upgrade-button"><?php echo __("Upgrade", $this->plugin_name); ?></div>
+                            </div>
+                        </a>
+                        <div class="ays-poll-center-big-main-button-box ays-poll-new-big-button-flex">
+                            <div class="ays-poll-center-big-main-button-box">
+                                <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" class="ays-poll-new-upgrade-button-link">
+                                    <div class="ays-poll-center-new-big-upgrade-button">
+                                        <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/locked_24x24.svg'?>" class="ays-poll-new-button-img-hide">
+                                        <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/unlocked_24x24.svg'?>" class="ays-poll-new-upgrade-button-hover">  
+                                        <?php echo __("Upgrade", $this->plugin_name); ?>
+                                    </div>
+                                </a>
+                            </div>
                         </div>
                     </div>
-                    <div class="form-group row">
-                        <div class="col-sm-4">
-                            <label>
-                                <?php echo __('Email configuration',$this->plugin_name)?>
-                                <a  class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" title="<?php echo __('Set up the attributes of the sending email.',$this->plugin_name); ?>">
-                                    <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
-                                </a>
-                            </label>
-                        </div>
-                        <div class="col-sm-8 ays_divider_left">
-                            <div class="form-group row">
-                                <div class="col-sm-3">
-                                    <label for="ays_poll_email_configuration_from_email">
-                                        <?php echo __('From email',$this->plugin_name)?>
-                                        <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" data-html="true" title="<?php 
-                                            echo htmlspecialchars( sprintf(
-                                                __('Specify the email address from which the results will be sent. If you leave the field blank, the sending email address will take the default value — %spoll_maker@{your_site_url}%s.',$this->plugin_name),
-                                                '<em>',
-                                                '</em>'
-                                            ) );
-                                        ?>">
-                                            <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
-                                        </a>
-                                    </label>
-                                </div>
-                                <div class="col-sm-9">
-                                    <input type="text" class="ays-text-input" />
-                                </div>
-                            </div> <!-- From email -->
-                            <hr/>
-                            <div class="form-group row">
-                                <div class="col-sm-3">
-                                    <label for="ays_poll_email_configuration_from_name">
-                                        <?php echo __('From name',$this->plugin_name)?>
-                                        <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" data-html="true" title="<?php 
-                                            echo htmlspecialchars( sprintf(
-                                                __("Specify the name that will be displayed as the sender of the results. If you don't enter any name, it will be %sPoll Maker%s.",$this->plugin_name),
-                                                '<em>',
-                                                '</em>'
-                                            ) );
-                                        ?>">
-                                            <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
-                                        </a>
-                                    </label>
-                                </div>
-                                <div class="col-sm-9">
-                                    <input type="text" class="ays-text-input" >
-                                </div>
-                            </div><!-- From name -->
-                            <hr/>
-                            <div class="form-group row">
-                                <div class="col-sm-3">
-                                    <label for="ays_poll_email_configuration_from_subject">
-                                        <?php echo __('Subject',$this->plugin_name)?>
-                                        <a  class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" title="<?php echo __("Fill in the subject field of the message. If you don't, it will take the poll title.",$this->plugin_name); ?>">
-                                            <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
-                                        </a>
-                                    </label>
-                                </div>
-                                <div class="col-sm-9">
-                                    <input type="text" class="ays-text-input">
-                                </div>
-                            </div> <!-- Subject -->
-                            <hr/>
-                            <div class="form-group row">
-                                <div class="col-sm-3">
-                                    <label for="ays_poll_email_configuration_replyto_email">
-                                        <?php echo __('Reply to email',$this->plugin_name)?>
-                                        <a  class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" title="<?php echo __("Specify to which email the poll taker can reply. If you leave the field blank, the email address won't be specified.",$this->plugin_name); ?>">
-                                            <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
-                                        </a>
-                                    </label>
-                                </div>
-                                <div class="col-sm-9">
-                                    <input type="text" class="ays-text-input">
-                                </div>
-                            </div> <!-- Reply to email -->
-                            <hr/>
-                            <div class="form-group row">
-                                <div class="col-sm-3">
-                                    <label for="ays_poll_email_configuration_replyto_name">
-                                        <?php echo __('Reply to name',$this->plugin_name)?>
-                                        <a  class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" title="<?php echo __("Specify the name of the email address to which the poll taker can reply. If you leave the field blank, the name won't be specified.",$this->plugin_name); ?>">
-                                            <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
-                                        </a>
-                                    </label>
-                                </div>
-                                <div class="col-sm-9">
-                                    <input type="text" class="ays-text-input">
-                                </div>
-                            </div> <!-- Reply to name -->
-                        </div>
-                    </div> <!-- Email Configuration -->
                 </div> 
                 <hr>
             </div>
@@ -4741,15 +4840,9 @@ $emoji = array(
                         <img class="ays_integration_logo" src="<?php echo POLL_MAKER_AYS_ADMIN_URL; ?>/images/integrations/campaignmonitor_logo.png" alt="">
                         <h5><?php echo __('Campaign Monitor Settings', $this->plugin_name) ?></h5>
                     </legend>
-                    <div class="form-group row">
-                        <div class="col-sm-12" style="padding:20px;">
-                            <div class="pro_features pro_features_integrations" style="justify-content:flex-end;">
-                                <div style="margin-right:20px;">
-                                    <p style="font-size:20px;">
-                                        <?php echo __("This feature is available only in ", $this->plugin_name); ?>
-                                        <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" title="Developer feature"><?php echo __("PRO version!!!", $this->plugin_name); ?></a>
-                                    </p>
-                                </div>
+                    <div class="form-group row" style="margin: 0px;">
+                        <div class="col-sm-12 only_pro" style="padding:10px 0 0 10px;">
+                            <div class="pro_features" style="justify-content:flex-end;">
                             </div>
                             <div class="form-group row">
                                 <div class="col-sm-4">
@@ -4774,6 +4867,15 @@ $emoji = array(
                                     </select>                                    
                                 </div>
                         	</div>
+                            <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" class="ays-poll-new-upgrade-button-link">
+                                <div class="ays-poll-new-upgrade-button-box">
+                                    <div>
+                                        <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/locked_24x24.svg'?>">
+                                        <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/unlocked_24x24.svg'?>" class="ays-poll-new-upgrade-button-hover">
+                                    </div>
+                                    <div class="ays-poll-new-upgrade-button"><?php echo __("Upgrade", $this->plugin_name); ?></div>
+                                </div>
+                            </a>
                         </div>
                     </div>
                 </fieldset><!-- Campaign Monitor Settings PRO Feature -->
@@ -4783,15 +4885,9 @@ $emoji = array(
                         <img class="ays_integration_logo" src="<?php echo POLL_MAKER_AYS_ADMIN_URL; ?>/images/integrations/zapier_logo.png" alt="">
                         <h5><?php echo __('Zapier Integration Settings', $this->plugin_name) ?></h5>
                     </legend>
-                    <div class="form-group row">
-                        <div class="col-sm-12" style="padding:20px;">
-                            <div class="pro_features pro_features_integrations" style="justify-content:flex-end;">
-                                <div style="margin-right:20px;">
-                                    <p style="font-size:20px;">
-                                        <?php echo __("This feature is available only in ", $this->plugin_name); ?>
-                                        <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" title="Developer feature"><?php echo __("PRO version!!!", $this->plugin_name); ?></a>
-                                    </p>
-                                </div>
+                    <div class="form-group row" style="margin: 0px;">
+                        <div class="col-sm-12 only_pro" style="padding:10px 0 0 10px;">
+                            <div class="pro_features" style="justify-content:flex-end;">
                             </div> 
                             <div class="form-group row">
                                 <div class="col-sm-4">
@@ -4814,6 +4910,15 @@ $emoji = array(
                                     </a>
                                 </div>
                             </div>
+                            <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" class="ays-poll-new-upgrade-button-link">
+                                <div class="ays-poll-new-upgrade-button-box">
+                                    <div>
+                                        <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/locked_24x24.svg'?>">
+                                        <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/unlocked_24x24.svg'?>" class="ays-poll-new-upgrade-button-hover">
+                                    </div>
+                                    <div class="ays-poll-new-upgrade-button"><?php echo __("Upgrade", $this->plugin_name); ?></div>
+                                </div>
+                            </a>
                         </div>
                     </div>
                 </fieldset> <!-- Zapier Integration Settings PRO Feature -->
@@ -4823,15 +4928,9 @@ $emoji = array(
                         <img class="ays_integration_logo" src="<?php echo POLL_MAKER_AYS_ADMIN_URL; ?>/images/integrations/activecampaign_logo.png" alt="">
                         <h5><?php echo __('Active Campaign Settings', $this->plugin_name) ?></h5>
                     </legend>
-                    <div class="form-group row">
-                        <div class="col-sm-12" style="padding:20px;">
-                            <div class="pro_features pro_features_integrations" style="justify-content:flex-end;">
-                                <div style="margin-right:20px;">
-                                    <p style="font-size:20px;">
-                                        <?php echo __("This feature is available only in ", $this->plugin_name); ?>
-                                        <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" title="Developer feature"><?php echo __("PRO version!!!", $this->plugin_name); ?></a>
-                                    </p>
-                                </div>
+                    <div class="form-group row" style="margin: 0px;">
+                        <div class="col-sm-12 only_pro" style="padding:10px 0 0 10px;">
+                            <div class="pro_features" style="justify-content:flex-end;">
                             </div>
                             <div class="form-group row">
                                 <div class="col-sm-4">
@@ -4873,6 +4972,15 @@ $emoji = array(
                                     </select>
                                 </div>
                             </div>
+                            <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" class="ays-poll-new-upgrade-button-link">
+                                <div class="ays-poll-new-upgrade-button-box">
+                                    <div>
+                                        <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/locked_24x24.svg'?>">
+                                        <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/unlocked_24x24.svg'?>" class="ays-poll-new-upgrade-button-hover">
+                                    </div>
+                                    <div class="ays-poll-new-upgrade-button"><?php echo __("Upgrade", $this->plugin_name); ?></div>
+                                </div>
+                            </a>
                         </div>
                     </div>
                 </fieldset><!-- Active Campaign Settings PRO Feature -->
@@ -4882,15 +4990,9 @@ $emoji = array(
                         <img class="ays_integration_logo" src="<?php echo POLL_MAKER_AYS_ADMIN_URL; ?>/images/integrations/slack_logo.png" alt="">
                         <h5><?php echo __('Slack Settings', $this->plugin_name) ?></h5>
                     </legend>
-                    <div class="form-group row">
-                        <div class="col-sm-12" style="padding:20px;">
-                            <div class="pro_features pro_features_integrations" style="justify-content:flex-end;">
-                                <div style="margin-right:20px;">
-                                    <p style="font-size:20px;">
-                                        <?php echo __("This feature is available only in ", $this->plugin_name); ?>
-                                        <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" title="Developer feature"><?php echo __("PRO version!!!", $this->plugin_name); ?></a>
-                                    </p>
-                                </div>
+                    <div class="form-group row" style="margin: 0px;">
+                        <div class="col-sm-12 only_pro" style="padding:10px 0 0 10px;">
+                            <div class="pro_features" style="justify-content:flex-end;">
                             </div>
                             <div class="form-group row">
                                 <div class="col-sm-4">
@@ -4916,6 +5018,15 @@ $emoji = array(
                                     </select>                                    
                                 </div>
                             </div>
+                            <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" class="ays-poll-new-upgrade-button-link">
+                                <div class="ays-poll-new-upgrade-button-box">
+                                    <div>
+                                        <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/locked_24x24.svg'?>">
+                                        <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/unlocked_24x24.svg'?>" class="ays-poll-new-upgrade-button-hover">
+                                    </div>
+                                    <div class="ays-poll-new-upgrade-button"><?php echo __("Upgrade", $this->plugin_name); ?></div>
+                                </div>
+                            </a>
                         </div>
                     </div>
                     </fieldset> <!-- Slack Settings PRO Feature -->
@@ -4925,15 +5036,9 @@ $emoji = array(
                         <img class="ays_integration_logo" src="<?php echo POLL_MAKER_AYS_ADMIN_URL; ?>/images/integrations/sheets_logo.png" alt="">
                         <h5><?php echo __('Google Sheet Settings', $this->plugin_name) ?></h5>
                     </legend>
-                    <div class="form-group row">
-                        <div class="col-sm-12" style="padding:20px;">
-                            <div class="pro_features pro_features_integrations" style="justify-content:flex-end;">
-                                <div style="margin-right:20px;">
-                                    <p style="font-size:20px;">
-                                        <?php echo __("This feature is available only in ", $this->plugin_name); ?>
-                                        <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" title="Developer feature"><?php echo __("PRO version!!!", $this->plugin_name); ?></a>
-                                    </p>
-                                </div>
+                    <div class="form-group row" style="margin: 0px;">
+                        <div class="col-sm-12 only_pro" style="padding:10px 0 0 10px;">
+                            <div class="pro_features" style="justify-content:flex-end;">
                             </div>
                             <div class="form-group row">
                                 <div class="col-sm-4">
@@ -4946,6 +5051,15 @@ $emoji = array(
                                         value="on">                      
                                 </div>
                             </div>
+                            <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" class="ays-poll-new-upgrade-button-link">
+                                <div class="ays-poll-new-upgrade-button-box">
+                                    <div>
+                                        <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/locked_24x24.svg'?>">
+                                        <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/unlocked_24x24.svg'?>" class="ays-poll-new-upgrade-button-hover">
+                                    </div>
+                                    <div class="ays-poll-new-upgrade-button"><?php echo __("Upgrade", $this->plugin_name); ?></div>
+                                </div>
+                            </a>
                         </div>
                     </div>
                 </fieldset> <!-- Google Sheet Settings PRO Feature -->
@@ -4955,15 +5069,9 @@ $emoji = array(
                         <img class="ays_integration_logo" src="<?php echo POLL_MAKER_AYS_ADMIN_URL; ?>/images/integrations/mad-mimi-logo-min.png" alt="">
                         <h5><?php echo __('Mad Mimi', $this->plugin_name) ?></h5>
                     </legend>
-                    <div class="form-group row">
-                        <div class="col-sm-12" style="padding:20px;">
-                            <div class="pro_features pro_features_integrations" style="justify-content:flex-end;">
-                                <div style="margin-right:20px;">
-                                    <p style="font-size:20px;">
-                                        <?php echo __("This feature is available only in ", $this->plugin_name); ?>
-                                        <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" title="Developer feature"><?php echo __("PRO version!!!", $this->plugin_name); ?></a>
-                                    </p>
-                                </div>
+                    <div class="form-group row" style="margin: 0px;">
+                        <div class="col-sm-12 only_pro" style="padding:10px 0 0 10px;">
+                            <div class="pro_features" style="justify-content:flex-end;">
                             </div>
                             <hr/>
                             <div class="form-group row">
@@ -4993,6 +5101,15 @@ $emoji = array(
                                     ?>
                                 </div>
                             </div>
+                            <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" class="ays-poll-new-upgrade-button-link">
+                                <div class="ays-poll-new-upgrade-button-box">
+                                    <div>
+                                        <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/locked_24x24.svg'?>">
+                                        <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/unlocked_24x24.svg'?>" class="ays-poll-new-upgrade-button-hover">
+                                    </div>
+                                    <div class="ays-poll-new-upgrade-button"><?php echo __("Upgrade", $this->plugin_name); ?></div>
+                                </div>
+                            </a>
                         </div>
                     </div>
                 </fieldset> <!-- Mad Mimi -->
@@ -5002,15 +5119,9 @@ $emoji = array(
                         <img class="ays_integration_logo" src="<?php echo POLL_MAKER_AYS_ADMIN_URL; ?>/images/integrations/get_response.png" alt="">
                         <h5><?php echo __('GetResponse Settings', $this->plugin_name) ?></h5>
                     </legend>
-                    <div class="form-group row">
-                        <div class="col-sm-12" style="padding:20px;">
-                            <div class="pro_features pro_features_integrations" style="justify-content:flex-end;">
-                                <div style="margin-right:20px;">
-                                    <p style="font-size:20px;">
-                                        <?php echo __("This feature is available only in ", $this->plugin_name); ?>
-                                        <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" title="Developer feature"><?php echo __("PRO version!!!", $this->plugin_name); ?></a>
-                                    </p>
-                                </div>
+                    <div class="form-group row" style="margin: 0px;">
+                        <div class="col-sm-12 only_pro" style="padding:10px 0 0 10px;">
+                            <div class="pro_features" style="justify-content:flex-end;">
                             </div>
                             <div class="form-group row">
                                 <div class="col-sm-4">
@@ -5040,6 +5151,15 @@ $emoji = array(
                                     ?>
                                 </div>  
                             </div>
+                            <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" class="ays-poll-new-upgrade-button-link">
+                                <div class="ays-poll-new-upgrade-button-box">
+                                    <div>
+                                        <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/locked_24x24.svg'?>">
+                                        <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/unlocked_24x24.svg'?>" class="ays-poll-new-upgrade-button-hover">
+                                    </div>
+                                    <div class="ays-poll-new-upgrade-button"><?php echo __("Upgrade", $this->plugin_name); ?></div>
+                                </div>
+                            </a>
                         </div>
                     </div>
                 </fieldset> <!-- GetResponse Settings -->
@@ -5049,15 +5169,9 @@ $emoji = array(
                         <img class="ays_integration_logo" src="<?php echo POLL_MAKER_AYS_ADMIN_URL; ?>/images/integrations/convertkit_logo.png" alt="">
                         <h5><?php echo __('ConvertKit Settings',$this->plugin_name)?></h5>
                     </legend>
-                    <div class="form-group row">
-                        <div class="col-sm-12" style="padding:20px;">
-                            <div class="pro_features pro_features_integrations" style="justify-content:flex-end;">
-                                <div style="margin-right:20px;">
-                                    <p style="font-size:20px;">
-                                        <?php echo __("This feature is available only in ", $this->plugin_name); ?>
-                                        <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" title="Developer feature"><?php echo __("PRO version!!!", $this->plugin_name); ?></a>
-                                    </p>
-                                </div>
+                    <div class="form-group row" style="margin: 0px;">
+                        <div class="col-sm-12 only_pro" style="padding:10px 0 0 10px;">
+                            <div class="pro_features" style="justify-content:flex-end;">
                             </div>
                             <div class="form-group row">
                                 <div class="col-sm-4">
@@ -5082,6 +5196,15 @@ $emoji = array(
                                     </select>
                                 </div>
                             </div>
+                            <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" class="ays-poll-new-upgrade-button-link">
+                                <div class="ays-poll-new-upgrade-button-box">
+                                    <div>
+                                        <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/locked_24x24.svg'?>">
+                                        <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/unlocked_24x24.svg'?>" class="ays-poll-new-upgrade-button-hover">
+                                    </div>
+                                    <div class="ays-poll-new-upgrade-button"><?php echo __("Upgrade", $this->plugin_name); ?></div>
+                                </div>
+                            </a>
                         </div>
                     </div>
                 </fieldset> <!-- ConvertKit Settings -->
@@ -5843,176 +5966,190 @@ $emoji = array(
                     </div>
                 </div>
                 <hr>
-	                <div class="form-group row">
-	                    <div class="col-sm-2">
-	                        <label for="apm_allow_add_answers">
-								<?= __('Show results by', $this->plugin_name); ?>
-	                            <a class="ays_help" data-toggle="tooltip" data-placement="top"
-	                               title="<?= __("Select the way of displaying the results on the result page of the poll.", $this->plugin_name); ?>">
-	                                <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
-	                            </a>
-	                        </label>
-	                    </div>
-	                    <div class="col-sm-4" style="padding-right: 0">
-	                       <div style="display: flex; justify-content: flex-end;">
-	                       		<div class="form-check form-check-inline ays_poll_loader">
-	                            	<label class="form-check-label ays_poll_check_label">
-	                                	<input type="radio" class="ays-poll-show-result-chart-google" name="ays_poll_show_result_chart" value="google_bar_chart" <?php echo ($show_chart_type == 'google_bar_chart') ? 'checked' : '' ?>/>
-                                        <?= __('Bar chart(Google)', $this->plugin_name); ?>
-                                    </label>
-	                            </div>
-	                            <div class="form-check form-check-inline ays_poll_loader">
-	                            	<label class="form-check-label ays_poll_check_label">
-	                                	<input type="radio" name="ays_poll_show_result_chart" value="default_bar_chart" <?php echo ($show_chart_type == 'default_bar_chart') ? 'checked' : '' ?>/>
-                                        <?= __('Bar chart', $this->plugin_name); ?>
-                                    </label>
-	                            </div>
-	                    	</div>
-	                    </div>
-	                     <div class="col-sm-6" style="padding-left: 0">
-	                     	<div class="col-sm-12" style="padding:1px 10px 48px;">
-			                    <div class="pro_features" style="justify-content:flex-end;">
-			                        <div style="margin-right:20px;">
-			                            <p style="font-size:13px;">
-			                                <?php echo __("This feature is available only in ", $this->plugin_name); ?>
-			                                <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" title="Developer feature"><?php echo __("PRO version!!!", $this->plugin_name); ?></a>
-			                            </p>
-			                        </div>
-			                    </div>
-	                            <div class="form-check form-check-inline ays_poll_loader">
-	                                <input type="radio"/>
-	                                <label class="form-check-label ays_poll_check_label"> 
-                                        <?= __('Pie Chart', $this->plugin_name); ?>
-                                    </label>
-                                </div>
-                                <div class="form-check form-check-inline ays_poll_loader">
-                                    <input type="radio"/>
-                                    <label class="form-check-label ays_poll_check_label">
-                                         <?= __('Column Chart', $this->plugin_name); ?> 
-                                    </label>
-                                </div>
-                                <div class="form-check form-check-inline ays_poll_loader if_versus_type">
-                                    <input type="radio"/>
-                                    <label class="form-check-label ays_poll_check_label">
-                                         <?= __('Versus Chart', $this->plugin_name); ?>
-                                    </label>
-                                </div>
-                                <div class="form-check form-check-inline ays_poll_loader if_rating_type" style="<?php echo $poll['view_type'] == 'star' ? '' : 'display: none'?>">
-                                    <input type="radio"/>
-                                    <label class="form-check-label ays_poll_check_label" for="ays_poll_show_res_rating_chart">
-                                         <?= __('Rating Chart', $this->plugin_name); ?>
-                                    </label>
-                                </div>
-	                        </div>
-	                    </div>
-	                </div>
-                <hr/>
-                <div class="col-sm-12" style="padding:30px;">
-                    <div class="pro_features" style="justify-content:flex-end;">
-                        <div>
-                            <p style="font-size:15px;">
-                                <?php echo __("This feature is available only in ", $this->plugin_name); ?>
-                                <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" title="Developer feature"><?php echo __("PRO version!!!", $this->plugin_name); ?></a>
-                            </p>
-                        </div>
-                        <div style="position: absolute; top: 15px;">
-                            <p style="font-size:15px;">
-                                <?php echo __("This feature is available only in ", $this->plugin_name); ?>
-                                <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" title="Developer feature"><?php echo __("PRO version!!!", $this->plugin_name); ?></a>
-                            </p>
+                <div class="form-group row">
+                    <div class="col-sm-2">
+                        <label for="apm_allow_add_answers">
+                            <?= __('Show results by', $this->plugin_name); ?>
+                            <a class="ays_help" data-toggle="tooltip" data-placement="top"
+                                title="<?= __("Select the way of displaying the results on the result page of the poll.", $this->plugin_name); ?>">
+                                <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
+                            </a>
+                        </label>
+                    </div>
+                    <div class="col-sm-4" style="padding-right: 0">
+                        <div style="display: flex; justify-content: flex-end;">
+                            <div class="form-check form-check-inline ays_poll_loader">
+                                <label class="form-check-label ays_poll_check_label">
+                                    <input type="radio" class="ays-poll-show-result-chart-google" name="ays_poll_show_result_chart" value="google_bar_chart" <?php echo ($show_chart_type == 'google_bar_chart') ? 'checked' : '' ?>/>
+                                    <?= __('Bar chart(Google)', $this->plugin_name); ?>
+                                </label>
+                            </div>
+                            <div class="form-check form-check-inline ays_poll_loader">
+                                <label class="form-check-label ays_poll_check_label">
+                                    <input type="radio" name="ays_poll_show_result_chart" value="default_bar_chart" <?php echo ($show_chart_type == 'default_bar_chart') ? 'checked' : '' ?>/>
+                                    <?= __('Bar chart', $this->plugin_name); ?>
+                                </label>
+                            </div>
                         </div>
                     </div>
-                    <p class="ays-subtitle ays-poll-subtitle-button"><?php echo __("Result message based on the answer" , $this->plugin_name); ?></p> 
-                    <hr>
-	                <div class="form-group row">
-	                    <div class="col-sm-3">
-	                        <label for="ays_show_answer_message">
-	                            <?php echo __('Show Answer message',$this->plugin_name)?>
-	                            <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip"
-	                               data-placement="top"
-	                               title="<?= __("Show different messages based on the answer.", $this->plugin_name); ?>">
-	                                <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
-	                            </a>
-	                        </label>
-	                    </div>
-	                    <div class="col-sm-9">
-	                        <input type="checkbox" class="ays-enable-timer1" id="ays_show_answer_message"
-	                        name=""
-	                        value="on">
-	                    </div>
-	                </div> 
-	                <hr/>
-	                <!--Result message -->
-	                <div class='form-group row'>
-	                	<div class="ays_reset_answers_div">
-	                     	<input type="button" name="ays_reset_answers" id="ays_reset_answers" class="button ays-button" value="Reset answers">
-	                 	</div>
-	                     <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" data-placement="top" title="<?= __("RRefresh the below answers table after adding or removing answer(s) in the General tab.", $this->plugin_name); ?>">
-	                         <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
-	                     </a>
-	                 </div>
-	                <hr>
-	                <?php
-	                    $content = '<div class="ays-field-dashboard ays-table-wrap">                            
-	                                    <table class="ays-answers-table ">
-	                                        <thead>
-	                                            <tr class="ui-state-default">
-	                                                <th>'.__('Answers' , $this->plugin_name).'</th>
-	                                                <th>'.__('Text' , $this->plugin_name).'</th>                                                     
-	                                                <th>'.__('Image' , $this->plugin_name).'</th>
-	                                            </tr>
-	                                        </thead>
-	                                        <tbody>';	                        
-	                        $content .= '<tr class="ays-interval-row">
-	                                        <td>
-	                                            <span>'.__("Answer 1", $this->plugin_name).'</span>
-	                                            <input type="hidden" name="ays_answer_id[]">
-	                                        </td>
-	                                        <td>
-	                                            <textarea type="text" name="ays_answer_message[]" class="interval__text"></textarea>
-	                                        </td>
-	                                        <td class="ays-answer-image-td">
-	                                            <label class="ays-label" for="ays-answer">
-	                                                <a href="javascript:void(0)" class="add-answer-image" >
-	                                                    '.__("Add" , $this->plugin_name).'
-	                                                </a>
-	                                            </label>
-	                                            <div class="ays-answer-image-container ays-interval-image-container">
-	                                                <span class="ays-remove-answer-img"></span>
-	                                                <img src="" class="ays-answer-img">
-	                                                <input type="hidden" name="interval_image[]" class="ays-answer-image"
-	                                                    >
-	                                            </div>
-	                                        </td>
-	                                    </tr>
-	                                    <tr class="ays-interval-row">
-	                                        <td>
-	                                            <span>'.__("Answer 2", $this->plugin_name).'</span>
-	                                            <input type="hidden" name="ays_answer_id[]">
-	                                        </td>
-	                                        <td>
-	                                            <textarea type="text" name="ays_answer_message[]" class="interval__text"></textarea>
-	                                        </td>
-	                                        <td class="ays-answer-image-td">
-	                                            <label class="ays-label" for="ays-answer">
-	                                                <a href="javascript:void(0)" class="add-answer-image" >
-	                                                    '.__("Add" , $this->plugin_name).'
-	                                                </a>
-	                                            </label>
-	                                            <div class="ays-answer-image-container ays-interval-image-container">
-	                                                <span class="ays-remove-answer-img"></span>
-	                                                <img src="" class="ays-answer-img">
-	                                                <input type="hidden" name="interval_image[]" class="ays-answer-image"
-	                                                    >
-	                                            </div>
-	                                        </td>
-	                                    </tr>';
-	                    $content .= '</tbody></table></div>';
-	                    echo $content;	                
-	                ?>
+                    <div class="col-sm-6" style="padding-left: 0">
+                        <div class="col-sm-12 only_pro" style="padding:1px 10px 48px;">
+                            <div class="pro_features" style="justify-content:flex-end;">
+                            </div>
+                            <div class="form-check form-check-inline ays_poll_loader">
+                                <input type="radio"/>
+                                <label class="form-check-label ays_poll_check_label"> 
+                                    <?= __('Pie Chart', $this->plugin_name); ?>
+                                </label>
+                            </div>
+                            <div class="form-check form-check-inline ays_poll_loader">
+                                <input type="radio"/>
+                                <label class="form-check-label ays_poll_check_label">
+                                        <?= __('Column Chart', $this->plugin_name); ?> 
+                                </label>
+                            </div>
+                            <div class="form-check form-check-inline ays_poll_loader if_versus_type">
+                                <input type="radio"/>
+                                <label class="form-check-label ays_poll_check_label">
+                                        <?= __('Versus Chart', $this->plugin_name); ?>
+                                </label>
+                            </div>
+                            <div class="form-check form-check-inline ays_poll_loader if_rating_type" style="<?php echo $poll['view_type'] == 'star' ? '' : 'display: none'?>">
+                                <input type="radio"/>
+                                <label class="form-check-label ays_poll_check_label" for="ays_poll_show_res_rating_chart">
+                                        <?= __('Rating Chart', $this->plugin_name); ?>
+                                </label>
+                            </div>
+                            <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" class="ays-poll-new-upgrade-button-link">
+                                <div class="ays-poll-new-upgrade-button-box">
+                                    <div>
+                                        <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/locked_24x24.svg'?>">
+                                        <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/unlocked_24x24.svg'?>" class="ays-poll-new-upgrade-button-hover">
+                                    </div>
+                                    <div class="ays-poll-new-upgrade-button"><?php echo __("Upgrade", $this->plugin_name); ?></div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
                 </div>
                 <hr/>
+                <div class="form-group row" style="margin: 0px;">
+                    <div class="col-sm-12 only_pro" style="padding:10px 0 0 10px;">
+                        <div class="pro_features" style="justify-content:flex-end;">
+                        </div>
+                        <p class="ays-subtitle ays-poll-subtitle-button"><?php echo __("Result message based on the answer" , $this->plugin_name); ?></p> 
+                        <hr>
+                        <div class="form-group row">
+                            <div class="col-sm-3">
+                                <label for="ays_show_answer_message">
+                                    <?php echo __('Show Answer message',$this->plugin_name)?>
+                                    <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip"
+                                    data-placement="top"
+                                    title="<?= __("Show different messages based on the answer.", $this->plugin_name); ?>">
+                                        <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
+                                    </a>
+                                </label>
+                            </div>
+                            <div class="col-sm-9">
+                                <input type="checkbox" class="ays-enable-timer1" id="ays_show_answer_message"
+                                name=""
+                                value="on">
+                            </div>
+                        </div> 
+                        <hr/>
+                        <!--Result message -->
+                        <div class='form-group row'>
+                            <div class="ays_reset_answers_div">
+                                <input type="button" name="ays_reset_answers" id="ays_reset_answers" class="button ays-button" value="Reset answers">
+                            </div>
+                            <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" data-placement="top" title="<?= __("RRefresh the below answers table after adding or removing answer(s) in the General tab.", $this->plugin_name); ?>">
+                                <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
+                            </a>
+                        </div>
+                        <hr>
+                        <?php
+                            $content = '<div class="ays-field-dashboard ays-table-wrap">                            
+                                            <table class="ays-answers-table ">
+                                                <thead>
+                                                    <tr class="ui-state-default">
+                                                        <th>'.__('Answers' , $this->plugin_name).'</th>
+                                                        <th>'.__('Text' , $this->plugin_name).'</th>                                                     
+                                                        <th>'.__('Image' , $this->plugin_name).'</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>';	                        
+                                $content .= '<tr class="ays-interval-row">
+                                                <td>
+                                                    <span>'.__("Answer 1", $this->plugin_name).'</span>
+                                                    <input type="hidden" name="ays_answer_id[]">
+                                                </td>
+                                                <td>
+                                                    <textarea type="text" name="ays_answer_message[]" class="interval__text"></textarea>
+                                                </td>
+                                                <td class="ays-answer-image-td">
+                                                    <label class="ays-label" for="ays-answer">
+                                                        <a href="javascript:void(0)" class="add-answer-image" >
+                                                            '.__("Add" , $this->plugin_name).'
+                                                        </a>
+                                                    </label>
+                                                    <div class="ays-answer-image-container ays-interval-image-container">
+                                                        <span class="ays-remove-answer-img"></span>
+                                                        <img src="" class="ays-answer-img">
+                                                        <input type="hidden" name="interval_image[]" class="ays-answer-image"
+                                                            >
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr class="ays-interval-row">
+                                                <td>
+                                                    <span>'.__("Answer 2", $this->plugin_name).'</span>
+                                                    <input type="hidden" name="ays_answer_id[]">
+                                                </td>
+                                                <td>
+                                                    <textarea type="text" name="ays_answer_message[]" class="interval__text"></textarea>
+                                                </td>
+                                                <td class="ays-answer-image-td">
+                                                    <label class="ays-label" for="ays-answer">
+                                                        <a href="javascript:void(0)" class="add-answer-image" >
+                                                            '.__("Add" , $this->plugin_name).'
+                                                        </a>
+                                                    </label>
+                                                    <div class="ays-answer-image-container ays-interval-image-container">
+                                                        <span class="ays-remove-answer-img"></span>
+                                                        <img src="" class="ays-answer-img">
+                                                        <input type="hidden" name="interval_image[]" class="ays-answer-image"
+                                                            >
+                                                    </div>
+                                                </td>
+                                            </tr>';
+                            $content .= '</tbody></table></div>';
+                            echo $content;	                
+                        ?>
+                        <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" class="ays-poll-new-upgrade-button-link">
+                            <div class="ays-poll-new-upgrade-button-box">
+                                <div>
+                                    <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/locked_24x24.svg'?>">
+                                    <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/unlocked_24x24.svg'?>" class="ays-poll-new-upgrade-button-hover">
+                                </div>
+                                <div class="ays-poll-new-upgrade-button"><?php echo __("Upgrade", $this->plugin_name); ?></div>
+                            </div>
+                        </a>
+                        <div class="ays-poll-center-big-main-button-box ays-poll-new-big-button-flex">
+                            <div class="ays-poll-center-big-main-button-box">
+                                <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" class="ays-poll-new-upgrade-button-link">
+                                    <div class="ays-poll-center-new-big-upgrade-button">
+                                        <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/locked_24x24.svg'?>" class="ays-poll-new-button-img-hide">
+                                        <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/unlocked_24x24.svg'?>" class="ays-poll-new-upgrade-button-hover">  
+                                        <?php echo __("Upgrade", $this->plugin_name); ?>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <hr/>
+                </div>
             </div>
+            <hr>
             <!-- <div class="form-group row ays-poll-general-bundle-container">
                 <div class="col-sm-12 ays-poll-general-bundle-box">
                     <div class="ays-poll-general-bundle-row ays-poll-general-bundle-image-row">

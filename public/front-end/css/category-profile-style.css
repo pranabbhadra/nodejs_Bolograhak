@@ -14,33 +14,30 @@
 }
 
 .company-profile {
-    display: flex;
-    align-items: center;
     border-bottom: 1px #B6B6B6 solid;
-    padding: 10px 0;
+    padding: 10px 0 10px 225px;
+    position: relative;
+    min-height: 230px;
 }
 
 .company-logo {
-    position: relative;
-    width: 200px;
-    height: 200px;
-    border-radius: 100%;
-    overflow: hidden;
-    box-shadow: rgba(0,0,0,0.2)0 0 10px;
+    position: absolute;
+    left: 15px;
+    top: 10px;
 }
 
 .company-logo img {
-    width: 70%;
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    margin: auto;
-    top: 0;
+    width: 200px;
+    height: 200px!important;
+    object-fit: contain;
+    border-radius: 50%;
+    border: 7px #fff solid;
+    box-shadow: rgba(0,0,0,0.2)0 0 10px;
+    background: #fff;
 }
 
 .company-info {
-    margin-left: 34px;
+    margin-left: 24px;
 }
 
 .company-info h3 {
@@ -103,12 +100,14 @@
     color: #F4A835;
     margin-right: 10px;
     font-size: 18px;
-    display: inline-block;
-    vertical-align: middle;
+    position: absolute;
+    left: 0;
+    top: 0;
 }
-
 .company-contact-info span {
     display: inline-block;
+    position: relative;
+    padding-left: 28px;
 }
 
 .company-contact-info span + span {

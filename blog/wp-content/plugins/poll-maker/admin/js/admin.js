@@ -15,7 +15,8 @@
             cancelButtonColor: '#d33',
             confirmButtonText: 'Upgrade',
             cancelButtonText: 'Deactivate',
-            confirmButtonClass: "ays-poll-upgrade-button"
+            confirmButtonClass: "ays-poll-upgrade-button",
+            cancelButtonClass: "ays-poll-cancel-button"
         }).then((result) => {
             let upgrade_plugin = false;
             if (result.value) upgrade_plugin = true;

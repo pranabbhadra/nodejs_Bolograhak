@@ -20,18 +20,31 @@
             <iframe width="560" height="315" src="https://www.youtube.com/embed/LnaTowgH29c" loading="lazy" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </div>
     </div>
-    <div class="row" style="margin:0;">
-        <div class="col-sm-12">
-            <div class="pro_features_atributes pro_features">
-                <div style="margin-right:20px;">
-                    <p style="font-size:20px;">
-                        <?php echo __("This feature is available only in ", $this->plugin_name); ?>
-                                <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" title="Developer feature"><?php echo __("PRO version!!!", $this->plugin_name); ?></a>
-                    </p>
-                </div>
+    <div class="form-group row" style="margin: 0px;">
+        <div class="col-sm-12 only_pro" style="padding:10px 0 0 10px;">
+            <div class="pro_features" style="justify-content:flex-end;">
             </div>
             <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL . '/images/features/personal_avatar.png'; ?>" alt="Statistics" style="width: 100%;">
+            <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" class="ays-poll-new-upgrade-button-link">
+                <div class="ays-poll-new-upgrade-button-box">
+                    <div>
+                        <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/locked_24x24.svg'?>">
+                        <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/unlocked_24x24.svg'?>" class="ays-poll-new-upgrade-button-hover">
+                    </div>
+                    <div class="ays-poll-new-upgrade-button"><?php echo __("Upgrade", $this->plugin_name); ?></div>
+                </div>
+            </a>
+            <div class="ays-poll-center-big-main-button-box ays-poll-new-big-button-flex">
+                <div class="ays-poll-center-big-main-button-box">
+                    <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" class="ays-poll-new-upgrade-button-link">
+                        <div class="ays-poll-center-new-big-upgrade-button">
+                            <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/locked_24x24.svg'?>" class="ays-poll-new-button-img-hide">
+                            <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/unlocked_24x24.svg'?>" class="ays-poll-new-upgrade-button-hover">  
+                            <?php echo __("Upgrade", $this->plugin_name); ?>
+                        </div>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
-
 </div>

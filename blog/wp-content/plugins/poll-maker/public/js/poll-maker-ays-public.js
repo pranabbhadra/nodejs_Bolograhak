@@ -138,14 +138,17 @@
 
         $('.redirect-after-vote-url').on('click', function(e) {
             var x = $(this).attr('answers-url');
-            var multivoteActivated = $(document).find('#multivot_answer_count').length;
+            var multivoteActivated = $(document).find('#ays_poll_multivote_min_count').length;
             var finalUrl = "";
 
             if (multivoteActivated > 0) {
                 var checkedBoxes =  $(this).parents(".apm-answers").find("input:checkbox:checked");
-                for(var i = 0; i < checkedBoxes.length; i ++) {
-                    if(typeof checkedBoxes.eq(i).next().attr('answers-url') !== 'undefined' && checkedBoxes.eq(i).next().attr('answers-url') !== false) {
-                        finalUrl = checkedBoxes.eq(i).next().attr('answers-url');
+
+                for(var i = 0; i <= checkedBoxes.length; i ++) {
+                    var answersUrl = checkedBoxes.eq(i).next().attr('answers-url');
+
+                    if(typeof answersUrl !== 'undefined' && answersUrl !== false) {
+                        finalUrl = answersUrl;
                         break;
                     }
                     else {
@@ -364,7 +367,10 @@
         $(document).on('change', '.apm-choosing' , function(){
             var numberOfChecked = $(this).parent().find("input:checkbox:checked").length;
             var multivote_answer_count = $(this).parent().find("#multivot_answer_count").val();
+            var pollMultivoteMinCount = $(this).parent().find("#ays_poll_multivote_min_count").val();
             var numberNotChecked = $(this).parent().find('input:checkbox:not(":checked")');
+            var numberAllAnswers = $(this).parents("form").find('input:checkbox').length;
+            var voteButton = $(this).parents("form").find("input[name='ays_finish_poll']");
             var otherAnswer = $(this).parent().find('input.ays-poll-new-answer-apply-text');
             otherAnswer.attr("data-votes" , numberOfChecked);
             if(otherAnswer.length > 0){
@@ -374,32 +380,66 @@
                     otherAnswer.attr("data-votes" , numberOfChecked+1);
                     otherAnswerVotes = numberOfChecked+1;
                 }
-                if(numberOfChecked >= multivote_answer_count && otherAnswerVal == ""){
+                if (numberOfChecked >= multivote_answer_count && otherAnswerVal == ""){
                     otherAnswer.attr("data-votes" , numberOfChecked);
                     numberNotChecked.prop( "disabled", true );
                     otherAnswer.prop( "disabled", true );
                     otherAnswer.css( "opacity", "0.5" );
-                }
-                else if(otherAnswerVotes >= multivote_answer_count){
+                } else if (otherAnswerVotes >= multivote_answer_count) {
                     numberNotChecked.prop( "disabled", true );
-                }
-                else{
+                } else{
                     numberNotChecked.prop( "disabled", false );
                     otherAnswer.prop( "disabled", false );
                     otherAnswer.css( "opacity", "1" );
+                }
+
+                if (numberAllAnswers < pollMultivoteMinCount) {
+                    pollMultivoteMinCount = numberAllAnswers;
+                }
+                
+                if (otherAnswerVal == "") {
+                    if(pollMultivoteMinCount > numberOfChecked){
+                        voteButton.css("opacity" , "0.5");
+                    } else {
+                        voteButton.css("opacity" , "1");
+                    }
+                } else {
+                    if (pollMultivoteMinCount > otherAnswerVotes) {
+                        voteButton.css("opacity" , "0.5");
+                    } else {
+                        voteButton.css("opacity" , "1");
+                    }
                 }
             }
             else{
                 if(numberOfChecked >= multivote_answer_count){
                     numberNotChecked.prop( "disabled", true );
-                }else{
+                } else {
                     numberNotChecked.prop( "disabled", false );
+                }
+
+                if (numberAllAnswers < pollMultivoteMinCount){
+                    pollMultivoteMinCount = numberAllAnswers;
+                }
+                
+                if (pollMultivoteMinCount > numberOfChecked){
+                    voteButton.css("opacity" , "0.5");
+                } else {
+                    voteButton.css("opacity" , "1");
                 }
             }
         });
 
         $(document).find(".ays-poll-new-answer-apply-text").on("input" , function(){
             var _this = $(this);
+            var voteButton = _this.parents("form").find("input[name='ays_finish_poll']");
+            var allowMultivoteCheck = _this.parents("form").find('input#ays_poll_multivote_min_count').data("allow");
+            var pollMultivoteMinCount = _this.parents(".apm-answers").find("#ays_poll_multivote_min_count").val();
+            var CheckedBoxes = _this.parents(".apm-answers").find("input:checkbox:checked");
+            var numberOfChecked = CheckedBoxes.length;
+            if(_this.val() != ""){
+                numberOfChecked++;
+            }
             var noteBox = _this.parents(".apm-add-answer").next();
             if(noteBox.hasClass('ays-poll-add-answer-note-enable')){
                 noteBox.slideDown(200);
@@ -408,6 +448,14 @@
             else if(_this.val() == ''){
                 noteBox.addClass("ays-poll-add-answer-note-enable");
                 noteBox.slideUp(200);
+            }
+            if(allowMultivoteCheck){
+                if(pollMultivoteMinCount > numberOfChecked){
+                    voteButton.css("opacity" , "0.5");
+                }
+                else{
+                    voteButton.css("opacity" , "1");
+                }
             }
         });
 

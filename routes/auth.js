@@ -23,6 +23,30 @@ const storage = multer.diskStorage({
 // Create multer instance
 const upload = multer({ storage: storage });
 
+const csv_storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'company-csv/');
+    },
+    filename: function (req, file, cb) {
+        const currentDate = new Date();
+
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+        const day = String(currentDate.getDate()).padStart(2, '0');
+        const hours = String(currentDate.getHours()).padStart(2, '0');
+        const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+        const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+
+        const formattedDate = `${year}-${month}-${day}-${hours}_${minutes}_${seconds}`;
+
+        const originalname = file.originalname;
+        const sanitizedFilename = originalname.replace(/[^a-zA-Z0-9\-\_\.]/g, ''); // Remove symbols and spaces
+        const filename = formattedDate + '-' + sanitizedFilename;
+        cb(null, filename);
+    }
+});
+// Create multer instance
+const csvupload = multer({ storage: csv_storage });
 
 
 router.post('/register', authController.register);
@@ -45,7 +69,7 @@ router.put('/edit-user-data', upload.single('profile_pic'), authController.editU
 //---Company--------//
 router.post('/create-company', upload.single('logo'), authController.createCompany);
 router.put('/edit-company-data', upload.single('logo'), authController.editCompany);
-
+router.post('/company-bulk-upload', csvupload.single('company_file'), authController.companyBulkUpload);
 // Add FAQ
 router.post('/create-faq', authController.createFAQ);
 
@@ -166,5 +190,14 @@ router.post('/update-business', upload.fields([
     { name: 'did_you_know_img', maxCount: 1 },
 
 ]), authController.updateBusiness);
+
+//Update Privacy Policy
+router.post('/update-privacy', authController.updatePrivacy);
+
+//Update disclaimer
+router.post('/update-disclaimer', authController.updateDisclaimer);
+
+//Update terms-of-service
+router.post('/update-terms-of-service', authController.updateTermsOfService);
 
 module.exports = router;

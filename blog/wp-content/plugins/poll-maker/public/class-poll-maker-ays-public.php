@@ -2164,14 +2164,20 @@ class Poll_Maker_Ays_Public {
 						}
 					}
 					$poll_allow_multivote = isset($options['poll_allow_multivote']) && $options['poll_allow_multivote'] == 'on' ? true : false;
-					$poll_multivote_checkbox = $poll_allow_multivote ? 'checkbox' : 'radio';						
+					$poll_multivote_checkbox = $poll_allow_multivote ? 'checkbox' : 'radio';
 
+					$poll_multivote_min_count = '';
+					$poll_multivote_min_count_content = '';
 					$multivote_answer_count = '';
 					$allow_multivote_answer = '';
+					$poll_multivote_message_content = '';
 					if($poll_allow_multivote){
 						$multivote_answer_count = (isset($options['poll_allow_multivote_count']) && $options['poll_allow_multivote_count'] != '') ? absint(intval($options['poll_allow_multivote_count'])) : '1';
 						$multiple_select = 'multiple';
 						$allow_multivote_answer = 'on';
+						$poll_multivote_min_count = (isset($options['multivote_answer_min_count']) && $options['multivote_answer_min_count'] != '') ? absint(intval($options['multivote_answer_min_count'])) : '1';
+						$poll_multivote_min_count_content = "<input type='hidden' id='ays_poll_multivote_min_count' data-allow='true' value='".$poll_multivote_min_count."'/>";
+						$poll_multivote_message_content = "<div class='ays-poll-multivote-message add_answer_for_grid'>".__("Min votes count should be" , $this->plugin_name)." ".$poll_multivote_min_count."</div>";
 					}else{
 						$multiple_select = '';
 						$allow_multivote_answer = '';
@@ -2221,6 +2227,7 @@ class Poll_Maker_Ays_Public {
 								}
 								if($poll_allow_multivote){
 									$content .= "<input type='hidden' id='multivot_answer_count' value='".$multivote_answer_count."'/>";
+									$content .= $poll_multivote_min_count_content;
 								}
 								foreach ( $poll['answers'] as $index => $answer ) {
 									if ($answer['user_added'] == 1 && $answer['show_user_added'] ==  0) {
@@ -2294,8 +2301,8 @@ class Poll_Maker_Ays_Public {
 										</div>
 									";
 									}
-									
 								}
+								$content .= $poll_multivote_message_content;
 								break;
 							case 'voting':
 								switch ( $poll['view_type'] ) {
@@ -2431,7 +2438,7 @@ class Poll_Maker_Ays_Public {
 			}
 			
 			$show_res_button = !is_user_logged_in() && !$show_login_form ? true : false;
-			
+
 			if (is_user_logged_in() || $show_res_button ) {
 				$content .= $vote_reason;
 				if($limit_users > 0){
@@ -2483,7 +2490,7 @@ class Poll_Maker_Ays_Public {
 	                    " . (!$load_poll ? "data-allow='false'" : "") .
 					            'value="' . $ays_vote_button_text . '"
 	                    >';
-					
+
 				}
 			}
 			if(!$limit_users > 0 && (is_user_logged_in() || $show_res_button )){
@@ -2556,7 +2563,10 @@ class Poll_Maker_Ays_Public {
 		if(isset($widths[0]) && $widths[0] == "0px"){
 			$widths[0] = "98%";
 		}
-		$cat_opt    = json_decode($cat['options'], true);
+		$cat_opt = null;
+		if ($cat['options'] !== null) {
+			$cat_opt = json_decode($cat['options'], true);
+		}
 		$default_message = 'The polls that belong to this category are expired or unpublished';
 		$exp_message = isset($cat_opt['exp_message']) && $cat_opt['exp_message'] != '' ? stripslashes(esc_html($cat_opt['exp_message'])) : $default_message;
 		if(array_sum($checker) == 0){
@@ -2763,13 +2773,39 @@ class Poll_Maker_Ays_Public {
 		return $result;
 	}
 
+	public function get_poll_status($id) {
+		global $wpdb;
+		$poll_id = absint(intval($id));
+		$poll_table = $wpdb->prefix . 'ayspoll_polls';
+	
+		$poll = $wpdb->get_row($wpdb->prepare("SELECT styles FROM $poll_table WHERE id = %d", $poll_id));
+
+		if ($poll) {
+			$styles = json_decode($poll->styles, true);
+			if (isset($styles['published']) && $styles['published'] == 1) {
+				return 'published';
+			} else {
+				return 'unpublished';
+			}
+		} else {
+			return false;
+		}
+	}
+
 	public function ays_finish_poll() {
 		global $wpdb;
 		if (wp_verify_nonce($_POST["ays_finish_poll"], 'ays_finish_poll')) {
-			
+
 			// $answer_id = (isset($_POST['answer']) && $_POST['answer'] !== null) ? $_POST['answer'] : 0;
 			// $poll_id   = absint($_POST['poll_id']);
 			$poll_id   = absint($_POST['poll_id']);
+			$poll_status = $this->get_poll_status($poll_id);
+
+			if ($poll_status === 'unpublished') {
+				$res = array('error' => 'The poll is not published.');
+				echo json_encode($res);
+				wp_die();
+			}
 
 			$title_ids = array();
             $answer_titless = array();
@@ -2821,7 +2857,7 @@ class Poll_Maker_Ays_Public {
             }
 
 
-            $poll    = $this->get_poll_by_id($poll_id);
+			$poll    = $this->get_poll_by_id($poll_id);
 			$options = $poll['styles'];
 			$poll_answers_count  = isset($poll['answers']) ? count($poll['answers']) : 0;
 			$added_answer_id = array();
@@ -2987,20 +3023,20 @@ class Poll_Maker_Ays_Public {
 				// $votes++;
 				
 				$other_info = array(
-					"name"  => "",
+					"Name"  => "",
 					"email" => "",
 					"phone" => "",
 				);
 				
 				if (!empty($options['info_form']) || $check_allowing) {
 					$other_info = array(
-						"name"  => !empty($_POST['apm_name']) ? sanitize_text_field($_POST['apm_name']) : "",
+						"Name"  => !empty($_POST['apm_name']) ? sanitize_text_field($_POST['apm_name']) : "",
 						"email" => !empty($_POST['apm_email']) ? sanitize_email($_POST['apm_email']) : "",
 						"phone" => !empty($_POST['apm_phone']) ? sanitize_text_field($_POST['apm_phone']) : "",
 					);
 				}
 				if($poll_vote_reason){
-					$other_info['vote_reason'] = $poll_vote_reason_text;
+					$other_info['voteReason'] = $poll_vote_reason_text;
 				}
 				// global $wpdb;
 				$answ_table = esc_sql($wpdb->prefix."ayspoll_answers");

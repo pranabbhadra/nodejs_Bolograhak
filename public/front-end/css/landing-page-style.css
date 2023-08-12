@@ -586,12 +586,13 @@ span#selected-range-emojis {
 /*=============== Social Widgets Start ==============*/
 
 .social-widgets-content {
-	background: rgb(241,174,0); /* Old browsers */
-	background: -moz-linear-gradient(left, rgba(241,174,0,1) 50%, rgba(252,203,6,1) 50%); /* FF3.6-15 */
-	background: -webkit-linear-gradient(left, rgba(241,174,0,1) 50%,rgba(252,203,6,1) 50%); /* Chrome10-25,Safari5.1-6 */
-	background: linear-gradient(to right, rgba(241,174,0,1) 50%,rgba(252,203,6,1) 50%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f1ae00', endColorstr='#fccb06',GradientType=1 ); /* IE6-9 */
+    background: #fccb06;
+    background: -moz-linear-gradient(left, rgba(241,174,0,1) 50%, rgba(252,203,6,1) 50%);
+    background: -webkit-linear-gradient(left, rgba(241,174,0,1) 50%,rgba(252,203,6,1) 50%);
+    background: linear-gradient(to right, rgba(241,174,0,1) 50%,rgba(252,203,6,1) 50%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f1ae00', endColorstr='#fccb06',GradientType=1 );
 }
+
 .social-widgets-wrapper {
 	overflow: hidden;
 	max-width: 1358px;
@@ -728,10 +729,27 @@ span#selected-range-emojis {
 
 .social-widgets {
     border-radius: 10px;
-    overflow: hidden;
+    overflow-y: auto;
     position: relative;
     z-index: 1;
+    overflow-x: hidden;
+    height: 425px;
 }
+
+
+.social-widgets iframe {
+    border-radius: 10px;
+}
+
+.social-widgets::-webkit-scrollbar {
+    display: none;
+}
+  
+.social-widgets{
+    -ms-overflow-style: none;  
+    scrollbar-width: none;  
+}
+
 .social-widgets img {
 	width: 100%;
 }

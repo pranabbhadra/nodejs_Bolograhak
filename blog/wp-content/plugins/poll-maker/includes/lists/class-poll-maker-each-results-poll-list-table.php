@@ -278,11 +278,12 @@ class Pma_Each_Results_List_Table extends WP_List_Table {
 	 * @return mixed
 	 */
 	public function column_default( $item, $column_name ) {
+		$other_info = json_decode($item['other_info'], true);
+
 		switch ( $column_name ) {
 			case 'user_ip':
 			case 'answer_id':
 			case 'vote_date':
-			case 'user_email':
 			case 'vote_reason':
 			case 'unread':
 				return $item[$column_name];
@@ -290,11 +291,34 @@ class Pma_Each_Results_List_Table extends WP_List_Table {
 			case 'user_id':
 				return (!empty($item[$column_name]) && $item[$column_name] > 0) ? get_user_by('ID', $item[$column_name])->display_name : __("Guest", $this->plugin_name);
 				break;
-			case 'user_name':
-				$other_info = json_decode($item['other_info'], true);
-				return (isset($other_info['Name']) && !empty($other_info['Name'])) ? $other_info['Name'] : '';
-				break;
+			case 'user_email':
+				$email = '';
 
+				if ($item[$column_name] != '') {
+					$email = $item[$column_name];
+				} elseif (isset($other_info['email']) && !empty($other_info['email'])) {
+					$email = $other_info['email'];
+				}
+				return $email;
+				break;
+			case 'user_name':
+				$name = '';
+
+				if (isset($other_info['name']) && !empty($other_info['name'])) {
+					$name = $other_info['name'];
+				}
+				elseif (isset($other_info['Name']) && !empty($other_info['Name'])) {
+					$name = $other_info['Name'];
+				}
+				return $name;
+				break;
+			case 'user_phone':
+				if (!empty($other_info)) {
+					return isset($other_info['phone']) ? $other_info['phone'] : "";
+				} else {
+					return "";
+				}
+				break;
 			default:
 				return print_r($item, true); //Show the whole array for troubleshooting purposes
 				break;
@@ -322,7 +346,7 @@ class Pma_Each_Results_List_Table extends WP_List_Table {
 	 * @return string
 	 */
 	function column_answer_id( $item ) {
-		$answer = sprintf('<span>' . stripslashes($item['answer']) . '</span>');
+		$answer = sprintf('<a href="javascript:void(0)" data-result="%d" class="%s">' . stripslashes($item['answer']) . '</a>', absint($item['id']), 'ays-show-results');
 
 		return $answer;
 	}
@@ -333,8 +357,17 @@ class Pma_Each_Results_List_Table extends WP_List_Table {
 
 	function column_vote_reason( $item ) {
 		$info = json_decode($item['other_info'], true);
+		$vote_reason = '';
 
-		return isset($info['voteReason']) ? $info['voteReason'] : '';
+		if (isset($info['voteReason']) && !empty($info['voteReason'])) {
+			$vote_reason = $info['voteReason'];
+		}
+
+		if (isset($info['vote_reason']) && !empty($info['vote_reason'])) {
+			$vote_reason = $info['vote_reason'];
+		}
+
+		return $vote_reason;
 	}
 
 	function column_unread( $item ) {
@@ -357,6 +390,7 @@ class Pma_Each_Results_List_Table extends WP_List_Table {
 			'user_id'     => __('WP User', $this->plugin_name),
 			'user_email'  => __('User Email', $this->plugin_name),
 			'user_name'   => __('User Name', $this->plugin_name),
+			'user_phone'  => __('User Phone', $this->plugin_name),
 			'vote_date'   => __('Vote Datetime', $this->plugin_name),
 			'vote_reason' => __('Vote Reason', $this->plugin_name),
 			'unread'      => __('Read Status', $this->plugin_name)
