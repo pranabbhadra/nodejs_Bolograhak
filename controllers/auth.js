@@ -1343,7 +1343,7 @@ exports.companyBulkUpload = async (req, res) => {
         // Delete the uploaded CSV file
         //fs.unlinkSync(csvFilePath);
         if (connection) {
-            //connection.end(); // Close the connection if it exists
+            connection.end(); // Close the connection if it exists
         }
     }
 }
