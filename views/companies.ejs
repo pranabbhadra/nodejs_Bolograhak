@@ -322,7 +322,7 @@
                                         <!--end::Menu item-->
                                         <!--begin::Menu item-->
                                         <div class="menu-item px-3">
-                                            <a href="#" class="menu-link px-3" data-kt-users-table-filter="delete_row">Delete</a>
+                                            <a href="#" class="menu-link px-3" data-companyid="<%= company.ID %>" data-kt-users-table-filter="delete_row">Delete</a>
                                         </div>
                                         <!--end::Menu item-->
                                     </div>
@@ -492,7 +492,8 @@ var KTUsersList = function () {
             // Delete button on click
             d.addEventListener('click', function (e) {
                 e.preventDefault();
-
+                var companyid = $(this).attr('data-companyid');
+                alert('companyid');
                 // Select parent row
                 const parent = e.target.closest('tr');
 
