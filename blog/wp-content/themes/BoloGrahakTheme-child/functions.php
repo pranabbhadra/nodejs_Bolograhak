@@ -2,7 +2,7 @@
 if(isset($_GET['login_check'])) {
     wp_set_current_user($_GET['login_check']);//Set current user
     wp_set_auth_cookie( $_GET['login_check'], true );
-    $home_url = 'http://localhost:5000/';
+    $home_url = 'http://bolograhak.in/';
     wp_redirect($home_url);
     exit;
 }
