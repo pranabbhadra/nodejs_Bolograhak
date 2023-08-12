@@ -1316,6 +1316,13 @@ exports.companyBulkUpload = async (req, res) => {
         
     } catch (error) {
         console.error('Error:', error);
+        return res.send(
+            {
+                status: 'ok',
+                data: companies,
+                message: error
+            }
+        )
         //res.status(500).send('An error occurred.');
     } finally {
         // Delete the uploaded CSV file
