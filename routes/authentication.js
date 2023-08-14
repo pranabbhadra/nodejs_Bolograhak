@@ -28,11 +28,9 @@ const upload = multer({ storage: storage });
 router.post('/register',upload.single('profile_pic') ,authenController.register);
 router.post('/login', authenController.login);
 router.put('/edituser',upload.single('profile_pic') ,authenController.edituser);
-//router.get('/getUserDetails/:user_id', authenController.getUserDetails);
 router.post('/createcategories',upload.single('c_image'),authenController.createcategories);
-//router.post('/createcompany',upload.single('c_image'),authenController.createcompany)
-// router.put('/editcompany',upload.single('c_image'),authenController.editcompany)
-router.post('/createcompany',upload.single('logo') ,authenController.createcompany)
-router.put('/editcompany',upload.single('logo') ,authenController.editcompany)
-router.post('/createcompanylocation',authenController.createcompanylocation)
+router.post('/createcompany',upload.single('logo') ,authenController.createcompany);
+router.put('/editcompany',upload.single('logo') ,authenController.editcompany);
+router.post('/createcompanylocation',authenController.createcompanylocation);
+router.post('/createReviewSubmit',authenController.createReviewSubmit);
 module.exports = router;
