@@ -870,10 +870,10 @@
       var pin_code = $(this).find('a').attr('data-companyPin');
 
       $('#search-input-review').val(resulttitle);
-      if(address){
+      if(address && address!='null'){
         $('#review-address').val(address);
       }
-      if(pin_code){
+      if(pin_code && pin_code!='null'){
         $('#review-zip').val(pin_code);
       }
       $(".autofield-dropdown-review").fadeOut();
