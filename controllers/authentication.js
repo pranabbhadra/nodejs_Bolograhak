@@ -647,8 +647,8 @@ exports.createcompanylocation = (req, res) => {
 
 
 exports.createReviewSubmit = (req, res) => {
-  const reviewData = req.body;
-  const customerId = 1; // Replace with the desired customer ID
+  //const reviewData = req.body;
+  const customerId = 1; 
 
   const currentDate = new Date();
   const year = currentDate.getFullYear();
@@ -659,7 +659,7 @@ exports.createReviewSubmit = (req, res) => {
   const seconds = String(currentDate.getSeconds()).padStart(2, '0');
 
   const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-  //const submitReview = (reviewData, customerId, formattedDate, res) => {
+  const submitReview = (reviewData, customerId, formattedDate, res) => {
   // Check if the company exists in the company table
   const checkCompanyQuery = 'SELECT ID FROM company WHERE ID = ?';
   db.query(checkCompanyQuery, [reviewData.company_id], (err, companyResult) => {
@@ -756,4 +756,5 @@ exports.createReviewSubmit = (req, res) => {
       });
     }
   });
+};
 }
