@@ -6,7 +6,14 @@
  * @subpackage bolo_grahak
  * @since Bolo Grahak 1.0
  */
-
+if (is_user_logged_in()) {
+	$current_user = wp_get_current_user();
+	$user_full_name = $current_user->user_firstname.' '.$current_user->user_lastname;
+    $user_email = $current_user->user_email;
+}else{
+	$user_full_name = '';
+    $user_email = '';
+}
 get_header(); ?>
 <!-- ============== Inner Heading Start =============== -->
 <section class="inner-page-heading">
@@ -128,10 +135,10 @@ get_header(); ?>
 				<form action="<?php echo esc_url(site_url('/wp-comments-post.php')); ?>" method="post" id="commentform" class="comment-form" enctype="multipart/form-data">
 				   <div class="row">
 				      <div class="col-sm-6">
-				         <div class="input-wrap"><input id="author" class="form-control" placeholder="Name" name="author" type="text" value="<?php echo esc_attr( $commenter['comment_author'] ); ?>" required=""></div>
+				         <div class="input-wrap"><input id="author" class="form-control" placeholder="Name" name="author" type="text" value="<?php echo $user_full_name; ?>" required=""></div>
 				      </div>
 				      <div class="col-sm-6">
-				         <div class="input-wrap"><input id="email" name="email" type="email" placeholder="Email" class="form-control" value="<?php echo esc_attr( $commenter['comment_author_email'] ); ?>" required=""></div>
+				         <div class="input-wrap"><input id="email" name="email" type="email" placeholder="Email" class="form-control" value="<?php echo $user_email; ?>" required=""></div>
 				      </div>
 				      <div id="acf-form-data" class="acf-hidden">
 							   <input type="hidden" id="_acf_screen" name="_acf_screen" value="comment">
