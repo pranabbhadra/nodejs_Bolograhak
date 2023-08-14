@@ -232,28 +232,28 @@
                     </div>
                     <div class="col-md-12">
                        <div class="custom-form">
-                          <input type="text" class="form-control" name="address" placeholder="Location" required>
+                          <input type="text" class="form-control" name="address" id="review-address" placeholder="Location" required>
                           <!--<div class="under-input-text">India, Westbengal, Kolkata, 5330</div>-->
                        </div>
                     </div>
                     <div class="col-sm-6">
                        <div class="custom-form">
-                          <input type="text" class="form-control" placeholder="Country" name="country" required>
+                          <input type="text" class="form-control" placeholder="Country" id="review-country" name="country" required>
                        </div>
                     </div>
                     <div class="col-sm-6">
                        <div class="custom-form">
-                          <input type="text" class="form-control" placeholder="State" name="state" required>
+                          <input type="text" class="form-control" placeholder="State" id="review-state" name="state" required>
                        </div>
                     </div>
                     <div class="col-sm-6">
                        <div class="custom-form">
-                          <input type="text" class="form-control" placeholder="City" name="city" required>
+                          <input type="text" class="form-control" placeholder="City" id="review-city" name="city" required>
                        </div>
                     </div>
                     <div class="col-sm-6">
                        <div class="custom-form">
-                          <input type="text" class="form-control" placeholder="Pin Code" name="zip" required>
+                          <input type="text" class="form-control" placeholder="Pin Code" id="review-zip" name="zip" required>
                        </div>
                     </div>
                     <div class="col-md-12">
@@ -827,7 +827,7 @@
                 let respData = data.data;
                 let html = '<ul class="p-0 m-0">';
                   respData.forEach(company => {
-                    html += '<li><a href="#" data-resulttitle="' + company.company_name + '" data-companyID="' + company.ID + '" >' + company.company_name + '</a></li>';
+                    html += '<li><a href="#" data-resulttitle="' + company.company_name + '" data-companyID="' + company.ID + '" data-companyAddress="' + company.main_address + '" data-companyPin="' + company.main_address_pin_code + '" >' + company.company_name + '</a></li>';
                   });
                 html += '</ul>';
                 $('.autofield-dropdown-review').html(html);
@@ -866,7 +866,12 @@
     $("body").on('click', ".autofield-dropdown-review ul > li", function(e){
       e.preventDefault();
       var resulttitle = $(this).find('a').attr('data-resulttitle');
+      var address = $(this).find('a').attr('data-companyAddress');
+      var pin_code = $(this).find('a').attr('data-companyPin');
+
       $('#search-input-review').val(resulttitle);
+      $('#review-address').val(address);
+      $('#review-zip').val(pin_code);
       $(".autofield-dropdown-review").fadeOut();
     });
 </script>

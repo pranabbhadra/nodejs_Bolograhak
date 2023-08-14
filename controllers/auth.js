@@ -1561,7 +1561,7 @@ exports.contactFeedback = (req, res) => {
     const message = req.body.message;
     //console.log(req.body);
     var mailOptions = {
-        from: 'vivek@scwebtech.com',
+        from: process.env.MAIL_USER,
         to: process.env.MAIL_USER,
         subject: 'Feedback Mail From Contact',
         //html: ejs.renderFile(path.join(process.env.BASE_URL, '/views/email-template/', 'feedback.ejs'), { phone: phone, message: message })
