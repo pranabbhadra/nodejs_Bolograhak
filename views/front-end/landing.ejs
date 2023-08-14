@@ -870,8 +870,12 @@
       var pin_code = $(this).find('a').attr('data-companyPin');
 
       $('#search-input-review').val(resulttitle);
-      $('#review-address').val(address);
-      $('#review-zip').val(pin_code);
+      if(address){
+        $('#review-address').val(address);
+      }
+      if(pin_code){
+        $('#review-zip').val(pin_code);
+      }
       $(".autofield-dropdown-review").fadeOut();
     });
 </script>

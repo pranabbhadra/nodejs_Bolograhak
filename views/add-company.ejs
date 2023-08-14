@@ -138,7 +138,7 @@
                                 </div>
                                 <div class="row mb-6">
                                     <!--begin::Label-->
-                                    <label class="col-lg-4 col-form-label required fw-bold fs-6">About Company</label>
+                                    <label class="col-lg-4 col-form-label fw-bold fs-6">About Company</label>
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-8">
@@ -175,7 +175,7 @@
                                 <div class="row mb-6">
                                     <!--begin::Label-->
                                     <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span class="required">Contact Phone</span>
+                                        <span class="">Contact Phone</span>
                                     </label>
                                     <!--end::Label-->
                                     <!--begin::Col-->
@@ -201,7 +201,7 @@
                                 <div class="row mb-6">
                                     <!--begin::Label-->
                                     <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span class="required">Main Address</span>
+                                        <span class="">Main Address</span>
                                     </label>
                                     <!--end::Label-->
                                     <!--begin::Col-->
@@ -446,13 +446,6 @@
                                             }
                                         }
                                     },
-                                    about_company: {
-                                        validators: {
-                                            notEmpty: {
-                                                message: 'Description is required'
-                                            }
-                                        }
-                                    },
                                     comp_email: {
                                         validators: {
                                             emailAddress: {
@@ -462,19 +455,9 @@
                                     },
                                     comp_phone: {
                                         validators: {
-                                            notEmpty: {
-                                                message: 'Contact phone number is required'
-                                            },
                                             regexp: {
                                                 regexp: /^\d{10}$/, // Regular expression pattern for a 10-digit phone number
                                                 message: 'The phone number is not valid'
-                                            }
-                                        }
-                                    },
-                                    main_address: {
-                                        validators: {
-                                            notEmpty: {
-                                                message: 'Addres is required'
                                             }
                                         }
                                     },
