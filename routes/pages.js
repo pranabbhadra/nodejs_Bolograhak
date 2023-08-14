@@ -358,7 +358,36 @@ router.get('/category-details-premium', checkCookieValue, async (req, res) => {
 
 router.get('/disclaimer', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
-    res.render('front-end/disclaimer', { menu_active_id: 'disclaimer', page_title: 'Disclaimer', currentUserData });
+    try {
+        const sql = `SELECT * FROM page_info where secret_Key = 'disclaimer' `;
+        db.query(sql, (err, results, fields) => {
+            if (err) throw err;
+            const common = results[0];
+            const meta_sql = `SELECT * FROM page_meta where page_id = ${common.id}`;
+            db.query(meta_sql, async (meta_err, _meta_result) => {
+                if (meta_err) throw meta_err;
+
+                const meta_values = _meta_result;
+                let meta_values_array = {};
+                await meta_values.forEach((item) => {
+                    meta_values_array[item.page_meta_key] = item.page_meta_value;
+                })
+                console.log(meta_values_array);
+                res.render('front-end/disclaimer', {
+                    menu_active_id: 'disclaimer',
+                    page_title: common.title,
+                    currentUserData,
+                    common,
+                    meta_values_array,
+                });
+            })
+
+        })
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+    //res.render('front-end/disclaimer', { menu_active_id: 'disclaimer', page_title: 'Disclaimer', currentUserData });
 });
 
 router.get('/terms-of-service', checkCookieValue, async (req, res) => {
