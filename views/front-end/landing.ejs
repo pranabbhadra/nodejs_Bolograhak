@@ -615,10 +615,13 @@
         <div class="col-md-6 my-auto">
           <div class="about-right my-3" data-aos="fade-left">
             <%- meta_values_array.cus_right_content %>
-              <div class="text-sm-start text-center"><a href="<%= meta_values_array.cus_right_button_link %>"
-                  class="view-more mt-0"><span class="position-relative"><i class="fa-solid fa-angle-right"></i>
-                    <%= meta_values_array.cus_right_button_text %>
-                  </span></a></div>
+            <% if(meta_values_array.cus_right_button_link){ %>
+              <div class="text-sm-start text-center">
+                <a href="<%= meta_values_array.cus_right_button_link %>" class="view-more mt-0">
+                  <span class="position-relative"><i class="fa-solid fa-angle-right"></i><%= meta_values_array.cus_right_button_text %></span>
+                </a>
+              </div>
+            <% } %>
           </div>
         </div>
       </div>
@@ -679,10 +682,12 @@
         <div class="col-md-6 my-auto">
           <div class="about-right my-3" data-aos="fade-right"> 
             <%- meta_values_array.org_responsibility_content %>
+            <% if(meta_values_array.org_responsibility_buttton_link){ %>
               <div class="text-sm-start text-center"><a href="<%= meta_values_array.org_responsibility_buttton_link %>"
                   class="view-more mt-0"><span class="position-relative"><i class="fa-solid fa-angle-right"></i>
                     <%= meta_values_array.org_responsibility_buttton_text %>
                   </span></a></div>
+            <% } %>
           </div>
         </div>
       </div>
