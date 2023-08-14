@@ -16,7 +16,7 @@ get_header(); ?>
 				<div class="bread-crumb">
 					<ul>
 						<li><a href="http://bolograhak.in/">Home</a></li>
-						<li><a href="<?php echo site_url(); ?>"><?php echo get_the_title(10); ?></a></li>
+						<li><a href="<?php echo site_url(); ?>/"><?php echo get_the_title(10); ?></a></li>
 						<li><?php the_title(); ?></li>
 					</ul>
 				</div>

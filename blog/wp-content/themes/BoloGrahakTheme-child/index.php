@@ -230,18 +230,11 @@ get_header(); ?>
                         <h2 class="main-head mb-sm-0" style="color: #161616;">Categories</h2>
                      </span>
                      <marquee behavior="scroll" direction="left" onmouseover="this.stop();" onmouseout="this.start();">
-                        <ul class="p-0 m-0">
-                           <li><a href="http://scwebtech4u.com/Projects/bolo-grahak/tag/curabitur/">Curabitur</a></li>
-                           <li><a href="http://scwebtech4u.com/Projects/bolo-grahak/tag/quisque/">Quisque</a></li>
-                           <li><a href="http://scwebtech4u.com/Projects/bolo-grahak/tag/etiam/">Etiam</a></li>
-                           <li><a href="http://scwebtech4u.com/Projects/bolo-grahak/tag/pellentesque/">Pellentesque</a></li>
-                           <li><a href="http://scwebtech4u.com/Projects/bolo-grahak/tag/vivamus/">Vivamus</a></li>
-                           <li><a href="http://scwebtech4u.com/Projects/bolo-grahak/tag/phasellus/">Phasellus</a></li>
-                           <li><a href="http://scwebtech4u.com/Projects/bolo-grahak/tag/maecenas/">Maecenas</a></li>
-                           <li><a href="http://scwebtech4u.com/Projects/bolo-grahak/tag/cras/">Cras</a></li>
-                           <li><a href="http://scwebtech4u.com/Projects/bolo-grahak/tag/fusce/">Fusce</a></li>
-                           <li><a href="http://scwebtech4u.com/Projects/bolo-grahak/tag/praesent/">Praesent</a></li>
-                       </ul>
+                     <ul class="p-0 m-0">
+                        <?php foreach ( $popular_tags as $tag ) { ?>
+                          <li><a href="<?php echo get_term_link( $tag ); ?>"><?php echo $tag->name; ?></a></li>
+                        <?php } ?>
+                     </ul>
                      </marquee>
                   </div>
                <div class="all-blogs-head d-flex align-items-center justify-content-between position-relative">

@@ -55,7 +55,7 @@ function gsdu(){
 }
 
 //To disable the ability to assign posts to the "Uncategorized" category in WordPress
-/*
+
 function disable_uncategorized_category($categories) {
     foreach ($categories as $key => $category) {
         if ($category->name == 'Uncategorized') {
@@ -66,7 +66,7 @@ function disable_uncategorized_category($categories) {
     return $categories;
 }
 add_filter('get_terms', 'disable_uncategorized_category', 10, 2);
-*/
+
 
 // post Details page Custom Comment Form
 function enqueue_custom_scripts() {
