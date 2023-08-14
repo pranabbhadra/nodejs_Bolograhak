@@ -313,17 +313,6 @@ router.get('/business', checkCookieValue, async (req, res) => {
 });
 
 
-
-router.get('/privacy-policy', checkCookieValue, async (req, res) => {
-    let currentUserData = JSON.parse(req.userData);
-    res.render('front-end/privacy-policy', { menu_active_id: 'privacy-policy', page_title: 'Privacy Policy', currentUserData });
-});
-
-router.get('/terms-conditions', checkCookieValue, async (req, res) => {
-    let currentUserData = JSON.parse(req.userData);
-    res.render('front-end/terms-conditions', { menu_active_id: 'terms-conditions', page_title: 'Terms of Service', currentUserData });
-});
-
 router.get('/company/:id', checkCookieValue, async (req, res) => {
     const companyID = req.params.id;
     const [allRatingTags, CompanyInfo, companyReviewNumbers, getCompanyReviews] = await Promise.all([
@@ -354,6 +343,39 @@ router.get('/company/:id', checkCookieValue, async (req, res) => {
 router.get('/category-details-premium', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
     res.render('front-end/category-details-premium', { menu_active_id: 'category-details-premium', page_title: 'Categories Details', currentUserData });
+});
+
+router.get('/privacy-policy', checkCookieValue, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
+    try {
+        const sql = `SELECT * FROM page_info where secret_Key = 'privacy' `;
+        db.query(sql, (err, results, fields) => {
+            if (err) throw err;
+            const common = results[0];
+            const meta_sql = `SELECT * FROM page_meta where page_id = ${common.id}`;
+            db.query(meta_sql, async (meta_err, _meta_result) => {
+                if (meta_err) throw meta_err;
+
+                const meta_values = _meta_result;
+                let meta_values_array = {};
+                await meta_values.forEach((item) => {
+                    meta_values_array[item.page_meta_key] = item.page_meta_value;
+                })
+                console.log(meta_values_array);
+                res.render('front-end/privacy-policy', {
+                    menu_active_id: 'privacy-policy',
+                    page_title: common.title,
+                    currentUserData,
+                    common,
+                    meta_values_array,
+                });
+            })
+
+        })
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
 });
 
 router.get('/disclaimer', checkCookieValue, async (req, res) => {
@@ -392,7 +414,36 @@ router.get('/disclaimer', checkCookieValue, async (req, res) => {
 
 router.get('/terms-of-service', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
-    res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
+    try {
+        const sql = `SELECT * FROM page_info where secret_Key = 'terms_of_service' `;
+        db.query(sql, (err, results, fields) => {
+            if (err) throw err;
+            const common = results[0];
+            const meta_sql = `SELECT * FROM page_meta where page_id = ${common.id}`;
+            db.query(meta_sql, async (meta_err, _meta_result) => {
+                if (meta_err) throw meta_err;
+
+                const meta_values = _meta_result;
+                let meta_values_array = {};
+                await meta_values.forEach((item) => {
+                    meta_values_array[item.page_meta_key] = item.page_meta_value;
+                })
+                console.log(meta_values_array);
+                res.render('front-end/terms-of-service', {
+                    menu_active_id: 'terms-of-service',
+                    page_title: common.title,
+                    currentUserData,
+                    common,
+                    meta_values_array,
+                });
+            })
+
+        })
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+    //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
 });
 // Front-End Page Routes End--------------------//
 
