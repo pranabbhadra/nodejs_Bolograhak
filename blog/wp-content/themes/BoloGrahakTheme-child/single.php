@@ -39,12 +39,22 @@ get_header(); ?>
             $alt_text = get_post_meta(get_post_thumbnail_id( $current_post_ID ), '_wp_attachment_image_alt', true);
 		?>
 		<div class="blog-cover position-relative mb-sm-5 mb-4">
+			<?php if($blog_banner){?>
 			<picture>
 				<source media="(max-width:575px)" srcset="<?php echo $blog_mobile_banner['0']; ?>" width="551" height="205">
 				<source media="(max-width:767px)" srcset="<?php echo $blog_tab_banner['0']; ?>" width="745" height="277">
 				<source media="(max-width:991px)" srcset="<?php echo $blog_smalld_banner['0']; ?>" width="965" height="359">
 				<img src="<?php echo $blog_banner['0']; ?>" alt="<?php echo $alt_text;?>" width="1142" height="425" loading="lazy" class="w-100">
 			</picture>
+			<?php }else{?>
+			<picture>
+				<source media="(max-width:575px)" srcset="<?php echo get_stylesheet_directory_uri();?>/images/no-banner.jpg" width="551" height="205">
+				<source media="(max-width:767px)" srcset="<?php echo get_stylesheet_directory_uri();?>/images/no-banner.jpg" width="745" height="277">
+				<source media="(max-width:991px)" srcset="<?php echo get_stylesheet_directory_uri();?>/images/no-banner.jpg" width="965" height="359">
+				<img src="<?php echo get_stylesheet_directory_uri();?>/images/no-banner.jpg" alt="<?php echo $alt_text;?>" width="1142" height="425" loading="lazy" class="w-100">
+			</picture>
+			<?php }?>
+			
 			<div class="blog-cover-overlay">
 				<span class="date-tag"><?php the_time(__('M d, Y', 'kubrick')) ?></span>
 				<span class="viewers-tag"><i class="fa-regular fa-eye"></i><?php echo pvc_get_post_views( $current_post_ID ); ?> views</span>
@@ -81,8 +91,8 @@ get_header(); ?>
 			<div class="inner-tags"><?php the_tags(__('Tags:', 'kubrick') . ' ', ', ', '<br />'); ?></div>
 			<?php the_content(); ?>
 			<div class="social-icons">
-				<a href="https://www.facebook.com/sharer?u=<?php echo urlencode(get_the_permalink($current_post_ID));?>&t=<?php echo urlencode(get_the_title($post_id));?>" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-facebook-f"></i></a>
-				<a href="https://twitter.com/intent/tweet?text=<?php the_title(); ?>&url=<?php echo urlencode(get_the_permalink($current_post_ID));?>&media=<?php echo urlencode($blog_banner['0']);?>" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-twitter"></i></a>
+				<a href="https://www.facebook.com/sharer?u=<?php echo urlencode(get_the_permalink($current_post_ID));?>&t=<?php echo urlencode(get_the_title($current_post_ID));?>" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-facebook-f"></i></a>
+				<a href="https://twitter.com/intent/tweet?text=<?php echo get_the_title($current_post_ID); ?>&url=<?php echo urlencode(get_the_permalink($current_post_ID));?>" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-twitter"></i></a>
 				<a href="https://www.linkedin.com/shareArticle?mini=true&url=<?php echo urlencode(get_the_permalink($current_post_ID));?>&title=<?php echo urlencode(get_the_title($current_post_ID));?>&summary=<?php echo urlencode(get_the_excerpt($current_post_ID));?>&source=<?php bloginfo('name');?>" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-linkedin-in"></i></a>
 				<a href="https://api.whatsapp.com/send?text=<?php echo urlencode(get_the_title($current_post_ID));?>%0a<?php echo urlencode(get_the_permalink($current_post_ID));?>" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
 			</div>

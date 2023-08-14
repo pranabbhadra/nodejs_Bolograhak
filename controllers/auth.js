@@ -1061,7 +1061,26 @@ exports.createCompany = (req, res) => {
     const encodedUserData = req.cookies.user;
     const currentUserData = JSON.parse(encodedUserData);
 
-    db.query('SELECT comp_phone FROM company WHERE comp_phone = ?', [req.body.comp_phone], async (err, results) => {
+    const currentDate = new Date();
+
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+    const day = String(currentDate.getDate()).padStart(2, '0');
+    const hours = String(currentDate.getHours()).padStart(2, '0');
+    const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+    const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+
+    const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+    var insert_values = [];
+    if (req.file) {
+        insert_values = [currentUserData.user_id, req.body.company_name, req.body.heading, req.file.filename, req.body.about_company, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, req.body.status, req.body.trending, formattedDate, formattedDate, req.body.tollfree_number, req.body.main_address, req.body.main_address_pin_code, req.body.address_map_url];
+    } else {
+        insert_values = [currentUserData.user_id, req.body.company_name, req.body.heading, '', req.body.about_company, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, req.body.status, req.body.trending, formattedDate, formattedDate, req.body.tollfree_number, req.body.main_address, req.body.main_address_pin_code, req.body.address_map_url];
+    }
+
+    const insertQuery = 'INSERT INTO company (user_created_by, company_name, heading, logo, about_company, comp_phone, comp_email, comp_registration_id, status, trending, created_date, updated_date, tollfree_number, main_address, main_address_pin_code, address_map_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    db.query(insertQuery, insert_values, (err, results, fields) => {
         if (err) {
             return res.send(
                 {
@@ -1070,71 +1089,29 @@ exports.createCompany = (req, res) => {
                     message: 'An error occurred while processing your request' + err
                 }
             )
-        }
-
-        if (results.length > 0) {
-
-            return res.send(
-                {
-                    status: 'err',
-                    data: '',
-                    message: 'Phone number already exist for another Company'
-                }
-            )
-        }
-
-        const currentDate = new Date();
-
-        const year = currentDate.getFullYear();
-        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-        const day = String(currentDate.getDate()).padStart(2, '0');
-        const hours = String(currentDate.getHours()).padStart(2, '0');
-        const minutes = String(currentDate.getMinutes()).padStart(2, '0');
-        const seconds = String(currentDate.getSeconds()).padStart(2, '0');
-
-        const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-
-        var insert_values = [];
-        if (req.file) {
-            insert_values = [currentUserData.user_id, req.body.company_name, req.body.heading, req.file.filename, req.body.about_company, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, req.body.status, req.body.trending, formattedDate, formattedDate, req.body.tollfree_number, req.body.main_address, req.body.main_address_pin_code, req.body.address_map_url];
         } else {
-            insert_values = [currentUserData.user_id, req.body.company_name, req.body.heading, '', req.body.about_company, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, req.body.status, req.body.trending, formattedDate, formattedDate, req.body.tollfree_number, req.body.main_address, req.body.main_address_pin_code, req.body.address_map_url];
-        }
-
-        const insertQuery = 'INSERT INTO company (user_created_by, company_name, heading, logo, about_company, comp_phone, comp_email, comp_registration_id, status, trending, created_date, updated_date, tollfree_number, main_address, main_address_pin_code, address_map_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-        db.query(insertQuery, insert_values, (err, results, fields) => {
-            if (err) {
-                return res.send(
-                    {
+            const companyId = results.insertId;
+            const categoryArray = Array.isArray(req.body.category) ? req.body.category : [req.body.category];
+            const companyCategoryData = categoryArray.map((categoryID) => [companyId, categoryID]);
+            db.query('INSERT INTO company_cactgory_relation (company_id, category_id) VALUES ?', [companyCategoryData], function (error, results) {
+                if (error) {
+                    console.log(error);
+                    res.status(400).json({
                         status: 'err',
-                        data: '',
-                        message: 'An error occurred while processing your request' + err
-                    }
-                )
-            } else {
-                const companyId = results.insertId;
-                const categoryArray = Array.isArray(req.body.category) ? req.body.category : [req.body.category];
-                const companyCategoryData = categoryArray.map((categoryID) => [companyId, categoryID]);
-                db.query('INSERT INTO company_cactgory_relation (company_id, category_id) VALUES ?', [companyCategoryData], function (error, results) {
-                    if (error) {
-                        console.log(error);
-                        res.status(400).json({
-                            status: 'err',
-                            message: 'Error while creating company category'
-                        });
-                    }
-                    else {
-                        return res.send(
-                            {
-                                status: 'ok',
-                                data: companyId,
-                                message: 'New company created'
-                            }
-                        )
-                    }
-                });
-            }
-        })
+                        message: 'Error while creating company category'
+                    });
+                }
+                else {
+                    return res.send(
+                        {
+                            status: 'ok',
+                            data: companyId,
+                            message: 'New company created'
+                        }
+                    )
+                }
+            });
+        }
     })
 }
 
@@ -1153,96 +1130,70 @@ exports.editCompany = (req, res) => {
 
     const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
-    // Check if the updated email ID or phone number already exist for another company
-    const checkQuery = 'SELECT * FROM company WHERE comp_phone = ? AND ID != ?';
-    const checkValues = [req.body.comp_phone, companyID];
+    // Update company details in the company table
+    const updateQuery = 'UPDATE company SET company_name = ?, heading = ?, logo = ?, about_company = ?, comp_phone = ?, comp_email = ?, comp_registration_id = ?, status = ?, trending = ?, updated_date = ?, tollfree_number = ?, main_address = ?, main_address_pin_code = ?, address_map_url = ? WHERE ID = ?';
+    const updateValues = [req.body.company_name, req.body.heading, '', req.body.about_company, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, req.body.status, req.body.trending, formattedDate, req.body.tollfree_number, req.body.main_address, req.body.main_address_pin_code, req.body.address_map_url, companyID];
 
-    db.query(checkQuery, checkValues, (err, results) => {
+    if (req.file) {
+        // Unlink (delete) the previous file
+        const unlinkcompanylogo = "uploads/" + req.body.previous_logo;
+        fs.unlink(unlinkcompanylogo, (err) => {
+            if (err) {
+                //console.error('Error deleting file:', err);
+            } else {
+                //console.log('Previous file deleted');
+            }
+        });
+
+        updateValues[2] = req.file.filename;
+    }else{
+        updateValues[2] = req.body.previous_logo;
+    }
+    db.query(updateQuery, updateValues, (err, results) => {
         if (err) {
-            //console.log(err)
-            return res.send(
-                {
-                    status: 'err',
-                    data: '',
-                    message: 'An error occurred while processing your request' + err
-                }
-            )
-        }
-
-        if (results.length > 0) {
-            // Email ID or phone number already exist for another company
+            // Handle the error
             return res.send({
                 status: 'err',
                 data: '',
-                message: 'Phone number already exist for another company'
+                message: 'An error occurred while updating the company details: ' + err
             });
         }
 
-        // Update company details in the company table
-        const updateQuery = 'UPDATE company SET company_name = ?, heading = ?, logo = ?, about_company = ?, comp_phone = ?, comp_email = ?, comp_registration_id = ?, status = ?, trending = ?, updated_date = ?, tollfree_number = ?, main_address = ?, main_address_pin_code = ?, address_map_url = ? WHERE ID = ?';
-        const updateValues = [req.body.company_name, req.body.heading, '', req.body.about_company, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, req.body.status, req.body.trending, formattedDate, req.body.tollfree_number, req.body.main_address, req.body.main_address_pin_code, req.body.address_map_url, companyID];
-
-        if (req.file) {
-            // Unlink (delete) the previous file
-            const unlinkcompanylogo = "uploads/" + req.body.previous_logo;
-            fs.unlink(unlinkcompanylogo, (err) => {
-                if (err) {
-                    //console.error('Error deleting file:', err);
-                } else {
-                    //console.log('Previous file deleted');
-                }
-            });
-
-            updateValues[2] = req.file.filename;
-        }else{
-            updateValues[2] = req.body.previous_logo;
-        }
-        db.query(updateQuery, updateValues, (err, results) => {
+        // Update company categories in the company_cactgory_relation table
+        const deleteQuery = 'DELETE FROM company_cactgory_relation WHERE company_id = ?';
+        db.query(deleteQuery, [companyID], (err) => {
             if (err) {
                 // Handle the error
                 return res.send({
                     status: 'err',
                     data: '',
-                    message: 'An error occurred while updating the company details: ' + err
+                    message: 'An error occurred while deleting existing company categories: ' + err
                 });
             }
 
-            // Update company categories in the company_cactgory_relation table
-            const deleteQuery = 'DELETE FROM company_cactgory_relation WHERE company_id = ?';
-            db.query(deleteQuery, [companyID], (err) => {
+            // Create an array of arrays for bulk insert
+            
+            const categoryArray = Array.isArray(req.body.category) ? req.body.category : [req.body.category];
+            const insertValues = categoryArray.map((categoryID) => [companyID, categoryID]);
+
+            const insertQuery = 'INSERT INTO company_cactgory_relation (company_id, category_id) VALUES ?';
+
+            db.query(insertQuery, [insertValues], (err) => {
                 if (err) {
                     // Handle the error
                     return res.send({
                         status: 'err',
                         data: '',
-                        message: 'An error occurred while deleting existing company categories: ' + err
+                        message: 'An error occurred while updating company categories: ' + err
                     });
                 }
 
-                // Create an array of arrays for bulk insert
-                
-                const categoryArray = Array.isArray(req.body.category) ? req.body.category : [req.body.category];
-                const insertValues = categoryArray.map((categoryID) => [companyID, categoryID]);
-
-                const insertQuery = 'INSERT INTO company_cactgory_relation (company_id, category_id) VALUES ?';
-
-                db.query(insertQuery, [insertValues], (err) => {
-                    if (err) {
-                        // Handle the error
-                        return res.send({
-                            status: 'err',
-                            data: '',
-                            message: 'An error occurred while updating company categories: ' + err
-                        });
-                    }
-
-                    // Return success response
-                    return res.send({
-                        status: 'ok',
-                        data: companyID,
-                        message: 'Company details updated successfully'
-                    });
-                })
+                // Return success response
+                return res.send({
+                    status: 'ok',
+                    data: companyID,
+                    message: 'Company details updated successfully'
+                });
             })
         })
     })
