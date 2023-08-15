@@ -150,7 +150,7 @@
                </span>
                <nav class="nav_sec">
                   <ul>
-                     <li class="active"><a href="<?php echo get_the_permalink(10); ?>">Did You Know?</a></li>
+                     <li class="active"><a href="https://bolograhak.com/blog/">Did You Know?</a></li>
                      <li><a href="https://bolograhak.com/about-us">About Us</a></li>
                      <li><a href="https://bolograhak.com/business">Business</a></li>
                      <li><a href="https://bolograhak.com/contact-us">Contact</a></li>
@@ -313,6 +313,8 @@
       <div class="login-overlay2"><img src="<?php echo get_stylesheet_directory_uri();?>/images/login-overlay2.png" alt="img" width="164" height="314"></div>
    </div>
    <!-- ============== Login Modal End =============== -->
+   <?php } ?>
+   <?php /* ?>
    <div class="modal fade pe-0" tabindex="-1" id="quickloginmodal">
      <div class="modal-dialog">
        <div class="modal-content">
@@ -337,4 +339,4 @@
        </div>
      </div>
    </div>   
-   <?php } ?>
+   <?php */ ?>
