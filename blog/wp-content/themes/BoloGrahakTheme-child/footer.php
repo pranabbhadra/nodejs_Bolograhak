@@ -77,8 +77,8 @@
 
                      </a>
                      <h4>Contact Info</h4>
-                     <div class="c-email"><span>Sales:</span> <a href="">Sales@CEchoes.com</a></div>
-                     <div class="c-email"><span>Support:</span> <a href="">Support@CEchoes.com</a></div>
+                     <div class="c-email"><span>Sales:</span> <a href="mailto:sales@bolograhak.com">Sales@Bolograhak.com</a></div>
+                     <div class="c-email"><span>Support:</span> <a href="mailto:support@bolograhak.com">Support@Bolograhak.com</a></div>
                      <a href="https://bolograhak.com/contact-us" class="c-link"><u>Contact Us</u></a>
                   </div>
                </div>
@@ -90,14 +90,13 @@
                </div>
                <div class="col-md-5 col-sm-12">
                   <div class="footer-part">
-                     <h4>Get The App</h4>
-                     <p>Mus mauris vitae ultricies leo integer malesuada nunc vel arcu dui vivamus arcu felis.</p>
+                     <p>We are coming soon on Google Play and App Store.</p>
                      <div class="app-info">
-                        <a href=""><img src="<?php echo get_stylesheet_directory_uri();?>/images/g-play.png" alt="img" width="183" height="56"></a>
-                        <a href=""><img src="<?php echo get_stylesheet_directory_uri();?>/images/app-store.png" alt="img" width="178" height="56"></a>
+                        <a href="#"><img src="<?php echo get_stylesheet_directory_uri();?>/images/g-play.png" alt="img" width="183" height="56"></a>
+                        <a href="#"><img src="<?php echo get_stylesheet_directory_uri();?>/images/app-store.png" alt="img" width="178" height="56"></a>
                      </div>
                      <div class="social-icons">
-                        <a href="#" target="_blank"><i class="fa-brands fa-facebook-f"></i></a><a href="#" target="_blank"><i class="fa-brands fa-twitter"></i></a><a href="#" target="_blank"><i class="fa-brands fa-linkedin-in"></i></a><a href="#" target="_blank"><i class="fa-brands fa-instagram"></i></a><a href="#" target="_blank"><i class="fa-brands fa-youtube"></i></a>
+                        <a href="https://www.facebook.com/profile.php?id=100094607193555" target="_blank"><i class="fa-brands fa-facebook-f"></i></a><a href="https://twitter.com/GrahakBolo" target="_blank"><i class="fa-brands fa-twitter"></i></a><a href="#" target="_blank"><i class="fa-brands fa-linkedin-in"></i></a><a href="#" target="_blank"><i class="fa-brands fa-instagram"></i></a><a href="https://www.youtube.com/@BoloGrahak" target="_blank"><i class="fa-brands fa-youtube"></i></a>
                      </div>
                   </div>
                </div>
@@ -107,7 +106,7 @@
                   <span>Copyright</span> <?php echo date('Y'); ?> <a href="#">CEchoes Technology Pvt Ltd</a>
                </div>
                <div class="footer-b-right">
-                  <a href="#">Disclaimer</a> | <a href="">Privacy Policy</a> | <a href="">Terms of Service</a>
+                  <!--<a href="#">Disclaimer</a>--> | <a href="https://bolograhak.com/privacy-policy">Privacy Policy</a> | <!--<a href="">Terms of Service</a>-->
                </div>
             </div>
          </div>
