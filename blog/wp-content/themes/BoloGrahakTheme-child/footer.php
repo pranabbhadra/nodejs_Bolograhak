@@ -106,7 +106,7 @@
                   <span>Copyright</span> <?php echo date('Y'); ?> <a href="#">CEchoes Technology Pvt Ltd</a>
                </div>
                <div class="footer-b-right">
-                  <!--<a href="#">Disclaimer</a>--> | <a href="https://bolograhak.com/privacy-policy">Privacy Policy</a> | <!--<a href="">Terms of Service</a>-->
+                  <!--<a href="#">Disclaimer</a> |--> <a href="https://bolograhak.com/privacy-policy">Privacy Policy</a> <!--| <a href="">Terms of Service</a>-->
                </div>
             </div>
          </div>
