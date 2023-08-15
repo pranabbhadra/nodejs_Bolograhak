@@ -240,7 +240,7 @@
            <div class="col-md-6">
               <div class="login-left">
                  <h4 class="text-center">Dive In</h4>
-                 <div class="login-browse">
+                 <!--<div class="login-browse">
                     <div class="log-bowse-content">
                        <span><i class="fa-brands fa-google"></i></span>
                        <span><a href="" target="btn-default">Log in with google</a></span>
@@ -250,7 +250,7 @@
                        <span><a href="#" target="btn-default">Log in with facebook</a></span>
                     </div>
                  </div>
-                 <div class="or-connect"><span>Or continue with</span></div>
+                 <div class="or-connect"><span>Or continue with</span></div>-->
                  <form>
                     <div class="custom-form">
                         <label><span>Name</span></label>
