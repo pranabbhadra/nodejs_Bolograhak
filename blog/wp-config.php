@@ -50,19 +50,20 @@ define( 'DB_NAME', 'bolograhak' );
 
 /** Database username */
 
-define( 'DB_USER', 'root' );
+define( 'DB_USER', 'admin' );
 
 
 
 /** Database password */
 
-define( 'DB_PASSWORD', '' );
+define( 'DB_PASSWORD', 'bGdbPa55w0rD' );
 
 
 
 /** Database hostname */
 
-define( 'DB_HOST', 'localhost' );
+define( 'DB_HOST', 'bolograhakdb.cb41jdmx4rqo.us-east-1.rds.amazonaws.com' );
+
 
 
 
