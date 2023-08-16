@@ -40,13 +40,15 @@
                                  <%= review.company_location %>
                               </p>
                            </div>
-                           <!-- <div class="user-info-panel">
-                              <span><i class="fa-solid fa-box"></i></span>
-                              <p class="m-0">
-                                 <strong>Product/division</strong><br>
-                                 Samsung Galaxy
-                              </p>
-                           </div> -->
+                           <% if(review && review.review_title) { %>
+                              <div class="user-info-panel">
+                                 <span><i class="fa-solid fa-box"></i></span>
+                                 <p class="m-0">
+                                    <strong>Product/division</strong><br>
+                                    <%= review.review_title %>
+                                 </p>
+                              </div>
+                              <% } %>
                            <div class="user-review-text">
                                 <% AllReviewTags.forEach( (tag,index)=> {%>
                                     <% if(tag.review_id == review.id) { %>

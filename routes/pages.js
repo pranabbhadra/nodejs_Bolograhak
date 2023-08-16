@@ -445,6 +445,37 @@ router.get('/terms-of-service', checkCookieValue, async (req, res) => {
     }
     //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
 });
+
+//FrontEnd profile-dashboard page
+router.get('/users-all-reviews', checkFrontEndLoggedIn, async (req, res) => {
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+        const userId = currentUserData.user_id;
+        console.log('editUserID: ', userId);
+
+        // Fetch all the required data asynchronously
+        const [ AllCompaniesReviews, AllReviewTags, allRatingTags] = await Promise.all([
+            comFunction2.getAllCompaniesReviews(userId),
+            comFunction2.getAllReviewTags(),
+            comFunction.getAllRatingTags(),
+        ]);
+        //console.log(AllReviewTags);
+        // Render the 'edit-user' EJS view and pass the data
+        res.render('front-end/user-all-reviews', {
+            menu_active_id: 'profile-dashboard',
+            page_title: 'My Reviews',
+            currentUserData,
+            AllCompaniesReviews: AllCompaniesReviews,
+            allRatingTags:allRatingTags,
+            AllReviewTags:AllReviewTags
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+    //res.render('front-end/profile-dashboard', { menu_active_id: 'profile-dashboard', page_title: 'My Dashboard', currentUserData });
+});
 // Front-End Page Routes End--------------------//
 
 
