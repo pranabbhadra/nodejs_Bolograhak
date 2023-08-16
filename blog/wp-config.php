@@ -42,6 +42,8 @@
 
 /** The name of the database for WordPress */
 
+define( 'MAIN_URL_BG', 'https://bolograhak.com/' );
+
 define( 'DB_NAME', 'bolograhak' );
 
 
