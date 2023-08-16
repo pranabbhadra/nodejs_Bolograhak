@@ -598,8 +598,8 @@ async function createCompany(comInfo, userId) {
     if (company_name_checking_results.length > 0) {
         //company exist
         try{
-          const company_address_exist_query = 'SELECT * FROM company_location WHERE company_id = ? AND country = ? AND state = ? AND city = ? AND zip = ?';
-          const company_address_exist_values = [company_name_checking_results[0].ID, comInfo.country, comInfo.state, comInfo.city, comInfo.zip];
+          const company_address_exist_query = 'SELECT * FROM company_location WHERE company_id = ? AND address = ?';
+          const company_address_exist_values = [company_name_checking_results[0].ID, comInfo.address];
           const company_address_exist_results = await query(company_address_exist_query, company_address_exist_values);
           if (company_address_exist_results.length > 0) {
             //address exist return location ID
@@ -610,7 +610,7 @@ async function createCompany(comInfo, userId) {
             //create new address for company
             try{
               const create_company_address_query = 'INSERT INTO company_location (company_id, address, country, state, city, zip, status) VALUES (?, ?, ?, ?, ?, ?, ?)';
-              const create_company_address_values = [company_name_checking_results[0].ID, comInfo.address, comInfo.country, comInfo.state, comInfo.city, comInfo.zip, '2'];
+              const create_company_address_values = [company_name_checking_results[0].ID, comInfo.address, '', '', '', '', '2'];
               const create_company_address_results = await query(create_company_address_query, create_company_address_values);
               if (create_company_address_results.insertId) {
                 return_data.companyID = company_name_checking_results[0].ID;
@@ -643,7 +643,7 @@ async function createCompany(comInfo, userId) {
           //create new address for company
           try{
             const create_company_address_query = 'INSERT INTO company_location (company_id, address, country, state, city, zip, status) VALUES (?, ?, ?, ?, ?, ?, ?)';
-            const create_company_address_values = [create_company_results.insertId, comInfo.address, comInfo.country, comInfo.state, comInfo.city, comInfo.zip, '2'];
+            const create_company_address_values = [create_company_results.insertId, comInfo.address, '', '', '', '', '2'];
             const create_company_address_results = await query(create_company_address_query, create_company_address_values);
             if (create_company_address_results.insertId) {
               return_data.companyID = create_company_results.insertId;
@@ -670,6 +670,10 @@ async function createReview(reviewIfo, userId, comInfo){
   // reviewIfo['tags[]'].forEach((tag) => {
   //   console.log(tag);
   // });
+  if (typeof reviewIfo['tags[]'] === 'string') {
+    // Convert it to an array containing a single element
+    reviewIfo['tags[]'] = [reviewIfo['tags[]']];
+  }
   const currentDate = new Date();
   // Format the date in 'YYYY-MM-DD HH:mm:ss' format (adjust the format as needed)
   const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
