@@ -645,10 +645,9 @@ exports.createcompanylocation = (req, res) => {
 };
 
 
-
 exports.createReviewSubmit = (req, res) => {
-  //const reviewData = req.body;
-  const customerId = 1; 
+  const reviewData = req.body;
+  const customerId = 1; // Replace with the desired customer ID
 
   const currentDate = new Date();
   const year = currentDate.getFullYear();
@@ -659,102 +658,105 @@ exports.createReviewSubmit = (req, res) => {
   const seconds = String(currentDate.getSeconds()).padStart(2, '0');
 
   const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
   const submitReview = (reviewData, customerId, formattedDate, res) => {
-  // Check if the company exists in the company table
-  const checkCompanyQuery = 'SELECT ID FROM company WHERE ID = ?';
-  db.query(checkCompanyQuery, [reviewData.company_id], (err, companyResult) => {
-    if (err) {
-      console.error('Error checking company:', err);
-      res.status(500).json({ error: 'Error checking company' });
-    } else if (companyResult.length === 0) {
-      const createCompanyQuery = 'INSERT INTO company (ID, company_name,user_created_by,created_date) VALUES (?, ?,?,?)';
-      const companyValues = [reviewData.company_id, reviewData.company_name, '1', formattedDate];
-      db.query(createCompanyQuery, companyValues, (err) => {
-        if (err) {
-          console.error('Error creating company:', err);
-          res.status(500).json({ error: 'Error creating company' });
-        } else {
-          // Create location and submit the review
-          const createLocationQuery = 'INSERT INTO company_location (address, country, state, city, zip) VALUES (?, ?, ?, ?, ?, ?)';
-          db.query(createLocationQuery, [reviewData.address, reviewData.country, reviewData.state, reviewData.city, reviewData.zip], (err) => {
-            if (err) {
-              console.error('Error creating company location:', err);
-              res.status(500).json({ error: 'Error creating company location' });
-            } else {
-              // Continue with review submission
-              submitReview(reviewData, customerId, formattedDate, res);
-            }
-          });
-        }
-      });
-    } else {
-      // Check if the company location exists in the company_location table
-      const checkLocationQuery = 'SELECT ID FROM company_location WHERE ID = ?';
-      db.query(checkLocationQuery, [reviewData.company_location_id], (err, locationResult) => {
-        if (err) {
-          console.error('Error checking company location:', err);
-          res.status(500).json({ error: 'Error checking company location' });
-        } else if (locationResult.length === 0) {
-          const createLocationQuery = 'INSERT INTO company_location(company_id, address, country, state, city, zip) VALUES (?, ?, ?, ?, ?, ?)';
-      db.query(createLocationQuery, [reviewData.company_location_id, reviewData.address, reviewData.country, reviewData.state, reviewData.city, reviewData.zip], (err) => {
-        if (err) {
-          console.error('Error creating company location:', err);
-          res.status(500).json({ error: 'Error creating company location' });
-        } else {
-          // Continue with review submission
-          submitReview(reviewData, customerId, formattedDate, res);
-        }
-      });
-    } else {
-          const fetchLocationQuery = 'SELECT address, country, state, city, zip FROM company_location WHERE ID = ?';
-          db.query(fetchLocationQuery, [reviewData.company_location_id], (err, locationDetails) => {
-            if (err) {
-              console.error('Error fetching company location details:', err);
-              res.status(500).json({ error: 'Error fetching company location details' });
-            } else {
-              const insertQuery = `INSERT INTO reviews (company_id, company_location_id, customer_id, company_location, review_title, rating, review_content, user_privacy, review_status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-              
-              db.query(insertQuery, [
-                reviewData.company_id,
-                reviewData.company_location_id,
-                customerId,
-                locationDetails[0].address, 
-                reviewData.review_title,
-                reviewData.rating,
-                reviewData.review_content,
-                reviewData.user_privacy,
-                reviewData.review_status,
-                formattedDate,
-                formattedDate
-              ], (err, result) => {
-                if (err) {
-                  console.error('Error submitting review:', err);
-                  res.status(500).json({ error: 'Error submitting review' });
-                } else {
-                  const reviewId = result.insertId;
-
-                  // Loop through the tags and insert them into the review_tag_relation table
-                  reviewData.tags.forEach(tag => {
-                    const insertTagQuery = 'INSERT INTO review_tag_relation (review_id, tag_name) VALUES (?, ?)';
-                    db.query(insertTagQuery, [reviewId, tag], (err, tagResult) => {
-                      if (err) {
-                        console.error('Error inserting tag:', err);
-                      }
+    // Check if the company exists in the company table
+    const checkCompanyQuery = 'SELECT ID FROM company WHERE ID = ?';
+    db.query(checkCompanyQuery, [reviewData.company_id], (err, companyResult) => {
+      if (err) {
+        console.error('Error checking company:', err);
+        res.status(500).json({ error: 'Error checking company' });
+      } else if (companyResult.length === 0) {
+        const createCompanyQuery = 'INSERT INTO company (ID, company_name,user_created_by,created_date) VALUES (?, ?,?,?)';
+        const companyValues = [reviewData.company_id, reviewData.company_name, '1', formattedDate];
+        db.query(createCompanyQuery, companyValues, (err) => {
+          if (err) {
+            console.error('Error creating company:', err);
+            res.status(500).json({ error: 'Error creating company' });
+          } else {
+            // Create location and submit the review
+            const createLocationQuery = 'INSERT INTO company_location (address, country, state, city, zip) VALUES (?, ?, ?, ?, ?, ?)';
+            db.query(createLocationQuery, [reviewData.address, reviewData.country, reviewData.state, reviewData.city, reviewData.zip], (err) => {
+              if (err) {
+                console.error('Error creating company location:', err);
+                res.status(500).json({ error: 'Error creating company location' });
+              } else {
+                // Continue with review submission
+                submitReview(reviewData, customerId, formattedDate, res);
+              }
+            });
+          }
+        });
+      } else {
+        // Check if the company location exists in the company_location table
+        const checkLocationQuery = 'SELECT ID FROM company_location WHERE ID = ?';
+        db.query(checkLocationQuery, [reviewData.company_location_id], (err, locationResult) => {
+          if (err) {
+            console.error('Error checking company location:', err);
+            res.status(500).json({ error: 'Error checking company location' });
+          } else if (locationResult.length === 0) {
+            const createLocationQuery = 'INSERT INTO company_location(company_id, address, country, state, city, zip) VALUES (?, ?, ?, ?, ?, ?)';
+        db.query(createLocationQuery, [reviewData.company_location_id, reviewData.address, reviewData.country, reviewData.state, reviewData.city, reviewData.zip], (err) => {
+          if (err) {
+            console.error('Error creating company location:', err);
+            res.status(500).json({ error: 'Error creating company location' });
+          } else {
+            // Continue with review submission
+            submitReview(reviewData, customerId, formattedDate, res);
+          }
+        });
+      } else {
+            const fetchLocationQuery = 'SELECT address, country, state, city, zip FROM company_location WHERE ID = ?';
+            db.query(fetchLocationQuery, [reviewData.company_location_id], (err, locationDetails) => {
+              if (err) {
+                console.error('Error fetching company location details:', err);
+                res.status(500).json({ error: 'Error fetching company location details' });
+              } else {
+                const insertQuery = `INSERT INTO reviews (company_id, company_location_id, customer_id, company_location, review_title, rating, review_content, user_privacy, review_status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+                
+                db.query(insertQuery, [
+                  reviewData.company_id,
+                  reviewData.company_location_id,
+                  customerId,
+                  locationDetails[0].address, 
+                  reviewData.review_title,
+                  reviewData.rating,
+                  reviewData.review_content,
+                  reviewData.user_privacy,
+                  reviewData.review_status,
+                  formattedDate,
+                  formattedDate
+                ], (err, result) => {
+                  if (err) {
+                    console.error('Error submitting review:', err);
+                    res.status(500).json({ error: 'Error submitting review' });
+                  } else {
+                    const reviewId = result.insertId;
+  
+                    // Loop through the tags and insert them into the review_tag_relation table
+                    reviewData.tags.forEach(tag => {
+                      const insertTagQuery = 'INSERT INTO review_tag_relation (review_id, tag_name) VALUES (?, ?)';
+                      db.query(insertTagQuery, [reviewId, tag], (err, tagResult) => {
+                        if (err) {
+                          console.error('Error inserting tag:', err);
+                        }
+                      });
                     });
-                  });
-
-                  return res.send({
-                    status: 'ok',
-                    data: '',
-                    message: 'Review submitted successfully'
-                  });
-                }
-              });
-            }
-          });
-        }
-      });
-    }
-  });
+  
+                    return res.send({
+                      status: 'ok',
+                      data: 'h8',
+                      message: 'Review submitted successfully'
+                    });
+                  }
+                });
+              }
+            });
+          }
+        });
+      }
+    });
+  };
+  submitReview(reviewData, customerId, formattedDate, res);
 };
-}
+
