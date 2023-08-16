@@ -919,29 +919,33 @@
     <% }) %>
   };
 
+
   $("#rating-range").slider({
-      step: 0.5,
-      range: true, 
-      min: 0.5, 
-      max: 5, 
-      values: [0.5, 5], 
-      slide: function(event, ui)
-      {
-        console.log(ui);
-        $("#ratingRange").val(ui.values[0] + " / " + ui.values[1]);
-        $("#ratingvalue").val(ui.values[0]);
-        // When slider values change, update the text
-        var numberAsString = ui.values[0].toString();
+    step: 0.5,
+    range: "min", 
+    min: 0.5, 
+    max: 5, 
+    value: 0.5, 
+    create: function( event, ui ) {
+      $("#ratingRange").val('0.5/5');
+      $("#ratingvalue").val(0.5);
+      $("#selected-range-text").text(rangeTexts[0.5]);
+        $("#selected-range-emojis").attr('src',rangeEmojis[0.5]);
+    },
+    slide: function(event, ui){
+      console.log(ui.value);
+      $("#ratingRange").val(ui.value + " / " + "5");
+      $("#ratingvalue").val(ui.value);
+      // When slider values change, update the text
+        var numberAsString = ui.value.toString();
         var classnumber = numberAsString.replace(".", "");
-        $("#selected-range-text").text(rangeTexts[ui.values[0]]);
-        $("#selected-range-emojis").attr('src',rangeEmojis[ui.values[0]]);
+        $("#selected-range-text").text(rangeTexts[ui.value]);
+        $("#selected-range-emojis").attr('src',rangeEmojis[ui.value]);
         $('.range-tag'+classnumber).removeClass('d-none');
         $('.tag-items-wrapper:not(.range-tag'+classnumber+')').addClass("d-none");
         $('input[type="checkbox"][name="tags"]').prop('checked', false);
-      }
-  });
-  $("#ratingRange").val($("#rating-range").slider("values", 0) + " / " + $("#rating-range").slider("values", 1));
-
+    }
+    });
 ////////////////////////////// Range Slider End
 
   //-------Review Form Submit-----------------//

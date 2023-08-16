@@ -279,13 +279,16 @@
     background-color: #1D1D1D;
     height: 50px;
     border-radius: 8px;
-    color: #808080;
+    color: #fff;
 }
 
+.review-right .form-control::placeholder {
+    color: rgba(255,255,255,0.8);
+}
 .review-right .form-control:focus {
     background-color: transparent;
     border-color: #fccb06;
-    color: #808080;
+    color: #fff;
 }
 
 .review-right .custom-form textarea {
@@ -337,12 +340,12 @@
     margin: 0 auto;
 }
 
-#rating-range  span.ui-slider-handle:last-child  {
+/* #rating-range  span.ui-slider-handle:last-child  {
 	display: none;
-}
+} */
 
 .rating-slider .ui-slider .ui-slider-range {
-    background: #f2f2f2;
+    background: #FCCB06;
 }
 
 .rating-slider span.ui-slider-handle.ui-state-default.ui-corner-all {
@@ -357,7 +360,7 @@
 
 .rating-slider .ui-widget-content {
     border-color: transparent;
-    background: #fccb06;
+    background: #f2f2f2;
 }
 
 #selected-range-text {
