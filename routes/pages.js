@@ -1261,19 +1261,6 @@ router.get('/getAllUsersDetails', async (req, res) => {
     }
 });
 
-//All companies details
-// router.get('/getAllCompaniesDetails',async(req,res)=>{
-//     try {
-//         const [allcompany] = await Promise.all([
-//           comFunction.getAllCompany(),
-//         ]);
-    
-//         res.json(allcompany);
-//       } catch (err) {
-//         console.error(err);
-//         res.status(500).json({ error: 'Error retrieving companies' });
-//       }
-//     });
 
 router.get('/getAllCompaniesDetails', async (req, res) => {
     const query = `SELECT c.ID, c.company_name, COUNT(r.id) as review_count, AVG(r.rating) as average_rating,
@@ -1382,87 +1369,6 @@ router.get('/getComapniesDetails/:ID', async (req, res) => {
     });
 });
 
-//getAllReviews
-router.get('/getAllReviews', async (req, res) => {
-    console.log('Fetching all review details...');
-    
-    const query = `
-    SELECT r.company_id, r.customer_id, r.company_location, r.company_location_id, c.company_name, c.logo,
-    AVG(r.rating) AS average_rating,
-    GROUP_CONCAT(rtr.id) AS tag_ids,
-    GROUP_CONCAT(rtr.tag_name) AS tag_names,
-    r.review_title, r.rating AS individual_rating, r.review_content, r.user_privacy, r.review_status,
-    r.created_at AS review_created_at, r.updated_at AS review_updated_at, rtr.id AS reviewrelation_id,
-    u.first_name, u.last_name, u.email, ucd.profile_pic
-    FROM reviews r
-    LEFT JOIN review_tag_relation rtr ON r.id = rtr.review_id
-    LEFT JOIN company c ON r.company_id = c.id  
-    LEFT JOIN users u ON r.customer_id = u.user_id
-    LEFT JOIN user_customer_meta ucd ON u.user_id = ucd.user_id
-    GROUP BY r.company_id, r.review_title, r.rating, r.review_content, r.user_privacy,
-    r.review_status, r.created_at, r.updated_at, rtr.id, u.first_name, u.last_name, u.email, ucd.profile_pic;`;
-    
-    db.query(query, (err, results) => {
-      if (err) {
-        return res.status(500).json({
-          status: 'error',
-          message: 'An error occurred while fetching details',
-          err
-        });
-      }
-
-      const reviewDetailsMap = new Map();
-
-      for (const review of results) {
-        const tagIds = review.tag_ids ? review.tag_ids.split(',') : [];
-        const tagNames = review.tag_names ? review.tag_names.split(',') : [];
-        const tagArray = [];
-
-        for (let i = 0; i < tagIds.length; i++) {
-            tagArray.push({ id: tagIds[i], tag_name: tagNames[i] });
-        }
-
-        const reviewObj = {
-          review_title: review.review_title,
-          rating: review.individual_rating,
-          review_content: review.review_content,
-          user_privacy: review.user_privacy,
-          review_status: review.review_status,
-          created_at: review.review_created_at,
-          updated_at: review.review_updated_at,
-          reviewrelation_id: review.reviewrelation_id,
-          first_name: review.first_name,
-          last_name: review.last_name,
-          email: review.email,
-          profile_pic: review.profile_pic,
-          tag_name: tagArray
-        };
-
-        if (!reviewDetailsMap.has(review.company_id)) {
-          reviewDetailsMap.set(review.company_id, {
-            company_id: review.company_id,
-            customer_id: review.customer_id,
-            company_location: review.company_location,
-            company_location_id: review.company_location_id,
-            company_name: review.company_name,
-            logo: review.logo,
-            average_rating: parseFloat(review.average_rating || 0),
-            reviews: []
-          });
-        }
-
-        reviewDetailsMap.get(review.company_id).reviews.push(reviewObj);
-      }
-
-      const reviewDetails = Array.from(reviewDetailsMap.values());
-
-      return res.status(200).json({
-        status: 'success',
-        data: reviewDetails,
-        message: 'All review details with company and review information fetched successfully'
-      });
-    });
-});
 //getAllRatingTags
 router.get('/getAllRatingTags', async (req, res) => {
     const query = 'SELECT * FROM review_rating_tags';
@@ -1645,6 +1551,83 @@ router.get('/reviewslistofallcompaniesbyuser/:user_id', (req, res) => {
     });
 });
 
+//getAllReviews
+router.get('/getreviewlisting', async (req, res) => {
+    const query = `
+    SELECT r.id, r.company_id, r.customer_id, r.company_location, r.company_location_id,
+    c.company_name, c.logo, AVG(r.rating) AS average_rating,
+    r.review_title, r.rating AS individual_rating, r.review_content,
+    r.user_privacy, r.review_status, r.created_at AS review_created_at,
+    r.updated_at AS review_updated_at,
+    u.first_name, u.last_name, u.email, ucd.profile_pic,
+    rtr.id AS review_relation_tag_id, rtr.tag_name, GROUP_CONCAT(rtr.id) AS tag_ids
+    FROM reviews r
+    LEFT JOIN review_tag_relation rtr ON r.id = rtr.review_id
+    LEFT JOIN company c ON r.company_id = c.ID
+    LEFT JOIN users u ON r.customer_id = u.user_id
+    LEFT JOIN user_customer_meta ucd ON u.user_id = ucd.user_id
+    GROUP BY r.id, r.company_id, r.review_title, r.rating, r.review_content, r.user_privacy,
+    r.review_status, r.created_at, r.updated_at, rtr.id, u.first_name, u.last_name, u.email, ucd.profile_pic`;
+    
+      
+    db.query(query, async (err, results) => {
+        if (err) {
+            return res.status(500).json({
+                status: 'error',
+                message: 'An error occurred while fetching details',
+                err
+            });
+        }
+        if(results.length===0){
+            return res.status(404).json({
+                status:'error',
+                message:'No reviews found'
+            })
+        }
+        const reviewsData={};
+
+        results.forEach(row=>{
+            const reviewId=row.id;
+
+            if(!reviewsData[reviewId]){
+                reviewsData[reviewId]={
+                    id: row.id,
+                    company_id: row.company_id,
+                    customer_id: row.customer_id,
+                    company_location: row.company_location,
+                    review_title:row.review_title,
+                    rating:row.rating,
+                    review_content:row.review_content,
+                    user_privacy:row.user_privacy,
+                    review_status:row.review_status,
+                    created_at:row.created_at,
+                    updated_at:row.updated_at,
+                    reviewrelation_id:row.reviewrelation_id,
+                    first_name:row.first_name,
+                    last_name:row.last_name,
+                    email:row.email,    
+                    profile_pic:row.profile_pic,
+                    tags:[],
+            };
+        }
+            reviewsData[reviewId].tags.push({
+                id:row.review_relation_tag_id,
+                tag_name:row.tag_name
+            });
+        });
+     const formattedreviewesData = Object.values(reviewsData);
+
+        return res.status(200).json({
+            status: 'success',
+            data: formattedreviewesData,
+            message: 'Company details fetched successfully'
+        });
+    });
+});
+
+
+
+
 
 
 router.get('/help/:id', (_, resp) => {
@@ -1655,6 +1638,7 @@ router.get('/help/:id', (_, resp) => {
 router.get('*', (_, resp) => {
     resp.sendFile(`${publicPath}/nopage.html`)
 });
+
 
 
 function generateRandomPassword() {
@@ -1668,5 +1652,6 @@ function generateRandomPassword() {
     }
     return password;
 }
+
 
 module.exports = router;

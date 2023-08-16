@@ -266,7 +266,6 @@ exports.login = (req, res) => {
 
 exports.createcategories = (req, res) => {
   console.log('category', req.body);
-  console.log("aaaaa");
   const { cat_name, cat_parent_id, country } = req.body;
   
   // Check if category_name is provided and not empty
@@ -312,8 +311,7 @@ exports.createcategories = (req, res) => {
 
 exports.createcompany = (req, res) => {
   console.log('company', req.body);
-  console.log('aaaaaa');
-
+ 
   const { comp_email, company_name, comp_phone, comp_registration_id } = req.body;
   db.query('SELECT comp_email FROM company WHERE comp_email=? OR comp_phone=?', [comp_email, comp_phone], async (err, results) => {
     if (err) {
@@ -588,7 +586,6 @@ exports.editcompany = (req, res) => {
 
 exports.createcompanylocation = (req, res) => {
     console.log(req.body);
-    console.log('aaaaa');
     const {
         company_id,
         address,
