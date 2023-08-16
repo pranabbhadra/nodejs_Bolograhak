@@ -21,21 +21,20 @@
                       </div> -->
                   <div class="custom-form">
                     <label><span>Phone Number</span></label>
-                    <input type="tel" class="form-control" placeholder="How do I speak with you" name="phone_no"
-                      required>
+                    <input type="tel" class="form-control" name="phone_no" >
                   </div>
                 </div>
                 <div class="col-sm-12">
                   <div class="custom-form">
-                    <label><span>Message</span></label>
-                    <textarea type="text" rows="5" class="form-control" placeholder="Tell us what do you want to say"
-                      name="message" required></textarea>
+                    <label><span>Message<sup style="color:red">*</sup></span></label>
+                    <textarea type="text" rows="5" class="form-control" name="message" required></textarea>
                   </div>
                   <div class="env-btn">
-                    <input type="submit" value="Send it to us" class="btn-default btn-warning w-100">
+                    <input type="submit" value="SEND" class="btn-default btn-warning w-100">
                   </div>
                 </div>
               </div>
+              <div class="submit-message" style="color: black;"></div>
             </form>
           </div>
           <div class="envelope-inner-social-info text-center">
@@ -92,7 +91,7 @@
         <picture>
           <source media="(max-width:575px)" srcset="/front-end/images/map-img-mbl-screen.png" width="535" height="323">
           <source media="(max-width:767px)" srcset="/front-end/images/map-img-tab-screen.png" width="603" height="364">
-          <img src="/front-end/images/map-img.png" alt="image" loading="lazy" width="1215" height="734">
+          <img src="/front-end/images/map-image-new.png" alt="image" loading="lazy" width="1215" height="734">
         </picture>
       </div>
       <div class="overlay-object5"><img src="/front-end/images/overlay-object5.png" alt="img" width="118" height="315"
@@ -106,7 +105,8 @@
         $(document).ready(function () {
           $('form#feedback_form').submit(function (e) {
             e.preventDefault();
-
+            $('.submit-message').hide();
+            $('.submit-message').text('');
             const formData = $('#feedback_form').serializeArray();
             const jsonData = {};
             $(formData).each(function (index, field) {
@@ -121,8 +121,12 @@
               ContentType: 'application / json', // Let the browser set the content type
               success: function (data) {
                 if (data.status == 'ok') {
-                  window.location.href = "/contact-us";
+                  $('.submit-message').text(data.message);
+                  $('.submit-message').show();
+                  //window.location.href = "/contact-us";
                 } else {
+                  $('.submit-message').text(data.message);
+                  $('.submit-message').show();
                   console.log('Some thting went wrong');
                 }
               },

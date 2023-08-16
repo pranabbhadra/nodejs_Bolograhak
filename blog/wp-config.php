@@ -42,6 +42,8 @@
 
 /** The name of the database for WordPress */
 
+define( 'MAIN_URL_BG', 'https://bolograhak.com/' );
+
 define( 'DB_NAME', 'bolograhak' );
 
 
@@ -61,6 +63,7 @@ define( 'DB_PASSWORD', 'bGdbPa55w0rD' );
 /** Database hostname */
 
 define( 'DB_HOST', 'bolograhakdb.cb41jdmx4rqo.us-east-1.rds.amazonaws.com' );
+
 
 
 

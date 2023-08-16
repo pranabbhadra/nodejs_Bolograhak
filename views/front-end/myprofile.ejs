@@ -183,10 +183,12 @@
                   </tbody>
                 </table>
               </div>
-              <div class="about-me-area">
-                <h2>About Me</h2>
-                <p><%= userMeta && userMeta.about ? userMeta.about : '' %></p>
-             </div>
+              <% if(userMeta && userMeta.about) { %>
+                <div class="about-me-area">
+                  <h2>About Me</h2>
+                  <p><%= userMeta && userMeta.about ? userMeta.about : '' %></p>
+              </div>
+              <% } %>
              <!-- <div class="profile-info-table">
               <table class="table">
                 <tbody>

@@ -103,6 +103,11 @@ router.post('/update-home', upload.fields([
     { name: 'banner_img_4', maxCount: 1 },
     { name: 'banner_img_5', maxCount: 1 },
     { name: 'banner_img_6', maxCount: 1 },
+    
+    { name: 'review_img_1', maxCount: 1 },
+    { name: 'review_img_2', maxCount: 1 },
+    { name: 'review_img_3', maxCount: 1 },
+    { name: 'review_img_4', maxCount: 1 },
 
     { name: 'cus_right_img_1', maxCount: 1 },
     { name: 'cus_right_img_2', maxCount: 1 },
@@ -123,6 +128,9 @@ router.post('/update-home', upload.fields([
     { name: 'org_responsibility_img_8', maxCount: 1 },
 
     { name: 'about_us_img', maxCount: 1 },
+
+    { name: 'map_img', maxCount: 1 },
+
 ]), authController.updateHome);
 
 // About Page

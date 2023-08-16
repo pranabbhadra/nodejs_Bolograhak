@@ -324,27 +324,27 @@ nge
     margin: 0 auto;
 }
 
-#rating-range  span.ui-slider-handle:last-child  {
+/* #rating-range  span.ui-slider-handle:last-child  {
 	display: none;
-}
+} */
 
 .rating-slider .ui-slider .ui-slider-range {
-    background: #f2f2f2;
+    background: #FCCB06;
 }
 
 .rating-slider span.ui-slider-handle.ui-state-default.ui-corner-all {
     background: #FCCB06;
-    border: 4px #FFEFB0 solid;
+    border: 5px #FFEFB0 solid;
     border-radius: 50%;
-    width: 21px;
-    height: 21px;
-    top: -6px;
+    width: 30px;
+    height: 30px;
+    top: -11px;
     outline: none;
 }
 
 .rating-slider .ui-widget-content {
     border-color: transparent;
-    background: #fccb06;
+    background: #f2f2f2;
 }
 
 #selected-range-text {

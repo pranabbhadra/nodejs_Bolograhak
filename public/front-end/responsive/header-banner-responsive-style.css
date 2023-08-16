@@ -162,7 +162,9 @@
 }
 
 @media only screen and (max-width:575.98px) {
-
+	.main-banner {
+		padding-top: 100px;
+	}
 	.main-banner h1 {
 		font-size: 26px;
 		line-height: 18px;
@@ -241,6 +243,13 @@
 
 	.back-browser {
 		font-size: 16px;
+	}
+
+	.main-banner > .container > .row{
+		flex-direction: column-reverse !important;
+	}
+	.banner-left {
+		margin-bottom: 30px;
 	}
 
 }
