@@ -46,6 +46,10 @@
 		padding: 65px 40px 27px 45px;
 	}
 
+	.about-digital-wrold {
+		width: 75%;
+	}
+
 }
 
 @media only screen and (max-width:1320.98px) {
@@ -1762,6 +1766,9 @@
 	.social-widgets {
 		max-width: 244px;
 		margin: 0 auto;
+	}
+	.about-digital-wrold{
+		width: 100%;
 	}
 
 }
