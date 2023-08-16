@@ -1,9 +1,13 @@
+
+
+#Begin Really Simple Security
 <IfModule mod_rewrite.c>
 RewriteEngine on
 RewriteCond %{HTTPS} !=on [NC]
 RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
 </IfModule>
 
+#End Really Simple Security
 # BEGIN WordPress
 # The directives (lines) between "BEGIN WordPress" and "END WordPress" are
 # dynamically generated, and should only be modified via WordPress filters.
@@ -19,6 +23,3 @@ RewriteRule . /blog/index.php [L]
 </IfModule>
 
 # END WordPress
-<IfModule mod_security.c>
-SecFilterEngine Off
-</IfModule>
