@@ -1885,7 +1885,7 @@ exports.submitReview = async (req, res) => {
                 return res.send(
                     {
                         status: 'error',
-                        data: '',
+                        data: {company,review},
                         message: 'Error occurred please try again'
                     }
                 );

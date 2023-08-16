@@ -619,11 +619,13 @@ async function createCompany(comInfo, userId) {
               }
             }catch(error){
               console.error('Error during create_company_address_query:', error);
+              return error;
             }
                         
           }
         }catch(error){
             console.error('Error during company_address_exist_query:', error);
+            return error;
         }        
         //return company_name_checking_results[0].ID;
     }else{
@@ -652,10 +654,12 @@ async function createCompany(comInfo, userId) {
             }
           }catch(error){
             console.error('Error during create_company_address_query:', error);
+            return error;
           }
         }
       }catch(error){
         console.error('Error during user create_company_query:', error);
+       return error;
       }
     }
   }
