@@ -63,8 +63,8 @@
                 </div>
               </div>
             <!-- <h3><span>#CustomerRightsMatterBG</span></h3> -->
-            <p class="text-light"><span id="type-writing"><noscript>A fluid and transparent platform for all consumers, citizens, visitors to share their shopping, vist and every other experiences and give feedback on all products and services.</noscript></span></p>
-            <h3><span id="type-writing2"><noscript>Your Voice Matters !!</noscript></span></h3>
+            <p class="text-light"><span id="type-writing"><noscript><%= meta_values_array.bannner_content_2 %></noscript></span></p>
+            <h3><span id="type-writing2"><noscript><%= meta_values_array.bannner_hashtag %></noscript></span></h3>
           </div>
         </div>
       </div>
@@ -192,25 +192,25 @@
                 <div class="review-big-img">
                   <div class="review-big-slider1">
                     <div class="item">
-                      <img src="/front-end/images/review-slider-img1.png" alt="img" width="464" height="535" loading="lazy">
+                      <img src="/<%= meta_values_array.review_img_1 %>" alt="img" width="464" height="535" loading="lazy">
                     </div>
                     <div class="item">
-                      <img src="/front-end/images/review-slider-img2.png" alt="img" width="464" height="535" loading="lazy">
+                      <img src="/<%= meta_values_array.review_img_2 %>" alt="img" width="464" height="535" loading="lazy">
                     </div>
                   </div>
                 </div>
                 <div class="review-small-img">
                   <div class="review-small-slider2">
                     <div class="item">
-                      <img src="/front-end/images/review-small-slider1.png" alt="img" width="246" height="283" loading="lazy">
+                      <img src="/<%= meta_values_array.review_img_3 %>" alt="img" width="246" height="283" loading="lazy">
                     </div>
                     <div class="item">
-                      <img src="/front-end/images/review-small-slider2.png" alt="img" width="246" height="283" loading="lazy">
+                      <img src="/<%= meta_values_array.review_img_4 %>" alt="img" width="246" height="283" loading="lazy">
                     </div>
                   </div>
                 </div>
               </div>
-              <%#<h5><a href="#" data-bs-toggle="modal" data-bs-target="#reviewers_guidelines">Guidelines for Reviewers</a></h5>#%>
+              <h5><a href="#" data-bs-toggle="modal" data-bs-target="#reviewers_guidelines"><%= meta_values_array.reviewers_guidelines_title %></a></h5>
            </div>
         </div>
         <div class="col-md-6">
@@ -337,17 +337,14 @@
 
         <!-- Modal Header -->
         <div class="modal-header">
-          <h4 class="modal-title fw-bold">Guidelines for Reviewers</h4>
+          <h4 class="modal-title fw-bold"><%= meta_values_array.reviewers_guidelines_title %></h4>
           <button type="button" class="btn-close" data-bs-dismiss="modal"><i
               class="fa-solid fa-circle-xmark"></i></button>
         </div>
 
         <!-- Modal body -->
         <div class="modal-body">
-          <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the
-            industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and
-            scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into
-            electronic typesetting, remaining essentially unchanged.</p>
+          <p><%= meta_values_array.reviewers_guidelines_popup %></p>
         </div>
 
       </div>
@@ -630,7 +627,7 @@
     </div>
     <div class="tooltip-pop" data-aos="zoom-in-left">
       <h4><span>Facts</span></h4>
-      <p class="m-0">US President John F. Kennedy first outlined a vision of consumer rights in a special message to Congress on 15 March 1962 (the day we now celebrate World Consumer Rights Day).</p>
+      <p class="m-0"><%= meta_values_array.cus_right_facts_popup %></p>
     </div>
   </section>
   <!-- ============== About End =============== -->
@@ -696,7 +693,7 @@
     </div>
     <div class="tooltip-pop" data-aos="zoom-in-right">
       <h4>Facts</h4>
-      <p class="m-0">Ralph Nader, a leading American political activist and author is known as the father of the consumer movement.</p>
+      <p class="m-0"><%= meta_values_array.org_responsibility_facts_popup %></p>
     </div>
   </section>
   <section class="main-content about-digital-content">
@@ -737,7 +734,7 @@
       <picture>
         <source media="(max-width:575px)" srcset="/front-end/images/map-img-mbl-screen.png" width="535" height="323">
         <source media="(max-width:767px)" srcset="/front-end/images/map-img-tab-screen.png" width="603" height="364">
-        <img src="/front-end/images/map-img.png" alt="image" loading="lazy" width="1215" height="734">
+        <img src="/<%= meta_values_array.map_img %>" alt="image" loading="lazy" >
       </picture>
     </div>
     <div class="overlay-object5"><img src="/front-end/images/overlay-object5.png" alt="img" width="118" height="315"

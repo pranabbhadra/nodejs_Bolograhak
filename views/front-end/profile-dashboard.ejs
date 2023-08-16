@@ -28,7 +28,7 @@
                   <div class="review-slider-wrap">
                      <div class="dashboard-head-panel">
                         <h2>Latest Reviews</h2>
-                        <a href="/my-reviews" class="btn-default btn-warning">View All</a>
+                        <a href="/users-all-reviews" class="btn-default btn-warning">View All</a>
                      </div>
                      <div class="review-slider2">
                         <% if(AllCompaniesReviews) { %>
@@ -43,6 +43,15 @@
                                           <%= review.company_location %>
                                        </p>
                                     </div>
+                                    <% if(review && review.review_title) { %>
+                                       <div class="user-info-panel">
+                                          <span><i class="fa-solid fa-box"></i></span>
+                                          <p class="m-0">
+                                             <strong>Product/division</strong><br>
+                                             <%= review.review_title %>
+                                          </p>
+                                       </div>
+                                       <% } %>
                                     <div class="user-review-text">
                                        <% AllReviewTags.forEach( (tag,index)=> {%>
                                           <% if(tag.review_id == review.id) { %>
@@ -215,10 +224,12 @@
                         </div> -->
                      </div>
                   </div>
+                  <% if(userMeta && userMeta.about) { %>
                   <div class="about-me-area">
                      <h2>About Me</h2>
                      <p><%= userMeta && userMeta.about ? userMeta.about : '' %></p>
                   </div>
+                  <% } %>
                   <div class="review-company-wrap">
                      <div class="dashboard-head-panel">
                         <h2>Your Reviewed Companies</h2>
