@@ -249,7 +249,20 @@
 		flex-direction: column-reverse !important;
 	}
 	.banner-left {
-		margin-bottom: 30px;
+		margin-bottom: 0;
 	}
+	.landing-banner .banner-right {
+		display: none;
+	}
+	
 
+}
+
+@media only screen and (max-width:480px){
+	.review-content .review-left-img{
+		display: none;
+	}
+	.review-content .review-right{
+		margin-top: 0px !important;
+	}
 }
