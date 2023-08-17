@@ -869,12 +869,16 @@
       var pin_code = $(this).find('a').attr('data-companyPin');
 
       $('#search-input-review').val(resulttitle);
-      if(address && address!=null){
+      if(address && address!='null'){
         $('#review-address').val(address);
+      }else{
+        $('#review-address').val('');
       }
       
-      if(pin_code && pin_code!=null){
+      if(pin_code && pin_code!='null'){
         $('#review-zip').val(pin_code);
+      }else{
+        $('#review-zip').val('');
       }
       $(".autofield-dropdown-review").fadeOut();
     });

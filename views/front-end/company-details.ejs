@@ -10,12 +10,9 @@
       </div>
       <div class="company-info">
         <h3>
-          <% if(CompanyInfo.heading){ %>
-          <%= CompanyInfo.heading %>
-          <% }else{ %>
-          <%= CompanyInfo.company_name %>
-          <% } %>
-          <% if(CompanyInfo.status == 1){ %>
+          <%= CompanyInfo.company_name %><br>
+          <small clas="tag-line"><%= CompanyInfo.heading %></small>
+          <% if(CompanyInfo.verified == 1){ %>
           <span class="verified-tag">
             <svg width="21" height="23" viewBox="0 0 21 23" fill="none" xmlns="http://www.w3.org/2000/svg">
               <g id="Group">

@@ -382,8 +382,8 @@ async function saveUserFacebookLoginDataToDB(userData) {
 
   //Checking external_registration_id exist or not and register_from facebook or not
   try{
-    const user_exist_query = 'SELECT * FROM users WHERE register_from = ? AND external_registration_id = ?';
-    const user_exist_values = ["facebook", userData.id];
+    const user_exist_query = 'SELECT * FROM users WHERE register_from = ? AND external_registration_id = ? AND email = ?';
+    const user_exist_values = ["facebook", userData.id, userData.emails[0].value];
     const user_exist_results = await query(user_exist_query, user_exist_values);
     if (user_exist_results.length > 0) {
         //console.log(user_exist_results);
@@ -398,8 +398,16 @@ async function saveUserFacebookLoginDataToDB(userData) {
       //user doesnot exist Insert initial data getting from facebook but user status 0
       const userFullName = userData.displayName;
       const userFullNameArray = userFullName.split(" ");
-      const user_insert_query = 'INSERT INTO users (first_name, last_name, register_from, external_registration_id, user_registered, user_status, user_type_id) VALUES (?, ?, ?, ?, ?, ?, ?)';
-      const user_insert_values = [userFullNameArray[0], userFullNameArray[1], 'facebook', userData.id, formattedDate, 0, 2];
+      const userFirstName = userData.name.givenName;
+      const userLastName = userData.name.familyName;
+      const userEmail = userData.emails[0].value;
+      const user_insert_query = 'INSERT INTO users (first_name, last_name, email, register_from, external_registration_id, user_registered, user_status, user_type_id) VALUES (?, ?, ?, ?, ?, ?, ?)';
+      const user_insert_values = [userFirstName, userLastName, userEmail, 'facebook', userData.id, formattedDate, 0, 2];
+      if(userEmail){
+        user_insert_values[6] = 1;
+      }else{
+        user_insert_values[6] = 0;
+      }
       try{
         const user_insert_results = await query(user_insert_query, user_insert_values);
         if (user_insert_results.insertId) {
@@ -451,7 +459,7 @@ function getReviewRatingData(review_rating_Id) {
 
 async function getAllReviews() {
   const all_review_query = `
-    SELECT r.*, c.company_name, c.logo, c.status as company_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic
+    SELECT r.*, c.company_name, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic
       FROM reviews r
       JOIN company c ON r.company_id = c.ID
       JOIN company_location cl ON r.company_location_id = cl.ID
@@ -469,7 +477,7 @@ async function getAllReviews() {
 }
 async function getCustomerReviewData(review_Id){
   const select_review_query = `
-    SELECT r.*, c.company_name, c.logo, c.status as company_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic
+    SELECT r.*, c.company_name, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic
       FROM reviews r
       JOIN company c ON r.company_id = c.ID
       JOIN company_location cl ON r.company_location_id = cl.ID
@@ -636,8 +644,8 @@ async function createCompany(comInfo, userId) {
       // Format the date in 'YYYY-MM-DD HH:mm:ss' format (adjust the format as needed)
       const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
       try {
-        const create_company_query = 'INSERT INTO company (user_created_by, company_name, status, created_date, updated_date) VALUES (?, ?, ?, ?, ?)';
-        const create_company_values = [userId, comInfo.company_name, '2', formattedDate, formattedDate];
+        const create_company_query = 'INSERT INTO company (user_created_by, company_name, status, created_date, updated_date, main_address, verified) VALUES (?, ?, ?, ?, ?, ?, ?)';
+        const create_company_values = [userId, comInfo.company_name, '2', formattedDate, formattedDate, comInfo.address, '0'];
         const create_company_results = await query(create_company_query, create_company_values);
         // console.log('New Company:', create_company_results);
         // console.log('New Company ID:', create_company_results.insertId);

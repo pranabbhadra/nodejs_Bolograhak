@@ -44,6 +44,10 @@ header.main_header {
     color: #FCCB06;
 }
 
+.user-log-profile:hover .user-log-profile-dropdown{
+    display: block;
+}
+
 .lang-dropdown,
 .user-log-profile-dropdown {
     position: absolute;

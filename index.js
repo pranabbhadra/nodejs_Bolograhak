@@ -62,7 +62,7 @@ app.get('/auth/google',
     passport.authenticate('google', { scope: ['profile', 'email'] })
 );
 
-app.get('/auth/facebook', passport.authenticate('facebook'));
+app.get('/auth/facebook', passport.authenticate('facebook',{scope:'email'}));
 
 // Google login callback
 app.get('/auth/google/callback',
@@ -150,6 +150,7 @@ app.get(
 
 app.get('/facebook-user-data', async (req, res) => {
     const user = req.user;
+    //res.json(user);
     try {
         const UserResponse = await comFunction.saveUserFacebookLoginDataToDB(user); // Replace 'saveUserDataToDatabase' with your custom function
         console.log('aaaa',UserResponse);
