@@ -209,4 +209,7 @@ router.post('/update-disclaimer', authController.updateDisclaimer);
 //Update terms-of-service
 router.post('/update-terms-of-service', authController.updateTermsOfService);
 
+//Update My Profile
+router.post('/update-myprofile',upload.single('profile_pic'), authController.updateMyProfile);
+
 module.exports = router;

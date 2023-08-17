@@ -1850,7 +1850,7 @@ exports.updateHome = async (req, res) => {
             {
                 status: 'ok',
                 data: '',
-                message: 'Title update successfully'
+                message: ' Updated successfully'
             }
         )
     })
@@ -2002,7 +2002,7 @@ exports.updateAbout = async (req, res) => {
             {
                 status: 'ok',
                 data: '',
-                message: 'Title update successfully'
+                message: 'Updated successfully'
             }
         )
     })
@@ -2225,25 +2225,7 @@ if (typeof upcoming_features_content === 'string' ) {
     })
 }
     
-    // const delete_query = `DELETE FROM business_features WHERE existing_or_upcoming = 'upcoming'`;
-    // await db.query(delete_query, async (delete_err,delete_res)=>{
-    //     await upcoming_features_content.forEach((value, key) => {
-    //         const insert_query = `INSERT INTO business_features ( content, existing_or_upcoming) VALUES (?,'upcoming')`;
-    //         const insert_data = [content];
-    //          db.query(insert_query,insert_data,(insert_err,insert_res)=>{
-    //             if (insert_err) {
-    //                 return res.send(
-    //                     {
-    //                         status: 'err',
-    //                         data: '',
-    //                         message: 'An error occurred while processing your request'
-    //                     }
-    //                 )
-    //             }
-    //         });
-    //     })
-    // });
-    
+
     
 
     const title_sql = `UPDATE page_info SET title = ?, meta_title = ?, meta_desc = ?, meta_keyword = ? WHERE id  = ?`;
@@ -2254,7 +2236,7 @@ if (typeof upcoming_features_content === 'string' ) {
             {
                 status: 'ok',
                 data: '',
-                message: 'Title update successfully'
+                message: 'Updated successfully'
             }
         )
     })
@@ -2309,7 +2291,7 @@ exports.updatePrivacy = (req, res) => {
                             {
                                 status: 'ok',
                                 data: '',
-                                message: 'Privacy policy update successfully'
+                                message: 'Privacy policy updated successfully'
                             }
                         )
                     })
@@ -2352,7 +2334,7 @@ exports.updateDisclaimer = (req, res) => {
                             {
                                 status: 'ok',
                                 data: '',
-                                message: 'Disclaimer update successfully'
+                                message: 'Disclaimer updated successfully'
                             }
                         )
                     })
@@ -2370,7 +2352,7 @@ exports.updateDisclaimer = (req, res) => {
                             {
                                 status: 'ok',
                                 data: '',
-                                message: 'Disclaimer update successfully'
+                                message: 'Disclaimer updated successfully'
                             }
                         )
                     })
@@ -2413,7 +2395,7 @@ exports.updateTermsOfService = (req, res) => {
                             {
                                 status: 'ok',
                                 data: '',
-                                message: 'Terms Of Service update successfully'
+                                message: 'Terms Of Service updated successfully'
                             }
                         )
                     })
@@ -2441,4 +2423,207 @@ exports.updateTermsOfService = (req, res) => {
     });
 
     
+}
+
+// Frontend Update Myprofile page
+exports.updateMyProfile = (req, res) => {
+    // console.log('edit profile', req.body)
+    // console.log('profile pic', req.file)
+    const userId = req.body.user_id;
+    const checkQuery = 'SELECT user_id FROM users WHERE phone = ? AND user_id <> ?';
+    db.query(checkQuery, [req.body.phone, userId], (checkError, checkResults) => {
+        if (checkError) {
+            //console.log(checkError)
+            return res.send(
+                {
+                    status: 'err',
+                    data: '',
+                    message: 'An error occurred while processing your request' + checkError
+                }
+            )
+        }
+
+        if (checkResults.length > 0) {
+            // Phone number already exists for another user
+            return res.send(
+                {
+                    status: 'err',
+                    data: '',
+                    message: 'Phone number already exists for another user'
+                }
+            )
+        } else {
+            // Update the user's data
+            const updateQuery = 'UPDATE users SET first_name = ?, last_name = ?, phone = ? WHERE user_id = ?';
+            db.query(updateQuery, [req.body.first_name, req.body.last_name, req.body.phone,  userId], (updateError, updateResults) => {
+
+                if (updateError) {
+                    //console.log(updateError);
+                    return res.send(
+                        {
+                            status: 'err',
+                            data: '',
+                            message: 'An error occurred while processing your request' + updateError
+                        }
+                    )
+                } else {
+                    // Update the user's meta data
+
+                    if (req.file) {
+                        // Unlink (delete) the previous file
+                        const unlinkprofilePicture = "uploads/" + req.body.previous_profile_pic;
+                        fs.unlink(unlinkprofilePicture, (err) => {
+                            if (err) {
+                                //console.error('Error deleting file:', err);
+                            } else {
+                                //console.log('Previous file deleted');
+                            }
+                        });
+                        //const profilePicture = req.file;
+                        console.log(req.file.filename);
+                        
+
+                        const updateQueryMeta = 'UPDATE user_customer_meta SET address = ?, country = ?, state = ?, city = ?, zip = ?, date_of_birth = ?,  gender = ?, profile_pic = ?, alternate_phone = ?, marital_status = ?, about = ? WHERE user_id = ?';
+                        const updateQueryData = [req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, req.body.date_of_birth,  req.body.gender, req.file.filename, req.body.alternate_phone, req.body.marital_status, req.body.about, userId]
+                        db.query(updateQueryMeta, updateQueryData , (updateError, updateResults) => {
+                            if (updateError) {
+                                return res.send(
+                                    {
+                                        status: 'err',
+                                        data: userId,
+                                        message: 'An error occurred while processing your request' + updateError
+                                    }
+                                )
+                            } else {
+                                const query = `
+                                        SELECT user_meta.*, c.name as country_name, s.name as state_name, u.first_name
+                                        , u.last_name, u.email, u.phone, u.user_type_id
+                                        FROM user_customer_meta user_meta
+                                        JOIN users u ON u.user_id = user_meta.user_id
+                                        JOIN countries c ON user_meta.country = c.id
+                                        JOIN states s ON user_meta.state = s.id
+                                        WHERE user_meta.user_id = ?
+                                        `;
+                                 db.query(query, [userId], async (err, results) => {
+                                    let userData = {};
+                                    if (results.length > 0) {
+                                        const user_meta = results[0];
+                                        //console.log(user_meta,'aaaaaaaa');
+                                        // Set a cookie
+                                        const dateString = user_meta.date_of_birth;
+                                        const date_of_birth_date = new Date(dateString);
+                                        const formattedDate = date_of_birth_date.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+
+                                        let userData = {
+                                            user_id: user_meta.user_id,
+                                            first_name: user_meta.first_name,
+                                            last_name: user_meta.last_name,
+                                            email: user_meta.email,
+                                            phone: user_meta.phone,
+                                            user_type_id: user_meta.user_type_id,
+                                            address: user_meta.address,
+                                            country: user_meta.country,
+                                            country_name: user_meta.country_name,
+                                            state: user_meta.state,
+                                            state_name: user_meta.state_name,
+                                            city: user_meta.city,
+                                            zip: user_meta.zip,
+                                            review_count: user_meta.review_count,
+                                            date_of_birth: formattedDate,
+                                            occupation: user_meta.occupation,
+                                            gender: user_meta.gender,
+                                            profile_pic: user_meta.profile_pic
+                                        };
+                                        const encodedUserData = JSON.stringify(userData);
+                                        res.cookie('user', encodedUserData);
+                                        return res.send(
+                                            {
+                                                status: 'ok',
+                                                data: userId,
+                                                message: 'Successfully Updated'
+                                            }
+                                        )
+                                    } 
+                                });
+
+                                
+                            }
+                        });
+
+                    } else {
+                        const updateQueryMeta = 'UPDATE user_customer_meta SET address = ?, country = ?, state = ?, city = ?, zip = ?, date_of_birth = ?, gender = ?, alternate_phone = ?, marital_status = ?, about = ? WHERE user_id = ?';
+                        const updateQueryData = [req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, req.body.date_of_birth,  req.body.gender,req.body.alternate_phone, req.body.marital_status, req.body.about, userId]
+                        db.query(updateQueryMeta, updateQueryData, (updateError, updateResults) => {
+                            if (updateError) {
+                                return res.send(
+                                    {
+                                        status: 'err',
+                                        data: '',
+                                        message: 'An error occurred while processing your request' + updateError
+                                    }
+                                )
+                            } else {
+                                const query = `
+                                        SELECT user_meta.*, c.name as country_name, s.name as state_name, u.first_name
+                                        , u.last_name, u.email, u.phone, u.user_type_id
+                                        FROM user_customer_meta user_meta
+                                        JOIN users u ON u.user_id = user_meta.user_id
+                                        JOIN countries c ON user_meta.country = c.id
+                                        JOIN states s ON user_meta.state = s.id
+                                        WHERE user_meta.user_id = ?
+                                        `;
+                                 db.query(query, [userId], async (err, results) => {
+                                    let userData = {};
+                                    if (results.length > 0) {
+                                        const user_meta = results[0];
+                                        //console.log(user_meta,'aaaaaaaa');
+                                        // Set a cookie
+                                        const dateString = user_meta.date_of_birth;
+                                        const date_of_birth_date = new Date(dateString);
+                                        const formattedDate = date_of_birth_date.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+
+                                        let userData = {
+                                            user_id: user_meta.user_id,
+                                            first_name: user_meta.first_name,
+                                            last_name: user_meta.last_name,
+                                            email: user_meta.email,
+                                            phone: user_meta.phone,
+                                            user_type_id: user_meta.user_type_id,
+                                            address: user_meta.address,
+                                            country: user_meta.country,
+                                            country_name: user_meta.country_name,
+                                            state: user_meta.state,
+                                            state_name: user_meta.state_name,
+                                            city: user_meta.city,
+                                            zip: user_meta.zip,
+                                            review_count: user_meta.review_count,
+                                            date_of_birth: formattedDate,
+                                            occupation: user_meta.occupation,
+                                            gender: user_meta.gender,
+                                            profile_pic: user_meta.profile_pic
+                                        };
+                                        const encodedUserData = JSON.stringify(userData);
+                                        res.cookie('user', encodedUserData);
+
+                                        return res.send(
+                                            {
+                                                status: 'ok',
+                                                data: userId,
+                                                message: 'Successfully Updated'
+                                            }
+                                        )
+                                    } 
+                                });
+                                
+                            }
+                        });
+                    }
+
+                }
+
+
+
+            });
+        }
+    });
 }

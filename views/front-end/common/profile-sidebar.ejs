@@ -2,11 +2,13 @@
     <div class="profile-left-content">
        <div class="profile-img">
         <% if(userMeta && userMeta.profile_pic){ %>
+         <input type="hidden" name="previous_profile_pic" value="<%= userMeta.profile_pic %>">
           <a href="/myprofile"><img src="/<%= userMeta.profile_pic %>" alt="img" width="189" height="189"></a>
       <% }else{ %>
+         <input type="hidden" name="previous_profile_pic" value="">
          <a href="/myprofile"><img src="/assets/media/avatars/blank.png" alt="img" width="189" height="189"></a>
       <% } %>
-          <input type="file" class="camera-icon">
+          <input type="file" name="profile_pic" class="camera-icon">
        </div>
        <div class="myprofile-info text-center">
           <h4><%= user.first_name %> <%= user.last_name %></h4>

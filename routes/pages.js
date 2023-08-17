@@ -476,6 +476,39 @@ router.get('/users-all-reviews', checkFrontEndLoggedIn, async (req, res) => {
     }
     //res.render('front-end/profile-dashboard', { menu_active_id: 'profile-dashboard', page_title: 'My Dashboard', currentUserData });
 });
+
+//FrontEnd myprofile page
+router.get('/edit-myprofile', checkFrontEndLoggedIn, async (req, res) => {  
+    
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+        const userId = currentUserData.user_id;
+        console.log('editUserID: ', userId);
+
+        // Fetch all the required data asynchronously
+        const [user, userMeta, countries,  states] = await Promise.all([
+            comFunction.getUser(userId),
+            comFunction.getUserMeta(userId),
+            comFunction.getCountries(),
+            comFunction.getStatesByUserID(userId)
+        ]);
+
+        // Render the 'edit-user' EJS view and pass the data
+        res.render('front-end/update-myprofile', {
+            menu_active_id: 'myprofile',
+            page_title: 'Update My Profile',
+            currentUserData,
+            user: user,
+            userMeta: userMeta,
+            countries: countries,
+            states: states
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
 // Front-End Page Routes End--------------------//
 
 
@@ -1574,7 +1607,7 @@ router.get('/myprofile', checkFrontEndLoggedIn, async (req, res) => {
         const encodedUserData = req.cookies.user;
         const currentUserData = JSON.parse(encodedUserData);
         const userId = currentUserData.user_id;
-        console.log('editUserID: ', userId);
+        //console.log('editUserID: ', currentUserData);
 
         // Fetch all the required data asynchronously
         const [user, userMeta] = await Promise.all([
@@ -1662,6 +1695,41 @@ router.get('/my-reviews', checkFrontEndLoggedIn, async (req, res) => {
         res.status(500).send('An error occurred');
     }
     //res.render('front-end/profile-dashboard', { menu_active_id: 'profile-dashboard', page_title: 'My Dashboard', currentUserData });
+});
+
+//Edit terms-of-service Page
+router.get('/edit-global', checkLoggedIn, (req, res) => {
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+        const sql = `SELECT * FROM page_info where secret_Key = 'terms_of_service' `;
+        db.query(sql, (err, results, fields) => {
+            if (err) throw err;
+            const common = results[0];
+            const meta_sql = `SELECT * FROM page_meta where page_id = ${common.id}`;
+            db.query(meta_sql, async (meta_err, _meta_result) => {
+                if (meta_err) throw meta_err;
+
+                const meta_values = _meta_result;
+                let meta_values_array = {};
+                await meta_values.forEach((item) => {
+                    meta_values_array[item.page_meta_key] = item.page_meta_value;
+                })
+                //console.log(meta_values_array);
+                res.render('pages/update-global', {
+                    menu_active_id: 'pages',
+                    page_title: 'Global Content',
+                    currentUserData,
+                    common,
+                    meta_values_array,
+                });
+            })
+
+        })
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
 });
 
 router.get('/help/:id', (_, resp) => {

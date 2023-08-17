@@ -173,7 +173,13 @@
                     <tr>
                       <td>Gender</td>
                       <td>:</td>
-                      <td><%= userMeta && userMeta.gender ? userMeta.gender : '' %></td>
+                      <% if(userMeta && userMeta.gender == 'male') { %>
+                      <td>Male</td>
+                      <%} else if(userMeta && userMeta.gender == 'female') { %>
+                        <td>Female</td>
+                        <%} else { %>
+                          <td>Unisex</td>
+                          <% } %>
                     </tr>
                     <tr>
                       <td>Marital Status</td>
@@ -189,56 +195,56 @@
                   <p><%= userMeta && userMeta.about ? userMeta.about : '' %></p>
               </div>
               <% } %>
-             <!-- <div class="profile-info-table">
-              <table class="table">
-                <tbody>
-                  <tr>
-                    <td colspan="3" style="font-weight: 600;">Spouse</td>
-                  </tr>
-                  <tr>
-                    <td>Name</td>
-                    <td>:</td>
-                    <td>John Doe</td>
-                  </tr>
-                  <tr>
-                    <td>Age</td>
-                    <td>:</td>
-                    <td>32 y</td>
-                  </tr>
-                </tbody>
-              </table>
+              <!-- <div class="profile-info-table">
+                <table class="table">
+                  <tbody>
+                    <tr>
+                      <td colspan="3" style="font-weight: 600;">Spouse</td>
+                    </tr>
+                    <tr>
+                      <td>Name</td>
+                      <td>:</td>
+                      <td>John Doe</td>
+                    </tr>
+                    <tr>
+                      <td>Age</td>
+                      <td>:</td>
+                      <td>32 y</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="profile-info-table">
+                <table class="table">
+                  <tbody>
+                    <tr>
+                      <td colspan="3" style="font-weight: 600;">Children</td>
+                    </tr>
+                    <tr>
+                      <td>Name</td>
+                      <td>:</td>
+                      <td>Katherina Doe</td>
+                    </tr>
+                    <tr>
+                      <td>Age</td>
+                      <td>:</td>
+                      <td>22 y</td>
+                    </tr>
+                    <tr>
+                      <td>Name</td>
+                      <td>:</td>
+                      <td>Sam Joe</td>
+                    </tr>
+                    <tr>
+                      <td>Age</td>
+                      <td>:</td>
+                      <td>18 y</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div> -->
+            <div class="text-end"><a href="/edit-myprofile" class="btn-default btn-warning">Edit</a></div>
             </div>
-            <div class="profile-info-table">
-              <table class="table">
-                <tbody>
-                  <tr>
-                    <td colspan="3" style="font-weight: 600;">Children</td>
-                  </tr>
-                  <tr>
-                    <td>Name</td>
-                    <td>:</td>
-                    <td>Katherina Doe</td>
-                  </tr>
-                  <tr>
-                    <td>Age</td>
-                    <td>:</td>
-                    <td>22 y</td>
-                  </tr>
-                  <tr>
-                    <td>Name</td>
-                    <td>:</td>
-                    <td>Sam Joe</td>
-                  </tr>
-                  <tr>
-                    <td>Age</td>
-                    <td>:</td>
-                    <td>18 y</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="text-end"><a href="" class="btn-default btn-warning">Edit</a></div>
-            </div> -->
             
            </div>
         </div>
