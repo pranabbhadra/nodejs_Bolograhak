@@ -133,7 +133,7 @@
                         <div class="row mb-6">
                             <!--begin::Label-->
                             <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                <span class="required">Contact Phone</span>
+                                <span class="">Contact Phone</span>
                             </label>
                             <!--end::Label-->
                             <!--begin::Col-->
@@ -173,7 +173,7 @@
                         <div class="row mb-6">
                             <!--begin::Label-->
                             <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                <span class="required">Address</span>
+                                <span class="">Address</span>
                             </label>
                             <!--end::Label-->
                             <!--begin::Col-->
@@ -187,7 +187,7 @@
                         <div class="row mb-6">
                             <!--begin::Label-->
                             <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                <span class="required">Country</span>
+                                <span class="">Country</span>
                             </label>
                             <!--end::Label-->
                             <!--begin::Col-->
@@ -215,7 +215,7 @@
                         <div class="row mb-6" id="dynamic_state_field_wrapper"  <% if(userMeta && userMeta.state){ %>style="display: none;" <% }else{%>style="display: flex;" <%} %>>
                             <!--begin::Label-->
                             <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                <span class="required">State</span>
+                                <span class="">State</span>
                             </label>
                             <!--end::Label-->
                             <!--begin::Col-->
@@ -234,7 +234,7 @@
                         <div class="row mb-6">
                             <!--begin::Label-->
                             <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                <span class="required">City</span>
+                                <span class="">City</span>
                             </label>
                             <!--end::Label-->
                             <!--begin::Col-->
@@ -248,7 +248,7 @@
                         <div class="row mb-6">
                             <!--begin::Label-->
                             <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                <span class="required">Zip</span>
+                                <span class="">Zip</span>
                             </label>
                             <!--end::Label-->
                             <!--begin::Col-->
@@ -261,7 +261,7 @@
                         <div class="row mb-6">
                             <!--begin::Label-->
                             <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                <span class="required">Date Of Birth</span>
+                                <span class="">Date Of Birth</span>
                             </label>
                             <!--end::Label-->
                             <!--begin::Col-->
@@ -301,7 +301,7 @@
                         <!--begin::Input group-->
                         <div class="row mb-6">
                             <!--begin::Label-->
-                            <label class="col-lg-4 col-form-label required fw-bold fs-6">Gender</label>
+                            <label class="col-lg-4 col-form-label fw-bold fs-6">Gender</label>
                             <!--end::Label-->
                             <!--begin::Col-->
                             <div class="col-lg-8 fv-row">
@@ -357,7 +357,7 @@
                         </div>
                         <div class="row mb-6">
                             <!--begin::Label-->
-                            <label class="col-lg-4 col-form-label required fw-bold fs-6">Marital Status</label>
+                            <label class="col-lg-4 col-form-label fw-bold fs-6">Marital Status</label>
                             <!--end::Label-->
                             <!--begin::Col-->
                             <div class="col-lg-8 fv-row">
@@ -653,9 +653,6 @@ var KTAccountSettingsProfileDetails = function () {
                     },
                     phone: {
                         validators: {
-                            notEmpty: {
-                                message: 'Contact phone number is required'
-                            },
                             regexp: {
                                 regexp: /^\d{10}$/, // Regular expression pattern for a 10-digit phone number
                                 message: 'The phone number is not valid'
@@ -667,55 +664,6 @@ var KTAccountSettingsProfileDetails = function () {
                             regexp: {
                                 regexp: /^\d{10}$/, // Regular expression pattern for a 10-digit phone number
                                 message: 'The phone number is not valid'
-                            }
-                        }
-                    },
-                    address: {
-                        validators: {
-                            notEmpty: {
-                                message: 'Address is required'
-                            }
-                        }
-                    },
-                    country: {
-                        validators: {
-                            notEmpty: {
-                                message: 'Please select a country'
-                            }
-                        }
-                    },
-                    city: {
-                        validators: {
-                            notEmpty: {
-                                message: 'City is required'
-                            }
-                        }
-                    },
-                    zip: {
-                        validators: {
-                            notEmpty: {
-                                message: 'Zip is required'
-                            }
-                        }
-                    },
-                    date_of_birth: {
-                        validators: {
-                            notEmpty: {
-                                message: 'Date of birth is required'
-                            }
-                        }
-                    },
-                    gender: {
-                        validators: {
-                            notEmpty: {
-                                message: 'Gender is required'
-                            }
-                        }
-                    },
-                    marital_status: {
-                        validators: {
-                            notEmpty: {
-                                message: 'Marital Status is required'
                             }
                         }
                     },

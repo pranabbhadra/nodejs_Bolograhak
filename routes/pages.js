@@ -331,7 +331,7 @@ router.get('/company/:id', checkCookieValue, async (req, res) => {
     res.render('front-end/company-details',
     {
         menu_active_id: 'company',
-        page_title: 'Category Details',
+        page_title: 'Organization Details',
         currentUserData,
         allRatingTags,
         CompanyInfo,

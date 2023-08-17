@@ -42,7 +42,7 @@
 
 /** The name of the database for WordPress */
 
-define( 'MAIN_URL_BG', 'https://bolograhak.com/' );
+define( 'MAIN_URL_BG', 'http://localhost:5000/' );
 
 define( 'DB_NAME', 'bolograhak' );
 
@@ -50,19 +50,19 @@ define( 'DB_NAME', 'bolograhak' );
 
 /** Database username */
 
-define( 'DB_USER', 'admin' );
+define( 'DB_USER', 'root' );
 
 
 
 /** Database password */
 
-define( 'DB_PASSWORD', 'bGdbPa55w0rD' );
+define( 'DB_PASSWORD', '' );
 
 
 
 /** Database hostname */
 
-define( 'DB_HOST', 'bolograhakdb.cb41jdmx4rqo.us-east-1.rds.amazonaws.com' );
+define( 'DB_HOST', 'localhost' );
 
 
 

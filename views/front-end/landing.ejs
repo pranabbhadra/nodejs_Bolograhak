@@ -888,48 +888,52 @@
 
       });
 
-      $("body").on('click', ".autofield-dropdown-review ul > li", function (e) {
-        e.preventDefault();
-        var resulttitle = $(this).find('a').attr('data-resulttitle');
-        var address = $(this).find('a').attr('data-companyAddress');
-        var pin_code = $(this).find('a').attr('data-companyPin');
+    $("body").on('click', ".autofield-dropdown-review ul > li", function(e){
+      e.preventDefault();
+      var resulttitle = $(this).find('a').attr('data-resulttitle');
+      var address = $(this).find('a').attr('data-companyAddress');
+      var pin_code = $(this).find('a').attr('data-companyPin');
 
-        $('#search-input-review').val(resulttitle);
-        if (address && address != null) {
-          $('#review-address').val(address);
-        }
-
-        if (pin_code && pin_code != null) {
-          $('#review-zip').val(pin_code);
-        }
-        $(".autofield-dropdown-review").fadeOut();
-      });
-    </script>
-    <script>
-      // Function to handle Google Maps API initialization
-      function initMap() {
-        // Your JavaScript code that interacts with the Maps API should be placed here,
-        // after the API has been initialized.
-        // For example, you can initialize the Autocomplete service and map here.
-
-        // Initialize the Autocomplete service
-        const autocomplete = new google.maps.places.Autocomplete(
-          document.getElementById('autocomplete'),
-          { types: ['geocode'] }
-        );
-
-        // Initialize the map (optional, just for illustration purposes)
-        const map = new google.maps.Map(document.getElementById('map'), {
-          center: { lat: -34.397, lng: 150.644 },
-          zoom: 8
-        });
-
-        // Optional: Listen for the "place_changed" event to get the selected place details
-        autocomplete.addListener('place_changed', () => {
-          const place = autocomplete.getPlace();
-          console.log('Selected place:', place);
-        });
+      $('#search-input-review').val(resulttitle);
+      if(address && address!='null'){
+        $('#review-address').val(address);
+      }else{
+        $('#review-address').val('');
       }
+      
+      if(pin_code && pin_code!='null'){
+        $('#review-zip').val(pin_code);
+      }else{
+        $('#review-zip').val('');
+      }
+      $(".autofield-dropdown-review").fadeOut();
+    });
+</script>
+<script>
+  // Function to handle Google Maps API initialization
+  function initMap() {
+    // Your JavaScript code that interacts with the Maps API should be placed here,
+    // after the API has been initialized.
+    // For example, you can initialize the Autocomplete service and map here.
+    
+    // Initialize the Autocomplete service
+    const autocomplete = new google.maps.places.Autocomplete(
+      document.getElementById('autocomplete'),
+      { types: ['geocode'] }
+    );
+    
+    // Initialize the map (optional, just for illustration purposes)
+    const map = new google.maps.Map(document.getElementById('map'), {
+      center: { lat: -34.397, lng: 150.644 },
+      zoom: 8
+    });
+    
+    // Optional: Listen for the "place_changed" event to get the selected place details
+    autocomplete.addListener('place_changed', () => {
+      const place = autocomplete.getPlace();
+      console.log('Selected place:', place);
+    });
+  }
 
       // ////////////////////////////// Range Slider Start
 
