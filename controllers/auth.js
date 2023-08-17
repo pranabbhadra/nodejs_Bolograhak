@@ -181,13 +181,85 @@ exports.frontendUserRegister = async (req, res) => {
                 axios.post(process.env.BLOG_API_ENDPOINT + '/register', userRegistrationData)
                     .then((response) => {
                         //console.log('User registration successful. User ID:', response.data.user_id);
-                        return res.send(
-                            {
-                                status: 'ok',
-                                data: response.data.user_id,
-                                message: 'User registration successful'
+
+                        //-------User Auto Login --------------//
+                        const userAgent = req.headers['user-agent'];
+                        const agent = useragent.parse(userAgent);
+
+                        // Set a cookie
+                        const userData = {
+                            user_id: userResults.insertId,
+                            first_name: first_name,
+                            last_name: last_name,
+                            email: email,
+                            user_type_id: 2
+                        };
+                        const encodedUserData = JSON.stringify(userData);
+                        res.cookie('user', encodedUserData);
+
+                        (async () => {
+                            //---- Login to Wordpress Blog-----//
+                            //let wp_user_data;
+                            try {
+                                const userLoginData = {
+                                    email: email,
+                                    password: register_password,
+                                };
+                                const response = await axios.post(process.env.BLOG_API_ENDPOINT + '/login', userLoginData);
+                                const wp_user_data = response.data.data;
+
+                                //-- check last Login Info-----//
+                                const device_query = "SELECT * FROM user_device_info WHERE user_id = ?";
+                                db.query(device_query, [userResults.insertId], async (err, device_query_results) => {
+                                    const currentDate = new Date();
+                                    const year = currentDate.getFullYear();
+                                    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+                                    const day = String(currentDate.getDate()).padStart(2, '0');
+                                    const hours = String(currentDate.getHours()).padStart(2, '0');
+                                    const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+                                    const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+                                    const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+                                    if (device_query_results.length > 0) {
+                                        // User exist update info
+                                        const device_update_query = 'UPDATE user_device_info SET device_id = ?, IP_address = ?, last_logged_in = ? WHERE user_id = ?';
+                                        const values = [agent.toAgent() + ' ' + agent.os.toString(), requestIp.getClientIp(req), formattedDate, userResults.insertId];
+                                        db.query(device_update_query, values, (err, device_update_query_results) => {
+                                            return res.send(
+                                                {
+                                                    status: 'ok',
+                                                    data: userData,
+                                                    wp_user: wp_user_data,
+                                                    message: 'Registration successful you are automatically login to your dashboard'
+                                                }
+                                            )
+                                        })
+                                    } else {
+                                        // User doesnot exist Insert New Row.
+
+                                        const device_insert_query = 'INSERT INTO user_device_info (user_id, device_id, device_token, imei_no, model_name, make_name, IP_address, last_logged_in, created_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+                                        const values = [userResults.insertId, agent.toAgent() + ' ' + agent.os.toString(), '', '', '', '', requestIp.getClientIp(req), formattedDate, formattedDate];
+
+                                        db.query(device_insert_query, values, (err, device_insert_query_results) => {
+                                            return res.send(
+                                                {
+                                                    status: 'ok',
+                                                    data: userData,
+                                                    wp_user: wp_user_data,
+                                                    message: 'Registration successful you are automatically login to your dashboard'
+                                                }
+                                            )
+                                        })
+
+                                    }
+                                })
+                            } catch (error) {
+                                console.error('User login failed. Error:', error);
+                                if (error.response && error.response.data) {
+                                    console.log('Error response data:', error.response.data);
+                                }
                             }
-                        )
+                        })();
                     })
                     .catch((error) => {
                         //console.error('User registration failed:', );
@@ -206,180 +278,6 @@ exports.frontendUserRegister = async (req, res) => {
         console.error('Error during user registration:', error);
         return res.status(500).json({ status: 'err', message: 'An error occurred while processing your request.' });
     }
-}
-
-
-//-- Login Function --//
-exports.login = (req, res) => {
-    //console.log(req.body);
-    const userAgent = req.headers['user-agent'];
-    const agent = useragent.parse(userAgent);
-
-    //res.json(deviceInfo);
-
-    const { email, password } = req.body;
-
-    db.query('SELECT * FROM users WHERE email = ?', [email], async (err, results) => {
-        if (err) {
-            return res.send(
-                {
-                    status: 'err',
-                    data: '',
-                    message: 'An error occurred while processing your request' + err
-                }
-            )
-        } else {
-            if (results.length > 0) {
-                const user = results[0];
-                //console.log(user);
-                // Compare the provided password with the stored hashed password
-                bcrypt.compare(password, user.password, (err, result) => {
-                    if (err) {
-                        return res.send(
-                            {
-                                status: 'err',
-                                data: '',
-                                message: 'Error: ' + err
-                            }
-                        )
-                    }
-                    if (result) {
-                        //check Administrative Login
-                        if (user.user_type_id == 1 && user.user_status == 1) {
-                            const query = `
-                                        SELECT user_meta.*, c.name as country_name, s.name as state_name
-                                        FROM user_customer_meta user_meta
-                                        JOIN countries c ON user_meta.country = c.id
-                                        JOIN states s ON user_meta.state = s.id
-                                        WHERE user_id = ?
-                                        `;
-                            db.query(query, [user.user_id], async (err, results) => {
-                                let userData = {};
-                                if (results.length > 0) {
-                                    const user_meta = results[0];
-                                    //console.log(user_meta,'aaaaaaaa');
-                                    // Set a cookie
-                                    const dateString = user_meta.date_of_birth;
-                                    const date_of_birth_date = new Date(dateString);
-                                    const formattedDate = date_of_birth_date.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
-
-                                    let userData = {
-                                        user_id: user.user_id,
-                                        first_name: user.first_name,
-                                        last_name: user.last_name,
-                                        email: user.email,
-                                        phone: user.phone,
-                                        user_type_id: user.user_type_id,
-                                        address: user_meta.address,
-                                        country: user_meta.country,
-                                        country_name: user_meta.country_name,
-                                        state: user_meta.state,
-                                        state_name: user_meta.state_name,
-                                        city: user_meta.city,
-                                        zip: user_meta.zip,
-                                        review_count: user_meta.review_count,
-                                        date_of_birth: formattedDate,
-                                        occupation: user_meta.occupation,
-                                        gender: user_meta.gender,
-                                        profile_pic: user_meta.profile_pic
-                                    };
-                                    const encodedUserData = JSON.stringify(userData);
-                                    res.cookie('user', encodedUserData);
-                                    //console.log(encodedUserData, 'login user data');
-                                } else {
-                                    // Set a cookie
-                                    let userData = {
-                                        user_id: user.user_id,
-                                        first_name: user.first_name,
-                                        last_name: user.last_name,
-                                        email: user.email,
-                                        phone: user.phone,
-                                        user_type_id: user.user_type_id
-                                    };
-                                    const encodedUserData = JSON.stringify(userData);
-                                    res.cookie('user', encodedUserData);
-                                }
-                                //console.log(userData, 'User data');
-                                //-- check last Login Info-----//
-                                const device_query = "SELECT * FROM user_device_info WHERE user_id = ?";
-                                db.query(device_query, [user.user_id], async (err, device_query_results) => {
-                                    const currentDate = new Date();
-                                    const year = currentDate.getFullYear();
-                                    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-                                    const day = String(currentDate.getDate()).padStart(2, '0');
-                                    const hours = String(currentDate.getHours()).padStart(2, '0');
-                                    const minutes = String(currentDate.getMinutes()).padStart(2, '0');
-                                    const seconds = String(currentDate.getSeconds()).padStart(2, '0');
-                                    const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-
-                                    if (device_query_results.length > 0) {
-                                        // User exist update info
-                                        const device_update_query = 'UPDATE user_device_info SET device_id = ?, IP_address = ?, last_logged_in = ? WHERE user_id = ?';
-                                        const values = [agent.toAgent() + ' ' + agent.os.toString(), requestIp.getClientIp(req), formattedDate, user.user_id];
-                                        db.query(device_update_query, values, (err, device_update_query_results) => {
-                                            return res.send(
-                                                {
-                                                    status: 'ok',
-                                                    data: userData,
-                                                    message: 'Login Successfull'
-                                                }
-                                            )
-                                        })
-                                    } else {
-                                        // User doesnot exist Insert New Row.
-
-                                        const device_insert_query = 'INSERT INTO user_device_info (user_id, device_id, device_token, imei_no, model_name, make_name, IP_address, last_logged_in, created_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
-                                        const values = [user.user_id, agent.toAgent() + ' ' + agent.os.toString(), '', '', '', '', requestIp.getClientIp(req), formattedDate, formattedDate];
-
-                                        db.query(device_insert_query, values, (err, device_insert_query_results) => {
-                                            return res.send(
-                                                {
-                                                    status: 'ok',
-                                                    data: userData,
-                                                    message: 'Login Successfull'
-                                                }
-                                            )
-                                        })
-
-                                    }
-                                })
-                            })
-                        } else {
-                            let err_msg = '';
-                            if (user.user_status == 0) {
-                                err_msg = 'your account is inactive, please contact with administrator.';
-                            } else {
-                                err_msg = 'You do not have permission to login as administrator.';
-                            }
-                            return res.send(
-                                {
-                                    status: 'err',
-                                    data: '',
-                                    message: err_msg
-                                }
-                            )
-                        }
-                    } else {
-                        return res.send(
-                            {
-                                status: 'err',
-                                data: '',
-                                message: 'Invalid password'
-                            }
-                        )
-                    }
-                });
-            } else {
-                return res.send(
-                    {
-                        status: 'err',
-                        data: '',
-                        message: 'Invalid Email'
-                    }
-                )
-            }
-        }
-    })
 }
 
 //-- Frontend User Login Function--//
@@ -554,6 +452,180 @@ exports.frontendUserLogin = (req, res) => {
                                 err_msg = 'your account is inactive, please contact with administrator.';
                             } else {
                                 err_msg = 'Do you want to login as administrator, then please go to proper route';
+                            }
+                            return res.send(
+                                {
+                                    status: 'err',
+                                    data: '',
+                                    message: err_msg
+                                }
+                            )
+                        }
+                    } else {
+                        return res.send(
+                            {
+                                status: 'err',
+                                data: '',
+                                message: 'Invalid password'
+                            }
+                        )
+                    }
+                });
+            } else {
+                return res.send(
+                    {
+                        status: 'err',
+                        data: '',
+                        message: 'Invalid Email'
+                    }
+                )
+            }
+        }
+    })
+}
+
+
+//-- Login Function --//
+exports.login = (req, res) => {
+    //console.log(req.body);
+    const userAgent = req.headers['user-agent'];
+    const agent = useragent.parse(userAgent);
+
+    //res.json(deviceInfo);
+
+    const { email, password } = req.body;
+
+    db.query('SELECT * FROM users WHERE email = ?', [email], async (err, results) => {
+        if (err) {
+            return res.send(
+                {
+                    status: 'err',
+                    data: '',
+                    message: 'An error occurred while processing your request' + err
+                }
+            )
+        } else {
+            if (results.length > 0) {
+                const user = results[0];
+                //console.log(user);
+                // Compare the provided password with the stored hashed password
+                bcrypt.compare(password, user.password, (err, result) => {
+                    if (err) {
+                        return res.send(
+                            {
+                                status: 'err',
+                                data: '',
+                                message: 'Error: ' + err
+                            }
+                        )
+                    }
+                    if (result) {
+                        //check Administrative Login
+                        if (user.user_type_id == 1 && user.user_status == 1) {
+                            const query = `
+                                        SELECT user_meta.*, c.name as country_name, s.name as state_name
+                                        FROM user_customer_meta user_meta
+                                        JOIN countries c ON user_meta.country = c.id
+                                        JOIN states s ON user_meta.state = s.id
+                                        WHERE user_id = ?
+                                        `;
+                            db.query(query, [user.user_id], async (err, results) => {
+                                let userData = {};
+                                if (results.length > 0) {
+                                    const user_meta = results[0];
+                                    //console.log(user_meta,'aaaaaaaa');
+                                    // Set a cookie
+                                    const dateString = user_meta.date_of_birth;
+                                    const date_of_birth_date = new Date(dateString);
+                                    const formattedDate = date_of_birth_date.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+
+                                    let userData = {
+                                        user_id: user.user_id,
+                                        first_name: user.first_name,
+                                        last_name: user.last_name,
+                                        email: user.email,
+                                        phone: user.phone,
+                                        user_type_id: user.user_type_id,
+                                        address: user_meta.address,
+                                        country: user_meta.country,
+                                        country_name: user_meta.country_name,
+                                        state: user_meta.state,
+                                        state_name: user_meta.state_name,
+                                        city: user_meta.city,
+                                        zip: user_meta.zip,
+                                        review_count: user_meta.review_count,
+                                        date_of_birth: formattedDate,
+                                        occupation: user_meta.occupation,
+                                        gender: user_meta.gender,
+                                        profile_pic: user_meta.profile_pic
+                                    };
+                                    const encodedUserData = JSON.stringify(userData);
+                                    res.cookie('user', encodedUserData);
+                                    //console.log(encodedUserData, 'login user data');
+                                } else {
+                                    // Set a cookie
+                                    let userData = {
+                                        user_id: user.user_id,
+                                        first_name: user.first_name,
+                                        last_name: user.last_name,
+                                        email: user.email,
+                                        phone: user.phone,
+                                        user_type_id: user.user_type_id
+                                    };
+                                    const encodedUserData = JSON.stringify(userData);
+                                    res.cookie('user', encodedUserData);
+                                }
+                                //console.log(userData, 'User data');
+                                //-- check last Login Info-----//
+                                const device_query = "SELECT * FROM user_device_info WHERE user_id = ?";
+                                db.query(device_query, [user.user_id], async (err, device_query_results) => {
+                                    const currentDate = new Date();
+                                    const year = currentDate.getFullYear();
+                                    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+                                    const day = String(currentDate.getDate()).padStart(2, '0');
+                                    const hours = String(currentDate.getHours()).padStart(2, '0');
+                                    const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+                                    const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+                                    const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+                                    if (device_query_results.length > 0) {
+                                        // User exist update info
+                                        const device_update_query = 'UPDATE user_device_info SET device_id = ?, IP_address = ?, last_logged_in = ? WHERE user_id = ?';
+                                        const values = [agent.toAgent() + ' ' + agent.os.toString(), requestIp.getClientIp(req), formattedDate, user.user_id];
+                                        db.query(device_update_query, values, (err, device_update_query_results) => {
+                                            return res.send(
+                                                {
+                                                    status: 'ok',
+                                                    data: userData,
+                                                    message: 'Login Successfull'
+                                                }
+                                            )
+                                        })
+                                    } else {
+                                        // User doesnot exist Insert New Row.
+
+                                        const device_insert_query = 'INSERT INTO user_device_info (user_id, device_id, device_token, imei_no, model_name, make_name, IP_address, last_logged_in, created_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+                                        const values = [user.user_id, agent.toAgent() + ' ' + agent.os.toString(), '', '', '', '', requestIp.getClientIp(req), formattedDate, formattedDate];
+
+                                        db.query(device_insert_query, values, (err, device_insert_query_results) => {
+                                            return res.send(
+                                                {
+                                                    status: 'ok',
+                                                    data: userData,
+                                                    message: 'Login Successfull'
+                                                }
+                                            )
+                                        })
+
+                                    }
+                                })
+                            })
+                        } else {
+                            let err_msg = '';
+                            if (user.user_status == 0) {
+                                err_msg = 'your account is inactive, please contact with administrator.';
+                            } else {
+                                err_msg = 'You do not have permission to login as administrator.';
                             }
                             return res.send(
                                 {
@@ -947,111 +1019,86 @@ exports.updateCategory = (req, res) => {
 
 //-- User Profile Edit --//
 exports.editUserData = (req, res) => {
-    //console.log(req.body);
+    console.log(req.body);
     const userId = req.body.user_id;
 
-    const checkQuery = 'SELECT user_id FROM users WHERE phone = ? AND user_id <> ?';
-    db.query(checkQuery, [req.body.phone, userId], (checkError, checkResults) => {
-        if (checkError) {
-            //console.log(checkError)
-            return res.send(
-                {
-                    status: 'err',
-                    data: '',
-                    message: 'An error occurred while processing your request' + checkError
-                }
-            )
-        }
+    // Update the user's data
+    const updateQuery = 'UPDATE users SET first_name = ?, last_name = ?, phone = ?, user_type_id = ? WHERE user_id = ?';
+    db.query(updateQuery, [req.body.first_name, req.body.last_name, req.body.phone, req.body.user_type_id, userId], (updateError, updateResults) => {
 
-        if (checkResults.length > 0) {
-            // Phone number already exists for another user
+        if (updateError) {
+            //console.log(updateError);
             return res.send(
                 {
                     status: 'err',
                     data: '',
-                    message: 'Phone number already exists for another user'
+                    message: 'An error occurred while processing your request' + updateError
                 }
             )
         } else {
-            // Update the user's data
-            const updateQuery = 'UPDATE users SET first_name = ?, last_name = ?, phone = ?, user_type_id = ? WHERE user_id = ?';
-            db.query(updateQuery, [req.body.first_name, req.body.last_name, req.body.phone, req.body.user_type_id, userId], (updateError, updateResults) => {
+            // Update the user's meta data
 
-                if (updateError) {
-                    //console.log(updateError);
-                    return res.send(
-                        {
-                            status: 'err',
-                            data: '',
-                            message: 'An error occurred while processing your request' + updateError
-                        }
-                    )
-                } else {
-                    // Update the user's meta data
-
-                    if (req.file) {
-                        // Unlink (delete) the previous file
-                        const unlinkprofilePicture = "uploads/" + req.body.previous_profile_pic;
-                        fs.unlink(unlinkprofilePicture, (err) => {
-                            if (err) {
-                                //console.error('Error deleting file:', err);
-                            } else {
-                                //console.log('Previous file deleted');
-                            }
-                        });
-                        //const profilePicture = req.file;
-                        //console.log(profilePicture);
-
-                        const updateQueryMeta = 'UPDATE user_customer_meta SET address = ?, country = ?, state = ?, city = ?, zip = ?, date_of_birth = ?, occupation = ?, gender = ?, profile_pic = ?, alternate_phone = ?, marital_status = ?, about = ? WHERE user_id = ?';
-                        db.query(updateQueryMeta, [req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, req.body.date_of_birth, req.body.occupation, req.body.gender, req.file.filename, req.body.alternate_phone, req.body.marital_status, req.body.about, userId], (updateError, updateResults) => {
-                            if (updateError) {
-                                return res.send(
-                                    {
-                                        status: 'err',
-                                        data: userId,
-                                        message: 'An error occurred while processing your request' + updateError
-                                    }
-                                )
-                            } else {
-                                return res.send(
-                                    {
-                                        status: 'ok',
-                                        data: userId,
-                                        message: 'Update Successfull'
-                                    }
-                                )
-                            }
-                        });
-
+            if (req.file) {
+                // Unlink (delete) the previous file
+                const unlinkprofilePicture = "uploads/" + req.body.previous_profile_pic;
+                fs.unlink(unlinkprofilePicture, (err) => {
+                    if (err) {
+                        //console.error('Error deleting file:', err);
                     } else {
-                        const updateQueryMeta = 'UPDATE user_customer_meta SET address = ?, country = ?, state = ?, city = ?, zip = ?, date_of_birth = ?, occupation = ?, gender = ?, alternate_phone = ?, marital_status = ?, about = ? WHERE user_id = ?';
-                        db.query(updateQueryMeta, [req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, req.body.date_of_birth, req.body.occupation, req.body.gender,req.body.alternate_phone, req.body.marital_status, req.body.about, userId], (updateError, updateResults) => {
-                            if (updateError) {
-                                return res.send(
-                                    {
-                                        status: 'err',
-                                        data: '',
-                                        message: 'An error occurred while processing your request' + updateError
-                                    }
-                                )
-                            } else {
-                                return res.send(
-                                    {
-                                        status: 'ok',
-                                        data: userId,
-                                        message: 'Update Successfull'
-                                    }
-                                )
-                            }
-                        });
+                        //console.log('Previous file deleted');
                     }
+                });
+                //const profilePicture = req.file;
+                //console.log(profilePicture);
 
-                }
+                const updateQueryMeta = 'UPDATE user_customer_meta SET address = ?, country = ?, state = ?, city = ?, zip = ?, date_of_birth = ?, occupation = ?, gender = ?, profile_pic = ?, alternate_phone = ?, about = ? WHERE user_id = ?';
+                db.query(updateQueryMeta, [req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, req.body.date_of_birth, req.body.occupation, req.body.gender, req.file.filename, req.body.alternate_phone, req.body.about, userId], (updateError, updateResults) => {
+                    if (updateError) {
+                        return res.send(
+                            {
+                                status: 'err',
+                                data: userId,
+                                message: 'An error occurred while processing your request' + updateError
+                            }
+                        )
+                    } else {
+                        return res.send(
+                            {
+                                status: 'ok',
+                                data: userId,
+                                message: 'Update Successfull'
+                            }
+                        )
+                    }
+                });
 
+            } else {
+                const updateQueryMeta = 'UPDATE user_customer_meta SET address = ?, country = ?, state = ?, city = ?, zip = ?, date_of_birth = ?, occupation = ?, gender = ?, alternate_phone = ?, about = ? WHERE user_id = ?';
+                db.query(updateQueryMeta, [req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, req.body.date_of_birth, req.body.occupation, req.body.gender,req.body.alternate_phone, req.body.about, userId], (updateError, updateResults) => {
+                    if (updateError) {
+                        return res.send(
+                            {
+                                status: 'err',
+                                data: '',
+                                message: 'An error occurred while processing your request' + updateError
+                            }
+                        )
+                    } else {
+                        return res.send(
+                            {
+                                status: 'ok',
+                                data: userId,
+                                message: 'Update Successfull'
+                            }
+                        )
+                    }
+                });
+            }
 
-
-            });
         }
+
+
+
     });
 }
 
@@ -1074,12 +1121,12 @@ exports.createCompany = (req, res) => {
 
     var insert_values = [];
     if (req.file) {
-        insert_values = [currentUserData.user_id, req.body.company_name, req.body.heading, req.file.filename, req.body.about_company, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, req.body.status, req.body.trending, formattedDate, formattedDate, req.body.tollfree_number, req.body.main_address, req.body.main_address_pin_code, req.body.address_map_url];
+        insert_values = [currentUserData.user_id, req.body.company_name, req.body.heading, req.file.filename, req.body.about_company, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, req.body.status, req.body.trending, formattedDate, formattedDate, req.body.tollfree_number, req.body.main_address, req.body.main_address_pin_code, req.body.address_map_url, req.body.main_address_country, req.body.main_address_state, req.body.main_address_city, req.body.verified];
     } else {
-        insert_values = [currentUserData.user_id, req.body.company_name, req.body.heading, '', req.body.about_company, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, req.body.status, req.body.trending, formattedDate, formattedDate, req.body.tollfree_number, req.body.main_address, req.body.main_address_pin_code, req.body.address_map_url];
+        insert_values = [currentUserData.user_id, req.body.company_name, req.body.heading, '', req.body.about_company, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, req.body.status, req.body.trending, formattedDate, formattedDate, req.body.tollfree_number, req.body.main_address, req.body.main_address_pin_code, req.body.address_map_url, req.body.main_address_country, req.body.main_address_state, req.body.main_address_city, req.body.verified];
     }
 
-    const insertQuery = 'INSERT INTO company (user_created_by, company_name, heading, logo, about_company, comp_phone, comp_email, comp_registration_id, status, trending, created_date, updated_date, tollfree_number, main_address, main_address_pin_code, address_map_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    const insertQuery = 'INSERT INTO company (user_created_by, company_name, heading, logo, about_company, comp_phone, comp_email, comp_registration_id, status, trending, created_date, updated_date, tollfree_number, main_address, main_address_pin_code, address_map_url, main_address_country, main_address_state, main_address_city, verified) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
     db.query(insertQuery, insert_values, (err, results, fields) => {
         if (err) {
             return res.send(
@@ -1131,8 +1178,8 @@ exports.editCompany = (req, res) => {
     const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
     // Update company details in the company table
-    const updateQuery = 'UPDATE company SET company_name = ?, heading = ?, logo = ?, about_company = ?, comp_phone = ?, comp_email = ?, comp_registration_id = ?, status = ?, trending = ?, updated_date = ?, tollfree_number = ?, main_address = ?, main_address_pin_code = ?, address_map_url = ? WHERE ID = ?';
-    const updateValues = [req.body.company_name, req.body.heading, '', req.body.about_company, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, req.body.status, req.body.trending, formattedDate, req.body.tollfree_number, req.body.main_address, req.body.main_address_pin_code, req.body.address_map_url, companyID];
+    const updateQuery = 'UPDATE company SET company_name = ?, heading = ?, logo = ?, about_company = ?, comp_phone = ?, comp_email = ?, comp_registration_id = ?, status = ?, trending = ?, updated_date = ?, tollfree_number = ?, main_address = ?, main_address_pin_code = ?, address_map_url = ?, main_address_country = ?, main_address_state = ?, main_address_city = ?, verified = ? WHERE ID = ?';
+    const updateValues = [req.body.company_name, req.body.heading, '', req.body.about_company, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, req.body.status, req.body.trending, formattedDate, req.body.tollfree_number, req.body.main_address, req.body.main_address_pin_code, req.body.address_map_url, req.body.main_address_country, req.body.main_address_state, req.body.main_address_city, req.body.verified, companyID];
 
     if (req.file) {
         // Unlink (delete) the previous file
@@ -1264,9 +1311,9 @@ exports.companyBulkUpload = async (req, res) => {
                 await connection.execute(
                     `
                     INSERT INTO company 
-                        (user_created_by, company_name, heading, about_company, comp_email, comp_phone, tollfree_number, main_address, main_address_pin_code, address_map_url, comp_registration_id, status, trending, created_date, updated_date) 
+                        (user_created_by, company_name, heading, about_company, comp_email, comp_phone, tollfree_number, main_address, main_address_pin_code, address_map_url, comp_registration_id, status, trending, created_date, updated_date, verified) 
                     VALUES 
-                        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) 
+                        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) 
                     ON DUPLICATE KEY UPDATE
                         user_created_by = VALUES(user_created_by),
                         heading = VALUES(heading), 
@@ -1281,7 +1328,8 @@ exports.companyBulkUpload = async (req, res) => {
                         status = VALUES(status),
                         trending = VALUES(trending),
                         created_date = VALUES(created_date),
-                        updated_date =  VALUES(updated_date)
+                        updated_date =  VALUES(updated_date),
+                        verified =  VALUES(verified)
                     `,
                     cleanedCompany
                 );
@@ -1322,7 +1370,7 @@ function processCompanyCSVRows(worksheet, formattedDate, connection, user_id) {
 
         worksheet.eachRow((row, rowNumber) => {
             if (rowNumber !== 1) { // Skip the header row
-                companies.push([user_id, row.values[1], row.values[2], row.values[3], row.values[4], row.values[5], row.values[6], row.values[7], row.values[8], row.values[9], row.values[10], '1', '0', formattedDate, formattedDate]);
+                companies.push([user_id, row.values[1], row.values[2], row.values[3], row.values[4], row.values[5], row.values[6], row.values[7], row.values[8], row.values[9], row.values[10], '1', '0', formattedDate, formattedDate, '0']);
             }
         });
 
@@ -1850,7 +1898,7 @@ exports.updateHome = async (req, res) => {
             {
                 status: 'ok',
                 data: '',
-                message: 'Title update successfully'
+                message: ' Updated successfully'
             }
         )
     })
@@ -2002,7 +2050,7 @@ exports.updateAbout = async (req, res) => {
             {
                 status: 'ok',
                 data: '',
-                message: 'Title update successfully'
+                message: 'Updated successfully'
             }
         )
     })
@@ -2225,25 +2273,7 @@ if (typeof upcoming_features_content === 'string' ) {
     })
 }
     
-    // const delete_query = `DELETE FROM business_features WHERE existing_or_upcoming = 'upcoming'`;
-    // await db.query(delete_query, async (delete_err,delete_res)=>{
-    //     await upcoming_features_content.forEach((value, key) => {
-    //         const insert_query = `INSERT INTO business_features ( content, existing_or_upcoming) VALUES (?,'upcoming')`;
-    //         const insert_data = [content];
-    //          db.query(insert_query,insert_data,(insert_err,insert_res)=>{
-    //             if (insert_err) {
-    //                 return res.send(
-    //                     {
-    //                         status: 'err',
-    //                         data: '',
-    //                         message: 'An error occurred while processing your request'
-    //                     }
-    //                 )
-    //             }
-    //         });
-    //     })
-    // });
-    
+
     
 
     const title_sql = `UPDATE page_info SET title = ?, meta_title = ?, meta_desc = ?, meta_keyword = ? WHERE id  = ?`;
@@ -2254,7 +2284,7 @@ if (typeof upcoming_features_content === 'string' ) {
             {
                 status: 'ok',
                 data: '',
-                message: 'Title update successfully'
+                message: 'Updated successfully'
             }
         )
     })
@@ -2309,7 +2339,7 @@ exports.updatePrivacy = (req, res) => {
                             {
                                 status: 'ok',
                                 data: '',
-                                message: 'Privacy policy update successfully'
+                                message: 'Privacy policy updated successfully'
                             }
                         )
                     })
@@ -2352,7 +2382,7 @@ exports.updateDisclaimer = (req, res) => {
                             {
                                 status: 'ok',
                                 data: '',
-                                message: 'Disclaimer update successfully'
+                                message: 'Disclaimer updated successfully'
                             }
                         )
                     })
@@ -2370,7 +2400,7 @@ exports.updateDisclaimer = (req, res) => {
                             {
                                 status: 'ok',
                                 data: '',
-                                message: 'Disclaimer update successfully'
+                                message: 'Disclaimer updated successfully'
                             }
                         )
                     })
@@ -2413,7 +2443,7 @@ exports.updateTermsOfService = (req, res) => {
                             {
                                 status: 'ok',
                                 data: '',
-                                message: 'Terms Of Service update successfully'
+                                message: 'Terms Of Service updated successfully'
                             }
                         )
                     })
@@ -2441,4 +2471,207 @@ exports.updateTermsOfService = (req, res) => {
     });
 
     
+}
+
+// Frontend Update Myprofile page
+exports.updateMyProfile = (req, res) => {
+    // console.log('edit profile', req.body)
+    // console.log('profile pic', req.file)
+    const userId = req.body.user_id;
+    const checkQuery = 'SELECT user_id FROM users WHERE phone = ? AND user_id <> ?';
+    db.query(checkQuery, [req.body.phone, userId], (checkError, checkResults) => {
+        if (checkError) {
+            //console.log(checkError)
+            return res.send(
+                {
+                    status: 'err',
+                    data: '',
+                    message: 'An error occurred while processing your request' + checkError
+                }
+            )
+        }
+
+        if (checkResults.length > 0) {
+            // Phone number already exists for another user
+            return res.send(
+                {
+                    status: 'err',
+                    data: '',
+                    message: 'Phone number already exists for another user'
+                }
+            )
+        } else {
+            // Update the user's data
+            const updateQuery = 'UPDATE users SET first_name = ?, last_name = ?, phone = ? WHERE user_id = ?';
+            db.query(updateQuery, [req.body.first_name, req.body.last_name, req.body.phone,  userId], (updateError, updateResults) => {
+
+                if (updateError) {
+                    //console.log(updateError);
+                    return res.send(
+                        {
+                            status: 'err',
+                            data: '',
+                            message: 'An error occurred while processing your request' + updateError
+                        }
+                    )
+                } else {
+                    // Update the user's meta data
+
+                    if (req.file) {
+                        // Unlink (delete) the previous file
+                        const unlinkprofilePicture = "uploads/" + req.body.previous_profile_pic;
+                        fs.unlink(unlinkprofilePicture, (err) => {
+                            if (err) {
+                                //console.error('Error deleting file:', err);
+                            } else {
+                                //console.log('Previous file deleted');
+                            }
+                        });
+                        //const profilePicture = req.file;
+                        console.log(req.file.filename);
+                        
+
+                        const updateQueryMeta = 'UPDATE user_customer_meta SET address = ?, country = ?, state = ?, city = ?, zip = ?, date_of_birth = ?,  gender = ?, profile_pic = ?, alternate_phone = ?, marital_status = ?, about = ? WHERE user_id = ?';
+                        const updateQueryData = [req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, req.body.date_of_birth,  req.body.gender, req.file.filename, req.body.alternate_phone, req.body.marital_status, req.body.about, userId]
+                        db.query(updateQueryMeta, updateQueryData , (updateError, updateResults) => {
+                            if (updateError) {
+                                return res.send(
+                                    {
+                                        status: 'err',
+                                        data: userId,
+                                        message: 'An error occurred while processing your request' + updateError
+                                    }
+                                )
+                            } else {
+                                const query = `
+                                        SELECT user_meta.*, c.name as country_name, s.name as state_name, u.first_name
+                                        , u.last_name, u.email, u.phone, u.user_type_id
+                                        FROM user_customer_meta user_meta
+                                        JOIN users u ON u.user_id = user_meta.user_id
+                                        JOIN countries c ON user_meta.country = c.id
+                                        JOIN states s ON user_meta.state = s.id
+                                        WHERE user_meta.user_id = ?
+                                        `;
+                                 db.query(query, [userId], async (err, results) => {
+                                    let userData = {};
+                                    if (results.length > 0) {
+                                        const user_meta = results[0];
+                                        //console.log(user_meta,'aaaaaaaa');
+                                        // Set a cookie
+                                        const dateString = user_meta.date_of_birth;
+                                        const date_of_birth_date = new Date(dateString);
+                                        const formattedDate = date_of_birth_date.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+
+                                        let userData = {
+                                            user_id: user_meta.user_id,
+                                            first_name: user_meta.first_name,
+                                            last_name: user_meta.last_name,
+                                            email: user_meta.email,
+                                            phone: user_meta.phone,
+                                            user_type_id: user_meta.user_type_id,
+                                            address: user_meta.address,
+                                            country: user_meta.country,
+                                            country_name: user_meta.country_name,
+                                            state: user_meta.state,
+                                            state_name: user_meta.state_name,
+                                            city: user_meta.city,
+                                            zip: user_meta.zip,
+                                            review_count: user_meta.review_count,
+                                            date_of_birth: formattedDate,
+                                            occupation: user_meta.occupation,
+                                            gender: user_meta.gender,
+                                            profile_pic: user_meta.profile_pic
+                                        };
+                                        const encodedUserData = JSON.stringify(userData);
+                                        res.cookie('user', encodedUserData);
+                                        return res.send(
+                                            {
+                                                status: 'ok',
+                                                data: userId,
+                                                message: 'Successfully Updated'
+                                            }
+                                        )
+                                    } 
+                                });
+
+                                
+                            }
+                        });
+
+                    } else {
+                        const updateQueryMeta = 'UPDATE user_customer_meta SET address = ?, country = ?, state = ?, city = ?, zip = ?, date_of_birth = ?, gender = ?, alternate_phone = ?, marital_status = ?, about = ? WHERE user_id = ?';
+                        const updateQueryData = [req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, req.body.date_of_birth,  req.body.gender,req.body.alternate_phone, req.body.marital_status, req.body.about, userId]
+                        db.query(updateQueryMeta, updateQueryData, (updateError, updateResults) => {
+                            if (updateError) {
+                                return res.send(
+                                    {
+                                        status: 'err',
+                                        data: '',
+                                        message: 'An error occurred while processing your request' + updateError
+                                    }
+                                )
+                            } else {
+                                const query = `
+                                        SELECT user_meta.*, c.name as country_name, s.name as state_name, u.first_name
+                                        , u.last_name, u.email, u.phone, u.user_type_id
+                                        FROM user_customer_meta user_meta
+                                        JOIN users u ON u.user_id = user_meta.user_id
+                                        JOIN countries c ON user_meta.country = c.id
+                                        JOIN states s ON user_meta.state = s.id
+                                        WHERE user_meta.user_id = ?
+                                        `;
+                                 db.query(query, [userId], async (err, results) => {
+                                    let userData = {};
+                                    if (results.length > 0) {
+                                        const user_meta = results[0];
+                                        //console.log(user_meta,'aaaaaaaa');
+                                        // Set a cookie
+                                        const dateString = user_meta.date_of_birth;
+                                        const date_of_birth_date = new Date(dateString);
+                                        const formattedDate = date_of_birth_date.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+
+                                        let userData = {
+                                            user_id: user_meta.user_id,
+                                            first_name: user_meta.first_name,
+                                            last_name: user_meta.last_name,
+                                            email: user_meta.email,
+                                            phone: user_meta.phone,
+                                            user_type_id: user_meta.user_type_id,
+                                            address: user_meta.address,
+                                            country: user_meta.country,
+                                            country_name: user_meta.country_name,
+                                            state: user_meta.state,
+                                            state_name: user_meta.state_name,
+                                            city: user_meta.city,
+                                            zip: user_meta.zip,
+                                            review_count: user_meta.review_count,
+                                            date_of_birth: formattedDate,
+                                            occupation: user_meta.occupation,
+                                            gender: user_meta.gender,
+                                            profile_pic: user_meta.profile_pic
+                                        };
+                                        const encodedUserData = JSON.stringify(userData);
+                                        res.cookie('user', encodedUserData);
+
+                                        return res.send(
+                                            {
+                                                status: 'ok',
+                                                data: userId,
+                                                message: 'Successfully Updated'
+                                            }
+                                        )
+                                    } 
+                                });
+                                
+                            }
+                        });
+                    }
+
+                }
+
+
+
+            });
+        }
+    });
 }

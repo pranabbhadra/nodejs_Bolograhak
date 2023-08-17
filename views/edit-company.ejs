@@ -107,7 +107,7 @@
                         </div>
                         <div class="row mb-6">
                             <!--begin::Label-->
-                            <label class="col-lg-4 col-form-label fw-bold fs-6">Profile Heading</label>
+                            <label class="col-lg-4 col-form-label fw-bold fs-6">Lagline</label>
                             <!--end::Label-->
                             <!--begin::Col-->
                             <div class="col-lg-8">
@@ -115,7 +115,7 @@
                                 <div class="row">
                                     <!--begin::Col-->
                                     <div class="col-lg-12 fv-row">
-                                        <input type="text" name="heading" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0" placeholder="Profile heading" value="<%= company.heading %>" />
+                                        <input type="text" name="heading" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0" placeholder="Lagline" value="<%= company.heading %>" />
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -196,6 +196,42 @@
                         <div class="row mb-6">
                             <!--begin::Label-->
                             <label class="col-lg-4 col-form-label fw-bold fs-6">
+                                <span class="">Country</span>
+                            </label>
+                            <!--end::Label-->
+                            <!--begin::Col-->
+                            <div class="col-lg-8 fv-row">
+                                <input type="text" name="main_address_country" class="form-control form-control-lg form-control-solid" placeholder="Country" value="<%= company.main_address_country %>" />
+                            </div>
+                            <!--end::Col-->
+                        </div>
+                        <div class="row mb-6">
+                            <!--begin::Label-->
+                            <label class="col-lg-4 col-form-label fw-bold fs-6">
+                                <span class="">State</span>
+                            </label>
+                            <!--end::Label-->
+                            <!--begin::Col-->
+                            <div class="col-lg-8 fv-row">
+                                <input type="text" name="main_address_state" class="form-control form-control-lg form-control-solid" placeholder="State" value="<%= company.main_address_state %>" />
+                            </div>
+                            <!--end::Col-->
+                        </div>
+                        <div class="row mb-6">
+                            <!--begin::Label-->
+                            <label class="col-lg-4 col-form-label fw-bold fs-6">
+                                <span class="">City</span>
+                            </label>
+                            <!--end::Label-->
+                            <!--begin::Col-->
+                            <div class="col-lg-8 fv-row">
+                                <input type="text" name="main_address_city" class="form-control form-control-lg form-control-solid" placeholder="City" value="<%= company.main_address_city %>" />
+                            </div>
+                            <!--end::Col-->
+                        </div>
+                        <div class="row mb-6">
+                            <!--begin::Label-->
+                            <label class="col-lg-4 col-form-label fw-bold fs-6">
                                 <span class="required">Address Pin Code</span>
                             </label>
                             <!--end::Label-->
@@ -227,7 +263,7 @@
                             <!--end::Label-->
                             <!--begin::Col-->
                             <div class="col-lg-8 fv-row">
-                                <input type="text" name="comp_registration_id" class="form-control form-control-lg form-control-solid" placeholder="Occupation" value="<%= company.comp_registration_id %>" />
+                                <input type="text" name="comp_registration_id" class="form-control form-control-lg form-control-solid" placeholder="Registration ID" value="<%= company.comp_registration_id %>" />
                             </div>
                             <!--end::Col-->
                         </div>
@@ -295,6 +331,32 @@
                                         <input class="form-check-input mt-1" name="trending" type="radio" value="1" <% if(company.trending == '1'){ %>checked <% } %>/>
                                         <span class="fw-bold fs-6 badge badge-light-success fw-bolder px-4 py-3">Yes</span>
                                     </label>
+                                    <!--end::Option-->
+                                </div>
+                                <!--end::Options-->
+                            </div>
+                            <!--end::Col-->
+                        </div>
+                        <div class="row mb-6">
+                            <!--begin::Label-->
+                            <label class="col-lg-4 col-form-label required fw-bold fs-6">Verified</label>
+                            <!--end::Label-->
+                            <!--begin::Col-->
+                            <div class="col-lg-8 fv-row">
+                                <!--begin::Options-->
+                                <div class="d-flex align-items-center mt-3">
+                                    <!--begin::Option-->
+                                    <label class="form-check form-check-inline form-check-solid me-5">
+                                        <input class="form-check-input mt-1" name="verified" type="radio" value="0" <% if(company.verified == '0'){ %>checked <% } %>/>
+                                        <span class="fw-bold fs-6 badge badge-light-danger fw-bolder px-4 py-3">No</span>
+                                    </label>
+                                    <!--end::Option-->
+                                    <!--begin::Option-->
+                                    <label class="form-check form-check-inline form-check-solid me-5">
+                                        <input class="form-check-input mt-1" name="verified" type="radio" value="1" <% if(company.verified == '1'){ %>checked <% } %>/>
+                                        <span class="fw-bold fs-6 badge badge-light-success fw-bolder px-4 py-3">Yes</span>
+                                    </label>
+                                    <!--end::Option-->
                                     <!--end::Option-->
                                 </div>
                                 <!--end::Options-->

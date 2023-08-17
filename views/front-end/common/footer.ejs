@@ -103,7 +103,7 @@
         <span>Copyright</span> <%= new Date().getFullYear() %> <a href="#">CEchoes Technology Pvt Ltd</a>
       </div>
       <div class="footer-b-right">
-        <%#<a href="/disclaimer">Disclaimer</a> |#%> <a href="/privacy-policy">Privacy Policy</a> <%#| <a href="/terms-of-service">Terms of Service</a>#%>
+        <%#<a href="/disclaimer">Disclaimer</a> |#%> <a href="/privacy-policy">Privacy Policy</a> | <a href="/terms-of-service">Terms of Service</a>
       </div>
     </div>
   </div>
@@ -167,6 +167,13 @@
                 $('.frm-loading-register').hide();
                 $('.frm-error-message-register').text(data.message).show();
                 $('#user-signup').trigger('reset');
+                setTimeout(function() {
+                  if(data.wp_user){
+                    window.location.href="<%= globalData.BLOG_URL %>?login_check="+data.wp_user;
+                  }else{
+                    window.location.href="/";
+                  }
+                }, 2000 );             
               } else {
                 $('.frm-loading-register').hide();
                 $('.frm-error-message-register').text(data.message).show();

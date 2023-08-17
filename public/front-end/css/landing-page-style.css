@@ -92,6 +92,7 @@
 	left: 30px;
 	bottom: 0;
 	z-index: -9;
+    width: 300px;
 }
 
 .business-right-cartoon {
@@ -99,14 +100,63 @@
 	right: 30px;
 	bottom: 0;
 	z-index: -9;
+    width: 300px;
+}
+
+.all_features_home_page {
+    width: 100%;
+    max-width: 800px;
+    display: block;
+    margin: 0 auto;
+    padding: 0;
+}
+.all_features_home_page .heading_area {
+    width: 100%;
+    display: block;
+    margin: 0 0 30px;
+    padding: 0;
+    text-align: center;
+}
+.all_features_home_page .heading_area h5 {
+    color: #000;
+    margin: 0;
+    font-weight: 700;
+    font-size: 30px;
+}
+.all_features_home_page .heading_area h2{
+    font-size: 35px;
+    font-weight: 700;
+    color: #FCCB06;
+    margin: 0;
+    padding: 0;
+}
+
+.all_features_home_page .each_featur{
+    width: 100%;
+    border-radius: 10px;
+    padding: 20px 20px;
+    color: #000;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 160%;
+    box-shadow: 0px 5px 20px 0px rgba(0, 0, 0, 0.12);
+    margin: 0 0 25px;
+}
+.all_features_home_page .each_featur:nth-child(odd){
+    background-color: #161616;
+    color: #fff;
+}
+.all_features_home_page .each_featur:nth-child(even){
+    background-color: #FCCB06;
 }
 
 /*=============== Business End ==============*/
 
 /*=============== Blog Start ==============*/
 .landing-blog-content {
-    padding-top: 30px;
+    padding-top: 70px;
     padding-bottom: 77px;
+    background-color: #fbfbfb;
 }
 .landing-blog-content h2 {
 	margin-bottom: 44px;
