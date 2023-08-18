@@ -1,6 +1,7 @@
 /*=============== Business Start ==============*/
 .main-content.business-content {
 	padding-top: 20px;
+    background-color: #fccb06;
 }
 
 .business-left, 
@@ -126,7 +127,7 @@
 .all_features_home_page .heading_area h2{
     font-size: 35px;
     font-weight: 700;
-    color: #FCCB06;
+    color: #fff;
     margin: 0;
     padding: 0;
 }
@@ -135,7 +136,7 @@
     width: 100%;
     border-radius: 10px;
     padding: 20px 20px;
-    color: #000;
+    color: #fff;
     font-size: 20px;
     font-weight: 600;
     line-height: 160%;
@@ -143,11 +144,11 @@
     margin: 0 0 25px;
 }
 .all_features_home_page .each_featur:nth-child(odd){
-    background-color: #161616;
-    color: #fff;
+    background-color: #fff;
+    color: #000;
 }
 .all_features_home_page .each_featur:nth-child(even){
-    background-color: #FCCB06;
+    background-color: #000;
 }
 
 /*=============== Business End ==============*/

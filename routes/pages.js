@@ -47,8 +47,9 @@ const checkCookieValue = (req, res, next) => {
 router.get('', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
 
-    const [allRatingTags] = await Promise.all([
+    const [allRatingTags,globalPageMeta] = await Promise.all([
         comFunction.getAllRatingTags(),
+        comFunction2.getPageMetaValues('global'),
     ]);
     const rangeTexts = {};
 
@@ -97,7 +98,8 @@ router.get('', checkCookieValue, async (req, res) => {
                         meta_values_array,
                         featured_comps,
                         allRatingTags: allRatingTags,
-                        AddressapiKey: process.env.ADDRESS_GOOGLE_API_Key
+                        AddressapiKey: process.env.ADDRESS_GOOGLE_API_Key,
+                        globalPageMeta:globalPageMeta
                     });
                 })
 
@@ -135,7 +137,8 @@ router.get('', checkCookieValue, async (req, res) => {
                         meta_values_array,
                         featured_comps,
                         allRatingTags: allRatingTags,
-                        AddressapiKey: process.env.ADDRESS_GOOGLE_API_Key
+                        AddressapiKey: process.env.ADDRESS_GOOGLE_API_Key,
+                        globalPageMeta:globalPageMeta
                     });
                 })
 
@@ -145,10 +148,12 @@ router.get('', checkCookieValue, async (req, res) => {
     }
 });
 //view Contact Us Page
-router.get('/contact-us', checkCookieValue, (req, res) => {
+router.get('/contact-us', checkCookieValue,async (req, res) => {
     //resp.sendFile(`${publicPath}/index.html`)
     let currentUserData = JSON.parse(req.userData);
-
+    const [globalPageMeta] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+    ]);
     const sql = `SELECT * FROM contacts`;
     db.query(sql, (err, results, fields) => {
         if (err) throw err;
@@ -158,7 +163,8 @@ router.get('/contact-us', checkCookieValue, (req, res) => {
             const contacts = results[0];
             const page_title = results[0].title;
             const socials = social_results[0];
-            res.render('front-end/contact', { menu_active_id: 'contact', page_title: page_title, currentUserData, contacts, socials });
+            res.render('front-end/contact', { menu_active_id: 'contact', page_title: page_title, currentUserData, contacts, socials,
+            globalPageMeta:globalPageMeta });
 
         })
     })
@@ -169,36 +175,52 @@ router.get('/contact-us', checkCookieValue, (req, res) => {
 router.get('/about-us', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
     try {
-        const sql = `SELECT * FROM page_info where secret_Key = 'about' `;
-        db.query(sql, (err, results, fields) => {
-            if (err) throw err;
-            const common = results[0];
-            const meta_sql = `SELECT * FROM page_meta where page_id = ${common.id}`;
-            db.query(meta_sql, async (meta_err, _meta_result) => {
-                if (meta_err) throw meta_err;
+        // const sql = `SELECT * FROM page_info where secret_Key = 'about' `;
+        // db.query(sql, (err, results, fields) => {
+        //     if (err) throw err;
+        //     const common = results[0];
+        //     const meta_sql = `SELECT * FROM page_meta where page_id = ${common.id}`;
+        //     db.query(meta_sql, async (meta_err, _meta_result) => {
+        //         if (meta_err) throw meta_err;
 
-                const meta_values = _meta_result;
-                let meta_values_array = {};
-                await meta_values.forEach((item) => {
-                    meta_values_array[item.page_meta_key] = item.page_meta_value;
-                })
-                /*res.json({
-                    menu_active_id: 'about',
-                    page_title: common.title,
-                    currentUserData: currentUserData,
-                    common,
-                    meta_values_array
-                });*/
-                res.render('front-end/about', {
-                     menu_active_id: 'about',
-                     page_title: common.title,
-                     currentUserData: currentUserData,
-                     common,
-                     meta_values_array
-                 });
-            })
+        //         const meta_values = _meta_result;
+        //         let meta_values_array = {};
+        //         await meta_values.forEach((item) => {
+        //             meta_values_array[item.page_meta_key] = item.page_meta_value;
+        //         })
 
-        })
+                
+        //         /*res.json({
+        //             menu_active_id: 'about',
+        //             page_title: common.title,
+        //             currentUserData: currentUserData,
+        //             common,
+        //             meta_values_array
+        //         });*/
+        //         res.render('front-end/about', {
+        //              menu_active_id: 'about',
+        //              page_title: common.title,
+        //              currentUserData: currentUserData,
+        //              common,
+        //              meta_values_array
+        //          });
+        //     })
+
+        // })
+        const [PageInfo,PageMetaValues,globalPageMeta] = await Promise.all([
+            comFunction2.getPageInfo('about'),
+            comFunction2.getPageMetaValues('about'),
+            comFunction2.getPageMetaValues('global'),
+        ]);
+        //console.log(globalPageMeta)
+        res.render('front-end/about', {
+            menu_active_id: 'about',
+            page_title: PageInfo.title,
+            currentUserData: currentUserData,
+            common:PageInfo,
+            meta_values_array:PageMetaValues,
+            globalPageMeta:globalPageMeta
+        });
     } catch (error) {
         console.error('Error fetching blog posts:', error);
         res.render('front-end/about', {
@@ -217,14 +239,15 @@ router.get('/review', checkCookieValue, async (req, res) => {
         let currentUserData = JSON.parse(req.userData);
 
         // Fetch all the required data asynchronously
-        const [latestReviews, AllReviews, AllTrendingReviews, AllReviewTags, allRatingTags] = await Promise.all([
+        const [latestReviews, AllReviews, AllTrendingReviews, AllReviewTags, allRatingTags, globalPageMeta] = await Promise.all([
             comFunction2.getlatestReviews(20),
             comFunction2.getAllReviews(),
             comFunction2.getAllTrendingReviews(),
             comFunction2.getAllReviewTags(),
             comFunction.getAllRatingTags(),
+            comFunction2.getPageMetaValues('global'),
         ]);
-        //console.log(AllTrendingReviews);
+        //console.log(getPageMetaValues);
         res.render('front-end/review', {
             menu_active_id: 'review',
             page_title: 'Customer Reviews',
@@ -233,7 +256,8 @@ router.get('/review', checkCookieValue, async (req, res) => {
             AllReviews: AllReviews,
             allRatingTags: allRatingTags,
             AllReviewTags: AllReviewTags,
-            AllTrendingReviews: AllTrendingReviews
+            AllTrendingReviews: AllTrendingReviews,
+            globalPageMeta:globalPageMeta
         });
         // res.json({
         //     menu_active_id: 'review',
@@ -250,9 +274,15 @@ router.get('/review', checkCookieValue, async (req, res) => {
 router.get('/faq', checkCookieValue, async (req, res) => {
     try {
         let currentUserData = JSON.parse(req.userData);
-        const faqPageData = await comFunction2.getFaqPage();
-        const faqCategoriesData = await comFunction2.getFaqCategories();
-        const faqItemsData = await comFunction2.getFaqItems();
+        // const faqPageData = await comFunction2.getFaqPage();
+        // const faqCategoriesData = await comFunction2.getFaqCategories();
+        // const faqItemsData = await comFunction2.getFaqItems();
+        const [faqPageData,faqCategoriesData,faqItemsData,globalPageMeta] = await Promise.all([
+            comFunction2.getFaqPage(),
+            comFunction2.getFaqCategories(),
+            comFunction2.getFaqItems(),
+            comFunction2.getPageMetaValues('global'),
+        ]);
         // Render the 'add-page' EJS view and pass the data
         res.render('front-end/faq', {
             menu_active_id: 'faq',
@@ -260,7 +290,8 @@ router.get('/faq', checkCookieValue, async (req, res) => {
             currentUserData,
             faqPageData,
             faqCategoriesData,
-            faqItemsData
+            faqItemsData,
+            globalPageMeta:globalPageMeta
         });
     } catch (error) {
         console.error(err);
@@ -274,6 +305,10 @@ router.get('/faq', checkCookieValue, async (req, res) => {
 
 router.get('/business', checkCookieValue, async (req, res) => {
     
+    const [globalPageMeta] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+    ]);
+
     try {
         let currentUserData = JSON.parse(req.userData);
         const sql = `SELECT * FROM page_info where secret_Key = 'business' `;
@@ -300,7 +335,8 @@ router.get('/business', checkCookieValue, async (req, res) => {
                     common,
                     meta_values_array,
                     UpcomingBusinessFeature,
-                    BusinessFeature
+                    BusinessFeature,
+                    globalPageMeta:globalPageMeta
                 });
             })
 
@@ -315,11 +351,12 @@ router.get('/business', checkCookieValue, async (req, res) => {
 
 router.get('/company/:id', checkCookieValue, async (req, res) => {
     const companyID = req.params.id;
-    const [allRatingTags, CompanyInfo, companyReviewNumbers, getCompanyReviews] = await Promise.all([
+    const [allRatingTags, CompanyInfo, companyReviewNumbers, getCompanyReviews,globalPageMeta] = await Promise.all([
         comFunction.getAllRatingTags(),
         comFunction.getCompany(companyID),
         comFunction.getCompanyReviewNumbers(companyID),
         comFunction.getCompanyReviews(companyID),
+        comFunction2.getPageMetaValues('global'),
     ]);
     let currentUserData = JSON.parse(req.userData);
     // res.json({
@@ -336,17 +373,25 @@ router.get('/company/:id', checkCookieValue, async (req, res) => {
         allRatingTags,
         CompanyInfo,
         companyReviewNumbers,
-        getCompanyReviews
+        getCompanyReviews,
+        globalPageMeta:globalPageMeta
     });
 });
 
 router.get('/category-details-premium', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
-    res.render('front-end/category-details-premium', { menu_active_id: 'category-details-premium', page_title: 'Categories Details', currentUserData });
+    const [globalPageMeta] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+    ]);
+
+    res.render('front-end/category-details-premium', { menu_active_id: 'category-details-premium', page_title: 'Categories Details', currentUserData, globalPageMeta:globalPageMeta });
 });
 
 router.get('/privacy-policy', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
+    const [globalPageMeta] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+    ]);
     try {
         const sql = `SELECT * FROM page_info where secret_Key = 'privacy' `;
         db.query(sql, (err, results, fields) => {
@@ -361,13 +406,14 @@ router.get('/privacy-policy', checkCookieValue, async (req, res) => {
                 await meta_values.forEach((item) => {
                     meta_values_array[item.page_meta_key] = item.page_meta_value;
                 })
-                console.log(meta_values_array);
+                //console.log(meta_values_array);
                 res.render('front-end/privacy-policy', {
                     menu_active_id: 'privacy-policy',
                     page_title: common.title,
                     currentUserData,
                     common,
                     meta_values_array,
+                    globalPageMeta:globalPageMeta
                 });
             })
 
@@ -380,6 +426,9 @@ router.get('/privacy-policy', checkCookieValue, async (req, res) => {
 
 router.get('/disclaimer', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
+    const [globalPageMeta] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+    ]);
     try {
         const sql = `SELECT * FROM page_info where secret_Key = 'disclaimer' `;
         db.query(sql, (err, results, fields) => {
@@ -401,6 +450,7 @@ router.get('/disclaimer', checkCookieValue, async (req, res) => {
                     currentUserData,
                     common,
                     meta_values_array,
+                    globalPageMeta:globalPageMeta
                 });
             })
 
@@ -414,6 +464,9 @@ router.get('/disclaimer', checkCookieValue, async (req, res) => {
 
 router.get('/terms-of-service', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
+    const [globalPageMeta] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+    ]);
     try {
         const sql = `SELECT * FROM page_info where secret_Key = 'terms_of_service' `;
         db.query(sql, (err, results, fields) => {
@@ -435,6 +488,7 @@ router.get('/terms-of-service', checkCookieValue, async (req, res) => {
                     currentUserData,
                     common,
                     meta_values_array,
+                    globalPageMeta:globalPageMeta
                 });
             })
 
@@ -455,10 +509,11 @@ router.get('/users-all-reviews', checkFrontEndLoggedIn, async (req, res) => {
         console.log('editUserID: ', userId);
 
         // Fetch all the required data asynchronously
-        const [ AllCompaniesReviews, AllReviewTags, allRatingTags] = await Promise.all([
+        const [ AllCompaniesReviews, AllReviewTags, allRatingTags,globalPageMeta] = await Promise.all([
             comFunction2.getAllCompaniesReviews(userId),
             comFunction2.getAllReviewTags(),
             comFunction.getAllRatingTags(),
+            comFunction2.getPageMetaValues('global'),
         ]);
         //console.log(AllReviewTags);
         // Render the 'edit-user' EJS view and pass the data
@@ -468,7 +523,8 @@ router.get('/users-all-reviews', checkFrontEndLoggedIn, async (req, res) => {
             currentUserData,
             AllCompaniesReviews: AllCompaniesReviews,
             allRatingTags:allRatingTags,
-            AllReviewTags:AllReviewTags
+            AllReviewTags:AllReviewTags,
+            globalPageMeta:globalPageMeta
         });
     } catch (err) {
         console.error(err);
@@ -487,22 +543,24 @@ router.get('/edit-myprofile', checkFrontEndLoggedIn, async (req, res) => {
         console.log('editUserID: ', userId);
 
         // Fetch all the required data asynchronously
-        const [user, userMeta, countries,  states] = await Promise.all([
+        const [user, userMeta, countries,  states, globalPageMeta] = await Promise.all([
             comFunction.getUser(userId),
             comFunction.getUserMeta(userId),
             comFunction.getCountries(),
-            comFunction.getStatesByUserID(userId)
+            comFunction.getStatesByUserID(userId),
+            comFunction2.getPageMetaValues('global'),
         ]);
 
         // Render the 'edit-user' EJS view and pass the data
         res.render('front-end/update-myprofile', {
-            menu_active_id: 'myprofile',
+            menu_active_id: 'edit-myprofile',
             page_title: 'Update My Profile',
             currentUserData,
             user: user,
             userMeta: userMeta,
             countries: countries,
-            states: states
+            states: states,
+            globalPageMeta:globalPageMeta
         });
     } catch (err) {
         console.error(err);
@@ -1610,9 +1668,10 @@ router.get('/myprofile', checkFrontEndLoggedIn, async (req, res) => {
         //console.log('editUserID: ', currentUserData);
 
         // Fetch all the required data asynchronously
-        const [user, userMeta] = await Promise.all([
+        const [user, userMeta, globalPageMeta] = await Promise.all([
             comFunction.getUser(userId),
             comFunction.getUserMeta(userId),
+            comFunction2.getPageMetaValues('global'),
         ]);
 
         // Render the 'edit-user' EJS view and pass the data
@@ -1621,7 +1680,8 @@ router.get('/myprofile', checkFrontEndLoggedIn, async (req, res) => {
             page_title: 'My Profile',
             currentUserData,
             user: user,
-            userMeta: userMeta
+            userMeta: userMeta,
+            globalPageMeta:globalPageMeta
         });
     } catch (err) {
         console.error(err);
@@ -1638,13 +1698,14 @@ router.get('/profile-dashboard', checkFrontEndLoggedIn, async (req, res) => {
         console.log('editUserID: ', userId);
 
         // Fetch all the required data asynchronously
-        const [user, userMeta, ReviewedCompanies, AllCompaniesReviews, AllReviewTags, allRatingTags] = await Promise.all([
+        const [user, userMeta, ReviewedCompanies, AllCompaniesReviews, AllReviewTags, allRatingTags,globalPageMeta] = await Promise.all([
             comFunction.getUser(userId),
             comFunction.getUserMeta(userId),
             comFunction2.getReviewedCompanies(userId),
             comFunction2.getAllCompaniesReviews(userId),
             comFunction2.getAllReviewTags(),
             comFunction.getAllRatingTags(),
+            comFunction2.getPageMetaValues('global'),
         ]);
         //console.log(AllReviewTags);
         // Render the 'edit-user' EJS view and pass the data
@@ -1657,7 +1718,8 @@ router.get('/profile-dashboard', checkFrontEndLoggedIn, async (req, res) => {
             ReviewedCompanies: ReviewedCompanies,
             AllCompaniesReviews: AllCompaniesReviews,
             allRatingTags:allRatingTags,
-            AllReviewTags:AllReviewTags
+            AllReviewTags:AllReviewTags,
+            globalPageMeta:globalPageMeta
         });
     } catch (err) {
         console.error(err);
@@ -1675,10 +1737,11 @@ router.get('/my-reviews', checkFrontEndLoggedIn, async (req, res) => {
         console.log('editUserID: ', userId);
 
         // Fetch all the required data asynchronously
-        const [ AllCompaniesReviews, AllReviewTags, allRatingTags] = await Promise.all([
+        const [ AllCompaniesReviews, AllReviewTags, allRatingTags,globalPageMeta] = await Promise.all([
             comFunction2.getAllCompaniesReviews(userId),
             comFunction2.getAllReviewTags(),
             comFunction.getAllRatingTags(),
+            comFunction2.getPageMetaValues('global'),
         ]);
         //console.log(AllReviewTags);
         // Render the 'edit-user' EJS view and pass the data
@@ -1688,7 +1751,8 @@ router.get('/my-reviews', checkFrontEndLoggedIn, async (req, res) => {
             currentUserData,
             AllCompaniesReviews: AllCompaniesReviews,
             allRatingTags:allRatingTags,
-            AllReviewTags:AllReviewTags
+            AllReviewTags:AllReviewTags,
+            globalPageMeta:globalPageMeta
         });
     } catch (err) {
         console.error(err);
@@ -1702,7 +1766,7 @@ router.get('/edit-global', checkLoggedIn, (req, res) => {
     try {
         const encodedUserData = req.cookies.user;
         const currentUserData = JSON.parse(encodedUserData);
-        const sql = `SELECT * FROM page_info where secret_Key = 'terms_of_service' `;
+        const sql = `SELECT * FROM page_info where secret_Key = 'global' `;
         db.query(sql, (err, results, fields) => {
             if (err) throw err;
             const common = results[0];

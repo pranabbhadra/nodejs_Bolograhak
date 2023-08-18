@@ -3340,6 +3340,17 @@ a.quick-login span + span {
     margin-top: 10px;
 }
 
+.default-content-area table{
+    width: 100%;
+}
+.default-content-area table,
+.default-content-area table tr,
+.default-content-area table tr td,
+.default-content-area table tr td p,
+.default-content-area table tr td p span{
+    font-family: var(--nunito) !important;
+}
+
 
 /*========================= Sandip new CSS add 10.08.2023 ===========================*/
 
