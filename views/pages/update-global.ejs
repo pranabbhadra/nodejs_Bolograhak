@@ -39,7 +39,7 @@
                             aria-controls="kt_account_profile_details">
                             <!--begin::Card title-->
                             <div class="card-title m-0">
-                                <h3 class="fw-bolder m-0">Golobal Title Section</h3>
+                                <h3 class="fw-bolder m-0">Global Title Section</h3>
                             </div>
                             <!--end::Card title-->
                         </div>
@@ -99,62 +99,15 @@
 
                                 <!--begin::Input group-->
                                 <div class="row mb-6">
-                                    <!--begin::Label-->
                                     <label class="col-lg-4 col-form-label fw-bold fs-6">
                                         <span class="">Keyword</span>
                                     </label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
                                     <div class="col-lg-8 fv-row">
-                                        <input type="text" name="keyword" id="keyword"
+                                        <input type="text" name="meta_keyword" id="keyword"
                                             class="form-control form-control-lg form-control-solid"
                                             placeholder="Keyword" value="<%= common.meta_keyword %>" />
                                     </div>
-                                    <!--end::Col-->
                                 </div>
-                                <!--end::Input group-->
-                                 <!--begin::Input group-->
-                                 <div class="row mb-6">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span class="">Content</span>
-                                    </label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-8 fv-row">
-                                        <textarea name="content" class="content"
-                                            id="content-editor"><%= meta_values_array.content %></textarea>
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <!--end::Input group-->
-                            </div>
-                            <div class="card-header border-0 cursor-pointer" role="button"
-                                data-bs-target="#kt_account_profile_details" aria-expanded="true"
-                                aria-controls="kt_account_profile_details">
-                                <!--begin::Card title-->
-                                <div class="card-title m-0">
-                                    <h3 class="fw-bolder m-0">Header Section</h3>
-                                </div>
-                                <!--end::Card title-->
-                            </div>
-                            <div class="card-body border-top p-9">
-
-                                <div class="row mb-6">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span>Header Logo</span>
-                                    </label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-8 fv-row">
-                                        <textarea name="header_logo" id="about_us_content"
-                                            class="form-control form-control-lg form-control-solid"
-                                            placeholder="Header Logo"></textarea>
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-
                             </div>
                             <div class="card-header border-0 cursor-pointer" role="button"
                                 data-bs-target="#kt_account_profile_details" aria-expanded="true"
@@ -170,82 +123,90 @@
                                 <div class="row mb-6">
                                     <!--begin::Label-->
                                     <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span>Footer Logo</span>
+                                        <span>Contact Info</span>
                                     </label>
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-8 fv-row">
-                                        <textarea name="footer_logo" class="form-control form-control-lg form-control-solid"
-                                            placeholder="Footer Logo"></textarea>
+                                        <textarea name="footer_contact_info" class="form-control form-control-lg form-control-solid"
+                                            placeholder="Contact Info"><%= meta_values_array.footer_contact_info %></textarea>
                                     </div>
                                     <!--end::Col-->
                                 </div>
                                 <div class="row mb-6">
                                     <!--begin::Label-->
                                     <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span>Contact Title</span>
+                                        <span>Quick Links</span>
                                     </label>
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-8 fv-row">
-                                        <input name="footer_contact_title" class="form-control form-control-lg form-control-solid"
-                                        placeholder="Contact Title"/>
+                                        <textarea name="footer_quick_links" class="form-control form-control-lg form-control-solid"
+                                            placeholder="Quick Links"><%= meta_values_array.footer_quick_links %></textarea>
                                     </div>
                                     <!--end::Col-->
                                 </div>
                                 <div class="row mb-6">
                                     <!--begin::Label-->
                                     <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span>Contact Link-1 Title</span>
+                                        <span>The App Content</span>
                                     </label>
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-8 fv-row">
-                                        <input name="footer_contact_link1_title" class="form-control form-control-lg form-control-solid"
-                                        placeholder="Link-1 Title"/>
+                                        <textarea name="footer_the_app_content" class="form-control form-control-lg form-control-solid"
+                                            placeholder="The App Content"><%= meta_values_array.footer_the_app_content %></textarea>
                                     </div>
                                     <!--end::Col-->
                                 </div>
                                 <div class="row mb-6">
                                     <!--begin::Label-->
                                     <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span>Contact Link-1 URL</span>
+                                        <span>Apps Info</span>
                                     </label>
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-8 fv-row">
-                                        <input name="footer_contact_link1_url" class="form-control form-control-lg form-control-solid"
-                                        placeholder="Link-1 URL"/>
+                                        <textarea name="footer_apps_info" class="form-control form-control-lg form-control-solid"
+                                            placeholder="Apps Info"><%= meta_values_array.footer_apps_info %></textarea>
                                     </div>
                                     <!--end::Col-->
                                 </div>
                                 <div class="row mb-6">
                                     <!--begin::Label-->
                                     <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span>Contact Link-2 Title</span>
+                                        <span>Socials Info</span>
                                     </label>
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-8 fv-row">
-                                        <input name="footer_contact_link2_title" class="form-control form-control-lg form-control-solid"
-                                        placeholder="Link-2 Title"/>
+                                        <textarea name="footer_socials_info" class="form-control form-control-lg form-control-solid"
+                                            placeholder="Socials Info"><%= meta_values_array.footer_socials_info %></textarea>
                                     </div>
                                     <!--end::Col-->
                                 </div>
+                                <!-- <div class="row mb-6">
+                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
+                                        <span>Footer Bottom Left</span>
+                                    </label>
+                                    <div class="col-lg-8 fv-row">
+                                        <textarea name="footer_bottom_left" class="form-control form-control-lg form-control-solid"
+                                            placeholder="Footer Bottom Left"><%= meta_values_array.footer_bottom_left %></textarea>
+                                    </div>
+                                </div> -->
                                 <div class="row mb-6">
                                     <!--begin::Label-->
                                     <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span>Contact Link-2 URL</span>
+                                        <span>Footer Bottom Right</span>
                                     </label>
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-8 fv-row">
-                                        <input name="footer_contact_link2_url" class="form-control form-control-lg form-control-solid"
-                                        placeholder="Link-2 URL"/>
+                                        <textarea name="footer_bottom_right" class="form-control form-control-lg form-control-solid"
+                                            placeholder="Footer Bottom Right"><%= meta_values_array.footer_bottom_right %></textarea>
                                     </div>
                                     <!--end::Col-->
                                 </div>
-
                             </div>
                             <div class="card-footer d-flex justify-content-end py-6 px-9">
                                 <button type="reset"
@@ -319,8 +280,6 @@
                         // Handle form submit
                         submitButton.addEventListener('click', function (e) {
                             e.preventDefault();
-                            tinymce.get('content-editor').save();
-                            //alert("aaaaaaaa");
                             validation.validate().then(function (status) {
                                 if (status == 'Valid') {
                                     const jsonResponse = $('#kt_account_profile_details_form').serializeArray();
@@ -334,7 +293,7 @@
                                     //return false;
 
                                     $.ajax({
-                                        url: '/auth/update-terms-of-service',
+                                        url: '/auth/update-global-content',
                                         method: 'POST',
                                         data: JSON.stringify(transformedResponse),
                                         contentType: 'application/json',
@@ -350,7 +309,7 @@
                                                     }
                                                 }).then(function (result) {
                                                     if (result.isConfirmed) {
-                                                        window.location.href = "/edit-terms-of-service";
+                                                        window.location.href = "/edit-global";
                                                     }
                                                 });
                                             } else {
@@ -406,16 +365,5 @@
             })();
             //# sourceMappingURL=profile-details.js.map    
 
-            $(document).ready(function () {
-
-                
-                tinymce.init({
-                    selector: "#content-editor",
-                    menubar: false,
-                    toolbar: ["styleselect fontselect fontsizeselect",
-                        "undo redo | cut copy paste | bold italic | link image | alignleft aligncenter alignright alignjustify",
-                        "bullist numlist | outdent indent | blockquote subscript superscript | advlist | autolink | lists charmap | print preview |  code"],
-                    plugins: "advlist autolink link image lists charmap print preview code"
-                });
-            });
+           
         </script>

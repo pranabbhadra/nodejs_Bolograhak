@@ -212,4 +212,6 @@ router.post('/update-terms-of-service', authController.updateTermsOfService);
 //Update My Profile
 router.post('/update-myprofile',upload.single('profile_pic'), authController.updateMyProfile);
 
+//Update Global Content
+router.post('/update-global-content', authController.updateGlobalContent);
 module.exports = router;
