@@ -644,8 +644,8 @@ async function createCompany(comInfo, userId) {
       // Format the date in 'YYYY-MM-DD HH:mm:ss' format (adjust the format as needed)
       const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
       try {
-        const create_company_query = 'INSERT INTO company (user_created_by, company_name, status, created_date, updated_date, verified) VALUES (?, ?, ?, ?, ?, ?)';
-        const create_company_values = [userId, comInfo.company_name, '2', formattedDate, formattedDate, '2'];
+        const create_company_query = 'INSERT INTO company (user_created_by, company_name, status, created_date, updated_date, main_address, verified) VALUES (?, ?, ?, ?, ?, ?)';
+        const create_company_values = [userId, comInfo.company_name, '2', formattedDate, formattedDate, comInfo.company_name, '0'];
         const create_company_results = await query(create_company_query, create_company_values);
         // console.log('New Company:', create_company_results);
         // console.log('New Company ID:', create_company_results.insertId);
