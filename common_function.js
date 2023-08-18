@@ -29,8 +29,8 @@ function getUserMeta(userId) {
     const user_meta_query = `
             SELECT user_meta.*, c.name as country_name, s.name as state_name
             FROM user_customer_meta user_meta
-            JOIN countries c ON user_meta.country = c.id
-            JOIN states s ON user_meta.state = s.id
+            LEFT JOIN countries c ON user_meta.country = c.id
+            LEFT JOIN states s ON user_meta.state = s.id
             WHERE user_id = ?
         `;
     db.query(user_meta_query, [userId], (err, result) => {
@@ -78,7 +78,14 @@ function getStatesByUserID(userId) {
       } else {
         //console.log('Result:', result); // Log the result array
         if (result && result.length > 0) {
-          const userCountryId = result[0].country.toString();
+          console.log(result[0].country);
+          let countryID = '';
+          if(result[0].country==null){
+            countryID = 101;
+          }else{
+            countryID = result[0].country;
+          }
+          const userCountryId = countryID.toString();
           db.query('SELECT * FROM states WHERE country_id = ?', [userCountryId], async (err, results) => {
             if (err) {
               reject(err);

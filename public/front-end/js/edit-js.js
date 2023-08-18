@@ -840,9 +840,10 @@ jQuery(function ($) {
   //  ================ Faq page tabination ============= 
 
   // ///////////////////////////// Login profile doropdown start
-  $(".user-login-profile-icon").click(function () {
-    $(".user-log-profile-dropdown").slideToggle();
-  });
+  // $(".user-login-profile-icon").click(function () {
+  //   $(".user-log-profile-dropdown").slideToggle();
+  // });
+  
   // ///////////////////////////// Login profile doropdown end
 
 });

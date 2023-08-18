@@ -543,7 +543,7 @@ router.get('/edit-myprofile', checkFrontEndLoggedIn, async (req, res) => {
         console.log('editUserID: ', userId);
 
         // Fetch all the required data asynchronously
-        const [user, userMeta, countries,  states, globalPageMeta] = await Promise.all([
+        const [user, userMeta, countries, states, globalPageMeta] = await Promise.all([
             comFunction.getUser(userId),
             comFunction.getUserMeta(userId),
             comFunction.getCountries(),

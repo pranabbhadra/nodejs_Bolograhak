@@ -78,9 +78,12 @@
                                         
                                         <select id="select_state" name="state"  class="form-select">
                                             <option value="">Select a State...</option>
-                                            <% states.forEach( item => { %>
-                                            <option value="<%= item.id %>" <% if(item.id==userMeta.state){ %>selected <% } %> ><%= item.name %></option>
-                                            <% }) %>
+                                            <% if(states){ %>
+                                                <% states.forEach( item => { %>
+                                                    <option value="<%=  item.id  %>" <% if(item.id==userMeta.state){ %>selected <% } %> ><%= item && item.name ? item.name : '' %></option>
+                                                    <% }) %>
+                                                <% } %>
+                                            
                                         </select>
                                         
                                     </div> 
