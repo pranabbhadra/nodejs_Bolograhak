@@ -20,8 +20,12 @@
 }
 
 .profile-img img {
-	border-radius: 50%;
-	border: 13px #F4A835 solid;
+    border-radius: 50%;
+    border: 13px #F4A835 solid;
+    width: 189px;
+    height: 189px !important;
+    object-fit: cover;
+    object-position: center;
 }
 
 input.camera-icon {

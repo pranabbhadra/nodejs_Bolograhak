@@ -283,6 +283,33 @@ async function getAllReviews(){
 
 
 
+
+//Function to fetch Page Info Content from the  page_info table
+async function getPageInfo(pageName){
+  try{
+    const sql = `SELECT * FROM page_info where secret_Key = '${pageName}' `;
+        const get_page_info_result = await query(sql);
+    return get_page_info_result[0];
+  }catch(error){
+    console.error('Error during user get_latest_review_query:', error);
+  }
+}
+async function getPageMetaValues(pageName) {
+  const sql = `SELECT * FROM page_info where secret_Key = '${pageName}' `;
+  const get_page_info_result = await query(sql);
+
+  const meta_sql = `SELECT * FROM page_meta where page_id = ${get_page_info_result[0].id}`;
+  const get_page_meta_result = await query(meta_sql);
+  let meta_values_array = {};
+    await get_page_meta_result.forEach((item) => {
+        meta_values_array[item.page_meta_key] = item.page_meta_value;
+    })
+    return meta_values_array;
+}
+
+
+
+
 module.exports = {
   getFaqPage,
   getFaqCategories,
@@ -298,5 +325,7 @@ module.exports = {
   getAllReviewTags,
   getlatestReviews,
   getAllTrendingReviews,
-  getAllReviews
+  getAllReviews,
+  getPageMetaValues,
+  getPageInfo
 };
