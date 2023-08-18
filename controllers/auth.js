@@ -1946,6 +1946,29 @@ exports.submitReview = async (req, res) => {
         res.status(500).send('An error occurred');
     }
 }
+
+//--- Delete Review ----//
+exports.deleteReview = (req, res) => {
+    //console.log(req.body.companyid);
+    sql = `DELETE FROM reviews WHERE id = ?`;
+    const data = [req.body.reviewid];
+    db.query(sql, data, (err, result) => {
+        if (err) {
+            return res.send({
+                status: 'error',
+                message: 'Something went wrong'+err
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Review successfully deleted'
+            });
+        }
+
+    })
+
+}
+
 // Upadte About
 exports.updateAbout = async (req, res) => {
     // console.log('home', req.body);
