@@ -339,6 +339,22 @@
                         </div>
                         <div class="row mb-6">
                             <!--begin::Label-->
+                            <label class="col-lg-4 col-form-label fw-bold fs-6">Climed User</label>
+                            <!--end::Label-->
+                            <!--begin::Col-->
+                            <!--begin::Col-->
+                            <div class="col-lg-8 fv-row">
+                                <select id="claimed_by" name="claimed_by" aria-label="Select a User" data-control="select2" data-placeholder="Select a User..." class="form-select">
+                                    <option value="">Select a User...</option>
+                                    <% Allusers.forEach( user=> { %>
+                                    <option value="<%= user.user_id %>" ><%= user.first_name+' '+user.last_name %> - <%= user.email %></option>
+                                    <% }) %>
+                                </select>
+                            </div>
+                            <!--end::Col-->
+                        </div>
+                        <div class="row mb-6">
+                            <!--begin::Label-->
                             <label class="col-lg-4 col-form-label required fw-bold fs-6">Verified</label>
                             <!--end::Label-->
                             <!--begin::Col-->
@@ -439,7 +455,7 @@
 </div>
 <!--end::Content-->
 <%- include('common/footer') -%>
-<script>   
+<script> 
 $('#select_country').change(function() {
     $('#select_state').empty();
     $("#select_state").prop('required',false);

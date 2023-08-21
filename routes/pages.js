@@ -1073,9 +1073,10 @@ router.get('/edit-company/:id', checkLoggedIn, async (req, res) => {
         const companyId = req.params.id;
 
         // Fetch all the required data asynchronously
-        const [company, company_all_categories] = await Promise.all([
+        const [company, company_all_categories, users] = await Promise.all([
             comFunction.getCompany(companyId),
-            comFunction.getCompanyCategoryBuID(companyId)
+            comFunction.getCompanyCategoryBuID(companyId),
+            comFunction.getUsersByRole(2)
             //comFunction.getCompanyMeta(userId),
             //comFunction.getCountries(),
             //comFunction.getStatesByUserID(userId)
@@ -1087,7 +1088,8 @@ router.get('/edit-company/:id', checkLoggedIn, async (req, res) => {
         //     page_title: 'Edit Company',
         //     currentUserData,
         //     company: company,
-        //     company_all_categories : company_all_categories,
+        //     company_all_categories: company_all_categories,
+        //     users: users
         //     //countries: countries,
         //     //states: states            
         // });
@@ -1097,6 +1099,7 @@ router.get('/edit-company/:id', checkLoggedIn, async (req, res) => {
             currentUserData,
             company: company,
             company_all_categories: company_all_categories,
+            Allusers: users
             //countries: countries,
             //states: states            
         });

@@ -396,7 +396,7 @@
                     <input type="hidden" class="form-control" id="search-input-review" name="company_name" placeholder="Business/Institute/Establishment Name" required value="<%= CompanyInfo.company_name %>" readonly>
                   </div>
                   <div class="custom-form">
-                    <input type="text" class="form-control" name="address" placeholder="Location" value="<%= CompanyInfo.main_address %>" required>
+                    <input type="text" class="form-control" name="address" placeholder="Location" value="<%= CompanyInfo.main_address %>" required <% if(CompanyInfo.main_address){ %>readonly<% }%>>
                   </div>
                   <!--
                   <div class="custom-form">
@@ -489,7 +489,6 @@
 <!-- ============== Section1 end =============== -->
 <%- include('common/footer') -%>
 <script>
-  console.log('aa', <%= CompanyInfo.tollfree_number %>);
   // Function to handle Google Maps API initialization
   function initMap() {
     // Your JavaScript code that interacts with the Maps API should be placed here,
