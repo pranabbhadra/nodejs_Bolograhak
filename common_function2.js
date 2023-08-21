@@ -329,7 +329,7 @@ async function reviewApprovedEmail(req) {
     //console.log('approve Function', reviewData)
     var mailOptions = {
       from: 'vivek@scwebtech.com',
-      //to: 'pranab@scwebtech.com',
+      //to: 'sandip@scwebtech.com',
       to: approveReviewData[0].email,
       subject: 'Review Approval Email',
       html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
@@ -346,9 +346,11 @@ async function reviewApprovedEmail(req) {
                  <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
                    <tbody>
                      <tr>
-              <td id="header_wrapper" style="padding: 36px 48px; display: block;">
+                     <td><img alt="Logo" src="/assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
+                      <td id="header_wrapper" style="padding: 36px 48px; display: block;">
                          <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Review approved</h1>
                       </td>
+
                      </tr>
                    </tbody>
                  </table>
@@ -464,7 +466,7 @@ async function reviewRejectdEmail(req) {
     //console.log('approve Function', reviewData)
     var mailOptions = {
       from: 'vivek@scwebtech.com',
-      //to: 'sandip@scwebtech.com',
+      //to: 'pranab@scwebtech.com',
       to: rejectReviewData[0].email,
       subject: 'Review Rejected Email',
       html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
@@ -481,6 +483,8 @@ async function reviewRejectdEmail(req) {
                  <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
                    <tbody>
                      <tr>
+                     <td><img alt="Logo" src="/assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
+
               <td id="header_wrapper" style="padding: 36px 48px; display: block;">
                          <h1 style="color: red; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Review Rejected</h1>
                       </td>
@@ -571,7 +575,7 @@ async function reviewRejectdEmail(req) {
             console.log('Mail Send: ', info.response);
             return res.send({
                 status: 'ok',
-                message: 'Review Approve'
+                message: 'Review Rejected'
             });
         }
       })
