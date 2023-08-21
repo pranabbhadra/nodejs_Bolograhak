@@ -321,7 +321,13 @@
                     <%= company.company_name %>
                   </h5>
                   <p class="m-0">
-                    <%= company.short_desc %>
+                    <% var txt = company.short_desc; %>
+                    <% if(txt.length > 300) { 
+                      txt = txt.substr(0,300) + "...";
+                    } %>
+                    
+                      <%= txt %>
+                    
                   </p>
                 </div>
               </div>
@@ -907,6 +913,9 @@
         $('#review-zip').val('');
       }
       $(".autofield-dropdown-review").fadeOut();
+
+      
+
     });
 </script>
 <script>
