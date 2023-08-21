@@ -43,6 +43,20 @@ function getUserMeta(userId) {
   });
 }
 
+async function getUsersByRole(roleID){
+  const get_users_query = `
+    SELECT *
+    FROM users
+    WHERE user_type_id = ? AND user_status = "1"`;
+  const get_users_value = [roleID];
+  try{
+    const get_users_result = await query(get_users_query, get_users_value);
+    return get_users_result;
+  }catch(error){
+    return 'Error during user get_company_rewiew_query:'+error;
+  }
+}
+
 // Fetch all countries
 function getCountries() {
   return new Promise((resolve, reject) => {
@@ -886,5 +900,6 @@ module.exports = {
     editCustomerReview,
     searchCompany,
     getCompanyReviewNumbers,
-    getCompanyReviews
+    getCompanyReviews,
+    getUsersByRole,
 };

@@ -1179,7 +1179,27 @@ exports.editCompany = (req, res) => {
 
     // Update company details in the company table
     const updateQuery = 'UPDATE company SET company_name = ?, heading = ?, logo = ?, about_company = ?, comp_phone = ?, comp_email = ?, comp_registration_id = ?, status = ?, trending = ?, updated_date = ?, tollfree_number = ?, main_address = ?, main_address_pin_code = ?, address_map_url = ?, main_address_country = ?, main_address_state = ?, main_address_city = ?, verified = ? WHERE ID = ?';
-    const updateValues = [req.body.company_name, req.body.heading, '', req.body.about_company, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, req.body.status, req.body.trending, formattedDate, req.body.tollfree_number, req.body.main_address, req.body.main_address_pin_code, req.body.address_map_url, req.body.main_address_country, req.body.main_address_state, req.body.main_address_city, req.body.verified, companyID];
+    const updateValues = [
+                            req.body.company_name,
+                            req.body.heading,
+                            '',
+                            req.body.about_company,
+                            req.body.comp_phone,
+                            req.body.comp_email,
+                            req.body.comp_registration_id,
+                            req.body.status,
+                            req.body.trending,
+                            formattedDate,
+                            req.body.tollfree_number,
+                            req.body.main_address,
+                            req.body.main_address_pin_code,
+                            req.body.address_map_url,
+                            req.body.main_address_country,
+                            req.body.main_address_state,
+                            req.body.main_address_city,
+                            req.body.verified,
+                            companyID
+                        ];
 
     if (req.file) {
         // Unlink (delete) the previous file
@@ -1218,30 +1238,38 @@ exports.editCompany = (req, res) => {
                 });
             }
 
-            // Create an array of arrays for bulk insert
-            
-            const categoryArray = Array.isArray(req.body.category) ? req.body.category : [req.body.category];
-            const insertValues = categoryArray.map((categoryID) => [companyID, categoryID]);
+            if (req.body.category) {
+                // Create an array of arrays for bulk insert
+                const categoryArray = Array.isArray(req.body.category) ? req.body.category : [req.body.category];
+                const insertValues = categoryArray.map((categoryID) => [companyID, categoryID]);
 
-            const insertQuery = 'INSERT INTO company_cactgory_relation (company_id, category_id) VALUES ?';
+                const insertQuery = 'INSERT INTO company_cactgory_relation (company_id, category_id) VALUES ?';
 
-            db.query(insertQuery, [insertValues], (err) => {
-                if (err) {
-                    // Handle the error
+                db.query(insertQuery, [insertValues], (err) => {
+                    if (err) {
+                        // Handle the error
+                        return res.send({
+                            status: 'err',
+                            data: '',
+                            message: 'An error occurred while updating company categories: ' + err
+                        });
+                    }
+
+                    // Return success response
                     return res.send({
-                        status: 'err',
-                        data: '',
-                        message: 'An error occurred while updating company categories: ' + err
+                        status: 'ok',
+                        data: companyID,
+                        message: 'Company details updated successfully'
                     });
-                }
-
-                // Return success response
-                return res.send({
-                    status: 'ok',
-                    data: companyID,
-                    message: 'Company details updated successfully'
-                });
-            })
+                })
+            }else{
+                    // Return success response
+                    return res.send({
+                        status: 'ok',
+                        data: companyID,
+                        message: 'Company details updated successfully'
+                    }); 
+            }
         })
     })
 }
@@ -1307,13 +1335,22 @@ exports.companyBulkUpload = async (req, res) => {
                 if (cleanedCompany[10] === null) {
                     cleanedCompany[10] = '';
                 }
+                if (cleanedCompany[11] === null) {
+                    cleanedCompany[11] = '';
+                }
+                if (cleanedCompany[12] === null) {
+                    cleanedCompany[12] = '';
+                }
+                if (cleanedCompany[13] === null) {
+                    cleanedCompany[13] = '';
+                }
 
                 await connection.execute(
                     `
                     INSERT INTO company 
-                        (user_created_by, company_name, heading, about_company, comp_email, comp_phone, tollfree_number, main_address, main_address_pin_code, address_map_url, comp_registration_id, status, trending, created_date, updated_date, verified) 
+                        (user_created_by, company_name, heading, about_company, comp_email, comp_phone, tollfree_number, main_address, main_address_pin_code, address_map_url, comp_registration_id, status, trending, created_date, updated_date, main_address_country, main_address_state, main_address_city, verified) 
                     VALUES 
-                        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) 
+                        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) 
                     ON DUPLICATE KEY UPDATE
                         user_created_by = VALUES(user_created_by),
                         heading = VALUES(heading), 
@@ -1329,6 +1366,9 @@ exports.companyBulkUpload = async (req, res) => {
                         trending = VALUES(trending),
                         created_date = VALUES(created_date),
                         updated_date =  VALUES(updated_date),
+                        main_address_country =  VALUES(main_address_country),
+                        main_address_state =  VALUES(main_address_state),
+                        main_address_city =  VALUES(main_address_city),
                         verified =  VALUES(verified)
                     `,
                     cleanedCompany
@@ -1363,6 +1403,7 @@ exports.companyBulkUpload = async (req, res) => {
         //fs.unlinkSync(csvFilePath);
     }
 }
+
 // Define a promise-based function for processing rows
 function processCompanyCSVRows(worksheet, formattedDate, connection, user_id) {
     return new Promise((resolve, reject) => {
@@ -1370,7 +1411,7 @@ function processCompanyCSVRows(worksheet, formattedDate, connection, user_id) {
 
         worksheet.eachRow((row, rowNumber) => {
             if (rowNumber !== 1) { // Skip the header row
-                companies.push([user_id, row.values[1], row.values[2], row.values[3], row.values[4], row.values[5], row.values[6], row.values[7], row.values[8], row.values[9], row.values[10], '1', '0', formattedDate, formattedDate, '0']);
+                companies.push([user_id, row.values[1], row.values[2], row.values[3], row.values[4], row.values[5], row.values[6], row.values[7], row.values[8], row.values[9], row.values[10], '1', '0', formattedDate, formattedDate, row.values[11], row.values[12], row.values[13], '0']);
             }
         });
 
