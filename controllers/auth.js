@@ -1514,10 +1514,16 @@ exports.editRatingTags = (req, res) => {
 }
 
 exports.editCustomerReview = async (req, res) => {
-    //console.log(req.body);
+    console.log(req.body);
     // const ratingTagsArray = JSON.parse(req.body.rating_tags);
     // console.log(ratingTagsArray);
-    const editResponse = await comFunction.editCustomerReview( req.body );
+    const editResponse1 = await comFunction.editCustomerReview( req.body );
+    const [editResponse, ApproveMailSend,RejectdEmailSend] = await Promise.all([
+        comFunction.editCustomerReview( req.body ),
+        comFunction2.reviewApprovedEmail(req.body),
+        comFunction2.reviewRejectdEmail(req.body),
+    ]);
+
     if(editResponse == true){
         // Return success response
         return res.send({

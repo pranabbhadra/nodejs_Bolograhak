@@ -760,8 +760,8 @@ async function editCustomerReview(req){
   // Format the date in 'YYYY-MM-DD HH:mm:ss' format (adjust the format as needed)
   const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
 
-  const update_review_query = 'UPDATE reviews SET review_title = ?, rating = ?, review_content = ?, user_privacy = ?, review_status = ?, updated_at = ? WHERE id = ?';
-  const update_review_values = [req.review_title, req.rating, req.review_content, req.user_privacy, req.review_status, formattedDate, req.review_id];
+  const update_review_query = 'UPDATE reviews SET review_title = ?, rating = ?, review_content = ?, user_privacy = ?, review_status = ?,rejecting_reason = ?, updated_at = ? WHERE id = ?';
+  const update_review_values = [req.review_title, req.rating, req.review_content, req.user_privacy, req.review_status, req.review_rejecting_comment, formattedDate, req.review_id];
   try {
     const update_review_result = await query(update_review_query, update_review_values);
 

@@ -6,6 +6,7 @@ const bcrypt = require('bcryptjs');
 const useragent = require('useragent');
 const requestIp = require('request-ip');
 const axios = require('axios');
+const mdlconfig = require('./config-module');
 
 dotenv.config({ path: './.env' });
 const query = util.promisify(db.query).bind(db);
@@ -282,8 +283,6 @@ async function getAllReviews(){
 }
 
 
-
-
 //Function to fetch Page Info Content from the  page_info table
 async function getPageInfo(pageName){
   try{
@@ -294,6 +293,8 @@ async function getPageInfo(pageName){
     console.error('Error during user get_latest_review_query:', error);
   }
 }
+
+//Function to fetch Page Meta Values from the  page_meta table
 async function getPageMetaValues(pageName) {
   const sql = `SELECT * FROM page_info where secret_Key = '${pageName}' `;
   const get_page_info_result = await query(sql);
@@ -306,6 +307,279 @@ async function getPageMetaValues(pageName) {
     })
     return meta_values_array;
 }
+
+//Function to send mail to client after approve
+async function reviewApprovedEmail(req) {
+  const sql = `
+    SELECT r.created_at, c.company_name, u.first_name, u.email 
+    FROM reviews r
+    LEFT JOIN company c ON r.company_id = c.ID 
+    LEFT JOIN users u ON r.customer_id = u.user_id 
+    WHERE r.review_status = "1" AND r.id = "${req.review_id}"
+`;
+
+  const approveReviewData = await query(sql);
+
+
+  if(approveReviewData.length > 0){
+    const dateString = approveReviewData[0].created_at; 
+    const date = new Date(dateString); 
+    const reviewDate = date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' ,hour:'numeric',minute:'numeric',second: 'numeric' })
+  
+    //console.log('approve Function', reviewData)
+    var mailOptions = {
+      from: 'vivek@scwebtech.com',
+      //to: 'pranab@scwebtech.com',
+      to: approveReviewData[0].email,
+      subject: 'Review Approval Email',
+      html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
+      <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
+       <tbody>
+        <tr>
+         <td align="center" valign="top">
+           <div id="template_header_image"><p style="margin-top: 0;"></p></div>
+           <table id="template_container" style="box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; background-color: #fdfdfd; border: 1px solid #dcdcdc; border-radius: 3px !important;" border="0" cellpadding="0" cellspacing="0" width="600">
+            <tbody>
+              <tr>
+               <td align="center" valign="top">
+                 <!-- Header -->
+                 <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
+                   <tbody>
+                     <tr>
+              <td id="header_wrapper" style="padding: 36px 48px; display: block;">
+                         <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Review approved</h1>
+                      </td>
+                     </tr>
+                   </tbody>
+                 </table>
+           <!-- End Header -->
+           </td>
+              </tr>
+              <tr>
+               <td align="center" valign="top">
+                 <!-- Body -->
+                 <table id="template_body" border="0" cellpadding="0" cellspacing="0" width="600">
+                   <tbody>
+                     <tr>
+                      <td id="body_content" style="background-color: #fdfdfd;" valign="top">
+                        <!-- Content -->
+                        <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                         <tbody>
+                          <tr>
+                           <td style="padding: 48px;" valign="top">
+                             <div id="body_content_inner" style="color: #737373; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
+                              
+                              <table border="0" cellpadding="4" cellspacing="0" width="90%">
+                                <tr>
+                                  <td colspan="2">
+                                  <strong>Hello ${approveReviewData[0].first_name},</strong>
+                                  <p style="font-size:15px; line-height:20px">Your review for <i><b>"${approveReviewData[0].company_name} on ${reviewDate}"</b></i> has been approved. Now you can see your review on the website.</p>
+                                  </td>
+                                </tr>
+                              </table>
+                              
+                             </div>
+                           </td>
+                          </tr>
+                         </tbody>
+                        </table>
+                      <!-- End Content -->
+                      </td>
+                     </tr>
+                   </tbody>
+                 </table>
+               <!-- End Body -->
+               </td>
+              </tr>
+              <tr>
+               <td align="center" valign="top">
+                 <!-- Footer -->
+                 <table id="template_footer" border="0" cellpadding="10" cellspacing="0" width="600">
+                  <tbody>
+                   <tr>
+                    <td style="padding: 0; -webkit-border-radius: 6px;" valign="top">
+                     <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                       <tbody>
+                         <tr>
+                          <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
+                               <p>This email was sent from <a style="color:#FCCB06" href="https://bolograhak.com">BoloGrahak</a></p>
+                          </td>
+                         </tr>
+                       </tbody>
+                     </table>
+                    </td>
+                   </tr>
+                  </tbody>
+                 </table>
+               <!-- End Footer -->
+               </td>
+              </tr>
+            </tbody>
+           </table>
+         </td>
+        </tr>
+       </tbody>
+      </table>
+     </div>`
+    }
+      mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
+        if (err) {
+            console.log(err);
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong'
+            });
+        } else {
+            console.log('Mail Send: ', info.response);
+            return res.send({
+                status: 'ok',
+                message: 'Review Approve'
+            });
+        }
+      })
+  }
+ 
+    return true;
+}
+
+//Function to send mail to client after approve
+async function reviewRejectdEmail(req) {
+  const sql = `
+    SELECT r.created_at,r.rejecting_reason, c.company_name, u.first_name, u.email 
+    FROM reviews r
+    LEFT JOIN company c ON r.company_id = c.ID 
+    LEFT JOIN users u ON r.customer_id = u.user_id 
+    WHERE r.review_status = "0" AND r.id = "${req.review_id}"
+`;
+
+  const rejectReviewData = await query(sql);
+
+  console.log(rejectReviewData[0])
+  if(rejectReviewData.length > 0){
+
+    const dateString = rejectReviewData[0].created_at; 
+    const date = new Date(dateString); 
+    const reviewDate = date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' ,hour:'numeric',minute:'numeric',second: 'numeric' })
+  
+    //console.log('approve Function', reviewData)
+    var mailOptions = {
+      from: 'vivek@scwebtech.com',
+      //to: 'sandip@scwebtech.com',
+      to: rejectReviewData[0].email,
+      subject: 'Review Rejected Email',
+      html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
+      <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
+       <tbody>
+        <tr>
+         <td align="center" valign="top">
+           <div id="template_header_image"><p style="margin-top: 0;"></p></div>
+           <table id="template_container" style="box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; background-color: #fdfdfd; border: 1px solid #dcdcdc; border-radius: 3px !important;" border="0" cellpadding="0" cellspacing="0" width="600">
+            <tbody>
+              <tr>
+               <td align="center" valign="top">
+                 <!-- Header -->
+                 <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
+                   <tbody>
+                     <tr>
+              <td id="header_wrapper" style="padding: 36px 48px; display: block;">
+                         <h1 style="color: red; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Review Rejected</h1>
+                      </td>
+                     </tr>
+                   </tbody>
+                 </table>
+           <!-- End Header -->
+           </td>
+              </tr>
+              <tr>
+               <td align="center" valign="top">
+                 <!-- Body -->
+                 <table id="template_body" border="0" cellpadding="0" cellspacing="0" width="600">
+                   <tbody>
+                     <tr>
+                      <td id="body_content" style="background-color: #fdfdfd;" valign="top">
+                        <!-- Content -->
+                        <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                         <tbody>
+                          <tr>
+                           <td style="padding: 48px;" valign="top">
+                             <div id="body_content_inner" style="color: #737373; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
+                              
+                              <table border="0" cellpadding="4" cellspacing="0" width="90%">
+                                <tr>
+                                  <td colspan="2">
+                                  <strong>Hello ${rejectReviewData[0].first_name},</strong>
+                                  <p style="font-size:15px; line-height:20px">Your review for <i><b>"${rejectReviewData[0].company_name} on ${reviewDate}"</b></i> has been Rejected. The reasons are as follows:</p>
+                                   <p style="font-size:15px; line-height:25px;">${rejectReviewData[0].rejecting_reason}</p>
+                                   <p style="font-size:14px"><b>For further details contact us at : <a href="mailto:support@bolograhak.com"><i>support@bolograhak.com</i></a></b></p>
+                                  </td>
+                                </tr>
+                              </table>
+                              
+                             </div>
+                           </td>
+                          </tr>
+                         </tbody>
+                        </table>
+                      <!-- End Content -->
+                      </td>
+                     </tr>
+                   </tbody>
+                 </table>
+               <!-- End Body -->
+               </td>
+              </tr>
+              <tr>
+               <td align="center" valign="top">
+                 <!-- Footer -->
+                 <table id="template_footer" border="0" cellpadding="10" cellspacing="0" width="600">
+                  <tbody>
+                   <tr>
+                    <td style="padding: 0; -webkit-border-radius: 6px;" valign="top">
+                     <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                       <tbody>
+                         <tr>
+                          <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
+                               <p>This email was sent from <a style="color:#FCCB06" href="https://bolograhak.com">BoloGrahak</a></p>
+                          </td>
+                         </tr>
+                       </tbody>
+                     </table>
+                    </td>
+                   </tr>
+                  </tbody>
+                 </table>
+               <!-- End Footer -->
+               </td>
+              </tr>
+            </tbody>
+           </table>
+         </td>
+        </tr>
+       </tbody>
+      </table>
+     </div> `
+    }
+
+      mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
+        if (err) {
+            console.log(err);
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong'
+            });
+        } else {
+            console.log('Mail Send: ', info.response);
+            return res.send({
+                status: 'ok',
+                message: 'Review Approve'
+            });
+        }
+      })
+  }
+ 
+    return true;
+}
+
 
 
 
@@ -327,5 +601,7 @@ module.exports = {
   getAllTrendingReviews,
   getAllReviews,
   getPageMetaValues,
-  getPageInfo
+  getPageInfo,
+  reviewApprovedEmail,
+  reviewRejectdEmail
 };
