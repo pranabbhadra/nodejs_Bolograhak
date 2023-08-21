@@ -112,11 +112,11 @@ header.main_header {
 }
 
 .user-login-profile-icon img {
-    width: 50px;
-    height: 50%;
-    object-fit: cover;
-    object-position: center;
-    border-radius: 50%;
+	width: 50px;
+	height: 50px !important;
+	object-fit: cover;
+	object-position: center;
+	border-radius: 50%;
 }
 
 span.toggle-menu {

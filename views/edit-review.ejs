@@ -39,7 +39,7 @@
                 <!--begin::Form-->
                 <form id="kt_review_tag_update_form" class="form" action="/auth/add-rating-tags" method="POST">
                     <!--begin::Card body-->
-                    <div class="card-body border-top p-9">
+                    <div class="card-body border-top p-9" id="form_body">
                         <!--begin::Input group-->
                         <div class="row mb-6">
                             <!--begin::Label-->
@@ -150,12 +150,12 @@
                         <div class="row mb-6">
                             <!--begin::Label-->
                             <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                <span class="required">Review Title</span>
+                                <span class="">Product/Division Name</span>
                             </label>
                             <!--end::Label-->
                             <!--begin::Col-->
                             <div class="col-lg-8 fv-row">
-                                <input type="text" name="review_title" class="form-control form-control-lg form-control-solid" placeholder="Rating" value="<% if(reviewData && reviewData.review_title){ %><%= reviewData.review_title %><% } %>" />
+                                <input type="text" name="review_title" class="form-control form-control-lg form-control-solid" placeholder="Product/Division Name" value="<% if(reviewData && reviewData.review_title){ %><%= reviewData.review_title %><% } %>" />
                             </div>
                             <!--end::Col-->
                         </div>
@@ -233,16 +233,20 @@
                                     <!--end::Option-->
                                     <!--begin::Option-->
                                     <label class="form-check form-check-inline form-check-solid">
-                                        <input class="form-check-input mt-1" name="review_status" type="radio" value="0" <% if(reviewData.review_status == '0'){ %>checked <% } %> />
+                                        <input class="form-check-input mt-1" id="rejectId" name="review_status" type="radio" value="0" <% if(reviewData.review_status == '0'){ %>checked <% } %> />
                                         <span class="fw-bold fs-6 badge badge-light-danger fw-bolder px-4 py-3">Rejected</span>
                                     </label>
                                     <!--end::Option-->
                                 </div>
                                 <!--end::Options-->
                             </div>
+                            
                             <!--end::Col-->
                         </div>
+                       
+                        <div id="reject_area">
 
+                        </div>
 
                     </div>
                     <!--end::Card body-->
@@ -294,13 +298,6 @@
                                 validators: {
                                     notEmpty: {
                                         message: 'Please select rating number'
-                                    }
-                                }
-                            },
-                            'review_title': {
-                                validators: {
-                                    notEmpty: {
-                                        message: 'Title is required'
                                     }
                                 }
                             },
@@ -418,5 +415,18 @@
 
     })()
         ;
-//# sourceMappingURL=profile-details.js.map    
+//# sourceMappingURL=profile-details.js.map  
+$(document).ready(function() {
+    //$('#reject_textarea').hide();
+
+    $('input[type=radio][name=review_status]').change(function() {
+        if (this.value == '0') {
+
+        $('#reject_area').html('<div class="row mb-6" id="reject_textarea"><label class="col-lg-4 col-form-label fw-bold fs-6"><span class="">Rejecting Comment</span></label><div class="col-lg-8 fv-row"><textarea class="form-control form-control-lg form-control-solid" name="review_rejecting_comment" ></textarea></div></div>');
+      } else {
+        $('#reject_area').html('');
+      }
+    });
+  });
 </script>
+

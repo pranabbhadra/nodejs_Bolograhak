@@ -95,7 +95,11 @@
 	}
 	.floating-chat, 
 	.floating-emoji {
-		bottom: 32%;
+		bottom: 10px;
+		right: 0;
+	}
+	.floating-emoji img {
+		width: 45px;
 	}
 }
 

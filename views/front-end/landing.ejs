@@ -321,7 +321,13 @@
                     <%= company.company_name %>
                   </h5>
                   <p class="m-0">
-                    <%= company.short_desc %>
+                    <% var txt = company.short_desc; %>
+                    <% if(txt.length > 300) { 
+                      txt = txt.substr(0,300) + "...";
+                    } %>
+                    
+                      <%= txt %>
+                    
                   </p>
                 </div>
               </div>
@@ -798,6 +804,7 @@
             }, 500);
           } else {
             $('.autofield-dropdown-review').html(''); // Clear search results if less than three letters
+            $('#review-address').val('');
           }
         })
         // Function to perform the AJAX search
@@ -897,16 +904,24 @@
       $('#search-input-review').val(resulttitle);
       if(address && address!='null'){
         $('#review-address').val(address);
+        $('#review-address').attr('readonly', true);
       }else{
         $('#review-address').val('');
+        $('#review-address').attr('readonly', false);
       }
-      
+      /*
       if(pin_code && pin_code!='null'){
         $('#review-zip').val(pin_code);
+        $('#review-zip').attr('readonly', true);
       }else{
         $('#review-zip').val('');
+        $('#review-zip').attr('readonly', false);
       }
+      */
       $(".autofield-dropdown-review").fadeOut();
+
+      
+
     });
 </script>
 <script>

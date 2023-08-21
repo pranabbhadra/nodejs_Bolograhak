@@ -21,16 +21,16 @@ jQuery(function ($) {
     $(this).parent().siblings().find('.arw-nav').removeClass('actv');
   }
   $('.nav_sec ul > li > .arw-nav').on('click', subMenu);
-  
-/* Anything that gets to the document
-   will hide the dropdown */
-   $(document).click(function(){
+
+  /* Anything that gets to the document
+     will hide the dropdown */
+  $(document).click(function () {
     $(".nav_sec").removeClass('slidein');
   });
-  
+
   /* Clicks within the dropdown won't make
      it past the dropdown itself */
-  $(".toggle-menu").click(function(e){
+  $(".toggle-menu").click(function (e) {
     e.stopPropagation();
   });
 
@@ -843,7 +843,23 @@ jQuery(function ($) {
   // $(".user-login-profile-icon").click(function () {
   //   $(".user-log-profile-dropdown").slideToggle();
   // });
-  
+
   // ///////////////////////////// Login profile doropdown end
+
+  /*=========================== sandip counter js =================*/
+
+    $('.count').each(function () {
+      $(this).prop('Counter', 0).animate({
+        Counter: $(this).text()
+      }, {
+        duration: 3000,
+        easing: 'swing',
+        step: function (now) {
+          $(this).text(Math.ceil(now));
+        }
+      });
+    });
+
+  /*=========================== sandip counter js End =================*/
 
 });

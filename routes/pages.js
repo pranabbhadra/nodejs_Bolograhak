@@ -387,6 +387,26 @@ router.get('/category-details-premium', checkCookieValue, async (req, res) => {
     res.render('front-end/category-details-premium', { menu_active_id: 'category-details-premium', page_title: 'Categories Details', currentUserData, globalPageMeta:globalPageMeta });
 });
 
+//Basic company profile dashboard Page 
+router.get('/basic-company-profile-dashboard', checkCookieValue, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
+    const [globalPageMeta] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+    ]);
+
+    res.render('front-end/basic-company-profile-dashboard', { menu_active_id: 'company-dashboard', page_title: 'Company Dashboard', currentUserData, globalPageMeta:globalPageMeta });
+});
+
+//Premium company profile dashboard Page 
+router.get('/premium-company-profile-dashboard', checkCookieValue, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
+    const [globalPageMeta] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+    ]);
+
+    res.render('front-end/premium-company-profile-dashboard', { menu_active_id: 'company-dashboard', page_title: 'Company Dashboard', currentUserData, globalPageMeta:globalPageMeta });
+});
+
 router.get('/privacy-policy', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
     const [globalPageMeta] = await Promise.all([
@@ -1073,9 +1093,10 @@ router.get('/edit-company/:id', checkLoggedIn, async (req, res) => {
         const companyId = req.params.id;
 
         // Fetch all the required data asynchronously
-        const [company, company_all_categories] = await Promise.all([
+        const [company, company_all_categories, users] = await Promise.all([
             comFunction.getCompany(companyId),
-            comFunction.getCompanyCategoryBuID(companyId)
+            comFunction.getCompanyCategoryBuID(companyId),
+            comFunction.getUsersByRole(2)
             //comFunction.getCompanyMeta(userId),
             //comFunction.getCountries(),
             //comFunction.getStatesByUserID(userId)
@@ -1087,7 +1108,8 @@ router.get('/edit-company/:id', checkLoggedIn, async (req, res) => {
         //     page_title: 'Edit Company',
         //     currentUserData,
         //     company: company,
-        //     company_all_categories : company_all_categories,
+        //     company_all_categories: company_all_categories,
+        //     users: users
         //     //countries: countries,
         //     //states: states            
         // });
@@ -1097,6 +1119,7 @@ router.get('/edit-company/:id', checkLoggedIn, async (req, res) => {
             currentUserData,
             company: company,
             company_all_categories: company_all_categories,
+            Allusers: users
             //countries: countries,
             //states: states            
         });
@@ -1761,6 +1784,7 @@ router.get('/my-reviews', checkFrontEndLoggedIn, async (req, res) => {
     //res.render('front-end/profile-dashboard', { menu_active_id: 'profile-dashboard', page_title: 'My Dashboard', currentUserData });
 });
 
+
 //Edit terms-of-service Page
 router.get('/edit-global', checkLoggedIn, (req, res) => {
     try {
@@ -1795,6 +1819,7 @@ router.get('/edit-global', checkLoggedIn, (req, res) => {
         res.status(500).send('An error occurred');
     }
 });
+
 
 router.get('/help/:id', (_, resp) => {
     resp.sendFile(`${publicPath}/help.html`)
