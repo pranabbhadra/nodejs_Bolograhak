@@ -1781,6 +1781,7 @@ router.get('/my-reviews', checkFrontEndLoggedIn, async (req, res) => {
     //res.render('front-end/profile-dashboard', { menu_active_id: 'profile-dashboard', page_title: 'My Dashboard', currentUserData });
 });
 
+
 //Edit terms-of-service Page
 router.get('/edit-global', checkLoggedIn, (req, res) => {
     try {
