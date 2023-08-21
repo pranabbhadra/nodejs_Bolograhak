@@ -42,6 +42,12 @@
    <!-- Responsive css -->
    <link href="<?php echo get_stylesheet_directory_uri();?>/responsive/style-responsive.css" rel="stylesheet" media='screen and (max-width:1440.98px)' type="text/css">
    <link href="<?php echo get_stylesheet_directory_uri();?>/responsive/header-banner-responsive-style.css" rel="stylesheet" media='screen and (max-width:1440.98px)' type="text/css">
+   
+<!-- Google tag (gtag.js) --> 
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-KZ0CX4E95T"></script> 
+<script> window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-KZ0CX4E95T'); </script>
+
+
    <!--[if lt IE 9]>
    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>

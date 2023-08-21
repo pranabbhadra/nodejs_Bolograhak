@@ -387,6 +387,26 @@ router.get('/category-details-premium', checkCookieValue, async (req, res) => {
     res.render('front-end/category-details-premium', { menu_active_id: 'category-details-premium', page_title: 'Categories Details', currentUserData, globalPageMeta:globalPageMeta });
 });
 
+//Basic company profile dashboard Page 
+router.get('/basic-company-profile-dashboard', checkCookieValue, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
+    const [globalPageMeta] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+    ]);
+
+    res.render('front-end/basic-company-profile-dashboard', { menu_active_id: 'company-dashboard', page_title: 'Company Dashboard', currentUserData, globalPageMeta:globalPageMeta });
+});
+
+//Premium company profile dashboard Page 
+router.get('/premium-company-profile-dashboard', checkCookieValue, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
+    const [globalPageMeta] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+    ]);
+
+    res.render('front-end/premium-company-profile-dashboard', { menu_active_id: 'company-dashboard', page_title: 'Company Dashboard', currentUserData, globalPageMeta:globalPageMeta });
+});
+
 router.get('/privacy-policy', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
     const [globalPageMeta] = await Promise.all([
@@ -1795,6 +1815,7 @@ router.get('/edit-global', checkLoggedIn, (req, res) => {
         res.status(500).send('An error occurred');
     }
 });
+
 
 router.get('/help/:id', (_, resp) => {
     resp.sendFile(`${publicPath}/help.html`)
