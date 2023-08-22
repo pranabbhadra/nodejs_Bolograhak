@@ -407,6 +407,16 @@ router.get('/premium-company-profile-dashboard', checkCookieValue, async (req, r
     res.render('front-end/premium-company-profile-dashboard', { menu_active_id: 'company-dashboard', page_title: 'Company Dashboard', currentUserData, globalPageMeta:globalPageMeta });
 });
 
+//company dashboard management Page 
+router.get('/company-profile-management', checkCookieValue, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
+    const [globalPageMeta] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+    ]);
+
+    res.render('front-end/company-profile-management', { menu_active_id: 'company-profile', page_title: 'Company Profile', currentUserData, globalPageMeta:globalPageMeta });
+});
+
 router.get('/privacy-policy', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
     const [globalPageMeta] = await Promise.all([
