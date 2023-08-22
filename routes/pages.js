@@ -669,6 +669,33 @@ async function checkLoggedIn(req, res, next) {
     }
 }
 
+async function checkLoggedInAdministrator(req, res, next) {
+    res.locals.globalData = {
+        BLOG_URL: process.env.BLOG_URL,
+        MAIN_URL: process.env.MAIN_URL,
+        // Add other variables as needed
+    };    
+    const encodedUserData = req.cookies.user;
+    try {
+        if (encodedUserData) {
+            const UserJsonData = JSON.parse(encodedUserData);
+            console.log(UserJsonData.user_type_id);
+            // User is logged in, proceed to the next middleware or route handler
+            if( UserJsonData.user_type_id==1){
+                next();
+            }else{
+                res.redirect('/');
+            }
+            
+        } else {
+            res.redirect('admin-login');
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+}
+
 router.get('/dashboard', checkLoggedIn, (req, res) => {
     const encodedUserData = req.cookies.user;
     const currentUserData = JSON.parse(encodedUserData);
@@ -747,7 +774,7 @@ router.get('/edit-category/:id/:kk', checkLoggedIn, (req, res) => {
     })
 });
 
-router.get('/users', checkLoggedIn, (req, res) => {
+router.get('/users', checkLoggedInAdministrator, (req, res) => {
     const encodedUserData = req.cookies.user;
     const currentUserData = JSON.parse(encodedUserData);
     //res.render('users', { menu_active_id: 'user', page_title: 'Users', currentUserData });
@@ -1130,7 +1157,7 @@ router.get('/edit-company/:id', checkLoggedIn, async (req, res) => {
 });
 
 //---Review Rating Tag--//
-router.get('/add-rating-tag', checkLoggedIn, async (req, res) => {
+router.get('/add-rating-tag', checkLoggedInAdministrator, async (req, res) => {
     try {
         const encodedUserData = req.cookies.user;
         const currentUserData = JSON.parse(encodedUserData);
@@ -1207,9 +1234,11 @@ router.get('/all-review', checkLoggedIn, async (req, res) => {
         const currentUserData = JSON.parse(encodedUserData);
 
         // Fetch all the required data asynchronously
-        const [allReviews] = await Promise.all([
+        const [allReviews,AllReviewTags] = await Promise.all([
             comFunction.getAllReviews(),
+            comFunction2.getAllReviewTags(),
         ]);
+        //console.log(currentUserData);
 
         // res.json({
         //     menu_active_id: 'review',
@@ -1221,7 +1250,8 @@ router.get('/all-review', checkLoggedIn, async (req, res) => {
             menu_active_id: 'review',
             page_title: 'All Review',
             currentUserData,
-            allReviews: allReviews
+            allReviews: allReviews,
+            AllReviewTags:AllReviewTags
         });
     } catch (err) {
         console.error(err);

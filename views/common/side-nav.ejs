@@ -46,6 +46,7 @@
                   <span class="menu-section text-muted text-uppercase fs-8 ls-1">Dashboard</span>
                </div>
             </div>
+            <% if(currentUserData.user_type_id != 3 ) { %>
             <div data-kt-menu-trigger="click"
                class="menu-item menu-accordion <% if(menu_active_id=='user'){ %> here show mb-1<% }%>">
                <span class="menu-link">
@@ -85,6 +86,7 @@
                   #%>
                </div>
             </div>
+            <% } %>
             <div class="menu-item">
                <div class="menu-content pt-8 pb-2">
                   <span class="menu-section text-muted text-uppercase fs-8 ls-1">FRONT END PAGES</span>
@@ -328,6 +330,8 @@
                         <span class="menu-title">All Tags</span>
                      </a>
                   </div>
+                  
+                  <% if(currentUserData.user_type_id != 3 ) { %>
                   <div class="menu-item">
                      <a class="menu-link" href="/add-rating-tag">
                         <span class="menu-bullet">
@@ -336,6 +340,7 @@
                         <span class="menu-title">Add Tag</span>
                      </a>
                   </div>
+                  <% } %>
                </div>
             </div>
          </div>

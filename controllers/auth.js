@@ -521,7 +521,7 @@ exports.login = (req, res) => {
                     }
                     if (result) {
                         //check Administrative Login
-                        if (user.user_type_id == 1 && user.user_status == 1) {
+                        if ((user.user_type_id == 1 || user.user_type_id == 3) && user.user_status == 1) {
                             const query = `
                                         SELECT user_meta.*, c.name as country_name, s.name as state_name
                                         FROM user_customer_meta user_meta
@@ -1255,20 +1255,140 @@ exports.editCompany = (req, res) => {
                         });
                     }
 
+                    // Insert claim request if req.body.claimed_by exists
+                    if (req.body.claimed_by) {
+                        const checkClaimRequestQuery = 'SELECT * FROM company_claim_request WHERE company_id = ?';
+                        db.query(checkClaimRequestQuery, [companyID], (err, claimRequestResults) => {
+                            if (err) {
+                                // Handle the error
+                                return res.send({
+                                    status: 'err',
+                                    data: '',
+                                    message: 'An error occurred while checking company claim request: ' + err
+                                });
+                            }
+                            
+                            if (claimRequestResults.length > 0) {
+                                // Claim request already exists, handle accordingly
+                                const updateClaimRequestQuery = 'UPDATE company_claim_request SET claimed_by = ?, claimed_date = ? WHERE company_id = ?';
+                                const updateClaimRequestValues = [req.body.claimed_by, formattedDate, companyID];
+
+                                db.query(updateClaimRequestQuery, updateClaimRequestValues, (err) => {
+                                    if (err) {
+                                        // Handle the error
+                                        return res.send({
+                                            status: 'err',
+                                            data: '',
+                                            message: 'An error occurred while updating company claim request: ' + err
+                                        });
+                                    }
+
+                                    // Return success response
+                                    return res.send({
+                                        status: 'ok',
+                                        data: companyID,
+                                        message: 'Company details updated successfully'
+                                    });
+                                });
+                            }else{
+                                const claimRequestQuery = 'INSERT INTO company_claim_request (company_id, claimed_by, status, claimed_date) VALUES (?, ?, ?, ?)';
+                                const claimRequestValues = [companyID, req.body.claimed_by, '1', formattedDate];
+            
+                                db.query(claimRequestQuery, claimRequestValues, (err) => {
+                                    if (err) {
+                                        // Handle the error
+                                        return res.send({
+                                            status: 'err',
+                                            data: '',
+                                            message: 'An error occurred while inserting company claim request: ' + err
+                                        });
+                                    }
+            
+                                    // Return success response
+                                    return res.send({
+                                        status: 'ok',
+                                        data: companyID,
+                                        message: 'Company details updated successfully'
+                                    });
+                                });
+                            }
+                        });
+                    } else {
+                        // Return success response
+                        return res.send({
+                            status: 'ok',
+                            data: companyID,
+                            message: 'Company details updated successfully'
+                        });
+                    }
+                })
+            }else{
+                // Insert claim request if req.body.claimed_by exists
+                if (req.body.claimed_by) {
+                    const checkClaimRequestQuery = 'SELECT * FROM company_claim_request WHERE company_id = ?';
+                    db.query(checkClaimRequestQuery, [companyID], (err, claimRequestResults) => {
+                        if (err) {
+                            // Handle the error
+                            return res.send({
+                                status: 'err',
+                                data: '',
+                                message: 'An error occurred while checking company claim request: ' + err
+                            });
+                        }
+                        
+                        if (claimRequestResults.length > 0) {
+                            // Claim request already exists, handle accordingly
+                            const updateClaimRequestQuery = 'UPDATE company_claim_request SET claimed_by = ?, claimed_date = ? WHERE company_id = ?';
+                            const updateClaimRequestValues = [req.body.claimed_by, formattedDate, companyID];
+
+                            db.query(updateClaimRequestQuery, updateClaimRequestValues, (err) => {
+                                if (err) {
+                                    // Handle the error
+                                    return res.send({
+                                        status: 'err',
+                                        data: '',
+                                        message: 'An error occurred while updating company claim request: ' + err
+                                    });
+                                }
+
+                                // Return success response
+                                return res.send({
+                                    status: 'ok',
+                                    data: companyID,
+                                    message: 'Company details updated successfully'
+                                });
+                            });
+                        }else{
+                            const claimRequestQuery = 'INSERT INTO company_claim_request (company_id, claimed_by, status, claimed_date) VALUES (?, ?, ?, ?)';
+                            const claimRequestValues = [companyID, req.body.claimed_by, '1', formattedDate];
+        
+                            db.query(claimRequestQuery, claimRequestValues, (err) => {
+                                if (err) {
+                                    // Handle the error
+                                    return res.send({
+                                        status: 'err',
+                                        data: '',
+                                        message: 'An error occurred while inserting company claim request: ' + err
+                                    });
+                                }
+        
+                                // Return success response
+                                return res.send({
+                                    status: 'ok',
+                                    data: companyID,
+                                    message: 'Company details updated successfully'
+                                });
+                            });
+                        }
+                    });
+                } else {
                     // Return success response
                     return res.send({
                         status: 'ok',
                         data: companyID,
                         message: 'Company details updated successfully'
                     });
-                })
-            }else{
-                    // Return success response
-                    return res.send({
-                        status: 'ok',
-                        data: companyID,
-                        message: 'Company details updated successfully'
-                    }); 
+                } 
             }
         })
     })
