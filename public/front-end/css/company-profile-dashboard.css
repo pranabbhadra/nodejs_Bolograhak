@@ -131,6 +131,7 @@
     vertical-align: middle;
     margin: 5px 5px;
     padding: 0;
+    position: relative;
 }
 .company_profile_navigation > ul > li > a{
     display: inline-block;
@@ -147,6 +148,40 @@
 .company_profile_navigation > ul > li:hover > a,
 .company_profile_navigation > ul > li.active > a{
     background: #F4A835;
+    color: #000;
+}
+
+.company_profile_navigation > ul > li > ul{
+    width: 180px;
+    background-color: #000;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    text-align: left;
+    margin: 0;
+    padding: 0;
+    display: none;
+}
+.company_profile_navigation > ul > li:hover > ul{
+    display: block;
+}
+.company_profile_navigation > ul > li > ul > li{
+    margin: 0 !important;
+    padding: 0;
+    display: block;
+}
+.company_profile_navigation > ul > li > ul > li + li{
+    border-top: 1px solid #505050;
+}
+.company_profile_navigation > ul > li > ul > li > a{
+    display: block;
+    padding: 8px 10px;
+    font-size: 14px;
+    color: #fff;
+    font-weight: 500;
+}
+.company_profile_navigation > ul > li > ul > li:hover > a{
+    background-color: #F4A835;
     color: #000;
 }
 .analytics_data_row1{
