@@ -530,7 +530,7 @@ router.get('/terms-of-service', checkCookieValue, async (req, res) => {
     //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
 });
 
-//FrontEnd profile-dashboard page
+//FrontEnd users-all-reviews page
 router.get('/users-all-reviews', checkFrontEndLoggedIn, async (req, res) => {
     try {
         const encodedUserData = req.cookies.user;
