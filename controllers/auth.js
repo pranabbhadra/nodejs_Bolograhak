@@ -1164,7 +1164,7 @@ exports.createCompany = (req, res) => {
 
 //-- Company Edit --//
 exports.editCompany = (req, res) => {
-    console.log(req.body);
+    //console.log(req.body);
     const companyID = req.body.company_id;
     const currentDate = new Date();
 

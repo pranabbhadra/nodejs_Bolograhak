@@ -388,23 +388,42 @@ router.get('/category-details-premium', checkCookieValue, async (req, res) => {
 });
 
 //Basic company profile dashboard Page 
-router.get('/basic-company-profile-dashboard', checkCookieValue, async (req, res) => {
+router.get('/basic-company-profile/:compID', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
-    const [globalPageMeta] = await Promise.all([
+    const companyId = req.params.compID;
+    const [globalPageMeta, company] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
+        comFunction.getCompany(companyId),
     ]);
 
-    res.render('front-end/basic-company-profile-dashboard', { menu_active_id: 'company-dashboard', page_title: 'Company Dashboard', currentUserData, globalPageMeta:globalPageMeta });
+    res.render('front-end/basic-company-profile-dashboard', 
+    { 
+        menu_active_id: 'company-dashboard', 
+        page_title: 'Company Dashboard', 
+        currentUserData, 
+        globalPageMeta:globalPageMeta,
+        company
+    });
 });
 
 //Premium company profile dashboard Page 
-router.get('/premium-company-profile-dashboard', checkCookieValue, async (req, res) => {
+router.get('/premium-company-profile/:compID', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
-    const [globalPageMeta] = await Promise.all([
+    const companyId = req.params.compID;
+
+    const [globalPageMeta, company] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
+        comFunction.getCompany(companyId),
     ]);
 
-    res.render('front-end/premium-company-profile-dashboard', { menu_active_id: 'company-dashboard', page_title: 'Company Dashboard', currentUserData, globalPageMeta:globalPageMeta });
+    res.render('front-end/premium-company-profile-dashboard', 
+    { 
+        menu_active_id: 'company-dashboard', 
+        page_title: 'Company Dashboard', 
+        currentUserData, 
+        globalPageMeta:globalPageMeta,
+        company
+    });
 });
 
 //company dashboard management Page 
@@ -1138,7 +1157,7 @@ router.get('/edit-company/:id', checkLoggedIn, async (req, res) => {
             //comFunction.getCountries(),
             //comFunction.getStatesByUserID(userId)
         ]);
-
+        console.log(company);
         // Render the 'edit-user' EJS view and pass the data
         // res.json({
         //     menu_active_id: 'company',
@@ -1770,7 +1789,7 @@ router.get('/profile-dashboard', checkFrontEndLoggedIn, async (req, res) => {
             comFunction.getAllRatingTags(),
             comFunction2.getPageMetaValues('global'),
         ]);
-        //console.log(AllReviewTags);
+        console.log(userMeta);
         // Render the 'edit-user' EJS view and pass the data
         res.render('front-end/profile-dashboard', {
             menu_active_id: 'profile-dashboard',
