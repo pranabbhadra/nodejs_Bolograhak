@@ -23,27 +23,32 @@
     align-items: center;
     justify-content: center;
 }
-.basic_info_of_company .company_logo a img{
-    width: auto;
+.basic_info_of_company .company_logo a img {
+    width: 145px;
 }
 
 .basic_info_of_company .company_details h2.company_name{
     color: #000;
-    font-family: Inter;
+    font-family: var(--inter);
     font-size: 32px;
     font-style: normal;
-    font-weight: 500;
+    font-weight: 800;
     line-height: 110.4%; /* 35.328px */
     text-transform: capitalize;
-    margin: 0 0 15px;
+    margin: 0 0 10px;
+}
+.basic_info_of_company .company_details h4.tag_line{
+    font-size: 20px;
+    text-transform: capitalize;
+    margin: 0 0 10px;
 }
 .basic_info_of_company .company_details .common_style {
     color: #525252;
-    font-family: Inter;
+    font-family: var(--inter);
     font-size: 16px;
     font-style: normal;
     font-weight: 400;
-    line-height: 110.4%;
+    line-height: 23px;
     position: relative;
     padding: 0 0 0 20px;
 }
@@ -53,9 +58,9 @@
 .basic_info_of_company .company_details .common_style a:hover{
     color: #F4A835;
 }
-.basic_info_of_company .company_details .common_style i{
+.basic_info_of_company .company_details .common_style i {
     position: absolute;
-    top: 0;
+    top: 3px;
     left: 0;
     color: #F4A835;
 }
@@ -96,7 +101,7 @@
 
 .score_info .review_count{
     color: #000;
-    font-family: Inter;
+    font-family: var(--inter);
     font-size: 45px;
     font-style: normal;
     font-weight: 700;
@@ -108,7 +113,7 @@
 }
 .basic_info_of_company .overall_score .score_info p{
     color: #000;
-    font-family: Inter;
+    font-family: var(--inter);
     font-size: 17px;
     font-style: normal;
     font-weight: 400;
@@ -139,7 +144,7 @@
     border-radius: 6px;
     border: 2px solid #FFF6D1;
     color: rgba(0, 0, 0, 0.40);
-    font-family: Inter;
+    font-family: var(--inter);
     font-size: 16px;
     font-style: normal;
     font-weight: 600;
@@ -184,7 +189,7 @@
     background-color: #F4A835;
     color: #000;
 }
-.analytics_data_row1{
+.analytics_data{
     width: 100%;
     display: block;
     margin:0 0 50px;
@@ -211,7 +216,7 @@
 }
 .total_reviews .count{
     color: #FFF;
-    font-family: Inter;
+    font-family: var(--inter);
     font-size: 80px;
     font-style: normal;
     font-weight: 700;
@@ -246,21 +251,202 @@
 .positive_reviews h4,
 .negative_reviews h4{
     color: #252525;
-    font-family: Inter;
+    font-family: var(--inter);
     font-size: 22px;
     font-style: normal;
     font-weight: 700;
     line-height: 110.4%; /* 28.704px */
     text-transform: capitalize;
+    margin: 0;
 }
 .positive_reviews .count,
 .negative_reviews .count{
     color: #F4A835;
     text-align: right;
-    font-family: Inter;
+    font-family: var(--inter);
     font-size: 48px;
     font-style: normal;
     font-weight: 700;
     line-height: 157.9%; /* 75.792px */
     text-transform: capitalize;  
+}
+
+.canvasjs-chart-credit{
+    display: none;
+}
+
+.display_tags{
+    width: 100%;
+    display: block;
+    margin: 0;
+    padding:25px 25px 10px;
+    border-radius: 20px;
+    background: #FFF6D1;
+}
+.display_tags > p{
+    color: #000;
+    font-family: var(--inter);
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 110.4%; /* 26.496px */
+    margin: 0 0 30px;
+}
+.display_tags .all_tags .each_tag_info {
+    position: relative;
+    padding: 0 0 0 18px;
+    margin: 0 0 25px;
+}
+.display_tags .all_tags .each_tag_info .circale {
+    width: 10px;
+    height: 10px;
+    border-radius: 100%;
+    background-color: #000;
+    position: absolute;
+    top: 3px;
+    left: 0;
+}
+.display_tags .all_tags .each_tag_info .tag_count{
+    color: #000;
+    font-family: var(--inter);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 110.4%; /* 26.496px */
+    text-transform: capitalize;
+    margin: 0 0 5px;
+}
+.display_tags .all_tags .each_tag_info .tag_name{
+    color: #000;
+    font-family: var(--inter);
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 110.4%; /* 22.08px */
+    text-transform: capitalize;
+}
+.analytics_data.analytics_data_row3{
+    border-radius: 20px;
+    background: #FFF;
+    box-shadow: 0px 4px 34px 0px rgba(0, 0, 0, 0.12);
+    padding: 30px 45px;
+}
+.all_ratings_progressbar{
+    width: 100%;
+}
+
+.analytics_data .sec_heading{
+    color: #000;
+    font-family: var(--inter);
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 110.4%; /* 26.496px */
+    text-transform: capitalize;
+    margin: 0 0 25px;
+}
+
+.select_box_and_btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0;
+}
+.select_box_and_btn .select_location{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+.select_box_and_btn .select_location label{
+    color: #000;
+    font-family: var(--inter);
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 110.4%; /* 24.288px */
+    text-transform: capitalize;
+    margin-right: 15px;
+}
+.select_box_and_btn .select_location select {
+    width: 100%;
+    min-width: 250px;
+    border-radius: 5px;
+    background: #D9D9D9;
+    border: 0;
+    height: 42px;
+    padding: 0 7px;
+    outline: none;
+}
+.select_box_and_btn >  a{
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0;
+    padding: 10px 15px;
+    border-radius: 5px;
+    background: #FCCB06;
+    color: #000;
+    font-size: 16px;
+    text-transform: capitalize;
+}
+.select_box_and_btn > a:hover{
+    background-color: #000;
+    color: #fff;
+}
+
+.data_by_locations{
+    width: 100%;
+    display: block;
+    margin: 20px 0 0;
+    padding: 0;
+}
+
+.data_by_locations .total_reviews .count {
+    font-size: 50px;
+    color: #000;
+}
+.data_by_locations .total_reviews p {
+    font-size: 20px;
+}
+.data_by_locations .positive_reviews .count, 
+.data_by_locations .negative_reviews .count {
+    font-size: 32px;
+}
+
+.company_dashboard_all_reviews_slider {
+    width: 100%;
+    display: block;
+    margin: 85px 0 0;
+}
+
+
+/*========================================= responsive ====================================*/
+
+
+@media only screen and (max-width: 1199px){
+    .company_profile_navigation > ul > li > a {
+        padding: 13px 12px;
+    }    
+}
+@media only screen and (max-width: 991px){
+    .basic_info_of_company .overall_score{
+        margin-top: 30px;
+    }
+    .total_reviews .count {
+        font-size: 55px;
+    }
+    .positive_reviews .count, .negative_reviews .count {
+        font-size: 35px;
+    }
+}
+@media only screen and (max-width: 767px){
+    .basic_info_of_company .company_logo a{
+        margin: 0 auto 30px;
+    }
+    .total_reviews {
+        margin: 0 0 15px;
+    }
+    .all_ratings_progressbar{
+        margin-bottom: 15px;
+    }
 }
