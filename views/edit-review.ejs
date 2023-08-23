@@ -39,6 +39,7 @@
                 <!--begin::Form-->
                 <form id="kt_review_tag_update_form" class="form" action="/auth/add-rating-tags" method="POST">
                     <!--begin::Card body-->
+                    <input type="hidden" name="company_id" value="<%= reviewData.company_id %>" />
                     <div class="card-body border-top p-9" id="form_body">
                         <!--begin::Input group-->
                         <div class="row mb-6">

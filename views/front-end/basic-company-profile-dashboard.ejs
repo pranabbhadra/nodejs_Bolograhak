@@ -11,26 +11,36 @@
                   <div class="row align-items-center">
                      <div class="col-md-3">
                         <div class="company_logo">
-                           <a href="#"><img src="/front-end/images/feature-logo1.png" alt="samsung"></a>
+                           
+                           <% if(company && company.logo) { %>
+                           <a href="#"><img src="/<%= company.logo %>" alt="company"></a>
+                           <%} else {%>
+                              <a href="#"><img src="/front-end/images/company-placeholder-image.png" alt="company" ></a>
+                              <% } %>
                         </div>
                      </div>
                      <div class="col-md-6">
                         <div class="company_details">
                            <div class="row">
                               <div class="col-sm-12">
-                                 <h2 class="company_name">Company Name</h2>
+                                 <h2 class="company_name"><%= company && company.company_name ? company.company_name : '' %></h2>
                               </div>
                               <div class="col-sm-6">
+                                 <% if(company && company.comp_email){ %>
                                  <p class="common_style"><i class="fas fa-envelope"></i><a
-                                       href="mailto:johndoe12@gmail.com">johndoe12@gmail.com</a></p>
+                                       href="mailto:<%= company && company.comp_email ? company.comp_email : '' %>"><%= company && company.comp_email ? company.comp_email : '' %></a></p>
+                                       <% } %>
                               </div>
                               <div class="col-sm-6">
+                                 <% if(company && company.comp_phone ){ %>
                                  <p class="common_style"><i class="fas fa-mobile"></i><a
-                                       href="tel:+9876543210">+9876543210</a></p>
+                                       href="tel:<%= company && company.comp_phone ? company.comp_phone : '' %>"><%= company && company.comp_phone ? company.comp_phone : '' %></a></p>
+                                       <% } %>
                               </div>
                               <div class="col-sm-12">
-                                 <p class="common_style"><i class="fas fa-map-marker-alt"></i> EE 91, EE Block, Sector
-                                    II, Bidhannagar, Kolkata, West Bengal 700091</p>
+                                 <% if(company && company.main_address ){ %>
+                                 <p class="common_style"><i class="fas fa-map-marker-alt"></i> <%= company && company.main_address ? company.main_address : '' %></p>
+                                 <% } %>
                               </div>
                            </div>
                         </div>
@@ -58,7 +68,7 @@
                   <ul>
                      <li class="active"><a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
                      <li><a href="#"><i class="fas fa-envelope"></i> My Reviews</a></li>
-                     <li><a href="#"><i class="fas fa-user-tie"></i> Profile</a></li>
+                     <li><a href="/basic-company-profile-management/<%= company.ID  %>"><i class="fas fa-user-tie"></i> Profile</a></li>
                      <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
                      <li><a href="#"><i class="fas fa-lock"></i> Change Password</a></li>
                      <li><a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a></li>

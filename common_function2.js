@@ -310,8 +310,10 @@ async function getPageMetaValues(pageName) {
 
 //Function to send mail to client after approve
 async function reviewApprovedEmail(req) {
+  //console.log(req);
+
   const sql = `
-    SELECT r.created_at, c.company_name, u.first_name, u.email 
+    SELECT r.created_at, r.company_id, c.company_name, u.first_name, u.email 
     FROM reviews r
     LEFT JOIN company c ON r.company_id = c.ID 
     LEFT JOIN users u ON r.customer_id = u.user_id 
@@ -329,7 +331,7 @@ async function reviewApprovedEmail(req) {
     //console.log('approve Function', reviewData)
     var mailOptions = {
       from: process.env.MAIL_USER,
-      //to: 'sandip@scwebtech.com',
+      //to: 'pranab@scwebtech.com',
       to: approveReviewData[0].email,
       subject: 'Review Approval Email',
       html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
@@ -346,7 +348,7 @@ async function reviewApprovedEmail(req) {
                  <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
                    <tbody>
                      <tr>
-                     <td><img alt="Logo" src="https://bolograhak.com/assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
+                     <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
                       <td id="header_wrapper" style="padding: 36px 48px; display: block;">
                          <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Review approved</h1>
                       </td>
@@ -375,7 +377,7 @@ async function reviewApprovedEmail(req) {
                                 <tr>
                                   <td colspan="2">
                                   <strong>Hello ${approveReviewData[0].first_name},</strong>
-                                  <p style="font-size:15px; line-height:20px">Your review for <i><b>"${approveReviewData[0].company_name} on ${reviewDate}"</b></i> has been approved. Now you can see your review on the website.</p>
+                                  <p style="font-size:15px; line-height:20px">Your review for <i><b>"${approveReviewData[0].company_name} on ${reviewDate}"</b></i> has been approved. Now you can see your review on the <a href="${process.env.MAIN_URL}company/${approveReviewData[0].company_id}">website</a>.</p>
                                   </td>
                                 </tr>
                               </table>
@@ -404,7 +406,7 @@ async function reviewApprovedEmail(req) {
                        <tbody>
                          <tr>
                           <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
-                               <p>This email was sent from <a style="color:#FCCB06" href="https://bolograhak.com">BoloGrahak</a></p>
+                               <p>This email was sent from <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a></p>
                           </td>
                          </tr>
                        </tbody>
@@ -466,7 +468,7 @@ async function reviewRejectdEmail(req) {
     //console.log('approve Function', reviewData)
     var mailOptions = {
       from: process.env.MAIL_USER,
-      //to: 'pranab@scwebtech.com',
+      //to: 'sandip@scwebtech.com',
       to: rejectReviewData[0].email,
       subject: 'Review Rejected Email',
       html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
@@ -483,7 +485,7 @@ async function reviewRejectdEmail(req) {
                  <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
                    <tbody>
                      <tr>
-                     <td><img alt="Logo" src="https://bolograhak.com/assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
+                     <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
 
               <td id="header_wrapper" style="padding: 36px 48px; display: block;">
                          <h1 style="color: red; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Review Rejected</h1>
@@ -512,9 +514,10 @@ async function reviewRejectdEmail(req) {
                                 <tr>
                                   <td colspan="2">
                                   <strong>Hello ${rejectReviewData[0].first_name},</strong>
-                                  <p style="font-size:15px; line-height:20px">Your review for <i><b>"${rejectReviewData[0].company_name} on ${reviewDate}"</b></i> has been Rejected. The reasons are as follows:</p>
+                                  <p style="font-size:15px; line-height:20px">Your review for <i><b>"${rejectReviewData[0].company_name} on ${reviewDate}"</b></i> was unfortunately rejected because of the following reason:</p>
                                    <p style="font-size:15px; line-height:25px;">${rejectReviewData[0].rejecting_reason}</p>
-                                   <p style="font-size:14px"><b>For further details contact us at : <a href="mailto:support@bolograhak.com"><i>support@bolograhak.com</i></a></b></p>
+                                   <p style="font-size:15px; line-height:25px;">You can submit a new review keeping the above comments in mind.</p>
+                                   <small>For further details contact us at : <a href="mailto:support@bolograhak.com"><i>support@bolograhak.com</i></a></small>
                                   </td>
                                 </tr>
                               </table>
@@ -543,7 +546,7 @@ async function reviewRejectdEmail(req) {
                        <tbody>
                          <tr>
                           <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
-                               <p>This email was sent from <a style="color:#FCCB06" href="https://bolograhak.com">BoloGrahak</a></p>
+                               <p>This email was sent from <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a></p>
                           </td>
                          </tr>
                        </tbody>

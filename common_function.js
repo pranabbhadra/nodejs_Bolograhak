@@ -817,8 +817,6 @@ async function searchCompany(keyword){
   const get_company_query = `
     SELECT ID, company_name, logo, about_company, main_address, main_address_pin_code FROM company
     WHERE company_name LIKE '%${keyword}%'
-    OR about_company LIKE '%${keyword}%'
-    OR heading LIKE '%${keyword}%'
     ORDER BY created_date DESC
   `;
   try{
