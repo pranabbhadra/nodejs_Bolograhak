@@ -388,23 +388,52 @@ router.get('/category-details-premium', checkCookieValue, async (req, res) => {
 });
 
 //Basic company profile dashboard Page 
-router.get('/basic-company-profile-dashboard', checkCookieValue, async (req, res) => {
+router.get('/basic-company-profile/:compID', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
-    const [globalPageMeta] = await Promise.all([
+    const companyId = req.params.compID;
+    const [globalPageMeta, company] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
+        comFunction.getCompany(companyId),
     ]);
 
-    res.render('front-end/basic-company-profile-dashboard', { menu_active_id: 'company-dashboard', page_title: 'Company Dashboard', currentUserData, globalPageMeta:globalPageMeta });
+    res.render('front-end/basic-company-profile-dashboard', 
+    { 
+        menu_active_id: 'company-dashboard', 
+        page_title: 'Company Dashboard', 
+        currentUserData, 
+        globalPageMeta:globalPageMeta,
+        company
+    });
 });
 
 //Premium company profile dashboard Page 
-router.get('/premium-company-profile-dashboard', checkCookieValue, async (req, res) => {
+router.get('/premium-company-profile/:compID', checkCookieValue, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
+    const companyId = req.params.compID;
+
+    const [globalPageMeta, company] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+        comFunction.getCompany(companyId),
+    ]);
+
+    res.render('front-end/premium-company-profile-dashboard', 
+    { 
+        menu_active_id: 'company-dashboard', 
+        page_title: 'Company Dashboard', 
+        currentUserData, 
+        globalPageMeta:globalPageMeta,
+        company
+    });
+});
+
+//company dashboard management Page 
+router.get('/company-profile-management', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
     const [globalPageMeta] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
     ]);
 
-    res.render('front-end/premium-company-profile-dashboard', { menu_active_id: 'company-dashboard', page_title: 'Company Dashboard', currentUserData, globalPageMeta:globalPageMeta });
+    res.render('front-end/company-profile-management', { menu_active_id: 'company-profile', page_title: 'Company Profile', currentUserData, globalPageMeta:globalPageMeta });
 });
 
 router.get('/privacy-policy', checkCookieValue, async (req, res) => {
@@ -520,7 +549,7 @@ router.get('/terms-of-service', checkCookieValue, async (req, res) => {
     //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
 });
 
-//FrontEnd profile-dashboard page
+//FrontEnd users-all-reviews page
 router.get('/users-all-reviews', checkFrontEndLoggedIn, async (req, res) => {
     try {
         const encodedUserData = req.cookies.user;
@@ -669,6 +698,33 @@ async function checkLoggedIn(req, res, next) {
     }
 }
 
+async function checkLoggedInAdministrator(req, res, next) {
+    res.locals.globalData = {
+        BLOG_URL: process.env.BLOG_URL,
+        MAIN_URL: process.env.MAIN_URL,
+        // Add other variables as needed
+    };    
+    const encodedUserData = req.cookies.user;
+    try {
+        if (encodedUserData) {
+            const UserJsonData = JSON.parse(encodedUserData);
+            console.log(UserJsonData.user_type_id);
+            // User is logged in, proceed to the next middleware or route handler
+            if( UserJsonData.user_type_id==1){
+                next();
+            }else{
+                res.redirect('/');
+            }
+            
+        } else {
+            res.redirect('admin-login');
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+}
+
 router.get('/dashboard', checkLoggedIn, (req, res) => {
     const encodedUserData = req.cookies.user;
     const currentUserData = JSON.parse(encodedUserData);
@@ -747,7 +803,7 @@ router.get('/edit-category/:id/:kk', checkLoggedIn, (req, res) => {
     })
 });
 
-router.get('/users', checkLoggedIn, (req, res) => {
+router.get('/users', checkLoggedInAdministrator, (req, res) => {
     const encodedUserData = req.cookies.user;
     const currentUserData = JSON.parse(encodedUserData);
     //res.render('users', { menu_active_id: 'user', page_title: 'Users', currentUserData });
@@ -1101,7 +1157,7 @@ router.get('/edit-company/:id', checkLoggedIn, async (req, res) => {
             //comFunction.getCountries(),
             //comFunction.getStatesByUserID(userId)
         ]);
-
+        console.log(company);
         // Render the 'edit-user' EJS view and pass the data
         // res.json({
         //     menu_active_id: 'company',
@@ -1130,7 +1186,7 @@ router.get('/edit-company/:id', checkLoggedIn, async (req, res) => {
 });
 
 //---Review Rating Tag--//
-router.get('/add-rating-tag', checkLoggedIn, async (req, res) => {
+router.get('/add-rating-tag', checkLoggedInAdministrator, async (req, res) => {
     try {
         const encodedUserData = req.cookies.user;
         const currentUserData = JSON.parse(encodedUserData);
@@ -1207,9 +1263,11 @@ router.get('/all-review', checkLoggedIn, async (req, res) => {
         const currentUserData = JSON.parse(encodedUserData);
 
         // Fetch all the required data asynchronously
-        const [allReviews] = await Promise.all([
+        const [allReviews,AllReviewTags] = await Promise.all([
             comFunction.getAllReviews(),
+            comFunction2.getAllReviewTags(),
         ]);
+        //console.log(currentUserData);
 
         // res.json({
         //     menu_active_id: 'review',
@@ -1221,7 +1279,8 @@ router.get('/all-review', checkLoggedIn, async (req, res) => {
             menu_active_id: 'review',
             page_title: 'All Review',
             currentUserData,
-            allReviews: allReviews
+            allReviews: allReviews,
+            AllReviewTags:AllReviewTags
         });
     } catch (err) {
         console.error(err);
@@ -1730,7 +1789,7 @@ router.get('/profile-dashboard', checkFrontEndLoggedIn, async (req, res) => {
             comFunction.getAllRatingTags(),
             comFunction2.getPageMetaValues('global'),
         ]);
-        //console.log(AllReviewTags);
+        console.log(userMeta);
         // Render the 'edit-user' EJS view and pass the data
         res.render('front-end/profile-dashboard', {
             menu_active_id: 'profile-dashboard',

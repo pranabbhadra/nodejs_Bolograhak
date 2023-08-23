@@ -120,7 +120,7 @@
                                 </div>
                                 <div class="row mb-6">
                                     <!--begin::Label-->
-                                    <label class="col-lg-4 col-form-label fw-bold fs-6">Lagline</label>
+                                    <label class="col-lg-4 col-form-label fw-bold fs-6">Tagline</label>
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-8">
@@ -128,7 +128,7 @@
                                         <div class="row">
                                             <!--begin::Col-->
                                             <div class="col-lg-12 fv-row">
-                                                <input type="text" name="heading" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0" placeholder="Lagline" value="" />
+                                                <input type="text" name="heading" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0" placeholder="Tagline" value="" />
                                             </div>
                                             <!--end::Col-->
                                         </div>
@@ -406,6 +406,33 @@
                                     </div>
                                     <!--end::Col-->
                                 </div>
+                                <div class="row mb-6">
+                                    <!--begin::Label-->
+                                    <label class="col-lg-4 col-form-label  fw-bold fs-6">Payment Status</label>
+                                    <!--end::Label-->
+                                    <!--begin::Col-->
+                                    <div class="col-lg-8 fv-row">
+                                        <!--begin::Options-->
+                                        <div class="d-flex align-items-center mt-3">
+                                            <!--begin::Option-->
+                                            <label class="form-check form-check-inline form-check-solid me-5">
+                                                <input class="form-check-input mt-1" name="payment_status" type="radio" value="free" checked/>
+                                                <span class="fw-bold fs-6 badge badge-light-danger fw-bolder px-4 py-3">Free</span>
+                                            </label>
+                                            <!--end::Option-->
+                                            <!--begin::Option-->
+                                            <label class="form-check form-check-inline form-check-solid me-5">
+                                                <input class="form-check-input mt-1" name="payment_status" type="radio" value="paid"/>
+                                                <span class="fw-bold fs-6 badge badge-light-success fw-bolder px-4 py-3">Paid</span>
+                                            </label>
+                                            <!--end::Option-->
+                                            <!--end::Option-->
+                                        </div>
+                                        <!--end::Options-->
+                                    </div>
+                                    <!--end::Col-->
+                                </div>
+                            
 
                             </div>
                             <!--end::Card body-->

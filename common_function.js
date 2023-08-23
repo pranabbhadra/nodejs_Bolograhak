@@ -27,11 +27,13 @@ function getUser(userId) {
 function getUserMeta(userId) {
   return new Promise((resolve, reject) => {
     const user_meta_query = `
-            SELECT user_meta.*, c.name as country_name, s.name as state_name
+            SELECT user_meta.*, c.name as country_name, s.name as state_name, ccr.company_id as claimed_comp_id, company.paid_status as payment_status
             FROM user_customer_meta user_meta
             LEFT JOIN countries c ON user_meta.country = c.id
             LEFT JOIN states s ON user_meta.state = s.id
-            WHERE user_id = ?
+            LEFT JOIN company_claim_request ccr ON user_meta.user_id = ccr.claimed_by
+            LEFT JOIN company ON company.ID = ccr.company_id
+            WHERE user_meta.user_id = ?
         `;
     db.query(user_meta_query, [userId], (err, result) => {
       if (err) {
@@ -136,7 +138,10 @@ function getAllCompany() {
 
 function getCompany(companyId) {
   return new Promise((resolve, reject) => {
-    db.query('SELECT * FROM company WHERE ID = ?', [companyId], (err, result) => {
+    const sql = `SELECT company.*, ccr.claimed_by FROM company 
+              LEFT JOIN company_claim_request ccr ON company.ID = ccr.company_id
+              WHERE company.ID = ?`
+    db.query(sql, [companyId], (err, result) => {
       if (err) {
         reject(err);
       } else {
@@ -812,8 +817,6 @@ async function searchCompany(keyword){
   const get_company_query = `
     SELECT ID, company_name, logo, about_company, main_address, main_address_pin_code FROM company
     WHERE company_name LIKE '%${keyword}%'
-    OR about_company LIKE '%${keyword}%'
-    OR heading LIKE '%${keyword}%'
     ORDER BY created_date DESC
   `;
   try{

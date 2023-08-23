@@ -226,11 +226,14 @@
                                                 </div>
                                                 <!--end::Menu item-->
                                                 <!--begin::Menu item-->
-                                                <div class="menu-item px-3">
-                                                    <a href="#" data-cat-id="<%= company.id %>"
-                                                        class="menu-link px-3 company-id"
-                                                        data-kt-users-table-filter="delete_row">Delete</a>
-                                                </div>
+                                                
+                                                <% if(currentUserData.user_type_id != 3 ) { %>
+                                                    <div class="menu-item px-3">
+                                                        <a href="#" data-cat-id="<%= company.id %>"
+                                                            class="menu-link px-3 company-id"
+                                                            data-kt-users-table-filter="delete_row">Delete</a>
+                                                    </div>
+                                                <% } %>
                                                 <!--end::Menu item-->
                                             </div>
                                             <!--end::Menu-->
