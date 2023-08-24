@@ -1,13 +1,826 @@
 <%- include('common/header') -%>
-   <link href="/front-end/css/business-style.css" rel="stylesheet" type="text/css">
+   <link href="/front-end/css/company-profile-dashboard.css" rel="stylesheet" type="text/css">
+   <link href="/front-end/css/review-style.css" rel="stylesheet" type="text/css">
+   <script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
    <%- include('common/header-banner') -%>
 
       <!-- ============== Section1 Start =============== -->
-      <section class="main-content about-content2 py-3">
+      <section class="main-content premium_company_profile">
          <div class="container">
-            
+            <div class="main_box">
+               <div class="basic_info_of_company">
+                  <div class="row align-items-center">
+                     <div class="col-md-4 col-lg-3">
+                        <div class="company_logo">
+                           <% if(company && company.logo) { %>
+                              <a href="#"><img src="/<%= company.logo %>" alt="company"></a>
+                           <%} else {%>
+                              <a href="#"><img src="/front-end/images/company-placeholder-image.png" alt="company"></a>
+                           <% } %>
+                           <div class="premium_logo"><i class="fas fa-crown"></i></div>
+                        </div>
+                     </div>
+                     <div class="col-md-8 col-lg-6">
+                        <div class="company_details">
+                           <div class="row">
+                              <% if(company && company.company_name){ %>
+                                 <div class="col-sm-12">
+                                    <h2 class="company_name">
+                                       <%= company && company.company_name ? company.company_name : '' %>
+                                    </h2>
+                                    <h4 class="tag_line">Simpley creative</h4>
+                                 </div>
+                              <% } %>
+                              <% if(company && company.comp_email){ %>
+                                 <div class="col-sm-6">
+                                    <p class="common_style"><i class="fas fa-envelope"></i><a
+                                          href="mailto:<%= company.comp_email %>">
+                                          <%= company.comp_email %>
+                                       </a></p>
+                                 </div>
+                              <% } %>
+                              <% if(company && company.comp_phone ){ %>
+                                 <div class="col-sm-6">
+                                    <p class="common_style"><i class="fas fa-mobile"></i><a
+                                          href="tel:<%= company.comp_phone %>">
+                                          <%= company.comp_phone %>
+                                       </a></p>
+                                 </div>
+                              <% } %>
+                              <% if(company && company.main_address ){ %>
+                                 <div class="col-sm-12">
+                                    <p class="common_style"><i class="fas fa-map-marker-alt"></i>
+                                       <%= company.main_address %>
+                                    </p>
+                                 </div>
+                              <% } %>
+                           </div>
+                        </div>
+                     </div>
+                     <div class="col-md-12 col-lg-3">
+                        <div class="overall_score">
+                           <div class="social_links">
+                              <ul>
+                                 <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
+                                 <li><a href="#"><i class="fab fa-twitter"></i></a></li>
+                                 <li><a href="#"><i class="fab fa-instagram"></i></a></li>
+                                 <li><a href="#"><i class="fab fa-linkedin-in"></i></a></li>
+                                 <li><a href="#"><i class="fab fa-youtube"></i></a></li>
+                              </ul>
+                           </div>
+                           <div class="score_info">
+                              <div class="d-flex align-items-center mb-2">
+                                 <div class="review_count">4.5</div>
+                                 <div class="emoji_respective_review">
+                                    <img src="/front-end/images/4-5.gif" alt="">
+                                 </div>
+                              </div>
+                              <p>Total Review 1,117</p>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+               <div class="company_profile_navigation">
+                  <ul>
+                     <li class="active"><a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                     <li><a href="#"><i class="fas fa-envelope"></i> My Reviews</a></li>
+                     <li>
+                        <a href="#"><i class="fas fa-user-tie"></i> Profile</a>
+                        <ul>
+                           <li><a href="#">My Profile</a></li>
+                           <li><a href="#">Company Profile</a></li>
+                        </ul>
+                     </li>
+                     <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+                     <li><a href="#"><i class="fas fa-lock"></i> Change Password</a></li>
+                     <li><a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                  </ul>
+               </div>
+               <div class="analytics_data analytics_data_row1">
+                  <div class="row">
+                     <div class="col-lg-4">
+                        <div class="total_reviews">
+                           <p>Total Reviews</p>
+                           <div class="count">405</div>
+                        </div>
+                     </div>
+                     <div class="col-lg-4">
+                        <div class="total_reviews total_replied">
+                           <p>Total Replied</p>
+                           <div class="count">200</div>
+                        </div>
+                     </div>
+                     <div class="col-lg-4">
+                        <div class="positive_reviews">
+                           <h4>positive reviews</h4>
+                           <div class="count">125</div>
+                        </div>
+                        <div class="negative_reviews">
+                           <h4>negative reviews</h4>
+                           <div class="count">125</div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+
+               <div class="heading_header">
+                  <h4>Visitors & Ratings</h4>
+               </div>
+               <div class="analytics_data analytics_data_row5">
+                  <div class="row">
+                     <div class="col-lg-5">
+                        <div class="user_viewed">
+                           <div>
+                              <h4>Total Visitors</h4>
+                              <div class="count">1500</div>
+                           </div>
+                        </div>
+                     </div>
+                     <div class="col-lg-7">
+                        <div class="all_ratings_progressbar">
+                           <div id="columnChart" style="height: 250px; width: 100%;"></div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+
+               <div class="analytics_data analytics_data_row2">
+                  <div class="row align-items-center">
+                     <div class="col-lg-5">
+                        <div id="chartContainer" style="height: 250px; width: 100%;"></div>
+                     </div>
+                     <div class="col-lg-7">
+                        <div class="display_tags">
+                           <p>Below are the review tags you got</p>
+                           <div class="all_tags">
+                              <div class="row">
+                                 <div class="col-6 col-md-3">
+                                    <div class="each_tag_info">
+                                       <div class="circale"></div>
+                                       <div class="tag_count">510</div>
+                                       <div class="tag_name">Good</div>
+                                    </div>
+                                 </div>
+                                 <div class="col-6 col-md-3">
+                                    <div class="each_tag_info">
+                                       <div class="circale"></div>
+                                       <div class="tag_count">410</div>
+                                       <div class="tag_name">Agerage</div>
+                                    </div>
+                                 </div>
+                                 <div class="col-6 col-md-3">
+                                    <div class="each_tag_info">
+                                       <div class="circale"></div>
+                                       <div class="tag_count">210</div>
+                                       <div class="tag_name">not good</div>
+                                    </div>
+                                 </div>
+                                 <div class="col-6 col-md-3">
+                                    <div class="each_tag_info">
+                                       <div class="circale"></div>
+                                       <div class="tag_count">110</div>
+                                       <div class="tag_name">Nice</div>
+                                    </div>
+                                 </div>
+                                 <div class="col-6 col-md-3">
+                                    <div class="each_tag_info">
+                                       <div class="circale"></div>
+                                       <div class="tag_count">510</div>
+                                       <div class="tag_name">Good</div>
+                                    </div>
+                                 </div>
+                                 <div class="col-6 col-md-3">
+                                    <div class="each_tag_info">
+                                       <div class="circale"></div>
+                                       <div class="tag_count">410</div>
+                                       <div class="tag_name">Agerage</div>
+                                    </div>
+                                 </div>
+                                 <div class="col-6 col-md-3">
+                                    <div class="each_tag_info">
+                                       <div class="circale"></div>
+                                       <div class="tag_count">210</div>
+                                       <div class="tag_name">not good</div>
+                                    </div>
+                                 </div>
+                                 <div class="col-6 col-md-3">
+                                    <div class="each_tag_info">
+                                       <div class="circale"></div>
+                                       <div class="tag_count">110</div>
+                                       <div class="tag_name">Nice</div>
+                                    </div>
+                                 </div>
+                                 <div class="col-6 col-md-3">
+                                    <div class="each_tag_info">
+                                       <div class="circale"></div>
+                                       <div class="tag_count">410</div>
+                                       <div class="tag_name">Agerage</div>
+                                    </div>
+                                 </div>
+                                 <div class="col-6 col-md-3">
+                                    <div class="each_tag_info">
+                                       <div class="circale"></div>
+                                       <div class="tag_count">210</div>
+                                       <div class="tag_name">not good</div>
+                                    </div>
+                                 </div>
+                                 <div class="col-6 col-md-3">
+                                    <div class="each_tag_info">
+                                       <div class="circale"></div>
+                                       <div class="tag_count">110</div>
+                                       <div class="tag_name">Nice</div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+
+               <div class="analytics_data analytics_data_row3">
+                  <div class="row">
+                     <div class="col-lg-6">
+                        <h4 class="sec_heading">Viewer use device</h4>
+                        <div id="chartContainerByDevice" style="height: 370px; width: 100%;"></div>
+                     </div>
+                     <div class="col-lg-6">
+                        <h4 class="sec_heading">Visited by age category</h4>
+                        <div id="ageChartContainer" style="width: 100%; height: 360px"></div>
+                     </div>
+                  </div>
+               </div>
+
+               <div class="analytics_data analytics_data_row4">
+                  <div class="select_box_and_btn">
+                     <div class="select_location">
+                        <label>Select locations</label>
+                        <div class="address_selectbox">
+                           <select name="" id="">
+                              <option value="">Select</option>
+                              <option value="">Scwebtech Saltlake</option>
+                              <option value="">Scwebtech Jadavpur</option>
+                              <option value="">Scwebtech Howrah</option>
+                              <option value="">Scwebtech Malda</option>
+                           </select>
+                        </div>
+                     </div>   
+                     <a href="#">View All Reviews</a>
+                  </div>
+                  <div class="data_by_locations">
+                     <div class="row">
+                        <div class="col-lg-4">
+                           <div class="total_reviews">
+                              <p>Total Reviews</p>
+                              <div class="count">405</div>
+                           </div>
+                        </div>
+                        <div class="col-lg-4">
+                           <div class="total_reviews total_replied">
+                              <p>Total Replied</p>
+                              <div class="count">200</div>
+                           </div>
+                        </div>
+                        <div class="col-lg-4">
+                           <div class="positive_reviews">
+                              <h4>positive reviews</h4>
+                              <div class="count">125</div>
+                           </div>
+                           <div class="negative_reviews">
+                              <h4>negative reviews</h4>
+                              <div class="count">125</div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+
+               <div class="company_dashboard_all_reviews_slider">
+                  <div class="review-slider">   
+                     <div class="item">
+                        <div class="review-box">
+                           <h3>Reliance Industries</h3>
+                           <div class="user-info-panel">
+                              <span><i class="fa-solid fa-location-dot"></i></span>
+                              <p class="m-0">
+                                 <strong>Location</strong><br>
+                                 2/6 Sree Colony 
+                              </p>
+                           </div>
+                           <div class="user-info-panel">
+                              <span><i class="fa-solid fa-box"></i></span>
+                              <p class="m-0">
+                                 <strong>Product/division</strong><br>
+                                 Test
+                              </p>
+                           </div>
+                           <div class="user-review-text">
+                              <span class="user-select-tag">Decent</span>
+                              <span class="user-select-tag">Middle of the road</span>
+                              <div class="review-description-wrap">
+                                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum eu metus eget...
+                                    <div class="review-full-description">
+                                       Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum eu metus eget. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                                    </div>
+                                    <a href="" class="read-review">View More</a>
+                              </div>
+                           </div>
+                           <div class="user-bio_rating">
+                              <div class="user-profile-info">
+                                 <div class="user-name-show position-relative">
+                                    <span><img src="/1692354088064-feature-man2.png" alt="img" width="20px"></span>
+                                    <span>Vivek Roy</span>
+                                 </div>
+                                 <div class="user-review-date">August 10, 2023</div>
+                              </div>
+                              <div class="user-rating">
+                                 <span><img src="/1691875935385-8.Awesome.gif" alt="" style="display: inline-block;" width="35"></span>
+                                 <span>3.5/5</span>
+                              </div>
+                           </div>
+                           <!-- <div class="review-like-dislike">
+                              <span><a href=""><i class="fa-solid fa-thumbs-up"></i> 10</a></span>
+                              <span><a href=""><i class="fa-solid fa-thumbs-down"></i> 8</a></span>
+                              </div> -->
+                        </div>
+                     </div>
+                     <div class="item">
+                        <div class="review-box">
+                           <h3>Reliance Industries</h3>
+                           <div class="user-info-panel">
+                              <span><i class="fa-solid fa-location-dot"></i></span>
+                              <p class="m-0">
+                                 <strong>Location</strong><br>
+                                 2/6 Sree Colony 
+                              </p>
+                           </div>
+                           <div class="user-info-panel">
+                              <span><i class="fa-solid fa-box"></i></span>
+                              <p class="m-0">
+                                 <strong>Product/division</strong><br>
+                                 Test
+                              </p>
+                           </div>
+                           <div class="user-review-text">
+                              <span class="user-select-tag">Decent</span>
+                              <span class="user-select-tag">Middle of the road</span>
+                              <div class="review-description-wrap">
+                                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum eu metus eget...
+                                    <div class="review-full-description">
+                                       Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum eu metus eget. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                                    </div>
+                                    <a href="" class="read-review">View More</a>
+                              </div>
+                           </div>
+                           <div class="user-bio_rating">
+                              <div class="user-profile-info">
+                                 <div class="user-name-show position-relative">
+                                    <span><img src="/1692354088064-feature-man2.png" alt="img" width="20px"></span>
+                                    <span>Vivek Roy</span>
+                                 </div>
+                                 <div class="user-review-date">August 10, 2023</div>
+                              </div>
+                              <div class="user-rating">
+                                 <span><img src="/1691875935385-8.Awesome.gif" alt="" style="display: inline-block;" width="35"></span>
+                                 <span>3.5/5</span>
+                              </div>
+                           </div>
+                           <!-- <div class="review-like-dislike">
+                              <span><a href=""><i class="fa-solid fa-thumbs-up"></i> 10</a></span>
+                              <span><a href=""><i class="fa-solid fa-thumbs-down"></i> 8</a></span>
+                              </div> -->
+                        </div>
+                     </div>
+                     <div class="item">
+                        <div class="review-box">
+                           <h3>Reliance Industries</h3>
+                           <div class="user-info-panel">
+                              <span><i class="fa-solid fa-location-dot"></i></span>
+                              <p class="m-0">
+                                 <strong>Location</strong><br>
+                                 2/6 Sree Colony 
+                              </p>
+                           </div>
+                           <div class="user-info-panel">
+                              <span><i class="fa-solid fa-box"></i></span>
+                              <p class="m-0">
+                                 <strong>Product/division</strong><br>
+                                 Test
+                              </p>
+                           </div>
+                           <div class="user-review-text">
+                              <span class="user-select-tag">Decent</span>
+                              <span class="user-select-tag">Middle of the road</span>
+                              <div class="review-description-wrap">
+                                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum eu metus eget...
+                                    <div class="review-full-description">
+                                       Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum eu metus eget. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                                    </div>
+                                    <a href="" class="read-review">View More</a>
+                              </div>
+                           </div>
+                           <div class="user-bio_rating">
+                              <div class="user-profile-info">
+                                 <div class="user-name-show position-relative">
+                                    <span><img src="/1692354088064-feature-man2.png" alt="img" width="20px"></span>
+                                    <span>Vivek Roy</span>
+                                 </div>
+                                 <div class="user-review-date">August 10, 2023</div>
+                              </div>
+                              <div class="user-rating">
+                                 <span><img src="/1691875935385-8.Awesome.gif" alt="" style="display: inline-block;" width="35"></span>
+                                 <span>3.5/5</span>
+                              </div>
+                           </div>
+                           <!-- <div class="review-like-dislike">
+                              <span><a href=""><i class="fa-solid fa-thumbs-up"></i> 10</a></span>
+                              <span><a href=""><i class="fa-solid fa-thumbs-down"></i> 8</a></span>
+                              </div> -->
+                        </div>
+                     </div>
+                     <div class="item">
+                        <div class="review-box">
+                           <h3>Reliance Industries</h3>
+                           <div class="user-info-panel">
+                              <span><i class="fa-solid fa-location-dot"></i></span>
+                              <p class="m-0">
+                                 <strong>Location</strong><br>
+                                 2/6 Sree Colony 
+                              </p>
+                           </div>
+                           <div class="user-info-panel">
+                              <span><i class="fa-solid fa-box"></i></span>
+                              <p class="m-0">
+                                 <strong>Product/division</strong><br>
+                                 Test
+                              </p>
+                           </div>
+                           <div class="user-review-text">
+                              <span class="user-select-tag">Decent</span>
+                              <span class="user-select-tag">Middle of the road</span>
+                              <div class="review-description-wrap">
+                                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum eu metus eget...
+                                    <div class="review-full-description">
+                                       Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum eu metus eget. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                                    </div>
+                                    <a href="" class="read-review">View More</a>
+                              </div>
+                           </div>
+                           <div class="user-bio_rating">
+                              <div class="user-profile-info">
+                                 <div class="user-name-show position-relative">
+                                    <span><img src="/1692354088064-feature-man2.png" alt="img" width="20px"></span>
+                                    <span>Vivek Roy</span>
+                                 </div>
+                                 <div class="user-review-date">August 10, 2023</div>
+                              </div>
+                              <div class="user-rating">
+                                 <span><img src="/1691875935385-8.Awesome.gif" alt="" style="display: inline-block;" width="35"></span>
+                                 <span>3.5/5</span>
+                              </div>
+                           </div>
+                           <!-- <div class="review-like-dislike">
+                              <span><a href=""><i class="fa-solid fa-thumbs-up"></i> 10</a></span>
+                              <span><a href=""><i class="fa-solid fa-thumbs-down"></i> 8</a></span>
+                              </div> -->
+                        </div>
+                     </div>
+                  </div>
+               </div>
+
+               <div class="analytics_data analytics_data_row6">
+                  <div class="row align-items-center">
+                     <div class="col-md-6">
+                        <div class="admin_map">
+                           <div id="chartdiv"></div> 
+                        </div>
+                     </div>
+                     <div class="col-md-6">
+                        <div class="map_content">
+                           <h4>Hover on state to see top reviews</h4>
+                           <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum.</p>
+                           <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum.</p>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
          </div>
       </section>
       <!-- ============== Section6 End =============== -->
 
       <%- include('common/footer') -%>
+         <script src="https://www.amcharts.com/lib/4/core.js"></script>
+         <script src="https://www.amcharts.com/lib/4/maps.js"></script>
+         <script src="https://www.amcharts.com/lib/4/geodata/india2019High.js"></script>
+         <script src="https://www.amcharts.com/lib/4/themes/animated.js"></script>
+         <script>
+            window.onload = function () {
+
+               var chart = new CanvasJS.Chart("chartContainer", {
+                  exportEnabled: false,
+                  animationEnabled: true,
+                  legend :{ 
+                     verticalAlign: "center", 
+                     horizontalAlign: "right",
+                     fontSize:15,
+                     fontWeight:"normal",
+                  }, 
+                  data: [{
+                     type: "doughnut",
+                     innerRadius: 70,
+                     showInLegend: true,
+                     toolTipContent: "<b>{name}</b>: #percent%",
+                     indexLabel: "#percent%",
+                     indexLabelPlacement: "inside",
+                     indexLabelFontColor: "black",
+                     indexLabelFontSize: 13,
+                     indexLabelFontWeight: "bold",
+                     dataPoints: [
+                        { y: 10, name: "Disappointing", color: "red" },
+                        { y: 10, name: "Dissatisfied", color: "#fc3003" },
+                        { y: 10, name: "Unsatisfactory", color: "#fc5603" },
+                        { y: 10, name: "inadequate", color: "#fc9003" },
+                        { y: 10, name: "Moderate", color: "#fcb503" },
+                        { y: 10, name: "Acceptable", color: "#e3fc03" },
+                        { y: 10, name: "Satisfactory", color: "#bafc03" },
+                        { y: 10, name: "Good", color: "#a1fc03" },
+                        { y: 10, name: "Impressive", color: "#80fc03" },
+                        { y: 10, name: "Excellent", color: "#03fc2c" },
+                     ]
+                  }]
+               });
+               chart.render();
+
+               /*========================================*/
+
+               var columnChart = new CanvasJS.Chart("columnChart", {
+                  animationEnabled: true,
+                  //exportEnabled: true,
+                  theme: "light1", // "light1", "light2", "dark1", "dark2"
+                  title: {
+                     //text: "Simple Column Chart with Index Labels"
+                  },
+                  axisY: {
+                     includeZero: true
+                  },
+                  dataPointWidth: 25,
+                  //backgroundColor: "#F5DEB3",
+                  data: [{
+                     type: "column",
+                     //indexLabel: "{y}", //Shows y value on all Data Points
+                     indexLabelFontColor: "#5A5757",
+                     indexLabelFontSize: 16,
+                     indexLabelPlacement: "outside",
+                     dataPoints: [
+                        { x: 0.5, y: 71, color: '#F8A401' },
+                        { x: 1, y: 55, color: '#F8A401' },
+                        { x: 1.5, y: 50, color: '#F8A401' },
+                        { x: 2, y: 65, color: '#F8A401' },
+                        { x: 2.5, y: 70, color: '#F8A401' },
+                        { x: 3, y: 68, color: '#F8A401' },
+                        { x: 3.5, y: 38, color: '#F8A401' },
+                        { x: 4, y: 99, color: '#F8A401' },
+                        { x: 4.5, y: 54, color: '#F8A401' },
+                        { x: 5, y: 60, color: '#F8A401' },
+                     ]
+                  }]
+               });
+               columnChart.render();
+
+               /*===================================================*/
+               
+               var ageChart = new CanvasJS.Chart("ageChartContainer", {  
+                  legend :{ 
+                     verticalAlign: "center", 
+                     horizontalAlign: "right",
+                     fontSize:15,
+                     fontWeight:"normal",
+                  }, 
+                  data: [ 
+                  { 
+                     type: "pie", 
+                     showInLegend: true, 
+                     toolTipContent: "<b>Age:</b> {label} <br/> <b>Visited:</b> {y} %", 
+                     indexLabel: "{y} %", 
+                     dataPoints: [ 
+                        { label: "<18",  y: 30.3, color:'#F87701', legendText: "< 18"}, 
+                        { label: "18-24",    y: 19.1, color:'#F8A401', legendText: "18 - 24"  }, 
+                        { label: "25-34",   y: 4.0, color:'#F4DD35',  legendText: "25 - 34" }, 
+                        { label: "35-44",       y: 3.8, color:'#FFF6B2',  legendText: "35 - 44"}, 
+                        { label: ">45",   y: 3.2, color:'#000',  legendText: "> 45" }, 
+                     ] 
+                  } 
+                  ] 
+               });
+               ageChart.render();
+
+               /*===================================================*/
+
+               var chartByDevice = new CanvasJS.Chart("chartContainerByDevice", {
+                  animationEnabled: true,
+                  data: [{
+                     type: "pyramid",
+                     indexLabelFontSize: 18,
+                     valueRepresents: "area",
+                     showInLegend: true,
+                     legendText: "{indexLabel}",
+                     toolTipContent: "<b>{indexLabel}:</b> {y}%",
+                     dataPoints: [
+                        { y: 60, color:"#000000", indexLabel: "Computer" },
+                        { y: 10, color:"#F8A401", indexLabel: "Tablet" },
+                        { y: 30, color:"#F87701", indexLabel: "Mobile" },
+                     ]
+                  }]
+               });
+               chartByDevice.render();
+
+               /*============================== map js ==========================*/
+
+               // Themes begin
+               am4core.useTheme(am4themes_animated);
+               // Themes end
+
+               // Create map instance
+               var chart = am4core.create("chartdiv", am4maps.MapChart);
+
+               // Set map definition
+               chart.geodata = am4geodata_india2019High;
+
+               // Create map polygon series
+               var polygonSeries = chart.series.push(new am4maps.MapPolygonSeries());
+
+               //Set min/max fill color for each area
+               polygonSeries.heatRules.push({
+               property: "fill",
+               target: polygonSeries.mapPolygons.template,
+               min: chart.colors.getIndex(0).brighten(1),  
+               min: chart.colors.getIndex(1).brighten(0.3),
+               // logarithmic: true
+               // "min": am4core.color("#ffd7b1"), 
+               });
+
+               // Make map load polygon data (state shapes and names) from GeoJSON
+               polygonSeries.useGeodata = true;
+
+               // Set heatmap values for each state
+               polygonSeries.data = [
+               {
+                  id: "IN-JK",
+                  value: 10,
+               },
+               {
+                  id: "IN-MH",
+                  value: 12
+               },
+               {
+                  id: "IN-UP",
+                  value: 10
+               },
+               {
+                  id: "US-AR",
+                  value: 13
+               },
+               {
+                  id: "IN-RJ",
+                  value: 30
+               },
+               {
+                  id: "IN-AP",
+                  value: 40
+               },
+               {
+                  id: "IN-MP",
+                  value: 90
+               },
+               {
+                  id: "IN-TN",
+                  value: 40
+               },
+               {
+                  id: "IN-JH",
+                  value: 3
+               },
+               {
+                  id: "IN-WB",
+                  value: 0
+               },
+               {
+                  id: "IN-GJ",
+                  value: 0
+               },
+               {
+                  id: "IN-BR",
+                  value: 0
+               },
+               {
+                  id: "IN-TG",
+                  value: 0
+               },
+               {
+                  id: "IN-GA",
+                  value: 0
+               },
+               {
+                  id: "IN-DN",
+                  value: 0
+               },
+               {
+                  id: "IN-DL",
+                  value: 0
+               },
+               {
+                  id: "IN-DD",
+                  value: 0
+               },
+               {
+                  id: "IN-CH",
+                  value: 0
+               },
+               {
+                  id: "IN-CT",
+                  value: 0
+               },
+               {
+                  id: "IN-AS",
+                  value: 0
+               },
+               {
+                  id: "IN-AR",
+                  value: 0
+               },
+               {
+                  id: "IN-AN",
+                  value: 0
+               },
+               {
+                  id: "IN-KA",
+                  value: 0
+               },
+               {
+                  id: "IN-KL",
+                  value: 0
+               },
+               {
+                  id: "IN-OR",
+                  value: 0
+               },
+               {
+                  id: "IN-SK",
+                  value: 0
+               },
+               {
+                  id: "IN-HP",
+                  value:15
+               },
+               {
+                  id: "IN-PB",
+                  value: 14
+               },
+               {
+                  id: "IN-HR",
+                  value: 13
+               },
+               {
+                  id: "IN-UT",
+                  value: 12
+               },
+               {
+                  id: "IN-LK",
+                  value: 30
+               },
+               {
+                  id: "IN-MN",
+                  value: 5
+               },
+               {
+                  id: "IN-TR",
+                  value: 4
+               },
+               {
+                  id: "IN-MZ",
+                  value: 3
+               },
+               {
+                  id: "IN-NL",
+                  value: 2
+               },
+               {
+                  id: "IN-ML",
+                  value: 1
+               }
+               ];
+
+               // Configure series tooltip
+               var polygonTemplate = polygonSeries.mapPolygons.template;
+               polygonTemplate.tooltipText = "{name}: {value}";
+               polygonTemplate.nonScalingStroke = true;
+               polygonTemplate.strokeWidth = 0.5;
+
+               // Create hover state and set alternative fill color
+               var hs = polygonTemplate.states.create("hover");
+               hs.properties.fill = am4core.color("#FCCB06");
+ 
+            }
+         </script>
