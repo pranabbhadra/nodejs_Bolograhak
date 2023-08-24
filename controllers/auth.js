@@ -2910,8 +2910,8 @@ exports.updateGlobalContent = async (req, res) => {
 
 //--Front end- Update Basic Company profile --//
 exports.updateBasicCompany = (req, res) => {
-    console.log('updateBasicCompany:',req.body);
-    console.log('updateBasicCompany File:',req.file);
+    //console.log('updateBasicCompany:',req.body);
+    //console.log('updateBasicCompany File:',req.file);
     //return false;
     const companyID = req.body.company_id;
     const currentDate = new Date();
