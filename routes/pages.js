@@ -436,6 +436,27 @@ router.get('/company-profile-management', checkCookieValue, async (req, res) => 
     res.render('front-end/company-profile-management', { menu_active_id: 'company-profile', page_title: 'Company Profile', currentUserData, globalPageMeta:globalPageMeta });
 });
 
+//company dashboard Review listing Page 
+router.get('/company-dashboard-review-listing', checkCookieValue, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
+    const [globalPageMeta] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+    ]);
+
+    res.render('front-end/company-dashboard-review-listing', { menu_active_id: 'company-dashboard-review-listing', page_title: 'Company Review Listing', currentUserData, globalPageMeta:globalPageMeta });
+});
+
+//company dashboard Review replay Page 
+router.get('/company-dashboard-review-replay', checkCookieValue, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
+    const [globalPageMeta] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+    ]);
+
+    res.render('front-end/company-dashboard-review-replay', { menu_active_id: 'company-dashboard-review-replay', page_title: 'Company Review Replay', currentUserData, globalPageMeta:globalPageMeta });
+});
+
+
 router.get('/privacy-policy', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
     const [globalPageMeta] = await Promise.all([
