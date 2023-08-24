@@ -432,7 +432,7 @@ router.get('/basic-company-profile/:compID', checkClientClaimedCompany, async (r
     //console.log(company);
     res.render('front-end/basic-company-profile-dashboard', 
     { 
-        menu_active_id: 'company-dashboard', 
+        menu_active_id: 'basic-company-dashboard', 
         page_title: 'Company Dashboard', 
         currentUserData, 
         globalPageMeta:globalPageMeta,
@@ -483,7 +483,7 @@ router.get('/basic-company-profile-management/:compId', checkCookieValue, async 
 
     res.render('front-end/basic-company-profile-management', 
     { 
-        menu_active_id: 'company-profile', 
+        menu_active_id: 'basic-company-management', 
         page_title: 'Company Profile Management', 
         currentUserData, 
         globalPageMeta:globalPageMeta,

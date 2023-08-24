@@ -1968,7 +1968,7 @@ exports.updateHome = async (req, res) => {
 
     const { home_id, title, meta_title, meta_desc, meta_keyword, bannner_content, for_business,
         for_customer, cus_right_content, cus_right_button_link, cus_right_button_text,youtube_link,
-        youtube_1, youtube_2, youtube_3, youtube_4, fb_widget, twitter_widget,
+        youtube_1, youtube_2, youtube_3, youtube_4, youtube_5, youtube_6, youtube_7, youtube_8, youtube_9, youtube_10, fb_widget, twitter_widget,
         org_responsibility_content, org_responsibility_buttton_link, org_responsibility_buttton_text,
         about_us_content, about_us_button_link, about_us_button_text, bannner_content_2, bannner_hashtag, reviewers_guidelines_title,reviewers_guidelines_popup, review_form_demo_location, cus_right_facts_popup, org_responsibility_facts_popup } = req.body;
 
@@ -1981,12 +1981,12 @@ exports.updateHome = async (req, res) => {
         for_customer, cus_right_content, cus_right_button_link, cus_right_button_text,youtube_link,
         youtube_1, youtube_2, youtube_3, youtube_4, fb_widget, twitter_widget,
         org_responsibility_content, org_responsibility_buttton_link, org_responsibility_buttton_text,
-        about_us_content, about_us_button_link, about_us_button_text, bannner_content_2, bannner_hashtag, reviewers_guidelines_title,reviewers_guidelines_popup, review_form_demo_location, cus_right_facts_popup, org_responsibility_facts_popup];
+        about_us_content, about_us_button_link, about_us_button_text, bannner_content_2, bannner_hashtag, reviewers_guidelines_title,reviewers_guidelines_popup, review_form_demo_location, cus_right_facts_popup, org_responsibility_facts_popup,youtube_5, youtube_6, youtube_7, youtube_8, youtube_9, youtube_10];
 
     const meta_key = ['bannner_content', 'for_business',
         'for_customer', 'cus_right_content', 'cus_right_button_link', 'cus_right_button_text','youtube_link', 'youtube_1', 'youtube_2', 'youtube_3', 'youtube_4', 'fb_widget', 'twitter_widget',
         'org_responsibility_content', 'org_responsibility_buttton_link', 'org_responsibility_buttton_text',
-        'about_us_content', 'about_us_button_link', 'about_us_button_text', 'bannner_content_2', 'bannner_hashtag', 'reviewers_guidelines_title','reviewers_guidelines_popup', 'review_form_demo_location', 'cus_right_facts_popup', 'org_responsibility_facts_popup'];
+        'about_us_content', 'about_us_button_link', 'about_us_button_text', 'bannner_content_2', 'bannner_hashtag', 'reviewers_guidelines_title','reviewers_guidelines_popup', 'review_form_demo_location', 'cus_right_facts_popup', 'org_responsibility_facts_popup','youtube_5', 'youtube_6', 'youtube_7', 'youtube_8', 'youtube_9', 'youtube_10'];
 
     await meta_value.forEach((element, index) => {
         //console.log(element, index);
@@ -2910,8 +2910,9 @@ exports.updateGlobalContent = async (req, res) => {
 
 //--Front end- Update Basic Company profile --//
 exports.updateBasicCompany = (req, res) => {
-    console.log(req.body);
-    return false;
+    console.log('updateBasicCompany:',req.body);
+    console.log('updateBasicCompany File:',req.file);
+    //return false;
     const companyID = req.body.company_id;
     const currentDate = new Date();
 
@@ -2925,27 +2926,16 @@ exports.updateBasicCompany = (req, res) => {
     const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
     // Update company details in the company table
-    const updateQuery = 'UPDATE company SET company_name = ?, heading = ?, logo = ?, about_company = ?, comp_phone = ?, comp_email = ?, comp_registration_id = ?, status = ?, trending = ?, updated_date = ?, tollfree_number = ?, main_address = ?, main_address_pin_code = ?, address_map_url = ?, main_address_country = ?, main_address_state = ?, main_address_city = ?, verified = ?, paid_status = ? WHERE ID = ?';
+    const updateQuery = 'UPDATE company SET  heading = ?, logo = ?, about_company = ?, comp_phone = ?, comp_email = ?, updated_date = ?, tollfree_number = ?, main_address = ?  WHERE ID = ?';
     const updateValues = [
-                            req.body.company_name,
                             req.body.heading,
                             '',
                             req.body.about_company,
                             req.body.comp_phone,
                             req.body.comp_email,
-                            req.body.comp_registration_id,
-                            req.body.status,
-                            req.body.trending,
                             formattedDate,
                             req.body.tollfree_number,
                             req.body.main_address,
-                            req.body.main_address_pin_code,
-                            req.body.address_map_url,
-                            req.body.main_address_country,
-                            req.body.main_address_state,
-                            req.body.main_address_city,
-                            req.body.verified,
-                            req.body.payment_status,
                             companyID
                         ];
 
@@ -2960,9 +2950,9 @@ exports.updateBasicCompany = (req, res) => {
             }
         });
 
-        updateValues[2] = req.file.filename;
+        updateValues[1] = req.file.filename;
     }else{
-        updateValues[2] = req.body.previous_logo;
+        updateValues[1] = req.body.previous_logo;
     }
     db.query(updateQuery, updateValues, (err, results) => {
         if (err) {
@@ -2972,6 +2962,14 @@ exports.updateBasicCompany = (req, res) => {
                 data: '',
                 message: 'An error occurred while updating the company details: ' + err
             });
+        }else{
+            return res.send(
+                {
+                    status: 'ok',
+                    data: companyID,
+                    message: 'Successfully Updated'
+                }
+            )
         }
 
         

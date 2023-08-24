@@ -117,7 +117,9 @@
                                     <!--end::Avatar-->
                                     <!--begin::Text-->
                                     <div class="flex-grow-1"><strong><%= reviewData.first_name +' '+ reviewData.last_name %></strong></div>
+                                    <% if(currentUserData.user_type_id != 3 ) { %>
                                     <a target="_blank" href="/edit-user/<%= reviewData.customer_id %>" class="btn btn-bg-light btn-active-color-primary btn-sm">View</a>
+                                    <% } %>
                                     <!--end::Text-->
                                 </div> 
                             </div>
@@ -132,19 +134,23 @@
                             <!--end::Label-->
                             <!--begin::Col-->
                             <div class="col-lg-8 fv-row">
-                                <select name="rating" class="form-select form-control form-control-lg form-control-solid">
-                                    <option value="0" <% if(reviewData.rating == '0'){ %>selected <% } %>>0</option>
-                                    <option value="0.5" <% if(reviewData.rating == '0.5'){ %>selected <% } %>>0.5</option>
-                                    <option value="1" <% if(reviewData.rating == '1'){ %>selected <% } %>>1</option>
-                                    <option value="1.5" <% if(reviewData.rating == '1.5'){ %>selected <% } %>>1.5</option>
-                                    <option value="2" <% if(reviewData.rating == '2'){ %>selected <% } %>>2</option>
-                                    <option value="2.5" <% if(reviewData.rating == '2.5'){ %>selected <% } %>>2.5</option>
-                                    <option value="3" <% if(reviewData.rating == '3'){ %>selected <% } %>>3</option>
-                                    <option value="3.5" <% if(reviewData.rating == '3.5'){ %>selected <% } %>>3.5</option>
-                                    <option value="4" <% if(reviewData.rating == '4'){ %>selected <% } %>>4</option>
-                                    <option value="4.5" <% if(reviewData.rating == '4.5'){ %>selected <% } %>>4.5</option>
-                                    <option value="5" <% if(reviewData.rating == '5'){ %>selected <% } %>>5</option>
-                                </select>
+                                <% if(currentUserData.user_type_id == 3 ) { %>
+                                    <input type="text" name="rating" class="form-control form-control-lg form-control-solid" placeholder="Rating" value="<% if(reviewData && reviewData.rating){ %><%= reviewData.rating %><% } %>" readonly  />
+                                <% } else { %>
+                                    <select name="rating" class="form-select form-control form-control-lg form-control-solid">
+                                        <option value="0" <% if(reviewData.rating == '0'){ %>selected <% } %>>0</option>
+                                        <option value="0.5" <% if(reviewData.rating == '0.5'){ %>selected <% } %>>0.5</option>
+                                        <option value="1" <% if(reviewData.rating == '1'){ %>selected <% } %>>1</option>
+                                        <option value="1.5" <% if(reviewData.rating == '1.5'){ %>selected <% } %>>1.5</option>
+                                        <option value="2" <% if(reviewData.rating == '2'){ %>selected <% } %>>2</option>
+                                        <option value="2.5" <% if(reviewData.rating == '2.5'){ %>selected <% } %>>2.5</option>
+                                        <option value="3" <% if(reviewData.rating == '3'){ %>selected <% } %>>3</option>
+                                        <option value="3.5" <% if(reviewData.rating == '3.5'){ %>selected <% } %>>3.5</option>
+                                        <option value="4" <% if(reviewData.rating == '4'){ %>selected <% } %>>4</option>
+                                        <option value="4.5" <% if(reviewData.rating == '4.5'){ %>selected <% } %>>4.5</option>
+                                        <option value="5" <% if(reviewData.rating == '5'){ %>selected <% } %>>5</option>
+                                    </select>
+                                <% } %> 
                             </div>
                             <!--end::Col-->
                         </div>
@@ -156,7 +162,7 @@
                             <!--end::Label-->
                             <!--begin::Col-->
                             <div class="col-lg-8 fv-row">
-                                <input type="text" name="review_title" class="form-control form-control-lg form-control-solid" placeholder="Product/Division Name" value="<% if(reviewData && reviewData.review_title){ %><%= reviewData.review_title %><% } %>" />
+                                <input type="text" name="review_title" class="form-control form-control-lg form-control-solid" placeholder="Product/Division Name" value="<% if(reviewData && reviewData.review_title){ %><%= reviewData.review_title %><% } %>" <% if(currentUserData.user_type_id == 3){ %>readonly <% } %> />
                             </div>
                             <!--end::Col-->
                         </div>
@@ -168,7 +174,7 @@
                             <!--end::Label-->
                             <!--begin::Col-->
                             <div class="col-lg-8 fv-row">
-                                <textarea name="review_content" rows="8" class="form-control form-control-lg form-control-solid" placeholder="Review Content"><% if(reviewData && reviewData.review_content){ %><%= reviewData.review_content %><% } %></textarea>
+                                <textarea name="review_content" rows="8" class="form-control form-control-lg form-control-solid" placeholder="Review Content" <% if(currentUserData.user_type_id == 3){ %> readonly <% } %> ><% if(reviewData && reviewData.review_content){ %><%= reviewData.review_content %><% } %></textarea>
                             </div>
                             <!--end::Col-->
                         </div>
@@ -181,7 +187,7 @@
                             <!--end::Label-->
                             <!--begin::Col-->
                             <div class="col-lg-8 fv-row">
-                                <input class="form-control" name="rating_tags" value="<% if(reviewTagData){ %><% reviewTagData.forEach(function(tag) { %><%= tag.tag_name %>, <% }); %><% } %>" id="kt_rating_tags"/>
+                                <input class="form-control" name="rating_tags" value="<% if(reviewTagData){ %><% reviewTagData.forEach(function(tag) { %><%= tag.tag_name %>, <% }); %><% } %>" id="kt_rating_tags" <% if(currentUserData.user_type_id == 3){ %>readonly <% } %> />
                             </div>
                             <!--end::Col-->
                         </div>
@@ -196,13 +202,13 @@
                                 <div class="d-flex align-items-center mt-3">
                                     <!--begin::Option-->
                                     <label class="form-check form-check-inline form-check-solid me-5">
-                                        <input class="form-check-input" name="user_privacy" type="radio" value="1" <% if(reviewData.user_privacy == '1'){ %>checked <% } %>/>
+                                        <input class="form-check-input" name="user_privacy" type="radio" value="1" <% if(reviewData.user_privacy == '1'){ %>checked <% } %> <% if(currentUserData.user_type_id == 3 && reviewData.user_privacy != '1'){ %>disabled <% } %>/>
                                         <span class="fw-bold ps-2 fs-6">Public</span>
                                     </label>
                                     <!--end::Option-->
                                     <!--begin::Option-->
                                     <label class="form-check form-check-inline form-check-solid">
-                                        <input class="form-check-input" name="user_privacy" type="radio" value="0" <% if(reviewData.user_privacy == '0'){ %>checked <% } %> />
+                                        <input class="form-check-input" name="user_privacy" type="radio" value="0" <% if(reviewData.user_privacy == '0'){ %>checked <% } %> <% if(currentUserData.user_type_id == 3 && reviewData.user_privacy != '0'){ %>disabled <% } %> />
                                         <span class="fw-bold ps-2 fs-6">Private</span>
                                     </label>
                                     <!--end::Option-->

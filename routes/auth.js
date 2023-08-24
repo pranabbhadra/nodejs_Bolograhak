@@ -215,6 +215,7 @@ router.post('/update-myprofile',upload.single('profile_pic'), authController.upd
 //Update Global Content
 router.post('/update-global-content', authController.updateGlobalContent);
 
-//Update basic-company-profile-management Update
-router.post('/basic_company_profile_update', authController.updateBasicCompany);
+//Update basic-company-profile-management 
+router.post('/basic_company_profile_update', upload.single('logo'), authController.updateBasicCompany);
+
 module.exports = router;
