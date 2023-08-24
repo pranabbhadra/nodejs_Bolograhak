@@ -318,10 +318,11 @@ exports.frontendUserLogin = (req, res) => {
                         //check Customer Login
                         if (user.user_type_id == 2 && user.user_status == 1) {
                             const query = `
-                                        SELECT user_meta.*, c.name as country_name, s.name as state_name
+                                        SELECT user_meta.*, c.name as country_name, s.name as state_name, ccr.company_id as claimed_comp_id
                                         FROM user_customer_meta user_meta
                                         JOIN countries c ON user_meta.country = c.id
                                         JOIN states s ON user_meta.state = s.id
+                                        LEFT JOIN company_claim_request ccr ON user_meta.user_id = ccr.claimed_by
                                         WHERE user_id = ?
                                         `;
                             db.query(query, [user.user_id], async (err, results) => {
@@ -352,7 +353,8 @@ exports.frontendUserLogin = (req, res) => {
                                         date_of_birth: formattedDate,
                                         occupation: user_meta.occupation,
                                         gender: user_meta.gender,
-                                        profile_pic: user_meta.profile_pic
+                                        profile_pic: user_meta.profile_pic,
+                                        claimed_comp_id: user_meta.claimed_comp_id
                                     };
                                     const encodedUserData = JSON.stringify(userData);
                                     res.cookie('user', encodedUserData);
@@ -365,7 +367,8 @@ exports.frontendUserLogin = (req, res) => {
                                         last_name: user.last_name,
                                         email: user.email,
                                         phone: user.phone,
-                                        user_type_id: user.user_type_id
+                                        user_type_id: user.user_type_id,
+                                        claimed_comp_id: user_meta.claimed_comp_id
                                     };
                                     const encodedUserData = JSON.stringify(userData);
                                     res.cookie('user', encodedUserData);
@@ -523,10 +526,11 @@ exports.login = (req, res) => {
                         //check Administrative Login
                         if ((user.user_type_id == 1 || user.user_type_id == 3) && user.user_status == 1) {
                             const query = `
-                                        SELECT user_meta.*, c.name as country_name, s.name as state_name
+                                        SELECT user_meta.*, c.name as country_name, s.name as state_name, ccr.company_id as claimed_comp_id
                                         FROM user_customer_meta user_meta
                                         JOIN countries c ON user_meta.country = c.id
                                         JOIN states s ON user_meta.state = s.id
+                                        LEFT JOIN company_claim_request ccr ON user_meta.user_id = ccr.claimed_by
                                         WHERE user_id = ?
                                         `;
                             db.query(query, [user.user_id], async (err, results) => {
@@ -557,7 +561,8 @@ exports.login = (req, res) => {
                                         date_of_birth: formattedDate,
                                         occupation: user_meta.occupation,
                                         gender: user_meta.gender,
-                                        profile_pic: user_meta.profile_pic
+                                        profile_pic: user_meta.profile_pic,
+                                        claimed_comp_id: user_meta.claimed_comp_id
                                     };
                                     const encodedUserData = JSON.stringify(userData);
                                     res.cookie('user', encodedUserData);
@@ -570,7 +575,8 @@ exports.login = (req, res) => {
                                         last_name: user.last_name,
                                         email: user.email,
                                         phone: user.phone,
-                                        user_type_id: user.user_type_id
+                                        user_type_id: user.user_type_id,
+                                        claimed_comp_id: user_meta.claimed_comp_id
                                     };
                                     const encodedUserData = JSON.stringify(userData);
                                     res.cookie('user', encodedUserData);
@@ -1676,7 +1682,7 @@ exports.editRatingTags = (req, res) => {
 }
 
 exports.editCustomerReview = async (req, res) => {
-    console.log(req.body);
+    //console.log('controller',req.body);
     // const ratingTagsArray = JSON.parse(req.body.rating_tags);
     // console.log(ratingTagsArray);
     const editResponse1 = await comFunction.editCustomerReview( req.body );
@@ -1962,7 +1968,7 @@ exports.updateHome = async (req, res) => {
 
     const { home_id, title, meta_title, meta_desc, meta_keyword, bannner_content, for_business,
         for_customer, cus_right_content, cus_right_button_link, cus_right_button_text,youtube_link,
-        youtube_1, youtube_2, youtube_3, youtube_4, fb_widget, twitter_widget,
+        youtube_1, youtube_2, youtube_3, youtube_4, youtube_5, youtube_6, youtube_7, youtube_8, youtube_9, youtube_10, fb_widget, twitter_widget,
         org_responsibility_content, org_responsibility_buttton_link, org_responsibility_buttton_text,
         about_us_content, about_us_button_link, about_us_button_text, bannner_content_2, bannner_hashtag, reviewers_guidelines_title,reviewers_guidelines_popup, review_form_demo_location, cus_right_facts_popup, org_responsibility_facts_popup } = req.body;
 
@@ -1975,12 +1981,12 @@ exports.updateHome = async (req, res) => {
         for_customer, cus_right_content, cus_right_button_link, cus_right_button_text,youtube_link,
         youtube_1, youtube_2, youtube_3, youtube_4, fb_widget, twitter_widget,
         org_responsibility_content, org_responsibility_buttton_link, org_responsibility_buttton_text,
-        about_us_content, about_us_button_link, about_us_button_text, bannner_content_2, bannner_hashtag, reviewers_guidelines_title,reviewers_guidelines_popup, review_form_demo_location, cus_right_facts_popup, org_responsibility_facts_popup];
+        about_us_content, about_us_button_link, about_us_button_text, bannner_content_2, bannner_hashtag, reviewers_guidelines_title,reviewers_guidelines_popup, review_form_demo_location, cus_right_facts_popup, org_responsibility_facts_popup,youtube_5, youtube_6, youtube_7, youtube_8, youtube_9, youtube_10];
 
     const meta_key = ['bannner_content', 'for_business',
         'for_customer', 'cus_right_content', 'cus_right_button_link', 'cus_right_button_text','youtube_link', 'youtube_1', 'youtube_2', 'youtube_3', 'youtube_4', 'fb_widget', 'twitter_widget',
         'org_responsibility_content', 'org_responsibility_buttton_link', 'org_responsibility_buttton_text',
-        'about_us_content', 'about_us_button_link', 'about_us_button_text', 'bannner_content_2', 'bannner_hashtag', 'reviewers_guidelines_title','reviewers_guidelines_popup', 'review_form_demo_location', 'cus_right_facts_popup', 'org_responsibility_facts_popup'];
+        'about_us_content', 'about_us_button_link', 'about_us_button_text', 'bannner_content_2', 'bannner_hashtag', 'reviewers_guidelines_title','reviewers_guidelines_popup', 'review_form_demo_location', 'cus_right_facts_popup', 'org_responsibility_facts_popup','youtube_5', 'youtube_6', 'youtube_7', 'youtube_8', 'youtube_9', 'youtube_10'];
 
     await meta_value.forEach((element, index) => {
         //console.log(element, index);
@@ -2782,11 +2788,12 @@ exports.updateMyProfile = (req, res) => {
                     } else {
                         const query = `
                                 SELECT user_meta.*, c.name as country_name, s.name as state_name, u.first_name
-                                , u.last_name, u.email, u.phone, u.user_type_id
+                                , u.last_name, u.email, u.phone, u.user_type_id, ccr.company_id as claimed_comp_id
                                 FROM user_customer_meta user_meta
                                 JOIN users u ON u.user_id = user_meta.user_id
                                 JOIN countries c ON user_meta.country = c.id
                                 JOIN states s ON user_meta.state = s.id
+                                LEFT JOIN company_claim_request ccr ON user_meta.user_id = ccr.claimed_by
                                 WHERE user_meta.user_id = ?
                                 `;
                             db.query(query, [userId], async (err, results) => {
@@ -2817,7 +2824,8 @@ exports.updateMyProfile = (req, res) => {
                                     date_of_birth: formattedDate,
                                     occupation: user_meta.occupation,
                                     gender: user_meta.gender,
-                                    profile_pic: user_meta.profile_pic
+                                    profile_pic: user_meta.profile_pic,
+                                    claimed_comp_id: user_meta.claimed_comp_id
                                 };
                                 const encodedUserData = JSON.stringify(userData);
                                 res.cookie('user', encodedUserData);
@@ -2898,4 +2906,72 @@ exports.updateGlobalContent = async (req, res) => {
                 }
             )
         })
+}
+
+//--Front end- Update Basic Company profile --//
+exports.updateBasicCompany = (req, res) => {
+    //console.log('updateBasicCompany:',req.body);
+    //console.log('updateBasicCompany File:',req.file);
+    //return false;
+    const companyID = req.body.company_id;
+    const currentDate = new Date();
+
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+    const day = String(currentDate.getDate()).padStart(2, '0');
+    const hours = String(currentDate.getHours()).padStart(2, '0');
+    const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+    const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+
+    const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+    // Update company details in the company table
+    const updateQuery = 'UPDATE company SET  heading = ?, logo = ?, about_company = ?, comp_phone = ?, comp_email = ?, updated_date = ?, tollfree_number = ?, main_address = ?  WHERE ID = ?';
+    const updateValues = [
+                            req.body.heading,
+                            '',
+                            req.body.about_company,
+                            req.body.comp_phone,
+                            req.body.comp_email,
+                            formattedDate,
+                            req.body.tollfree_number,
+                            req.body.main_address,
+                            companyID
+                        ];
+
+    if (req.file) {
+        // Unlink (delete) the previous file
+        const unlinkcompanylogo = "uploads/" + req.body.previous_logo;
+        fs.unlink(unlinkcompanylogo, (err) => {
+            if (err) {
+                //console.error('Error deleting file:', err);
+            } else {
+                //console.log('Previous file deleted');
+            }
+        });
+
+        updateValues[1] = req.file.filename;
+    }else{
+        updateValues[1] = req.body.previous_logo;
+    }
+    db.query(updateQuery, updateValues, (err, results) => {
+        if (err) {
+            // Handle the error
+            return res.send({
+                status: 'err',
+                data: '',
+                message: 'An error occurred while updating the company details: ' + err
+            });
+        }else{
+            return res.send(
+                {
+                    status: 'ok',
+                    data: companyID,
+                    message: 'Successfully Updated'
+                }
+            )
+        }
+
+        
+    })
 }

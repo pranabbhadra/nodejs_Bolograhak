@@ -8,51 +8,42 @@
       <section class="main-content about-content2 py-3">
          <div class="container">
             <div class="main_box basic_company_profile">
-               <div class="basic_info_of_company">
+               <%- include('common/basic-company-sidebar') -%>
+               <!-- <div class="basic_info_of_company">
                   <div class="row align-items-center">
                      <div class="col-md-4 col-lg-3">
                         <div class="company_logo">
+                           
                            <% if(company && company.logo) { %>
-                              <a href="#"><img src="/<%= company.logo %>" alt="company"></a>
+                           <a href="#"><img src="/<%= company.logo %>" alt="company"></a>
                            <%} else {%>
-                              <a href="#"><img src="/front-end/images/company-placeholder-image.png" alt="company"></a>
-                           <% } %>
+                              <a href="#"><img src="/front-end/images/company-placeholder-image.png" alt="company" ></a>
+                              <% } %>
                         </div>
                      </div>
                      <div class="col-md-8 col-lg-6">
                         <div class="company_details">
                            <div class="row">
-                              <% if(company && company.company_name){ %>
-                                 <div class="col-sm-12">
-                                    <h2 class="company_name">
-                                       <%= company && company.company_name ? company.company_name : '' %>
-                                    </h2>
-                                    <h4 class="tag_line">Simpley creative</h4>
-                                 </div>
-                              <% } %>
-                              <% if(company && company.comp_email){ %>
-                                 <div class="col-sm-6">
-                                    <p class="common_style"><i class="fas fa-envelope"></i><a
-                                          href="mailto:<%= company.comp_email %>">
-                                          <%= company.comp_email %>
-                                       </a></p>
-                                 </div>
-                              <% } %>
-                              <% if(company && company.comp_phone ){ %>
-                                 <div class="col-sm-6">
-                                    <p class="common_style"><i class="fas fa-mobile"></i><a
-                                          href="tel:<%= company.comp_phone %>">
-                                          <%= company.comp_phone %>
-                                       </a></p>
-                                 </div>
-                              <% } %>
-                              <% if(company && company.main_address ){ %>
-                                 <div class="col-sm-12">
-                                    <p class="common_style"><i class="fas fa-map-marker-alt"></i>
-                                       <%= company.main_address %>
-                                    </p>
-                                 </div>
-                              <% } %>
+                              <div class="col-sm-12">
+                                 <h2 class="company_name"><%= company && company.company_name ? company.company_name : '' %></h2>
+                              </div>
+                              <div class="col-sm-6">
+                                 <% if(company && company.comp_email){ %>
+                                 <p class="common_style"><i class="fas fa-envelope"></i><a
+                                       href="mailto:<%= company && company.comp_email ? company.comp_email : '' %>"><%= company && company.comp_email ? company.comp_email : '' %></a></p>
+                                       <% } %>
+                              </div>
+                              <div class="col-sm-6">
+                                 <% if(company && company.comp_phone ){ %>
+                                 <p class="common_style"><i class="fas fa-mobile"></i><a
+                                       href="tel:<%= company && company.comp_phone ? company.comp_phone : '' %>"><%= company && company.comp_phone ? company.comp_phone : '' %></a></p>
+                                       <% } %>
+                              </div>
+                              <div class="col-sm-12">
+                                 <% if(company && company.main_address ){ %>
+                                 <p class="common_style"><i class="fas fa-map-marker-alt"></i> <%= company && company.main_address ? company.main_address : '' %></p>
+                                 <% } %>
+                              </div>
                            </div>
                         </div>
                      </div>
@@ -79,12 +70,14 @@
                   <ul>
                      <li class="active"><a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
                      <li><a href="#"><i class="fas fa-envelope"></i> My Reviews</a></li>
-                     <li><a href="#"><i class="fas fa-user-tie"></i> Profile</a></li>
+                     <li><a href="/basic-company-profile-management/<%= company.ID  %>"><i class="fas fa-user-tie"></i> Profile</a></li>
                      <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
                      <li><a href="#"><i class="fas fa-lock"></i> Change Password</a></li>
                      <li><a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
                   </ul>
-               </div>
+               </div> -->
+
+
                <div class="analytics_data analytics_data_row1">
                   <div class="row">
                      <div class="col-md-4">

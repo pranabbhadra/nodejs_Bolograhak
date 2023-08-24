@@ -387,18 +387,52 @@ router.get('/category-details-premium', checkCookieValue, async (req, res) => {
     res.render('front-end/category-details-premium', { menu_active_id: 'category-details-premium', page_title: 'Categories Details', currentUserData, globalPageMeta:globalPageMeta });
 });
 
+// Middleware function to check if user is Claimed a Company or not
+async function checkClientClaimedCompany(req, res, next) {
+    res.locals.globalData = {
+        BLOG_URL: process.env.BLOG_URL,
+        MAIN_URL: process.env.MAIN_URL,
+        // Add other variables as needed
+    };    
+    const encodedUserData = req.cookies.user;
+    //console.log('aaaaaaaaa',encodedUserData);
+    //let currentUserData = JSON.parse(req.userData);
+    try {
+        
+        if (encodedUserData) {
+            const UserJsonData = JSON.parse(encodedUserData);
+            //console.log('checkClientClaimedCompany',UserJsonData);
+            // User is logged in, proceed to the next middleware or route handler
+            if(UserJsonData && UserJsonData.claimed_comp_id == req.params.compID ){
+                next();
+            }else{
+                res.redirect('/');
+            }
+            
+        } else {
+            res.redirect('/');
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+}
 //Basic company profile dashboard Page 
-router.get('/basic-company-profile/:compID', checkCookieValue, async (req, res) => {
-    let currentUserData = JSON.parse(req.userData);
+router.get('/basic-company-profile/:compID', checkClientClaimedCompany, async (req, res) => {
+    
+    const encodedUserData = req.cookies.user;
+    const currentUserData = JSON.parse(encodedUserData);
+    //let currentUserData = JSON.parse(req.userData);
+
     const companyId = req.params.compID;
     const [globalPageMeta, company] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
         comFunction.getCompany(companyId),
     ]);
-
+    //console.log(company);
     res.render('front-end/basic-company-profile-dashboard', 
     { 
-        menu_active_id: 'company-dashboard', 
+        menu_active_id: 'basic-company-dashboard', 
         page_title: 'Company Dashboard', 
         currentUserData, 
         globalPageMeta:globalPageMeta,
@@ -407,8 +441,10 @@ router.get('/basic-company-profile/:compID', checkCookieValue, async (req, res) 
 });
 
 //Premium company profile dashboard Page 
-router.get('/premium-company-profile/:compID', checkCookieValue, async (req, res) => {
-    let currentUserData = JSON.parse(req.userData);
+router.get('/premium-company-profile/:compID', checkClientClaimedCompany, async (req, res) => {
+    //let currentUserData = JSON.parse(req.userData);
+    const encodedUserData = req.cookies.user;
+    const currentUserData = JSON.parse(encodedUserData);
     const companyId = req.params.compID;
 
     const [globalPageMeta, company] = await Promise.all([
@@ -434,6 +470,25 @@ router.get('/company-profile-management', checkCookieValue, async (req, res) => 
     ]);
 
     res.render('front-end/company-profile-management', { menu_active_id: 'company-profile', page_title: 'Company Profile', currentUserData, globalPageMeta:globalPageMeta });
+});
+
+//Basic company dashboard management Page 
+router.get('/basic-company-profile-management/:compId', checkCookieValue, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
+    const companyId = req.params.compId;
+    const [globalPageMeta, company] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+        comFunction.getCompany(companyId),
+    ]);
+
+    res.render('front-end/basic-company-profile-management', 
+    { 
+        menu_active_id: 'basic-company-management', 
+        page_title: 'Company Profile Management', 
+        currentUserData, 
+        globalPageMeta:globalPageMeta,
+        company:company
+    });
 });
 
 router.get('/privacy-policy', checkCookieValue, async (req, res) => {
@@ -698,6 +753,7 @@ async function checkLoggedIn(req, res, next) {
     }
 }
 
+// Middleware function to check if user is Administrator or not
 async function checkLoggedInAdministrator(req, res, next) {
     res.locals.globalData = {
         BLOG_URL: process.env.BLOG_URL,
@@ -724,6 +780,7 @@ async function checkLoggedInAdministrator(req, res, next) {
         res.status(500).send('An error occurred');
     }
 }
+
 
 router.get('/dashboard', checkLoggedIn, (req, res) => {
     const encodedUserData = req.cookies.user;
@@ -1157,7 +1214,7 @@ router.get('/edit-company/:id', checkLoggedIn, async (req, res) => {
             //comFunction.getCountries(),
             //comFunction.getStatesByUserID(userId)
         ]);
-        console.log(company);
+        //console.log(company);
         // Render the 'edit-user' EJS view and pass the data
         // res.json({
         //     menu_active_id: 'company',
@@ -1299,7 +1356,7 @@ router.get('/edit-review/:id', checkLoggedIn, async (req, res) => {
             comFunction.getCustomerReviewData(review_Id),
             comFunction.getCustomerReviewTagRelationData(review_Id),
         ]);
-
+        //console.log(reviewData);
         // Render the 'edit-user' EJS view and pass the data
         // res.json({
         //     reviewData: reviewData,

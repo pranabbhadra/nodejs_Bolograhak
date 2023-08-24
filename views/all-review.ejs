@@ -201,18 +201,9 @@
                                 </td>
                                 <!--end::Checkbox-->
                                 <!--begin::User=-->
-                                <td class="d-flex align-items-center">
-                                    <!--begin:: Avatar -->
-                                    <div class="symbol symbol-65px symbol-circle mb-5 me-3">
-                                        
-                                    </div>                                    
-                                    <!--end::Avatar-->
-                                    <!--begin::User details-->
-                                    <div class="d-flex flex-column">
+                                <td class="align-items-center">
+                                   
                                         <%= review.company_name %>
-                                        <span><%= review.state+', '+review.city+'-'+review.zip %></span>
-                                    </div>
-                                    <!--begin::User details-->
                                 </td>
                                 <!--end::User=-->
                                 <!--begin::Two step=-->
@@ -234,7 +225,7 @@
                                         <!--end::Text-->
                                     </div>                                    
                                 </td>
-                                <td>
+                                <td class="align-items-center">
                                     <% if(review.rating>=3.5){ %>
                                     <span class="badge badge-square badge-success"><%= review.rating %></span>
                                     <% }else if(review.rating>=2){ %>
@@ -244,11 +235,11 @@
                                     <% }%>
                                 </td>
                                 
-                                <td class="align-items-center">
+                                <td class="align-items-center m-0">
                                     
                                         <% AllReviewTags.forEach( (tag,index)=> {%>
                                             <% if(tag.review_id == review.id) { %>
-                                               <span class="badge px-4 badge-square badge-success"><%= tag.tag_name %></span>&nbsp;
+                                               <span class="badge badge-light-info fw-bolder px-4 py-3"><%= tag.tag_name %></span>&nbsp;
                                             <% } %>
                                          <% }) %>
                                 </td>
