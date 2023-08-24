@@ -201,17 +201,9 @@
                                 </td>
                                 <!--end::Checkbox-->
                                 <!--begin::User=-->
-                                <td class="d-flex align-items-center">
-                                    <!--begin:: Avatar -->
-                                    <div class="symbol symbol-65px symbol-circle mb-5 me-3">
-                                        
-                                    </div>                                    
-                                    <!--end::Avatar-->
-                                    <!--begin::User details-->
-                                    <div class="d-flex flex-column">
+                                <td class="align-items-center">
+                                   
                                         <%= review.company_name %>
-                                    </div>
-                                    <!--begin::User details-->
                                 </td>
                                 <!--end::User=-->
                                 <!--begin::Two step=-->
@@ -233,7 +225,7 @@
                                         <!--end::Text-->
                                     </div>                                    
                                 </td>
-                                <td>
+                                <td class="align-items-center">
                                     <% if(review.rating>=3.5){ %>
                                     <span class="badge badge-square badge-success"><%= review.rating %></span>
                                     <% }else if(review.rating>=2){ %>
