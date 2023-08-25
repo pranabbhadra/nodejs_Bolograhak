@@ -239,15 +239,28 @@ router.get('/review', checkCookieValue, async (req, res) => {
         let currentUserData = JSON.parse(req.userData);
 
         // Fetch all the required data asynchronously
-        const [latestReviews, AllReviews, AllTrendingReviews, AllReviewTags, allRatingTags, globalPageMeta] = await Promise.all([
+        const [latestReviews, AllReviews, AllTrendingReviews, AllReviewTags, allRatingTags, globalPageMeta, homePageMeta] = await Promise.all([
             comFunction2.getlatestReviews(20),
             comFunction2.getAllReviews(),
             comFunction2.getAllTrendingReviews(),
             comFunction2.getAllReviewTags(),
             comFunction.getAllRatingTags(),
             comFunction2.getPageMetaValues('global'),
+            comFunction2.getPageMetaValues('home'),
         ]);
         //console.log(getPageMetaValues);
+        // res.json({
+        //     menu_active_id: 'review',
+        //     page_title: 'Customer Reviews',
+        //     currentUserData,
+        //     latestReviews: latestReviews,
+        //     AllReviews: AllReviews,
+        //     allRatingTags: allRatingTags,
+        //     AllReviewTags: AllReviewTags,
+        //     AllTrendingReviews: AllTrendingReviews,
+        //     globalPageMeta:globalPageMeta,
+        //     homePageMeta:homePageMeta
+        // });
         res.render('front-end/review', {
             menu_active_id: 'review',
             page_title: 'Customer Reviews',
@@ -257,14 +270,9 @@ router.get('/review', checkCookieValue, async (req, res) => {
             allRatingTags: allRatingTags,
             AllReviewTags: AllReviewTags,
             AllTrendingReviews: AllTrendingReviews,
-            globalPageMeta:globalPageMeta
+            globalPageMeta:globalPageMeta,
+            homePageMeta:homePageMeta
         });
-        // res.json({
-        //     menu_active_id: 'review',
-        //     page_title: 'Customer Reviews',
-        //     currentUserData,
-        //     latestReviews: latestReviews
-        // });
     } catch (err) {
         console.error(err);
         res.status(500).send('An error occurred');
