@@ -91,10 +91,12 @@ function getStatesByUserID(userId) {
     db.query('SELECT country FROM user_customer_meta WHERE user_id = ?', [userId], async (err, result) => {
       if (err) {
         reject(err);
+      }else if(result[0].country == null){
+        resolve([]);
       } else {
         //console.log('Result:', result); // Log the result array
         if (result && result.length > 0) {
-          console.log(result[0].country);
+          //console.log(result[0].country);
           let countryID = '';
           if(result[0].country==null){
             countryID = 101;
