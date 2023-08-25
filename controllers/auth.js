@@ -129,7 +129,13 @@ exports.frontendUserRegister = async (req, res) => {
             });
         });
         if (emailExists) {
-            return res.status(400).json({ message: 'Email ID already exists.' });
+            return res.send(
+                {
+                    status: 'err',
+                    data: '',
+                    message: 'Email ID already exists'
+                }
+            )
         }
 
         // Hash the password asynchronously
@@ -368,7 +374,7 @@ exports.frontendUserLogin = (req, res) => {
                                         email: user.email,
                                         phone: user.phone,
                                         user_type_id: user.user_type_id,
-                                        claimed_comp_id: user_meta.claimed_comp_id
+                                        claimed_comp_id: ''
                                     };
                                     const encodedUserData = JSON.stringify(userData);
                                     res.cookie('user', encodedUserData);
@@ -576,7 +582,7 @@ exports.login = (req, res) => {
                                         email: user.email,
                                         phone: user.phone,
                                         user_type_id: user.user_type_id,
-                                        claimed_comp_id: user_meta.claimed_comp_id
+                                        claimed_comp_id: ''
                                     };
                                     const encodedUserData = JSON.stringify(userData);
                                     res.cookie('user', encodedUserData);
