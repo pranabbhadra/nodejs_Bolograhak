@@ -1060,53 +1060,43 @@ exports.editUserData = (req, res) => {
                         //console.log('Previous file deleted');
                     }
                 });
-                //const profilePicture = req.file;
-                //console.log(profilePicture);
-
-                const updateQueryMeta = 'UPDATE user_customer_meta SET address = ?, country = ?, state = ?, city = ?, zip = ?, date_of_birth = ?, occupation = ?, gender = ?, profile_pic = ?, alternate_phone = ?, about = ? WHERE user_id = ?';
-                db.query(updateQueryMeta, [req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, req.body.date_of_birth, req.body.occupation, req.body.gender, req.file.filename, req.body.alternate_phone, req.body.about, userId], (updateError, updateResults) => {
-                    if (updateError) {
-                        return res.send(
-                            {
-                                status: 'err',
-                                data: userId,
-                                message: 'An error occurred while processing your request' + updateError
-                            }
-                        )
-                    } else {
-                        return res.send(
-                            {
-                                status: 'ok',
-                                data: userId,
-                                message: 'Update Successfull'
-                            }
-                        )
-                    }
-                });
-
-            } else {
-                const updateQueryMeta = 'UPDATE user_customer_meta SET address = ?, country = ?, state = ?, city = ?, zip = ?, date_of_birth = ?, occupation = ?, gender = ?, alternate_phone = ?, about = ? WHERE user_id = ?';
-                db.query(updateQueryMeta, [req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, req.body.date_of_birth, req.body.occupation, req.body.gender, req.body.alternate_phone, req.body.about, userId], (updateError, updateResults) => {
-                    if (updateError) {
-                        return res.send(
-                            {
-                                status: 'err',
-                                data: '',
-                                message: 'An error occurred while processing your request' + updateError
-                            }
-                        )
-                    } else {
-                        return res.send(
-                            {
-                                status: 'ok',
-                                data: userId,
-                                message: 'Update Successfull'
-                            }
-                        )
-                    }
-                });
             }
+            const userCustomerMetaUpdateData = {
+                address: req.body.address || null,
+                country: req.body.country || null,
+                state: req.body.state || null,
+                city: req.body.city || null,
+                zip: req.body.zip || null,
+                date_of_birth: req.body.date_of_birth || null,
+                occupation: req.body.occupation || null,
+                gender: req.body.gender || null,
+                profile_pic: req.file ? req.file.filename : req.body.previous_profile_pic,
+                alternate_phone: req.body.alternate_phone || null,
+                marital_status: req.body.marital_status || null,
+                about: req.body.about || null,
+            };
+            //const updateQueryMeta = 'UPDATE user_customer_meta SET address = ?, country = ?, state = ?, city = ?, zip = ?, date_of_birth = ?, occupation = ?, gender = ?, profile_pic = ?, alternate_phone = ?, about = ? WHERE user_id = ?';
+            const updateQueryMeta = `UPDATE user_customer_meta SET ? WHERE user_id = ?`;
 
+            db.query(updateQueryMeta, [userCustomerMetaUpdateData, userId], (updateError, updateResults) => {
+                if (updateError) {
+                    return res.send(
+                        {
+                            status: 'err',
+                            data: userId,
+                            message: 'An error occurred while processing your request' + updateError
+                        }
+                    )
+                } else {
+                    return res.send(
+                        {
+                            status: 'ok',
+                            data: userId,
+                            message: 'Update Successfull'
+                        }
+                    )
+                }
+            });
         }
 
 
