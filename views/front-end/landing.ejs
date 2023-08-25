@@ -810,7 +810,7 @@
         src="/front-end/images/emoji-gif.gif" alt="img" width="77" height="77"></a>
   </div>
   <%- include('common/footer') -%>
-    <script>
+<script>
       jQuery(document).ready(function ($) {
         // /////////////////////////////////////// Auto Field Dropdown Start
         var timer;
@@ -822,6 +822,7 @@
               performSearch(keyword);
             }, 500);
           } else {
+            $('.autofield-dropdown').hide();
             $('.autofield-dropdown').html(''); // Clear search results if less than three letters
           }
         })
@@ -833,12 +834,14 @@
               performSearchForReview(keyword);
             }, 500);
           } else {
+            $('.autofield-dropdown-review').hide('');
             $('.autofield-dropdown-review').html(''); // Clear search results if less than three letters
             $('#review-address').val('');
           }
         })
         // Function to perform the AJAX search
         function performSearch(keyword) {
+          $('.autofield-dropdown').css('height', "200px");
           const data = {
             keyword: keyword,
           };
@@ -858,13 +861,17 @@
                   html += '</ul>';
                   $('.autofield-dropdown').html(html);
                   $('.autofield-dropdown').show();
+                  if(data.data.length < 4){
+                    var divlength = data.data.length*48;
+                    $('.autofield-dropdown').css('height', divlength + "px");
+                  }
                 } else {
-                  $('.autofield-dropdown').html('');
                   $('.autofield-dropdown').hide();
+                  $('.autofield-dropdown').html('');
                 }
               } else {
-                $('.autofield-dropdown').html('');
                 $('.autofield-dropdown').hide();
+                $('.autofield-dropdown').html('');
               }
             },
             error: function (error) {
@@ -875,6 +882,7 @@
         }
         // Company Search For review
         function performSearchForReview(keyword) {
+          $('.autofield-dropdown-review').css('height', "200px");
           const data = {
             keyword: keyword,
           };
@@ -894,18 +902,22 @@
                   html += '</ul>';
                   $('.autofield-dropdown-review').html(html);
                   $('.autofield-dropdown-review').show();
+                  if(data.data.length < 4){
+                    var divlength = data.data.length*48;
+                    $('.autofield-dropdown-review').css('height', divlength + "px");
+                  }
                 } else {
-                  $('.autofield-dropdown-review').html('');
                   $('.autofield-dropdown-review').hide();
+                  $('.autofield-dropdown-review').html('');
                 }
               } else {
-                $('.autofield-dropdown-review').html('');
                 $('.autofield-dropdown-review').hide();
+                $('.autofield-dropdown-review').html('');
               }
             },
             error: function (error) {
-              $('.autofield-dropdown-review').html('');
               $('.autofield-dropdown-review').hide();
+              $('.autofield-dropdown-review').html('');
             }
           });
 
