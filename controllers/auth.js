@@ -320,8 +320,8 @@ exports.frontendUserLogin = (req, res) => {
                             const query = `
                                         SELECT user_meta.*, c.name as country_name, s.name as state_name, ccr.company_id as claimed_comp_id
                                         FROM user_customer_meta user_meta
-                                        JOIN countries c ON user_meta.country = c.id
-                                        JOIN states s ON user_meta.state = s.id
+                                        LEFT JOIN countries c ON user_meta.country = c.id
+                                        LEFT JOIN states s ON user_meta.state = s.id
                                         LEFT JOIN company_claim_request ccr ON user_meta.user_id = ccr.claimed_by
                                         WHERE user_id = ?
                                         `;
@@ -368,7 +368,7 @@ exports.frontendUserLogin = (req, res) => {
                                         email: user.email,
                                         phone: user.phone,
                                         user_type_id: user.user_type_id,
-                                        claimed_comp_id: user_meta.claimed_comp_id
+                                        claimed_comp_id: ''
                                     };
                                     const encodedUserData = JSON.stringify(userData);
                                     res.cookie('user', encodedUserData);
@@ -528,8 +528,8 @@ exports.login = (req, res) => {
                             const query = `
                                         SELECT user_meta.*, c.name as country_name, s.name as state_name, ccr.company_id as claimed_comp_id
                                         FROM user_customer_meta user_meta
-                                        JOIN countries c ON user_meta.country = c.id
-                                        JOIN states s ON user_meta.state = s.id
+                                        LEFT JOIN countries c ON user_meta.country = c.id
+                                        LEFT JOIN states s ON user_meta.state = s.id
                                         LEFT JOIN company_claim_request ccr ON user_meta.user_id = ccr.claimed_by
                                         WHERE user_id = ?
                                         `;
@@ -576,7 +576,7 @@ exports.login = (req, res) => {
                                         email: user.email,
                                         phone: user.phone,
                                         user_type_id: user.user_type_id,
-                                        claimed_comp_id: user_meta.claimed_comp_id
+                                        claimed_comp_id: ''
                                     };
                                     const encodedUserData = JSON.stringify(userData);
                                     res.cookie('user', encodedUserData);
@@ -2720,11 +2720,12 @@ exports.updateMyProfile = (req, res) => {
                     } else {
                         const query = `
                                 SELECT user_meta.*, c.name as country_name, s.name as state_name, u.first_name
-                                , u.last_name, u.email, u.phone, u.user_type_id
+                                , u.last_name, u.email, u.phone, u.user_type_id, ccr.company_id as claimed_comp_id
                                 FROM user_customer_meta user_meta
-                                JOIN users u ON u.user_id = user_meta.user_id
-                                JOIN countries c ON user_meta.country = c.id
-                                JOIN states s ON user_meta.state = s.id
+                                LEFT JOIN users u ON u.user_id = user_meta.user_id
+                                LEFT JOIN countries c ON user_meta.country = c.id
+                                LEFT JOIN states s ON user_meta.state = s.id
+                                LEFT JOIN company_claim_request ccr ON user_meta.user_id = ccr.claimed_by
                                 WHERE user_meta.user_id = ?
                                 `;
                             db.query(query, [userId], async (err, results) => {
@@ -2755,7 +2756,8 @@ exports.updateMyProfile = (req, res) => {
                                     date_of_birth: formattedDate,
                                     occupation: user_meta.occupation,
                                     gender: user_meta.gender,
-                                    profile_pic: user_meta.profile_pic
+                                    profile_pic: user_meta.profile_pic,
+                                    claimed_comp_id: user_meta.claimed_comp_id
                                 };
                                 const encodedUserData = JSON.stringify(userData);
                                 res.cookie('user', encodedUserData);
@@ -2977,10 +2979,10 @@ exports.updateBasicCompany = (req, res) => {
 }
 
 //--Front end- Update Basic Company profile --//
-exports.updatePremiumCompany = (req, res) => {
+exports.updatePremiumCompany =async (req, res) => {
     console.log('PremiumCompany:',req.body);
     console.log('PremiumCompany File:',req.files);
-    return false;
+
     const companyID = req.body.company_id;
     const currentDate = new Date();
 
@@ -2992,6 +2994,68 @@ exports.updatePremiumCompany = (req, res) => {
     const seconds = String(currentDate.getSeconds()).padStart(2, '0');
 
     const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+
+    const { youtube_iframe, promotion_title, promotion_desc, promotion_discount, promotion_image, product_title, product_desc, product_image } = req.body;
+
+    const { cover_image, gallery_images } = req.files;
+
+    const galleryImages = gallery_images.map((title, index) => ({
+        gallery_images:req.files.gallery_images[index].filename
+    }));
+
+    
+    let count = 0;
+    const ProductData = product_title.map((title, index) => {
+        let productImage = null;
+        if (product_image[index] !== '') {
+            productImage = req.files.product_image[count].filename;
+            count++;
+        }else{
+            productImage = null;
+        }
+      
+        return {
+          product_title: title,
+          product_desc: product_desc[index],
+          product_image: productImage
+        };
+    });
+
+    let i = 0;
+    const PromotionalData = promotion_title.map((title, index) => {
+    let promotionImage = null;
+    if (promotion_image[index] !== '') {
+        promotionImage = req.files.promotion_image[i].filename;
+        i++;
+    }
+    
+    return {
+        promotion_title: title,
+        promotion_desc: promotion_desc[index],
+        promotion_discount: promotion_discount[index],
+        promotion_image: promotionImage
+    };
+    });
+      
+    const Products = JSON.stringify(ProductData);
+    const Promotion = JSON.stringify(PromotionalData);
+    const galleryImg = JSON.stringify(galleryImages);
+    let coverImg = null;
+    if(cover_image){
+         coverImg = cover_image[0].filename;
+    }else{
+        
+    }
+
+    
+
+    //   console.log('rearrangedProductData:',JSON.stringify(ProductData));
+    //   console.log('rearrangedPromotionalData:',PromotionalData);
+    //   console.log('galleryImages:',galleryImages);
+    //   console.log('cover_image:',cover_image[0].filename);
+    //return false;
+    
 
     // Update company details in the company table
     const updateQuery = 'UPDATE company SET  heading = ?, logo = ?, about_company = ?, comp_phone = ?, comp_email = ?, updated_date = ?, tollfree_number = ?, main_address = ?  WHERE ID = ?';
@@ -3007,7 +3071,7 @@ exports.updatePremiumCompany = (req, res) => {
                             companyID
                         ];
 
-    if (req.file) {
+    if (req.files.logo) {
         // Unlink (delete) the previous file
         const unlinkcompanylogo = "uploads/" + req.body.previous_logo;
         fs.unlink(unlinkcompanylogo, (err) => {
@@ -3018,7 +3082,7 @@ exports.updatePremiumCompany = (req, res) => {
             }
         });
 
-        updateValues[1] = req.file.filename;
+        updateValues[1] = req.files.logo[0].filename;
     }else{
         updateValues[1] = req.body.previous_logo;
     }
@@ -3031,15 +3095,30 @@ exports.updatePremiumCompany = (req, res) => {
                 message: 'An error occurred while updating the company details: ' + err
             });
         }else{
-            return res.send(
-                {
-                    status: 'ok',
-                    data: companyID,
-                    message: 'Successfully Updated'
-                }
-            )
+            db.query(`DELETE FROM premium_company_data WHERE company_id = ${companyID}`, (del_err, del_res)=>{
+                const premium_query = `INSERT INTO premium_company_data ( company_id, cover_img, gallery_img, youtube_iframe, promotions, products) VALUES (?, ?, ?, ?, ?, ?)`;
+                const premium_data = [companyID, coverImg, galleryImg, youtube_iframe, Promotion, Products];
+                db.query(premium_query, premium_data, (premium_err, premium_result)=>{
+                    if (premium_err) {
+                        // Handle the error
+                        return res.send({
+                            status: 'err',
+                            data: '',
+                            message: 'An error occurred while updating the company details: ' + premium_err
+                        });
+                    } else {
+                        return res.send(
+                            {
+                                status: 'ok',
+                                data: companyID,
+                                message: 'Successfully Updated'
+                            }
+                        )
+                    }
+                })
+            })
+            
         }
 
-        
     })
 }

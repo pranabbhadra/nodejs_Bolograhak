@@ -280,8 +280,9 @@
                                 const fileInput = element;
                                 // Check if the file input has a selected file
                                 if (fileInput.files.length === 0) {
-                                    // If no file is chosen, set the corresponding value to null
                                     formData.set(`product_image[${index}]`, '');
+                                }else{
+                                    formData.set(`product_image[${index}]`, 'file');
                                 }
                             });
                             $('.promotion_image').each(function(index, element) {
@@ -290,17 +291,11 @@
                                 if (fileInput.files.length === 0) {
                                     // If no file is chosen, set the corresponding value to null
                                     formData.set(`promotion_image[${index}]`, '');
+                                }else{
+                                    formData.set(`promotion_image[${index}]`, 'file');
                                 }
                             });
                             console.log(formData);
-
-                            //return false;
-                            //const formData = $('#feedback_form').serializeArray();
-                            //const jsonData = {};
-                            // $(formData).each(function (index, field) {
-                            // jsonData[field.name] = field.value;
-                            // });
-                            //console.log(jsonData);
                             $.ajax({
                             url: '/auth/premium_company_profile_update', 
                             method: 'POST',

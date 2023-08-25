@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const db = require('../config');
 var moment = require('moment');
-const { error } = require('console');
+const { error, log } = require('console');
 const async = require('async');
 const axios = require('axios');
 const dotenv = require('dotenv');
@@ -395,18 +395,19 @@ async function checkClientClaimedCompany(req, res, next) {
         // Add other variables as needed
     };    
     const encodedUserData = req.cookies.user;
-    //console.log('aaaaaaaaa',encodedUserData);
-    //let currentUserData = JSON.parse(req.userData);
+    const UserJsonData = JSON.parse(encodedUserData);
+    const userId = UserJsonData.user_id;
     try {
         
         if (encodedUserData) {
-            const UserJsonData = JSON.parse(encodedUserData);
-            //console.log('checkClientClaimedCompany',UserJsonData);
+            // console.log('checkClientClaimedCompany',UserJsonData);
+            // console,log('claimed_comp_id',UserJsonData.claimed_comp_id)
+            // console,log('comp_id',req.params.compID)
             // User is logged in, proceed to the next middleware or route handler
             if(UserJsonData && UserJsonData.claimed_comp_id == req.params.compID ){
                 next();
             }else{
-                res.redirect('/');
+                res.redirect('/logout');
             }
             
         } else {
