@@ -94,9 +94,9 @@ function getStatesByUserID(userId) {
       }else if(result[0].country == null){
         resolve([]);
       } else {
-        console.log('Result:', result); // Log the result array
+        //console.log('Result:', result); // Log the result array
         if (result && result.length > 0) {
-          console.log(result[0].country);
+          //console.log(result[0].country);
           let countryID = '';
           if(result[0].country==null){
             countryID = 101;
