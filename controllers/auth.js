@@ -2975,3 +2975,71 @@ exports.updateBasicCompany = (req, res) => {
         
     })
 }
+
+//--Front end- Update Basic Company profile --//
+exports.updatePremiumCompany = (req, res) => {
+    console.log('PremiumCompany:',req.body);
+    console.log('PremiumCompany File:',req.files);
+    return false;
+    const companyID = req.body.company_id;
+    const currentDate = new Date();
+
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+    const day = String(currentDate.getDate()).padStart(2, '0');
+    const hours = String(currentDate.getHours()).padStart(2, '0');
+    const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+    const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+
+    const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+    // Update company details in the company table
+    const updateQuery = 'UPDATE company SET  heading = ?, logo = ?, about_company = ?, comp_phone = ?, comp_email = ?, updated_date = ?, tollfree_number = ?, main_address = ?  WHERE ID = ?';
+    const updateValues = [
+                            req.body.heading,
+                            '',
+                            req.body.about_company,
+                            req.body.comp_phone,
+                            req.body.comp_email,
+                            formattedDate,
+                            req.body.tollfree_number,
+                            req.body.main_address,
+                            companyID
+                        ];
+
+    if (req.file) {
+        // Unlink (delete) the previous file
+        const unlinkcompanylogo = "uploads/" + req.body.previous_logo;
+        fs.unlink(unlinkcompanylogo, (err) => {
+            if (err) {
+                //console.error('Error deleting file:', err);
+            } else {
+                //console.log('Previous file deleted');
+            }
+        });
+
+        updateValues[1] = req.file.filename;
+    }else{
+        updateValues[1] = req.body.previous_logo;
+    }
+    db.query(updateQuery, updateValues, (err, results) => {
+        if (err) {
+            // Handle the error
+            return res.send({
+                status: 'err',
+                data: '',
+                message: 'An error occurred while updating the company details: ' + err
+            });
+        }else{
+            return res.send(
+                {
+                    status: 'ok',
+                    data: companyID,
+                    message: 'Successfully Updated'
+                }
+            )
+        }
+
+        
+    })
+}
