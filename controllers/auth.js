@@ -1086,7 +1086,7 @@ exports.editUserData = (req, res) => {
 
             } else {
                 const updateQueryMeta = 'UPDATE user_customer_meta SET address = ?, country = ?, state = ?, city = ?, zip = ?, date_of_birth = ?, occupation = ?, gender = ?, alternate_phone = ?, about = ? WHERE user_id = ?';
-                db.query(updateQueryMeta, [req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, req.body.date_of_birth, req.body.occupation, req.body.gender,req.body.alternate_phone, req.body.about, userId], (updateError, updateResults) => {
+                db.query(updateQueryMeta, [req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, req.body.date_of_birth, req.body.occupation, req.body.gender, req.body.alternate_phone, req.body.about, userId], (updateError, updateResults) => {
                     if (updateError) {
                         return res.send(
                             {

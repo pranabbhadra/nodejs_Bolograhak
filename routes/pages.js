@@ -1153,6 +1153,16 @@ router.get('/edit-user/:id', checkLoggedIn, async (req, res) => {
         ]);
 
         // Render the 'edit-user' EJS view and pass the data
+        // res.json({
+        //     menu_active_id: 'user',
+        //     page_title: 'Edit User',
+        //     currentUserData,
+        //     user: user,
+        //     userMeta: userMeta,
+        //     countries: countries,
+        //     userRoles: userRoles,
+        //     states: states
+        // });
         res.render('edit-user', {
             menu_active_id: 'user',
             page_title: 'Edit User',
