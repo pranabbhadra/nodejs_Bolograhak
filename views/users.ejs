@@ -172,7 +172,7 @@
                                     <span class="me-2" data-kt-user-table-select="selected_count"></span>Selected
                                 </div>
                                 <button type="button" class="btn btn-danger"
-                                    data-kt-user-table-select="delete_selected">Delete Selected</button>
+                                    data-kt-user-table-select="delete_selected" style="display: none;">Delete Selected</button>
                             </div>
                             <!--end::Group actions-->
                             <!--begin::Modal - Adjust Balance-->
@@ -392,11 +392,11 @@
                                                         <!--end::Menu item-->
                                                         <!--begin::Menu item-->
                                                         <% if( user.user_type_id !=1 ){ %>
-                                                            <div class="menu-item px-3">
+                                                            <%#<div class="menu-item px-3">
                                                                 <a href="#" class="menu-link px-3"
                                                                     data-kt-users-table-filter="delete_row">Delete</a>
-                                                            </div>
-                                                            <% } %>
+                                                            </div>#%>
+                                                        <% } %>
                                                                 <!--end::Menu item-->
                                                     </div>
                                                     <!--end::Menu-->

@@ -89,6 +89,7 @@ function getUserRoles() {
 function getStatesByUserID(userId) {
   return new Promise((resolve, reject) => {
     db.query('SELECT country FROM user_customer_meta WHERE user_id = ?', [userId], async (err, result) => {
+      console.log(result);
       if (err) {
         reject(err);
       }else if(result[0].country == null){
