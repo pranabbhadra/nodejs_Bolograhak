@@ -65,7 +65,7 @@ router.get('/getUserDetails/:user_id', verifyToken, async (req, res) => {
             status: 'error',
             data: {
                 ...mergedData,
-                userCompany:userCompanyInfo
+                userCompanyInfo
             },
             message: 'user data successfully recived'
         });
