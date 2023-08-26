@@ -1,6 +1,7 @@
-
+const util = require('util');
 const express = require('express');
 const db = require('../config');
+const mysql = require('mysql2/promise');
 const mdlconfig = require('../config-module');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
@@ -9,6 +10,7 @@ const requestIp = require('request-ip');
 const fs = require('fs');
 const dotenv = require('dotenv');
 dotenv.config({ path: './.env' });
+const query = util.promisify(db.query).bind(db);
 const cookieParser = require('cookie-parser');
 const secretKey = 'grahak-secret-key';
 const path = require('path');
@@ -218,7 +220,7 @@ exports.login = (req, res) => {
         }
     
         const token = jwt.sign({ userId: user.id }, secretKey, {
-          expiresIn: '1h', 
+          expiresIn: '10h', 
         });
     
 
@@ -961,3 +963,31 @@ exports.submitReview = async (req, res) => {
 };
 
 
+// --searchCompany --//
+exports.searchCompany = async (req, res) => {
+  //console.log(req.body);
+  const keyword = req.body.keyword; //Approved Company
+  const get_company_query = `
+    SELECT ID, company_name, logo, about_company, main_address, main_address_pin_code FROM company
+    WHERE company_name LIKE '%${keyword}%'
+    ORDER BY created_date DESC
+  `;
+  try{
+    const get_company_results = await query(get_company_query);
+    if(get_company_results.length > 0 ){
+      res.status(200).json({
+          status: 'success',
+          data: get_company_results,
+          message: get_company_results.length+' company data recived'
+      });
+      return {status: 'success', data: get_company_results, message: get_company_results.length+' company data recived'};
+    }else{
+      res.status(200).json({status: 'success', data: '', message: 'No company data found'});
+    }
+  }catch(error){
+    return res.status(500).json({
+      status: 'error',
+      message: 'An error occurred while posting the request: '+error
+    });
+  } 
+}

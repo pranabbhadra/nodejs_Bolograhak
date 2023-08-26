@@ -151,6 +151,8 @@ router.get('/getAllUsersDetails', verifyToken, async (req, res) => {
     }
 });
 
+//Search Company By Keyword
+router.get('/search-company', verifyToken, authenController.searchCompany);
 
 router.get('/getAllCompaniesDetails', verifyToken, async (req, res) => {
     const query = `SELECT c.ID, c.user_created_by, c.logo, c.company_name, c.comp_phone, c.comp_email, c.status, c.trending, c.main_address, c.main_address_pin_code, COUNT(r.id) as review_count, AVG(r.rating) as average_rating,
