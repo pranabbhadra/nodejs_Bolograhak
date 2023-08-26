@@ -884,7 +884,26 @@ async function getUserCompany(user_ID){
       const get_user_company_result = await query(get_user_company_query, get_user_company_value);
       return get_user_company_result;
     }catch(error){
-      return 'Error during user get_company_rewiew_query:'+error;
+      return 'Error during user get_user_company_query:'+error;
+    }
+}
+
+async function getUserReview(user_ID){
+    const reviewsQuery = `
+      SELECT
+        r.*, co.company_name, co.logo AS company_logo
+      FROM reviews r
+      JOIN users c ON r.customer_id = c.user_id
+      JOIN company co ON r.company_id = co.ID
+      WHERE c.user_id = ?
+      ORDER BY r.created_at ASC;
+    `;
+    const get_review_query_value = [user_ID];
+    try{
+      const get_review_query_result = await query(reviewsQuery, get_review_query_value);
+      return get_review_query_result;
+    }catch(error){
+      return 'Error during user reviewsQuery:'+error;
     }
 }
 
@@ -918,5 +937,6 @@ module.exports = {
     getCompanyReviewNumbers,
     getCompanyReviews,
     getUsersByRole,
-    getUserCompany
+    getUserCompany,
+    getUserReview
 };

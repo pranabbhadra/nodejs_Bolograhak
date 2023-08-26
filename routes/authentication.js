@@ -42,10 +42,11 @@ router.post('/submitReview',verifyToken, authenController.submitReview);
 router.get('/getUserDetails/:user_id', verifyToken, async (req, res) => {
 
     const user_ID = req.params.user_id;
-    const [userBasicInfo, userMetaInfo, userCompany] = await Promise.all([
+    const [userBasicInfo, userMetaInfo, userCompany, userReview] = await Promise.all([
         comFunction.getUser(user_ID),
         comFunction.getUserMeta(user_ID),
         comFunction.getUserCompany(user_ID),
+        comFunction.getUserReview(user_ID),
     ]);
     if(Object.keys(userBasicInfo).length > 0){
         delete userBasicInfo.password;
@@ -65,7 +66,8 @@ router.get('/getUserDetails/:user_id', verifyToken, async (req, res) => {
             status: 'error',
             data: {
                 ...mergedData,
-                userCompany
+                userCompany,
+                userReview
             },
             message: 'user data successfully recived'
         });
