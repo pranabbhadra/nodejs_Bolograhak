@@ -207,7 +207,7 @@ exports.login = (req, res) => {
             message: 'User not found',
           });
         }
-    
+        delete results[0].password;
         const user = results[0];
         const isPasswordMatch = await bcrypt.compare(password, user.password);
     
