@@ -907,6 +907,22 @@ async function getUserReview(user_ID){
     }
 }
 
+async function getuserReviewCompany(user_ID){
+    const user_review_company_query = `
+    SELECT c.id AS company_id, MAX(r.created_at) AS latest_review_date, c.company_name, c.logo, COUNT(r.id) AS review_count
+    FROM reviews r JOIN company c ON r.company_id = c.id
+    WHERE r.customer_id = ?
+    GROUP BY c.id, c.company_name
+    ORDER BY latest_review_date DESC`;
+    const user_review_company_value = [user_ID];
+    try{
+      const user_review_company_result = await query(user_review_company_query, user_review_company_value);
+      return user_review_company_result;
+    }catch(error){
+      return 'Error during user user_review_company_query:'+error;
+    }
+}
+
 module.exports = {
     getUser,
     getUserMeta,
@@ -938,5 +954,6 @@ module.exports = {
     getCompanyReviews,
     getUsersByRole,
     getUserCompany,
-    getUserReview
+    getUserReview,
+    getuserReviewCompany
 };
