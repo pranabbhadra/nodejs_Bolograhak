@@ -359,15 +359,15 @@ function app_latest_blog_api_handler($request) {
 
     if(count($post_items)>0){
         $data = array(
-            'status' => 'ok',
+            'status' => 'success',
             'data' => $post_items,
-            'success_message' => 'All posts for home page',
+            'success_message' => count($post_items). 'posts avilable',
             'error_message' => ''
             );        
         return $data;
     }else{
         $data = array(
-            'status' => 'err',
+            'status' => 'error',
             'data' => '',
             'success_message' => '',
             'error_message' => 'No result found'
