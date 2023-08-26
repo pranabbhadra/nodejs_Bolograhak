@@ -42,7 +42,7 @@ router.post('/submitReview',verifyToken, authenController.submitReview);
 router.get('/getUserDetails/:user_id', verifyToken, async (req, res) => {
 
     const user_ID = req.params.user_id;
-    const [userBasicInfo, userMetaInfo, UserCompany] = await Promise.all([
+    const [userBasicInfo, userMetaInfo, userCompany] = await Promise.all([
         comFunction.getUser(user_ID),
         comFunction.getUserMeta(user_ID),
         comFunction.getUserCompany(user_ID),
@@ -61,11 +61,16 @@ router.get('/getUserDetails/:user_id', verifyToken, async (req, res) => {
             }
         }
 
+        if(Object.keys(userCompany).length > 0){
+            mergedData = {
+                ...mergedData,
+                ...userCompany
+            }
+        }
         return res.status(200).json({
             status: 'error',
             data: {
                 ...mergedData,
-                UserCompany
             },
             message: 'user data successfully recived'
         });
