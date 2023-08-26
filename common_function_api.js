@@ -886,7 +886,7 @@ function getUserCompany(user_ID){
           if (err) {
             reject(err);
           } else {
-            resolve(result);
+            resolve(user_ID);
           }
         });
     });
