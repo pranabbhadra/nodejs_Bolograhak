@@ -3,7 +3,7 @@ const multer = require('multer');
 const authenController = require('../controllers/authentication');
 const jwt = require('jsonwebtoken');
 const jwtsecretKey = 'grahak-secret-key';
-//const db = require('../config');
+const db = require('../config');
 
 
 const router = express.Router();
