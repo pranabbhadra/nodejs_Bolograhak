@@ -361,7 +361,7 @@ function app_latest_blog_api_handler($request) {
         $data = array(
             'status' => 'success',
             'data' => $post_items,
-            'success_message' => count($post_items). 'posts avilable',
+            'success_message' => count($post_items). ' posts avilable',
             'error_message' => ''
             );        
         return $data;
@@ -397,7 +397,43 @@ function app_popular_tags_api_handler($request) {
         $data = array(
             'status' => 'success',
             'data' => $popular_tags,
-            'success_message' => count($popular_tags). 'tags avilable',
+            'success_message' => count($popular_tags). ' tags avilable',
+            'error_message' => ''
+            );        
+        return $data;
+    }else{
+        $data = array(
+            'status' => 'error',
+            'data' => '',
+            'success_message' => '',
+            'error_message' => 'No result found'
+            );
+        return $data;
+    }
+}
+
+//----------Popular Category API -----------------//
+function app_popular_category_api_init() {
+    register_rest_route('custom/v1', '/popular-tags', array(
+        'methods' => 'GET',
+        'callback' => 'app_popular_category_api_handler',
+    ));
+}
+add_action('rest_api_init', 'app_popular_category_api_init');
+
+function app_popular_category_api_handler($request) {
+    $popular_categories = get_terms( array(
+              'taxonomy' => 'category',
+              'orderby' => 'count',
+              'order' => 'DESC',
+              'number' => 10, // Specify the number of popular tags to retrieve
+    ) );
+
+    if(count($popular_categories)>0){
+        $data = array(
+            'status' => 'success',
+            'data' => $popular_categories,
+            'success_message' => count($popular_categories). ' category avilable',
             'error_message' => ''
             );        
         return $data;
