@@ -16,23 +16,24 @@
                 <div class="col-sm-12">
                    <h2 class="company_name"><%= company && company.company_name ? company.company_name : '' %></h2>
                 </div>
+                
+                <% if(company && company.comp_email){ %>
+                  <div class="col-sm-6">
+                     <p class="common_style"><i class="fas fa-envelope"></i><a
+                           href="mailto:<%= company && company.comp_email ? company.comp_email : '' %>"><%= company && company.comp_email ? company.comp_email : '' %></a></p>
+                  </div>
+                <% } %>
+                <% if(company && company.comp_phone ){ %>
                 <div class="col-sm-6">
-                   <% if(company && company.comp_email){ %>
-                   <p class="common_style"><i class="fas fa-envelope"></i><a
-                         href="mailto:<%= company && company.comp_email ? company.comp_email : '' %>"><%= company && company.comp_email ? company.comp_email : '' %></a></p>
-                         <% } %>
-                </div>
-                <div class="col-sm-6">
-                   <% if(company && company.comp_phone ){ %>
                    <p class="common_style"><i class="fas fa-mobile"></i><a
                          href="tel:<%= company && company.comp_phone ? company.comp_phone : '' %>"><%= company && company.comp_phone ? company.comp_phone : '' %></a></p>
-                         <% } %>
                 </div>
+                <% } %>
+                <% if(company && company.main_address ){ %>
                 <div class="col-sm-12">
-                   <% if(company && company.main_address ){ %>
                    <p class="common_style"><i class="fas fa-map-marker-alt"></i> <%= company && company.main_address ? company.main_address : '' %></p>
-                   <% } %>
                 </div>
+                <% } %>
              </div>
           </div>
        </div>

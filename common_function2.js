@@ -446,7 +446,7 @@ async function reviewApprovedEmail(req) {
     return true;
 }
 
-//Function to send mail to client after approve
+//Function to send mail to client after reject
 async function reviewRejectdEmail(req) {
   const sql = `
     SELECT r.created_at,r.rejecting_reason, c.company_name, u.first_name, u.email 
@@ -587,6 +587,15 @@ async function reviewRejectdEmail(req) {
     return true;
 }
 
+//Function to fetch Premium company details Values from the  premium_company_data table
+async function getPremiumCompanyData(companyId) {
+  const sql = `SELECT * FROM premium_company_data where company_id = '${companyId}' `;
+  const PremiumCompanyData = await query(sql);
+
+  //console.log('PremiumCompanyData',PremiumCompanyData[0])
+  return PremiumCompanyData[0];
+}
+
 
 
 
@@ -610,5 +619,6 @@ module.exports = {
   getPageMetaValues,
   getPageInfo,
   reviewApprovedEmail,
-  reviewRejectdEmail
+  reviewRejectdEmail,
+  getPremiumCompanyData
 };

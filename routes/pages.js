@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const db = require('../config');
 var moment = require('moment');
-const { error, log } = require('console');
+const { error, log, Console } = require('console');
 const async = require('async');
 const axios = require('axios');
 const dotenv = require('dotenv');
@@ -351,40 +351,105 @@ router.get('/business', checkCookieValue, async (req, res) => {
 
 router.get('/company/:id', checkCookieValue, async (req, res) => {
     const companyID = req.params.id;
-    const [allRatingTags, CompanyInfo, companyReviewNumbers, getCompanyReviews,globalPageMeta] = await Promise.all([
+    const [allRatingTags, CompanyInfo, companyReviewNumbers, getCompanyReviews,globalPageMeta, PremiumCompanyData] = await Promise.all([
         comFunction.getAllRatingTags(),
         comFunction.getCompany(companyID),
         comFunction.getCompanyReviewNumbers(companyID),
         comFunction.getCompanyReviews(companyID),
         comFunction2.getPageMetaValues('global'),
+        comFunction2.getPremiumCompanyData(companyID),
     ]);
     let currentUserData = JSON.parse(req.userData);
+    
+    let cover_img = '';
+    let youtube_iframe = '';
+    let gallery_img = [];
+    let products = [];
+    let promotions = [];
+
+    if(typeof PremiumCompanyData !== 'undefined' ){
+         cover_img = PremiumCompanyData.cover_img;
+         youtube_iframe = PremiumCompanyData.youtube_iframe;
+         gallery_img = JSON.parse(PremiumCompanyData.gallery_img);
+         product = JSON.parse(PremiumCompanyData.products);
+         promotions = JSON.parse(PremiumCompanyData.promotions);
+        
+    }
+    
     // res.json({
     //     allRatingTags,
     //     CompanyInfo,
     //     companyReviewNumbers,
     //     getCompanyReviews
     // });
-    res.render('front-end/company-details',
-    {
-        menu_active_id: 'company',
-        page_title: 'Organization Details',
-        currentUserData,
-        allRatingTags,
-        CompanyInfo,
-        companyReviewNumbers,
-        getCompanyReviews,
-        globalPageMeta:globalPageMeta
-    });
+    console.log(PremiumCompanyData);
+    if(CompanyInfo.paid_status == 'paid'){
+        res.render('front-end/category-details-premium',
+        {
+            menu_active_id: 'company',
+            page_title: 'Organization Details',
+            currentUserData,
+            allRatingTags,
+            company:CompanyInfo,
+            CompanyInfo,
+            companyReviewNumbers,
+            getCompanyReviews,
+            globalPageMeta:globalPageMeta,
+            cover_img:cover_img,
+            gallery_img:gallery_img,
+            youtube_iframe:youtube_iframe,
+            products:product,
+            promotions:promotions,
+        });
+    }else{
+        res.render('front-end/company-details',
+        {
+            menu_active_id: 'company',
+            page_title: 'Organization Details',
+            currentUserData,
+            allRatingTags,
+            company:CompanyInfo,
+            CompanyInfo,
+            companyReviewNumbers,
+            getCompanyReviews,
+            globalPageMeta:globalPageMeta
+        });
+    }
+
 });
 
-router.get('/category-details-premium', checkCookieValue, async (req, res) => {
+router.get('/category-details-premium/:compID', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
-    const [globalPageMeta] = await Promise.all([
+    const companyId = req.params.compID;
+    const [globalPageMeta, company, PremiumCompanyData] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
+        comFunction.getCompany(companyId),
+        comFunction2.getPremiumCompanyData(companyId),
     ]);
+    const cover_img = PremiumCompanyData.cover_img;
+    const youtube_iframe = PremiumCompanyData.youtube_iframe;
+    const gallery_img = JSON.parse(PremiumCompanyData.gallery_img);
+    const product = JSON.parse(PremiumCompanyData.products);
+    const promotions = JSON.parse(PremiumCompanyData.promotions);
+    console.log('cover_img::',cover_img)
+    console.log('youtube_iframe::',youtube_iframe)
+    console.log('gallery_img::',gallery_img)
+    console.log('product::',product)
+    console.log('promotions::',promotions)
 
-    res.render('front-end/category-details-premium', { menu_active_id: 'category-details-premium', page_title: 'Categories Details', currentUserData, globalPageMeta:globalPageMeta });
+    res.render('front-end/category-details-premium', 
+    {
+         menu_active_id: 'category-details-premium', 
+         page_title: 'Categories Details', 
+         currentUserData, 
+         globalPageMeta:globalPageMeta ,
+         company:company,
+         cover_img:cover_img,
+         gallery_img:gallery_img,
+         youtube_iframe:youtube_iframe,
+         products:product,
+         promotions:promotions,
+    });
 });
 
 // Middleware function to check if user is Claimed a Company or not
@@ -442,35 +507,52 @@ router.get('/basic-company-profile/:compID', checkClientClaimedCompany, async (r
 });
 
 //Premium company profile dashboard Page 
-// router.get('/premium-company-profile/:compID', checkClientClaimedCompany, async (req, res) => {
-//     //let currentUserData = JSON.parse(req.userData);
-//     const encodedUserData = req.cookies.user;
-//     const currentUserData = JSON.parse(encodedUserData);
-//     const companyId = req.params.compID;
+router.get('/premium-company-profile/:compID', checkClientClaimedCompany, async (req, res) => {
+    //let currentUserData = JSON.parse(req.userData);
+    const encodedUserData = req.cookies.user;
+    const currentUserData = JSON.parse(encodedUserData);
+    const companyId = req.params.compID;
 
-//     const [globalPageMeta, company] = await Promise.all([
-//         comFunction2.getPageMetaValues('global'),
-//         comFunction.getCompany(companyId),
-//     ]);
+    const [globalPageMeta, company] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+        comFunction.getCompany(companyId),
+    ]);
 
-//     res.render('front-end/premium-company-profile-dashboard', 
-//     { 
-//         menu_active_id: 'company-dashboard', 
-//         page_title: 'Company Dashboard', 
-//         currentUserData, 
-//         globalPageMeta:globalPageMeta,
-//         company
-//     });
-// });
+    res.render('front-end/premium-company-profile-dashboard', 
+    { 
+        menu_active_id: 'company-dashboard', 
+        page_title: 'Company Dashboard', 
+        currentUserData, 
+        globalPageMeta:globalPageMeta,
+        company
+    });
+});
 
 //company dashboard management Page 
 router.get('/premium-company-profile-management/:compID', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
     const companyId = req.params.compID;
-    const [globalPageMeta, company] = await Promise.all([
+    const [globalPageMeta, company, PremiumCompanyData] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
         comFunction.getCompany(companyId),
-    ]);;
+        comFunction2.getPremiumCompanyData(companyId),
+    ]);
+
+        
+    let cover_img = '';
+    let youtube_iframe = '';
+    let gallery_img = [];
+    let product = [];
+    let promotions = [];
+
+    if(typeof PremiumCompanyData !== 'undefined' ){
+         cover_img = PremiumCompanyData.cover_img;
+         youtube_iframe = PremiumCompanyData.youtube_iframe;
+         gallery_img = JSON.parse(PremiumCompanyData.gallery_img);
+         product = JSON.parse(PremiumCompanyData.products);
+         promotions = JSON.parse(PremiumCompanyData.promotions);
+        
+    }
 
     res.render('front-end/premium-company-profile-management', 
     { 
@@ -478,7 +560,12 @@ router.get('/premium-company-profile-management/:compID', checkCookieValue, asyn
         page_title: 'Company Profile', 
         currentUserData, 
         globalPageMeta:globalPageMeta,
-        company:company
+        company:company,
+        cover_img:cover_img,
+        gallery_img:gallery_img,
+        youtube_iframe:youtube_iframe,
+        products:product,
+        promotions:promotions,
     });
 });
 

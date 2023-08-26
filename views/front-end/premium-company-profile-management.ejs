@@ -4,7 +4,7 @@
     <%- include('common/header-banner') -%>
 
         <!-- ============== Section1 Start =============== -->
-        <section class="main-content about-content2 py-3">
+        <section class="main-content about-content2 py-3 premium_company_profile">
             <div class="container">
                 <div class="company_profile_management">
 
@@ -12,36 +12,45 @@
                     <div class="row align-items-center">
                         <div class="col-md-3">
                             <div class="company_logo">
-                                <a href="#"><img src="/front-end/images/feature-logo1.png" alt="samsung"></a>
+                                <% if(company && company.logo) { %>
+                                    <a href="#"><img src="/<%= company.logo %>" alt="company"></a>
+                                    <%} else {%>
+                                       <a href="#"><img src="/front-end/images/company-placeholder-image.png" alt="company" ></a>
+                                       <% } %>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="company_details">
                                 <div class="row">
                                 <div class="col-sm-12">
-                                    <h2 class="company_name">Company Name</h2>
+                                    <h2 class="company_name"><%= company && company.company_name ? company.company_name : '' %></h2>
                                 </div>
-                                <div class="col-sm-6">
-                                    <p class="common_style"><i class="fas fa-envelope"></i><a
-                                            href="mailto:johndoe12@gmail.com">johndoe12@gmail.com</a></p>
-                                </div>
-                                <div class="col-sm-6">
-                                    <p class="common_style"><i class="fas fa-mobile"></i><a
-                                            href="tel:+9876543210">+9876543210</a></p>
-                                </div>
-                                <div class="col-sm-12">
-                                    <p class="common_style"><i class="fas fa-map-marker-alt"></i> EE 91, EE Block, Sector
-                                        II, Bidhannagar, Kolkata, West Bengal 700091</p>
-                                </div>
+                                <% if(company && company.comp_email){ %>
+                                    <div class="col-sm-6">
+                                       <p class="common_style"><i class="fas fa-envelope"></i><a
+                                             href="mailto:<%= company && company.comp_email ? company.comp_email : '' %>"><%= company && company.comp_email ? company.comp_email : '' %></a></p>
+                                    </div>
+                                  <% } %>
+                                  <% if(company && company.comp_phone ){ %>
+                                    <div class="col-sm-6">
+                                       <p class="common_style"><i class="fas fa-mobile"></i><a
+                                             href="tel:<%= company && company.comp_phone ? company.comp_phone : '' %>"><%= company && company.comp_phone ? company.comp_phone : '' %></a></p>
+                                    </div>
+                                    <% } %>
+                                    <% if(company && company.main_address ){ %>
+                                        <div class="col-sm-12">
+                                           <p class="common_style"><i class="fas fa-map-marker-alt"></i> <%= company && company.main_address ? company.main_address : '' %></p>
+                                        </div>
+                                        <% } %>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="overall_score">
-                                <div class="button_group">
+                                <!-- <div class="button_group">
                                 <a class="free" href="#">Free</a>
                                 <a class="switch_to_premium" href="#">switch to premium</a>
-                                </div>
+                                </div> -->
                                 <div class="score_info">
                                 <div class="d-flex align-items-center mb-2">
                                     <div class="review_count">4.5</div>
@@ -96,11 +105,16 @@
                                     <label for="upload-company-coverimage" class="form-label">Upload cover
                                         image</label>
                                     <input class="form-control" type="file" id="upload-company-coverimage" name="cover_image">
+                                    <input class="form-control" type="hidden"  name="previous_cover_image" value="<%= cover_img ? cover_img : '' %>">
                                 </div>
                                 <div class="col-sm-5 col-md-4 col-lg-2">
                                     <div class="display_image_box">
-                                        <img id="company_cover_image_preview" src="/front-end/images/fixed-emoji.png"
-                                            alt="">
+                                        <% if(cover_img) { %>
+                                            <img id="company_logo_preview" src="/<%= cover_img %>"  alt="">
+                                            <%} else {%>
+                                                <img id="company_cover_image_preview" src="/front-end/images/fixed-emoji.png"
+                                                    alt="">
+                                                <% } %>
                                     </div>
                                 </div>
                             </div>
@@ -168,7 +182,7 @@
                                 <div class="col-12">
                                     <div class="mb-3">
                                         <label for="about-company" class="form-label">Add youtube iframe</label>
-                                        <textarea class="form-control" id="about-company" placeholder="" rows="3" name="youtube_iframe"></textarea>
+                                        <textarea class="form-control" id="about-company" placeholder="" rows="3" name="youtube_iframe"><%= youtube_iframe ? youtube_iframe : '' %></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -178,38 +192,45 @@
                             <div class="repeter_wrap">
                                 <div class="all_repeter">
                                     <div class="each_repeter">
-                                        <div class="row align-items-center">
-                                            <div class="col-12">
-                                                <div class="mb-3">
-                                                    <label class="form-label">Add title<sup>*</sup></label>
-                                                    <input type="text" class="form-control" placeholder="" name="promotion_title" required>
+                                        <% promotions.forEach( (promotion,index)=> {%>
+                                            <div class="row align-items-center">
+                                                <div class="col-12">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Add title<sup>*</sup></label>
+                                                        <input type="text" class="form-control" placeholder="" name="promotion_title" value="<%= promotion.promotion_title %>" required>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Add description<sup>*</sup></label>
+                                                        <textarea class="form-control" placeholder="" rows="3" name="promotion_desc" ><%= promotion.promotion_desc %></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Add discount</label>
+                                                        <input type="text" class="form-control" placeholder="In percentage (ex: 70%)" name="promotion_discount" value="<%= promotion.promotion_discount %>">
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-10">
+                                                    <label class="form-label">Upload image</label>
+                                                    <input class="form-control upload_in_repeter promotion_image" type="file" name="promotion_image">
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <div class="display_image_box">
+                                                        <% if(promotion.promotion_image != null) {%>
+                                                            <img class="promotion_image_review" src="/<%= promotion.promotion_image %>" alt="">
+                                                        <% } else {%>
+                                                            <img class="promotion_image_review" src="/front-end/images/no-image.png" alt="">
+                                                            <% } %>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="text-right"><button type="button" class="btn btn-danger delete_item">Remove</button></div>
                                                 </div>
                                             </div>
-                                            <div class="col-12">
-                                                <div class="mb-3">
-                                                    <label class="form-label">Add description<sup>*</sup></label>
-                                                    <textarea class="form-control" placeholder="" rows="3" name="promotion_desc" ></textarea>
-                                                </div>
-                                            </div>
-                                            <div class="col-12">
-                                                <div class="mb-3">
-                                                    <label class="form-label">Add discount</label>
-                                                    <input type="text" class="form-control" placeholder="In percentage (ex: 70%)" name="promotion_discount">
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-10">
-                                                <label class="form-label">Upload image</label>
-                                                <input class="form-control upload_in_repeter promotion_image" type="file" name="promotion_image">
-                                            </div>
-                                            <div class="col-sm-2">
-                                                <div class="display_image_box">
-                                                    <img class="promotion_image_review" src="/front-end/images/fixed-emoji.png" alt="">
-                                                </div>
-                                            </div>
-                                            <div class="col-12">
-                                                <div class="text-right"><button type="button" class="btn btn-danger delete_item">Remove</button></div>
-                                            </div>
-                                        </div>
+                                            <% }) %>
+                                        
                                     </div>
                                 </div>
                                 <div class="add_more_btn">
@@ -222,32 +243,39 @@
                             <div class="repeter_wrap">
                                 <div class="all_repeter">
                                     <div class="each_repeter">
+                                        <% products.forEach( (product,index)=> {%>
                                         <div class="row align-items-center">
                                             <div class="col-12">
                                                 <div class="mb-3">
                                                     <label class="form-label">Add title<sup>*</sup></label>
-                                                    <input type="text" class="form-control" placeholder="" name="product_title" required>
+                                                    <input type="text" class="form-control" placeholder="" name="product_title" value="<%= product.product_title %>" required>
                                                 </div>
                                             </div>
                                             <div class="col-12">
                                                 <div class="mb-3">
                                                     <label class="form-label">Add description<sup>*</sup></label>
-                                                    <textarea class="form-control" placeholder="" rows="3" name="product_desc"></textarea>
+                                                    <textarea class="form-control" placeholder="" rows="3" name="product_desc"><%= product.product_desc %></textarea>
                                                 </div>
                                             </div>
                                             <div class="col-sm-10">
                                                 <label class="form-label">Upload image</label>
+                                                
                                                 <input class="form-control upload_in_repeter product_image" type="file" name="product_image">
                                             </div>
                                             <div class="col-sm-2">
                                                 <div class="display_image_box">
-                                                    <img class="promotion_image_review" src="/front-end/images/fixed-emoji.png" alt="">
+                                                    <% if(product && product.product_image ) {%>
+                                                        <img class="promotion_image_review" src="/<%= product.product_image %>" alt="">
+                                                    <% } else {%>
+                                                        <img class="promotion_image_review" src="/front-end/images/no-image.png" alt="">
+                                                        <% } %>
                                                 </div>
                                             </div>
                                             <div class="col-12">
                                                 <div class="text-right"><button type="button" class="btn btn-danger delete_item">Remove</button></div>
                                             </div>
                                         </div>
+                                        <% }) %>
                                     </div>
                                 </div>
                                 <div class="add_more_btn">

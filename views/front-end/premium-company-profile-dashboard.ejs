@@ -28,7 +28,7 @@
                                     <h2 class="company_name">
                                        <%= company && company.company_name ? company.company_name : '' %>
                                     </h2>
-                                    <h4 class="tag_line">Simpley creative</h4>
+                                    <h4 class="tag_line"><%= company && company.heading ? company.heading : '' %></h4>
                                  </div>
                               <% } %>
                               <% if(company && company.comp_email){ %>
@@ -89,7 +89,7 @@
                         <a href="#"><i class="fas fa-user-tie"></i> Profile</a>
                         <ul>
                            <li><a href="#">My Profile</a></li>
-                           <li><a href="#">Company Profile</a></li>
+                           <li><a href="/premium-company-profile-management/<%= company.ID  %>">Company Profile</a></li>
                         </ul>
                      </li>
                      <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
