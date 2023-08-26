@@ -105,14 +105,34 @@ router.get('/getUserDetails/:user_id', verifyToken, async (req, res) => {
         comFunction.getUser(user_ID),
         comFunction.getUserMeta(user_ID),
     ]);
-
-    return res.status(200).json({
-        status: 'success',
-        data: {
-            userBasicInfo,
-            userMetaInfo
+    if(userBasicInfo.length>0){
+        delete userBasicInfo.password;
+        let mergedData = {};
+        if(getUserMeta.length>0){
+            mergedData = {
+                ...userBasicInfo,
+                ...userMetaInfo
+            };
+        }else{
+            mergedData = {
+                ...userBasicInfo
+            }
         }
-    });
+        
+        return res.status(200).json({
+            status: 'error',
+            data: {
+                mergedData
+            },
+            message: 'user data successfully recived'
+        });
+    }else{
+        return res.status(404).json({
+            status: 'error',
+            data: '',
+            message: 'Id not exist'
+        });
+    }
 });
 
 //get All user details
