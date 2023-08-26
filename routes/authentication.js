@@ -207,15 +207,7 @@ router.get('/getComapniesDetails/:ID', verifyToken, async (req, res) => {
     const { ID } = req.params;
     const query = `
         SELECT
-            c.user_created_by,
-            c.company_name,
-            c.logo,
-            c.comp_phone,
-            c.comp_email,
-            c.comp_registration_id,
-            c.status,
-            c.created_date,
-            c.updated_date,
+            c.*,
             l.id as location_id,
             l.address,
             l.country,
