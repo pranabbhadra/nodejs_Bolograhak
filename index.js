@@ -12,7 +12,7 @@ const useragent = require('useragent');
 const requestIp = require('request-ip');
 const FacebookStrategy = require('passport-facebook').Strategy;
 const querystring = require('querystring');
-
+const bodyParser = require('body-parser');
 const comFunction = require('./common_function');
 
 dotenv.config({ path: './.env' });
@@ -176,6 +176,7 @@ app.get('/facebook-user-data', async (req, res) => {
 app.use('/', require('./routes/pages'));
 app.use('/auth', require('./routes/auth'));
 app.use('/api', require('./routes/api'));
+app.use('/authentication', require('./routes/authentication'));
 
 
 app.listen(2000);
