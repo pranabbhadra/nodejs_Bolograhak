@@ -873,11 +873,10 @@ async function getCompanyReviews(companyID){
 }
 
 function getUserCompany(user_ID){
-    const get_user_company_query = `
-    SELECT * company WHERE ID = ?`;
-    const get_user_company_value = [user_ID];
 
     return new Promise((resolve, reject) => {
+        const get_user_company_query = `SELECT * company WHERE ID = ?`;
+        const get_user_company_value = [user_ID];
         db.query(get_user_company_query, get_user_company_value, (err, result) => {
           if (err) {
             reject(err);
