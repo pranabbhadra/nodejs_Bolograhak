@@ -383,6 +383,7 @@ exports.edituser = (req, res) => {
   const profilePicFile = req.file;
   const userUpdateQuery = 'UPDATE users SET first_name=?, last_name=?, phone=? WHERE user_id=?';
   const userUpdateValues = [first_name, last_name, phone, user_id];
+
   let userMetaUpdateQuery = 'UPDATE user_customer_meta SET address=?, country=?, state=?, city=?, zip=?, date_of_birth=?, occupation=?, gender=?, alternate_phone=?, marital_status=?, about=?';
   let userMetaUpdateValues = [address, country, state, city, zip, date_of_birth, occupation, gender, alternate_phone, marital_status, about];
   if (profilePicFile) {
@@ -425,7 +426,7 @@ exports.edituser = (req, res) => {
                                   message: 'An error occurred while fetching updated user details',
                               });
                           }
-
+                          delete updatedUserDetails[0].password;
                           if (updatedUserDetails && updatedUserDetails.length > 0) {
                               return res.json({
                                   status: 'success',
