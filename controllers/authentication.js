@@ -207,7 +207,6 @@ exports.login = (req, res) => {
             message: 'User not found',
           });
         }
-        delete results[0].password;
         const user = results[0];
         const isPasswordMatch = await bcrypt.compare(password, user.password);
     
@@ -260,7 +259,8 @@ exports.login = (req, res) => {
             //   client_ip: clientIp,
             //   user_agent: userAgent.toString(),
             // });
-
+            
+            delete user.password;
             //-- check last Login Info-----//
             const device_query = "SELECT * FROM user_device_info WHERE user_id = ?";
             db.query(device_query, [user.user_id], async (err, device_query_results) => {
