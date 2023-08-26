@@ -39,7 +39,7 @@ router.post('/submitReview',verifyToken, authenController.submitReview);
 
 //----------Get API Start----------------//
 //get user details
-router.get('/getUserDetails/:user_id', async (req, res) => {
+router.get('/getUserDetails/:user_id', verifyToken, async (req, res) => {
     const { user_id } = req.params;
     console.log(user_id);
 
