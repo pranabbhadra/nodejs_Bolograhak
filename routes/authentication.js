@@ -105,10 +105,10 @@ router.get('/getUserDetails/:user_id', verifyToken, async (req, res) => {
         comFunction.getUser(user_ID),
         comFunction.getUserMeta(user_ID),
     ]);
-    if(userBasicInfo.length>0){
+    if(Object.keys(userBasicInfo).length > 0){
         delete userBasicInfo.password;
         let mergedData = {};
-        if(getUserMeta.length>0){
+        if(Object.keys(userMetaInfo).length > 0){
             mergedData = {
                 ...userBasicInfo,
                 ...userMetaInfo
@@ -118,7 +118,7 @@ router.get('/getUserDetails/:user_id', verifyToken, async (req, res) => {
                 ...userBasicInfo
             }
         }
-        
+
         return res.status(200).json({
             status: 'error',
             data: {
