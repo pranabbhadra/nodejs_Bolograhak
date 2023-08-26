@@ -40,7 +40,7 @@ router.post('/submitReview',authenController.submitReview);
 function verifyToken(req, res, next){
     let token = req.headers['authorization'];
     if(token){
-        token = token.splite(' ')[1];
+        token = token.split(' ')[1];
         jwt.verify(token, jwtsecretKey, (err, valid) =>{
             if(err){
                 return res.status(401).json({
@@ -58,5 +58,6 @@ function verifyToken(req, res, next){
         });
     }
 }
+
 
 module.exports = router;
