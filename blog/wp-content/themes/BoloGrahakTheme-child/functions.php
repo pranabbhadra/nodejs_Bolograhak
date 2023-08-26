@@ -414,7 +414,7 @@ function app_popular_tags_api_handler($request) {
 
 //----------Popular Category API -----------------//
 function app_popular_category_api_init() {
-    register_rest_route('custom/v1', '/popular-tags', array(
+    register_rest_route('custom/v1', '/popular-category', array(
         'methods' => 'GET',
         'callback' => 'app_popular_category_api_handler',
     ));
