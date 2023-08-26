@@ -375,4 +375,40 @@ function app_latest_blog_api_handler($request) {
         return $data;
     }
 }
+
+//----------Popular Tags API -----------------//
+function app_popular_tags_api_init() {
+    register_rest_route('custom/v1', '/popular-tags', array(
+        'methods' => 'GET',
+        'callback' => 'app_popular_tags_api_handler',
+    ));
+}
+add_action('rest_api_init', 'app_popular_tags_api_init');
+
+function app_popular_tags_api_handler($request) {
+    $popular_tags = get_terms( array(
+              'taxonomy' => 'post_tag',
+              'orderby' => 'count',
+              'order' => 'DESC',
+              'number' => 10, // Specify the number of popular tags to retrieve
+    ) );
+
+    if(count($popular_tags)>0){
+        $data = array(
+            'status' => 'success',
+            'data' => $popular_tags,
+            'success_message' => count($popular_tags). 'tags avilable',
+            'error_message' => ''
+            );        
+        return $data;
+    }else{
+        $data = array(
+            'status' => 'error',
+            'data' => '',
+            'success_message' => '',
+            'error_message' => 'No result found'
+            );
+        return $data;
+    }
+}
 ?>
