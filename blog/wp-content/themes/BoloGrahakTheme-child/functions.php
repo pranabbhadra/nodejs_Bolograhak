@@ -312,4 +312,67 @@ function home_latest_blog_api_handler($request) {
         return $data;
     }
 }
+
+//----------App Latest Blog API -----------------//
+function app_latest_blog_api_init() {
+    register_rest_route('custom/v1', '/latest-blog', array(
+        'methods' => 'GET',
+        'callback' => 'app_latest_blog_api_handler',
+    ));
+}
+add_action('rest_api_init', 'app_latest_blog_api_init');
+
+function app_latest_blog_api_handler($request) {
+    $post_items = [];
+    $args = array(
+        'posts_per_page'  => 4,
+        'post_status' => 'publish',
+        'offset'  => 1,
+    );
+    query_posts($args);
+    if (have_posts()) : while (have_posts()) : the_post();
+    $ID = get_the_ID();
+    $thumbnail = wp_get_attachment_image_src( get_post_thumbnail_id( $ID ), 'trending-blog-thumb' );
+    $full = wp_get_attachment_image_src( get_post_thumbnail_id( $ID ), 'full' );
+    $alt_text = get_post_meta(get_post_thumbnail_id( $ID ), '_wp_attachment_image_alt', true);
+    $title = get_the_title();
+    $the_title = strip_tags($title);
+    $categories = get_the_terms( $ID, 'category' );
+    /*
+    if(strlen($the_title)>45){
+      $the_title = substr($the_title,0,45).'..';
+    }
+    */
+    $post_items[] = array(
+                        'id' =>  $ID,
+                        'title'  =>  $title,
+                        'publish_date'  =>  get_the_time(__('M d, Y', 'kubrick')),
+                        'thumbnail'  =>  $thumbnail['0'],
+                        'full'  =>  $full['0'],
+                        'thumbnail_alt'  =>  $alt_text,
+                        'thumbnail_alt'  =>  $alt_text,
+                        'permalink' => get_the_permalink(),
+                        'views_count'  =>  pvc_get_post_views( $ID ),
+                        'category'  => $categories,
+                      );
+    endwhile; endif; wp_reset_query();
+
+    if(count($post_items)>0){
+        $data = array(
+            'status' => 'ok',
+            'data' => $post_items,
+            'success_message' => 'All posts for home page',
+            'error_message' => ''
+            );        
+        return $data;
+    }else{
+        $data = array(
+            'status' => 'err',
+            'data' => '',
+            'success_message' => '',
+            'error_message' => 'No result found'
+            );
+        return $data;
+    }
+}
 ?>
