@@ -40,70 +40,12 @@ router.post('/submitReview',verifyToken, authenController.submitReview);
 //----------Get API Start----------------//
 //get user details
 router.get('/getUserDetails/:user_id', verifyToken, async (req, res) => {
-    const { user_id } = req.params;
-    // console.log(user_id);
-
-    // const query = 'SELECT u.user_id, u.first_name, u.last_name, u.email, u.phone, u.user_registered, u.register_from, u.external_registration_id, u.user_type_id, u.user_status, m.address, m.country, m.state, m.city, m.zip, m.date_of_birth, m.occupation, m.gender, m.profile_pic, m.alternate_phone, m.marital_status,m.about FROM users u LEFT JOIN user_customer_meta m on u.user_id=m.user_id WHERE u.user_id=?';
-
-    // db.query(query, [user_id], (err, results) => {
-    //     if (err) {
-    //         return res.status(500).json({
-    //             status: 'error',
-    //             message: 'An error occurred while fetching user details',
-    //         });
-    //     }
-
-    //     if (results.length === 0) {
-    //         return res.status(404).json({
-    //             status: 'error',
-    //             message: 'User not found',
-    //         });
-    //     }
-
-    //     const userDetails = results[0];
-    //     const countryQuery = 'SELECT name FROM countries WHERE id=?';
-    //     db.query(countryQuery, [userDetails.country], (countryErr, countryResults) => {
-    //         if (countryErr) {
-    //             return res.status(500).json({
-    //                 status: 'error',
-    //                 message: 'An error occurred while fetching country details',
-    //             });
-    //         }
-
-    //         if (Array.isArray(countryResults) && countryResults.length > 0) {
-    //             userDetails.countryname = countryResults[0].name;
-    //         } else {
-    //             userDetails.countryname = 'Unknown Country';
-    //         }
-
-    //         const stateQuery = 'SELECT name FROM states WHERE id=?';
-    //         db.query(stateQuery, [userDetails.state], (stateErr, stateResults) => {
-    //             if (stateErr) {
-    //                 return res.status(500).json({
-    //                     status: 'error',
-    //                     message: 'An error occurred while fetching state details',
-    //                 });
-    //             }
-
-    //             if (Array.isArray(stateResults) && stateResults.length > 0) {
-    //                 userDetails.statename = stateResults[0].name;
-    //             } else {
-    //                 userDetails.statename = 'Unknown State';
-    //             }
-
-    //             return res.status(200).json({
-    //                 status: 'success',
-    //                 data: userDetails,
-    //                 message: 'User details fetched successfully',
-    //             });
-    //         });
-    //     });
-    // });
 
     const user_ID = req.params.user_id;
-    const [userBasicInfo, userMetaInfo] = await Promise.all([
+    const [userBasicInfo, userMetaInfo, userCompanyInfo] = await Promise.all([
         comFunction.getUser(user_ID),
         comFunction.getUserMeta(user_ID),
+        comFunction.getUserCompany(user_ID),
     ]);
     if(Object.keys(userBasicInfo).length > 0){
         delete userBasicInfo.password;
@@ -122,7 +64,8 @@ router.get('/getUserDetails/:user_id', verifyToken, async (req, res) => {
         return res.status(200).json({
             status: 'error',
             data: {
-                ...mergedData
+                ...mergedData,
+                userCompany:userCompanyInfo
             },
             message: 'user data successfully recived'
         });
