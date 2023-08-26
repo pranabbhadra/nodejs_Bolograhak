@@ -173,10 +173,10 @@ app.get('/facebook-user-data', async (req, res) => {
 });
 
 // Define Routes
+app.use('/authentication', require('./routes/authentication'));
 app.use('/', require('./routes/pages'));
 app.use('/auth', require('./routes/auth'));
 app.use('/api', require('./routes/api'));
-app.use('/authentication', require('./routes/authentication'));
 
 
 app.listen(2000);
