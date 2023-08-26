@@ -1,6 +1,8 @@
 const express = require('express');
 const multer = require('multer');
 const authenController = require('../controllers/authentication');
+const jwt = require('jsonwebtoken');
+const jwtsecretKey = 'grahak-secret-key';
 //const db = require('../config');
 
 
@@ -28,10 +30,33 @@ const upload = multer({ storage: storage });
 
 router.post('/register',upload.single('profile_pic') ,authenController.register);
 router.post('/login', authenController.login);
-router.put('/edituser',upload.single('profile_pic') ,authenController.edituser);
+router.put('/edituser', verifyToken, upload.single('profile_pic') ,authenController.edituser);
 router.post('/createcategories',upload.single('c_image'),authenController.createcategories);
 router.post('/createcompany',upload.single('logo') ,authenController.createcompany);
 router.put('/editcompany',upload.single('logo') ,authenController.editcompany);
 router.post('/createcompanylocation',authenController.createcompanylocation);
 router.post('/submitReview',authenController.submitReview);
+
+function verifyToken(req, res, next){
+    let token = req.headers['authorization'];
+    if(token){
+        token = token.splite(' ')[1];
+        jwt.verify(token, jwtsecretKey, (err, valid) =>{
+            if(err){
+                return res.status(401).json({
+                    status: 'error',
+                    message: 'Invalid token',
+                });
+            }else{
+                next();
+            }
+        })
+    }else{
+        return res.status(403).json({
+            status: 'error',
+            message: 'Missing header token',
+        });
+    }
+}
+
 module.exports = router;
