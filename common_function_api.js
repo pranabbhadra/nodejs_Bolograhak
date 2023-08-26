@@ -874,11 +874,7 @@ async function getCompanyReviews(companyID){
 
 function getUserCompany(user_ID){
     const get_user_company_query = `
-    SELECT c.*
-    FROM company_claim_request ccr
-    LEFT JOIN users ur ON ccr.claimed_by = ur.user_id
-    LEFT JOIN company c ON ccr.company_id = c.ID
-    WHERE ccr.claimed_by = ?`;
+    SELECT * company WHERE ID = ?`;
     const get_user_company_value = [user_ID];
 
     return new Promise((resolve, reject) => {

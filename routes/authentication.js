@@ -45,7 +45,7 @@ router.get('/getUserDetails/:user_id', verifyToken, async (req, res) => {
     const [userBasicInfo, userMetaInfo, userCompanyInfo] = await Promise.all([
         comFunction.getUser(user_ID),
         comFunction.getUserMeta(user_ID),
-        comFunction.getUserCompany(user_ID),
+        comFunction.getUserCompany(14),
     ]);
     if(Object.keys(userBasicInfo).length > 0){
         delete userBasicInfo.password;
