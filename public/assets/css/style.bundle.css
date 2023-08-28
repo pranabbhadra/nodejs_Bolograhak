@@ -50492,3 +50492,58 @@ body {
 }
 
 /*# sourceMappingURL=style.bundle.css.map*/
+.aside-dark .menu .menu-item .menu-link .menu-title {
+  color: #fff;
+}
+
+.aside-dark .menu .menu-item .menu-section {
+  color: #fff !important;
+}
+
+.aside.aside-dark .aside-logo,
+.aside-dark .hover-scroll-overlay-y,
+.aside-footer,
+.aside .aside-menu {
+  background-color: #000;
+}
+
+.aside-dark .menu .menu-item .menu-link:hover:not(.disabled):not(.active) .menu-title,
+.aside-dark .menu .menu-item.here > .menu-link .menu-title, .aside-dark .menu .menu-item.show > .menu-link .menu-title,
+.aside-dark .menu .menu-item.hover > .menu-link:not(.disabled):not(.active) .menu-title, .aside-dark .menu .menu-item .menu-link:hover:not(.disabled):not(.active) .menu-title,
+.aside-dark .menu .menu-item .menu-link.active .menu-title {
+  color: #fccb06;
+}
+
+.menu-item .svg-icon svg [fill]:not(.permanent):not(g) {
+  fill: #fccb06 !important;
+}
+
+.aside-dark .menu .menu-item .menu-link.active .menu-bullet .bullet,
+.aside-dark .menu .menu-item .menu-link:hover:not(.disabled):not(.active) .menu-bullet .bullet {
+  background-color: #fccb06 !important;
+}
+
+.col-form-label,
+.table tr, 
+.table th, 
+.table td,
+.btn.btn-light,
+.form-text {
+  color: #000;
+}
+
+.btn.btn-light .svg-icon svg [fill]:not(.permanent):not(g) {
+  fill: #000000;
+}
+
+.text-gray-800 {
+  color: #000 !important;
+}
+
+.badge-light-info {
+  margin: 2px 0;
+}
+
+input.form-control {
+  color: #000000 !important;
+}

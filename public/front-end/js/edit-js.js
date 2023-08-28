@@ -441,14 +441,14 @@ jQuery(function ($) {
       {
         breakpoint: 1080,
         settings: {
-          slidesToShow: 1
+          slidesToShow: 3
         }
       },
 
       {
         breakpoint: 991,
         settings: {
-          slidesToShow: 1
+          slidesToShow: 3
         }
       },
       {

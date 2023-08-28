@@ -842,4 +842,11 @@ span.toggle-menu {
     bottom: 0;
 }
 
+.frm-error-message-register,
+.frm-error-message{
+    color: #282828;
+    font-weight: 600;
+    line-height: normal;
+}
+
 /*================== Login Modal Css =================*/
