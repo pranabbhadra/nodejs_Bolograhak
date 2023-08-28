@@ -199,7 +199,7 @@ exports.login = (req, res) => {
         if (err) {
           return res.status(500).json({
             status: 'error',
-            message: 'An error occurred while processing your request',
+            message: 'An error occurred while processing your request '+err,
           });
         }
     
@@ -232,7 +232,7 @@ exports.login = (req, res) => {
             console.error("An error occurred:", metaErr);
             return res.status(500).json({
                 status: 'error',
-                message: 'An error occurred while processing your request',
+                message: 'An error occurred while processing your request '+metaErr,
                 error: metaErr 
             })
           }
