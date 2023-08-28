@@ -178,7 +178,7 @@
                                         <% gallery_img.forEach( (image,index)=> {%>
                                         <div class="image-container col-sm-6 col-md-3">
                                             <img class="uploaded-image" id="" src="/<%= image.gallery_images %>"  alt="image" width="50px;">
-                                            <button  image-index="<%= index %>" class="delete-button">X</button>
+                                            <button company-id="<%= company.ID  %>"  image-index="<%= index %>" class="delete-button">X</button>
                                         </div>
                                         <% }) %>
                                         <% } %>
@@ -237,8 +237,7 @@
                                             </div>
                                             <div class="col-12">
                                                 <div class="text-right">
-                                                    <input type="hidden" class="index_val" name="index_val" value="<%= index %>"/>
-                                                    <button data-id="<%= index %>" company-id = "1" data-type="promotion" type="button" class="btn btn-danger delete_item">Remove</button>
+                                                    <button data-id="<%= index %>" company-id = "<%= company.ID %>" data-type="promotion" type="button" class="btn btn-danger delete_item">Remove</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -254,8 +253,9 @@
                             <h2 class="mb-3">Add Products</h2>
                             <div class="repeter_wrap">
                                 <div class="all_repeter">
+                                    
+                                    <% products.forEach( (product,index)=> {%>
                                     <div class="each_repeter">
-                                        <% products.forEach( (product,index)=> {%>
                                         <div class="row align-items-center">
                                             <div class="col-12">
                                                 <div class="mb-3">
@@ -284,13 +284,18 @@
                                                 </div>
                                             </div>
                                             <div class="col-12">
-                                                <div class="text-right"><button type="button" class="btn btn-danger delete_item">Remove</button></div>
+                                                <div class="text-right">
+                                                    
+                                                    <button data-id="<%= index %>" company-id = "<%= company.ID %>" data-type="product" type="button" class="btn btn-danger delete_item">Remove</button>
+                                                    
+                                                </div>
                                             </div>
                                         </div>
-                                        <% }) %>
                                     </div>
+                                    <% }) %>
                                 </div>
                                 <div class="add_more_btn">
+                                    
                                     <button type="button" class="btn btn-primary add_more_product">Add Product</button>
                                 </div>
                             </div>
@@ -420,12 +425,27 @@
 
                         $('body').on('click','.delete-button',function(e){
                             e.preventDefault();
-                            $(this).parent('.image-container').remove();
-                            setTimeout(function () {
-                                $('#imagePreview').find('.image-container').each(function(index){
-                                    console.log('index=>', index);
-                                });
-                            }, 1000);
+                            
+                            var imgIndex = $(this).attr('image-index');
+                            var companyId = $(this).attr('company-id');
+                            //alert(imgIndex,companyId)
+                            $.ajax({
+                                url: '/auth/deletePremiumImage',
+                                method: 'POST',
+                                data: {companyId:companyId,imgIndex:imgIndex},
+                                ContentType: 'application/json',
+                                success: function (data) {
+                                    if (data.status == 'ok') {
+                                        location.reload();               
+                                    } else {
+                                    }
+                                },
+                                error: function (error) {
+                                // Handle any errors
+                                console.log(error);
+                                }
+                            });
+                            
                         });
 
                         //=============== Repeter js
@@ -443,47 +463,48 @@
                         });
 
                         $('body').on('click','.delete_item',function(){
-                            var dataId = $(this).attr('data-id');
+                            var dataIndex = $(this).attr('data-id');
                             var companyId = $(this).attr('company-id');
                             var dataType = $(this).attr('data-type');
-                            console.log(dataId, companyId, dataType);
-                            $(this).parents('.each_repeter').remove();
-                        });
-
-                        $.ajax({
-                            url: '/api/states',
-                            method: 'POST',
-                            data: {country_id:country_id},
-                            ContentType: 'application/json',
-                            success: function (data) {
-                                if (data.status == 'ok') {
-                                    $('#dynamic_state_field_wrapper').show();
-                                    //$("#select_state").prop('required',true);
-                                    $.each(data.data, function (i, item) {
-                                        $('#select_state').append($('<option>', { 
-                                            value: item.id,
-                                            text : item.name 
-                                        }));
-                                    });                
-                                } else {
-                                    $('#dynamic_state_field_wrapper').hide();
-                                    $("#select_state").prop('required',false);
-                                }
-                            },
-                            error: function (error) {
-                            // Handle any errors
-                            Swal.fire({
-                                text: error,
-                                icon: "error",
-                                buttonsStyling: false,
-                                confirmButtonText: "Ok, got it!",
-                                customClass: {
-                                    confirmButton: "btn btn-primary"
+                            console.log(dataIndex, companyId, dataType);
+                            //$(this).parents('.each_repeter').remove();
+                            if(dataType == 'promotion'){
+                                $.ajax({
+                                url: '/auth/deletePremiumPromotion',
+                                method: 'POST',
+                                data: {companyId:companyId,dataIndex:dataIndex},
+                                ContentType: 'application/json',
+                                success: function (data) {
+                                    if (data.status == 'ok') {
+                                        location.reload();               
+                                    } else {
+                                    }
+                                },
+                                error: function (error) {
+                                // Handle any errors
+                                console.log(error);
                                 }
                             });
-                            submitButton.disabled = false;
+                            } else {
+                                $.ajax({
+                                url: '/auth/deletePremiumProduct',
+                                method: 'POST',
+                                data: {companyId:companyId,dataIndex:dataIndex},
+                                ContentType: 'application/json',
+                                success: function (data) {
+                                    if (data.status == 'ok') {
+                                        location.reload();               
+                                    } else {
+                                    }
+                                },
+                                error: function (error) {
+                                // Handle any errors
+                                console.log(error);
+                                }
+                            });
                             }
-                        });   
+                        });
+  
 
                     });
                 });

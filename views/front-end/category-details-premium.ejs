@@ -65,12 +65,13 @@
                <p><%= company.about_company  %></p>
             </div>
             <% } %>
+            
+        <% if(gallery_img != "") {%>
          <div class="gallery-content">
             <div class="gallery-head d-flex justify-content-between align-items-center">
                 <h2 class="inner-main-head m-0">Gallery</h2>
                 <!-- <a href="#" class="view-more mt-0"><span class="position-relative"><i class="fa-solid fa-angle-right"></i>View More</span></a> -->
             </div>
-            <% if(gallery_img != "") {%>
             <div class="gallery-wrapper">
                 <% gallery_img.forEach( (image,index)=> {%>
                     <div class="gallery-img">
@@ -80,13 +81,15 @@
                     </div>
                 <% }) %>
             </div>
-            <% } %>
          </div>
+         
+         <% } %>
     </div>
 </section>
 <!-- ============== Section1 end =============== -->
 
 <!-- ============== Section2 Start =============== -->
+<% if(youtube_iframe) { %>
 <section class="main-content category-youtube-content">
     <div class="container">
         <div class="category-youtube-head">
@@ -129,6 +132,7 @@
           </div>  
     </div>
 </section>
+<% } %>
 <!-- ============== Section2 end =============== -->
 
 <!-- ============== Section2 Start =============== -->

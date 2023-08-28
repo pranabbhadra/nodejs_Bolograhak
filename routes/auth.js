@@ -233,4 +233,13 @@ router.post('/premium_company_profile_update',  upload.fields([
 
 ]), authController.updatePremiumCompany);
 
+//Delete One Premium Gallery Image
+router.post('/deletePremiumImage', authController.deletePremiumImage);
+
+//Delete One Premium Promotion 
+router.post('/deletePremiumPromotion', authController.deletePremiumPromotion);
+
+//Delete one Premium Product
+router.post('/deletePremiumProduct', authController.deletePremiumProduct);
+
 module.exports = router;

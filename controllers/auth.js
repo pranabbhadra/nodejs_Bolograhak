@@ -3007,58 +3007,121 @@ exports.updatePremiumCompany =async (req, res) => {
     const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
 
-    const { youtube_iframe, promotion_title, promotion_desc, promotion_discount, promotion_image, product_title, product_desc, product_image } = req.body;
+    const { previous_cover_image, youtube_iframe, promotion_title, promotion_desc, promotion_discount, promotion_image, product_title, product_desc, product_image } = req.body;
 
     const { cover_image, gallery_images } = req.files;
-    let galleryImages = '';
+    let galleryImages = [];
     if(gallery_images){
          galleryImages = gallery_images.map((title, index) => ({
             gallery_images:req.files.gallery_images[index].filename
         }));
     }
 
-    
-    let count = 0;
-    const ProductData = product_title.map((title, index) => {
-        let productImage = null;
-        if (product_image[index] !== '') {
-            productImage = req.files.product_image[count].filename;
-            count++;
-        }else{
-            productImage = null;
-        }
-      
-        return {
-          product_title: title,
-          product_desc: product_desc[index],
-          product_image: productImage
-        };
-    });
+    // const check_sql = `SELECT * FROM premium_company_data WHERE company_id = ? `;
+    // const check_data = [companyID];
+    // db.query(check_sql, check_data, (check_err, check_result) => {
+    //     if (check_err) {
+    //         return res.send(
+    //             {
+    //                 status: 'err',
+    //                 data: '',
+    //                 message: 'An error occurred while processing your request'
+    //             }
+    //         )
+    //     } else {
+    //         if (check_result.length > 0) {
+                
+    //             console.log(check_result[0]);
+    //             //return false;
+    //             const gallery_img = JSON.parse(check_result[0].gallery_img);
+                
+    //             if(galleryImages.length > 0){
+    //                 galleryImages.forEach(function(img, index, arr) {
+    //                     gallery_img.push(img);
+    //                 })
+    //             }
+    //             //gallery_img.push(galleryImages);
 
-    let i = 0;
-    const PromotionalData = promotion_title.map((title, index) => {
-    let promotionImage = null;
-    if (promotion_image[index] !== '') {
-        promotionImage = req.files.promotion_image[i].filename;
-        i++;
+    //             console.log('merge_img:',gallery_img);
+
+                
+                
+    //             const gallery_img = JSON.stringify(gallery_img);
+
+                
+    //         }
+    //     }
+    // });
+
+    //return false;
+    let ProductData = [];
+    if( Array.isArray(product_title) && product_title.length >0 ){
+        let count = 0;
+        ProductData = product_title.map((title, index) => {
+            let productImage = null;
+            if (product_image[index] !== '') {
+                productImage = req.files.product_image[count].filename;
+                count++;
+            }else{
+                productImage = null;
+            }
+        
+            return {
+            product_title: title,
+            product_desc: product_desc[index],
+            product_image: productImage
+            };
+        });
+    } else {
+        let prodkImg = null;
+        if(product_image[0] !== ''){
+            prodkImg = req.files.product_image[0].filename;
+        }
+        ProductData = [{
+            "product_title":product_title,
+            "product_desc":product_desc,
+            "product_image":prodkImg
+        }]
     }
+
     
-    return {
-        promotion_title: title,
-        promotion_desc: promotion_desc[index],
-        promotion_discount: promotion_discount[index],
-        promotion_image: promotionImage
-    };
-    });
-      
-    const Products = JSON.stringify(ProductData);
-    const Promotion = JSON.stringify(PromotionalData);
-    const galleryImg = JSON.stringify(galleryImages);
+
+    let PromotionalData = [];
+    if( Array.isArray(promotion_title) && promotion_title.length >0 ){
+        let i = 0;
+        PromotionalData = promotion_title.map((title, index) => {
+            let promotionImage = null;
+            if (promotion_image[index] !== '') {
+                promotionImage = req.files.promotion_image[i].filename;
+                i++;
+            }
+        
+            return {
+                promotion_title: title,
+                promotion_desc: promotion_desc[index],
+                promotion_discount: promotion_discount[index],
+                promotion_image: promotionImage
+            };
+        });
+    }else{
+        let promoImg = null;
+        if(promotion_image[0] !== ''){
+            promoImg = req.files.promotion_image[0].filename;
+        }
+        PromotionalData = [{
+            "promotion_title":promotion_title,
+            "promotion_desc":promotion_desc,
+            "promotion_discount":promotion_discount,
+            "promotion_image":promoImg
+        }]
+    }
+    console.log('PromotionalData:',PromotionalData)
+
     let coverImg = null;
     if(cover_image){
          coverImg = cover_image[0].filename;
     }else{
-        
+        coverImg = previous_cover_image;
     }
 
     
@@ -3108,30 +3171,263 @@ exports.updatePremiumCompany =async (req, res) => {
                 message: 'An error occurred while updating the company details: ' + err
             });
         }else{
-            db.query(`DELETE FROM premium_company_data WHERE company_id = ${companyID}`, (del_err, del_res)=>{
-                const premium_query = `INSERT INTO premium_company_data ( company_id, cover_img, gallery_img, youtube_iframe, promotions, products) VALUES (?, ?, ?, ?, ?, ?)`;
-                const premium_data = [companyID, coverImg, galleryImg, youtube_iframe, Promotion, Products];
-                db.query(premium_query, premium_data, (premium_err, premium_result)=>{
-                    if (premium_err) {
-                        // Handle the error
-                        return res.send({
+            const check_sql = `SELECT * FROM premium_company_data WHERE company_id = ? `;
+            const check_data = [companyID];
+            db.query(check_sql, check_data, (check_err, check_result) => {
+                if (check_err) {
+                    return res.send(
+                        {
                             status: 'err',
                             data: '',
-                            message: 'An error occurred while updating the company details: ' + premium_err
-                        });
-                    } else {
-                        return res.send(
-                            {
-                                status: 'ok',
-                                data: companyID,
-                                message: 'Successfully Updated'
-                            }
-                        )
-                    }
-                })
-            })
-            
-        }
+                            message: 'An error occurred while processing your request'
+                        }
+                    )
+                } else {
+                    if (check_result.length > 0) {
+                        
+                        console.log(check_result[0]);
+                        //return false;
+                        const gallery_img = JSON.parse(check_result[0].gallery_img);
+                        
+                        if(galleryImages.length > 0){
+                            galleryImages.forEach(function(img, index, arr) {
+                                gallery_img.push(img);
+                            })
+                        }
+                        //gallery_img.push(galleryImages);
+        
+                        //console.log('merge_img:',gallery_img);
+                        
+                        
+                        const promotionSQL = JSON.parse(check_result[0].promotions);
+                        //console.log('promotionSQL',promotionSQL);
+                        //return false;
+                        if(promotionSQL.length > 0){
+                            promotionSQL.forEach(function(promotionImg, index, arr) {
+                                if(promotionImg.promotion_image != null) {
+                                    if(promotion_image[index] == ''){
+                                        
+                                        PromotionalData[index].promotion_image = promotionSQL[index].promotion_image;
+                                    }
+                                }
+                            })
+                        }
+                        const productSQL = JSON.parse(check_result[0].products);
+                        if(productSQL.length > 0){
+                            productSQL.forEach(function(productImg, index, arr) {
+                                if(productImg.product_image != null) {
+                                    if(product_image[index]== ''){
+                                        ProductData[index].product_image = productSQL[index].product_image;
+                                    }
+                                }
+                            })
+                        }
+                        // console.log('allPromotionalData',PromotionalData);
+                        // console.log('allProductData',ProductData);
+                        const galleryimg = JSON.stringify(gallery_img);
+                        const Products = JSON.stringify(ProductData);
+                        const Promotion = JSON.stringify(PromotionalData);
+                        
 
+                        //return false;
+                        const update_query = `UPDATE premium_company_data SET cover_img = ?, gallery_img = ?, youtube_iframe = ?,promotions = ?, products = ? WHERE company_id = ? `;
+                        const update_data = [coverImg, galleryimg, youtube_iframe, Promotion, Products, companyID];
+                        db.query(update_query, update_data, (update_err,update_result)=>{
+                            if (update_err) {
+                                // Handle the error
+                                return res.send({
+                                    status: 'err',
+                                    data: '',
+                                    message: 'An error occurred while updating the company details: ' + update_err
+                                });
+                            } else {
+                                return res.send(
+                                    {
+                                        status: 'ok',
+                                        data: companyID,
+                                        message: 'Successfully Updated'
+                                    }
+                                )
+                            }
+                        })
+                        
+                    }else {
+                        const premium_query = `INSERT INTO premium_company_data ( company_id, cover_img, gallery_img, youtube_iframe, promotions, products) VALUES (?, ?, ?, ?, ?, ?)`;
+                        const premium_data = [companyID, coverImg, galleryImg, youtube_iframe, Promotion, Products];
+                        db.query(premium_query, premium_data, (premium_err, premium_result)=>{
+                            if (premium_err) {
+                                // Handle the error
+                                return res.send({
+                                    status: 'err',
+                                    data: '',
+                                    message: 'An error occurred while updating the company details: ' + premium_err
+                                });
+                            } else {
+                                return res.send(
+                                    {
+                                        status: 'ok',
+                                        data: companyID,
+                                        message: 'Successfully Updated'
+                                    }
+                                )
+                            }
+                        })
+                    }
+                }
+            });
+        }
     })
+}
+
+// Delete premium gallery image
+exports.deletePremiumImage = (req, res) => {
+    //console.log('deletePremiumImage', req.body);
+    ///return false;
+    const { companyId, imgIndex } = req.body;
+
+
+    const check_sql = `SELECT gallery_img FROM premium_company_data WHERE company_id = ? `;
+    const check_data = [companyId];
+    db.query(check_sql, check_data, (check_err, check_result) => {
+        if (check_err) {
+            return res.send(
+                {
+                    status: 'err',
+                    data: '',
+                    message: 'An error occurred while processing your request'
+                }
+            )
+        } else {
+            if (check_result.length > 0) {
+                const gallery_img = JSON.parse(check_result[0].gallery_img);
+                //console.log(gallery_img);
+
+                const indexToRemove = imgIndex;
+                if (indexToRemove >= 0 && indexToRemove < gallery_img.length) {
+                    gallery_img.splice(indexToRemove, 1);
+                }
+                
+                const galleryImg = JSON.stringify(gallery_img);
+
+                const update_sql = `UPDATE premium_company_data SET gallery_img = ? WHERE company_id = ? `;
+                const update_data = [galleryImg, companyId];
+                db.query(update_sql, update_data, (update_err, update_result) => {
+                    if (update_err) throw update_err;
+                    return res.send(
+                        {
+                            status: 'ok',
+                            data: '',
+                            message: 'Image Deleted successfully'
+                        }
+                    )
+                })
+            }
+        }
+    });
+
+    
+}
+
+// Delete premium gallery image
+exports.deletePremiumPromotion = (req, res) => {
+    //console.log('deletePremiumImage', req.body);
+    ///return false;
+    const { companyId, dataIndex } = req.body;
+
+
+    const check_sql = `SELECT promotions FROM premium_company_data WHERE company_id = ? `;
+    const check_data = [companyId];
+    db.query(check_sql, check_data, (check_err, check_result) => {
+        if (check_err) {
+            return res.send(
+                {
+                    status: 'err',
+                    data: '',
+                    message: 'An error occurred while processing your request'
+                }
+            )
+        } else {
+            if (check_result.length > 0) {
+                
+                console.log(check_result[0]);
+                //return false;
+                const promotions = JSON.parse(check_result[0].promotions);
+                //console.log(gallery_img);
+
+                const indexToRemove = dataIndex;
+                if (indexToRemove >= 0 && indexToRemove < promotions.length) {
+                    promotions.splice(indexToRemove, 1);
+                }
+                
+                const promotionData = JSON.stringify(promotions);
+
+                const update_sql = `UPDATE premium_company_data SET promotions = ? WHERE company_id = ? `;
+                const update_data = [promotionData, companyId];
+                db.query(update_sql, update_data, (update_err, update_result) => {
+                    if (update_err) throw update_err;
+                    return res.send(
+                        {
+                            status: 'ok',
+                            data: '',
+                            message: 'Promotion Deleted successfully'
+                        }
+                    )
+                })
+            }
+        }
+    });
+
+    
+}
+
+// Delete premium gallery image
+exports.deletePremiumProduct = (req, res) => {
+    //console.log('deletePremiumImage', req.body);
+    ///return false;
+    const { companyId, dataIndex } = req.body;
+
+
+    const check_sql = `SELECT products FROM premium_company_data WHERE company_id = ? `;
+    const check_data = [companyId];
+    db.query(check_sql, check_data, (check_err, check_result) => {
+        if (check_err) {
+            return res.send(
+                {
+                    status: 'err',
+                    data: '',
+                    message: 'An error occurred while processing your request'
+                }
+            )
+        } else {
+            if (check_result.length > 0) {
+                
+                console.log(check_result[0]);
+                //return false;
+                const products = JSON.parse(check_result[0].products);
+                //console.log(gallery_img);
+
+                const indexToRemove = dataIndex;
+                if (indexToRemove >= 0 && indexToRemove < products.length) {
+                    products.splice(indexToRemove, 1);
+                }
+                
+                const productsData = JSON.stringify(products);
+
+                const update_sql = `UPDATE premium_company_data SET products = ? WHERE company_id = ? `;
+                const update_data = [productsData, companyId];
+                db.query(update_sql, update_data, (update_err, update_result) => {
+                    if (update_err) throw update_err;
+                    return res.send(
+                        {
+                            status: 'ok',
+                            data: '',
+                            message: 'Product Deleted successfully'
+                        }
+                    )
+                })
+            }
+        }
+    });
+
+    
 }
