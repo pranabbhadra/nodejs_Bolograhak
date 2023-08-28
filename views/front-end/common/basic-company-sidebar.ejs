@@ -58,13 +58,13 @@
 </div>
 <div class="company_profile_navigation">
     <ul>
-       <li <% if( menu_active_id == 'basic-company-dashboard') { %>  class="active" <% } %> ><a href="/basic-company-profile/<%= company.ID  %>"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+       <li <% if( menu_active_id == 'basic-company-dashboard') { %>  class="active" <% } %> ><a href="/company-dashboard/<%= company.ID  %>"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
        <li><a href="#"><i class="fas fa-envelope"></i> My Reviews</a></li>
        <li <% if( menu_active_id == 'basic-company-management') { %>  class="active" <% } %>>
          <a href="#"><i class="fas fa-user-tie"></i> Profile</a>
          <ul>
             <li><a href="/myprofile">User Profile</a></li>
-            <li><a href="/basic-company-profile-management/<%= company.ID  %>">Company Profile</a></li>
+            <li><a href="/company-profile-management/<%= company.ID  %>">Company Profile</a></li>
         </ul>
       </li>
        <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>

@@ -505,6 +505,27 @@ async function getAllReviews() {
     console.error('Error during all_review_query:', error);
   }
 }
+
+async function getAllReviewsByCompanyID(companyId) {
+  const all_review_query = `
+    SELECT r.*, c.company_name, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic
+      FROM reviews r
+      JOIN company c ON r.company_id = c.ID
+      JOIN company_location cl ON r.company_location_id = cl.ID
+      JOIN users u ON r.customer_id = u.user_id
+      LEFT JOIN user_customer_meta ucm ON u.user_id = ucm.user_id
+      WHERE r.company_id = ? AND r.review_status = '1'
+      ORDER BY r.created_at DESC;
+  `;
+  try{
+    const all_review_results = await query(all_review_query, companyId);
+    return all_review_results;
+  }
+  catch(error){
+    console.error('Error during all_review_query:', error);
+  }
+}
+
 async function getCustomerReviewData(review_Id){
   const select_review_query = `
     SELECT r.*, c.company_name, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic
@@ -778,7 +799,10 @@ async function getlatestReviews(reviewCount){
 
 async function editCustomerReview(req){
   //console.log(req)
-  const ratingTagsArray = JSON.parse(req.rating_tags);
+  let ratingTagsArray = '';
+  if(req.rating_tags){
+    ratingTagsArray = JSON.parse(req.rating_tags);
+  }
   const currentDate = new Date();
   // Format the date in 'YYYY-MM-DD HH:mm:ss' format (adjust the format as needed)
   const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
@@ -909,4 +933,5 @@ module.exports = {
     getCompanyReviewNumbers,
     getCompanyReviews,
     getUsersByRole,
+    getAllReviewsByCompanyID
 };
