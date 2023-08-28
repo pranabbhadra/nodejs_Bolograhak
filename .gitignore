@@ -3,3 +3,4 @@
 /.env-test
 /blog/.htaccess
 /blog/wp-config.php
+/config.js
