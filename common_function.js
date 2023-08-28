@@ -47,9 +47,10 @@ function getUserMeta(userId) {
 
 async function getUsersByRole(roleID){
   const get_users_query = `
-    SELECT *
-    FROM users
-    WHERE user_type_id = ? AND user_status = "1"`;
+    SELECT ur.*, ccr.company_id, ccr.status
+    FROM users ur
+    LEFT JOIN company_claim_request ccr ON ur.user_id = ccr.claimed_by
+    WHERE ur.user_type_id = ? AND ur.user_status = "1"`;
   const get_users_value = [roleID];
   try{
     const get_users_result = await query(get_users_query, get_users_value);
