@@ -2999,10 +2999,12 @@ exports.updatePremiumCompany =async (req, res) => {
     const { youtube_iframe, promotion_title, promotion_desc, promotion_discount, promotion_image, product_title, product_desc, product_image } = req.body;
 
     const { cover_image, gallery_images } = req.files;
-
-    const galleryImages = gallery_images.map((title, index) => ({
-        gallery_images:req.files.gallery_images[index].filename
-    }));
+    let galleryImages = '';
+    if(gallery_images){
+         galleryImages = gallery_images.map((title, index) => ({
+            gallery_images:req.files.gallery_images[index].filename
+        }));
+    }
 
     
     let count = 0;

@@ -70,6 +70,7 @@
                 <h2 class="inner-main-head m-0">Gallery</h2>
                 <!-- <a href="#" class="view-more mt-0"><span class="position-relative"><i class="fa-solid fa-angle-right"></i>View More</span></a> -->
             </div>
+            <% if(gallery_img != "") {%>
             <div class="gallery-wrapper">
                 <% gallery_img.forEach( (image,index)=> {%>
                     <div class="gallery-img">
@@ -79,6 +80,7 @@
                     </div>
                 <% }) %>
             </div>
+            <% } %>
          </div>
     </div>
 </section>
