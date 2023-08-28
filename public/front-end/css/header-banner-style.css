@@ -844,7 +844,7 @@ span.toggle-menu {
 
 .frm-error-message-register,
 .frm-error-message{
-    color: red;
+    color: #282828;
     font-weight: 600;
     line-height: normal;
 }
