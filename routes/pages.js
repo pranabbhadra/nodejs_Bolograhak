@@ -2078,8 +2078,23 @@ router.get('/help/:id', (_, resp) => {
 });
 
 //-- 404---//
-router.get('*', (_, resp) => {
-    resp.sendFile(`${publicPath}/nopage.html`)
+router.get('*',checkCookieValue, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
+    const [globalPageMeta] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+    ]);
+    try {
+        res.render('front-end/404', {
+            menu_active_id: '404',
+            page_title: '404',
+            currentUserData,
+            globalPageMeta:globalPageMeta
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+    //res.sendFile(`${publicPath}/nopage.html`)
 });
 
 

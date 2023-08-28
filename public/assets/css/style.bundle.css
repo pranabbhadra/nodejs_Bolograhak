@@ -50492,6 +50492,10 @@ body {
 }
 
 /*# sourceMappingURL=style.bundle.css.map*/
+
+
+/*======================== Custom CSS ===========================*/
+
 .aside-dark .menu .menu-item .menu-link .menu-title {
   color: #fff;
 }
@@ -50544,6 +50548,24 @@ body {
   margin: 2px 0;
 }
 
-input.form-control {
+input.form-control,
+select.form-select,
+textarea.form-control,
+.form-select span{
   color: #000000 !important;
+}
+
+input.form-control::placeholder,
+textarea.form-control::placeholder{
+  color:rgba(0,0,0,0.7) !important;
+}
+.col-lg-8.fv-row > ul {
+	height: 300px;
+	overflow-y: scroll;
+	background: #f5f8fa;
+	border-radius: 6px;
+}
+.col-lg-8.fv-row > ul li,
+.col-lg-8.fv-row > ul > li > ul > li{
+  list-style: none;
 }
