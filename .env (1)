@@ -1,0 +1,26 @@
+# DATABASE = bolograhakstaging
+# DATABASE_HOST =  bolograhak-staging.cb41jdmx4rqo.us-east-1.rds.amazonaws.com
+# DATABASE_USER =  admin_staging
+# DATABASE_PASSWORD = 'StageBolograhak#123'
+
+DATABASE = bolograhak
+DATABASE_HOST = localhost
+DATABASE_USER =  root
+DATABASE_PASSWORD = 
+
+MAIL_HOST = smtp.gmail.com
+MAIL_PORT = 587
+MAIL_USER = vivek@scwebtech.com
+MAIL_PASSWORD = scwt@VivR@3914!
+#mailto:grahakbolo@gmail.com
+#Visual@03072023
+
+MAIL_SUPPORT = Support@Bolograhak.com
+
+BLOG_API_ENDPOINT = http://localhost/bolograhak/blog/wp-json/custom/v1
+BLOG_URL = http://localhost/bolograhak/blog/
+MAIN_URL = http://localhost:5000/
+
+ADDRESS_GOOGLE_API_Key = AIzaSyCeWX1g70Bt3QUhHQTJB9yD8_Iw1HH7krg
+
+
