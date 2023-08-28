@@ -218,4 +218,19 @@ router.post('/update-global-content', authController.updateGlobalContent);
 //Update basic-company-profile-management 
 router.post('/basic_company_profile_update', upload.single('logo'), authController.updateBasicCompany);
 
+//Update basic-company-profile-management 
+router.post('/premium_company_profile_update',  upload.fields([
+    
+    { name: 'logo', maxCount: 1 },
+
+    { name: 'cover_image', maxCount: 1 },
+
+    { name: 'gallery_images', maxCount: 100 },
+
+    { name: 'promotion_image', maxCount: 100 },
+
+    { name: 'product_image', maxCount: 100 },
+
+]), authController.updatePremiumCompany);
+
 module.exports = router;

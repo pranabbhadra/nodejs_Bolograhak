@@ -26,12 +26,16 @@
                      </div>
                   </div>
                   <div class="review-slider-wrap">
+                     <% if(AllCompaniesReviews.length>0) { %>
                      <div class="dashboard-head-panel">
                         <h2>Latest Reviews</h2>
                         <a href="/users-all-reviews" class="btn-default btn-warning">View All</a>
                      </div>
+                     
+                     <% } %>
+                     
+                     <% if(AllCompaniesReviews.length > 0) { %>
                      <div class="review-slider2">
-                        <% if(AllCompaniesReviews) { %>
                            <% AllCompaniesReviews.forEach( (review,index)=> {%>
                                <div class="item">
                                  <div class="review-box">
@@ -116,9 +120,12 @@
                                  </div>
                               </div>
                             <% }) %>
-                         <% }%>
-                       
                      </div>
+                     <% } else { %>
+                         <div class="blank-message">
+                           If you're not seeing any review listing, please start share your opinion on companies.
+                        </div> 
+                     <% } %>
                   </div>
                   <% if(userMeta && userMeta.about) { %>
                   <div class="about-me-area">
@@ -126,37 +133,63 @@
                      <p><%= userMeta && userMeta.about ? userMeta.about : '' %></p>
                   </div>
                   <% } %>
-                  <div class="review-company-wrap">
-                     <div class="dashboard-head-panel">
-                        <h2>Your Reviewed Companies</h2>
-                        <!-- <a href="#" class="btn-default btn-warning">View All</a> -->
+                  
+                  <% if(ReviewedCompanies.length > 0) { %>
+                     <div class="review-company-wrap">
+                        <div class="dashboard-head-panel">
+                           <h2>Your Reviewed Companies</h2>
+                           <!-- <a href="#" class="btn-default btn-warning">View All</a> -->
+                        </div>
+                        <div class="review-company-slider">
+                           <% ReviewedCompanies.forEach( (company,index)=> {%>
+                                 <div class="item">
+                                    <% if(company && company.logo) { %>
+                                          <a href="/company/<%= company.company_id %>"><img src="/<%= company.logo %>" alt="img" width="88" height="88"></a>
+                                    <%} else {%>
+                                          <a href="/company/<%= company.company_id %>"><img src="/front-end/images/company-placeholder-image.png" alt="img" width="88" height="88" ></a>
+                                    <% } %>
+                                    
+                                    <h6><%= company.company_name %></h6>
+                                 </div>
+                              <% }) %>
+                        </div>
+                        <!-- <% if( userMeta.payment_status == 'paid' ) {%>
+                           <div class="review-company-slider">
+                              <% ReviewedCompanies.forEach( (company,index)=> {%>
+                                    <div class="item">
+                                       <% if(company && company.logo) { %>
+                                          <a href="/category-details-premium/<%= company.company_id %>"><img src="/<%= company.logo %>" alt="img" width="88" height="88"></a>
+                                    <%} else {%>
+                                          <a href="/category-details-premium/<%= company.company_id %>"><img src="/front-end/images/company-placeholder-image.png" alt="img" width="88" height="88" ></a>
+                                    <% } %>
+                                       <h6><%= company.company_name %></h6>
+                                    </div>
+                                 <% }) %>
+                           </div>
+                        <% } else { %>
+                           <div class="review-company-slider">
+                              <% ReviewedCompanies.forEach( (company,index)=> {%>
+                                    <div class="item">
+                                       <% if(company && company.logo) { %>
+                                             <a href="/company/<%= company.company_id %>"><img src="/<%= company.logo %>" alt="img" width="88" height="88"></a>
+                                       <%} else {%>
+                                             <a href="/company/<%= company.company_id %>"><img src="/front-end/images/company-placeholder-image.png" alt="img" width="88" height="88" ></a>
+                                       <% } %>
+                                       
+                                       <h6><%= company.company_name %></h6>
+                                    </div>
+                                 <% }) %>
+                           </div>
+                        <% } %> -->
                      </div>
-                     <div class="review-company-slider">
-                        <% if(ReviewedCompanies) { %>
-                          <% ReviewedCompanies.forEach( (company,index)=> {%>
-                              <div class="item">
-                                 <a href="/company/<%= company.company_id %>"><img src="/<%= company.logo %>" alt="img" width="88" height="88"></a>
-                                 <h6><%= company.company_name %></h6>
-                              </div>
-                           <% }) %>
-                        <% }%>
-                     </div>
-                  </div>
+                  <% }%>
                </div>
             </div>
          </div>
       </div>
    </div>
 </section>
-<!-- <%
-function truncateString(str, maxLength) {
-  if (str.length > maxLength) {
-    return str.slice(0, maxLength) + "...";
-  } else {
-    return str;
-  }
-}
-%> -->
+
 <!-- ============== Section1 End =============== -->
 <%- include('common/footer') -%>
 <script>

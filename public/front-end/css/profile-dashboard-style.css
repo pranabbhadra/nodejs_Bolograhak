@@ -478,3 +478,9 @@ span.user-select-tag {
 .profile-right-content .btn-warning {
     font-family: var(--nunito);
 }
+
+.blank-message {
+    background-color: #f2f2f2;
+    padding: 20px;
+    border-radius: 12px;
+}
