@@ -40,8 +40,21 @@ router.post('/submitReview',verifyToken, authenController.submitReview);
 //----------Get API Start----------------//
 //get user details
 router.get('/getUserDetails/:user_id', verifyToken, async (req, res) => {
-
-    const user_ID = req.params.user_id;
+    const authenticatedUserId = parseInt(req.user.user_id);
+    console.log('authenticatedUserId: ', authenticatedUserId);
+    
+    const ApiuserId = parseInt(req.params.user_id); 
+    console.log('req.params.user_id: ', ApiuserId);
+    
+    const user_ID = req.params.user_id; 
+    console.log("user_id from request:", user_ID); 
+    
+    if (ApiuserId !== authenticatedUserId) {
+        return res.status(403).json({
+            status: 'error',
+            message: 'Access denied: You are not authorized to update this user.',
+        });
+    }
     const [userBasicInfo, userMetaInfo, userCompany, userReview, userReviewCompany] = await Promise.all([
         comFunction.getUser(user_ID),
         comFunction.getUserMeta(user_ID),
@@ -84,6 +97,14 @@ router.get('/getUserDetails/:user_id', verifyToken, async (req, res) => {
 
 //get All user details
 router.get('/getAllUsersDetails', verifyToken, async (req, res) => {
+    const authenticatedUserId = parseInt(req.user.user_id);
+    console.log('authenticatedUserId: ', authenticatedUserId);
+
+    const ApiuserId = parseInt(req.params.user_id); 
+    console.log('req.params.user_id: ', ApiuserId); 
+    
+    const user_ID = req.params.user_id; 
+    console.log("user_id from request:", user_ID); 
     const {user_type_id}=req.query;
     if(!user_type_id){
         const userTypeToExclude=1;
@@ -136,7 +157,7 @@ router.get('/getAllUsersDetails', verifyToken, async (req, res) => {
 router.get('/search-company', verifyToken, authenController.searchCompany);
 
 router.get('/getAllCompaniesDetails', verifyToken, async (req, res) => {
-    const query = `SELECT c.ID, c.user_created_by, c.logo, c.company_name, c.comp_phone, c.comp_email, c.status, c.trending, c.main_address, c.main_address_pin_code, COUNT(r.id) as review_count, AVG(r.rating) as average_rating,
+    const query = `SELECT c.ID, c.user_created_by, c.logo, c.company_name, c.about_company, c.comp_phone, c.comp_email, c.status, c.trending, c.main_address, c.main_address_pin_code, COUNT(r.id) as review_count, AVG(r.rating) as average_rating,
     l.id as location_id, l.address, l.country, l.state, l.city, l.zip
     FROM company c
     JOIN company_location l ON c.ID = l.company_id
@@ -167,6 +188,7 @@ router.get('/getAllCompaniesDetails', verifyToken, async (req, res) => {
 
             if (!companiesData[companyId]) {
                 companiesData[companyId] = {
+                    ID: row.ID,
                     company_name: row.company_name,
                     review_count: row.review_count,
                     average_rating: row.average_rating,
@@ -174,6 +196,7 @@ router.get('/getAllCompaniesDetails', verifyToken, async (req, res) => {
                     logo:row.logo,
                     comp_phone:row.comp_phone,
                     comp_email:row.comp_email,
+                    about_company:row.about_company,
                     status:row.status,
                     trending:row.trending,
                     main_address:row.main_address,
@@ -226,6 +249,8 @@ router.get('/getComapniesDetails/:ID', verifyToken, async (req, res) => {
             c.user_created_by,
             c.company_name,
             c.logo,
+            c.about_company,
+            c.trending,
             c.comp_phone,
             c.comp_email,
             c.comp_registration_id,
@@ -261,9 +286,11 @@ router.get('/getComapniesDetails/:ID', verifyToken, async (req, res) => {
             user_created_by: results[0].user_created_by,
             company_name: results[0].company_name,
             logo: results[0].logo,
+            about_company:results[0].about_company,
             comp_phone: results[0].comp_phone,
             comp_email: results[0].comp_email,
             comp_registration_id: results[0].comp_registration_id,
+            trending:results[0].trending,
             status: results[0].status,
             created_date: results[0].created_date,
             updated_date: results[0].updated_date,
@@ -280,7 +307,22 @@ router.get('/getComapniesDetails/:ID', verifyToken, async (req, res) => {
             }))
         };
        
-        const reviewsQuery = 'SELECT * FROM reviews WHERE company_id = ? AND review_status = 1';
+        const reviewsQuery = `
+        SELECT
+            r.*,
+            ucm.profile_pic,
+            u.first_name,
+            u.last_name,
+            u.email,
+            GROUP_CONCAT(tr.tag_name) as tag_names
+        FROM reviews r
+        LEFT JOIN user_customer_meta ucm ON r.customer_id = ucm.user_id
+        LEFT JOIN users u ON r.customer_id = u.user_id
+        LEFT JOIN review_tag_relation tr ON r.id = tr.review_id
+        WHERE r.company_id = ? AND r.review_status = 1
+        GROUP BY r.id;
+    `;
+    
         db.query(reviewsQuery, [ID], (reviewsErr, reviewsResults) => {
             if (reviewsErr) {
                 return res.status(500).json({
@@ -290,7 +332,39 @@ router.get('/getComapniesDetails/:ID', verifyToken, async (req, res) => {
                 });
             }
             
-            companyData.reviews = reviewsResults;
+            // companyData.reviews = reviewsResults.map(review => ({
+            //     first_name:review.first_name,
+            //     last_name:review.last_name,
+            //     email:review.email,
+            //     profile_Pic:review.profile_pic,
+            //     tag_names: review.tag_names.split(',')
+            //     // ... (include other review properties you need)
+            // }));
+            companyData.reviews = reviewsResults.reduce((reviews, review) => {
+                const existingReview = reviews.find(r => r.id === review.id);
+                if (existingReview) {
+                    existingReview.tags.push({
+                        id: review.tag_id,
+                        tag_names: review.tag_names.split(',')
+                    });
+                } else {
+                    reviews.push({
+                        id: review.id,
+                        first_name: review.first_name,
+                        last_name: review.last_name,
+                        email: review.email,
+                        profile_Pic: review.profile_pic,
+                        tags: [
+                            {
+                                id: review.tag_id,
+                                tag_names: review.tag_names.split(',')
+                            }
+                        ]
+                    });
+                }
+                return reviews;
+            }, []);
+            
 
             const ratingCountsQuery = 'SELECT rating, COUNT(*) as rating_count FROM reviews WHERE company_id = ? GROUP BY rating';
             db.query(ratingCountsQuery, [ID], (ratingCountsErr, ratingCountsResults) => {
@@ -388,7 +462,7 @@ router.get('/getcompanyreviewlisting/:company_id', verifyToken, (req, res) => {
     db.query(companyQuery, [companyId], (error, companyResult) => {
       if (error) {
         console.error('Error executing company query:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: 'Internal server error',error });
       } else {
         db.query(reviewsQuery, [companyId], (error, reviewsResult) => {
           if (error) {
@@ -416,10 +490,26 @@ router.get('/getcompanyreviewlisting/:company_id', verifyToken, (req, res) => {
 
 //getuserreviewlisting
 router.get('/getuserreviewlisting/:user_id', verifyToken, (req, res) => {
+    const authenticatedUserId = parseInt(req.user.user_id);
+    console.log('authenticatedUserId: ', authenticatedUserId);
+    
+    const ApiuserId = parseInt(req.params.user_id); 
+    console.log('req.params.user_id: ', ApiuserId);
+    
+    const user_ID = req.params.user_id; 
+    console.log("user_id from request:", user_ID); 
+    
+    if (ApiuserId !== authenticatedUserId) {
+        return res.status(403).json({
+            status: 'error',
+            message: 'Access denied: You are not authorized to update this user.',
+        });
+    }
     const userId = req.params.user_id;
   
     const userQuery = `
       SELECT
+        u.user_id,
         u.first_name,
         u.last_name,
         u.email,
@@ -433,56 +523,110 @@ router.get('/getuserreviewlisting/:user_id', verifyToken, (req, res) => {
     `;
   
     const reviewsQuery = `
-      SELECT
+    SELECT
         r.id AS review_id,
         r.review_title,
         r.rating,
         r.review_content,
         r.review_status,
+        r.rejecting_reason,
+        r.parent_review_id,
+        r.company_location_id,
+        MAX(r.created_at) AS latest_review_date,
         r.created_at AS review_created_at,
+        co.ID AS company_id,
         co.company_name,
-        co.logo AS company_logo
-      FROM
+        co.logo AS company_logo,
+        co.trending AS company_trending,
+        cl.address AS company_location,
+        cl.country AS company_location_country,
+        cl.state AS company_location_state,
+        cl.city AS company_location_city,
+        cl.zip AS company_location_zip,
+        cl.status AS company_location_status,
+        ucm.profile_pic AS customer_profile_pic,
+        GROUP_CONCAT(tr.id) AS tag_ids,
+        GROUP_CONCAT(tr.tag_name) AS tag_names
+    FROM
         reviews r
-      JOIN
-        users c ON r.customer_id = c.user_id
-      JOIN
+    JOIN
+        users u ON r.customer_id = u.user_id
+    JOIN
         company co ON r.company_id = co.ID
-      WHERE
-        c.user_id = ? AND r.review_status=1
-      ORDER BY
-        r.created_at ASC;
+    LEFT JOIN
+        user_customer_meta ucm ON u.user_id = ucm.user_id
+    LEFT JOIN
+        review_tag_relation tr ON r.id = tr.review_id
+    LEFT JOIN
+        company_location cl ON co.ID = cl.company_id
+    WHERE
+        u.user_id = ? AND r.review_status = 1
+    GROUP BY
+        r.id, co.ID;
     `;
-  
-    db.query(userQuery, [userId], (error, userResult) => {
-      if (error) {
-        console.error('Error executing user query:', error);
-        res.status(500).json({ error: 'Internal server error' });
-      } else if (userResult.length === 0) {
-        res.status(404).json({ error: 'User not found' });
-      } else {
-        db.query(reviewsQuery, [userId], (error, reviewsResult) => {
-          if (error) {
-            console.error('Error executing reviews query:', error);
-            res.status(500).json({ error: 'Internal server error' });
-          } else {
+    
+
+db.query(userQuery, [userId], (error, userResult) => {
+    if (error) {
+      console.error('Error executing user query:', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    } else if (userResult.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    } else {
+      db.query(reviewsQuery, [userId], (error, reviewsResult) => {
+        if (error) {
+          console.error('Error executing reviews query:', error);
+          return res.status(500).json({ error: 'Internal server error' });
+        } else  {
             const userInfo = userResult[0];
-            const reviews = reviewsResult;
-  
+            const reviews = reviewsResult.map(review => ({
+                id: review.review_id,
+                company_id: review.company_id,
+                company_name: review.company_name,
+                company_location_id:review.company_location_id,
+                logo: review.company_logo,
+                trending: review.company_trending,
+                company_location: {
+                    address: review.company_location,
+                    country: review.company_location_country,
+                    state: review.company_location_state,
+                    city: review.company_location_city,
+                    zip: review.company_location_zip,
+                    status: review.company_location_status,
+                },
+                review_title: review.review_title,
+                review_content: review.review_content,
+                user_privacy: review.user_privacy,
+                review_status: review.review_status,
+                rejecting_reason: review.rejecting_reason,
+                parent_review_id:review.parent_review_id,
+                latest_review_date: review.latest_review_date,
+                tags: review.tag_ids
+                    ? review.tag_ids.split(',').map((tagId, index) => ({
+                        id: parseInt(tagId),
+                        tag_name: review.tag_names.split(',')[index]
+                    }))
+                    : []
+            }));
+            const reviewCount = reviews.length; 
             const output = {
-              first_name: userInfo.first_name,
-              last_name: userInfo.last_name,
-              email: userInfo.email,
-              profile_pic: userInfo.profile_pic,
-              reviews: reviews
+                user_id: userInfo.user_id,
+                first_name: userInfo.first_name,
+                last_name: userInfo.last_name,
+                email: userInfo.email,
+                profile_pic: userInfo.profile_pic,
+                reviews: reviews,
+                review_count: reviewCount
             };
-  
+
             res.status(200).json(output);
-          }
-        });
-      }
-    });
+        }
+      });
+    }
 });
+});
+
+
  
 //reviewslistofallcompaniesbyuser
 router.get('/reviewslistofallcompaniesbyuser/:user_id', verifyToken, (req, res) => {
@@ -510,12 +654,14 @@ router.get('/getreviewlisting', verifyToken, async (req, res) => {
     r.user_privacy, r.review_status, r.created_at AS review_created_at,
     r.updated_at AS review_updated_at,
     u.first_name, u.last_name, u.email, ucd.profile_pic,
-    rtr.id AS review_relation_tag_id, rtr.tag_name, GROUP_CONCAT(rtr.id) AS tag_ids
+    rtr.id AS review_relation_tag_id, rtr.tag_name, GROUP_CONCAT(rtr.id) AS tag_ids,
+    cl.address AS company_address, cl.state AS company_state, cl.city AS company_city, cl.country AS company_country
     FROM reviews r
     LEFT JOIN review_tag_relation rtr ON r.id = rtr.review_id
     LEFT JOIN company c ON r.company_id = c.ID
     LEFT JOIN users u ON r.customer_id = u.user_id
     LEFT JOIN user_customer_meta ucd ON u.user_id = ucd.user_id
+    LEFT JOIN company_location cl ON c.ID = cl.company_id  -- Join the company_location table
     WHERE r.review_status = 1 
     GROUP BY r.id, r.company_id, r.review_title, r.rating, r.review_content, r.user_privacy,
     r.review_status, r.created_at, r.updated_at, rtr.id, u.first_name, u.last_name, u.email, ucd.profile_pic`;
@@ -549,6 +695,11 @@ router.get('/getreviewlisting', verifyToken, async (req, res) => {
                     logo: row.logo,
                     trending: row.trending,
                     company_location: row.company_location,
+                    company_location_id:row.company_location_id,
+                    company_address: row.company_address, 
+                    company_state: row.company_state,     
+                    company_city: row.company_city,        
+                    company_country: row.company_country,
                     review_title:row.review_title,
                     rating:row.rating,
                     review_content:row.review_content,
@@ -584,23 +735,28 @@ function verifyToken(req, res, next){
     let token = req.headers['authorization'];
     if(token){
         token = token.split(' ')[1];
-        jwt.verify(token, jwtsecretKey, (err, valid) =>{
+        console.log("Received token:", token);
+        jwt.verify(token, jwtsecretKey, (err, valid) => {
             if(err){
+                console.error("Token verification error:", err);
                 return res.status(401).json({
                     status: 'error',
                     message: 'Invalid token',
                 });
-            }else{
+            } else {
+                req.user = valid; 
+                console.log("user ccc",req.user) //to store user information
                 next();
             }
         })
-    }else{
+    } else {
         return res.status(403).json({
             status: 'error',
             message: 'Missing header token',
         });
     }
 }
+
 
 
 module.exports = router;

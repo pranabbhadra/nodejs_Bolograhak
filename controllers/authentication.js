@@ -192,6 +192,7 @@ exports.login = (req, res) => {
     console.log(req.body);
     const userAgent = req.headers['user-agent'];
     const agent = useragent.parse(userAgent);
+    const payload = {};
     // res.json(deviceInfo);
 
     const { email, password, device_id, device_token, imei_no, model_name, make_name } = req.body;
@@ -210,6 +211,7 @@ exports.login = (req, res) => {
           });
         }
         const user = results[0];
+        payload.user_id = user.user_id; 
         const isPasswordMatch = await bcrypt.compare(password, user.password);
     
         if (!isPasswordMatch) {
@@ -219,7 +221,7 @@ exports.login = (req, res) => {
           });
         }
     
-        const token = jwt.sign({ userId: user.id }, secretKey, {
+        const token = jwt.sign(payload, secretKey, {
           expiresIn: '10h', 
         });
     
@@ -361,93 +363,130 @@ exports.login = (req, res) => {
       });
     })
 }
-
 //edit user
 exports.edituser = (req, res) => {
-  const {
-      user_id,
-      first_name,
-      last_name,
-      phone,
-      address,
-      country,
-      state,
-      city,
-      zip,
-      date_of_birth,
-      occupation,
-      gender,
-      alternate_phone,
-      marital_status,
-      about
-  } = req.body;
+    const authenticatedUserId = parseInt(req.user.user_id);
+    console.log('authenticatedUserId: ', authenticatedUserId);
+    const ApiuserId=parseInt(req.body.user_id);
+    console.log('req.body.user_id: ', parseInt(req.body.user_id));
+    const {
+        user_id,
+        first_name,
+        last_name,
+        phone,
+        address,
+        country,
+        state,
+        city,
+        zip,
+        date_of_birth,
+        occupation,
+        gender,
+        alternate_phone,
+        marital_status,
+        about
+    } = req.body;
+    console.log("user_id from request:", req.body.user_id);
+    if (ApiuserId !== authenticatedUserId) {
+      return res.status(403).json({
+          status: 'error',
+          message: 'Access denied: You are not authorized to update this user.',
+      });
+    }
+    const profilePicFile = req.file;
+    const userUpdateQuery = 'UPDATE users SET first_name=?, last_name=?, phone=? WHERE user_id=?';
+    const userUpdateValues = [first_name, last_name, phone, user_id];
 
-  const profilePicFile = req.file;
-  const userUpdateQuery = 'UPDATE users SET first_name=?, last_name=?, phone=? WHERE user_id=?';
-  const userUpdateValues = [first_name, last_name, phone, user_id];
+    let userMetaUpdateQuery = 'UPDATE user_customer_meta SET address=?, country=?, state=?, city=?, zip=?, date_of_birth=?, occupation=?, gender=?, alternate_phone=?, marital_status=?, about=?';
+    let userMetaUpdateValues = [address, country, state, city, zip, date_of_birth, occupation, gender, alternate_phone, marital_status, about];
 
-  let userMetaUpdateQuery = 'UPDATE user_customer_meta SET address=?, country=?, state=?, city=?, zip=?, date_of_birth=?, occupation=?, gender=?, alternate_phone=?, marital_status=?, about=?';
-  let userMetaUpdateValues = [address, country, state, city, zip, date_of_birth, occupation, gender, alternate_phone, marital_status, about];
-  if (profilePicFile) {
-      userMetaUpdateQuery += ', profile_pic=?';
-      userMetaUpdateValues.push(profilePicFile.filename);
-  }
-  userMetaUpdateQuery += ' WHERE user_id=?';
-  userMetaUpdateValues.push(user_id);
-
-  db.query(
-      userUpdateQuery,
-      userUpdateValues,
-      (err, userUpdateResults) => {
-          if (err) {
-              return res.status(500).json({
-                  status: 'error',
-                  message: 'An error occurred while updating user information',
-              });
+    if (profilePicFile) {
+        db.query(
+            'SELECT profile_pic FROM user_customer_meta WHERE user_id=?',
+            [user_id],
+            (prevProfilePicErr, prevProfilePicResult) => {
+                if (prevProfilePicErr) {
+                    console.error('Error fetching previous profile_pic:', prevProfilePicErr);
+                    return res.status(500).json({
+                        status: 'error',
+                        message: 'An error occurred while fetching previous profile_pic'+prevProfilePicErr,
+                    });
+                }
+                if (prevProfilePicResult && prevProfilePicResult.length > 0 ){
+                  const previousProfilePicFilename = prevProfilePicResult[0].profile_pic;
+                  if (previousProfilePicFilename) {
+                    const previousProfilePicPath = 'uploads/' + previousProfilePicFilename
+                    console.log(previousProfilePicPath)
+                    //const previousProfilePicPath = 'uploads/' + prevProfilePicResult[0].profile_pic;
+                    fs.unlink(previousProfilePicPath, (unlinkError) => {
+                        if (unlinkError) {
+                            console.error('Error deleting previous profile_pic:', unlinkError);
+                        }
+                        updateUserInformation();
+                    });
+                } else {
+                    updateUserInformation();
+                    console.log('Previous profile picture deleted');
+                }
+            }
           }
+        );
+    } else {
+        updateUserInformation();
+    }
 
-          db.query(
-              userMetaUpdateQuery,
-              userMetaUpdateValues,
-              (err, userMetaUpdateResults) => {
-                  if (err) {
-                      return res.status(500).json({
-                          status: 'error',
-                          message: 'An error occurred while updating user information',
-                      });
-                  }
+    function updateUserInformation() {
+        userMetaUpdateQuery += ' WHERE user_id=?';
+        userMetaUpdateValues.push(user_id);
 
-                  db.query(
-                      'SELECT * FROM users u LEFT JOIN user_customer_meta m ON u.user_id = m.user_id WHERE u.user_id=?',
-                      [user_id],
-                      (err, updatedUserDetails) => {
-                          if (err) {
-                              console.error('Error fetching updated user details:', err);
-                              return res.status(500).json({
-                                  status: 'error',
-                                  message: 'An error occurred while fetching updated user details',
-                              });
-                          }
-                          delete updatedUserDetails[0].password;
-                          if (updatedUserDetails && updatedUserDetails.length > 0) {
-                              return res.json({
-                                  status: 'success',
-                                  data: updatedUserDetails[0], // Return the updated user details
-                                  message: 'User information updated successfully',
-                              });
-                          } else {
-                              return res.status(404).json({
-                                  status: 'error',
-                                  message: 'User not found',
-                              });
-                          }
-                      }
-                  );
-              }
-          );
-      }
-  );
+        db.query(userUpdateQuery, userUpdateValues, (err, userUpdateResults) => {
+            if (err) {
+                return res.status(500).json({
+                    status: 'error',
+                    message: 'An error occurred while updating user information',
+                    err
+                });
+            }
+
+            db.query(userMetaUpdateQuery, userMetaUpdateValues, (err, userMetaUpdateResults) => {
+                if (err) {
+                    return res.status(500).json({
+                        status: 'error',
+                        message: 'An error occurred while updating user information',
+                    });
+                }
+
+                db.query(
+                    'SELECT * FROM users u LEFT JOIN user_customer_meta m ON u.user_id = m.user_id WHERE u.user_id=?',
+                    [user_id],
+                    (err, updatedUserDetails) => {
+                        if (err) {
+                            console.error('Error fetching updated user details:', err);
+                            return res.status(500).json({
+                                status: 'error',
+                                message: 'An error occurred while fetching updated user details',
+                            });
+                        }
+                        delete updatedUserDetails[0].password;
+                        if (updatedUserDetails && updatedUserDetails.length > 0) {
+                            return res.json({
+                                status: 'success',
+                                data: updatedUserDetails[0], // Return the updated user details
+                                message: 'User information updated successfully',
+                            });
+                        } else {
+                            return res.status(404).json({
+                                status: 'error',
+                                message: 'User not found',
+                            });
+                        }
+                    }
+                );
+            });
+        });
+    }
 };
+
 
 
 exports.createcategories = (req, res) => {
@@ -830,7 +869,12 @@ exports.createcompanylocation = (req, res) => {
 
 
 exports.submitReview = async (req, res) => {
+
   try {
+    const authenticatedUserId = parseInt(req.user.user_id);
+    console.log('authenticatedUserId: ', authenticatedUserId);
+    const ApiuserId=parseInt(req.body.user_id);
+    console.log('req.body.user_id: ', parseInt(req.body.user_id));
     const {
       user_id,
       company_name,
@@ -841,7 +885,13 @@ exports.submitReview = async (req, res) => {
       user_privacy,
       tags
     } = req.body;
-
+    console.log("user_id from request:", req.body.user_id);
+    if (ApiuserId !== authenticatedUserId) {
+      return res.status(403).json({
+          status: 'error',
+          message: 'Access denied: You are not authorized to update this user.',
+      });
+    }
     const currentDate = new Date();
     const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
 
