@@ -505,6 +505,27 @@ async function getAllReviews() {
     console.error('Error during all_review_query:', error);
   }
 }
+
+async function getAllReviewsByCompanyID(companyId) {
+  const all_review_query = `
+    SELECT r.*, c.company_name, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic
+      FROM reviews r
+      JOIN company c ON r.company_id = c.ID
+      JOIN company_location cl ON r.company_location_id = cl.ID
+      JOIN users u ON r.customer_id = u.user_id
+      LEFT JOIN user_customer_meta ucm ON u.user_id = ucm.user_id
+      WHERE r.company_id = ? AND r.review_status = '1'
+      ORDER BY r.created_at DESC;
+  `;
+  try{
+    const all_review_results = await query(all_review_query, companyId);
+    return all_review_results;
+  }
+  catch(error){
+    console.error('Error during all_review_query:', error);
+  }
+}
+
 async function getCustomerReviewData(review_Id){
   const select_review_query = `
     SELECT r.*, c.company_name, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic
@@ -778,7 +799,10 @@ async function getlatestReviews(reviewCount){
 
 async function editCustomerReview(req){
   //console.log(req)
-  const ratingTagsArray = JSON.parse(req.rating_tags);
+  let ratingTagsArray = '';
+  if(req.rating_tags){
+    ratingTagsArray = JSON.parse(req.rating_tags);
+  }
   const currentDate = new Date();
   // Format the date in 'YYYY-MM-DD HH:mm:ss' format (adjust the format as needed)
   const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
@@ -863,10 +887,10 @@ async function getCompanyReviewNumbers(companyID){
 
 async function getCompanyReviews(companyID){
   const get_company_rewiew_query = `
-    SELECT r.*, ur.first_name, ur.last_name, ur.last_name, ucm.profile_pic
+    SELECT r.*, ur.first_name, ur.last_name, ur.email, ucm.profile_pic
     FROM reviews r
     JOIN users ur ON r.customer_id = ur.user_id
-    JOIN user_customer_meta ucm ON ur.user_id = ucm.user_id
+    LEFT JOIN user_customer_meta ucm ON ur.user_id = ucm.user_id
     WHERE r.company_id = ? AND r.review_status = "1"
     ORDER BY r.created_at DESC
     LIMIT 20`;
@@ -876,6 +900,42 @@ async function getCompanyReviews(companyID){
     return get_company_rewiew_result;
   }catch(error){
     return 'Error during user get_company_rewiew_query:'+error;
+  }
+}
+
+async function getReviewByID(reviewId){
+  const get_single_rewiew_query = `
+    SELECT r.*, ur.first_name, ur.last_name, ur.email, ucm.profile_pic, ccreq.claimed_by as company_owner
+    FROM reviews r
+    JOIN users ur ON r.customer_id = ur.user_id
+    LEFT JOIN user_customer_meta ucm ON ur.user_id = ucm.user_id
+    LEFT JOIN company_claim_request ccreq ON r.company_id = ccreq.company_id
+    WHERE r.id = ?`;
+  const get_single_rewiew_value = [reviewId];
+  try{
+    const get_single_rewiew_result = await query(get_single_rewiew_query, get_single_rewiew_value);
+    return get_single_rewiew_result;
+    console.log('aaa',get_single_rewiew_result);
+  }catch(error){
+    return 'Error during user get_single_rewiew_query:'+error;
+  }
+}
+
+async function getReviewReplyDataByID(reviewId){
+  const get_single_rewiew_reply_query = `
+    SELECT rpy.*, ur.first_name, ur.last_name, ur.email, ucm.profile_pic, ccreq.claimed_by as company_owner
+    FROM review_reply rpy
+    JOIN users ur ON rpy.reply_by = ur.user_id
+    LEFT JOIN user_customer_meta ucm ON ur.user_id = ucm.user_id
+    LEFT JOIN company_claim_request ccreq ON r.company_id = ccreq.company_id
+    WHERE r.id = ?`;
+  const get_single_rewiew_value = [reviewId];
+  try{
+    const get_single_rewiew_result = await query(get_single_rewiew_query, get_single_rewiew_value);
+    return get_single_rewiew_result;
+    console.log('aaa',get_single_rewiew_result);
+  }catch(error){
+    return 'Error during user get_single_rewiew_query:'+error;
   }
 }
 
@@ -909,4 +969,7 @@ module.exports = {
     getCompanyReviewNumbers,
     getCompanyReviews,
     getUsersByRole,
+    getAllReviewsByCompanyID,
+    getReviewByID,
+    getReviewReplyDataByID
 };

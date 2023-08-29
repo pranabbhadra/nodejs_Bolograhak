@@ -7,79 +7,8 @@
         <section class="main-content about-content2 py-3 premium_company_profile">
             <div class="container">
                 <div class="company_profile_management">
-
-                    <div class="basic_info_of_company">
-                    <div class="row align-items-center">
-                        <div class="col-md-3">
-                            <div class="company_logo">
-                                <% if(company && company.logo) { %>
-                                    <a href="#"><img src="/<%= company.logo %>" alt="company"></a>
-                                    <%} else {%>
-                                       <a href="#"><img src="/front-end/images/company-placeholder-image.png" alt="company" ></a>
-                                       <% } %>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="company_details">
-                                <div class="row">
-                                <div class="col-sm-12">
-                                    <h2 class="company_name"><%= company && company.company_name ? company.company_name : '' %></h2>
-                                </div>
-                                <% if(company && company.comp_email){ %>
-                                    <div class="col-sm-6">
-                                       <p class="common_style"><i class="fas fa-envelope"></i><a
-                                             href="mailto:<%= company && company.comp_email ? company.comp_email : '' %>"><%= company && company.comp_email ? company.comp_email : '' %></a></p>
-                                    </div>
-                                  <% } %>
-                                  <% if(company && company.comp_phone ){ %>
-                                    <div class="col-sm-6">
-                                       <p class="common_style"><i class="fas fa-mobile"></i><a
-                                             href="tel:<%= company && company.comp_phone ? company.comp_phone : '' %>"><%= company && company.comp_phone ? company.comp_phone : '' %></a></p>
-                                    </div>
-                                    <% } %>
-                                    <% if(company && company.main_address ){ %>
-                                        <div class="col-sm-12">
-                                           <p class="common_style"><i class="fas fa-map-marker-alt"></i> <%= company && company.main_address ? company.main_address : '' %></p>
-                                        </div>
-                                        <% } %>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="overall_score">
-                                <!-- <div class="button_group">
-                                <a class="free" href="#">Free</a>
-                                <a class="switch_to_premium" href="#">switch to premium</a>
-                                </div> -->
-                                <div class="score_info">
-                                <div class="d-flex align-items-center mb-2">
-                                    <div class="review_count">4.5</div>
-                                    <div class="emoji_respective_review">
-                                        <img src="/front-end/images/4-5.gif" alt="">
-                                    </div>
-                                </div>
-                                <p>Total Review 1,117</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    </div>
-                    <div class="company_profile_navigation">
-                        <ul>
-                            <li><a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                            <li><a href="#"><i class="fas fa-envelope"></i> My Reviews</a></li>
-                            <li class="active">
-                                <a href="#"><i class="fas fa-user-tie"></i> Profile</a>
-                                <ul>
-                                    <li><a href="#">User Profile</a></li>
-                                    <li><a href="#">Company Profile</a></li>
-                                </ul>
-                            </li>
-                            <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
-                            <li><a href="#"><i class="fas fa-lock"></i> Change Password</a></li>
-                            <li><a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-                        </ul>
-                    </div>
+                    <%- include('common/premium-company-sidebar') -%>
+                    
                     <form id="premium_company_profile_form" enctype="multipart/form-data">
                         <input type="hidden" name="company_id" value="<%= company.ID  %>"/>
                         <input type="hidden" name="previous_logo" value="<%= company.logo %>"/>
@@ -112,7 +41,7 @@
                                         <% if(cover_img) { %>
                                             <img id="company_logo_preview" src="/<%= cover_img %>"  alt="">
                                             <%} else {%>
-                                                <img id="company_cover_image_preview" src="/front-end/images/fixed-emoji.png"
+                                                <img id="company_cover_image_preview" src="/front-end/images/no-image.png"
                                                     alt="">
                                                 <% } %>
                                     </div>
@@ -201,6 +130,7 @@
                             <h2 class="mb-3">Add Promotions</h2>
                             <div class="repeter_wrap">
                                 <div class="all_repeter">
+                                    <% if(promotions.length > 0 ){ %>
                                     <% promotions.forEach( (promotion,index)=> {%>
                                     <div class="each_repeter">
                                         <div class="row align-items-center">
@@ -243,6 +173,44 @@
                                         </div>
                                     </div>
                                     <% }) %>
+                                    <% } else { %>
+                                        <div class="each_repeter">
+                                            <div class="row align-items-center">
+                                                <div class="col-12">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Add title<sup>*</sup></label>
+                                                        <input type="text" class="form-control" placeholder="" name="promotion_title" value="" required>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Add description<sup>*</sup></label>
+                                                        <textarea class="form-control" placeholder="" rows="3" name="promotion_desc" ></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Add discount</label>
+                                                        <input type="text" class="form-control" placeholder="In percentage (ex: 70%)" name="promotion_discount" value="">
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-10">
+                                                    <label class="form-label">Upload image</label>
+                                                    <input class="form-control upload_in_repeter promotion_image" type="file" name="promotion_image">
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <div class="display_image_box">
+                                                            <img class="promotion_image_review" src="/front-end/images/no-image.png" alt="">
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="text-right">
+                                                        <button data-id="null" company-id = "<%= company.ID %>" data-type="promotion" type="button" class="btn btn-danger delete_item">Remove</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <% } %>
                                 </div>
                                 <div class="add_more_btn">
                                     <button type="button" class="btn btn-primary add_more_promotion">Add Promotion</button>
@@ -253,7 +221,7 @@
                             <h2 class="mb-3">Add Products</h2>
                             <div class="repeter_wrap">
                                 <div class="all_repeter">
-                                    
+                                    <% if(products.length > 0 ) { %>
                                     <% products.forEach( (product,index)=> {%>
                                     <div class="each_repeter">
                                         <div class="row align-items-center">
@@ -293,6 +261,41 @@
                                         </div>
                                     </div>
                                     <% }) %>
+                                    <% } else { %>
+                                        <div class="each_repeter">
+                                            <div class="row align-items-center">
+                                                <div class="col-12">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Add title<sup>*</sup></label>
+                                                        <input type="text" class="form-control" placeholder="" name="product_title" value="" required>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Add description<sup>*</sup></label>
+                                                        <textarea class="form-control" placeholder="" rows="3" name="product_desc"></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-10">
+                                                    <label class="form-label">Upload image</label>
+                                                    
+                                                    <input class="form-control upload_in_repeter product_image" type="file" name="product_image">
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <div class="display_image_box">
+                                                            <img class="promotion_image_review" src="/front-end/images/no-image.png" alt="">
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="text-right">
+                                                        
+                                                        <button data-id="null" company-id = "<%= company.ID %>" data-type="product" type="button" class="btn btn-danger delete_item">Remove</button>
+                                                        
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <% } %>
                                 </div>
                                 <div class="add_more_btn">
                                     
@@ -303,6 +306,7 @@
                         <div class="submit_button text-end custom-form m-0" >
                             <input type="submit" value="Update" class="btn btn-warning " />
                         </div>
+                        <div style=" width: 100%; text-align: center; display: block; border: 2px solid #fccb06; padding: 6px; margin-top: 20px; border-radius: 5px; display: none;" class="company-edit-message"></div>
                     </form>
                 </div>
             </div>
@@ -317,8 +321,8 @@
                         $('#premium_company_profile_form').submit(function (e) {
                             e.preventDefault();
                             //alert('aaaaaa');
-                            $('.basic-company-edit-message').hide();
-                            $('.basic-company-edit-message').text('');
+                            $('.company-edit-message').hide();
+                            $('.company-edit-message').text('');
                             const formData = new FormData($('#premium_company_profile_form')[0])
                             //const formData = $('#premium_company_profile_form').serialize();
                             $('.product_image').each(function(index, element) {
@@ -349,14 +353,14 @@
                             contentType: false,
                             success: function (data) {
                                 if (data.status == 'ok') {
-                                    $('.basic-company-edit-message').text(data.message);
-                                    $('.basic-company-edit-message').show();
+                                    $('.company-edit-message').text(data.message);
+                                    $('.company-edit-message').show();
                                     setTimeout(function() {
-                                        window.location.href = "/premium-company-profile/" + data.data;
+                                        window.location.href = "/company-dashboard/" + data.data;
                                     }, 2000);
                                 } else {
-                                    $('.basic-company-edit-message').text(data.message);
-                                    $('.basic-company-edit-message').show();
+                                    $('.company-edit-message').text(data.message);
+                                    $('.company-edit-message').show();
                                     console.log('Some thting went wrong');
                                 }
                             },
@@ -426,6 +430,9 @@
                         $('body').on('click','.delete-button',function(e){
                             e.preventDefault();
                             
+                            if(typeof imgIndex == 'undefined'){
+                                $(this).parent('.image-container').remove();
+                            }
                             var imgIndex = $(this).attr('image-index');
                             var companyId = $(this).attr('company-id');
                             //alert(imgIndex,companyId)
@@ -455,54 +462,60 @@
                         });
 
                         $('.add_more_promotion').click(function(e){
-                            $(this).parents('.add_promotions').find('.all_repeter').append('<div class=each_repeter><div class="align-items-center row"><div class=col-12><div class=mb-3><label class=form-label>Add title<sup>*</sup></label> <input class=form-control placeholder="" name="promotion_title" required></div></div><div class=col-12><div class=mb-3><label class=form-label>Add description<sup>*</sup></label> <textarea class=form-control placeholder="" name="promotion_desc" rows=3></textarea></div></div><div class=col-12><div class=mb-3><label class=form-label>Add discount</label> <input class=form-control placeholder="In percentage (ex: 70%)" name="promotion_discount" ></div></div><div class=col-sm-10><label class=form-label>Upload image</label> <input class="form-control upload_in_repeter promotion_image"type=file name="promotion_image"></div><div class=col-sm-2><div class=display_image_box><img alt=""class=promotion_image_review src=/front-end/images/fixed-emoji.png></div></div><div class=col-12><div class=text-right><button class="btn btn-danger delete_item"type=button>Remove</button></div></div></div></div>');
+                            $(this).parents('.add_promotions').find('.all_repeter').append('<div class=each_repeter><div class="align-items-center row"><div class=col-12><div class=mb-3><label class=form-label>Add title<sup>*</sup></label> <input class=form-control placeholder="" name="promotion_title" required></div></div><div class=col-12><div class=mb-3><label class=form-label>Add description<sup>*</sup></label> <textarea class=form-control placeholder="" name="promotion_desc" rows=3></textarea></div></div><div class=col-12><div class=mb-3><label class=form-label>Add discount</label> <input class=form-control placeholder="In percentage (ex: 70%)" name="promotion_discount" ></div></div><div class=col-sm-10><label class=form-label>Upload image</label> <input class="form-control upload_in_repeter promotion_image"type=file name="promotion_image"></div><div class=col-sm-2><div class=display_image_box><img alt=""class=promotion_image_review src=/front-end/images/no-image.png></div></div><div class=col-12><div class=text-right><button data-id="null" class="btn btn-danger delete_item"type=button>Remove</button></div></div></div></div>');
                         });
 
                         $('.add_more_product').click(function(e){
-                            $(this).parents('.add_products').find('.all_repeter').append('<div class=each_repeter><div class="align-items-center row"><div class=col-12><div class=mb-3><label class=form-label>Add title<sup>*</sup></label> <input class=form-control placeholder="" name="product_title" required></div></div><div class=col-12><div class=mb-3><label class=form-label>Add description<sup>*</sup></label> <textarea class=form-control placeholder="" name="product_desc" rows=3></textarea></div></div><div class=col-sm-10><label class=form-label>Upload image</label> <input class="form-control upload_in_repeter product_image"type=file name="product_image" ></div><div class=col-sm-2><div class=display_image_box><img alt=""class=promotion_image_review src=/front-end/images/fixed-emoji.png></div></div><div class=col-12><div class=text-right><button class="btn btn-danger delete_item"type=button>Remove</button></div></div></div></div>');
+                            $(this).parents('.add_products').find('.all_repeter').append('<div class=each_repeter><div class="align-items-center row"><div class=col-12><div class=mb-3><label class=form-label>Add title<sup>*</sup></label> <input class=form-control placeholder="" name="product_title" required></div></div><div class=col-12><div class=mb-3><label class=form-label>Add description<sup>*</sup></label> <textarea class=form-control placeholder="" name="product_desc" rows=3></textarea></div></div><div class=col-sm-10><label class=form-label>Upload image</label> <input class="form-control upload_in_repeter product_image"type=file name="product_image" ></div><div class=col-sm-2><div class=display_image_box><img alt=""class=promotion_image_review src=/front-end/images/no-image.png></div></div><div class=col-12><div class=text-right><button data-id="null" class="btn btn-danger delete_item"type=button>Remove</button></div></div></div></div>');
                         });
 
                         $('body').on('click','.delete_item',function(){
+
                             var dataIndex = $(this).attr('data-id');
                             var companyId = $(this).attr('company-id');
                             var dataType = $(this).attr('data-type');
-                            console.log(dataIndex, companyId, dataType);
+                            if(dataIndex != 'null'){
+                                //console.log(dataIndex, companyId, dataType);
                             //$(this).parents('.each_repeter').remove();
-                            if(dataType == 'promotion'){
-                                $.ajax({
-                                url: '/auth/deletePremiumPromotion',
-                                method: 'POST',
-                                data: {companyId:companyId,dataIndex:dataIndex},
-                                ContentType: 'application/json',
-                                success: function (data) {
-                                    if (data.status == 'ok') {
-                                        location.reload();               
-                                    } else {
+                                if(dataType == 'promotion'){
+                                    $.ajax({
+                                    url: '/auth/deletePremiumPromotion',
+                                    method: 'POST',
+                                    data: {companyId:companyId,dataIndex:dataIndex},
+                                    ContentType: 'application/json',
+                                    success: function (data) {
+                                        if (data.status == 'ok') {
+                                            location.reload();               
+                                        } else {
+                                        }
+                                    },
+                                    error: function (error) {
+                                    // Handle any errors
+                                    console.log(error);
                                     }
-                                },
-                                error: function (error) {
-                                // Handle any errors
-                                console.log(error);
-                                }
-                            });
-                            } else {
-                                $.ajax({
-                                url: '/auth/deletePremiumProduct',
-                                method: 'POST',
-                                data: {companyId:companyId,dataIndex:dataIndex},
-                                ContentType: 'application/json',
-                                success: function (data) {
-                                    if (data.status == 'ok') {
-                                        location.reload();               
-                                    } else {
+                                });
+                                } else {
+                                    $.ajax({
+                                    url: '/auth/deletePremiumProduct',
+                                    method: 'POST',
+                                    data: {companyId:companyId,dataIndex:dataIndex},
+                                    ContentType: 'application/json',
+                                    success: function (data) {
+                                        if (data.status == 'ok') {
+                                            location.reload();               
+                                        } else {
+                                        }
+                                    },
+                                    error: function (error) {
+                                    // Handle any errors
+                                    console.log(error);
                                     }
-                                },
-                                error: function (error) {
-                                // Handle any errors
-                                console.log(error);
+                                });
                                 }
-                            });
+                            }else{
+                                $(this).parents('.each_repeter').remove();
                             }
+                            
                         });
   
 

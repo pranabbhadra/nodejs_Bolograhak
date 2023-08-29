@@ -242,4 +242,10 @@ router.post('/deletePremiumPromotion', authController.deletePremiumPromotion);
 //Delete one Premium Product
 router.post('/deletePremiumProduct', authController.deletePremiumProduct);
 
+//Delete one Premium Product
+router.post('/frontend-forgot-password', authController.forgotPassword);
+
+//Reset Password
+router.post('/reset_password', authController.resetPassword);
+
 module.exports = router;
