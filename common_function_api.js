@@ -891,9 +891,10 @@ async function getUserCompany(user_ID){
 async function getUserReview(user_ID){
     const reviewsQuery = `
       SELECT
-        r.*, co.company_name, co.logo AS company_logo
+        r.*, c.first_name, c.last_name, c.email, ucm.profile_pic, co.company_name, co.logo AS company_logo
       FROM reviews r
       JOIN users c ON r.customer_id = c.user_id
+      LEFT JOIN user_customer_meta ucm ON r.customer_id = ucm.user_id
       JOIN company co ON r.company_id = co.ID
       WHERE c.user_id = ?
       ORDER BY r.created_at ASC;

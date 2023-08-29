@@ -422,9 +422,21 @@ exports.edituser = (req, res) => {
                         if (unlinkError) {
                             console.error('Error deleting previous profile_pic:', unlinkError);
                         }
+                        db.query(
+                          'UPDATE user_customer_meta SET profile_pic=? WHERE user_id=?',
+                          [profilePicFile.filename, user_id],
+                          (err, results) => {
+                              if (err) {
+                                  return res.status(500).json({
+                                      status: 'error',
+                                      message: 'An error occurred while updating the profile picture',
+                                  });
+                              }
                         updateUserInformation();
                     });
-                } else {
+                  })
+                }
+                else {
                     updateUserInformation();
                     console.log('Previous profile picture deleted');
                 }
@@ -486,6 +498,86 @@ exports.edituser = (req, res) => {
         });
     }
 };
+
+
+
+// exports.edituser = (req, res) => {
+//   const { user_id, first_name, last_name,phone, address, country, state, city, zip, date_of_birth,occupation, gender } = req.body;
+//   console.log(req.body)
+//   db.query(
+//       'UPDATE users SET first_name=?, last_name=?,phone=? WHERE user_id=?',
+//       [first_name, last_name, phone,user_id],
+//       (err, results) => {
+//           if (err) {
+//               return res.status(500).json({
+//                   status: 'error',
+//                   message: 'An error occurred while updating user information',
+//               });
+//           }
+
+//           db.query(
+//               'UPDATE user_customer_meta SET address=?, country=?, state=?, city=?, zip=?, date_of_birth=?, occupation=?, gender=? WHERE user_id=?',
+//               [address, country, state, city, zip, date_of_birth, occupation, gender, user_id],
+//               (err, results) => {
+//                   if (err) {
+//                       return res.status(500).json({
+//                           status: 'error',
+//                           message: 'An error occurred while updating user information',
+//                       });
+//                   }
+//                   const profilePicFile = req.file;
+//                   if (!profilePicFile) {
+//                       return res.status(400).json({
+//                           status: 'error',
+//                           message: 'Profile picture file is required',
+//                       });
+//                   }
+//                   db.query(
+//                       'SELECT profile_pic FROM user_customer_meta WHERE user_id=?',
+//                       [user_id],
+//                       (err, result) => {
+//                           if (err) {
+//                               console.error('Error fetching previous profile picture:', err);
+//                           }
+
+//                           if (result && result.length > 0) {
+//                               const previousProfilePicFilename = result[0].profile_pic;
+//                               if (previousProfilePicFilename) {
+//                                   const previousProfilePicPath = 'uploads/' + previousProfilePicFilename;
+//                                   fs.unlink(previousProfilePicPath, (err) => {
+//                                       if (err) {
+//                                           console.error('Error deleting previous profile picture:', err);
+//                                       } else {
+//                                           console.log('Previous profile picture deleted');
+//                                       }
+//                                   });
+//                               }
+//                           }
+//                           db.query(
+//                               'UPDATE user_customer_meta SET profile_pic=? WHERE user_id=?',
+//                               [profilePicFile.filename, user_id],
+//                               (err, results) => {
+//                                   if (err) {
+//                                       return res.status(500).json({
+//                                           status: 'error',
+//                                           message: 'An error occurred while updating the profile picture',
+//                                       });
+//                                   }
+
+//                                   return res.json({
+//                                       status: 'success',
+//                                       data: "",
+//                                       message: 'User information updated successfully',
+//                                   });
+//                               }
+//                           );
+//                       }
+//                   );
+//               }
+//           );
+//       }
+//   );
+// };
 
 
 
@@ -1016,7 +1108,7 @@ exports.submitReview = async (req, res) => {
 // --searchCompany --//
 exports.searchCompany = async (req, res) => {
   //console.log(req.body);
-  const keyword = req.body.keyword; //Approved Company
+  const keyword = req.params.keyword; //Approved Company
   const get_company_query = `
     SELECT ID, company_name, logo, about_company, main_address, main_address_pin_code FROM company
     WHERE company_name LIKE '%${keyword}%'
