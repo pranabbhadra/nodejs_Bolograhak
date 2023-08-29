@@ -160,6 +160,7 @@ router.post('/update-about', upload.fields([
 
 router.post('/add-review', authController.submitReview);
 router.post('/delete-review', authController.deleteReview);
+router.post('/add-review-reply', authController.submitReviewReply);
 //---Rating Tags--------//
 router.post('/add-rating-tags', upload.single('rating_image'), authController.createRatingTags);
 router.put('/edit-rating-tags', upload.single('rating_image'), authController.editRatingTags);

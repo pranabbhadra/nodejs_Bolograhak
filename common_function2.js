@@ -166,11 +166,12 @@ function getReviewedCompanies(userId) {
 function getAllCompaniesReviews(userId) {
   return new Promise((resolve, reject) => {
     const reviewed_companies_query = `
-            SELECT reviews.id, reviews.company_id, reviews.customer_id, reviews.company_location, reviews.review_title,
-             reviews.review_content, reviews.rating, reviews.created_at, c.company_name as company_name, c.logo as logo
-            FROM  reviews 
-            JOIN company c ON reviews.company_id = c.ID
-            WHERE reviews.customer_id = ?
+            SELECT r.*, c.company_name as company_name, c.logo as logo, COUNT(review_reply.id) as review_reply_count
+            FROM  reviews r
+            JOIN company c ON r.company_id = c.ID
+            LEFT JOIN review_reply ON review_reply.review_id = r.id
+            WHERE r.customer_id = ?
+            GROUP BY r.id
             ORDER BY updated_at DESC
         `;
     db.query(reviewed_companies_query, [userId], (err, result) => {
@@ -204,13 +205,15 @@ function getAllReviewTags() {
 async function getlatestReviews(reviewCount){
   const get_latest_review_query = `
     SELECT r.*, c.company_name, c.logo, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, 
-    u.last_name, u.user_id, u.user_status, ucm.profile_pic
+    u.last_name, u.user_id, u.user_status, ucm.profile_pic, COUNT(review_reply.id) as review_reply_count
       FROM reviews r
       LEFT JOIN company c ON r.company_id = c.ID 
       LEFT JOIN company_location cl ON r.company_location_id = cl.ID 
       LEFT JOIN users u ON r.customer_id = u.user_id 
       LEFT JOIN user_customer_meta ucm ON ucm.user_id = u.user_id 
+      LEFT JOIN review_reply ON review_reply.review_id = r.id
       WHERE r.review_status = "1" AND c.status = "1" 
+      GROUP BY r.id
       ORDER BY r.created_at DESC
       LIMIT ${reviewCount};
   `;
@@ -232,13 +235,15 @@ async function getlatestReviews(reviewCount){
 async function getAllTrendingReviews(){
   const get_latest_review_query = `
     SELECT r.*, c.company_name, c.logo, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, 
-    u.last_name, u.user_id, u.user_status, ucm.profile_pic
+    u.last_name, u.user_id, u.user_status, ucm.profile_pic, COUNT(review_reply.id) as review_reply_count
       FROM reviews r
       LEFT JOIN company c ON r.company_id = c.ID 
       LEFT JOIN company_location cl ON r.company_location_id = cl.ID 
       LEFT JOIN users u ON r.customer_id = u.user_id 
       LEFT JOIN user_customer_meta ucm ON ucm.user_id = u.user_id 
+      LEFT JOIN review_reply ON review_reply.review_id = r.id
       WHERE r.review_status = "1" AND c.status = "1" AND c.trending = "1"
+      GROUP BY r.id
       ORDER BY r.created_at DESC
   `;
   try{
@@ -259,13 +264,15 @@ async function getAllTrendingReviews(){
 async function getAllReviews(){
   const get_latest_review_query = `
     SELECT r.*, c.company_name, c.logo, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, 
-    u.last_name, u.user_id, u.user_status, ucm.profile_pic
+    u.last_name, u.user_id, u.user_status, ucm.profile_pic, COUNT(review_reply.id) as review_reply_count
       FROM reviews r
       LEFT JOIN company c ON r.company_id = c.ID 
       LEFT JOIN company_location cl ON r.company_location_id = cl.ID 
       LEFT JOIN users u ON r.customer_id = u.user_id 
       LEFT JOIN user_customer_meta ucm ON ucm.user_id = u.user_id 
+      LEFT JOIN review_reply ON review_reply.review_id = r.id
       WHERE r.review_status = "1" AND c.status = "1"
+      GROUP BY r.id
       ORDER BY r.created_at DESC
   `;
   try{

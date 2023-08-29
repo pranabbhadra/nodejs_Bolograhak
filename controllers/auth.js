@@ -3135,3 +3135,57 @@ exports.updatePremiumCompany =async (req, res) => {
 
     })
 }
+
+
+//--Submit Review Reply----//
+exports.submitReviewReply = async (req, res) => {
+    const encodedUserData = req.cookies.user;
+    //console.log(currentUserData);
+    try {
+        if (encodedUserData) {
+            const currentUserData = JSON.parse(encodedUserData);
+            //console.log(currentUserData);
+            const loginCompanyUserId = currentUserData.user_id;
+            if(loginCompanyUserId == req.body.reply_by){
+                const currentDate = new Date();
+                const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+                const replyInsertData = {
+                    review_id: req.body.review_id,
+                    reply_by: req.body.reply_by,
+                    comment: req.body.comment,
+                    created_at: formattedDate,
+                    updated_at: formattedDate
+                };
+                db.query('INSERT INTO review_reply SET ?', replyInsertData, async (err, results) => {
+                    if (err) {
+                        return res.status(500).json({
+                          status: 'error',
+                          message: 'An error occurred while processing your request'+err,
+                        });
+                    }
+                    return res.send(
+                        {
+                            status: 'ok',
+                            data: '',
+                            message: 'Reply successfully submitted'
+                        }
+                    );
+
+                });
+            }else{
+                return res.send(
+                    {
+                        status: 'error',
+                        data: '',
+                        message: 'Error occurred : Illegal activities'
+                    }
+                ); 
+            }
+        } else {
+            //res.redirect('sign-in');
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred '+ err);
+    }
+}

@@ -520,6 +520,19 @@ router.get('/company/:id', checkCookieValue, async (req, res) => {
             promotions:promotions,
         });
     }else{
+        // res.json(
+        // {
+        //     menu_active_id: 'company',
+        //     page_title: 'Organization Details',
+        //     currentUserData,
+        //     allRatingTags,
+        //     company:CompanyInfo,
+        //     CompanyInfo,
+        //     companyReviewNumbers,
+        //     getCompanyReviews,
+        //     globalPageMeta:globalPageMeta
+        // });
+        
         res.render('front-end/company-details',
         {
             menu_active_id: 'company',
@@ -587,7 +600,7 @@ router.get('/company-dashboard/:compID', checkClientClaimedCompany, async (req, 
     const reviewTagsMap = {};
     allCompanyReviewTags.forEach(tag => {
         if (!reviewTagsMap[tag.review_id]) {
-        reviewTagsMap[tag.review_id] = [];
+            reviewTagsMap[tag.review_id] = [];
         }
         reviewTagsMap[tag.review_id].push({ review_id: tag.review_id, tag_name: tag.tag_name });
     });
@@ -759,13 +772,86 @@ router.get('/company-review-listing/:compID', checkClientClaimedCompany, async (
 });
 
 //company dashboard Review replay Page 
-router.get('/company-dashboard-review-replay', checkCookieValue, async (req, res) => {
-    let currentUserData = JSON.parse(req.userData);
-    const [globalPageMeta] = await Promise.all([
+router.get('/company-dashboard-review-replay/:compID/:reviewID', checkClientClaimedCompany, async (req, res) => {
+    const encodedUserData = req.cookies.user;
+    const currentUserData = JSON.parse(encodedUserData);
+    //let currentUserData = JSON.parse(req.userData);
+
+    const companyId = req.params.compID;
+    const reviewId = req.params.reviewID;
+    const [globalPageMeta, company, companyReviewNumbers, allRatingTags, allCompanyReviews, allCompanyReviewTags, singleReviewData, singleReviewReplyData] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
+        comFunction.getCompany(companyId),
+        comFunction.getCompanyReviewNumbers(companyId),
+        comFunction.getAllRatingTags(),
+        comFunction.getAllReviewsByCompanyID(companyId),
+        comFunction2.getAllReviewTags(),
+        comFunction.getReviewByID(reviewId),
+        comFunction.getReviewReplyDataByID(reviewId),
     ]);
 
-    res.render('front-end/company-dashboard-review-replay', { menu_active_id: 'company-dashboard-review-replay', page_title: 'Company Review Replay', currentUserData, globalPageMeta:globalPageMeta });
+    const reviewTagsMap = {};
+    allCompanyReviewTags.forEach(tag => {
+        if (!reviewTagsMap[tag.review_id]) {
+            reviewTagsMap[tag.review_id] = [];
+        }
+        reviewTagsMap[tag.review_id].push({ review_id: tag.review_id, tag_name: tag.tag_name });
+    });
+    // Merge allReviews with their associated tags
+    const finalsingleReviewData = singleReviewData.map(review => {
+        return {
+            ...review,
+            Tags: reviewTagsMap[review.id] || []
+        };
+    });
+
+    const companyPaidStatus = company.paid_status;
+    //console.log(companyPaidStatus);
+    if(companyPaidStatus=='free'){
+        if(Array.isArray(singleReviewData) && singleReviewData.length>0){
+            if(Array.isArray(singleReviewData) && singleReviewData[0].company_owner == currentUserData.user_id && singleReviewData[0].company_id == company.ID){
+                // res.json({ 
+                //     menu_active_id: 'company-dashboard', 
+                //     page_title: 'Company Review Replay', 
+                //     currentUserData, 
+                //     globalPageMeta:globalPageMeta,
+                //     company,
+                //     companyReviewNumbers,
+                //     allRatingTags,
+                //     finalsingleReviewData,
+                //     singleReviewReplyData
+                // });
+                res.render('front-end/basic-company-review-replay', 
+                { 
+                    menu_active_id: 'company-dashboard', 
+                    page_title: 'Company Review Replay', 
+                    currentUserData, 
+                    globalPageMeta:globalPageMeta,
+                    company,
+                    companyReviewNumbers,
+                    allRatingTags,
+                    finalsingleReviewData,
+                    singleReviewReplyData
+                });
+            }else{
+                res.redirect('/company-review-listing/'+company.ID);
+            }
+        }else{
+            res.redirect('/company-review-listing/'+company.ID);
+        }
+    }else{
+        res.render('front-end/premium-company-review-replay', 
+        { 
+            menu_active_id: 'company-dashboard', 
+            page_title: 'Company Review Replay', 
+            currentUserData, 
+            globalPageMeta:globalPageMeta,
+            company,
+            companyReviewNumbers,
+            allRatingTags,
+        });
+    }
+
 });
 
 
@@ -1923,7 +2009,7 @@ router.get('/profile-dashboard', checkFrontEndLoggedIn, async (req, res) => {
         console.log('editUserID: ', userId);
 
         // Fetch all the required data asynchronously
-        const [user, userMeta, ReviewedCompanies, AllCompaniesReviews, AllReviewTags, allRatingTags,globalPageMeta] = await Promise.all([
+        const [user, userMeta, ReviewedCompanies, AllCompaniesReviews, AllReviewTags, allRatingTags, globalPageMeta] = await Promise.all([
             comFunction.getUser(userId),
             comFunction.getUserMeta(userId),
             comFunction2.getReviewedCompanies(userId),
@@ -1932,8 +2018,20 @@ router.get('/profile-dashboard', checkFrontEndLoggedIn, async (req, res) => {
             comFunction.getAllRatingTags(),
             comFunction2.getPageMetaValues('global'),
         ]);
-        console.log(userMeta);
+        //console.log(userMeta);
         // Render the 'edit-user' EJS view and pass the data
+        // res.json({
+        //     menu_active_id: 'profile-dashboard',
+        //     page_title: 'My Dashboard',
+        //     currentUserData,
+        //     user: user,
+        //     userMeta: userMeta,
+        //     ReviewedCompanies: ReviewedCompanies,
+        //     AllCompaniesReviews: AllCompaniesReviews,
+        //     allRatingTags:allRatingTags,
+        //     AllReviewTags:AllReviewTags,
+        //     globalPageMeta:globalPageMeta
+        // });
         res.render('front-end/profile-dashboard', {
             menu_active_id: 'profile-dashboard',
             page_title: 'My Dashboard',

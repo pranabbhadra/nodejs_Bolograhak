@@ -350,7 +350,7 @@
                 </div>
                 <div class="customer-review-content">
                   <% getCompanyReviews.forEach( review => { %> 
-                  <div class="customer-review-wrap">
+                  <div class="customer-review-wrap" id="review-reply-<%= review.id %>">
                     <div class="cutomer-comment">
                       <span><%= review.rating %></span>
                       <span>
@@ -381,6 +381,37 @@
                       <span class="c-comment-date"><%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) %></span>
                       <% } %>
                     </div>
+                    <% if(review.review_reply.length>0){ %>
+                      <% review.review_reply.forEach( reply => { %>
+                        <div class="review-reply">
+                          <p><%= reply.comment %></p>
+                          <div class="customer-profile-info">
+                            <% const replydateString = reply.created_at; %>
+                            <% const replydate = new Date(replydateString); %>
+                            <% if(reply.reply_by == review.customer_id) { %>
+                            <% }else{ %>
+                            <span>
+                              <% if(CompanyInfo.logo) { %>
+                              <img src="/<%= CompanyInfo.logo %>" alt="img" width="23" height="23">
+                              <% }else{ %>
+                              <img src="/assets/media/avatars/blank.png" alt="img" width="23" height="23">
+                              <% } %>
+                            </span>
+                            <span><%= CompanyInfo.company_name %> <span class="c-comment-date"><%= replydate.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) %></span></span>
+                            <% } %>
+                          </div>
+                        </div>
+                        <% if(review.review_reply.length==1 && review.customer_id == currentUserData.user_id){ %>
+                          <form action="" class="review_reply_form">
+                            <input type="text" name="comment" placeholder="Add Reply.." required>
+                            <input type="hidden" name="review_id" value="<%- review.id -%>">
+                            <input type="hidden" name="reply_by" value="<%- currentUserData.user_id -%>">
+                            <button type="submit">Reply</button>
+                            <div class="submit-loading" style="display: none;">Please wait..</div>
+                          </form>
+                        <% } %>  
+                      <% }) %>
+                    <% } %>
                   </div>
                   <% }) %>
                   <% if(company_total_review>3){%> 
@@ -597,4 +628,43 @@
       }
     });
   });
+
+//---Review reply submit-------//
+$('.review_reply_form').submit(function(e){
+  event.preventDefault();
+  $('#review_reply_btn').prop( "disabled", true );
+  $(this).find('.submit-loading').show();
+
+  const formData = $(this).serializeArray();
+  const jsonData = {};
+  $(formData).each(function (index, field) {
+      jsonData[field.name] = field.value;
+  });
+  
+  $.ajax({
+    url: '/auth/add-review-reply',
+    method: 'POST',
+    data: jsonData,
+    ContentType: 'application/json',
+    success: function (data) {
+      if (data.status == 'ok') {
+        $(this).find('.submit-loading').hide();
+        //$(this)[0].reset();
+        $(this).append('<p>'+data.message+'</p>');
+        setTimeout( function(){
+          location.reload(true);
+        }, 3000 );
+      } else {
+        $(this).find('.submit-loading').hide();
+        $(this).append('<p>'+data.message+'</p>');
+      }
+      //console.log(data);
+    },
+    error: function (error) {
+      $(this).find('.submit-loading').hide();
+      $(this).append('<p>'+data.message+'</p>');
+    }
+  });
+})
+
 </script>

@@ -1,5 +1,6 @@
 <%- include('common/header') -%>
 <link href="/front-end/css/review-style.css" rel="stylesheet" type="text/css">
+<link href="/front-end/css/profile-dashboard-style.css" rel="stylesheet" type="text/css">
 <%- include('common/header-banner') -%>
 <!-- ============== Section1 Start =============== -->
 <section class="main-content bottom-main-content">
@@ -26,9 +27,8 @@
       </div>-->
       <div class="review-slider-wrap">
          <h2 class="inner-main-head">All Reviews</h2>
+         <% if(AllCompaniesReviews.length>0) { %>
          <div class="review-slider">
-            
-            <% if(AllCompaniesReviews) { %>
                 <% AllCompaniesReviews.forEach( (review,index)=> {%>
                     <div class="item">
                         <div class="review-box">
@@ -76,29 +76,11 @@
                                 <% const date = new Date(dateString); %>
                                  <div class="user-review-date"><%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) %></div>
                               </div>
-                              <% var average = review.rating %>
-                                <% if (average >= 1 && average <= 1.25) {
-                                    var avg = 1
-                                    } else if (average > 1.25 && average <= 1.9) {
-                                    var avg = 1.5
-                                    } else if (average >= 2 && average <= 2.25) {
-                                    var avg = 2
-                                    } else if (average > 2.25 && average <= 2.9) {
-                                    var avg = 2.5
-                                    } else if (average >= 3 && average <= 3.25) {
-                                    var avg = 3
-                                    } else if (average > 3.25 && average <= 3.9) {
-                                    var avg = 3.5
-                                    } else if (average >= 4 && average <= 4.25) {
-                                    var avg = 4
-                                    } else if (average > 4.25 && average <= 4.9) {
-                                    var avg = 4.5
-                                    } else if (average > 4.5) {
-                                    var avg = 5
-                                    } else {
-                                    var avg = 0
-                                    }
-                                    %>
+                              
+                              <% if(review.review_reply_count==1){ %>
+                                 <span class="user-select-tag review-reply-btn"><a href="/company/<%- review.company_id -%>#review-reply-<%- review.id -%>">Reply</a></span> 
+                                 <% } %>
+                              <% var avg = review.rating %>
                               <div class="user-rating">
                                 <% allRatingTags.forEach( tag => { %>
                                     <% if(tag.review_rating_value == avg){ %>
@@ -115,9 +97,13 @@
                         </div>
                      </div>
                 <% }) %>
-            <%}%>
-            
          </div>
+         <%}else{%>
+            <div class="blank-message" style="margin: 60px 0;">
+               If you're not seeing any review listing, please start share your opinion on companies.
+               <a href="/review/#submit-review" class="btn-default btn-outline-warning">Submit Review</a>
+            </div> 
+         <% } %>
       </div>
    </div>
 </section>
