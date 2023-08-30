@@ -1309,49 +1309,129 @@ router.get('/reviewslistofallcompaniesbyuser/:user_id', verifyToken, (req, res) 
 
 
 
+// router.get('/getreviewlisting', verifyToken, async (req, res) => {
+//       const [ allreviews, allCompanyReviewTags,getAllRatingTags,getReviewRatingData,getCustomerReviewData,getUserReview,getlatestReviews] = await Promise.all([
+//         comFunction.getAllReviews(),
+//         comFunction2.getAllReviewTags(),
+//         comFunction.getAllRatingTags(),
+//         comFunction.getReviewRatingData(),
+//         comFunction.getCustomerReviewData(),
+//         comFunction.getUserReview(),
+//         comFunction.getlatestReviews()
+//       ]);
+//       console.log(allreviews);
+//   let mergedData = {};
+//   if (allreviews.length > 0 && getlatestReviews>0) {
+//     const reviewTagsMap = {};
+//     allCompanyReviewTags.forEach(tag => {
+//       if (!reviewTagsMap[tag.review_id]) {
+//         reviewTagsMap[tag.review_id] = [];
+//       }
+//       reviewTagsMap[tag.review_id].push({ review_id: tag.review_id, tag_name: tag.tag_name });
+//     });
+//     const all = allreviews.map(review => {
+//         return {
+//             ...review,
+//             Tags: reviewTagsMap[review.id] || []
+//         };
+//     });
+//     const latestreviews=getlatestReviews.map(review => {
+//         return {
+//             ...review,
+//             Tags: reviewTagsMap[review.id] || []
+//         };
+//     });
+
+
+
+//     return res.status(200).json({
+//       status: 'success',
+//       data: {
+//         //finalCompanyallReviews,
+//         all,
+//         allCompanyReviewTags,
+//       },
+//       message: 'user data successfully received'
+//     });
+//   }
+
+// });
+
+  
 router.get('/getreviewlisting', verifyToken, async (req, res) => {
-      const [ allreviews, allCompanyReviewTags,getAllRatingTags,getReviewRatingData,getCustomerReviewData,getUserReview] = await Promise.all([
+    try {
+      const [
+        allreviews,
+        allCompanyReviewTags,
+        getAllRatingTags,
+        getReviewRatingData,
+        getCustomerReviewData,
+        getUserReview,
+        latestReviews
+      ] = await Promise.all([
         comFunction.getAllReviews(),
         comFunction2.getAllReviewTags(),
         comFunction.getAllRatingTags(),
         comFunction.getReviewRatingData(),
         comFunction.getCustomerReviewData(),
         comFunction.getUserReview(),
+        comFunction.getLatestReview()  
       ]);
+  
       console.log(allreviews);
-  let mergedData = {};
-  if (allreviews.length > 0) {
-    const reviewTagsMap = {};
-    allCompanyReviewTags.forEach(tag => {
-      if (!reviewTagsMap[tag.review_id]) {
-        reviewTagsMap[tag.review_id] = [];
-      }
-      reviewTagsMap[tag.review_id].push({ review_id: tag.review_id, tag_name: tag.tag_name });
-    });
-    const all = allreviews.map(review => {
-        return {
+      console.log(latestReviews);
+  
+      let mergedData = {};
+      if (allreviews.length > 0) {
+        const reviewTagsMap = {};
+        allCompanyReviewTags.forEach(tag => {
+          if (!reviewTagsMap[tag.review_id]) {
+            reviewTagsMap[tag.review_id] = [];
+          }
+          reviewTagsMap[tag.review_id].push({ review_id: tag.review_id, tag_name: tag.tag_name });
+        });
+  
+        const all = allreviews.map(review => {
+          return {
             ...review,
             Tags: reviewTagsMap[review.id] || []
-        };
-    });
-
-
-
-    return res.status(200).json({
-      status: 'success',
-      data: {
-        //finalCompanyallReviews,
-        all,
-        allCompanyReviewTags,
-      },
-      message: 'user data successfully received'
-    });
-  }
-
-});
-
+          };
+        });
   
-
+        if (latestReviews.length > 0) {
+            const reviewTagsMap = {};
+            allCompanyReviewTags.forEach(tag => {
+                if (!reviewTagsMap[tag.review_id]) {
+                  reviewTagsMap[tag.review_id] = [];
+                }
+                reviewTagsMap[tag.review_id].push({ review_id: tag.review_id, tag_name: tag.tag_name });
+              });
+        
+              const latest_reviews = latestReviews.map(review => {
+                return {
+                  ...review,
+                  Tags: reviewTagsMap[review.id] || []
+                };
+              });
+  
+        return res.status(200).json({
+          status: 'success',
+          data: {
+            //finalCompanyallReviews,
+            all,
+            latest_reviews,
+            allCompanyReviewTags,
+          },
+          message: 'user data successfully received'
+        });
+      }
+    }
+    } catch (error) {
+      console.error("An error occurred:", error);
+      // Handle the error appropriately, e.g., sending an error response
+    }
+  });
+  
 
 
 

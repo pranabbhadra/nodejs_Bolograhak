@@ -496,6 +496,27 @@ async function getAllReviews() {
     console.error('Error during all_review_query:', error);
   }
 }
+
+async function getLatestReview(limit = null) {
+  const all_review_query = `
+    SELECT r.*, c.company_name, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic
+      FROM reviews r
+      JOIN company c ON r.company_id = c.ID
+      JOIN company_location cl ON r.company_location_id = cl.ID
+      JOIN users u ON r.customer_id = u.user_id
+      LEFT JOIN user_customer_meta ucm ON u.user_id = ucm.user_id
+      ORDER BY r.created_at DESC
+      ${limit !== null ? `LIMIT ${limit}` : ''};
+  `;
+  try {
+    const all_review_results = await query(all_review_query);
+    return all_review_results;
+  } catch (error) {
+    console.error('Error during all_review_query:', error);
+    throw error; 
+  }
+}
+
 async function getCustomerReviewData(review_Id){
   const select_review_query = `
     SELECT r.*, c.company_name, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic
@@ -756,7 +777,7 @@ async function getlatestReviews(reviewCount){
   try{
     const get_latest_review_results = await query(get_latest_review_query);
     if(get_latest_review_results.length > 0 ){
-      //console.log(get_latest_review_results);
+      console.log(get_latest_review_results);
       return get_latest_review_results;
     }else{
       return [];
@@ -947,6 +968,7 @@ module.exports = {
     createReview,
     getlatestReviews,
     getAllReviews,
+    getLatestReview,//new
     getCustomerReviewData,
     getCustomerReviewTagRelationData,
     editCustomerReview,
