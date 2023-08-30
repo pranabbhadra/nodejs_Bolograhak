@@ -14,6 +14,7 @@ const query = util.promisify(db.query).bind(db);
 const cookieParser = require('cookie-parser');
 const secretKey = 'grahak-secret-key';
 const path = require('path');
+const multer = require('multer');
 
 const app = express();
 
@@ -21,6 +22,22 @@ const comFunction = require('../common_function');
 const axios = require('axios');
 //const cookieParser = require('cookie-parser');
 app.use(cookieParser());
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+      cb(null, 'uploads/');
+  },
+  filename: function (req, file, cb) {
+      // const originalname = file.originalname;
+      // const sanitizedFilename = originalname.replace(/[^a-zA-Z0-9\-\_\.]/g, ''); // Remove symbols and spaces
+      // const filename = Date.now() + '-' + sanitizedFilename;
+      // cb(null, filename);
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      cb(null, file.fieldname + '-' + uniqueSuffix);
+  }
+});
+// Create multer instance
+const upload = multer({ storage: storage });
 
 //registration
 exports.register = (req, res) => {

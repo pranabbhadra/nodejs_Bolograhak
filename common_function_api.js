@@ -69,6 +69,20 @@ function getCountries() {
     });
   });
 }
+//fetch all states by its country_id
+function getStates(countryID){
+  return new Promise((resolve,reject)=>{
+    db.query('SELECT * FROM  states WHERE country_id=?',[countryID],(err,result)=>{
+      if(err){
+        reject(err);
+      }else{
+        resolve(result);
+      }
+    })
+  })
+}
+      
+
 
 // Fetch user role from user_account_type table data
 function getUserRoles() {
@@ -497,6 +511,28 @@ async function getAllReviews() {
   }
 }
 
+async function getTrendingReviews() {
+  const all_review_query = `
+  SELECT r.*, c.company_name, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic
+    FROM reviews r
+    JOIN company c ON r.company_id = c.ID
+    JOIN company_location cl ON r.company_location_id = cl.ID
+    JOIN users u ON r.customer_id = u.user_id
+    LEFT JOIN user_customer_meta ucm ON u.user_id = ucm.user_id
+    WHERE c.trending = 1
+    ORDER BY r.created_at DESC;
+`;
+
+  try{
+    const all_review_results = await query(all_review_query);
+    return all_review_results;
+  }
+  catch(error){
+    console.error('Error during all_review_query:', error);
+  }
+}
+
+
 async function getLatestReview(limit = null) {
   const all_review_query = `
     SELECT r.*, c.company_name, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic
@@ -875,6 +911,17 @@ async function getCompanyReviewNumbers(companyID){
   }
 }
 
+// function getCompany(companyId) {
+//   return new Promise((resolve, reject) => {
+//     db.query('SELECT * FROM company WHERE ID = ?', [companyId], (err, result) => {
+//       if (err) {
+//         reject(err);
+//       } else {
+//         resolve(result[0]);
+//       }
+//     });
+//   });
+// }
 async function getCompanyReviews(companyID){
   const get_company_rewiew_query = `
     SELECT r.*, ur.first_name, ur.last_name, ur.last_name, ucm.profile_pic
@@ -949,6 +996,7 @@ module.exports = {
     getUser,
     getUserMeta,
     getCountries,
+    getStates,//new
     getUserRoles,
     getStatesByUserID,
     getAllCompany,
@@ -968,12 +1016,14 @@ module.exports = {
     createReview,
     getlatestReviews,
     getAllReviews,
+    getTrendingReviews, //new
     getLatestReview,//new
     getCustomerReviewData,
     getCustomerReviewTagRelationData,
     editCustomerReview,
     searchCompany,
     getCompanyReviewNumbers,
+    //getCompany,//new
     getCompanyReviews,
     getUsersByRole,
     getUserCompany,
