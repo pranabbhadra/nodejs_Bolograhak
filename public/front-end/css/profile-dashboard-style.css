@@ -468,6 +468,10 @@ span.user-select-tag {
 }
 
 .review-company-slider img {
+    width: 88px;
+    height: 88px !important;
+    object-fit: contain;
+    object-position: center;
     border-radius: 50%;
     border: 8px solid #FFF;
     background-color: #ffffff;

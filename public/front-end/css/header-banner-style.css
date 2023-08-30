@@ -26,7 +26,7 @@ header.main_header {
 }
 
 .header-right-content span+span {
-    margin-left: 30px;
+    margin-left: 20px;
 }
 
 .header-right-content span.language-select {
@@ -51,17 +51,20 @@ header.main_header {
 .lang-dropdown,
 .user-log-profile-dropdown {
     position: absolute;
-    background: #fff;
+    background: #fccb06;
     width: 80px;
     border-radius: 4px;
     overflow: hidden;
     display: none;
+    box-shadow: rgba(0,0,0,0.4)0 0 10px;
 }
 
 .user-log-profile-dropdown {
     width: 120px;
 }
-
+.user-log-profile-dropdown ul li + li{
+    border-top: 1px solid #ffffff52;
+}
 .lang-dropdown ul li a,
 .user-log-profile-dropdown ul li a {
     font-size: 14px;

@@ -3401,3 +3401,24 @@ a.quick-login span + span {
     font-size: 17px;
     display: none;
 }
+.page_not_found {
+    width: 100%;
+    display: block;
+    margin:0;
+    padding:0;
+    text-align: center;
+}
+.page_not_found img{
+    margin: 0 auto;
+}
+.go_back{
+    border-radius: 8px;
+    background: #FCCB06;
+    color: #000000;
+    position: relative;
+    padding: 12px 30px;
+}
+.go_back:hover{
+    background-color: #000;
+    color: #fff;
+}
