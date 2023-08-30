@@ -489,18 +489,11 @@ router.get('/company/:id', checkCookieValue, async (req, res) => {
          cover_img = PremiumCompanyData.cover_img;
          youtube_iframe = PremiumCompanyData.youtube_iframe;
          gallery_img = JSON.parse(PremiumCompanyData.gallery_img);
-         product = JSON.parse(PremiumCompanyData.products);
+         products = JSON.parse(PremiumCompanyData.products);
          promotions = JSON.parse(PremiumCompanyData.promotions);
         
     }
     
-    // res.json({
-    //     allRatingTags,
-    //     CompanyInfo,
-    //     companyReviewNumbers,
-    //     getCompanyReviews
-    // });
-    console.log(PremiumCompanyData);
     if(CompanyInfo.paid_status == 'paid'){
         res.render('front-end/category-details-premium',
         {
@@ -516,7 +509,7 @@ router.get('/company/:id', checkCookieValue, async (req, res) => {
             cover_img:cover_img,
             gallery_img:gallery_img,
             youtube_iframe:youtube_iframe,
-            products:product,
+            products:products,
             promotions:promotions,
         });
     }else{
@@ -810,20 +803,9 @@ router.get('/company-dashboard-review-replay/:compID/:reviewID', checkClientClai
     if(companyPaidStatus=='free'){
         if(Array.isArray(singleReviewData) && singleReviewData.length>0){
             if(Array.isArray(singleReviewData) && singleReviewData[0].company_owner == currentUserData.user_id && singleReviewData[0].company_id == company.ID){
-                // res.json({ 
-                //     menu_active_id: 'company-dashboard', 
-                //     page_title: 'Company Review Replay', 
-                //     currentUserData, 
-                //     globalPageMeta:globalPageMeta,
-                //     company,
-                //     companyReviewNumbers,
-                //     allRatingTags,
-                //     finalsingleReviewData,
-                //     singleReviewReplyData
-                // });
                 res.render('front-end/basic-company-review-replay', 
                 { 
-                    menu_active_id: 'company-dashboard', 
+                    menu_active_id: 'company-review-listing', 
                     page_title: 'Company Review Replay', 
                     currentUserData, 
                     globalPageMeta:globalPageMeta,
@@ -840,16 +822,26 @@ router.get('/company-dashboard-review-replay/:compID/:reviewID', checkClientClai
             res.redirect('/company-review-listing/'+company.ID);
         }
     }else{
-        res.render('front-end/premium-company-review-replay', 
-        { 
-            menu_active_id: 'company-dashboard', 
-            page_title: 'Company Review Replay', 
-            currentUserData, 
-            globalPageMeta:globalPageMeta,
-            company,
-            companyReviewNumbers,
-            allRatingTags,
-        });
+        if(Array.isArray(singleReviewData) && singleReviewData.length>0){
+            if(Array.isArray(singleReviewData) && singleReviewData[0].company_owner == currentUserData.user_id && singleReviewData[0].company_id == company.ID){
+                res.render('front-end/premium-company-review-replay', 
+                { 
+                    menu_active_id: 'company-review-listing', 
+                    page_title: 'Company Review Replay', 
+                    currentUserData, 
+                    globalPageMeta:globalPageMeta,
+                    company,
+                    companyReviewNumbers,
+                    allRatingTags,
+                    finalsingleReviewData,
+                    singleReviewReplyData
+                });
+            }else{
+                res.redirect('/company-review-listing/'+company.ID);
+            }
+        }else{
+            res.redirect('/company-review-listing/'+company.ID);
+        }
     }
 
 });
@@ -1979,10 +1971,11 @@ router.get('/myprofile', checkFrontEndLoggedIn, async (req, res) => {
         //console.log('editUserID: ', currentUserData);
 
         // Fetch all the required data asynchronously
-        const [user, userMeta, globalPageMeta] = await Promise.all([
+        const [user, userMeta, globalPageMeta, AllCompaniesReviews] = await Promise.all([
             comFunction.getUser(userId),
             comFunction.getUserMeta(userId),
             comFunction2.getPageMetaValues('global'),
+            comFunction2.getAllCompaniesReviews(userId),
         ]);
 
         // Render the 'edit-user' EJS view and pass the data
@@ -1992,7 +1985,8 @@ router.get('/myprofile', checkFrontEndLoggedIn, async (req, res) => {
             currentUserData,
             user: user,
             userMeta: userMeta,
-            globalPageMeta:globalPageMeta
+            globalPageMeta:globalPageMeta,
+            AllCompaniesReviews: AllCompaniesReviews
         });
     } catch (err) {
         console.error(err);
@@ -2094,12 +2088,13 @@ router.get('/edit-myprofile', checkFrontEndLoggedIn, async (req, res) => {
         console.log('editUserID: ', userId);
 
         // Fetch all the required data asynchronously
-        const [user, userMeta, countries, states, globalPageMeta] = await Promise.all([
+        const [user, userMeta, countries, states, globalPageMeta, AllCompaniesReviews] = await Promise.all([
             comFunction.getUser(userId),
             comFunction.getUserMeta(userId),
             comFunction.getCountries(),
             comFunction.getStatesByUserID(userId),
             comFunction2.getPageMetaValues('global'),
+            comFunction2.getAllCompaniesReviews(userId),
         ]);
 
         // Render the 'edit-user' EJS view and pass the data
@@ -2111,7 +2106,8 @@ router.get('/edit-myprofile', checkFrontEndLoggedIn, async (req, res) => {
             userMeta: userMeta,
             countries: countries,
             states: states,
-            globalPageMeta:globalPageMeta
+            globalPageMeta:globalPageMeta,
+            AllCompaniesReviews: AllCompaniesReviews
         });
     } catch (err) {
         console.error(err);

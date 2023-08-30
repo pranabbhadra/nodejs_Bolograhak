@@ -8,7 +8,7 @@
                 <div class="main_box">
                     <%- include('common/premium-company-sidebar') -%>
                 </div>
-                <div class="all_review_listing_for_company">
+                <div class="each_box update_basic_information all_review_listing_for_company">
                     <div class="table-responsive">
                         <% if (finalallReviews.length === 0) { %>
                             <p>No results found.</p>
@@ -17,7 +17,7 @@
                             <thead>
                                 <tr>
                                     <th scope="col">Date & Time</th>
-                                    <th scope="col">Comment</th>
+                                    <th scope="col" style="width: 450px;">Comment</th>
                                     <th scope="col">Tags</th>
                                     <th scope="col">Rating</th>
                                     <th scope="col">Acticon</th>
@@ -46,7 +46,7 @@
                                             <span class="badge badge-square badge-danger"><%= review.rating %></span>
                                         <% }%>
                                     </td>
-                                    <td><a class="rply_btn" href="<%- review.id -%>">Replay</a></td>
+                                    <td><a class="rply_btn" href="/company-dashboard-review-replay/<%- company.ID -%>/<%- review.id -%>">Replay</a></td>
                                 </tr>
                             <% }) %>
                             </tbody>

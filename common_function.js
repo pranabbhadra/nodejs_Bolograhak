@@ -888,7 +888,7 @@ async function getCompanyReviewNumbers(companyID){
 async function getCompanyReviews(companyID){
   const get_company_reviews_query = `
     SELECT r.*, ur.first_name, ur.last_name, ur.email, ucm.profile_pic,
-           rr.ID AS reply_id, rr.comment AS reply_comment, rr.reply_by AS reply_by
+           rr.ID AS reply_id, rr.reply_by AS reply_by, rr.comment AS reply_comment , rr.created_at AS created_at
     FROM reviews r
     JOIN users ur ON r.customer_id = ur.user_id
     LEFT JOIN user_customer_meta ucm ON ur.user_id = ucm.user_id

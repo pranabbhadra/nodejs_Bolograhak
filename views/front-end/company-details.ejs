@@ -351,6 +351,7 @@
                 <div class="customer-review-content">
                   <% getCompanyReviews.forEach( review => { %> 
                   <div class="customer-review-wrap" id="review-reply-<%= review.id %>">
+                    <!--Main Review -->
                     <div class="cutomer-comment">
                       <span><%= review.rating %></span>
                       <span>
@@ -368,19 +369,21 @@
                       <% const date = new Date(dateString); %>
                       <% if(review.user_privacy == 1) { %>
                       <span>
-                      <% if(review.profile_pic) { %>
-                      <img src="/<%= review.profile_pic %>" alt="img" width="23" height="23">
-                      <% }else{ %>
-                      <img src="/assets/media/avatars/blank.png" alt="img" width="23" height="23">
-                      <% } %>
+                        <% if(review.profile_pic) { %>
+                          <img class="user_img" src="/<%= review.profile_pic %>" alt="img" width="23" height="23">
+                        <% }else{ %>
+                          <img class="user_img" src="/assets/media/avatars/blank.png" alt="img" width="23" height="23">
+                        <% } %>
                       </span>
                       <span><%= review.first_name+' '+review.last_name %> <span class="c-comment-date"><%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) %></span></span>
                       <% }else{ %>
-                      <span><img src="/front-end/images/blur-img.png" alt="img"></span>
+                      <span><img class="user_img" src="/front-end/images/blur-img.png" alt="img"></span>
                       <span><img src="/front-end/images/blur-name.png" alt="img"></span>
                       <span class="c-comment-date"><%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) %></span>
                       <% } %>
                     </div>
+                    <!--Main Review End -->
+                    <!--Review Replys -->
                     <% if(review.review_reply.length>0){ %>
                       <% review.review_reply.forEach( reply => { %>
                         <div class="review-reply">
@@ -389,19 +392,40 @@
                             <% const replydateString = reply.created_at; %>
                             <% const replydate = new Date(replydateString); %>
                             <% if(reply.reply_by == review.customer_id) { %>
-                            <% }else{ %>
-                            <span>
-                              <% if(CompanyInfo.logo) { %>
-                              <img src="/<%= CompanyInfo.logo %>" alt="img" width="23" height="23">
+                              <!-- Customer Reply -->
+                              <% if(review.user_privacy == 1) { %>
+                              <span>
+                                <% if(review.profile_pic) { %>
+                                  <img class="user_img" src="/<%= review.profile_pic %>" alt="img" width="23" height="23">
+                                <% }else{ %>
+                                  <img class="user_img" src="/assets/media/avatars/blank.png" alt="img" width="23" height="23">
+                                <% } %>
+                              </span>
+                              <span><%= review.first_name+' '+review.last_name %> <span class="c-comment-date"><%= replydate.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) %></span></span>
                               <% }else{ %>
-                              <img src="/assets/media/avatars/blank.png" alt="img" width="23" height="23">
-                              <% } %>
-                            </span>
-                            <span><%= CompanyInfo.company_name %> <span class="c-comment-date"><%= replydate.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) %></span></span>
+                              <span>
+                                <img class="user_img" src="/front-end/images/blur-img.png" alt="img" width="23" height="23">
+                              </span>
+                              <span><img src="/front-end/images/blur-name.png" alt="img"> <span class="c-comment-date"><%= replydate.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) %></span></span>
+                              <% }%>  
+                              <!-- Customer Reply End-->
+                            <% }else{ %>
+                              <!-- Company Owner Reply -->
+                              <span>
+                                <% if(CompanyInfo.logo) { %>
+                                <img class="user_img" src="/<%= CompanyInfo.logo %>" alt="img" width="23" height="23">
+                                <% }else{ %>
+                                <img class="user_img" src="/front-end/images/company-placeholder-image.png" alt="img" width="23" height="23">
+                                <% } %>
+                              </span>
+                              <span><%= CompanyInfo.company_name %> <span class="c-comment-date"><%= replydate.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) %></span></span>
+                              <!-- Company Owner Reply End-->
                             <% } %>
                           </div>
                         </div>
+                        
                         <% if(review.review_reply.length==1 && review.customer_id == currentUserData.user_id){ %>
+                        <!--Review Replys Submit Form-->
                           <form action="" class="review_reply_form">
                             <input type="text" name="comment" placeholder="Add Reply.." required>
                             <input type="hidden" name="review_id" value="<%- review.id -%>">
@@ -409,9 +433,12 @@
                             <button type="submit">Reply</button>
                             <div class="submit-loading" style="display: none;">Please wait..</div>
                           </form>
-                        <% } %>  
+                        <!--Review Replys Submit Form End--> 
+                        <% } %>
+                        
                       <% }) %>
                     <% } %>
+                    <!--Review Replys End-->
                   </div>
                   <% }) %>
                   <% if(company_total_review>3){%> 
@@ -632,10 +659,12 @@
 //---Review reply submit-------//
 $('.review_reply_form').submit(function(e){
   event.preventDefault();
-  $('#review_reply_btn').prop( "disabled", true );
-  $(this).find('.submit-loading').show();
+  const $form = $(this);
 
-  const formData = $(this).serializeArray();
+  $form.prop( "disabled", true );
+  $form.find('.submit-loading').show();
+
+  const formData = $form.serializeArray();
   const jsonData = {};
   $(formData).each(function (index, field) {
       jsonData[field.name] = field.value;
@@ -648,21 +677,21 @@ $('.review_reply_form').submit(function(e){
     ContentType: 'application/json',
     success: function (data) {
       if (data.status == 'ok') {
-        $(this).find('.submit-loading').hide();
-        //$(this)[0].reset();
-        $(this).append('<p>'+data.message+'</p>');
+        $form.find('.submit-loading').hide();
+        $form[0].reset();
+        $form.append('<p>'+data.message+'</p>');
         setTimeout( function(){
           location.reload(true);
         }, 3000 );
       } else {
-        $(this).find('.submit-loading').hide();
-        $(this).append('<p>'+data.message+'</p>');
+        $form.find('.submit-loading').hide();
+        $form.append('<p>'+data.message+'</p>');
       }
       //console.log(data);
     },
     error: function (error) {
-      $(this).find('.submit-loading').hide();
-      $(this).append('<p>'+data.message+'</p>');
+      $form.find('.submit-loading').hide();
+      $form.append('<p>'+error+'</p>');
     }
   });
 })

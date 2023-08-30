@@ -1,14 +1,15 @@
 <%- include('common/header') -%>
 <link href="/front-end/css/review-style.css" rel="stylesheet" type="text/css">
 <link href="/front-end/css/company-profile-dashboard.css" rel="stylesheet" type="text/css">
-<link href="/front-end/css/business-profile-manage-style.css" rel="stylesheet" type="text/css">
 <%- include('common/header-banner') -%>
 
 <!-- ============== Section1 Start =============== -->
-<section class="main-content">
+<section class="main-content premium_company_profile">
     <div class="container">
+        <div class="main_box">
+            <%- include('common/premium-company-sidebar') -%>
+        </div>
         <div class="company_profile_management">
-            <%- include('common/basic-company-sidebar') -%>
             <div class="company_review_replay">
                 <div class="review-box">
                     <h3><%= company.company_name || '' %></h3>

@@ -31,7 +31,17 @@ const secretKey = 'grahak-secret-key';
 const comFunction = require('../common_function');
 const comFunction2 = require('../common_function2');
 const axios = require('axios');
-//const cookieParser = require('cookie-parser');
+
+const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: process.env.DESIRED_TIMEZONE,
+    hour12: true, // Set to true or false based on your preference
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric'
+  });
 
 
 //-- Register Function--//
