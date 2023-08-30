@@ -822,7 +822,7 @@
 
 .chat_area img.user_img{
 	width: 48px;
-	height: 50px !important;
+	height: 48px !important;
 	border-radius: 100%;
 	margin: 0 auto;
 }
@@ -902,6 +902,17 @@
 }
 .chat_area .msg_send_form button[type="submit"]:hover{
 	background: linear-gradient(180deg, #FFB800 0%, #FF5C00 100%);
+}
+
+.submit-success {
+    color: green;
+    margin: 10px 0 0;
+    font-size: 18px;
+}
+.submit-error {
+    color: red;
+    margin: 10px 0 0;
+    font-size: 18px;
 }
 
 /*========================================= responsive ====================================*/

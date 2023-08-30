@@ -68,7 +68,9 @@
 <script>
     jQuery(function ($) {
         $(document).ready(() => {
-            $('.table').DataTable();
+            $('.table').DataTable({
+                "order": [[ 4, "desc" ]]
+            });
         });
     });
 </script>

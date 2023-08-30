@@ -537,16 +537,18 @@ jQuery(function ($) {
       $(".load-slice-btn").hide();
     }
   });
-  $(".customer-review-wrap").slice(0, 3).show();
-  $(".show-comment-slice").click(function (e) {
-    e.preventDefault();
-    $(".customer-review-wrap:hidden").slice(0, 3).fadeIn("slow");
 
-    if ($(".customer-review-wrap:hidden").length == 0) {
-      $(".show-comment-slice").hide();
-      $(".btn-border-top").hide();
-    }
-  });
+  // $(".customer-review-wrap").slice(0, 3).show();
+  // $(".show-comment-slice").click(function (e) {
+  //   e.preventDefault();
+  //   $(".customer-review-wrap:hidden").slice(0, 3).fadeIn("slow");
+
+  //   if ($(".customer-review-wrap:hidden").length == 0) {
+  //     $(".show-comment-slice").hide();
+  //     $(".btn-border-top").hide();
+  //   }
+  // });
+  
   // /////////////////////////////////////// Load More Blog slice end
 
   // /////////////////////////////////////// Archive Slide Start

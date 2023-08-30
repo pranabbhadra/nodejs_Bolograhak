@@ -3422,3 +3422,91 @@ a.quick-login span + span {
     background-color: #000;
     color: #fff;
 }
+
+
+.review-reply {
+    width: 100%;
+    margin: 8px 0 5px 15px;
+    padding: 5px 8px;
+    background: #f0f0f0;
+    border-radius: 4px;
+    max-width: 380px;
+}
+.review-reply + .review-reply{
+    margin-left: 20px;
+}
+.review-reply p {
+	font-size: 15px;
+	margin: 0 0 2px;
+	font-weight: 400;
+}
+.review-reply .customer-profile-info span{
+    font-size: 11px;
+    display: inline-block;
+    vertical-align: middle;
+    margin:0;
+}
+.review-reply .customer-profile-info span img{
+    display: inline-block;
+    vertical-align: middle;
+}
+.review-reply .customer-profile-info span > span.c-comment-date{
+    font-size: 11px;
+    margin: 0;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.review_reply_form{
+    width: 100%;
+    margin: 8px 0 5px 20px;
+    padding: 0;
+    background: #f0f0f0;
+    border-radius: 4px;
+    max-width: 380px;
+    position: relative;
+}
+.review_reply_form input[type="text"] {
+	width: 100%;
+	height: 42px;
+	border: 1px solid #f4a835;
+	border-radius: 4px;
+	padding: 0 75px 0 10px;
+	font-size: 14px;
+    outline: none;
+}
+.review_reply_form button[type="submit"] {
+	position: absolute;
+	top: 0;
+	right: 0;
+	height: 42px;
+	background-color: #fccb06;
+	border: 0;
+	outline: none;
+	border-radius: 0 4px 4px 0;
+	padding: 0 15px;
+	font-size: 14px;
+}
+.review_reply_form button[type="submit"]:hover{
+    background-color: #000;
+    color: #fff;
+}
+
+.user-select-tag.review-reply-btn{
+    background-color: green;
+    transition: all 0.3s ease-in-out;
+}
+.user-select-tag.review-reply-btn:hover{
+    background-color: #000;
+}
+.user-select-tag.review-reply-btn a{
+    color: #fff;
+}
+
+img.user_img{
+    width: 20px;
+    height: 20px !important;
+    border: 1px solid #fccb06;
+    object-fit: contain;
+    object-position: center;
+}
