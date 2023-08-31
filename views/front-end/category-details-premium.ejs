@@ -213,14 +213,14 @@
     <% } %>
     <!-- ============== Section3 end =============== -->
 
+    <% var company_total_review = companyReviewNumbers.rewiew_count.total_review_count %>
+    <% if(company_total_review>0){%>
     <!-- ============== Section4 Start =============== -->
     <section class="main-content premiun_rating_review_box">
         <i class="image1"><img src="/front-end/images/s-shape-2.png" alt="shape"></i>
         <i class="image2"><img src="/front-end/images/s-side-image1.png" alt="shape"></i>
         <i class="image3"><img src="/front-end/images/s-shap-1.png" alt="shape"></i>
         <div class="container">
-            <% var company_total_review = companyReviewNumbers.rewiew_count.total_review_count %>
-            <% if(company_total_review>0){%>
             <div class="rating-review-box">
                 <div class="rating-review-head">
                 <h4>Ratings & Reviews</h4>
@@ -566,10 +566,10 @@
                 </div>
                 </div>
             </div>
-            <% } %>
         </div>
     </section>
     <!-- ============== Section4 end =============== -->
+    <% } %>
 
     <!-- ============== Section5 start =============== -->
     <section class="main-content premiun_review_submit_box">
