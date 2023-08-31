@@ -2120,6 +2120,7 @@ exports.submitReview = async (req, res) => {
                     {
                         status: 'ok',
                         data:   '',
+                        company,
                         message: 'Review posted successfully'
                     }
                 );
