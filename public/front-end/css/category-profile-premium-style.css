@@ -744,6 +744,30 @@ span#selected-range-emojis {
     margin-top: 48px;
 }
 
+.social_links{
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 15px;
+    margin-top: -10px;
+}
+.social_links a {
+	color: #000;
+	font-size: 13px;
+	width: 30px;
+	height: 30px;
+	background: #fccb06;
+	display: inline-block;
+	border-radius: 100%;
+	line-height: 32px;
+	text-align: center;
+}
+.social_links a:hover{
+    color:#fff;
+}
+.company-profile-cover{
+    background-color: rgba(0,0,0,0.4);
+}
+
 
 /*=============================== Responsive ==========================*/
 
