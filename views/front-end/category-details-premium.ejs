@@ -5,16 +5,21 @@
 <section class="category-premium">
     <!-- ============== Section1 Start =============== -->
     <section class="main-content pt-0">
-        <div class="company-profile-cover" style="background-image: url(/front-end/images/profile-cover.jpg);">
+        <% if(cover_img){ %>
+            <div class="company-profile-cover" style="background-image: url(/<%= cover_img %>);"></div>
+            <% } else {%>
+                <div class="company-profile-cover" style="background-image: url(/front-end/images/profile-cover.jpg);"></div>
+                <% } %>
+        
         </div>
         <div class="container">
             <div class="company-profile">
                 <div class="company-logo">
                     <% if(company && company.logo) { %>
                         <a href="#"><img src="/<%= company.logo %>" alt="img" loading="lazy" width="260" height="260"></a>
-                        <%} else {%>
+                    <%} else {%>
                         <a href="#"><img src="/front-end/images/company-placeholder-image.png" alt="img" loading="lazy" width="260" height="260" ></a>
-                        <% } %>
+                    <% } %>
                     <div class="premium-company-icon"><i class="fa-solid fa-crown"></i></div>
                 </div>
                 <div class="company-info">
@@ -28,6 +33,23 @@
                                 </g>
                             </svg>
                             verified business
+                        </span>
+                        <span class="social_links">
+                            <% if(facebook_url) { %>
+                                <a href="<%= facebook_url ? facebook_url : '' %>" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                             <% } %>
+                             <% if(twitter_url) { %>
+                                <a href="<%= twitter_url ? twitter_url : '' %>" target="_blank"><i class="fab fa-twitter"></i></a>
+                             <% } %>
+                             <% if(instagram_url) { %>
+                                <a href="<%= instagram_url ? instagram_url : '' %>" target="_blank"><i class="fab fa-instagram"></i></a>
+                             <% } %>
+                             <% if(linkedin_url) { %>
+                               <a href="<%= linkedin_url ? linkedin_url : '' %>" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                             <% } %>
+                             <% if(youtube_url) { %>
+                              <a href="<%= youtube_url ? youtube_url : '' %>" target="_blank"><i class="fab fa-youtube"></i></a>
+                             <% } %>
                         </span>
                     </h3>
                     <div class="company-rating-review">
@@ -124,7 +146,7 @@
     <!-- ============== Section2 end =============== -->
 
     <!-- ============== Section2 Start =============== -->
-    <% if(promotions.length > 0){%>
+    <% if(promotions.length > 0 && promotions[0].promotion_title){%>
     <section class="main-content category-promotions-content">
         <div class="container">
         <div class="promotion-wrapper">
@@ -145,56 +167,13 @@
                                 <div class="product-info">
                                     <h3><a href="#"><%= promotion.promotion_title %></a></h3>
                                     <p><a href="#"><%= promotion.promotion_desc %></a></p>
-                                    <p><a href="#"><i class="fa-regular fa-angle-right"></i></a></p>
+                                    <!-- <p><a href="#"><i class="fa-regular fa-angle-right"></i></a></p> -->
                                 </div>
                             </div>
                         </div>
                     <% }) %>
                     
-                    <!-- <div class="item">
-                        <div class="product-part">
-                            <span class="offer-tag">70% Off</span>
-                            <a href="#"><img src="/front-end/images/product-img1.jpg" alt="img" width="258" height="183"></a>
-                            <div class="product-info">
-                                <h3><a href="#">Product Name</a></h3>
-                                <p><a href="#">Lorem Ipsum is simply dummy text of the printing and typesetting industry.</a></p>
-                                <p><a href="#"><i class="fa-regular fa-angle-right"></i></a></p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <div class="product-part">
-                            <span class="offer-tag">70% Off</span>
-                            <a href="#"><img src="/front-end/images/product-img1.jpg" alt="img" width="258" height="183"></a>
-                            <div class="product-info">
-                                <h3><a href="#">Product Name</a></h3>
-                                <p><a href="#">Lorem Ipsum is simply dummy text of the printing and typesetting industry.</a></p>
-                                <p><a href="#"><i class="fa-regular fa-angle-right"></i></a></p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <div class="product-part">
-                            <span class="offer-tag">70% Off</span>
-                            <a href="#"><img src="/front-end/images/product-img1.jpg" alt="img" width="258" height="183"></a>
-                            <div class="product-info">
-                                <h3><a href="#">Product Name</a></h3>
-                                <p><a href="#">Lorem Ipsum is simply dummy text of the printing and typesetting industry.</a></p>
-                                <p><a href="#"><i class="fa-regular fa-angle-right"></i></a></p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <div class="product-part">
-                            <span class="offer-tag">70% Off</span>
-                            <a href="#"><img src="/front-end/images/product-img1.jpg" alt="img" width="258" height="183"></a>
-                            <div class="product-info">
-                                <h3><a href="#">Product Name</a></h3>
-                                <p><a href="#">Lorem Ipsum is simply dummy text of the printing and typesetting industry.</a></p>
-                                <p><a href="#"><i class="fa-regular fa-angle-right"></i></a></p>
-                            </div>
-                        </div>
-                    </div> -->
+                    
                 </div>
             <div class="feature-man1" data-aos="fade-down"><img src="/front-end/images/feature-man1.png" alt="img" width="198" height="169"></div>
                 <div class="feature-man2" data-aos="fade-down" data-aos-delay="500"><img src="/front-end/images/feature-man2.png" alt="img" width="202" height="145"></div>
@@ -207,7 +186,7 @@
     <!-- ============== Section2 end =============== -->
     
     <!-- ============== Section3 start =============== -->
-    <% if(products.length > 0){%>
+    <% if(products.length > 0 && products[0].product_title){%>
     <section class="main-content category_products_content">
         <div class="container">
             <h2 class="inner-main-head">Products</h2>
@@ -223,7 +202,7 @@
                             <div class="product-info">
                                 <h3><a href="#"><%= product.product_title %></a></h3>
                                 <p><a href="#"><%= product.product_desc %></a></p>
-                                <p><a href="#"><i class="fa-regular fa-angle-right"></i></a></p>
+                                <!-- <p><a href="#"><i class="fa-regular fa-angle-right"></i></a></p> -->
                             </div>
                         </div>
                     </div>

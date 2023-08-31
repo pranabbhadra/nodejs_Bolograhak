@@ -6,7 +6,11 @@
   <div class="container">
     <div class="company-profile">
       <div class="company-logo">
-        <img src="/<%= CompanyInfo.logo %>" alt="img" loading="lazy">
+        <% if(CompanyInfo.logo){ %>
+          <img src="/<%= CompanyInfo.logo %>" alt="img" loading="lazy" width="260" height="260">
+        <% }else{ %>
+          <img src="/front-end/images/company-placeholder-image.png" alt="img" loading="lazy" width="260" height="260">
+        <% } %>
       </div>
       <div class="company-info">
         <h3>

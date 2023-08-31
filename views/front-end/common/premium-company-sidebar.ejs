@@ -51,11 +51,21 @@
           <div class="overall_score">
              <div class="social_links">
                 <ul>
-                   <li><a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
-                   <li><a href="#" target="_blank"><i class="fab fa-twitter"></i></a></li>
-                   <li><a href="#" target="_blank"><i class="fab fa-instagram"></i></a></li>
-                   <li><a href="#" target="_blank"><i class="fab fa-linkedin-in"></i></a></li>
-                   <li><a href="#" target="_blank"><i class="fab fa-youtube"></i></a></li>
+                  <% if(facebook_url) { %>
+                     <li><a href="<%= facebook_url ? facebook_url : '' %>" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
+                  <% } %>
+                  <% if(twitter_url) { %>
+                     <li><a href="<%= twitter_url ? twitter_url : '' %>" target="_blank"><i class="fab fa-twitter"></i></a></li>
+                  <% } %>
+                  <% if(instagram_url) { %>
+                     <li><a href="<%= instagram_url ? instagram_url : '' %>" target="_blank"><i class="fab fa-instagram"></i></a></li>
+                  <% } %>
+                  <% if(linkedin_url) { %>
+                     <li><a href="<%= linkedin_url ? linkedin_url : '' %>" target="_blank"><i class="fab fa-linkedin-in"></i></a></li>
+                  <% } %>
+                  <% if(youtube_url) { %>
+                     <li><a href="<%= youtube_url ? youtube_url : '' %>" target="_blank"><i class="fab fa-youtube"></i></a></li>
+                  <% } %>
                 </ul>
              </div>
              <div class="score_info">

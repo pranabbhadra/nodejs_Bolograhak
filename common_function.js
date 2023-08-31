@@ -695,30 +695,48 @@ async function createCompany(comInfo, userId) {
       // Format the date in 'YYYY-MM-DD HH:mm:ss' format (adjust the format as needed)
       const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
       try {
-        const create_company_query = 'INSERT INTO company (user_created_by, company_name, status, created_date, updated_date, main_address, verified) VALUES (?, ?, ?, ?, ?, ?, ?)';
-        const create_company_values = [userId, comInfo.company_name, '2', formattedDate, formattedDate, comInfo.address, '0'];
-        const create_company_results = await query(create_company_query, create_company_values);
-        // console.log('New Company:', create_company_results);
-        // console.log('New Company ID:', create_company_results.insertId);
+        const companyInsertData = {
+          user_created_by : userId,
+          company_name: comInfo.company_name || null,
+          status: 2,
+          created_date: formattedDate,
+          updated_date: formattedDate,
+          main_address: comInfo.address || null,
+          verified: formattedDate,
+        };
+        const create_company_query = 'INSERT INTO company SET ?'
+        const create_company_results = await query(create_company_query, companyInsertData);
+        
         if (create_company_results.insertId) {
           //create new address for company
           try{
-            const create_company_address_query = 'INSERT INTO company_location (company_id, address, country, state, city, zip, status) VALUES (?, ?, ?, ?, ?, ?, ?)';
-            const create_company_address_values = [create_company_results.insertId, comInfo.address, '', '', '', '', '2'];
+            const create_company_address_values = {
+              company_id : create_company_results.insertId,
+              address: comInfo.address || null,
+              status: '2',
+            };
+            const create_company_address_query = 'INSERT INTO company_location SET ?'
             const create_company_address_results = await query(create_company_address_query, create_company_address_values);
+
             if (create_company_address_results.insertId) {
               return_data.companyID = create_company_results.insertId;
               return_data.companyLocationID = create_company_address_results.insertId;
+              return return_data;
+            }else{
+              return_data.companyID = create_company_results.insertId;
+              return_data.companyLocationID = '';
               return return_data;
             }
           }catch(error){
             console.error('Error during create_company_address_query:', error);
             return error;
           }
+        }else{
+          return [];
         }
       }catch(error){
         console.error('Error during user create_company_query:', error);
-       return error;
+        return error;
       }
     }
   }
@@ -747,14 +765,28 @@ async function createReview(reviewIfo, userId, comInfo){
   try {
     const create_review_results = await query(create_review_query, create_review_values);
     if(create_review_results.insertId){
-      //insert review_tag_relation
-      const review_tag_relation_query = 'INSERT INTO review_tag_relation (review_id, tag_name) VALUES (?, ?)';
-      try{
-        for (const tag of reviewIfo['tags[]']) {
-          const review_tag_relation_values = [create_review_results.insertId, tag];
-          const review_tag_relation_results = await query(review_tag_relation_query, review_tag_relation_values);
-        }
+      if (Array.isArray(reviewIfo['tags[]']) && reviewIfo['tags[]'].length > 0) {
+        //insert review_tag_relation
+        const review_tag_relation_query = 'INSERT INTO review_tag_relation (review_id, tag_name) VALUES (?, ?)';
+        try{
+          for (const tag of reviewIfo['tags[]']) {
+            const review_tag_relation_values = [create_review_results.insertId, tag];
+            const review_tag_relation_results = await query(review_tag_relation_query, review_tag_relation_values);
+          }
 
+          //-- user review count------//
+          const update_review_count_query = 'UPDATE user_customer_meta SET review_count = review_count + 1 WHERE user_id = ?';
+          try {
+            const [update_review_count_result] = await db.promise().query(update_review_count_query, [userId]);
+            return create_review_results.insertId;
+          }catch (error) {
+            console.error('Error during user update_review_count_query:', error);
+          }
+          
+        }catch(error){
+          console.error('Error during user review_tag_relation_results:', error);
+        }
+      }else{
         //-- user review count------//
         const update_review_count_query = 'UPDATE user_customer_meta SET review_count = review_count + 1 WHERE user_id = ?';
         try {
@@ -763,9 +795,6 @@ async function createReview(reviewIfo, userId, comInfo){
         }catch (error) {
           console.error('Error during user update_review_count_query:', error);
         }
-        
-      }catch(error){
-        console.error('Error during user review_tag_relation_results:', error);
       }
     }
   }catch (error) {
@@ -929,7 +958,6 @@ async function getCompanyReviews(companyID){
   }
 }
 
-
 async function getReviewByID(reviewId){
   const get_single_rewiew_query = `
     SELECT r.*, ur.first_name, ur.last_name, ur.email, ucm.profile_pic, ccreq.claimed_by as company_owner
@@ -964,39 +992,19 @@ async function getReviewReplyDataByID(reviewId){
   }
 }
 
-async function getReviewByID(reviewId){
-  const get_single_rewiew_query = `
-    SELECT r.*, ur.first_name, ur.last_name, ur.email, ucm.profile_pic, ccreq.claimed_by as company_owner
-    FROM reviews r
-    JOIN users ur ON r.customer_id = ur.user_id
-    LEFT JOIN user_customer_meta ucm ON ur.user_id = ucm.user_id
-    LEFT JOIN company_claim_request ccreq ON r.company_id = ccreq.company_id
-    WHERE r.id = ?`;
-  const get_single_rewiew_value = [reviewId];
+async function reviewTagsCountByCompanyID(companyId){
+  const get_rewiew_tag_counts_query = `
+    SELECT rtr.tag_name, COUNT(*) AS count
+    FROM review_tag_relation AS rtr
+    JOIN reviews AS r ON rtr.review_id = r.id
+    WHERE r.company_id = ? AND r.review_status = '1'
+    GROUP BY rtr.tag_name`;
+  const get_rewiew_tag_counts_query_value = [companyId];
   try{
-    const get_single_rewiew_result = await query(get_single_rewiew_query, get_single_rewiew_value);
-    return get_single_rewiew_result;
-    console.log('aaa',get_single_rewiew_result);
+    const get_rewiew_tag_counts_query_result = await query(get_rewiew_tag_counts_query, get_rewiew_tag_counts_query_value);
+    return get_rewiew_tag_counts_query_result;
   }catch(error){
-    return 'Error during user get_single_rewiew_query:'+error;
-  }
-}
-
-async function getReviewReplyDataByID(reviewId){
-  const get_single_rewiew_reply_query = `
-    SELECT rpy.*, ur.first_name, ur.last_name, ur.email, ucm.profile_pic, ccreq.claimed_by as company_owner
-    FROM review_reply rpy
-    JOIN users ur ON rpy.reply_by = ur.user_id
-    LEFT JOIN user_customer_meta ucm ON ur.user_id = ucm.user_id
-    LEFT JOIN company_claim_request ccreq ON r.company_id = ccreq.company_id
-    WHERE r.id = ?`;
-  const get_single_rewiew_value = [reviewId];
-  try{
-    const get_single_rewiew_result = await query(get_single_rewiew_query, get_single_rewiew_value);
-    return get_single_rewiew_result;
-    console.log('aaa',get_single_rewiew_result);
-  }catch(error){
-    return 'Error during user get_single_rewiew_query:'+error;
+    return 'Error during user get_rewiew_tag_counts_query:'+error;
   }
 }
 
@@ -1032,5 +1040,6 @@ module.exports = {
     getUsersByRole,
     getAllReviewsByCompanyID,
     getReviewByID,
-    getReviewReplyDataByID
+    getReviewReplyDataByID,
+    reviewTagsCountByCompanyID
 };

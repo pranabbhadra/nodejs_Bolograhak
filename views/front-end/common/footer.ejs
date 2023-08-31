@@ -281,21 +281,20 @@
             $('.frm-error-message-forgot').text(data.message).show();
             $('#forgot_submit_btn').prop('disabled', false);
             $('.frm-loading-forgot').hide();
-            // setTimeout(function() {
-            //   if(data.wp_user){
-            //     window.location.href="<%= globalData.BLOG_URL %>?login_check="+data.wp_user;
-            //   }else{
-            //     window.location.href="/";
-            //   }
-            // }, 2000 );             
+            $('#forgotPassword').trigger('reset');
+            setTimeout(function() {
+              $('#exampleModal').modal('hide');
+            }, 2000 );             
           } else if (data.status == 'not found'){
             $('.frm-error-message-forgot').text(data.message).show();
             $('#forgot_submit_btn').prop('disabled', false);
             $('.frm-loading-forgot').hide();
+            $('#forgotPassword').trigger('reset');
           } else {
             $('.frm-error-message-forgot').text(data.message).show();
             $('#forgot_submit_btn').prop('disabled', false);
             $('.frm-loading-forgot').hide();
+            $('#forgotPassword').trigger('reset');
           }
 
         },

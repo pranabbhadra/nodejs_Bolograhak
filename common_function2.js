@@ -603,6 +603,17 @@ async function getPremiumCompanyData(companyId) {
   return PremiumCompanyData[0];
 }
 
+//Function to fetch User Name from the  users table
+async function getUserName(email){
+  const sql = `SELECT user_id, first_name  FROM users WHERE email = '${email}' `;
+  const get_user_name = await query(sql);
+    if(get_user_name.length > 0 ){
+      return get_latest_review_results;
+    }else{
+      return [];
+    }
+ }
+
 
 
 
@@ -627,5 +638,6 @@ module.exports = {
   getPageInfo,
   reviewApprovedEmail,
   reviewRejectdEmail,
-  getPremiumCompanyData
+  getPremiumCompanyData,
+  getUserName
 };

@@ -2112,16 +2112,14 @@ exports.submitReview = async (req, res) => {
             //console.log(currentUserData);
             const userId = currentUserData.user_id;
             const company = await comFunction.createCompany(req.body, userId);
+            console.log('review submit company response: ',company);
             const review = comFunction.createReview(req.body, userId, company);
             // Render the 'edit-user' EJS view and pass the data
             if(company && review){
                 return res.send(
                     {
                         status: 'ok',
-                        data: {
-                                company,
-                                review
-                        },
+                        data:   '',
                         message: 'Review posted successfully'
                     }
                 );
@@ -2129,7 +2127,7 @@ exports.submitReview = async (req, res) => {
                 return res.send(
                     {
                         status: 'error',
-                        data: {company,review},
+                        data: '',
                         message: 'Error occurred please try again'
                     }
                 );
@@ -3018,7 +3016,7 @@ exports.updatePremiumCompany =async (req, res) => {
     const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
 
-    const { previous_cover_image, youtube_iframe, promotion_title, promotion_desc, promotion_discount, promotion_image, product_title, product_desc, product_image } = req.body;
+    const { previous_cover_image, youtube_iframe, promotion_title, promotion_desc, promotion_discount, promotion_image, product_title, product_desc, product_image, facebook_url, twitter_url, instagram_url, linkedin_url, youtube_url } = req.body;
 
     const { cover_image, gallery_images } = req.files;
     let galleryImages = [];
@@ -3027,42 +3025,6 @@ exports.updatePremiumCompany =async (req, res) => {
             gallery_images:req.files.gallery_images[index].filename
         }));
     }
-
-    // const check_sql = `SELECT * FROM premium_company_data WHERE company_id = ? `;
-    // const check_data = [companyID];
-    // db.query(check_sql, check_data, (check_err, check_result) => {
-    //     if (check_err) {
-    //         return res.send(
-    //             {
-    //                 status: 'err',
-    //                 data: '',
-    //                 message: 'An error occurred while processing your request'
-    //             }
-    //         )
-    //     } else {
-    //         if (check_result.length > 0) {
-                
-    //             console.log(check_result[0]);
-    //             //return false;
-    //             const gallery_img = JSON.parse(check_result[0].gallery_img);
-                
-    //             if(galleryImages.length > 0){
-    //                 galleryImages.forEach(function(img, index, arr) {
-    //                     gallery_img.push(img);
-    //                 })
-    //             }
-    //             //gallery_img.push(galleryImages);
-
-    //             console.log('merge_img:',gallery_img);
-
-                
-                
-    //             const gallery_img = JSON.stringify(gallery_img);
-
-                
-    //         }
-    //     }
-    // });
 
     //return false;
     if(typeof product_image == 'undefined' || typeof promotion_image == 'undefined' ){
@@ -3243,8 +3205,8 @@ exports.updatePremiumCompany =async (req, res) => {
                         
 
                         //return false;
-                        const update_query = `UPDATE premium_company_data SET cover_img = ?, gallery_img = ?, youtube_iframe = ?,promotions = ?, products = ? WHERE company_id = ? `;
-                        const update_data = [coverImg, galleryimg, youtube_iframe, Promotion, Products, companyID];
+                        const update_query = `UPDATE premium_company_data SET cover_img = ?, gallery_img = ?, youtube_iframe = ?,promotions = ?, products = ?, facebook_url = ?, twitter_url = ?, instagram_url = ?, linkedin_url = ?, youtube_url = ? WHERE company_id = ? `;
+                        const update_data = [coverImg, galleryimg, youtube_iframe, Promotion, Products, facebook_url, twitter_url, instagram_url, linkedin_url, youtube_url, companyID];
                         db.query(update_query, update_data, (update_err,update_result)=>{
                             if (update_err) {
                                 // Handle the error
@@ -3269,8 +3231,8 @@ exports.updatePremiumCompany =async (req, res) => {
                         const Products = JSON.stringify(ProductData);
                         const Promotion = JSON.stringify(PromotionalData);
 
-                        const premium_query = `INSERT INTO premium_company_data ( company_id, cover_img, gallery_img, youtube_iframe, promotions, products) VALUES (?, ?, ?, ?, ?, ?)`;
-                        const premium_data = [companyID, coverImg, galleryimg, youtube_iframe, Promotion, Products];
+                        const premium_query = `INSERT INTO premium_company_data ( company_id, cover_img, gallery_img, youtube_iframe, promotions, products, facebook_url, twitter_url, instagram_url, linkedin_url, youtube_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+                        const premium_data = [companyID, coverImg, galleryimg, youtube_iframe, Promotion, Products, facebook_url, twitter_url, instagram_url, linkedin_url, youtube_url];
                         db.query(premium_query, premium_data, (premium_err, premium_result)=>{
                             if (premium_err) {
                                 // Handle the error
@@ -3366,7 +3328,7 @@ exports.deletePremiumPromotion = (req, res) => {
         } else {
             if (check_result.length > 0) {
                 
-                console.log(check_result[0]);
+                //console.log(check_result[0]);
                 //return false;
                 const promotions = JSON.parse(check_result[0].promotions);
                 //console.log(gallery_img);
@@ -3418,7 +3380,7 @@ exports.deletePremiumProduct = (req, res) => {
         } else {
             if (check_result.length > 0) {
                 
-                console.log(check_result[0]);
+                //console.log(check_result[0]);
                 //return false;
                 const products = JSON.parse(check_result[0].products);
                 //console.log(gallery_img);
@@ -3451,15 +3413,12 @@ exports.deletePremiumProduct = (req, res) => {
 
 //forgot pssword
 exports.forgotPassword = (req, res) => {
-    console.log('forgot',req.body);
+    //console.log('forgot',req.body);
     const {email} = req.body;
     //let hasEmail =  bcrypt.hash(email, 8);
     const passphrase = process.env.ENCRYPT_DECRYPT_SECRET;
 
-    const cipher = crypto.createCipher('aes-256-cbc', passphrase);
-    let encrypted = cipher.update(email, 'utf8', 'hex');
-    encrypted += cipher.final('hex');
-    console.log('Encrypted:', encrypted);
+   
     
    
 
@@ -3476,6 +3435,11 @@ exports.forgotPassword = (req, res) => {
             )
         }else{
             if (result.length > 0) {
+                
+                const cipher = crypto.createCipher('aes-256-cbc', passphrase);
+                let encrypted = cipher.update(email, 'utf8', 'hex');
+                encrypted += cipher.final('hex');
+                //console.log('Encrypted:', encrypted);
 
                 const template = `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
                 <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
@@ -3520,7 +3484,7 @@ exports.forgotPassword = (req, res) => {
                                           <tr>
                                             <td colspan="2">
                                             <strong>Hello ${result[0].first_name},</strong>
-                                            <p style="font-size:15px; line-height:20px">A request has been received to change the password for your <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a>  account. <a class="btn btn-primary" href="${process.env.MAIN_URL}reset-password/${encrypted}">Reset Password</a></p>
+                                            <p style="font-size:15px; line-height:20px">A request has been received to change the password for your <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a>  account. <a class="btn btn-primary" href="${process.env.MAIN_URL}reset-password/${encrypted}">Click here </a>to reset your password</p>
                                             </td>
                                           </tr>
                                         </table>
@@ -3570,8 +3534,8 @@ exports.forgotPassword = (req, res) => {
                </div>`;
                 var mailOptions = {
                     from: process.env.MAIL_USER,
-                    to: 'pranab@scwebtech.com',
-                    //to: email,
+                    //to: 'pranab@scwebtech.com',
+                    to: email,
                     subject: 'Forgot password Email',
                     html: template
                   }
@@ -3661,30 +3625,81 @@ exports.submitReviewReply = async (req, res) => {
         res.status(500).send('An error occurred '+ err);
     }
 }
+
 // Reset Password
 exports.resetPassword = async (req, res) => {
-    console.log('resetPassword', req.body);
+    //console.log('resetPassword', req.body);
     const  { email, new_password } = req.body;
     let hasPassword = await bcrypt.hash(new_password, 8);
-    console.log(hasPassword);
-    const sql = `UPDATE users SET password = ?  WHERE email = ? `;
-    const data = [hasPassword, email];
-    db.query(sql, data, (err, result) =>{
-        if (err) {
-            console.log(err);
+    //console.log(hasPassword);
+    const check_query = `SELECT user_id, email FROM users WHERE email = '${email}' `;
+    db.query(check_query,(check_err, check_result)=>{
+        if (check_err) {
+            //console.log(check_err);
             return res.send({
                 status: 'not ok',
-                message: 'Something went wrong'
+                message: 'Something went wrong'+check_err
             });
         } else {
-            return res.send(
-                {
-                    status: 'ok',
-                    data: '',
-                    message: 'Password Update Successfully'
-                }
-            )
-         }
+            if (check_result.length > 0) {
+                const sql = `UPDATE users SET password = ?  WHERE email = ? `;
+                const data = [hasPassword, email];
+                db.query(sql, data, (err, result) =>{
+                    if (err) {
+                        console.log(err);
+                        return res.send({
+                            status: 'not ok',
+                            message: 'Something went wrong'+err
+                        });
+                    } else {
+                        //Wprdpress User reset password.
+                        (async () => {
+                            try {
+                                const wpUserLoginData = {
+                                    email: email,
+                                    password: new_password,
+                                };
+                                const response = await axios.post(process.env.BLOG_API_ENDPOINT + '/reset-password', wpUserLoginData);
+                                //console.log(response);
+                                const wp_user_data = response.data;
+                                //console.log(wp_user_data);
+                                if(wp_user_data.status=='ok'){
+                                    return res.send(
+                                        {
+                                            status: 'ok',
+                                            data: wp_user_data.data,
+                                            message: 'Password Update Successfully'
+                                        }
+                                    )
+                                }else{
+                                    return res.send(
+                                        {
+                                            status: 'err',
+                                            data: '',
+                                            message: wp_user_data.message
+                                        }
+                                    )
+                                }
+                            } catch (error) {
+                                console.log('axaxa', error);
+                                return res.send(
+                                    {
+                                        status: 'err',
+                                        data: '',
+                                        message: ''
+                                    }
+                                )
+                            }
+                        })();
+                    }
+                })
+            } else {
+                return res.send({
+                    status: 'not ok',
+                    message: 'Your URL is not valid please check or request for another URL'
+                });
+            }
+        }
     })
+    
 }
-
