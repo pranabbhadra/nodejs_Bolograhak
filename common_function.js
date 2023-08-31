@@ -698,11 +698,11 @@ async function createCompany(comInfo, userId) {
         const companyInsertData = {
           user_created_by : userId,
           company_name: comInfo.company_name || null,
-          status: 2,
+          status: '2',
           created_date: formattedDate,
           updated_date: formattedDate,
           main_address: comInfo.address || null,
-          verified: formattedDate,
+          verified: '0',
         };
         const create_company_query = 'INSERT INTO company SET ?'
         const create_company_results = await query(create_company_query, companyInsertData);
