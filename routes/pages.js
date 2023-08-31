@@ -485,6 +485,11 @@ router.get('/company/:id', checkCookieValue, async (req, res) => {
     let gallery_img = [];
     let products = [];
     let promotions = [];
+    let facebook_url = '';
+    let twitter_url = '';
+    let instagram_url = '';
+    let linkedin_url = '';
+    let youtube_url = '';
 
     if(typeof PremiumCompanyData !== 'undefined' ){
          cover_img = PremiumCompanyData.cover_img;
@@ -492,6 +497,11 @@ router.get('/company/:id', checkCookieValue, async (req, res) => {
          gallery_img = JSON.parse(PremiumCompanyData.gallery_img);
          products = JSON.parse(PremiumCompanyData.products);
          promotions = JSON.parse(PremiumCompanyData.promotions);
+         facebook_url = PremiumCompanyData.facebook_url;
+         twitter_url = PremiumCompanyData.twitter_url;
+         instagram_url = PremiumCompanyData.instagram_url;
+         linkedin_url = PremiumCompanyData.linkedin_url;
+         youtube_url = PremiumCompanyData.youtube_url;
         
     }
     
@@ -512,6 +522,11 @@ router.get('/company/:id', checkCookieValue, async (req, res) => {
             youtube_iframe:youtube_iframe,
             products:products,
             promotions:promotions,
+            facebook_url:facebook_url,
+            twitter_url:twitter_url,
+            instagram_url:instagram_url,
+            linkedin_url:linkedin_url,
+            youtube_url:youtube_url,
         });
     }else{
         // res.json(
@@ -582,14 +597,29 @@ router.get('/company-dashboard/:compID', checkClientClaimedCompany, async (req, 
     //let currentUserData = JSON.parse(req.userData);
 
     const companyId = req.params.compID;
-    const [globalPageMeta, company, companyReviewNumbers, allRatingTags, allCompanyReviews, allCompanyReviewTags] = await Promise.all([
+    const [globalPageMeta, company, companyReviewNumbers, allRatingTags, allCompanyReviews, allCompanyReviewTags, PremiumCompanyData] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
         comFunction.getCompany(companyId),
         comFunction.getCompanyReviewNumbers(companyId),
         comFunction.getAllRatingTags(),
         comFunction.getAllReviewsByCompanyID(companyId),
         comFunction2.getAllReviewTags(),
+        comFunction2.getPremiumCompanyData(companyId),
     ]);
+
+    let facebook_url = '';
+    let twitter_url = '';
+    let instagram_url = '';
+    let linkedin_url = '';
+    let youtube_url = '';
+
+    if(typeof PremiumCompanyData !== 'undefined' ){
+            facebook_url = PremiumCompanyData.facebook_url;
+            twitter_url = PremiumCompanyData.twitter_url;
+            instagram_url = PremiumCompanyData.instagram_url;
+            linkedin_url = PremiumCompanyData.linkedin_url;
+            youtube_url = PremiumCompanyData.youtube_url;
+    }
 
     const reviewTagsMap = {};
     allCompanyReviewTags.forEach(tag => {
@@ -639,7 +669,12 @@ router.get('/company-dashboard/:compID', checkClientClaimedCompany, async (req, 
             companyReviewNumbers,
             allRatingTags,
             finalCompanyallReviews,
-            reviewReatingChartArray
+            reviewReatingChartArray,
+            facebook_url:facebook_url,
+            twitter_url:twitter_url,
+            instagram_url:instagram_url,
+            linkedin_url:linkedin_url,
+            youtube_url:youtube_url,
         });
     }
 });
@@ -678,6 +713,11 @@ router.get('/company-profile-management/:compID', checkClientClaimedCompany, asy
         let gallery_img = [];
         let product = [];
         let promotions = [];
+        let facebook_url = '';
+        let twitter_url = '';
+        let instagram_url = '';
+        let linkedin_url = '';
+        let youtube_url = '';
     
         if(typeof PremiumCompanyData !== 'undefined' ){
              cover_img = PremiumCompanyData.cover_img;
@@ -685,6 +725,11 @@ router.get('/company-profile-management/:compID', checkClientClaimedCompany, asy
              gallery_img = JSON.parse(PremiumCompanyData.gallery_img);
              product = JSON.parse(PremiumCompanyData.products);
              promotions = JSON.parse(PremiumCompanyData.promotions);
+             facebook_url = PremiumCompanyData.facebook_url;
+             twitter_url = PremiumCompanyData.twitter_url;
+             instagram_url = PremiumCompanyData.instagram_url;
+             linkedin_url = PremiumCompanyData.linkedin_url;
+             youtube_url = PremiumCompanyData.youtube_url;
         }
         
         res.render('front-end/premium-company-profile-management', 
@@ -699,6 +744,11 @@ router.get('/company-profile-management/:compID', checkClientClaimedCompany, asy
             youtube_iframe:youtube_iframe,
             products:product,
             promotions:promotions,
+            facebook_url:facebook_url,
+            twitter_url:twitter_url,
+            instagram_url:instagram_url,
+            linkedin_url:linkedin_url,
+            youtube_url:youtube_url,
             companyReviewNumbers,
             getCompanyReviews,
             allRatingTags
@@ -2117,33 +2167,50 @@ router.get('/edit-myprofile', checkFrontEndLoggedIn, async (req, res) => {
 });
 
 //-----------------------------------------------------------------//
+
+
+
 router.get('/reset-password/:email', checkCookieValue, async (req, res) => {
 
     try {
             let currentUserData = JSON.parse(req.userData);
-            const [globalPageMeta] = await Promise.all([
-                comFunction2.getPageMetaValues('global'),
-            ]);
+            
             const encryptEmail = req.params.email;
-            console.log(encryptEmail);
-           
-
+            //console.log(encryptEmail);
             const passphrase = process.env.ENCRYPT_DECRYPT_SECRET;
              const decipher = crypto.createDecipher('aes-256-cbc', passphrase);
              let decrypted = decipher.update(encryptEmail, 'hex', 'utf8');
              decrypted += decipher.final('utf8');
-             console.log('Decrypted:', decrypted);
+             const decrypted_email = decrypted;
+             //console.log('Decrypted:', decrypted);
+            const [globalPageMeta] = await Promise.all([
+                comFunction2.getPageMetaValues('global'),
+            ]);
 
         res.render('front-end/reset-password', {
             menu_active_id: 'reset-password',
             page_title: 'Reset Password',
             currentUserData,
-            globalPageMeta:globalPageMeta
+            globalPageMeta:globalPageMeta,
+            decrypted_email,
+            error_message:''
         });
     } catch (err) {
         console.error(err);
-        res.status(500).send('An error occurred');
+        let currentUserData = JSON.parse(req.userData);
+            const [globalPageMeta] = await Promise.all([
+                comFunction2.getPageMetaValues('global'),
+            ]);
+        //res.status(500).send('An error occurred');
+        res.render('front-end/reset-password', {
+            menu_active_id: 'reset-password',
+            page_title: 'Reset Password',
+            currentUserData,
+            globalPageMeta:globalPageMeta,
+            error_message:'urlNotCorrect'
+        });
     }
+    
     //res.sendFile(`${publicPath}/nopage.html`)
 });
 

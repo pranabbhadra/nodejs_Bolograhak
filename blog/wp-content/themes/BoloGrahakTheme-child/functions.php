@@ -447,4 +447,36 @@ function app_popular_category_api_handler($request) {
         return $data;
     }
 }
+
+//----------Custom User Reset Password -----------------//
+function custom_user_resetpass_init() {
+    register_rest_route('custom/v1', '/reset-password', array(
+        'methods' => 'POST',
+        'callback' => 'custom_user_resetpass_handler',
+    ));
+}
+add_action('rest_api_init', 'custom_user_resetpass_init');
+
+// Custom User Login Handler
+function custom_user_resetpass_handler($request) {
+    $parameters = $request->get_params();
+    $user_name = $parameters['email'];
+    $user_new_password = $parameters['password'];
+    //-- Check user exist by email ID
+    $user_id = username_exists($user_name);
+    if ($user_id) {
+        wp_set_password($user_new_password, $user_id);
+        return array(
+            'status' => 'ok',
+            'data' => $user_id,
+            'message' => 'WP user reset password success'
+        );
+    } else {
+        return array(
+            'status' => 'err',
+            'data' => '',
+            'message' => 'User ID doesnot exist'
+        );
+    }
+}
 ?>

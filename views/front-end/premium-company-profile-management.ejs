@@ -116,6 +116,54 @@
                         </div>
                     </div>
                     <div class="each_box update_youtuve_videos">
+                        <h2 class="mb-3">Social Links</h2>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label for="about-company" class="form-label">Facebook URL</label>
+                                    <input type="text" class="form-control" name="facebook_url" 
+                                        id="" value="<%= facebook_url ? facebook_url : '' %>" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label for="about-company" class="form-label">Twitter URL</label>
+                                    <input type="text" class="form-control" name="twitter_url" 
+                                        id="" value="<%= twitter_url ? twitter_url : '' %>" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label for="about-company" class="form-label">Instagram URL</label>
+                                    <input type="text" class="form-control" name="instagram_url" 
+                                        id="" value="<%= instagram_url ? instagram_url : '' %>"  />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label for="about-company" class="form-label">Linkedin URL</label>
+                                    <input type="text" class="form-control" name="linkedin_url" 
+                                        id="" value="<%= linkedin_url ? linkedin_url : '' %>"  />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label for="about-company" class="form-label">Youtube URL</label>
+                                    <input type="text" class="form-control" name="youtube_url" 
+                                        id="" value="<%= youtube_url ? youtube_url : '' %>"  />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="each_box update_youtuve_videos">
                         <h2 class="mb-3">Upload Youtube video(iframe)</h2>
                         <div class="row">
                             <div class="col-12">
@@ -130,7 +178,7 @@
                         <h2 class="mb-3">Add Promotions</h2>
                         <div class="repeter_wrap">
                             <div class="all_repeter">
-                                <% if(promotions.length > 0 ){ %>
+                                <% if(promotions.length > 0 && promotions[0].promotion_title){ %>
                                 <% promotions.forEach( (promotion,index)=> {%>
                                 <div class="each_repeter">
                                     <div class="row align-items-center">
@@ -221,7 +269,7 @@
                         <h2 class="mb-3">Add Products</h2>
                         <div class="repeter_wrap">
                             <div class="all_repeter">
-                                <% if(products.length > 0 ) { %>
+                                <% if(products.length > 0 && products[0].product_title ) { %>
                                 <% products.forEach( (product,index)=> {%>
                                 <div class="each_repeter">
                                     <div class="row align-items-center">
@@ -303,8 +351,13 @@
                             </div>
                         </div>
                     </div>
+                    <div class="register-now frm-loading" style="display: none;">
+                        <span class="indicator-progress">Please wait...
+                          <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                        </span>
+                    </div>
                     <div class="submit_button text-end custom-form m-0" >
-                        <input type="submit" value="Update" class="btn btn-warning " />
+                        <input type="submit" value="Update" class="btn btn-warning " id="premium_update_btn" />
                     </div>
                     <div style=" width: 100%; text-align: center; display: block; border: 2px solid #fccb06; padding: 6px; margin-top: 20px; border-radius: 5px; display: none;" class="company-edit-message"></div>
                 </form>
@@ -321,6 +374,7 @@
             $('#premium_company_profile_form').submit(function (e) {
                 e.preventDefault();
                 //alert('aaaaaa');
+                $('#premium_update_btn').prop('disabled', true);
                 $('.company-edit-message').hide();
                 $('.company-edit-message').text('');
                 const formData = new FormData($('#premium_company_profile_form')[0])
@@ -355,13 +409,15 @@
                     if (data.status == 'ok') {
                         $('.company-edit-message').text(data.message);
                         $('.company-edit-message').show();
+                        $('#premium_update_btn').prop('disabled', false);
                         setTimeout(function() {
                             window.location.href = "/company-dashboard/" + data.data;
                         }, 2000);
                     } else {
                         $('.company-edit-message').text(data.message);
                         $('.company-edit-message').show();
-                        console.log('Some thting went wrong');
+                        $('#premium_update_btn').prop('disabled', false);
+                        console.log('Something went wrong');
                     }
                 },
                 error: function (xhr, status, error) {
