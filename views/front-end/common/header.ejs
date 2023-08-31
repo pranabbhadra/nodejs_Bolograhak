@@ -246,9 +246,12 @@
                       <label class="form-check-label" for="exampleCheck1">Remember me <a href="" data-bs-toggle="tooltip" data-bs-placement="top" title="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."><i class="fa-solid fa-circle-info"></i></a></label>
                     </div>
                   </div>
+                  <!-- <div class="forget-psw">
+                    <a href="#" data-target="#pwdModal" data-toggle="modal" >Forgot password?</a>
+                  </div> -->
                   <div class="forget-psw">
-                    <a href="#">Forgot password?</a>
-                  </div>
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@mdo">Forgot password?</a>
+                </div>
                 </div>
                 <input type="submit" value="Log In" id="kt_sign_in_submit" class="btn-default btn-warning w-100">
               </form>
@@ -334,4 +337,37 @@
          </div>
       </div>
    </div>
+ 
+  <!-- =================== Forgot Password Modal Start ==========================-->
+   <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">What's My Password?</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="forgotPassword">
+              <div class="fv-row custom-form mb-3">
+                <label><span>Email</span></label>
+                <input type="email" class="form-control" name="email" required autocomplete="off" placeholder="Enter Your Email Address">
+                <div class="input-icon"><i class="fa-solid fa-envelope" ></i></div>
+              </div>
+              <input type="submit" value="Send My Password" id="forgot_submit_btn" class="btn-default btn-warning w-100">
+          </form>
+        </div>
+        <div class="register-now frm-loading-forgot" style="display: none;">
+          <span class="indicator-progress">Please wait...
+            <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+          </span>
+        </div>
+        <div class="modal-footer">
+          <div class="register-now frm-error-message-forgot" style="display: none;"></div>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <!-- <button type="button" class="btn btn-primary"></button> -->
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- =================== Forgot Password Modal End ==========================-->
     <% } %>

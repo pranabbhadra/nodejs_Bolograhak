@@ -964,6 +964,42 @@ async function getReviewReplyDataByID(reviewId){
   }
 }
 
+async function getReviewByID(reviewId){
+  const get_single_rewiew_query = `
+    SELECT r.*, ur.first_name, ur.last_name, ur.email, ucm.profile_pic, ccreq.claimed_by as company_owner
+    FROM reviews r
+    JOIN users ur ON r.customer_id = ur.user_id
+    LEFT JOIN user_customer_meta ucm ON ur.user_id = ucm.user_id
+    LEFT JOIN company_claim_request ccreq ON r.company_id = ccreq.company_id
+    WHERE r.id = ?`;
+  const get_single_rewiew_value = [reviewId];
+  try{
+    const get_single_rewiew_result = await query(get_single_rewiew_query, get_single_rewiew_value);
+    return get_single_rewiew_result;
+    console.log('aaa',get_single_rewiew_result);
+  }catch(error){
+    return 'Error during user get_single_rewiew_query:'+error;
+  }
+}
+
+async function getReviewReplyDataByID(reviewId){
+  const get_single_rewiew_reply_query = `
+    SELECT rpy.*, ur.first_name, ur.last_name, ur.email, ucm.profile_pic, ccreq.claimed_by as company_owner
+    FROM review_reply rpy
+    JOIN users ur ON rpy.reply_by = ur.user_id
+    LEFT JOIN user_customer_meta ucm ON ur.user_id = ucm.user_id
+    LEFT JOIN company_claim_request ccreq ON r.company_id = ccreq.company_id
+    WHERE r.id = ?`;
+  const get_single_rewiew_value = [reviewId];
+  try{
+    const get_single_rewiew_result = await query(get_single_rewiew_query, get_single_rewiew_value);
+    return get_single_rewiew_result;
+    console.log('aaa',get_single_rewiew_result);
+  }catch(error){
+    return 'Error during user get_single_rewiew_query:'+error;
+  }
+}
+
 module.exports = {
     getUser,
     getUserMeta,

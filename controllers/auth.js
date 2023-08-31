@@ -15,6 +15,7 @@ const bodyParser = require('body-parser');
 const querystring = require('querystring');
 const app = express();
 const path = require('path');
+const crypto = require('crypto');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -3001,8 +3002,8 @@ exports.updateBasicCompany = (req, res) => {
 
 //--Front end- Update Basic Company profile --//
 exports.updatePremiumCompany =async (req, res) => {
-    console.log('PremiumCompany:',req.body);
-    console.log('PremiumCompany File:',req.files);
+    //console.log('PremiumCompany:',req.body);
+    //console.log('PremiumCompany File:',req.files);
 
     const companyID = req.body.company_id;
     const currentDate = new Date();
@@ -3017,68 +3018,133 @@ exports.updatePremiumCompany =async (req, res) => {
     const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
 
-    const { youtube_iframe, promotion_title, promotion_desc, promotion_discount, promotion_image, product_title, product_desc, product_image } = req.body;
+    const { previous_cover_image, youtube_iframe, promotion_title, promotion_desc, promotion_discount, promotion_image, product_title, product_desc, product_image } = req.body;
 
     const { cover_image, gallery_images } = req.files;
-    let galleryImages = '';
+    let galleryImages = [];
     if(gallery_images){
          galleryImages = gallery_images.map((title, index) => ({
             gallery_images:req.files.gallery_images[index].filename
         }));
     }
 
-    
-    let count = 0;
-    const ProductData = product_title.map((title, index) => {
-        let productImage = null;
-        if (product_image[index] !== '') {
-            productImage = req.files.product_image[count].filename;
-            count++;
-        }else{
-            productImage = null;
-        }
-      
-        return {
-          product_title: title,
-          product_desc: product_desc[index],
-          product_image: productImage
-        };
-    });
+    // const check_sql = `SELECT * FROM premium_company_data WHERE company_id = ? `;
+    // const check_data = [companyID];
+    // db.query(check_sql, check_data, (check_err, check_result) => {
+    //     if (check_err) {
+    //         return res.send(
+    //             {
+    //                 status: 'err',
+    //                 data: '',
+    //                 message: 'An error occurred while processing your request'
+    //             }
+    //         )
+    //     } else {
+    //         if (check_result.length > 0) {
+                
+    //             console.log(check_result[0]);
+    //             //return false;
+    //             const gallery_img = JSON.parse(check_result[0].gallery_img);
+                
+    //             if(galleryImages.length > 0){
+    //                 galleryImages.forEach(function(img, index, arr) {
+    //                     gallery_img.push(img);
+    //                 })
+    //             }
+    //             //gallery_img.push(galleryImages);
 
-    let i = 0;
-    const PromotionalData = promotion_title.map((title, index) => {
-    let promotionImage = null;
-    if (promotion_image[index] !== '') {
-        promotionImage = req.files.promotion_image[i].filename;
-        i++;
+    //             console.log('merge_img:',gallery_img);
+
+                
+                
+    //             const gallery_img = JSON.stringify(gallery_img);
+
+                
+    //         }
+    //     }
+    // });
+
+    //return false;
+    if(typeof product_image == 'undefined' || typeof promotion_image == 'undefined' ){
+        let product_image = [];
+        let promotion_image = [];
     }
+    let ProductData = [];
+    if( Array.isArray(product_title) && product_title.length >0 ){
+        let count = 0;
+        ProductData = product_title.map((title, index) => {
+            let productImage = null;
+            if (product_image[index] !== '') {
+                productImage = req.files.product_image[count].filename;
+                count++;
+            }else{
+                productImage = null;
+            }
+        
+            return {
+            product_title: title,
+            product_desc: product_desc[index],
+            product_image: productImage
+            };
+        });
+    } else {
+        let prodkImg = null;
+        if(typeof product_image != 'undefined'){
+            if(product_image[0] !== ''){
+                prodkImg = req.files.product_image[0].filename;
+            }
+        }
+        
+        ProductData = [{
+            "product_title":product_title,
+            "product_desc":product_desc,
+            "product_image":prodkImg
+        }]
+    }
+
     
-    return {
-        promotion_title: title,
-        promotion_desc: promotion_desc[index],
-        promotion_discount: promotion_discount[index],
-        promotion_image: promotionImage
-    };
-    });
-      
-    const Products = JSON.stringify(ProductData);
-    const Promotion = JSON.stringify(PromotionalData);
-    const galleryImg = JSON.stringify(galleryImages);
+
+    let PromotionalData = [];
+    if( Array.isArray(promotion_title) && promotion_title.length >0 ){
+        let i = 0;
+        PromotionalData = promotion_title.map((title, index) => {
+            let promotionImage = null;
+            if (promotion_image[index] !== '') {
+                promotionImage = req.files.promotion_image[i].filename;
+                i++;
+            }
+        
+            return {
+                promotion_title: title,
+                promotion_desc: promotion_desc[index],
+                promotion_discount: promotion_discount[index],
+                promotion_image: promotionImage
+            };
+        });
+    }else{
+        let promoImg = null;
+        if(typeof promotion_image != 'undefined'){
+            if(promotion_image[0] !== ''){
+                promoImg = req.files.promotion_image[0].filename;
+            }
+        }
+        
+        PromotionalData = [{
+            "promotion_title":promotion_title,
+            "promotion_desc":promotion_desc,
+            "promotion_discount":promotion_discount,
+            "promotion_image":promoImg
+        }]
+    }
+    //console.log('PromotionalData:',PromotionalData)
+
     let coverImg = null;
     if(cover_image){
          coverImg = cover_image[0].filename;
     }else{
-        
+        coverImg = previous_cover_image;
     }
 
-    
-
-    //   console.log('rearrangedProductData:',JSON.stringify(ProductData));
-    //   console.log('rearrangedPromotionalData:',PromotionalData);
-    //   console.log('galleryImages:',galleryImages);
-    //   console.log('cover_image:',cover_image[0].filename);
-    //return false;
-    
 
     // Update company details in the company table
     const updateQuery = 'UPDATE company SET  heading = ?, logo = ?, about_company = ?, comp_phone = ?, comp_email = ?, updated_date = ?, tollfree_number = ?, main_address = ?  WHERE ID = ?';
@@ -3118,31 +3184,427 @@ exports.updatePremiumCompany =async (req, res) => {
                 message: 'An error occurred while updating the company details: ' + err
             });
         }else{
-            db.query(`DELETE FROM premium_company_data WHERE company_id = ${companyID}`, (del_err, del_res)=>{
-                const premium_query = `INSERT INTO premium_company_data ( company_id, cover_img, gallery_img, youtube_iframe, promotions, products) VALUES (?, ?, ?, ?, ?, ?)`;
-                const premium_data = [companyID, coverImg, galleryImg, youtube_iframe, Promotion, Products];
-                db.query(premium_query, premium_data, (premium_err, premium_result)=>{
-                    if (premium_err) {
-                        // Handle the error
-                        return res.send({
+            const check_sql = `SELECT * FROM premium_company_data WHERE company_id = ? `;
+            const check_data = [companyID];
+            db.query(check_sql, check_data, (check_err, check_result) => {
+                if (check_err) {
+                    return res.send(
+                        {
                             status: 'err',
                             data: '',
-                            message: 'An error occurred while updating the company details: ' + premium_err
-                        });
-                    } else {
-                        return res.send(
+                            message: 'An error occurred while processing your request'
+                        }
+                    )
+                } else {
+                    if (check_result.length > 0) {
+                        
+                        //console.log(check_result[0]);
+                        //return false;
+                        const gallery_img = JSON.parse(check_result[0].gallery_img);
+                        
+                        if(galleryImages.length > 0){
+                            galleryImages.forEach(function(img, index, arr) {
+                                gallery_img.push(img);
+                            })
+                        }
+                        //gallery_img.push(galleryImages);
+        
+                        //console.log('merge_img:',gallery_img);
+                        
+                        
+                        const promotionSQL = JSON.parse(check_result[0].promotions);
+                        //console.log('promotionSQL',promotionSQL);
+                        //return false;
+                        if(promotionSQL.length > 0){
+                            promotionSQL.forEach(function(promotionImg, index, arr) {
+                                if(promotionImg.promotion_image != null) {
+                                    if(promotion_image[index] == ''){
+                                        
+                                        PromotionalData[index].promotion_image = promotionSQL[index].promotion_image;
+                                    }
+                                }
+                            })
+                        }
+                        const productSQL = JSON.parse(check_result[0].products);
+                        if(productSQL.length > 0){
+                            productSQL.forEach(function(productImg, index, arr) {
+                                if(productImg.product_image != null) {
+                                    if(product_image[index]== ''){
+                                        ProductData[index].product_image = productSQL[index].product_image;
+                                    }
+                                }
+                            })
+                        }
+                        // console.log('allPromotionalData',PromotionalData);
+                        // console.log('allProductData',ProductData);
+                        const galleryimg = JSON.stringify(gallery_img);
+                        const Products = JSON.stringify(ProductData);
+                        const Promotion = JSON.stringify(PromotionalData);
+                        
+
+                        //return false;
+                        const update_query = `UPDATE premium_company_data SET cover_img = ?, gallery_img = ?, youtube_iframe = ?,promotions = ?, products = ? WHERE company_id = ? `;
+                        const update_data = [coverImg, galleryimg, youtube_iframe, Promotion, Products, companyID];
+                        db.query(update_query, update_data, (update_err,update_result)=>{
+                            if (update_err) {
+                                // Handle the error
+                                return res.send({
+                                    status: 'err',
+                                    data: '',
+                                    message: 'An error occurred while updating the company details: ' + update_err
+                                });
+                            } else {
+                                return res.send(
+                                    {
+                                        status: 'ok',
+                                        data: companyID,
+                                        message: 'Successfully Updated'
+                                    }
+                                )
+                            }
+                        })
+                        
+                    }else {
+                        const galleryimg = JSON.stringify(galleryImages);
+                        const Products = JSON.stringify(ProductData);
+                        const Promotion = JSON.stringify(PromotionalData);
+
+                        const premium_query = `INSERT INTO premium_company_data ( company_id, cover_img, gallery_img, youtube_iframe, promotions, products) VALUES (?, ?, ?, ?, ?, ?)`;
+                        const premium_data = [companyID, coverImg, galleryimg, youtube_iframe, Promotion, Products];
+                        db.query(premium_query, premium_data, (premium_err, premium_result)=>{
+                            if (premium_err) {
+                                // Handle the error
+                                return res.send({
+                                    status: 'err',
+                                    data: '',
+                                    message: 'An error occurred while updating the company details: ' + premium_err
+                                });
+                            } else {
+                                return res.send(
+                                    {
+                                        status: 'ok',
+                                        data: companyID,
+                                        message: 'Successfully Updated'
+                                    }
+                                )
+                            }
+                        })
+                    }
+                }
+            });
+        }
+    })
+}
+
+// Delete premium gallery image
+exports.deletePremiumImage = (req, res) => {
+    //console.log('deletePremiumImage', req.body);
+    ///return false;
+    const { companyId, imgIndex } = req.body;
+
+
+    const check_sql = `SELECT gallery_img FROM premium_company_data WHERE company_id = ? `;
+    const check_data = [companyId];
+    db.query(check_sql, check_data, (check_err, check_result) => {
+        if (check_err) {
+            return res.send(
+                {
+                    status: 'err',
+                    data: '',
+                    message: 'An error occurred while processing your request'
+                }
+            )
+        } else {
+            if (check_result.length > 0) {
+                const gallery_img = JSON.parse(check_result[0].gallery_img);
+                //console.log(gallery_img);
+
+                const indexToRemove = imgIndex;
+                if (indexToRemove >= 0 && indexToRemove < gallery_img.length) {
+                    gallery_img.splice(indexToRemove, 1);
+                }
+                
+                const galleryImg = JSON.stringify(gallery_img);
+
+                const update_sql = `UPDATE premium_company_data SET gallery_img = ? WHERE company_id = ? `;
+                const update_data = [galleryImg, companyId];
+                db.query(update_sql, update_data, (update_err, update_result) => {
+                    if (update_err) throw update_err;
+                    return res.send(
+                        {
+                            status: 'ok',
+                            data: '',
+                            message: 'Image Deleted successfully'
+                        }
+                    )
+                })
+            }
+        }
+    });
+
+    
+}
+
+// Delete premium gallery image
+exports.deletePremiumPromotion = (req, res) => {
+    //console.log('deletePremiumImage', req.body);
+    ///return false;
+    const { companyId, dataIndex } = req.body;
+
+
+    const check_sql = `SELECT promotions FROM premium_company_data WHERE company_id = ? `;
+    const check_data = [companyId];
+    db.query(check_sql, check_data, (check_err, check_result) => {
+        if (check_err) {
+            return res.send(
+                {
+                    status: 'err',
+                    data: '',
+                    message: 'An error occurred while processing your request'
+                }
+            )
+        } else {
+            if (check_result.length > 0) {
+                
+                console.log(check_result[0]);
+                //return false;
+                const promotions = JSON.parse(check_result[0].promotions);
+                //console.log(gallery_img);
+
+                const indexToRemove = dataIndex;
+                if (indexToRemove >= 0 && indexToRemove < promotions.length) {
+                    promotions.splice(indexToRemove, 1);
+                }
+                
+                const promotionData = JSON.stringify(promotions);
+
+                const update_sql = `UPDATE premium_company_data SET promotions = ? WHERE company_id = ? `;
+                const update_data = [promotionData, companyId];
+                db.query(update_sql, update_data, (update_err, update_result) => {
+                    if (update_err) throw update_err;
+                    return res.send(
+                        {
+                            status: 'ok',
+                            data: '',
+                            message: 'Promotion Deleted successfully'
+                        }
+                    )
+                })
+            }
+        }
+    });
+
+    
+}
+
+// Delete premium gallery image
+exports.deletePremiumProduct = (req, res) => {
+    //console.log('deletePremiumImage', req.body);
+    ///return false;
+    const { companyId, dataIndex } = req.body;
+
+
+    const check_sql = `SELECT products FROM premium_company_data WHERE company_id = ? `;
+    const check_data = [companyId];
+    db.query(check_sql, check_data, (check_err, check_result) => {
+        if (check_err) {
+            return res.send(
+                {
+                    status: 'err',
+                    data: '',
+                    message: 'An error occurred while processing your request'
+                }
+            )
+        } else {
+            if (check_result.length > 0) {
+                
+                console.log(check_result[0]);
+                //return false;
+                const products = JSON.parse(check_result[0].products);
+                //console.log(gallery_img);
+
+                const indexToRemove = dataIndex;
+                if (indexToRemove >= 0 && indexToRemove < products.length) {
+                    products.splice(indexToRemove, 1);
+                }
+                
+                const productsData = JSON.stringify(products);
+
+                const update_sql = `UPDATE premium_company_data SET products = ? WHERE company_id = ? `;
+                const update_data = [productsData, companyId];
+                db.query(update_sql, update_data, (update_err, update_result) => {
+                    if (update_err) throw update_err;
+                    return res.send(
+                        {
+                            status: 'ok',
+                            data: '',
+                            message: 'Product Deleted successfully'
+                        }
+                    )
+                })
+            }
+        }
+    });
+
+    
+}
+
+//forgot pssword
+exports.forgotPassword = (req, res) => {
+    console.log('forgot',req.body);
+    const {email} = req.body;
+    //let hasEmail =  bcrypt.hash(email, 8);
+    const passphrase = process.env.ENCRYPT_DECRYPT_SECRET;
+
+    const cipher = crypto.createCipher('aes-256-cbc', passphrase);
+    let encrypted = cipher.update(email, 'utf8', 'hex');
+    encrypted += cipher.final('hex');
+    console.log('Encrypted:', encrypted);
+    
+   
+
+    //return false;
+    const sql = `SELECT user_id, first_name  FROM users WHERE email = '${email}' `;
+    db.query(sql, (error, result)=>{
+        if(error){
+            return res.send(
+                {
+                    status: 'err',
+                    data: '',
+                    message: 'An error occurred while processing your request'
+                }
+            )
+        }else{
+            if (result.length > 0) {
+
+                const template = `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
+                <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
+                 <tbody>
+                  <tr>
+                   <td align="center" valign="top">
+                     <div id="template_header_image"><p style="margin-top: 0;"></p></div>
+                     <table id="template_container" style="box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; background-color: #fdfdfd; border: 1px solid #dcdcdc; border-radius: 3px !important;" border="0" cellpadding="0" cellspacing="0" width="600">
+                      <tbody>
+                        <tr>
+                         <td align="center" valign="top">
+                           <!-- Header -->
+                           <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
+                             <tbody>
+                               <tr>
+                               <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
+                                <td id="header_wrapper" style="padding: 36px 48px; display: block;">
+                                   <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Forgot Password</h1>
+                                </td>
+          
+                               </tr>
+                             </tbody>
+                           </table>
+                     <!-- End Header -->
+                     </td>
+                        </tr>
+                        <tr>
+                         <td align="center" valign="top">
+                           <!-- Body -->
+                           <table id="template_body" border="0" cellpadding="0" cellspacing="0" width="600">
+                             <tbody>
+                               <tr>
+                                <td id="body_content" style="background-color: #fdfdfd;" valign="top">
+                                  <!-- Content -->
+                                  <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                                   <tbody>
+                                    <tr>
+                                     <td style="padding: 48px;" valign="top">
+                                       <div id="body_content_inner" style="color: #737373; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
+                                        
+                                        <table border="0" cellpadding="4" cellspacing="0" width="90%">
+                                          <tr>
+                                            <td colspan="2">
+                                            <strong>Hello ${result[0].first_name},</strong>
+                                            <p style="font-size:15px; line-height:20px">A request has been received to change the password for your <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a>  account. <a class="btn btn-primary" href="${process.env.MAIN_URL}reset-password/${encrypted}">Reset Password</a></p>
+                                            </td>
+                                          </tr>
+                                        </table>
+                                        
+                                       </div>
+                                     </td>
+                                    </tr>
+                                   </tbody>
+                                  </table>
+                                <!-- End Content -->
+                                </td>
+                               </tr>
+                             </tbody>
+                           </table>
+                         <!-- End Body -->
+                         </td>
+                        </tr>
+                        <tr>
+                         <td align="center" valign="top">
+                           <!-- Footer -->
+                           <table id="template_footer" border="0" cellpadding="10" cellspacing="0" width="600">
+                            <tbody>
+                             <tr>
+                              <td style="padding: 0; -webkit-border-radius: 6px;" valign="top">
+                               <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                                 <tbody>
+                                   <tr>
+                                    <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
+                                         <p>This email was sent from <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a></p>
+                                    </td>
+                                   </tr>
+                                 </tbody>
+                               </table>
+                              </td>
+                             </tr>
+                            </tbody>
+                           </table>
+                         <!-- End Footer -->
+                         </td>
+                        </tr>
+                      </tbody>
+                     </table>
+                   </td>
+                  </tr>
+                 </tbody>
+                </table>
+               </div>`;
+                var mailOptions = {
+                    from: process.env.MAIL_USER,
+                    to: 'pranab@scwebtech.com',
+                    //to: email,
+                    subject: 'Forgot password Email',
+                    html: template
+                  }
+              
+                    mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
+                      if (err) {
+                          console.log(err);
+                          return res.send({
+                              status: 'not ok',
+                              message: 'Something went wrong'
+                          });
+                      } else {
+                          console.log('Mail Send: ', info.response);
+                          return res.send(
                             {
                                 status: 'ok',
-                                data: companyID,
-                                message: 'Successfully Updated'
+                                data: '',
+                                message: 'Password Send to your email please check to your email'
                             }
                         )
+                      }
+                    })
+                
+            } else {
+                return res.send(
+                    {
+                        status: 'not found',
+                        data: '',
+                        message: 'Your Email did not match with our record'
                     }
-                })
-            })
-            
+                )
+            }
         }
-
     })
 }
 
@@ -3199,3 +3661,30 @@ exports.submitReviewReply = async (req, res) => {
         res.status(500).send('An error occurred '+ err);
     }
 }
+// Reset Password
+exports.resetPassword = async (req, res) => {
+    console.log('resetPassword', req.body);
+    const  { email, new_password } = req.body;
+    let hasPassword = await bcrypt.hash(new_password, 8);
+    console.log(hasPassword);
+    const sql = `UPDATE users SET password = ?  WHERE email = ? `;
+    const data = [hasPassword, email];
+    db.query(sql, data, (err, result) =>{
+        if (err) {
+            console.log(err);
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong'
+            });
+        } else {
+            return res.send(
+                {
+                    status: 'ok',
+                    data: '',
+                    message: 'Password Update Successfully'
+                }
+            )
+         }
+    })
+}
+

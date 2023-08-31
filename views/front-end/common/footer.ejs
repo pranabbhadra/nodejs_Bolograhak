@@ -262,6 +262,52 @@
 
     }); 
     
+
+    $("#forgotPassword").submit(function(e){
+      e.preventDefault();
+      $('#forgot_submit_btn').prop('disabled', true);
+      $('.frm-loading-forgot').show();
+      const formData = $('#forgotPassword').serialize();
+      //console.log(formData);
+      //return false;
+      $.ajax({
+        url: '/auth/frontend-forgot-password',
+        method: 'POST',
+        data: formData,
+        // processData: false,
+        // contentType: false,
+        success: function (data) {
+          if (data.status == 'ok') {
+            $('.frm-error-message-forgot').text(data.message).show();
+            $('#forgot_submit_btn').prop('disabled', false);
+            $('.frm-loading-forgot').hide();
+            // setTimeout(function() {
+            //   if(data.wp_user){
+            //     window.location.href="<%= globalData.BLOG_URL %>?login_check="+data.wp_user;
+            //   }else{
+            //     window.location.href="/";
+            //   }
+            // }, 2000 );             
+          } else if (data.status == 'not found'){
+            $('.frm-error-message-forgot').text(data.message).show();
+            $('#forgot_submit_btn').prop('disabled', false);
+            $('.frm-loading-forgot').hide();
+          } else {
+            $('.frm-error-message-forgot').text(data.message).show();
+            $('#forgot_submit_btn').prop('disabled', false);
+            $('.frm-loading-forgot').hide();
+          }
+
+        },
+        error: function (error) {
+          $('.frm-error-message-forgot').text(error).show();
+          $('#forgot_submit_btn').prop('disabled', false);
+          $('.frm-loading-forgot').hide();
+        }
+      });          
+      
+    }); 
+
     // Function to check password strength
     function checkPasswordStrength(password) {
       var strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");

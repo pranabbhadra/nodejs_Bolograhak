@@ -8,6 +8,7 @@ const async = require('async');
 const axios = require('axios');
 const dotenv = require('dotenv');
 dotenv.config({ path: './.env' });
+const crypto = require('crypto');
 
 const comFunction = require('../common_function');
 const comFunction2 = require('../common_function2');
@@ -2116,6 +2117,35 @@ router.get('/edit-myprofile', checkFrontEndLoggedIn, async (req, res) => {
 });
 
 //-----------------------------------------------------------------//
+router.get('/reset-password/:email', checkCookieValue, async (req, res) => {
+
+    try {
+            let currentUserData = JSON.parse(req.userData);
+            const [globalPageMeta] = await Promise.all([
+                comFunction2.getPageMetaValues('global'),
+            ]);
+            const encryptEmail = req.params.email;
+            console.log(encryptEmail);
+           
+
+            const passphrase = process.env.ENCRYPT_DECRYPT_SECRET;
+             const decipher = crypto.createDecipher('aes-256-cbc', passphrase);
+             let decrypted = decipher.update(encryptEmail, 'hex', 'utf8');
+             decrypted += decipher.final('utf8');
+             console.log('Decrypted:', decrypted);
+
+        res.render('front-end/reset-password', {
+            menu_active_id: 'reset-password',
+            page_title: 'Reset Password',
+            currentUserData,
+            globalPageMeta:globalPageMeta
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+    //res.sendFile(`${publicPath}/nopage.html`)
+});
 
 router.get('/logout', (req, res) => {
     const encodedUserData = req.cookies.user;
