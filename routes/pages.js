@@ -2115,15 +2115,13 @@ router.get('/reset-password/:email', checkCookieValue, async (req, res) => {
             ]);
             const encryptEmail = req.params.email;
             console.log(encryptEmail);
-            // Decryption
-            const algorithm = 'aes-256-cbc';
-            const key = crypto.randomBytes(32);
-            const iv = crypto.randomBytes(16);
-             //const cipher = crypto.createCipheriv(algorithm, key, iv);
-            const decipher = crypto.createDecipheriv(algorithm, key, iv);
-            let decrypted = decipher.update(encryptEmail, 'hex', 'utf8');
-            decrypted += decipher.final('utf8');
-            console.log('Decrypted:', decrypted);
+           
+
+            const passphrase = process.env.ENCRYPT_DECRYPT_SECRET;
+             const decipher = crypto.createDecipher('aes-256-cbc', passphrase);
+             let decrypted = decipher.update(encryptEmail, 'hex', 'utf8');
+             decrypted += decipher.final('utf8');
+             console.log('Decrypted:', decrypted);
 
         res.render('front-end/reset-password', {
             menu_active_id: 'reset-password',

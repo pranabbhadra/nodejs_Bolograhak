@@ -3444,21 +3444,15 @@ exports.forgotPassword = (req, res) => {
     console.log('forgot',req.body);
     const {email} = req.body;
     //let hasEmail =  bcrypt.hash(email, 8);
-    // Encryption
-    const algorithm = 'aes-256-cbc';
-    const key = crypto.randomBytes(32);
-    const iv = crypto.randomBytes(16);
-    const cipher = crypto.createCipheriv(algorithm, key, iv);
+    const passphrase = process.env.ENCRYPT_DECRYPT_SECRET;
+
+    const cipher = crypto.createCipher('aes-256-cbc', passphrase);
     let encrypted = cipher.update(email, 'utf8', 'hex');
     encrypted += cipher.final('hex');
     console.log('Encrypted:', encrypted);
-    console.log(email)
+    
+   
 
-    // Decryption
-    const decipher = crypto.createDecipheriv(algorithm, key, iv);
-    let decrypted = decipher.update(encrypted, 'hex', 'utf8');
-    decrypted += decipher.final('utf8');
-    console.log('Decrypted:', decrypted);
     //return false;
     const sql = `SELECT user_id, first_name  FROM users WHERE email = '${email}' `;
     db.query(sql, (error, result)=>{
@@ -3609,6 +3603,7 @@ exports.resetPassword = (req, res) => {
     console.log('resetPassword', req.body);
     const  { email, new_password } = req.body;
     let hasPassword =  bcrypt.hash(new_password, 8);
+    console.log(hasPassword);
     const sql = `UPDATE users SET password = ?  WHERE email = ? `;
     const data = [hasPassword, email];
     db.query(sql, data, (err, res) =>{
@@ -3628,11 +3623,5 @@ exports.resetPassword = (req, res) => {
           )
          }
     })
-
-
-
-    
-
-    
 }
 
