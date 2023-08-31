@@ -3599,14 +3599,14 @@ exports.forgotPassword = (req, res) => {
 }
 
 // Delete premium gallery image
-exports.resetPassword = (req, res) => {
+exports.resetPassword = async (req, res) => {
     console.log('resetPassword', req.body);
     const  { email, new_password } = req.body;
-    let hasPassword =  bcrypt.hash(new_password, 8);
+    let hasPassword = await bcrypt.hash(new_password, 8);
     console.log(hasPassword);
     const sql = `UPDATE users SET password = ?  WHERE email = ? `;
     const data = [hasPassword, email];
-    db.query(sql, data, (err, res) =>{
+    db.query(sql, data, (err, result) =>{
         if (err) {
             console.log(err);
             return res.send({
@@ -3615,12 +3615,12 @@ exports.resetPassword = (req, res) => {
             });
         } else {
             return res.send(
-              {
-                  status: 'ok',
-                  data: '',
-                  message: 'Password Update Successfully'
-              }
-          )
+                {
+                    status: 'ok',
+                    data: '',
+                    message: 'Password Update Successfully'
+                }
+            )
          }
     })
 }
