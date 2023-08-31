@@ -21,7 +21,7 @@
                      <div class="col-lg-4">
                         <div class="total_reviews total_replied">
                            <p>Total Replied</p>
-                           <div class="count">200</div>
+                           <div class="count">0</div>
                         </div>
                      </div>
                      <div class="col-lg-4">
@@ -67,85 +67,21 @@
                         <div class="display_tags">
                            <p>Below are the review tags you got</p>
                            <div class="all_tags">
+                              <% if(reviewTagsCount && reviewTagsCount.length>0 ){ %>
                               <div class="row">
-                                 <div class="col-6 col-md-3">
+                                 <% reviewTagsCount.forEach((item, index) => { %>
+                                 <div class="col-3">
                                     <div class="each_tag_info">
                                        <div class="circale"></div>
-                                       <div class="tag_count">510</div>
-                                       <div class="tag_name">Good</div>
+                                       <div class="tag_count"><%- item.count -%></div>
+                                       <div class="tag_name"><%- item.tag_name -%></div>
                                     </div>
                                  </div>
-                                 <div class="col-6 col-md-3">
-                                    <div class="each_tag_info">
-                                       <div class="circale"></div>
-                                       <div class="tag_count">410</div>
-                                       <div class="tag_name">Agerage</div>
-                                    </div>
-                                 </div>
-                                 <div class="col-6 col-md-3">
-                                    <div class="each_tag_info">
-                                       <div class="circale"></div>
-                                       <div class="tag_count">210</div>
-                                       <div class="tag_name">not good</div>
-                                    </div>
-                                 </div>
-                                 <div class="col-6 col-md-3">
-                                    <div class="each_tag_info">
-                                       <div class="circale"></div>
-                                       <div class="tag_count">110</div>
-                                       <div class="tag_name">Nice</div>
-                                    </div>
-                                 </div>
-                                 <div class="col-6 col-md-3">
-                                    <div class="each_tag_info">
-                                       <div class="circale"></div>
-                                       <div class="tag_count">510</div>
-                                       <div class="tag_name">Good</div>
-                                    </div>
-                                 </div>
-                                 <div class="col-6 col-md-3">
-                                    <div class="each_tag_info">
-                                       <div class="circale"></div>
-                                       <div class="tag_count">410</div>
-                                       <div class="tag_name">Agerage</div>
-                                    </div>
-                                 </div>
-                                 <div class="col-6 col-md-3">
-                                    <div class="each_tag_info">
-                                       <div class="circale"></div>
-                                       <div class="tag_count">210</div>
-                                       <div class="tag_name">not good</div>
-                                    </div>
-                                 </div>
-                                 <div class="col-6 col-md-3">
-                                    <div class="each_tag_info">
-                                       <div class="circale"></div>
-                                       <div class="tag_count">110</div>
-                                       <div class="tag_name">Nice</div>
-                                    </div>
-                                 </div>
-                                 <div class="col-6 col-md-3">
-                                    <div class="each_tag_info">
-                                       <div class="circale"></div>
-                                       <div class="tag_count">410</div>
-                                       <div class="tag_name">Agerage</div>
-                                    </div>
-                                 </div>
-                                 <div class="col-6 col-md-3">
-                                    <div class="each_tag_info">
-                                       <div class="circale"></div>
-                                       <div class="tag_count">210</div>
-                                       <div class="tag_name">not good</div>
-                                    </div>
-                                 </div>
-                                 <div class="col-6 col-md-3">
-                                    <div class="each_tag_info">
-                                       <div class="circale"></div>
-                                       <div class="tag_count">110</div>
-                                       <div class="tag_name">Nice</div>
-                                    </div>
-                                 </div>
+                                 <% }) %>
                               </div>
+                              <% }else{ %>
+                                 <p>No tags found</p>
+                              <% } %>
                            </div>
                         </div>
                      </div>
@@ -192,7 +128,7 @@
                         <div class="col-lg-4">
                            <div class="total_reviews total_replied">
                               <p>Total Replied</p>
-                              <div class="count">200</div>
+                              <div class="count">0</div>
                            </div>
                         </div>
                         <div class="col-lg-4">
