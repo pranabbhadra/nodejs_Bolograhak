@@ -128,7 +128,18 @@
                <% finalCompanyallReviews.forEach( review => { %>
                <div class="item">
                   <div class="review-box">
-                     <h3><%= company && company.company_name ? company.company_name : '' %></h3>
+                     <div class="head_box d-flex align-items-center justify-content-between mb-2">
+                       <h3 style="margin:0"><a href="/company/<%= review.company_id %>"><%= company && company.company_name ? company.company_name : '' %></a></h3>
+                       <% var avg = review.rating %>
+                       <div class="user-rating">
+                         <% allRatingTags.forEach( tag => { %>
+                             <% if(tag.review_rating_value == avg){ %>
+                               <span><img src="/<%= tag.rating_image %>" alt="" style="display: inline-block;" width="35"></span>
+                             <% } %>
+                             <% }) %> 
+                         <span><%= review.rating %>/5</span>
+                       </div>
+                     </div>
                      <% if(review.address){ %>
                      <div class="user-info-panel">
                         <span><i class="fa-solid fa-location-dot"></i></span>
@@ -188,7 +199,7 @@
                            <% const date = new Date(dateString); %>
                            <div class="user-review-date"><%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) %></div>
                         </div>
-                        <div class="user-rating">
+                        <!-- <div class="user-rating">
                            <span>
                               <% allRatingTags.forEach( tag => { %>
                                  <% if(tag.review_rating_value == review.rating){ %>
@@ -197,7 +208,7 @@
                               <% }) %>
                            </span>
                            <span><%= review.rating %>/5</span>
-                        </div>
+                        </div> -->
                      </div>
                      <!-- <div class="review-like-dislike">
                         <span><a href=""><i class="fa-solid fa-thumbs-up"></i> 10</a></span>

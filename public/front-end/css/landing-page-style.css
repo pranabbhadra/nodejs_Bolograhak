@@ -1055,6 +1055,7 @@ span#selected-range-emojis {
     background: #FFF;
     box-shadow: 0px 0 14px 0px rgba(0, 0, 0, 0.22);
     padding: 20px 18px 20px;
+    min-height: 420px;
 }
 
 .review-box h3 {
@@ -1062,6 +1063,9 @@ span#selected-range-emojis {
     font-weight: 700;
     line-height: normal;
     margin-bottom: 12px;
+}
+.review-box h3 a{
+    color: #000;
 }
 
 .user-info-panel {
@@ -1098,7 +1102,6 @@ span#selected-range-emojis {
     position: relative;
     filter: drop-shadow(0px 0px 1px #cccccc);
     background-color: #fff;
-    min-height: 170px;
 }
 
 .user-review-text:after {

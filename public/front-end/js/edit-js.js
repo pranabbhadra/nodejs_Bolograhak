@@ -1,5 +1,9 @@
 jQuery(function ($) {
 
+  $(document).ready(function() {
+    $('#preloder').fadeOut();
+  });
+  
   // /////////////////////////////////////// Nav Menu start
   function sidemenu() {
     $('.nav_sec').toggleClass('slidein');

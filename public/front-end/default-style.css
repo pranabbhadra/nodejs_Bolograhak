@@ -3157,6 +3157,7 @@ h2.inner-main-head small {
 
 #quickloginmodal {
     z-index: 9999;
+    pointer-events: none;
 }
 
 .modal {

@@ -299,7 +299,10 @@
 
 .product-part img {
     border-radius: 16px;
-    width: 100%;
+    width: 258px;
+    height: 183px !important;
+    object-fit: cover;
+    object-position: center;
 }
 
 .product-info {
@@ -822,5 +825,16 @@ span#selected-range-emojis {
         width: 100%;
         max-width: initial;
         margin: 5px 0 !important;
+    }
+    .category-premium .company-info h3{
+        color: #000;
+    }
+    .category-premium .company-info h3 span.verified-tag {
+        display: block;
+        margin: 15px 0;
+    }
+    .social_links{
+        display: block;
+        margin: 0;
     }
 }

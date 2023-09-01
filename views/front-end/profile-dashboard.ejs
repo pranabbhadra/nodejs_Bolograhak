@@ -39,7 +39,18 @@
                            <% AllCompaniesReviews.forEach( (review,index)=> {%>
                                <div class="item">
                                  <div class="review-box">
-                                    <h3><%= review.company_name %></h3>
+                                    <div class="head_box d-flex align-items-center justify-content-between mb-2">
+                                      <h3 style="margin:0"><a href="/company/<%= review.company_id %>"><%= review.company_name %></a></h3>
+                                      <% var avg = review.rating %>
+                                      <div class="user-rating">
+                                        <% allRatingTags.forEach( tag => { %>
+                                            <% if(tag.review_rating_value == avg){ %>
+                                              <span><img src="/<%= tag.rating_image %>" alt="" style="display: inline-block;" width="35"></span>
+                                            <% } %>
+                                            <% }) %> 
+                                        <span><%= review.rating %>/5</span>
+                                      </div>
+                                    </div>
                                     <div class="user-info-panel">
                                        <span><i class="fa-solid fa-location-dot"></i></span>
                                        <p class="m-0">
@@ -62,17 +73,25 @@
                                              <span class="user-select-tag"><%= tag.tag_name %></span>
                                           <% } %>
                                        <% }) %>
+                                       
+                                       <% var review_content = review.review_content
+                                         const review_content_words = review_content.split(' ');
+                                       %>
                                        <div class="review-description-wrap">
-                                          <%= review.review_content %>
-                                          <!-- Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum eu metus eget... -->
-                                          <!-- <div class="review-full-description">
-                                             <%= review.review_content %>
-                                             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum eu metus eget. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                          </div>
-                                          <a href="" class="read-review">View More</a> -->
+                                         <% if(review_content_words.length <= 35){%>
+                                         <%- review_content -%>
+                                         <% }else{
+                                           const firstPart = review_content_words.slice(0, 35).join(' ');
+                                           const secondPart = review_content_words.slice(35).join(' ');
+                                         %>
+                                           <%- firstPart -%> ...
+                                         <div class="review-full-description">
+                                           <%- secondPart -%>
+                                         </div>
+                                         <a href="" class="read-review">View More</a>
+                                         <% }%>
                                        </div>
                                     </div>
-                                    <% var avg = review.rating %>
                                    
                                     <% const dateString = review.created_at; %>
                                     <% const date = new Date(dateString); %>
@@ -83,6 +102,8 @@
                                        <% if(review.review_reply_count==1){ %>
                                        <span class="user-select-tag review-reply-btn"><a href="/company/<%- review.company_id -%>#review-reply-<%- review.id -%>">Reply</a></span> 
                                        <% } %>
+
+                                       <!-- <% var avg = review.rating %>
                                        <div class="user-rating">
                                           <% allRatingTags.forEach( tag => { %>
                                              <% if(tag.review_rating_value == avg){ %>
@@ -90,7 +111,7 @@
                                              <% } %>
                                           <% }) %> 
                                           <span><%= review.rating %>/5</span>
-                                       </div>
+                                       </div> -->
                                     </div>
                                     <!-- <div class="review-like-dislike">
                                        <span><a href=""><i class="fa-solid fa-thumbs-up"></i> 10</a></span>

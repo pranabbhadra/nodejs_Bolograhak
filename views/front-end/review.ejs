@@ -33,7 +33,18 @@
                <% latestReviews.forEach( (latestReview, index)=> {%>
                   <div class="item">
                      <div class="review-box">
-                        <h3><%= latestReview.company_name %></h3>
+                        <div class="head_box d-flex align-items-center justify-content-between mb-2">
+                          <h3 style="margin:0"><a href="/company/<%= latestReview.company_id %>"><%= latestReview.company_name %></a></h3>
+                          <% var avg = latestReview.rating %>
+                          <div class="user-rating">
+                            <% allRatingTags.forEach( tag => { %>
+                                <% if(tag.review_rating_value == avg){ %>
+                                  <span><img src="/<%= tag.rating_image %>" alt="" style="display: inline-block;" width="35"></span>
+                                <% } %>
+                                <% }) %> 
+                            <span><%= latestReview.rating %>/5</span>
+                          </div>
+                        </div>
                         <div class="user-info-panel">
                            <span><i class="fa-solid fa-location-dot"></i></span>
                            <p class="m-0">
@@ -56,12 +67,23 @@
                                  <span class="user-select-tag"><%= tag.tag_name %></span>
                               <% } %>
                            <% }) %>
+                          
+                           <% var review_content = latestReview.review_content
+                             const review_content_words = review_content.split(' ');
+                           %>
                            <div class="review-description-wrap">
-                              <%= latestReview.review_content %>
-                              <!-- <div class="review-full-description">
-                                 <%= latestReview.review_content %>
-                              </div>
-                              <a href="" class="read-review">View More</a> -->
+                             <% if(review_content_words.length <= 35){%>
+                             <%- review_content -%>
+                             <% }else{
+                               const firstPart = review_content_words.slice(0, 35).join(' ');
+                               const secondPart = review_content_words.slice(35).join(' ');
+                             %>
+                               <%- firstPart -%> ...
+                             <div class="review-full-description">
+                               <%- secondPart -%>
+                             </div>
+                             <a href="" class="read-review">View More</a>
+                             <% }%>
                            </div>
                         </div>
                         <div class="user-bio_rating">
@@ -88,16 +110,6 @@
                            <% if(latestReview.review_reply_count==1 && currentUserData.user_id == latestReview.customer_id ){ %>
                             <span class="user-select-tag review-reply-btn"><a href="/company/<%- latestReview.company_id -%>#review-reply-<%- latestReview.id -%>">Reply</a></span> 
                             <% } %>
-
-                           <% var avg = latestReview.rating %>
-                           <div class="user-rating">
-                              <% allRatingTags.forEach( tag => { %>
-                                 <% if(tag.review_rating_value == avg){ %>
-                                    <span><img src="/<%= tag.rating_image %>" alt="" style="display: inline-block;" width="35"></span>
-                                 <% } %>
-                                 <% }) %> 
-                              <span><%= latestReview.rating %>/5</span>
-                           </div>
                         </div>
                         <!-- <div class="review-like-dislike">
                            <span><a href=""><i class="fa-solid fa-thumbs-up"></i> 10</a></span>
@@ -117,7 +129,18 @@
                <% AllTrendingReviews.forEach( (TrendingReview, index)=> {%>
                   <div class="item">
                      <div class="review-box">
-                        <h3><%= TrendingReview.company_name %></h3>
+                        <div class="head_box d-flex align-items-center justify-content-between mb-2">
+                          <h3 style="margin:0"><a href="/company/<%= TrendingReview.company_id %>"><%= TrendingReview.company_name %></a></h3>
+                          <% var avg = TrendingReview.rating %>
+                          <div class="user-rating">
+                            <% allRatingTags.forEach( tag => { %>
+                                <% if(tag.review_rating_value == avg){ %>
+                                  <span><img src="/<%= tag.rating_image %>" alt="" style="display: inline-block;" width="35"></span>
+                                <% } %>
+                                <% }) %> 
+                            <span><%= TrendingReview.rating %>/5</span>
+                          </div>
+                        </div>
                         <div class="user-info-panel">
                            <span><i class="fa-solid fa-location-dot"></i></span>
                            <p class="m-0">
@@ -140,14 +163,25 @@
                                  <span class="user-select-tag"><%= tag.tag_name %></span>
                               <% } %>
                            <% }) %>
-                           <div class="review-description-wrap">
-                              <%= TrendingReview.review_content %>
-                              <!-- Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum eu metus eget...
-                              <div class="review-full-description">
-                                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum eu metus eget. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                              </div>
-                              <a href="" class="read-review">View More</a> -->
-                           </div>
+
+                          <% var review_content = TrendingReview.review_content
+                          const review_content_words = review_content.split(' ');
+                          %>
+                          <div class="review-description-wrap">
+                            <% if(review_content_words.length <= 35){%>
+                            <%- review_content -%>
+                            <% }else{
+                              const firstPart = review_content_words.slice(0, 35).join(' ');
+                              const secondPart = review_content_words.slice(35).join(' ');
+                            %>
+                              <%- firstPart -%> ...
+                            <div class="review-full-description">
+                              <%- secondPart -%>
+                            </div>
+                            <a href="" class="read-review">View More</a>
+                            <% }%>
+                          </div>
+
                         </div>
                         <div class="user-bio_rating">
                            <div class="user-profile-info">
@@ -171,15 +205,6 @@
                            <% if(TrendingReview.review_reply_count==1 && currentUserData.user_id == TrendingReview.customer_id){ %>
                             <span class="user-select-tag review-reply-btn"><a href="/company/<%- TrendingReview.company_id -%>#review-reply-<%- TrendingReview.id -%>">Reply</a></span> 
                             <% } %>
-                           <% var avg = TrendingReview.rating %>
-                           <div class="user-rating">
-                              <% allRatingTags.forEach( tag => { %>
-                                 <% if(tag.review_rating_value == avg){ %>
-                                    <span><img src="/<%= tag.rating_image %>" alt="" style="display: inline-block;" width="35"></span>
-                                 <% } %>
-                                 <% }) %> 
-                              <span><%= TrendingReview.rating %>/5</span>
-                           </div>
                         </div>
                         <!-- <div class="review-like-dislike">
                            <span><a href=""><i class="fa-solid fa-thumbs-up"></i> 10</a></span>
@@ -199,7 +224,18 @@
                <% AllReviews.forEach( (allReview, index)=> {%>
                   <div class="item">
                      <div class="review-box">
-                        <h3><%= allReview.company_name %></h3>
+                        <div class="head_box d-flex align-items-center justify-content-between mb-2">
+                          <h3 style="margin:0"><a href="/company/<%= allReview.company_id %>"><%= allReview.company_name %></a></h3>
+                          <% var avg = allReview.rating %>
+                          <div class="user-rating">
+                            <% allRatingTags.forEach( tag => { %>
+                                <% if(tag.review_rating_value == avg){ %>
+                                  <span><img src="/<%= tag.rating_image %>" alt="" style="display: inline-block;" width="35"></span>
+                                <% } %>
+                                <% }) %> 
+                            <span><%= allReview.rating %>/5</span>
+                          </div>
+                        </div>
                         <div class="user-info-panel">
                            <span><i class="fa-solid fa-location-dot"></i></span>
                            <p class="m-0">
@@ -225,16 +261,22 @@
                            <!-- <span class="user-select-tag">Present Rerum</span>
                            <span class="user-select-tag">Text 1</span>
                            <span class="user-select-tag">Text 2</span> -->
+                           <% var review_content = allReview.review_content
+                           const review_content_words = review_content.split(' ');
+                           %>
                            <div class="review-description-wrap">
-                              <%= allReview.review_content %>
-                              <!-- Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum eu metus eget... -->
-                              
-                              <!-- <div class="review-full-description">
-                                 <%= allReview.review_content %>
-                                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum eu metus eget. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                              </div>
-                              <a href="" class="read-review">View More</a> -->
-                              
+                             <% if(review_content_words.length <= 35){%>
+                             <%- review_content -%>
+                             <% }else{
+                               const firstPart = review_content_words.slice(0, 35).join(' ');
+                               const secondPart = review_content_words.slice(35).join(' ');
+                             %>
+                               <%- firstPart -%> ...
+                             <div class="review-full-description">
+                               <%- secondPart -%>
+                             </div>
+                             <a href="" class="read-review">View More</a>
+                             <% }%>
                            </div>
                         </div>
                         <div class="user-bio_rating">
@@ -261,15 +303,6 @@
                            <% if(allReview.review_reply_count==1 && currentUserData.user_id == allReview.customer_id){ %>
                             <span class="user-select-tag review-reply-btn"><a href="/company/<%- allReview.company_id -%>#review-reply-<%- allReview.id -%>">Reply</a></span> 
                             <% } %>
-                           <% var avg = allReview.rating %>
-                           <div class="user-rating">
-                              <% allRatingTags.forEach( tag => { %>
-                                 <% if(tag.review_rating_value == avg){ %>
-                                    <span><img src="/<%= tag.rating_image %>" alt="" style="display: inline-block;" width="35"></span>
-                                 <% } %>
-                                 <% }) %> 
-                              <span><%= allReview.rating %>/5</span>
-                           </div>
                         </div>
                         <!-- <div class="review-like-dislike">
                            <span><a href=""><i class="fa-solid fa-thumbs-up"></i> 10</a></span>
