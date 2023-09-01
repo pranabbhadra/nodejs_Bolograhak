@@ -335,15 +335,16 @@
                 <div class="review-submit d-flex justify-content-between align-items-center">
                   <% if(currentUserData){ %>
                     <input type="submit" class="btn-default btn-warning" value="Submit">
-                    <% } else { %>
-                      <a href="#" class="btn-default btn-outline-warning login">Submit</a>
-                      <% } %>
-                        <a href="/review" class="view-more mt-0"><span class="position-relative"><i
-                              class="fa-solid fa-angle-right"></i>View All Reviews</span></a>
+                  <% } else { %>
+                    <a href="#" class="btn-default btn-outline-warning login">Submit</a>
+                  <% } %>
+                  <a href="/review" class="view-more mt-0" id="all-review-hidden-btn" style="display: none;">
+                    <span class="position-relative"><i class="fa-solid fa-angle-right"></i>View All Reviews</span>
+                  </a>
+                  <div class="submit-message"></div>
                 </div>
               </div>
           </div>
-          <div class="submit-message"></div>
           </form>
         </div>
       </div>
@@ -1167,6 +1168,10 @@
               $('#review_submit_frm')[0].reset();
               $('.submit-message').text(data.message);
               $('.submit-message').show();
+              setTimeout( function(){
+                $('.submit-message').hide();
+                $('#all-review-hidden-btn').fadeIn();
+              }, 2000 );
             } else {
               $('.submit-message').text(data.message);
               $('.submit-message').show();

@@ -479,4 +479,23 @@ function custom_user_resetpass_handler($request) {
         );
     }
 }
+
+// ---------------------Logout API--------------------------------//
+function custom_user_logout_init() {
+    register_rest_route('custom/v1', '/force-logout', array(
+        'methods' => 'POST',
+        'callback' => 'custom_logout_handler',
+        'permission_callback' => 'restrict_dashboard_access_for_subscribers', // Ensure the user is logged in
+    ));
+}
+add_action('rest_api_init', 'custom_user_logout_init');
+function custom_logout_handler($request) {
+    // Perform logout actions (e.g., destroying the session)
+
+    // Optionally, clear any user-related cookies
+    setcookie("user_cookie", "", time() - 3600, "/"); // Set cookie expiration to the past
+
+    // Return a response indicating successful logout
+    return rest_ensure_response(array('message' => 'Logged out successfully.'));
+}
 ?>

@@ -29,12 +29,12 @@
                                 <tr>
                                 <td>Mobile number<sup style="color: #f20e0efd;">*</sup></td>
                                 <td>:</td>
-                                <td colspan="2"><div class="custom-form m-0"><input type="text" name="phone" placeholder="" class="form-control" value="<%= user.phone %>" required /></div></td>
+                                <td colspan="2"><div class="custom-form m-0"><input type="text" name="phone" placeholder="" class="numericInput form-control" value="<%= user.phone %>" required /></div></td>
                                 </tr>
                                 <tr>
                                 <td>Alternate Number</td>
                                 <td>:</td>
-                                <td colspan="2"><div class="custom-form m-0"><input type="text" name="alternate_phone" placeholder="" class="form-control" value="<% if(userMeta && userMeta.alternate_phone){ %><%= userMeta.alternate_phone %><% } %>" /></div></td>
+                                <td colspan="2"><div class="custom-form m-0"><input type="text" name="alternate_phone" placeholder="" class="numericInput form-control" value="<% if(userMeta && userMeta.alternate_phone){ %><%= userMeta.alternate_phone %><% } %>" /></div></td>
                                 </tr>
                                 <tr>
                                 <td>Address<sup style="color: #f20e0efd;">*</sup></td>
@@ -336,6 +336,18 @@
         $('#profile_pic').change( function(event) {
             var tmppath = URL.createObjectURL(event.target.files[0]);
             $('.profile-img .profile_pic').attr('src',tmppath);       
+        });
+
+        // Number validation
+        $('.numericInput').on('input', function() {
+            // Get the current input value
+            let inputValue = $(this).val();
+
+            // Remove any non-numeric characters using a regular expression
+            inputValue = inputValue.replace(/[^0-9]/g, '');
+
+            // Update the input field with the sanitized value
+            $(this).val(inputValue);
         });
 
     });

@@ -370,7 +370,7 @@
                     </div>
                     <div class="customer-profile-info">
                       <% const dateString = review.created_at; %>
-                      <% const date = new Date(dateString); %>
+                      <% const review_date = new Date(dateString); %>
                       <% if(review.user_privacy == 1) { %>
                       <span>
                         <% if(review.profile_pic) { %>
@@ -379,11 +379,11 @@
                           <img class="user_img" src="/assets/media/avatars/blank.png" alt="img" width="23" height="23">
                         <% } %>
                       </span>
-                      <span><%= review.first_name+' '+review.last_name %> <span class="c-comment-date"><%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) %></span></span>
+                      <span><%= review.first_name+' '+review.last_name %> <span class="c-comment-date"><%= review_date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) %></span></span>
                       <% }else{ %>
                       <span><img class="user_img" src="/front-end/images/blur-img.png" alt="img"></span>
                       <span><img src="/front-end/images/blur-name.png" alt="img"></span>
-                      <span class="c-comment-date"><%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) %></span>
+                      <span class="c-comment-date"><%= review_date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) %></span>
                       <% } %>
                     </div>
                     <!--Main Review End -->

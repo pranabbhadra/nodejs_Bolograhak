@@ -836,11 +836,35 @@ async function editCustomerReview(req){
   // Format the date in 'YYYY-MM-DD HH:mm:ss' format (adjust the format as needed)
   const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
 
-  const update_review_query = 'UPDATE reviews SET review_title = ?, rating = ?, review_content = ?, user_privacy = ?, review_status = ?,rejecting_reason = ?, updated_at = ? WHERE id = ?';
-  const update_review_values = [req.review_title, req.rating, req.review_content, req.user_privacy, req.review_status, req.review_rejecting_comment, formattedDate, req.review_id];
+  const update_review_values = [
+    req.update_company_id ? req.update_company_id : req.company_id,
+    req.company_location || null,
+    req.review_title || null,
+    req.rating,
+    req.review_content,
+    req.user_privacy,
+    req.review_status,
+    req.review_rejecting_comment || null,
+    formattedDate,
+    req.review_id,
+  ];
+  const update_review_query =
+    'UPDATE reviews SET ' +
+    'company_id = ?, ' +
+    'company_location = ?, ' +
+    'review_title = ?, ' +
+    'rating = ?, ' +
+    'review_content = ?, ' +
+    'user_privacy = ?, ' +
+    'review_status = ?, ' +
+    'rejecting_reason = ?, ' +
+    'updated_at = ? ' +
+    'WHERE id = ?';
+
+  console.log(update_review_query);
   try {
     const update_review_result = await query(update_review_query, update_review_values);
-
+    //console.log(update_review_result );
       // Remove all tags for the review
       const delete_tag_relation_query = 'DELETE FROM review_tag_relation WHERE review_id = ?';
       const delete_tag_relation_values = [req.review_id];
@@ -900,7 +924,7 @@ async function getCompanyReviewNumbers(companyID){
     const get_company_rewiew_rating_count_query = `
     SELECT rating,count(rating) AS cnt_rat
     FROM reviews
-    WHERE company_id = ?
+    WHERE company_id = ? AND review_status = '2'
     group by rating ORDER by rating DESC`;
     try{
       const get_company_rewiew_rating_count_result = await query(get_company_rewiew_rating_count_query, get_company_rewiew_count_value);
@@ -917,7 +941,7 @@ async function getCompanyReviewNumbers(companyID){
 async function getCompanyReviews(companyID){
   const get_company_reviews_query = `
     SELECT r.*, ur.first_name, ur.last_name, ur.email, ucm.profile_pic,
-           rr.ID AS reply_id, rr.reply_by AS reply_by, rr.comment AS reply_comment , rr.created_at AS created_at
+           rr.ID AS reply_id, rr.reply_by AS reply_by, rr.comment AS reply_comment , rr.created_at AS reply_created_at
     FROM reviews r
     JOIN users ur ON r.customer_id = ur.user_id
     LEFT JOIN user_customer_meta ucm ON ur.user_id = ucm.user_id
@@ -945,7 +969,7 @@ async function getCompanyReviews(companyID){
           review_id: row.id,
           reply_by: row.reply_by,
           comment: row.reply_comment,
-          created_at: row.created_at
+          created_at: row.reply_created_at
         });
       }
     }

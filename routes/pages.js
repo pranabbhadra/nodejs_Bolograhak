@@ -513,76 +513,50 @@ router.get('/company/:id', checkCookieValue, async (req, res) => {
          youtube_url = PremiumCompanyData.youtube_url;
         
     }
-    
-    if(CompanyInfo.paid_status == 'paid'){
-        res.render('front-end/category-details-premium',
-        {
-            menu_active_id: 'company',
-            page_title: 'Organization Details',
-            currentUserData,
-            allRatingTags,
-            company:CompanyInfo,
-            CompanyInfo,
-            companyReviewNumbers,
-            getCompanyReviews,
-            globalPageMeta:globalPageMeta,
-            cover_img:cover_img,
-            gallery_img:gallery_img,
-            youtube_iframe:youtube_iframe,
-            products:products,
-            promotions:promotions,
-            facebook_url:facebook_url,
-            twitter_url:twitter_url,
-            instagram_url:instagram_url,
-            linkedin_url:linkedin_url,
-            youtube_url:youtube_url,
-        });
-        // res.json(
-        // {
-        //     menu_active_id: 'company',
-        //     page_title: 'Organization Details',
-        //     currentUserData,
-        //     allRatingTags,
-        //     company:CompanyInfo,
-        //     CompanyInfo,
-        //     companyReviewNumbers,
-        //     getCompanyReviews,
-        //     globalPageMeta:globalPageMeta,
-        //     cover_img:cover_img,
-        //     gallery_img:gallery_img,
-        //     youtube_iframe:youtube_iframe,
-        //     products:products,
-        //     promotions:promotions,
-        //     facebook_url:facebook_url,
-        //     twitter_url:twitter_url,
-        //     instagram_url:instagram_url,
-        //     linkedin_url:linkedin_url,
-        //     youtube_url:youtube_url,
-        // });
+
+    if(CompanyInfo){
+        if(CompanyInfo.paid_status == 'paid'){
+            res.render('front-end/category-details-premium',
+            {
+                menu_active_id: 'company',
+                page_title: 'Organization Details',
+                currentUserData,
+                allRatingTags,
+                company:CompanyInfo,
+                CompanyInfo,
+                companyReviewNumbers,
+                getCompanyReviews,
+                globalPageMeta:globalPageMeta,
+                cover_img:cover_img,
+                gallery_img:gallery_img,
+                youtube_iframe:youtube_iframe,
+                products:products,
+                promotions:promotions,
+                facebook_url:facebook_url,
+                twitter_url:twitter_url,
+                instagram_url:instagram_url,
+                linkedin_url:linkedin_url,
+                youtube_url:youtube_url,
+            });
+        }else{
+            res.render('front-end/company-details',
+            {
+                menu_active_id: 'company',
+                page_title: 'Organization Details',
+                currentUserData,
+                allRatingTags,
+                company:CompanyInfo,
+                CompanyInfo,
+                companyReviewNumbers,
+                getCompanyReviews,
+                globalPageMeta:globalPageMeta
+            });
+        }
     }else{
-        // res.json(
-        // {
-        //     menu_active_id: 'company',
-        //     page_title: 'Organization Details',
-        //     currentUserData,
-        //     allRatingTags,
-        //     company:CompanyInfo,
-        //     CompanyInfo,
-        //     companyReviewNumbers,
-        //     getCompanyReviews,
-        //     globalPageMeta:globalPageMeta
-        // });
-        
-        res.render('front-end/company-details',
-        {
-            menu_active_id: 'company',
-            page_title: 'Organization Details',
+        res.render('front-end/404', {
+            menu_active_id: '404',
+            page_title: '404',
             currentUserData,
-            allRatingTags,
-            company:CompanyInfo,
-            CompanyInfo,
-            companyReviewNumbers,
-            getCompanyReviews,
             globalPageMeta:globalPageMeta
         });
     }
@@ -1651,23 +1625,35 @@ router.get('/edit-review/:id', checkLoggedIn, async (req, res) => {
         const review_Id = req.params.id;
 
         // Fetch all the required data asynchronously
-        const [reviewData, reviewTagData] = await Promise.all([
+        const [reviewData, reviewTagData, allcompany] = await Promise.all([
             comFunction.getCustomerReviewData(review_Id),
             comFunction.getCustomerReviewTagRelationData(review_Id),
+            comFunction.getAllCompany()
         ]);
         //console.log(reviewData);
         // Render the 'edit-user' EJS view and pass the data
         // res.json({
         //     reviewData: reviewData,
-        //     reviewTagData: reviewTagData,        
+        //     reviewTagData: reviewTagData,
+        //     allcompany      
         // });
-        res.render('edit-review', {
-            menu_active_id: 'review',
-            page_title: 'Edit Review',
-            currentUserData,
-            reviewData,
-            reviewTagData: reviewTagData,            
-        });
+        if(reviewData){
+            res.render('edit-review', {
+                menu_active_id: 'review',
+                page_title: 'Edit Review',
+                currentUserData,
+                reviewData,
+                reviewTagData: reviewTagData,
+                allcompany            
+            });
+        }else{
+            res.render('front-end/404', {
+                menu_active_id: '404',
+                page_title: '404',
+                currentUserData,
+                globalPageMeta:[]
+            });
+        }
     } catch (err) {
         console.error(err);
         res.status(500).send('An error occurred');
@@ -2364,9 +2350,14 @@ router.get('/reset-password/:email', checkCookieValue, async (req, res) => {
 router.get('/logout', (req, res) => {
     const encodedUserData = req.cookies.user;
     const currentUserData = JSON.parse(encodedUserData);
+
+    //--WP Logout--//
+    //const response = axios.post(process.env.BLOG_API_ENDPOINT + '/force-logout');
+
     if (currentUserData.user_type_id == 2) {
         res.clearCookie('user');
         res.redirect('/');
+        //res.redirect('http://localhost/bolograhak/blog/wp-login.php?action=logout&redirect_to=http://localhost:2000/');
     } else {
         res.clearCookie('user');
         res.redirect('/admin-login');
