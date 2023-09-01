@@ -924,7 +924,7 @@ async function getCompanyReviewNumbers(companyID){
     const get_company_rewiew_rating_count_query = `
     SELECT rating,count(rating) AS cnt_rat
     FROM reviews
-    WHERE company_id = ? AND review_status = '2'
+    WHERE company_id = ? AND review_status = '1'
     group by rating ORDER by rating DESC`;
     try{
       const get_company_rewiew_rating_count_result = await query(get_company_rewiew_rating_count_query, get_company_rewiew_count_value);
