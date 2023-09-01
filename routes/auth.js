@@ -249,4 +249,7 @@ router.post('/frontend-forgot-password', authController.forgotPassword);
 //Reset Password
 router.post('/reset_password', authController.resetPassword);
 
+//Change Password
+router.post('/change_password', authController.changePassword);
+
 module.exports = router;

@@ -122,7 +122,10 @@ router.get('', checkCookieValue, async (req, res) => {
                     //     meta_values_array,
                     //     featured_comps,
                     //     allRatingTags: allRatingTags,
-                    //     AddressapiKey: process.env.ADDRESS_GOOGLE_API_Key
+                    //     AddressapiKey: process.env.ADDRESS_GOOGLE_API_Key,
+                    //     globalPageMeta:globalPageMeta,
+                    //     latestReviews: latestReviews,
+                    //     AllReviewTags: AllReviewTags
                     // });
                     res.render('front-end/landing', {
                         menu_active_id: 'landing',
@@ -534,6 +537,28 @@ router.get('/company/:id', checkCookieValue, async (req, res) => {
             linkedin_url:linkedin_url,
             youtube_url:youtube_url,
         });
+        // res.json(
+        // {
+        //     menu_active_id: 'company',
+        //     page_title: 'Organization Details',
+        //     currentUserData,
+        //     allRatingTags,
+        //     company:CompanyInfo,
+        //     CompanyInfo,
+        //     companyReviewNumbers,
+        //     getCompanyReviews,
+        //     globalPageMeta:globalPageMeta,
+        //     cover_img:cover_img,
+        //     gallery_img:gallery_img,
+        //     youtube_iframe:youtube_iframe,
+        //     products:products,
+        //     promotions:promotions,
+        //     facebook_url:facebook_url,
+        //     twitter_url:twitter_url,
+        //     instagram_url:instagram_url,
+        //     linkedin_url:linkedin_url,
+        //     youtube_url:youtube_url,
+        // });
     }else{
         // res.json(
         // {
@@ -905,6 +930,18 @@ router.get('/company-dashboard-review-replay/:compID/:reviewID', checkClientClai
                     finalsingleReviewData,
                     singleReviewReplyData
                 });
+                // res.render('front-end/basic-company-review-replay', 
+                // { 
+                //     menu_active_id: 'company-review-listing', 
+                //     page_title: 'Company Review Replay', 
+                //     currentUserData, 
+                //     globalPageMeta:globalPageMeta,
+                //     company,
+                //     companyReviewNumbers,
+                //     allRatingTags,
+                //     finalsingleReviewData,
+                //     singleReviewReplyData
+                // });
             }else{
                 res.redirect('/company-review-listing/'+company.ID);
             }
@@ -954,6 +991,23 @@ router.get('/company-dashboard-review-replay/:compID/:reviewID', checkClientClai
                     linkedin_url:linkedin_url,
                     youtube_url:youtube_url
                 });
+                // res.json( 
+                // { 
+                //     menu_active_id: 'company-review-listing', 
+                //     page_title: 'Company Review Replay', 
+                //     currentUserData, 
+                //     globalPageMeta:globalPageMeta,
+                //     company,
+                //     companyReviewNumbers,
+                //     allRatingTags,
+                //     finalsingleReviewData,
+                //     singleReviewReplyData,
+                //     facebook_url:facebook_url,
+                //     twitter_url:twitter_url,
+                //     instagram_url:instagram_url,
+                //     linkedin_url:linkedin_url,
+                //     youtube_url:youtube_url
+                // });
             }else{
                 res.redirect('/company-review-listing/'+company.ID);
             }
@@ -2233,6 +2287,32 @@ router.get('/edit-myprofile', checkFrontEndLoggedIn, async (req, res) => {
     }
 });
 
+//FrontEnd Change Password page
+router.get('/change-password', checkFrontEndLoggedIn, async (req, res) => {  
+    
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+        const userId = currentUserData.user_id;
+        //console.log('editUserID: ', currentUserData);
+
+        // Fetch all the required data asynchronously
+        const [globalPageMeta ] = await Promise.all([
+            comFunction2.getPageMetaValues('global'),
+        ]);
+
+        // Render the 'edit-user' EJS view and pass the data
+        res.render('front-end/change-password', {
+            menu_active_id: 'change-password',
+            page_title: 'Change Password',
+            currentUserData,
+            globalPageMeta:globalPageMeta
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
 //-----------------------------------------------------------------//
 
 

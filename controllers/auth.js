@@ -91,11 +91,12 @@ exports.register = (req, res) => {
 
         const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
-        db.query('INSERT INTO users SET ?', { first_name: first_name, last_name: last_name, email: email, phone: phone, password: hasPassword, user_registered: formattedDate, user_status: 1, user_type_id: 2 }, (err, results) => {
+         db.query('INSERT INTO users SET ?', { first_name: first_name, last_name: last_name, email: email, phone: phone, password: hasPassword, user_registered: formattedDate, user_status: 1, user_type_id: 2 },  (err, results) => {
             if (err) {
                 // return res.render('sign-up', {
                 //     message: 'An error occurred while processing your request' + err
                 // })
+                
                 return res.send(
                     {
                         status: 'err',
@@ -107,6 +108,7 @@ exports.register = (req, res) => {
                 //console.log(results,'User Table');
                 //-- Insert User data to meta table--------//
                 db.query('INSERT INTO user_customer_meta SET ?', { user_id: results.insertId, address: '', country: '', state: '', city: '', zip: '', review_count: 0, date_of_birth: '', occupation: '', gender: '', profile_pic: '' }, (err, results) => {
+
                     return res.send(
                         {
                             status: 'ok',
@@ -163,7 +165,7 @@ exports.frontendUserRegister = async (req, res) => {
         const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
         const userInsertQuery = 'INSERT INTO users (first_name, last_name, email, password, register_from, user_registered, user_status, user_type_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-        db.query(userInsertQuery, [first_name, last_name, email, hashedPassword, 'web', formattedDate, 1, 2], (err, userResults) => {
+        db.query(userInsertQuery, [first_name, last_name, email, hashedPassword, 'web', formattedDate, 1, 2], async (err, userResults) => {
             if (err) {
                 console.error('Error inserting user into "users" table:', err);
                 return res.send(
@@ -174,7 +176,118 @@ exports.frontendUserRegister = async (req, res) => {
                     }
                 )
             }
-
+            var mailOptions = {
+                from: process.env.MAIL_USER,
+                //to: 'pranab@scwebtech.com',
+                to: email,
+                subject: 'Welcome Email',
+                html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
+                <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
+                 <tbody>
+                  <tr>
+                   <td align="center" valign="top">
+                     <div id="template_header_image"><p style="margin-top: 0;"></p></div>
+                     <table id="template_container" style="box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; background-color: #fdfdfd; border: 1px solid #dcdcdc; border-radius: 3px !important;" border="0" cellpadding="0" cellspacing="0" width="600">
+                      <tbody>
+                        <tr>
+                         <td align="center" valign="top">
+                           <!-- Header -->
+                           <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
+                             <tbody>
+                               <tr>
+                               <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
+                                <td id="header_wrapper" style="padding: 36px 48px; display: block;">
+                                   <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Welcome Email</h1>
+                                </td>
+          
+                               </tr>
+                             </tbody>
+                           </table>
+                     <!-- End Header -->
+                     </td>
+                        </tr>
+                        <tr>
+                         <td align="center" valign="top">
+                           <!-- Body -->
+                           <table id="template_body" border="0" cellpadding="0" cellspacing="0" width="600">
+                             <tbody>
+                               <tr>
+                                <td id="body_content" style="background-color: #fdfdfd;" valign="top">
+                                  <!-- Content -->
+                                  <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                                   <tbody>
+                                    <tr>
+                                     <td style="padding: 48px;" valign="top">
+                                       <div id="body_content_inner" style="color: #737373; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
+                                        
+                                        <table border="0" cellpadding="4" cellspacing="0" width="90%">
+                                          <tr>
+                                            <td colspan="2">
+                                            <strong>Hello ${first_name},</strong>
+                                            <p style="font-size:15px; line-height:20px">Welcome to our <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a> family.</p>
+                                            </td>
+                                          </tr>
+                                        </table>
+                                        
+                                       </div>
+                                     </td>
+                                    </tr>
+                                   </tbody>
+                                  </table>
+                                <!-- End Content -->
+                                </td>
+                               </tr>
+                             </tbody>
+                           </table>
+                         <!-- End Body -->
+                         </td>
+                        </tr>
+                        <tr>
+                         <td align="center" valign="top">
+                           <!-- Footer -->
+                           <table id="template_footer" border="0" cellpadding="10" cellspacing="0" width="600">
+                            <tbody>
+                             <tr>
+                              <td style="padding: 0; -webkit-border-radius: 6px;" valign="top">
+                               <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                                 <tbody>
+                                   <tr>
+                                    <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
+                                         <p>This email was sent from <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a></p>
+                                    </td>
+                                   </tr>
+                                 </tbody>
+                               </table>
+                              </td>
+                             </tr>
+                            </tbody>
+                           </table>
+                         <!-- End Footer -->
+                         </td>
+                        </tr>
+                      </tbody>
+                     </table>
+                   </td>
+                  </tr>
+                 </tbody>
+                </table>
+               </div>`
+              }
+                await mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
+                  if (err) {
+                      console.log(err);
+                      return res.send({
+                          status: 'not ok',
+                          message: 'Something went wrong'
+                      });
+                  } else {
+                      console.log('Mail Send: ', info.response);
+                      return res.send({
+                          status: 'ok',
+                          message: 'Review Approve'
+                      });
+                  }
+                })
             // Insert the user into the "user_customer_meta" table
             const userMetaInsertQuery = 'INSERT INTO user_customer_meta (user_id, review_count) VALUES (?, ?)';
             db.query(userMetaInsertQuery, [userResults.insertId, 0], (err, metaResults) => {
@@ -2112,15 +2225,134 @@ exports.submitReview = async (req, res) => {
             //console.log(currentUserData);
             const userId = currentUserData.user_id;
             const company = await comFunction.createCompany(req.body, userId);
-            console.log('review submit company response: ',company);
-            const review = comFunction.createReview(req.body, userId, company);
+            const review = await comFunction.createReview(req.body, userId, company);
             // Render the 'edit-user' EJS view and pass the data
             if(company && review){
+                console.log('submit review:',review)
+                const template = `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
+                <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
+                 <tbody>
+                  <tr>
+                   <td align="center" valign="top">
+                     <div id="template_header_image"><p style="margin-top: 0;"></p></div>
+                     <table id="template_container" style="box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; background-color: #fdfdfd; border: 1px solid #dcdcdc; border-radius: 3px !important;" border="0" cellpadding="0" cellspacing="0" width="600">
+                      <tbody>
+                        <tr>
+                         <td align="center" valign="top">
+                           <!-- Header -->
+                           <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
+                             <tbody>
+                               <tr>
+                               <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
+                                <td id="header_wrapper" style="padding: 36px 48px; display: block;">
+                                   <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">New Review</h1>
+                                </td>
+          
+                               </tr>
+                             </tbody>
+                           </table>
+                     <!-- End Header -->
+                     </td>
+                        </tr>
+                        <tr>
+                         <td align="center" valign="top">
+                           <!-- Body -->
+                           <table id="template_body" border="0" cellpadding="0" cellspacing="0" width="600">
+                             <tbody>
+                               <tr>
+                                <td id="body_content" style="background-color: #fdfdfd;" valign="top">
+                                  <!-- Content -->
+                                  <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                                   <tbody>
+                                    <tr>
+                                     <td style="padding: 48px;" valign="top">
+                                       <div id="body_content_inner" style="color: #737373; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
+                                        
+                                        <table border="0" cellpadding="4" cellspacing="0" width="90%">
+                                          <tr>
+                                            <td colspan="2">
+                                            <strong>Hello,</strong>
+                                            <p style="font-size:15px; line-height:20px">A new review submitted. <a class="btn btn-primary" href="${process.env.MAIN_URL}edit-review/${review}">Click here </a>to check this review.</p>
+                                            </td>
+                                          </tr>
+                                        </table>
+                                        
+                                       </div>
+                                     </td>
+                                    </tr>
+                                   </tbody>
+                                  </table>
+                                <!-- End Content -->
+                                </td>
+                               </tr>
+                             </tbody>
+                           </table>
+                         <!-- End Body -->
+                         </td>
+                        </tr>
+                        <tr>
+                         <td align="center" valign="top">
+                           <!-- Footer -->
+                           <table id="template_footer" border="0" cellpadding="10" cellspacing="0" width="600">
+                            <tbody>
+                             <tr>
+                              <td style="padding: 0; -webkit-border-radius: 6px;" valign="top">
+                               <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                                 <tbody>
+                                   <tr>
+                                    <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
+                                         <p>This email was sent from <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a></p>
+                                    </td>
+                                   </tr>
+                                 </tbody>
+                               </table>
+                              </td>
+                             </tr>
+                            </tbody>
+                           </table>
+                         <!-- End Footer -->
+                         </td>
+                        </tr>
+                      </tbody>
+                     </table>
+                   </td>
+                  </tr>
+                 </tbody>
+                </table>
+               </div>`;
+                var mailOptions = {
+                    from: process.env.MAIL_USER,
+                    //to: 'pranab@scwebtech.com',
+                    to: process.env.MAIL_USER,
+                    subject: 'New review added',
+                    html: template
+                  }
+              
+                mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
+                    if (err) {
+                        console.log(err);
+                        return res.send({
+                            status: 'not ok',
+                            message: 'Something went wrong'
+                        });
+                    } else {
+                        console.log('Mail Send: ', info.response);
+                        return res.send(
+                        {
+                            status: 'ok',
+                            data: '',
+                            message: 'Password Send to your email please check to your email'
+                        }
+                    )
+                    }
+                })
                 return res.send(
                     {
                         status: 'ok',
-                        data:   '',
-                        company,
+                        data: {
+                                company,
+                                review
+                        },
                         message: 'Review posted successfully'
                     }
                 );
@@ -2128,7 +2360,7 @@ exports.submitReview = async (req, res) => {
                 return res.send(
                     {
                         status: 'error',
-                        data: '',
+                        data: {company,review},
                         message: 'Error occurred please try again'
                     }
                 );
@@ -3577,7 +3809,7 @@ exports.forgotPassword = (req, res) => {
 //--Submit Review Reply----//
 exports.submitReviewReply = async (req, res) => {
     const encodedUserData = req.cookies.user;
-    //console.log(currentUserData);
+    console.log(req.body);
     try {
         if (encodedUserData) {
             const currentUserData = JSON.parse(encodedUserData);
@@ -3589,6 +3821,7 @@ exports.submitReviewReply = async (req, res) => {
                 const replyInsertData = {
                     review_id: req.body.review_id,
                     reply_by: req.body.reply_by,
+                    reply_to: req.body.reply_to,
                     comment: req.body.comment,
                     created_at: formattedDate,
                     updated_at: formattedDate
@@ -3599,14 +3832,129 @@ exports.submitReviewReply = async (req, res) => {
                           status: 'error',
                           message: 'An error occurred while processing your request'+err,
                         });
+                    }else {
+                        console.log(results.insertId);
+                        const mailReplyData =await comFunction2.ReviewReplyTo(results.insertId)
+                        console.log('MailSendTo',mailReplyData);
+                        var mailOptions = {
+                            from: process.env.MAIL_USER,
+                            //to: 'pranab@scwebtech.com',
+                            to: mailReplyData[0].email,
+                            subject: 'Review Reply Email',
+                            html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
+                            <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
+                             <tbody>
+                              <tr>
+                               <td align="center" valign="top">
+                                 <div id="template_header_image"><p style="margin-top: 0;"></p></div>
+                                 <table id="template_container" style="box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; background-color: #fdfdfd; border: 1px solid #dcdcdc; border-radius: 3px !important;" border="0" cellpadding="0" cellspacing="0" width="600">
+                                  <tbody>
+                                    <tr>
+                                     <td align="center" valign="top">
+                                       <!-- Header -->
+                                       <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
+                                         <tbody>
+                                           <tr>
+                                           <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
+                                            <td id="header_wrapper" style="padding: 36px 48px; display: block;">
+                                               <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Review Reply</h1>
+                                            </td>
+                      
+                                           </tr>
+                                         </tbody>
+                                       </table>
+                                 <!-- End Header -->
+                                 </td>
+                                    </tr>
+                                    <tr>
+                                     <td align="center" valign="top">
+                                       <!-- Body -->
+                                       <table id="template_body" border="0" cellpadding="0" cellspacing="0" width="600">
+                                         <tbody>
+                                           <tr>
+                                            <td id="body_content" style="background-color: #fdfdfd;" valign="top">
+                                              <!-- Content -->
+                                              <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                                               <tbody>
+                                                <tr>
+                                                 <td style="padding: 48px;" valign="top">
+                                                   <div id="body_content_inner" style="color: #737373; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
+                                                    
+                                                    <table border="0" cellpadding="4" cellspacing="0" width="90%">
+                                                      <tr>
+                                                        <td colspan="2">
+                                                        <strong>Hello ${mailReplyData[0].first_name},</strong>
+                                                        <p style="font-size:15px; line-height:20px">You got a reply for your reviews.</p>
+                                                        </td>
+                                                      </tr>
+                                                    </table>
+                                                    
+                                                   </div>
+                                                 </td>
+                                                </tr>
+                                               </tbody>
+                                              </table>
+                                            <!-- End Content -->
+                                            </td>
+                                           </tr>
+                                         </tbody>
+                                       </table>
+                                     <!-- End Body -->
+                                     </td>
+                                    </tr>
+                                    <tr>
+                                     <td align="center" valign="top">
+                                       <!-- Footer -->
+                                       <table id="template_footer" border="0" cellpadding="10" cellspacing="0" width="600">
+                                        <tbody>
+                                         <tr>
+                                          <td style="padding: 0; -webkit-border-radius: 6px;" valign="top">
+                                           <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                                             <tbody>
+                                               <tr>
+                                                <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
+                                                     <p>This email was sent from <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a></p>
+                                                </td>
+                                               </tr>
+                                             </tbody>
+                                           </table>
+                                          </td>
+                                         </tr>
+                                        </tbody>
+                                       </table>
+                                     <!-- End Footer -->
+                                     </td>
+                                    </tr>
+                                  </tbody>
+                                 </table>
+                               </td>
+                              </tr>
+                             </tbody>
+                            </table>
+                           </div>`
+                          }
+                        await mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
+                            if (err) {
+                                console.log(err);
+                                return res.send({
+                                    status: 'not ok',
+                                    message: 'Something went wrong'
+                                });
+                            } else {
+                                console.log('Mail Send: ', info.response);
+                                
+                            }
+                        })
+
+                        return res.send(
+                            {
+                                status: 'ok',
+                                data: '',
+                                message: 'Reply successfully submitted'
+                            }
+                        );
                     }
-                    return res.send(
-                        {
-                            status: 'ok',
-                            data: '',
-                            message: 'Reply successfully submitted'
-                        }
-                    );
+                    
 
                 });
             }else{
@@ -3704,3 +4052,101 @@ exports.resetPassword = async (req, res) => {
     })
     
 }
+// Change Password
+exports.changePassword = async (req, res) => {
+    console.log('changePassword', req.body);
+    const {userid, current_password, new_password } = req.body;
+    let CurrentHasPassword = await bcrypt.hash(current_password, 8);
+    let hasPassword = await bcrypt.hash(new_password, 8);
+    const check_query = `SELECT password, email  FROM users WHERE user_id = '${userid}' `;
+    db.query(check_query,(check_err, check_result)=>{
+        if (check_err) {
+            //console.log(check_err);
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong'+check_err
+            });
+        } else {
+            if (check_result.length > 0) {
+                const userPassword = check_result[0].password
+                console.log('userPassword',userPassword,'CurrentHasPassword',CurrentHasPassword)
+                bcrypt.compare(current_password, userPassword, (err, result) => {
+                    if (err) {
+                        return res.send(
+                            {
+                                status: 'err',
+                                data: '',
+                                message: 'Error: ' + err
+                            }
+                        )
+                    }
+                    if (result) {
+                        const sql = `UPDATE users SET password = ?  WHERE user_id = '${userid}' `;
+                        const data = [hasPassword, userid];
+                        db.query(sql, data, (err, result) =>{
+                            if (err) {
+                                console.log(err);
+                                return res.send({
+                                    status: 'not ok',
+                                    message: 'Something went wrong'+err
+                                });
+                            } else {
+                                //Wprdpress User reset password.
+                                (async () => {
+                                    try {
+                                        const wpUserLoginData = {
+                                            email: check_result[0].email,
+                                            password: new_password,
+                                        };
+                                        const response = await axios.post(process.env.BLOG_API_ENDPOINT + '/reset-password', wpUserLoginData);
+                                        //console.log(response);
+                                        const wp_user_data = response.data;
+                                        //console.log(wp_user_data);
+                                        if(wp_user_data.status=='ok'){
+                                            return res.send(
+                                                {
+                                                    status: 'ok',
+                                                    data: wp_user_data.data,
+                                                    message: 'Password Update Successfully'
+                                                }
+                                            )
+                                        }else{
+                                            return res.send(
+                                                {
+                                                    status: 'err',
+                                                    data: '',
+                                                    message: wp_user_data.message
+                                                }
+                                            )
+                                        }
+                                    } catch (error) {
+                                        console.log('axaxa', error);
+                                        return res.send(
+                                            {
+                                                status: 'err',
+                                                data: '',
+                                                message: ''
+                                            }
+                                        )
+                                    }
+                                })();
+                            }
+                        })
+                    }else {
+                        return res.send({
+                            status: 'not ok',
+                            message: 'Current Password is not correct!'
+                        });
+                    }
+                })
+                
+            } else {
+                return res.send({
+                    status: 'not ok',
+                    message: 'User is not valid'
+                });
+            }
+        }
+    })
+}
+
