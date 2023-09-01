@@ -1707,7 +1707,7 @@ exports.editCustomerReview = async (req, res) => {
     //console.log('controller',req.body);
     // const ratingTagsArray = JSON.parse(req.body.rating_tags);
     // console.log(ratingTagsArray);
-    const editResponse1 = await comFunction.editCustomerReview( req.body );
+    //const editResponse1 = await comFunction.editCustomerReview( req.body );
     const [editResponse, ApproveMailSend,RejectdEmailSend] = await Promise.all([
         comFunction.editCustomerReview( req.body ),
         comFunction2.reviewApprovedEmail(req.body),
@@ -2121,7 +2121,7 @@ exports.submitReview = async (req, res) => {
                         status: 'ok',
                         data:   '',
                         company,
-                        message: 'Review posted successfully'
+                        message: 'Review successfully posted, please wait for admin approval'
                     }
                 );
             }else{

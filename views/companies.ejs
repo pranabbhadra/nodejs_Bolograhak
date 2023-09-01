@@ -250,7 +250,7 @@
                                                 <% if(company.logo){ %>
                                                 <img src="<%= company.logo %>" alt="<%= company.company_name %>" class="w-100" />
                                                 <% } else { %>
-                                                    <img src="/assets/media/avatars/blank.png" alt="<%= company.company_name %>" class="w-100" />
+                                                    <img src="/front-end/images/company-placeholder-image.png" alt="<%= company.company_name %>" class="w-100" />
                                                 <% } %>
                                             </div>
                                         </a>
@@ -902,3 +902,8 @@ KTUtil.onDOMContentLoaded(function () {
 ;
 //# sourceMappingURL=export-users.js.map
 </script>
+<style>
+    .symbol-circle{
+        box-shadow: 0px 4px 14px 0px rgba(0, 0, 0, 0.25);
+    }
+</style>
