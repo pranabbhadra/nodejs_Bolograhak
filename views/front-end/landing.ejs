@@ -172,7 +172,7 @@
                             <div class="user-review-date"><%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) %></div>
                           </div>
                           
-                          <% if(latestReview.review_reply_count==1 && currentUserData.user_id == latestReview.customer_id ){ %>
+                          <% if(latestReview.review_reply_count==1 && currentUserData!= null && currentUserData.user_id == latestReview.customer_id ){ %>
                           <span class="user-select-tag review-reply-btn"><a href="/company/<%- latestReview.company_id -%>#review-reply-<%- latestReview.id -%>">Reply</a></span> 
                           <% } %>
                       </div>
