@@ -485,17 +485,58 @@ function custom_user_logout_init() {
     register_rest_route('custom/v1', '/force-logout', array(
         'methods' => 'POST',
         'callback' => 'custom_logout_handler',
-        'permission_callback' => 'restrict_dashboard_access_for_subscribers', // Ensure the user is logged in
+        'permission_callback' => function ($request) {
+            return true;
+        },
     ));
 }
 add_action('rest_api_init', 'custom_user_logout_init');
 function custom_logout_handler($request) {
-    // Perform logout actions (e.g., destroying the session)
+    /*
+    $parameters = $request->get_params();
+    $user_email = $parameters['email'];
+    $user = get_user_by('login', $user_email);
+    $user_id = $user->ID;
+    $user_nonce = wp_create_nonce('user_action_' . $user_id);
 
     // Optionally, clear any user-related cookies
     setcookie("user_cookie", "", time() - 3600, "/"); // Set cookie expiration to the past
 
     // Return a response indicating successful logout
-    return rest_ensure_response(array('message' => 'Logged out successfully.'));
+    return rest_ensure_response(array('message' => 'Logged out successfully.', 'user_nonce' => $user_nonce));
+    */
+    // List of WordPress cookies to unset
+    $cookies = array(
+        'wordpress_logged_in',
+        'wp-settings-1',
+        'wp-settings-time-1',
+        'wp-postpass',
+        'wordpress_test_cookie',
+        // Add more cookies here if needed
+    );
+
+    // Unset each cookie
+    foreach ($cookies as $cookie) {
+        if (isset($_COOKIE[$cookie])) {
+            unset($_COOKIE[$cookie]);
+            setcookie($cookie, '', time() - 3600, '/');
+        }
+    }
 }
+//---------//
+function force_logout_if_action_logout() {
+    if (isset($_GET['action']) && $_GET['action'] === 'logout') {
+        // Add any additional actions you want before logging the user out
+        // For example, you can clear cookies or perform other tasks here
+        
+        // Log the user out
+        wp_logout();
+
+        // Redirect to a specific URL after logout
+        wp_redirect(MAIN_URL_BG); // Change the URL as needed
+        exit;
+    }
+}
+
+add_action('init', 'force_logout_if_action_logout');
 ?>

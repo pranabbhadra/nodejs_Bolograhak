@@ -24,16 +24,30 @@
                            <div class="count">0</div>
                         </div>
                      </div>
+                     <% var positive_count = 0;
+                        var negative_count = 0;
+                        if (companyReviewNumbers && Array.isArray(companyReviewNumbers.rewiew_rating_count)) {
+                           companyReviewNumbers.rewiew_rating_count.forEach((item, index) => {
+                              if(parseFloat(item.rating)>=4){
+                                 positive_count += parseInt(item.cnt_rat);
+                              }
+                              if(parseFloat(item.rating)<=2){
+                                 negative_count += parseInt(item.cnt_rat);
+                              }
+                           })
+                        }
+                     %>
                      <div class="col-lg-4">
                         <div class="positive_reviews">
                            <h4>positive reviews</h4>
-                           <div class="count">00</div>
+                           <div class="count"><%- positive_count -%></div>
                         </div>
                         <div class="negative_reviews">
                            <h4>negative reviews</h4>
-                           <div class="count">00</div>
+                           <div class="count"><%- negative_count -%></div>
                         </div>
                      </div>
+                     
                   </div>
                </div>
 
@@ -100,7 +114,7 @@
                      </div>
                   </div>
                </div>
-
+               <!--
                <div class="analytics_data analytics_data_row4">
                   <div class="select_box_and_btn">
                      <div class="select_location">
@@ -144,6 +158,7 @@
                      </div>
                   </div>
                </div>
+               -->
                <% if (finalCompanyallReviews.length > 0) { %>
                <div class="company_dashboard_all_reviews_slider">
                   <div class="review-slider">   
