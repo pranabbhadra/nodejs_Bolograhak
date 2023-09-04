@@ -21,7 +21,7 @@
                      <div class="col-lg-4">
                         <div class="total_reviews total_replied">
                            <p>Total Replied</p>
-                           <div class="count">0</div>
+                           <div class="count"><%= TotalReplied.totalReplied %></div>
                         </div>
                      </div>
                      <div class="col-lg-4">
@@ -45,7 +45,7 @@
                      <div class="col-lg-5">
                         <div class="user_viewed">
                            <div>
-                              <h4>Total Visitors</h4>
+                              <h4>Total Visitors (Coming Soon)</h4>
                               <div class="count">1500</div>
                            </div>
                         </div>
@@ -91,17 +91,17 @@
                <div class="analytics_data analytics_data_row3">
                   <div class="row">
                      <div class="col-lg-6">
-                        <h4 class="sec_heading">Viewer use device</h4>
+                        <h4 class="sec_heading">Viewer use device (Coming Soon)</h4>
                         <div id="chartContainerByDevice" style="height: 370px; width: 100%;"></div>
                      </div>
                      <div class="col-lg-6">
-                        <h4 class="sec_heading">Visited by age category</h4>
+                        <h4 class="sec_heading">Visited by age category (Coming Soon)</h4>
                         <div id="ageChartContainer" style="width: 100%; height: 360px"></div>
                      </div>
                   </div>
                </div>
 
-               <div class="analytics_data analytics_data_row4">
+               <!-- <div class="analytics_data analytics_data_row4">
                   <div class="select_box_and_btn">
                      <div class="select_location">
                         <label>Select locations</label>
@@ -143,7 +143,7 @@
                         </div>
                      </div>
                   </div>
-               </div>
+               </div> -->
                <% if (finalCompanyallReviews.length > 0) { %>
                <div class="company_dashboard_all_reviews_slider">
                   <div class="review-slider">   
@@ -252,7 +252,7 @@
                      </div>
                      <div class="col-md-6">
                         <div class="map_content">
-                           <h4>Hover on state to see top reviews</h4>
+                           <h4>(Coming Soon...)</h4>
                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum.</p>
                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum.</p>
                         </div>
@@ -292,16 +292,16 @@
                      indexLabelFontSize: 13,
                      indexLabelFontWeight: "bold",
                      dataPoints: [
-                        { y: 10, name: "Disappointing", color: "red" },
-                        { y: 10, name: "Dissatisfied", color: "#fc3003" },
-                        { y: 10, name: "Unsatisfactory", color: "#fc5603" },
-                        { y: 10, name: "inadequate", color: "#fc9003" },
-                        { y: 10, name: "Moderate", color: "#fcb503" },
-                        { y: 10, name: "Acceptable", color: "#e3fc03" },
-                        { y: 10, name: "Satisfactory", color: "#bafc03" },
-                        { y: 10, name: "Good", color: "#a1fc03" },
-                        { y: 10, name: "Impressive", color: "#80fc03" },
-                        { y: 10, name: "Excellent", color: "#03fc2c" },
+                        { y: <%= reviewReatingChartArray[0].y %>, name: "<%= allRatingTags[0].review_rating_name %>", color: "red" },
+                        { y: <%= reviewReatingChartArray[1].y %>, name: "<%= allRatingTags[1].review_rating_name %>", color: "#fc3003" },
+                        { y: <%= reviewReatingChartArray[2].y %>, name: "<%= allRatingTags[2].review_rating_name %>", color: "#fc5603" },
+                        { y: <%= reviewReatingChartArray[3].y %>, name: "<%= allRatingTags[3].review_rating_name %>", color: "#fc9003" },
+                        { y: <%= reviewReatingChartArray[4].y %>, name: "<%= allRatingTags[4].review_rating_name %>", color: "#fcb503" },
+                        { y: <%= reviewReatingChartArray[5].y %>, name: "<%= allRatingTags[5].review_rating_name %>", color: "#e3fc03" },
+                        { y: <%= reviewReatingChartArray[6].y %>, name: "<%= allRatingTags[6].review_rating_name %>", color: "#bafc03" },
+                        { y: <%= reviewReatingChartArray[7].y %>, name: "<%= allRatingTags[7].review_rating_name %>", color: "#a1fc03" },
+                        { y: <%= reviewReatingChartArray[8].y %>, name: "<%= allRatingTags[8].review_rating_name %>", color: "#80fc03" },
+                        { y: <%= reviewReatingChartArray[9].y %>, name: "<%= allRatingTags[9].review_rating_name %>", color: "#03fc2c" },
                      ]
                   }]
                });
