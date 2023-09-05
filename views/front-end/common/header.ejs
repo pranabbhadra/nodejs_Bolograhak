@@ -173,7 +173,7 @@
       </div>
     </header>
     <!-- ============== Header End =============== -->
-    <% if(!currentUserData){ %>
+    <% if(!currentUserData && (menu_active_id != 'reset-password')){ %>
     <!-- ============== Login Modal Start =============== -->
     <div class="login-modal">
       <div class="modal-logo text-center">
@@ -238,7 +238,7 @@
         </a>
       </div>
       <div class="login-modal-content">
-        <a href="#" class="login-modal-close"><img src="/front-end/images/cross.png" alt="img" width="32" height="32"></a>
+        <!-- <a href="#" class="login-modal-close"><img src="/front-end/images/cross.png" alt="img" width="32" height="32"></a> -->
         <div class="row">
           <div class="col-md-6">
             <div class="login-left">

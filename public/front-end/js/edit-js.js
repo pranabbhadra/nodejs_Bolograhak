@@ -620,11 +620,17 @@ jQuery(function ($) {
 
   });
 
-  $(window).load(function () {
-    setTimeout(function () {
-      $("#quickloginmodal").modal('show');
-    }, 10000);
-  });
+  // $(window).load(function () {
+  //   setTimeout(function () {
+  //     $("#quickloginmodal").modal('show');
+  //   }, 10000);
+  // });
+
+  
+
+  setTimeout(function () {
+    $("body").find('.login').trigger('click');
+  }, 2000);
 
   $(".quicklog").click(function (e) {
     e.preventDefault();

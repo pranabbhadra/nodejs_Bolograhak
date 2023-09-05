@@ -3429,17 +3429,18 @@ a.quick-login span + span {
     width: 100%;
     margin: 8px 0 5px 15px;
     padding: 5px 8px;
-    background: #f0f0f0;
+    background:#ffe992;
     border-radius: 4px;
     max-width: 380px;
 }
 .review-reply + .review-reply{
     margin-left: 20px;
+    background-color: #f0f0f0;
 }
 .review-reply p {
 	font-size: 15px;
 	margin: 0 0 2px;
-	font-weight: 400;
+	font-weight: 500;
 }
 .review-reply .customer-profile-info span{
     font-size: 11px;

@@ -86,7 +86,7 @@
           <span><i class="fa-solid fa-mobile"></i><a href="tel:<%= CompanyInfo.comp_phone %>"><%= CompanyInfo.comp_phone %></a></span>
           <% } %>
           <% if(CompanyInfo.tollfree_number){ %>
-          <span><i class="fa-regular fa-circle-phone"></i><a href="tel:<%= CompanyInfo.tollfree_number %>"><%= CompanyInfo.tollfree_number %></a> (TOLL-FREE)</span>
+          <span><i class="fa-regular fa-circle-phone"></i><a href="tel:<%= CompanyInfo.tollfree_number %>"><%= CompanyInfo.tollfree_number %></a></span>
           <% } %>
         </div>
         <% if(CompanyInfo.main_address){ %>
@@ -379,11 +379,11 @@
                           <img class="user_img" src="/assets/media/avatars/blank.png" alt="img" width="23" height="23">
                         <% } %>
                       </span>
-                      <span><%= review.first_name+' '+review.last_name %> <span class="c-comment-date"><%= review_date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) %></span></span>
+                      <span><%= review.first_name+' '+review.last_name %> <span class="c-comment-date"><%= review_date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></span></span>
                       <% }else{ %>
                       <span><img class="user_img" src="/front-end/images/blur-img.png" alt="img"></span>
                       <span><img src="/front-end/images/blur-name.png" alt="img"></span>
-                      <span class="c-comment-date"><%= review_date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) %></span>
+                      <span class="c-comment-date"><%= review_date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></span>
                       <% } %>
                     </div>
                     <!--Main Review End -->
@@ -391,7 +391,6 @@
                     <% if(review.review_reply.length>0){ %>
                       <% review.review_reply.forEach( reply => { %>
                         <div class="review-reply">
-                          <p><%= reply.comment %></p>
                           <div class="customer-profile-info">
                             <% const replydateString = reply.created_at; %>
                             <% const replydate = new Date(replydateString); %>
@@ -405,16 +404,17 @@
                                   <img class="user_img" src="/assets/media/avatars/blank.png" alt="img" width="23" height="23">
                                 <% } %>
                               </span>
-                              <span><%= review.first_name+' '+review.last_name %> <span class="c-comment-date"><%= replydate.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) %></span></span>
+                              <span><%= review.first_name+' '+review.last_name %> <span class="c-comment-date"><%= replydate.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></span></span>
                               <% }else{ %>
                               <span>
                                 <img class="user_img" src="/front-end/images/blur-img.png" alt="img" width="23" height="23">
                               </span>
-                              <span><img src="/front-end/images/blur-name.png" alt="img"> <span class="c-comment-date"><%= replydate.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) %></span></span>
+                              <span><img src="/front-end/images/blur-name.png" alt="img"> <span class="c-comment-date"><%= replydate.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></span></span>
                               <% }%>  
                               <!-- Customer Reply End-->
                             <% }else{ %>
                               <!-- Company Owner Reply -->
+                              <% /* %>
                               <span>
                                 <% if(CompanyInfo.logo) { %>
                                 <img class="user_img" src="/<%= CompanyInfo.logo %>" alt="img" width="23" height="23">
@@ -422,10 +422,16 @@
                                 <img class="user_img" src="/front-end/images/company-placeholder-image.png" alt="img" width="23" height="23">
                                 <% } %>
                               </span>
-                              <span><%= CompanyInfo.company_name %> <span class="c-comment-date"><%= replydate.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) %></span></span>
+                              <% */ %>
+
+                              <span class="d-flex align-items-center justify-content-between">
+                                <div class="reply-company"><strong>Reply From:</strong> <%= CompanyInfo.company_name %></div>
+                                <span class="c-comment-date"><%= replydate.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></span>
+                              </span>
                               <!-- Company Owner Reply End-->
                             <% } %>
                           </div>
+                          <p><%= reply.comment %></p>
                         </div>
                         
                         <% if(review.review_reply.length==1 && currentUserData!= null && review.customer_id == currentUserData.user_id){ %>
