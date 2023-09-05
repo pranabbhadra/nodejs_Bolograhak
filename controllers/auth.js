@@ -1873,7 +1873,7 @@ exports.contactFeedback = (req, res) => {
     const email = currentUserData.email;
     console.log(currentUserData.first_name, currentUserData.last_name, currentUserData.email);
     var mailOptions = {
-        from: 'vivek@scwebtech.com',
+        from: process.env.MAIL_USER,
         to: process.env.MAIL_SUPPORT,
         //to: 'pranab@scwebtech.com',
         subject: 'Feedback Mail From Contact',
@@ -3179,7 +3179,7 @@ exports.updateBasicCompany = (req, res) => {
     const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
     // Update company details in the company table
-    const updateQuery = 'UPDATE company SET  heading = ?, logo = ?, about_company = ?, comp_phone = ?, comp_email = ?, updated_date = ?, tollfree_number = ?, main_address = ?  WHERE ID = ?';
+    const updateQuery = 'UPDATE company SET  heading = ?, logo = ?, about_company = ?, comp_phone = ?, comp_email = ?, updated_date = ?, tollfree_number = ?, main_address = ?, operating_hours = ?  WHERE ID = ?';
     const updateValues = [
                             req.body.heading,
                             '',
@@ -3189,6 +3189,7 @@ exports.updateBasicCompany = (req, res) => {
                             formattedDate,
                             req.body.tollfree_number,
                             req.body.main_address,
+                            req.body.operating_hours,
                             companyID
                         ];
 
@@ -3247,7 +3248,7 @@ exports.updatePremiumCompany =async (req, res) => {
     const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
 
-    const { previous_cover_image, youtube_iframe, promotion_title, promotion_desc, promotion_discount, promotion_image, product_title, product_desc, product_image, facebook_url, twitter_url, instagram_url, linkedin_url, youtube_url } = req.body;
+    const { previous_cover_image, youtube_iframe, promotion_title, promotion_desc, promotion_discount, promotion_image, product_title, product_desc, product_image, facebook_url, twitter_url, instagram_url, linkedin_url, youtube_url, support_email, escalation_one, escalation_two, escalation_three } = req.body;
 
     const { cover_image, gallery_images } = req.files;
     let galleryImages = [];
@@ -3340,7 +3341,7 @@ exports.updatePremiumCompany =async (req, res) => {
 
 
     // Update company details in the company table
-    const updateQuery = 'UPDATE company SET  heading = ?, logo = ?, about_company = ?, comp_phone = ?, comp_email = ?, updated_date = ?, tollfree_number = ?, main_address = ?  WHERE ID = ?';
+    const updateQuery = 'UPDATE company SET  heading = ?, logo = ?, about_company = ?, comp_phone = ?, comp_email = ?, updated_date = ?, tollfree_number = ?, main_address = ?, operating_hours = ?  WHERE ID = ?';
     const updateValues = [
                             req.body.heading,
                             '',
@@ -3350,6 +3351,7 @@ exports.updatePremiumCompany =async (req, res) => {
                             formattedDate,
                             req.body.tollfree_number,
                             req.body.main_address,
+                            req.body.operating_hours,
                             companyID
                         ];
 
@@ -3436,8 +3438,8 @@ exports.updatePremiumCompany =async (req, res) => {
                         
 
                         //return false;
-                        const update_query = `UPDATE premium_company_data SET cover_img = ?, gallery_img = ?, youtube_iframe = ?,promotions = ?, products = ?, facebook_url = ?, twitter_url = ?, instagram_url = ?, linkedin_url = ?, youtube_url = ? WHERE company_id = ? `;
-                        const update_data = [coverImg, galleryimg, youtube_iframe, Promotion, Products, facebook_url, twitter_url, instagram_url, linkedin_url, youtube_url, companyID];
+                        const update_query = `UPDATE premium_company_data SET cover_img = ?, gallery_img = ?, youtube_iframe = ?,promotions = ?, products = ?, facebook_url = ?, twitter_url = ?, instagram_url = ?, linkedin_url = ?, youtube_url = ?, support_email = ?, escalation_one = ?, escalation_two = ?, escalation_three = ? WHERE company_id = ? `;
+                        const update_data = [coverImg, galleryimg, youtube_iframe, Promotion, Products, facebook_url, twitter_url, instagram_url, linkedin_url, youtube_url, support_email, escalation_one, escalation_two, escalation_three, companyID];
                         db.query(update_query, update_data, (update_err,update_result)=>{
                             if (update_err) {
                                 // Handle the error
@@ -3462,8 +3464,8 @@ exports.updatePremiumCompany =async (req, res) => {
                         const Products = JSON.stringify(ProductData);
                         const Promotion = JSON.stringify(PromotionalData);
 
-                        const premium_query = `INSERT INTO premium_company_data ( company_id, cover_img, gallery_img, youtube_iframe, promotions, products, facebook_url, twitter_url, instagram_url, linkedin_url, youtube_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-                        const premium_data = [companyID, coverImg, galleryimg, youtube_iframe, Promotion, Products, facebook_url, twitter_url, instagram_url, linkedin_url, youtube_url];
+                        const premium_query = `INSERT INTO premium_company_data ( company_id, cover_img, gallery_img, youtube_iframe, promotions, products, facebook_url, twitter_url, instagram_url, linkedin_url, youtube_url, support_email, escalation_one, escalation_two, escalation_three) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+                        const premium_data = [companyID, coverImg, galleryimg, youtube_iframe, Promotion, Products, facebook_url, twitter_url, instagram_url, linkedin_url, youtube_url, support_email, escalation_one, escalation_two, escalation_three];
                         db.query(premium_query, premium_data, (premium_err, premium_result)=>{
                             if (premium_err) {
                                 // Handle the error
@@ -3833,122 +3835,20 @@ exports.submitReviewReply = async (req, res) => {
                     }else {
                         console.log(results.insertId);
                         const mailReplyData =await comFunction2.ReviewReplyTo(results.insertId)
+
                         console.log('MailSendTo',mailReplyData);
-                        var mailOptions = {
-                            from: process.env.MAIL_USER,
-                            //to: 'pranab@scwebtech.com',
-                            to: mailReplyData[0].email,
-                            subject: 'Review Reply Email',
-                            html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
-                            <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
-                             <tbody>
-                              <tr>
-                               <td align="center" valign="top">
-                                 <div id="template_header_image"><p style="margin-top: 0;"></p></div>
-                                 <table id="template_container" style="box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; background-color: #fdfdfd; border: 1px solid #dcdcdc; border-radius: 3px !important;" border="0" cellpadding="0" cellspacing="0" width="600">
-                                  <tbody>
-                                    <tr>
-                                     <td align="center" valign="top">
-                                       <!-- Header -->
-                                       <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
-                                         <tbody>
-                                           <tr>
-                                           <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
-                                            <td id="header_wrapper" style="padding: 36px 48px; display: block;">
-                                               <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Review Reply</h1>
-                                            </td>
-                      
-                                           </tr>
-                                         </tbody>
-                                       </table>
-                                 <!-- End Header -->
-                                 </td>
-                                    </tr>
-                                    <tr>
-                                     <td align="center" valign="top">
-                                       <!-- Body -->
-                                       <table id="template_body" border="0" cellpadding="0" cellspacing="0" width="600">
-                                         <tbody>
-                                           <tr>
-                                            <td id="body_content" style="background-color: #fdfdfd;" valign="top">
-                                              <!-- Content -->
-                                              <table border="0" cellpadding="20" cellspacing="0" width="100%">
-                                               <tbody>
-                                                <tr>
-                                                 <td style="padding: 48px;" valign="top">
-                                                   <div id="body_content_inner" style="color: #737373; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
-                                                    
-                                                    <table border="0" cellpadding="4" cellspacing="0" width="90%">
-                                                      <tr>
-                                                        <td colspan="2">
-                                                        <strong>Hello ${mailReplyData[0].first_name},</strong>
-                                                        <p style="font-size:15px; line-height:20px">You got a reply for your reviews.</p>
-                                                        </td>
-                                                      </tr>
-                                                    </table>
-                                                    
-                                                   </div>
-                                                 </td>
-                                                </tr>
-                                               </tbody>
-                                              </table>
-                                            <!-- End Content -->
-                                            </td>
-                                           </tr>
-                                         </tbody>
-                                       </table>
-                                     <!-- End Body -->
-                                     </td>
-                                    </tr>
-                                    <tr>
-                                     <td align="center" valign="top">
-                                       <!-- Footer -->
-                                       <table id="template_footer" border="0" cellpadding="10" cellspacing="0" width="600">
-                                        <tbody>
-                                         <tr>
-                                          <td style="padding: 0; -webkit-border-radius: 6px;" valign="top">
-                                           <table border="0" cellpadding="10" cellspacing="0" width="100%">
-                                             <tbody>
-                                               <tr>
-                                                <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
-                                                     <p>This email was sent from <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a></p>
-                                                </td>
-                                               </tr>
-                                             </tbody>
-                                           </table>
-                                          </td>
-                                         </tr>
-                                        </tbody>
-                                       </table>
-                                     <!-- End Footer -->
-                                     </td>
-                                    </tr>
-                                  </tbody>
-                                 </table>
-                               </td>
-                              </tr>
-                             </tbody>
-                            </table>
-                           </div>`
-                          }
-                        await mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
-                            if (err) {
-                                console.log(err);
-                                return res.send({
-                                    status: 'not ok',
-                                    message: 'Something went wrong'
-                                });
-                            } else {
-                                console.log('Mail Send: ', info.response);
-                                
-                            }
-                        })
+                        if(mailReplyData[0].customer_id == req.body.reply_to ){
+                            await comFunction2.ReviewReplyToCustomer(mailReplyData)
+                        }else{
+                            await comFunction2.ReviewReplyToCompany(mailReplyData)
+                        }
+                       
 
                         return res.send(
                             {
                                 status: 'ok',
                                 data: '',
-                                message: 'Reply successfully submitted'
+                                message: 'Reply Successfully Sent'
                             }
                         );
                     }

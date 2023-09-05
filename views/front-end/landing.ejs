@@ -169,7 +169,7 @@
                             </div>
                             <% const dateString = latestReview.created_at; %>
                             <% const date = new Date(dateString); %>
-                            <div class="user-review-date"><%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) %></div>
+                            <div class="user-review-date"><%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></div>
                           </div>
                           
                           <% if(latestReview.review_reply_count==1 && currentUserData!= null && currentUserData.user_id == latestReview.customer_id ){ %>

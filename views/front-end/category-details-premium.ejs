@@ -104,9 +104,11 @@
                                     <span><i class="fa-regular fa-circle-phone"></i><a href="tel:<%= company.tollfree_number  %>"><%= company.tollfree_number  %></a></span>
                                 <% } %> -->
                             </div>
-                            <div class="company-contact-info">
-                                <span><i class="fa-solid fa-clock"></i>Operiting hours: 11 AM to 11:30 PM / All Days</span>
-                            </div>
+                            <% if(company && company.operating_hours ) { %>
+                                <div class="company-contact-info">
+                                  <span><i class="fa-solid fa-clock"></i><%=  company.operating_hours %></span>
+                                </div>
+                            <% } %>
                             <% if(company && company.main_address){ %>
                                 <div class="company-contact-info">
                                     <span><i class="fa-solid fa-location-dot"></i><a href="#"><%= company.main_address  %></a></span>
@@ -118,10 +120,18 @@
                                 <% if(company && company.tollfree_number){ %>
                                     <div class="d-flex align-items-center"><i class="fa-regular fa-circle-phone"></i><a href="tel:<%= company.tollfree_number  %>"><%= company.tollfree_number  %></a></div>
                                 <% } %>
-                                <div class="d-flex align-items-center"><i class="fa-solid fa-envelope"></i><a href="mailto:customerSupport@gmail.com">customerSupport@gmail.com</a></div>
-                                <div class="d-flex align-items-center"><i class="fa-regular fa-circle-phone"></i><a href="#">Escalation 1: 8974561890</a></div>
-                                <div class="d-flex align-items-center"><i class="fa-regular fa-circle-phone"></i><a href="#">Escalation 2: 8974561890</a></div>
-                                <div class="d-flex align-items-center"><i class="fa-regular fa-circle-phone"></i><a href="#">Escalation 3: 8974561890</a></div>
+                                <% if(support_data && support_data.support_email){ %>
+                                    <div class="d-flex align-items-center"><i class="fa-solid fa-envelope"></i><a href="mailto:<%= support_data.support_email %>"><%= support_data.support_email %></a></div>
+                                <% } %>
+                                <% if(support_data && support_data.escalation_one){ %>
+                                    <div class="d-flex align-items-center"><i class="fa-regular fa-circle-phone"></i><a href="#"><%= support_data.escalation_one %></a></div>
+                                <% } %>
+                                <% if(support_data && support_data.escalation_two){ %>
+                                    <div class="d-flex align-items-center"><i class="fa-regular fa-circle-phone"></i><a href="#"><%= support_data.escalation_two %></a></div>
+                                <% } %>
+                                <% if(support_data && support_data.escalation_three){ %>
+                                    <div class="d-flex align-items-center"><i class="fa-regular fa-circle-phone"></i><a href="#"><%= support_data.escalation_three %></a></div>
+                                <% } %>
                             </div>
                         </div>
                     </div>

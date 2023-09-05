@@ -499,6 +499,7 @@ router.get('/company/:id', checkCookieValue, async (req, res) => {
     let instagram_url = '';
     let linkedin_url = '';
     let youtube_url = '';
+    let support_data = {};
 
     if(typeof PremiumCompanyData !== 'undefined' ){
          cover_img = PremiumCompanyData.cover_img;
@@ -511,6 +512,7 @@ router.get('/company/:id', checkCookieValue, async (req, res) => {
          instagram_url = PremiumCompanyData.instagram_url;
          linkedin_url = PremiumCompanyData.linkedin_url;
          youtube_url = PremiumCompanyData.youtube_url;
+         support_data = {support_email:PremiumCompanyData.support_email,	escalation_one:PremiumCompanyData.escalation_one, escalation_two:PremiumCompanyData.escalation_two, escalation_three:PremiumCompanyData.escalation_three}
         
     }
 
@@ -537,6 +539,7 @@ router.get('/company/:id', checkCookieValue, async (req, res) => {
                 instagram_url:instagram_url,
                 linkedin_url:linkedin_url,
                 youtube_url:youtube_url,
+                support_data:support_data,
             });
         }else{
             res.render('front-end/company-details',
@@ -600,9 +603,9 @@ router.get('/company-dashboard/:compID', checkClientClaimedCompany, async (req, 
     const encodedUserData = req.cookies.user;
     const currentUserData = JSON.parse(encodedUserData);
     //let currentUserData = JSON.parse(req.userData);
-
+    const userId = currentUserData.user_id;
     const companyId = req.params.compID;
-    const [globalPageMeta, company, companyReviewNumbers, allRatingTags, allCompanyReviews, allCompanyReviewTags, PremiumCompanyData, reviewTagsCount] = await Promise.all([
+    const [globalPageMeta, company, companyReviewNumbers, allRatingTags, allCompanyReviews, allCompanyReviewTags, PremiumCompanyData, reviewTagsCount, TotalReplied] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
         comFunction.getCompany(companyId),
         comFunction.getCompanyReviewNumbers(companyId),
@@ -610,8 +613,10 @@ router.get('/company-dashboard/:compID', checkClientClaimedCompany, async (req, 
         comFunction.getAllReviewsByCompanyID(companyId),
         comFunction2.getAllReviewTags(),
         comFunction2.getPremiumCompanyData(companyId),
-        comFunction.reviewTagsCountByCompanyID(companyId)
+        comFunction.reviewTagsCountByCompanyID(companyId),
+        comFunction2.TotalReplied(userId),
     ]);
+    //console.log('TotalReplied:', currentUserData.user_id);
 
     let facebook_url = '';
     let twitter_url = '';
@@ -663,7 +668,8 @@ router.get('/company-dashboard/:compID', checkClientClaimedCompany, async (req, 
             allRatingTags,
             finalCompanyallReviews,
             reviewReatingChartArray,
-            reviewTagsCount
+            reviewTagsCount,
+            TotalReplied:TotalReplied
         });
     }else{
         // res.json( 
@@ -696,8 +702,29 @@ router.get('/company-dashboard/:compID', checkClientClaimedCompany, async (req, 
             instagram_url:instagram_url,
             linkedin_url:linkedin_url,
             youtube_url:youtube_url,
-            reviewTagsCount
+            reviewTagsCount,
+            TotalReplied:TotalReplied
         });
+
+        // res.json(
+        // { 
+        //     menu_active_id: 'company-dashboard', 
+        //     page_title: 'Company Dashboard', 
+        //     currentUserData, 
+        //     globalPageMeta:globalPageMeta,
+        //     company,
+        //     companyReviewNumbers,
+        //     allRatingTags,
+        //     finalCompanyallReviews,
+        //     reviewReatingChartArray,
+        //     facebook_url:facebook_url,
+        //     twitter_url:twitter_url,
+        //     instagram_url:instagram_url,
+        //     linkedin_url:linkedin_url,
+        //     youtube_url:youtube_url,
+        //     reviewTagsCount,
+        //     TotalReplied:TotalReplied
+        // });
     }
 });
 
@@ -740,6 +767,7 @@ router.get('/company-profile-management/:compID', checkClientClaimedCompany, asy
         let instagram_url = '';
         let linkedin_url = '';
         let youtube_url = '';
+        let support_data = {};
     
         if(typeof PremiumCompanyData !== 'undefined' ){
              cover_img = PremiumCompanyData.cover_img;
@@ -752,6 +780,7 @@ router.get('/company-profile-management/:compID', checkClientClaimedCompany, asy
              instagram_url = PremiumCompanyData.instagram_url;
              linkedin_url = PremiumCompanyData.linkedin_url;
              youtube_url = PremiumCompanyData.youtube_url;
+             support_data = {support_email:PremiumCompanyData.support_email,	escalation_one:PremiumCompanyData.escalation_one, escalation_two:PremiumCompanyData.escalation_two, escalation_three:PremiumCompanyData.escalation_three}
         }
         
         res.render('front-end/premium-company-profile-management', 
@@ -771,6 +800,7 @@ router.get('/company-profile-management/:compID', checkClientClaimedCompany, asy
             instagram_url:instagram_url,
             linkedin_url:linkedin_url,
             youtube_url:youtube_url,
+            support_data:support_data,
             companyReviewNumbers,
             getCompanyReviews,
             allRatingTags

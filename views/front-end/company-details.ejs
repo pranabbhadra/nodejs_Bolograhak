@@ -89,6 +89,11 @@
           <span><i class="fa-regular fa-circle-phone"></i><a href="tel:<%= CompanyInfo.tollfree_number %>"><%= CompanyInfo.tollfree_number %></a></span>
           <% } %>
         </div>
+        <% if(company && company.operating_hours ) { %>
+          <div class="company-contact-info">
+            <span><i class="fa-solid fa-clock"></i><%=  company.operating_hours %></span>
+          </div>
+        <% } %>
         <% if(CompanyInfo.main_address){ %>
         <div class="company-contact-info">
           <span><i class="fa-solid fa-location-dot"></i><a <% if(CompanyInfo.address_map_url){ %>href="<%= CompanyInfo.address_map_url %>"<% } %> target="_blank"><%= CompanyInfo.main_address %></a></span>
