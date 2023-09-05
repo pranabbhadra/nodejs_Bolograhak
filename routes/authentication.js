@@ -18,12 +18,12 @@ const storage = multer.diskStorage({
         cb(null, 'uploads/');
     },
     filename: function (req, file, cb) {
-        // const originalname = file.originalname;
-        // const sanitizedFilename = originalname.replace(/[^a-zA-Z0-9\-\_\.]/g, ''); // Remove symbols and spaces
-        // const filename = Date.now() + '-' + sanitizedFilename;
-        // cb(null, filename);
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, file.fieldname + '-' + uniqueSuffix);
+        const originalname = file.originalname;
+        const sanitizedFilename = originalname.replace(/[^a-zA-Z0-9\-\_\.]/g, ''); // Remove symbols and spaces
+        const filename = Date.now() + '-' + sanitizedFilename;
+        cb(null, filename);
+        // const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        // cb(null, file.fieldname + '-' + uniqueSuffix);
     }
 });
 // Create multer instance
@@ -37,7 +37,10 @@ router.post('/createcompany',verifyToken, upload.single('logo') ,authenControlle
 router.put('/editcompany',verifyToken, upload.single('logo') ,authenController.editcompany);
 router.post('/createcompanylocation',verifyToken, authenController.createcompanylocation);
 router.post('/submitReview',verifyToken, authenController.submitReview);
-
+//forget password
+router.post('/forgotPassword',verifyToken, authenController.forgotPassword);
+router.post('/resetPassword', verifyToken, authenController.resetPassword);
+router.post('/changePassword', verifyToken, authenController.changePassword);
 //----------Get API Start----------------//
 //get user details
 router.get('/getUserDetails/:user_id', verifyToken, async (req, res) => {
@@ -118,11 +121,12 @@ router.get('/getComapniesDetails/:ID', verifyToken, async (req, res) => {
     const companyId = req.params.ID; 
     console.log("companyId from request:", companyId); 
     try {
-        const [company, companyreviews, allCompanyReviewTags, userReview] = await Promise.all([
+        const [company, companyreviews, allCompanyReviewTags, userReview,copmanyratings] = await Promise.all([
           comFunction.getCompany(companyId),
           comFunction.getCompanyReviews(companyId),
           comFunction2.getAllReviewTags(),
           comFunction.getUserReview(),
+          comFunction.getCompanyRatings(companyId),
         ]);
 
         if (company) {
@@ -146,6 +150,7 @@ router.get('/getComapniesDetails/:ID', verifyToken, async (req, res) => {
                 data: {
                     company,
                     companyreviews: finalCompanyallReviews,
+                    copmanyratings
                     //allCompanyReviewTags
                 },
                 message: 'company data successfully received'
@@ -731,5 +736,3 @@ module.exports = router;
 
 
 
-
-  

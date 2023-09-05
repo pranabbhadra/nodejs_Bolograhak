@@ -15,10 +15,13 @@ const cookieParser = require('cookie-parser');
 const secretKey = 'grahak-secret-key';
 const path = require('path');
 const multer = require('multer');
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
 
 const app = express();
 
-const comFunction = require('../common_function');
+const comFunction = require('../common_function_api');
+const comFunction2 = require('../common_function2');;
 const axios = require('axios');
 //const cookieParser = require('cookie-parser');
 app.use(cookieParser());
@@ -28,12 +31,12 @@ const storage = multer.diskStorage({
       cb(null, 'uploads/');
   },
   filename: function (req, file, cb) {
-      // const originalname = file.originalname;
-      // const sanitizedFilename = originalname.replace(/[^a-zA-Z0-9\-\_\.]/g, ''); // Remove symbols and spaces
-      // const filename = Date.now() + '-' + sanitizedFilename;
-      // cb(null, filename);
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-      cb(null, file.fieldname + '-' + uniqueSuffix);
+      const originalname = file.originalname;
+      const sanitizedFilename = originalname.replace(/[^a-zA-Z0-9\-\_\.]/g, ''); // Remove symbols and spaces
+      const filename = Date.now() + '-' + sanitizedFilename;
+      cb(null, filename);
+      // const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      // cb(null, file.fieldname + '-' + uniqueSuffix);
   }
 });
 // Create multer instance
@@ -381,220 +384,246 @@ exports.login = (req, res) => {
     })
 }
 //edit user
-exports.edituser = (req, res) => {
-    const authenticatedUserId = parseInt(req.user.user_id);
-    console.log('authenticatedUserId: ', authenticatedUserId);
-    const ApiuserId=parseInt(req.body.user_id);
-    console.log('req.body.user_id: ', parseInt(req.body.user_id));
-    const {
-        user_id,
-        first_name,
-        last_name,
-        phone,
-        address,
-        country,
-        state,
-        city,
-        zip,
-        date_of_birth,
-        occupation,
-        gender,
-        alternate_phone,
-        marital_status,
-        about
-    } = req.body;
-    console.log("user_id from request:", req.body.user_id);
-    if (ApiuserId !== authenticatedUserId) {
-      return res.status(403).json({
-          status: 'error',
-          message: 'Access denied: You are not authorized to update this user.',
-      });
-    }
-    const profilePicFile = req.file;
-    const userUpdateQuery = 'UPDATE users SET first_name=?, last_name=?, phone=? WHERE user_id=?';
-    const userUpdateValues = [first_name, last_name, phone, user_id];
-
-    let userMetaUpdateQuery = 'UPDATE user_customer_meta SET address=?, country=?, state=?, city=?, zip=?, date_of_birth=?, occupation=?, gender=?, alternate_phone=?, marital_status=?, about=?';
-    let userMetaUpdateValues = [address, country, state, city, zip, date_of_birth, occupation, gender, alternate_phone, marital_status, about];
-
-    if (profilePicFile) {
-        db.query(
-            'SELECT profile_pic FROM user_customer_meta WHERE user_id=?',
-            [user_id],
-            (prevProfilePicErr, prevProfilePicResult) => {
-                if (prevProfilePicErr) {
-                    console.error('Error fetching previous profile_pic:', prevProfilePicErr);
-                    return res.status(500).json({
-                        status: 'error',
-                        message: 'An error occurred while fetching previous profile_pic'+prevProfilePicErr,
-                    });
-                }
-                if (prevProfilePicResult && prevProfilePicResult.length > 0 ){
-                  const previousProfilePicFilename = prevProfilePicResult[0].profile_pic;
-                  if (previousProfilePicFilename) {
-                    const previousProfilePicPath = 'uploads/' + previousProfilePicFilename
-                    console.log(previousProfilePicPath)
-                    //const previousProfilePicPath = 'uploads/' + prevProfilePicResult[0].profile_pic;
-                    fs.unlink(previousProfilePicPath, (unlinkError) => {
-                        if (unlinkError) {
-                            console.error('Error deleting previous profile_pic:', unlinkError);
-                        }
-                        db.query(
-                          'UPDATE user_customer_meta SET profile_pic=? WHERE user_id=?',
-                          [profilePicFile.filename, user_id],
-                          (err, results) => {
-                              if (err) {
-                                  return res.status(500).json({
-                                      status: 'error',
-                                      message: 'An error occurred while updating the profile picture',
-                                  });
-                              }
-                        updateUserInformation();
-                    });
-                  })
-                }
-                else {
-                    updateUserInformation();
-                    console.log('Previous profile picture deleted');
-                }
-            }
-          }
-        );
-    } else {
-        updateUserInformation();
-    }
-
-    function updateUserInformation() {
-        userMetaUpdateQuery += ' WHERE user_id=?';
-        userMetaUpdateValues.push(user_id);
-
-        db.query(userUpdateQuery, userUpdateValues, (err, userUpdateResults) => {
-            if (err) {
-                return res.status(500).json({
-                    status: 'error',
-                    message: 'An error occurred while updating user information',
-                    err
-                });
-            }
-
-            db.query(userMetaUpdateQuery, userMetaUpdateValues, (err, userMetaUpdateResults) => {
-                if (err) {
-                    return res.status(500).json({
-                        status: 'error',
-                        message: 'An error occurred while updating user information',
-                    });
-                }
-
-                db.query(
-                    'SELECT * FROM users u LEFT JOIN user_customer_meta m ON u.user_id = m.user_id WHERE u.user_id=?',
-                    [user_id],
-                    (err, updatedUserDetails) => {
-                        if (err) {
-                            console.error('Error fetching updated user details:', err);
-                            return res.status(500).json({
-                                status: 'error',
-                                message: 'An error occurred while fetching updated user details',
-                            });
-                        }
-                        delete updatedUserDetails[0].password;
-                        if (updatedUserDetails && updatedUserDetails.length > 0) {
-                            return res.json({
-                                status: 'success',
-                                data: updatedUserDetails[0], // Return the updated user details
-                                message: 'User information updated successfully',
-                            });
-                        } else {
-                            return res.status(404).json({
-                                status: 'error',
-                                message: 'User not found',
-                            });
-                        }
-                    }
-                );
-            });
-        });
-    }
-};
-
-
-
 // exports.edituser = (req, res) => {
-//   const { user_id, first_name, last_name,phone, address, country, state, city, zip, date_of_birth,occupation, gender } = req.body;
-//   console.log(req.body)
-//   db.query(
-//       'UPDATE users SET first_name=?, last_name=?,phone=? WHERE user_id=?',
-//       [first_name, last_name, phone,user_id],
-//       (err, results) => {
-//           if (err) {
-//               return res.status(500).json({
-//                   status: 'error',
-//                   message: 'An error occurred while updating user information',
-//               });
-//           }
+//     const authenticatedUserId = parseInt(req.user.user_id);
+//     console.log('authenticatedUserId: ', authenticatedUserId);
+//     const ApiuserId=parseInt(req.body.user_id);
+//     console.log('req.body.user_id: ', parseInt(req.body.user_id));
+//     const {
+//         user_id,
+//         first_name,
+//         last_name,
+//         phone,
+//         address,
+//         country,
+//         state,
+//         city,
+//         zip,
+//         date_of_birth,
+//         occupation,
+//         gender,
+//         alternate_phone,
+//         marital_status,
+//         about
+//     } = req.body;
+//     console.log(req.body);
+//     console.log("user_id from request:", req.body.user_id);
+//     if (ApiuserId !== authenticatedUserId) {
+//       return res.status(403).json({
+//           status: 'error',
+//           message: 'Access denied: You are not authorized to update this user.',
+//       });
+//     }
+//     const profilePicFile = req.file;
+//     console.log("profile_pic",req.file)
+//     const userUpdateQuery = 'UPDATE users SET first_name=?, last_name=?, phone=? WHERE user_id=?';
+//     const userUpdateValues = [first_name, last_name, phone, user_id];
 
-//           db.query(
-//               'UPDATE user_customer_meta SET address=?, country=?, state=?, city=?, zip=?, date_of_birth=?, occupation=?, gender=? WHERE user_id=?',
-//               [address, country, state, city, zip, date_of_birth, occupation, gender, user_id],
-//               (err, results) => {
-//                   if (err) {
-//                       return res.status(500).json({
-//                           status: 'error',
-//                           message: 'An error occurred while updating user information',
-//                       });
-//                   }
-//                   const profilePicFile = req.file;
-//                   if (!profilePicFile) {
-//                       return res.status(400).json({
-//                           status: 'error',
-//                           message: 'Profile picture file is required',
-//                       });
-//                   }
-//                   db.query(
-//                       'SELECT profile_pic FROM user_customer_meta WHERE user_id=?',
-//                       [user_id],
-//                       (err, result) => {
-//                           if (err) {
-//                               console.error('Error fetching previous profile picture:', err);
-//                           }
+//     let userMetaUpdateQuery = 'UPDATE user_customer_meta SET address=?, country=?, state=?, city=?, zip=?, date_of_birth=?, occupation=?, gender=?, alternate_phone=?, marital_status=?, about=?';
+//     let userMetaUpdateValues = [address, country, state, city, zip, date_of_birth, occupation, gender, alternate_phone, marital_status, about];
 
-//                           if (result && result.length > 0) {
-//                               const previousProfilePicFilename = result[0].profile_pic;
-//                               if (previousProfilePicFilename) {
-//                                   const previousProfilePicPath = 'uploads/' + previousProfilePicFilename;
-//                                   fs.unlink(previousProfilePicPath, (err) => {
-//                                       if (err) {
-//                                           console.error('Error deleting previous profile picture:', err);
-//                                       } else {
-//                                           console.log('Previous profile picture deleted');
-//                                       }
-//                                   });
-//                               }
-//                           }
+//     if (profilePicFile) {
+//         db.query(
+//             'SELECT profile_pic FROM user_customer_meta WHERE user_id=?',
+//             [user_id],
+//             (prevProfilePicErr, prevProfilePicResult) => {
+//                 if (prevProfilePicErr) {
+//                     console.error('Error fetching previous profile_pic:', prevProfilePicErr);
+//                     return res.status(500).json({
+//                         status: 'error',
+//                         message: 'An error occurred while fetching previous profile_pic'+prevProfilePicErr,
+//                     });
+//                 }
+//                 console.log("usersss",prevProfilePicResult)
+//                 if (prevProfilePicResult && prevProfilePicResult.length > 0 ){
+//                   const previousProfilePicFilename = prevProfilePicResult[0].profile_pic;
+//                   console.log("previous",previousProfilePicFilename)
+//                   if (previousProfilePicFilename) {
+//                     const previousProfilePicPath = 'uploads/' + previousProfilePicFilename
+//                     console.log(previousProfilePicPath)
+//                     //const previousProfilePicPath = 'uploads/' + prevProfilePicResult[0].profile_pic;
+//                     fs.unlink(previousProfilePicPath, (unlinkError) => {
+//                       if (unlinkError) {
+//                           console.error('Error deleting previous profile_pic:', unlinkError);
+//                       } else {
+//                           console.log('Previous profile picture deleted');
 //                           db.query(
 //                               'UPDATE user_customer_meta SET profile_pic=? WHERE user_id=?',
 //                               [profilePicFile.filename, user_id],
 //                               (err, results) => {
 //                                   if (err) {
+//                                       console.error('Error updating profile picture in database:', err);
 //                                       return res.status(500).json({
 //                                           status: 'error',
 //                                           message: 'An error occurred while updating the profile picture',
 //                                       });
 //                                   }
-
-//                                   return res.json({
-//                                       status: 'success',
-//                                       data: "",
-//                                       message: 'User information updated successfully',
-//                                   });
+//                                   updateUserInformation();
 //                               }
 //                           );
 //                       }
-//                   );
+//                   });
 //               }
-//           );
+//             }
+//             })                
+                  
+//     } else {
+//         updateUserInformation();
+//     }
+
+//     function updateUserInformation() {
+//       userMetaUpdateQuery += ' WHERE user_id=?';
+//       userMetaUpdateValues.push(user_id);
+  
+//       if (profilePicFile) {
+//           userMetaUpdateQuery += ', profile_pic=?';
+//           userMetaUpdateValues.push(profilePicFile.filename);
 //       }
-//   );
+  
+//       db.query(userUpdateQuery, userUpdateValues, (err, userUpdateResults) => {
+//           if (err) {
+//               return res.status(500).json({
+//                   status: 'error',
+//                   message: 'An error occurred while updating user information',
+//                   err
+//               });
+//           }
+  
+//           db.query(userMetaUpdateQuery, userMetaUpdateValues, (err, userMetaUpdateResults) => {
+//               if (err) {
+//                   return res.status(500).json({
+//                       status: 'error',
+//                       message: 'An error occurred while updating user information',
+//                   });
+//               }
+  
+//               db.query(
+//                   'SELECT * FROM users u LEFT JOIN user_customer_meta m ON u.user_id = m.user_id WHERE u.user_id=?',
+//                   [user_id],
+//                   (err, updatedUserDetails) => {
+//                       if (err) {
+//                           console.error('Error fetching updated user details:', err);
+//                           return res.status(500).json({
+//                               status: 'error',
+//                               message: 'An error occurred while fetching updated user details',
+//                           });
+//                       }
+//                       delete updatedUserDetails[0].password;
+//                       if (updatedUserDetails && updatedUserDetails.length > 0) {
+//                           return res.json({
+//                               status: 'success',
+//                               data: updatedUserDetails[0], // Return the updated user details
+//                               message: 'User information updated successfully',
+//                           });
+//                       } else {
+//                           return res.status(404).json({
+//                               status: 'error',
+//                               message: 'User not found',
+//                           });
+//                       }
+//                   }
+//               );
+//           });
+//       });
+//   }
+  
 // };
+//new
+
+
+exports.edituser = (req, res) => {
+  console.log(req.body);
+  const authenticatedUserId = parseInt(req.user.user_id);
+  console.log('authenticatedUserId: ', authenticatedUserId);
+  const userId=parseInt(req.body.user_id);
+  console.log('req.body.user_id: ', parseInt(req.body.user_id));
+  // Update the user's data
+  const updateQuery = 'UPDATE users SET first_name = ?, last_name = ?, phone = ?, user_type_id = ? WHERE user_id = ?';
+  console.log("user_id from request:", req.body.user_id);
+  if (userId !== authenticatedUserId) {
+    return res.status(403).json({
+        status: 'error',
+        message: 'Access denied: You are not authorized to update this user.',
+    });
+  }
+  db.query(updateQuery, [req.body.first_name, req.body.last_name, req.body.phone,req.body.user_type_id, userId], (updateError, updateResults) => {
+
+      if (updateError) {
+          //console.log(updateError);
+          return res.send(
+              {
+                  status: 'err',
+                  data: '',
+                  message: 'An error occurred while processing your request' + updateError
+              }
+          )
+      } else {
+          // Update the user's meta data
+          if (req.file) {
+              // delete the previous file
+              const unlinkprofilePicture = "uploads/" + req.body.previous_profile_pic;
+               console.log('unlinkprofilePicture:', unlinkprofilePicture);
+               if (unlinkprofilePicture !== 'undefined') {
+              fs.unlink(unlinkprofilePicture, (err) => {
+                  if (err) {
+                      console.error('Error deleting file:', err);
+                  } else {
+                      console.log('Previous file deleted');
+                  }
+              });
+            }
+              const profilePicture = req.file;
+              console.log(profilePicture);
+
+              const updateQueryMeta = 'UPDATE user_customer_meta SET address = ?, country = ?, state = ?, city = ?, zip = ?, date_of_birth = ?, occupation = ?, gender = ?, profile_pic = ?, alternate_phone = ?, about = ? WHERE user_id = ?';
+              db.query(updateQueryMeta, [req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, req.body.date_of_birth, req.body.occupation, req.body.gender, req.file.filename, req.body.alternate_phone, req.body.about, userId], (updateError, updateResults) => {
+                  if (updateError) {
+                      return res.send(
+                          {
+                              status: 'err',
+                              data: userId,
+                              message: 'An error occurred while processing your request' + updateError
+                          }
+                      )
+                  } else {
+                      return res.send(
+                          {
+                              status: 'ok',
+                              data: userId,
+                              message: 'Update Successfull'
+                          }
+                      )
+                  }
+              });
+
+          } else {
+              const updateQueryMeta = 'UPDATE user_customer_meta SET address = ?, country = ?, state = ?, city = ?, zip = ?, date_of_birth = ?, occupation = ?, gender = ?,profile_pic = ?, alternate_phone = ?, about = ? WHERE user_id = ?';
+              db.query(updateQueryMeta, [req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, req.body.date_of_birth, req.body.occupation, req.body.gender,req.file.filename,req.body.alternate_phone, req.body.about, userId], (updateError, updateResults) => {
+                  if (updateError) {
+                      return res.send(
+                          {
+                              status: 'err',
+                              data: '',
+                              message: 'An error occurred while processing your request' + updateError
+                          }
+                      )
+                  } else {
+                      return res.send(
+                          {
+                              status: 'ok',
+                              data: userId,
+                              message: 'Update Successfull'
+                          }
+                      )
+                  }
+              });
+          }
+
+      }
+
+  });
+}
+
 
 
 
@@ -977,151 +1006,208 @@ exports.createcompanylocation = (req, res) => {
 };
 
 
+//submit review 
+
 exports.submitReview = async (req, res) => {
 
-  try {
-    const authenticatedUserId = parseInt(req.user.user_id);
-    console.log('authenticatedUserId: ', authenticatedUserId);
-    const ApiuserId=parseInt(req.body.user_id);
-    console.log('req.body.user_id: ', parseInt(req.body.user_id));
-    const {
-      user_id,
-      company_name,
-      address,
-      rating,
-      review_title,
-      review_content,
-      user_privacy,
-      tags
-    } = req.body;
-    console.log("user_id from request:", req.body.user_id);
-    if (ApiuserId !== authenticatedUserId) {
-      return res.status(403).json({
-          status: 'error',
-          message: 'Access denied: You are not authorized to update this user.',
-      });
-    }
-    const currentDate = new Date();
-    const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
-
-    // Check if the company already exists
-    const companyCheckQuery = 'SELECT id FROM company WHERE company_name = ?';
-    const [companyCheckResults] = await db.promise().query(companyCheckQuery, [company_name]);
-
-    let companyID;
-    let company_location_id;
-    // Check if the address already exists
-    const addressCheckQuery = 'SELECT ID FROM company_location WHERE address = ?';
-    const [addressCheckResults] = await db.promise().query(addressCheckQuery, [address]);
-
-    if (companyCheckResults.length === 0) {
-      // Company does not exist, create it
-      const createCompanyQuery = 'INSERT INTO company (user_created_by, company_name, status, created_date, updated_date) VALUES (?, ?, ?, ?, ?)';
-      const createCompanyValues = [user_id, company_name, '2', formattedDate, formattedDate];
-
-      const [createCompanyResults] = await db.promise().query(createCompanyQuery, createCompanyValues);
-      companyID = createCompanyResults.insertId;
-
-      // Create company address
-      const createAddressQuery = 'INSERT INTO company_location (company_id, address) VALUES (?, ?)';
-      const createAddressValues = [companyID, address];
-      const [createAddressResults] = await db.promise().query(createAddressQuery, createAddressValues);
-
-      console.log("createAddressResults:", createAddressResults); 
-
-      company_location_id = createAddressResults.insertId;
-
-    } else {
-      companyID = companyCheckResults[0].id;
-
-      if (addressCheckResults.length === 0) {
-        // Address does not exist, create it
+    try {
+      const authenticatedUserId = parseInt(req.user.user_id);
+      console.log('authenticatedUserId: ', authenticatedUserId);
+      const ApiuserId=parseInt(req.body.user_id);
+      console.log('req.body.user_id: ', parseInt(req.body.user_id));
+      const {
+        user_id,
+        company_name,
+        address,
+        rating,
+        review_title,
+        review_content,
+        user_privacy,
+        tags
+      } = req.body;
+      console.log("Rating from request:", rating);
+      console.log("Review Content from request:", review_content);
+      console.log("user_id from request:", req.body.user_id);
+      if (ApiuserId !== authenticatedUserId) {
+        return res.status(403).json({
+            status: 'error',
+            message: 'Access denied: You are not authorized to update this user.',
+        });
+      }
+      const currentDate = new Date();
+      const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+  
+      // Check if the company already exists
+      const companyCheckQuery = 'SELECT id FROM company WHERE company_name = ?';
+      const [companyCheckResults] = await db.promise().query(companyCheckQuery, [company_name]);
+  
+      let companyID;
+      let company_location_id;
+      // Check if the address already exists
+      const addressCheckQuery = 'SELECT ID FROM company_location WHERE address = ?';
+      const [addressCheckResults] = await db.promise().query(addressCheckQuery, [address]);
+  
+      if (companyCheckResults.length === 0) {
+        // Company does not exist, create it
+        const createCompanyQuery = 'INSERT INTO company (user_created_by, company_name, status, created_date, updated_date) VALUES (?, ?, ?, ?, ?)';
+        const createCompanyValues = [user_id, company_name, '2', formattedDate, formattedDate];
+  
+        const [createCompanyResults] = await db.promise().query(createCompanyQuery, createCompanyValues);
+        companyID = createCompanyResults.insertId;
+  
+        // Create company address
         const createAddressQuery = 'INSERT INTO company_location (company_id, address) VALUES (?, ?)';
         const createAddressValues = [companyID, address];
         const [createAddressResults] = await db.promise().query(createAddressQuery, createAddressValues);
-
+  
         console.log("createAddressResults:", createAddressResults); 
-
+  
         company_location_id = createAddressResults.insertId;
+  
       } else {
-        // Address already exists, use the existing ID
-        company_location_id = addressCheckResults[0].ID;
+        companyID = companyCheckResults[0].id;
+  
+        if (addressCheckResults.length === 0) {
+          // Address does not exist, create it
+          const createAddressQuery = 'INSERT INTO company_location (company_id, address) VALUES (?, ?)';
+          const createAddressValues = [companyID, address];
+          const [createAddressResults] = await db.promise().query(createAddressQuery, createAddressValues);
+  
+          console.log("createAddressResults:", createAddressResults); 
+  
+          company_location_id = createAddressResults.insertId;
+        } else {
+          // Address already exists, use the existing ID
+          company_location_id = addressCheckResults[0].ID;
+        }
       }
-    }
-
-    console.log("companyID:", companyID);
-    console.log("company_location_id:", company_location_id);
-    
-    // Create the review
-    const create_review_query = `
-      INSERT INTO reviews (
-        company_id,
-        customer_id,
-        company_location,
-        company_location_id,
+  
+      console.log("companyID:", companyID);
+      console.log("company_location_id:", company_location_id);
+      
+      // Create the review
+      console.log("Rating from request:", rating);
+      console.log("Review Content from request:", review_content);
+      
+      // Create the review
+      const create_review_query = `
+        INSERT INTO reviews (
+          company_id,
+          customer_id,
+          company_location,
+          company_location_id,
+          review_title,
+          rating,
+          review_content,
+          user_privacy,
+          review_status,
+          created_at,
+          updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 2, ?, ?)
+      `;
+      
+      const create_review_values = [
+        companyID,
+        user_id,
+        address,
+        company_location_id, 
         review_title,
         rating,
         review_content,
         user_privacy,
-        created_at,
-        updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
-
-    const create_review_values = [
-      companyID,
-      user_id,
-      address,
-      company_location_id, 
-      review_title,
-      rating,
-      review_content,
-      user_privacy,
-      formattedDate,
-      formattedDate
-    ];
-
-    try {
-      const [create_review_results] = await db.promise().query(create_review_query, create_review_values);
-
-      if (create_review_results.insertId) {
-        for (const tagItem of tags) {
-          const review_tag_relation_query = 'INSERT INTO review_tag_relation (review_id, tag_name) VALUES (?, ?)';
-          const review_tag_relation_values = [create_review_results.insertId, tagItem];
-          await db.promise().query(review_tag_relation_query, review_tag_relation_values);
+        //review_status,
+        formattedDate,
+        formattedDate
+      ];
+      
+      console.log("Inserting Review Data:", create_review_values);
+      
+      try {
+        const [create_review_results] = await db.promise().query(create_review_query, create_review_values);
+      
+        if (create_review_results.insertId) {
+          for (const tagItem of tags) {
+            const review_tag_relation_query = 'INSERT INTO review_tag_relation (review_id, tag_name) VALUES (?, ?)';
+            const review_tag_relation_values = [create_review_results.insertId, tagItem];
+            await db.promise().query(review_tag_relation_query, review_tag_relation_values);
+          }
+  
+          const update_review_count_query = 'UPDATE user_customer_meta SET review_count = review_count + 1 WHERE user_id = ?';
+          await db.promise().query(update_review_count_query, [user_id]);
+  
+          return res.send({
+            status: 'ok',
+            data: {
+              reviewId: create_review_results.insertId
+            },
+            message: 'Review posted successfully'
+          });
+        } else {
+          return res.send({
+            status: 'error',
+            data: '',
+            message: 'Error occurred, please try again'
+          });
         }
-
-        const update_review_count_query = 'UPDATE user_customer_meta SET review_count = review_count + 1 WHERE user_id = ?';
-        await db.promise().query(update_review_count_query, [user_id]);
-
-        return res.send({
-          status: 'ok',
-          data: {
-            reviewId: create_review_results.insertId
-          },
-          message: 'Review posted successfully'
-        });
-      } else {
-        return res.send({
+      } catch (error) {
+        console.error('Error during create_review_results:', error);
+        return res.status(500).json({
           status: 'error',
-          data: '',
-          message: 'Error occurred, please try again'
+          message: 'An error occurred while posting the review'
         });
       }
-    } catch (error) {
-      console.error('Error during create_review_results:', error);
-      return res.status(500).json({
-        status: 'error',
-        message: 'An error occurred while posting the review'
-      });
+    } catch (err) {
+      console.error(err);
+      return res.status(500).send('An error occurred');
     }
-  } catch (err) {
-    console.error(err);
-    return res.status(500).send('An error occurred');
-  }
-};
+  };
 
 
+// exports.submitReview = async (req, res) => {
+//   try {
+//     const authenticatedUserId = parseInt(req.user.user_id);
+//     console.log('authenticatedUserId: ', authenticatedUserId);
+//     const userId = req.user.user_id; 
+//     console.log('req.body.user_id: ', parseInt(req.body.user_id));
+//     const reviewInfo = req.body;
+//     console.log("user_id from request:", req.body.user_id);
+//     if (userId !== authenticatedUserId) {
+//       return res.status(403).json({
+//         status: 'error',
+//         message: 'Access denied: You are not authorized to update this user.',
+//       });
+//     }
+//     // Create the company
+//     const companyData = await comFunction.createCompany(req.body, userId);
+//     const review= await comFunction.createReview(req.body, userId, companyData);
+
+//       if (review) {
+//         // Both company and review were created successfully
+//         return res.status(201).json({
+//           status: 'ok',
+//           data: {
+//             company: companyData,
+//             review: review,
+//           },
+//           message: 'Review posted successfully',
+//         });
+//       } else {
+//         // Error occurred while creating the review
+//         return res.status(500).json({
+//           status: 'error',
+//           message: 'Error occurred while posting the review',
+//         });
+//       }
+//   } catch (error) {
+//     console.error('Error during review submission:', error);
+//     return res.status(500).json({
+//       status: 'error',
+//       message: 'An error occurred during review submission',
+//     });
+//   }
+// };
+
+ 
 // --searchCompany --//
 exports.searchCompany = async (req, res) => {
   //console.log(req.body);
@@ -1150,3 +1236,212 @@ exports.searchCompany = async (req, res) => {
     });
   } 
 }
+
+function generateOTP(length) {
+  const digits = '0123456789';
+  let otp = '';
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * digits.length);
+    otp += digits[randomIndex];
+  }
+  return otp;
+}
+
+//forgot password
+exports.forgotPassword = (req, res) => {
+  const { email } = req.body;
+  const passphrase = process.env.ENCRYPT_DECRYPT_SECRET;
+  console.log('Passphrase:', passphrase);
+  const otp = generateOTP(6);
+  console.log(otp);
+  const sql = `SELECT user_id, first_name  FROM users WHERE email = '${email}' `;
+  db.query(sql, (error, result)=>{
+      if(error){
+          return res.send(
+              {
+                  status: 'err',
+                  data: '',
+                  message: 'An error occurred while processing your request'
+              });
+          }else{
+          if (result.length > 0) {
+            if (typeof passphrase !== 'string') {
+              console.error('Passphrase is not a string:', passphrase);
+              // Handle the error or set a default passphrase value if needed.
+            } else{
+            
+            const userId = result[0].user_id;
+
+        // Insert the OTP into the user_code_verify table
+            const insertOtpQuery = `
+              INSERT INTO user_code_verify (user_id, phone, otp, email)
+             VALUES (${userId}, NULL, '${otp}', '${email}')
+           `;
+
+            db.query(insertOtpQuery, (insertError) => {
+            if (insertError) {
+                console.error(insertError);
+                return res.status(500).json({
+                    status: 'error',
+                    message: 'Failed to store OTP in the database.',
+                });
+            }
+             const transporter = nodemailer.createTransport({
+              host: process.env.MAIL_HOST,
+              port: process.env.MAIL_PORT,
+              secure: false,
+              requireTLS: true,
+              auth: {
+                  user: process.env.MAIL_USER,
+                  pass: process.env.MAIL_PASSWORD
+              }
+          })
+
+            var mailOptions = {
+              from: process.env.MAIL_USER,
+              to: email,
+              subject: 'Forgot password Email',
+              text: `Your OTP is for forgot password: ${otp}`,
+            };
+        
+              transporter.sendMail(mailOptions, function (err, info) {
+              if (err) {
+                console.log(err);
+                return res.send({
+                  status: 'not ok',
+                  message: 'Something went wrong',err
+                });
+              } else {
+                console.log('Mail Send: ', info.response);
+                return res.send({
+                  status: 'ok',
+                  data: '',
+                  message: 'Password reset OTP sent to your email. Please check your email.',
+            });
+
+          }
+        })
+      })
+    }
+    }else {
+      return res.send(
+          {
+              status: 'not found',
+              data: '',
+              message: 'Your Email did not match with our record'
+          }
+       )
+     }
+   } 
+ })
+}
+
+//reset password
+exports.resetPassword = async (req, res) => {
+  const { otp, new_password,confirm_passsword } = req.body;
+  const hashedPassword = await bcrypt.hash(new_password, 8);
+
+  // Check if the provided OTP exists in the user_code_verify table
+  const query = `SELECT user_id, email FROM user_code_verify WHERE otp = '${otp}'`;
+
+  db.query(query, (err, result) => {
+    if (err) {
+      return res.send({
+        status: 'not ok',
+        message: 'Something went wrong: ' + err,
+      });
+    } else {
+      if (result.length > 0) {
+        const userId = result[0].user_id;
+        const email = result[0].email;
+
+        // Update the password in the users table
+        const updateSql = 'UPDATE users SET password = ? WHERE email = ?';
+        const data = [hashedPassword, email];
+
+        db.query(updateSql, data, (updateErr) => {
+          if (updateErr) {
+            console.log(updateErr);
+            return res.send({
+              status: 'not ok',
+              message: 'Something went wrong: ' + updateErr,
+            });
+          } else {
+            return res.send({
+              status: 'ok',
+              data: data,
+              message: 'Password reset successfully.',
+            });
+          }
+        });
+      } else {
+        return res.send({
+          status: 'not ok',
+          message: 'Invalid OTP. Please check or request another OTP.',
+        });
+      }
+    }
+  });
+};
+
+
+//change password
+exports.changePassword = async (req, res) => {
+  console.log('change password', req.body);
+  const { userid, current_password, new_password } = req.body;
+
+  try {
+    const query = `SELECT password FROM users WHERE user_id = '${userid}'`;
+    db.query(query, async (err, result) => {
+      if (err) {
+        return res.send({
+          status: 'error',
+          message: 'Something went wrong' + err,
+        });
+      } else {
+        if (result.length > 0) {
+          const userPassword = result[0].password;
+          const isPasswordMatch = await bcrypt.compare(current_password, userPassword);
+
+          if (isPasswordMatch) {
+            const hashedNewPassword = await bcrypt.hash(new_password, 8);
+
+            const updateQuery = 'UPDATE users SET password = ? WHERE user_id = ?';
+            const data = [hashedNewPassword, userid];
+
+            db.query(updateQuery, data, (err, result) => {
+              if (err) {
+                return res.send({
+                  status: 'error',
+                  message: 'Something went wrong' + err,
+                });
+              } else {
+                return res.send({
+                  status: 'success',
+                  data:data,
+                  message: 'Password updated successfully',
+                });
+              }
+            });
+          } else {
+            return res.send({
+              status: 'error',
+              message: 'Current password does not match',
+            });
+          }
+        } else {
+          return res.send({
+            status: 'error',
+            message: 'User not found',
+          });
+        }
+      }
+    });
+  } catch (error) {
+    return res.send({
+      status: 'error',
+      message: 'Something went wrong' + error,
+    });
+  }
+};
+
