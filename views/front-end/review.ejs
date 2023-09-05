@@ -200,7 +200,7 @@
                               </div>
                               <% const dateString = TrendingReview.created_at; %>
                               <% const date = new Date(dateString); %>
-                              <div class="user-review-date"><%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'short, year: 'numeric' }) %></div>
+                              <div class="user-review-date"><%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></div>
                            </div>
                            <% if(TrendingReview.review_reply_count==1 && currentUserData.user_id == TrendingReview.customer_id){ %>
                             <span class="user-select-tag review-reply-btn"><a href="/company/<%- TrendingReview.company_id -%>#review-reply-<%- TrendingReview.id -%>">Reply</a></span> 
@@ -298,7 +298,7 @@
                               </div>
                               <% const dateString = allReview.created_at; %>
                               <% const date = new Date(dateString); %>
-                              <div class="user-review-date"><%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'short, year: 'numeric' }) %></div>
+                              <div class="user-review-date"><%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></div>
                            </div>
                            <% if(allReview.review_reply_count==1 && currentUserData.user_id == allReview.customer_id){ %>
                             <span class="user-select-tag review-reply-btn"><a href="/company/<%- allReview.company_id -%>#review-reply-<%- allReview.id -%>">Reply</a></span> 
