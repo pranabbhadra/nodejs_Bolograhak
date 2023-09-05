@@ -630,7 +630,7 @@ jQuery(function ($) {
 
   setTimeout(function () {
     $("body").find('.login').trigger('click');
-  }, 2000);
+  }, 10000);
 
   $(".quicklog").click(function (e) {
     e.preventDefault();
