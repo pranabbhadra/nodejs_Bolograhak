@@ -940,6 +940,32 @@ async function getCompanyReviews(companyID){
   }
 }
 
+
+//new
+async function getCompanyRatings(companyID) {
+  const getCompanyRatingsQuery = `
+    SELECT 
+      company_id,
+      COUNT(*) AS rating_count,
+      AVG(rating) AS rating_average
+    FROM 
+      reviews
+    WHERE 
+      company_id = ?
+    GROUP BY 
+      company_id`;
+
+
+    const ratingsResultvalue = [companyID]
+    try{
+      const ratingsResult = await query(getCompanyRatingsQuery, ratingsResultvalue);
+      return ratingsResult;
+    }catch(error){
+      return 'Error during user get_company_rating_query:'+error;
+    }
+  }
+
+
 async function getUserCompany(user_ID){
     const get_user_company_query = `
       SELECT c.*
@@ -1025,6 +1051,7 @@ module.exports = {
     getCompanyReviewNumbers,
     //getCompany,//new
     getCompanyReviews,
+    getCompanyRatings,//new
     getUsersByRole,
     getUserCompany,
     getUserReview,
