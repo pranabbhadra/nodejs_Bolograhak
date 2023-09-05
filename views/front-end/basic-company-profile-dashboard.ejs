@@ -18,6 +18,19 @@
                      <div class="count"><%- company_total_review -%></div>
                   </div>
                </div>
+               <% var positive_count = 0;
+                  var negative_count = 0;
+                  if (companyReviewNumbers && Array.isArray(companyReviewNumbers.rewiew_rating_count)) {
+                     companyReviewNumbers.rewiew_rating_count.forEach((item, index) => {
+                        if(parseFloat(item.rating)>=4){
+                           positive_count += parseInt(item.cnt_rat);
+                        }
+                        if(parseFloat(item.rating)<=2){
+                           negative_count += parseInt(item.cnt_rat);
+                        }
+                     })
+                  }
+               %>
                <div class="col-md-4">
                   <div class="total_reviews total_replied">
                      <p>Total Replied</p>
@@ -27,11 +40,11 @@
                <div class="col-md-4">
                   <div class="positive_reviews">
                      <h4>positive<br>reviews</h4>
-                     <div class="count">00</div>
+                     <div class="count"><%- positive_count -%></div>
                   </div>
                   <div class="negative_reviews">
                      <h4>negative<br>reviews</h4>
-                     <div class="count">00</div>
+                     <div class="count"><%- negative_count -%></div>
                   </div>
                </div>
             </div>
@@ -50,7 +63,7 @@
                            <% reviewTagsCount.forEach((item, index) => { %>
                            <div class="col-md-4 col-6">
                               <div class="each_tag_info">
-                                 <div class="circale"></div>
+                                 <!-- <div class="circale"></div> -->
                                  <div class="tag_name"><%- item.tag_name -%></div>
                                  <div class="tag_count"><%- item.count -%></div>
                               </div>
