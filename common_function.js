@@ -897,7 +897,7 @@ async function editCustomerReview(req){
 async function searchCompany(keyword){
   const get_company_query = `
     SELECT ID, company_name, logo, about_company, main_address, main_address_pin_code FROM company
-    WHERE company_name LIKE '%${keyword}%'
+    WHERE company_name LIKE '%${keyword}%' AND status = '1'
     ORDER BY created_date DESC
   `;
   try{

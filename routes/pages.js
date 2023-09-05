@@ -666,6 +666,20 @@ router.get('/company-dashboard/:compID', checkClientClaimedCompany, async (req, 
             reviewTagsCount
         });
     }else{
+        // res.json( 
+        // { 
+        //     company,
+        //     companyReviewNumbers,
+        //     allRatingTags,
+        //     finalCompanyallReviews,
+        //     reviewReatingChartArray,
+        //     facebook_url:facebook_url,
+        //     twitter_url:twitter_url,
+        //     instagram_url:instagram_url,
+        //     linkedin_url:linkedin_url,
+        //     youtube_url:youtube_url,
+        //     reviewTagsCount
+        // });
         res.render('front-end/premium-company-profile-dashboard', 
         { 
             menu_active_id: 'company-dashboard', 
@@ -2350,18 +2364,49 @@ router.get('/reset-password/:email', checkCookieValue, async (req, res) => {
 router.get('/logout', (req, res) => {
     const encodedUserData = req.cookies.user;
     const currentUserData = JSON.parse(encodedUserData);
+    //console.log(currentUserData);
 
     //--WP Logout--//
-    //const response = axios.post(process.env.BLOG_API_ENDPOINT + '/force-logout');
-
-    if (currentUserData.user_type_id == 2) {
-        res.clearCookie('user');
-        res.redirect('/');
-        //res.redirect('http://localhost/bolograhak/blog/wp-login.php?action=logout&redirect_to=http://localhost:2000/');
-    } else {
-        res.clearCookie('user');
-        res.redirect('/admin-login');
-    }
+    (async () => {
+        try {
+            const wpUserLoginData = {
+                email: currentUserData.email,
+                user_type: currentUserData.user_type_id
+            };
+            const response = await axios.post(process.env.BLOG_API_ENDPOINT + '/force-logout', wpUserLoginData);
+            //console.log(response);
+            const wp_user_data = response.data;
+            //console.log(wp_user_data);
+            if(wp_user_data.user_nonce!=''){
+                if (currentUserData.user_type_id == 2) {
+                    res.clearCookie('user');
+                    //res.redirect('/');
+                    res.redirect('http://localhost/bolograhak/blog/wp-login.php?action=logout&redirect_to=http://localhost:2000/&_wpnonce='+wp_user_data.user_nonce);
+                } else {
+                    res.clearCookie('user');
+                    res.redirect('http://localhost/bolograhak/blog/wp-login.php?action=logout&redirect_to=http://localhost:2000/admin-login&_wpnonce='+wp_user_data.user_nonce);
+                }
+            }else{
+                //Logout Only From Node.
+                if (currentUserData.user_type_id == 2) {
+                    res.clearCookie('user');
+                    res.redirect('/');
+                } else {
+                    res.clearCookie('user');
+                    res.redirect('/admin-login');
+                }                
+            }
+        } catch (error) {
+            console.log('Error: ', error);
+            // return res.send(
+            //     {
+            //         status: 'err',
+            //         data: '',
+            //         message: ''
+            //     }
+            // )
+        }
+    })();
 
 });
 
