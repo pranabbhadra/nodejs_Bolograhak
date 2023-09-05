@@ -2411,10 +2411,10 @@ router.get('/logout', (req, res) => {
                 if (currentUserData.user_type_id == 2) {
                     res.clearCookie('user');
                     //res.redirect('/');
-                    res.redirect('http://localhost/bolograhak/blog/wp-login.php?action=logout&redirect_to=http://localhost:2000/&_wpnonce='+wp_user_data.user_nonce);
+                    res.redirect(process.env.BLOG_URL+'wp-login.php?action=logout&redirect_to='+process.env.MAIN_URL+'&_wpnonce='+wp_user_data.user_nonce);
                 } else {
                     res.clearCookie('user');
-                    res.redirect('http://localhost/bolograhak/blog/wp-login.php?action=logout&redirect_to=http://localhost:2000/admin-login&_wpnonce='+wp_user_data.user_nonce);
+                    res.redirect(process.env.BLOG_URL+'wp-login.php?action=logout&redirect_to='+process.env.MAIN_URL+'admin-login&_wpnonce='+wp_user_data.user_nonce);
                 }
             }else{
                 //Logout Only From Node.
