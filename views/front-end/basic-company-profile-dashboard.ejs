@@ -43,7 +43,7 @@
                </div>
                <div class="col-md-7">
                   <div class="display_tags">
-                     <p>Below are the review tags you got</p>
+                     <p>Tags you got</p>
                      <div class="all_tags">
                         <% if(reviewTagsCount && reviewTagsCount.length>0 ){ %>
                         <div class="row">
@@ -51,8 +51,8 @@
                            <div class="col-md-4 col-6">
                               <div class="each_tag_info">
                                  <div class="circale"></div>
-                                 <div class="tag_count"><%- item.count -%></div>
                                  <div class="tag_name"><%- item.tag_name -%></div>
+                                 <div class="tag_count"><%- item.count -%></div>
                               </div>
                            </div>
                            <% }) %>
