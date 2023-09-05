@@ -70,6 +70,30 @@
                                             placeholder="1800 0000 00" value="<%= company && company.tollfree_number ? company.tollfree_number : '' %>" name="tollfree_number" >
                                 </div>
                             </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label for="support-email" class="form-label">Support Email</label>
+                                    <input type="email" class="form-control" id="support-email" placeholder="Support@example.com" value="<%= support_data && support_data.support_email ? support_data.support_email : '' %>" name="support_email" >
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label for="escalation-one" class="form-label">Escalation One</label>
+                                    <input type="text" class="form-control" id="escalation-one" placeholder="" value="<%= support_data && support_data.escalation_one ? support_data.escalation_one : '' %>" name="escalation_one">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label for="escalation-two" class="form-label">Escalation Two</label>
+                                    <input type="text" class="form-control" id="escalation-two" placeholder="" value="<%= support_data && support_data.escalation_two ? support_data.escalation_two : '' %>" name="escalation_two">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label for="escalation-three" class="form-label">Escalation Three</label>
+                                    <input type="text" class="form-control" id="escalation-three" placeholder="" value="<%= support_data && support_data.escalation_three ? support_data.escalation_three : '' %>" name="escalation_three">
+                                </div>
+                            </div>
                             <div class="col-md-12">
                                 <div class="mb-3">
                                     <label for="company-address" class="form-label">Address<sup>*</sup></label>
@@ -90,6 +114,13 @@
                                     <input type="text" class="form-control" id="company-tagline" placeholder="Tagline" value="<%= company && company.heading ? company.heading : '' %>" name="heading">
                                 </div>
                             </div>
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <label for="operating-hours" class="form-label">Operating Hours</label>
+                                    <input type="text" class="form-control" id="operating-hours" placeholder="10AM - 6PM (Mon-Fri)" value="<%= company && company.operating_hours ? company.operating_hours : '' %>" name="operating_hours">
+                                </div>
+                            </div>
+                           
                         </div>
                     </div>
 

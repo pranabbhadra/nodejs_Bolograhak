@@ -51,62 +51,91 @@
                               <a href="<%= youtube_url ? youtube_url : '' %>" target="_blank"><i class="fab fa-youtube"></i></a>
                              <% } %>
                         </span>
-                    </h3>
-                    <div class="company-rating-review">
-                      <% var average = companyReviewNumbers.rewiew_count.total_review_average %>
-                      <% if (average >= 1 && average <= 1.25) {
-                        var avg = 1
-                        } else if (average > 1.25 && average <= 1.9) {
-                        var avg = 1.5
-                        } else if (average >= 2 && average <= 2.25) {
-                        var avg = 2
-                        } else if (average > 2.25 && average <= 2.9) {
-                        var avg = 2.5
-                        } else if (average >= 3 && average <= 3.25) {
-                        var avg = 3
-                        } else if (average > 3.25 && average <= 3.9) {
-                        var avg = 3.5
-                        } else if (average >= 4 && average <= 4.25) {
-                        var avg = 4
-                        } else if (average > 4.25 && average <= 4.9) {
-                        var avg = 4.5
-                        } else if (average > 4.5) {
-                        var avg = 5
-                        } else {
-                        var avg = 0
-                        }
-                      %>          
-                      <% var company_total_review = companyReviewNumbers.rewiew_count.total_review_count %>
-                      <% if(company_total_review>10){%>
-                          <span class="rating-point">
-                          <% if(avg!=0){%>
-                          <%= avg %>                
-                          <% } %>
-                          </span>
-                          <% allRatingTags.forEach( tag => { %>
-                            <% if(tag.review_rating_value == avg){ %>
-                              <img style="display: inline-block;" src="/<%= tag.rating_image %>" width="55">
+                    </h3>                    <div class="row align-items-center">
+                        <div class="col-lg-7">
+                            <div class="company-rating-review">
+                            <% var average = companyReviewNumbers.rewiew_count.total_review_average %>
+                            <% if (average >= 1 && average <= 1.25) {
+                                var avg = 1
+                                } else if (average > 1.25 && average <= 1.9) {
+                                var avg = 1.5
+                                } else if (average >= 2 && average <= 2.25) {
+                                var avg = 2
+                                } else if (average > 2.25 && average <= 2.9) {
+                                var avg = 2.5
+                                } else if (average >= 3 && average <= 3.25) {
+                                var avg = 3
+                                } else if (average > 3.25 && average <= 3.9) {
+                                var avg = 3.5
+                                } else if (average >= 4 && average <= 4.25) {
+                                var avg = 4
+                                } else if (average > 4.25 && average <= 4.9) {
+                                var avg = 4.5
+                                } else if (average > 4.5) {
+                                var avg = 5
+                                } else {
+                                var avg = 0
+                                }
+                            %>          
+                            <% var company_total_review = companyReviewNumbers.rewiew_count.total_review_count %>
+                            <% if(company_total_review>10){%>
+                                <span class="rating-point">
+                                <% if(avg!=0){%>
+                                <%= avg %>                
+                                <% } %>
+                                </span>
+                                <% allRatingTags.forEach( tag => { %>
+                                    <% if(tag.review_rating_value == avg){ %>
+                                    <img style="display: inline-block;" src="/<%= tag.rating_image %>" width="55">
+                                    <% } %>
+                                <% }) %>
                             <% } %>
-                          <% }) %>
-                      <% } %>
-                      <%= companyReviewNumbers.rewiew_count.total_review_count %> Review<% if(companyReviewNumbers.rewiew_count.total_review_count>1){ %>s<% } %>
-                    </div>
-                    <div class="company-contact-info">
-                        <% if(company && company.comp_email){ %>
-                        <span><i class="fa-solid fa-envelope"></i><a href="mailto:<%= company.comp_email  %>"><%= company.comp_email  %></a></span>
-                        <% } %>
-                        <% if(company && company.comp_phone){ %>
-                            <span><i class="fa-solid fa-mobile"></i><a href="tel:<%= company.comp_phone  %>"><%= company.comp_phone  %></a></span>
-                        <% } %>
-                        <% if(company && company.tollfree_number){ %>
-                            <span><i class="fa-regular fa-circle-phone"></i><a href="tel:<%= company.tollfree_number  %>"><%= company.tollfree_number  %></a> (TOLL-FREE)</span>
+                            <%= companyReviewNumbers.rewiew_count.total_review_count %> Review<% if(companyReviewNumbers.rewiew_count.total_review_count>1){ %>s<% } %>
+                            </div>
+                            <div class="company-contact-info">
+                                <% if(company && company.comp_email){ %>
+                                <span><i class="fa-solid fa-envelope"></i><a href="mailto:<%= company.comp_email  %>"><%= company.comp_email  %></a></span>
+                                <% } %>
+                                <% if(company && company.comp_phone){ %>
+                                    <span><i class="fa-solid fa-mobile"></i><a href="tel:<%= company.comp_phone  %>"><%= company.comp_phone  %></a></span>
+                                <% } %>
+                                <!-- <% if(company && company.tollfree_number){ %>
+                                    <span><i class="fa-regular fa-circle-phone"></i><a href="tel:<%= company.tollfree_number  %>"><%= company.tollfree_number  %></a></span>
+                                <% } %> -->
+                            </div>
+                            <% if(company && company.operating_hours ) { %>
+                                <div class="company-contact-info">
+                                  <span><i class="fa-solid fa-clock"></i><%=  company.operating_hours %></span>
+                                </div>
                             <% } %>
-                    </div>
-                    <% if(company && company.main_address){ %>
-                        <div class="company-contact-info">
-                        <span><i class="fa-solid fa-location-dot"></i><a href="#"><%= company.main_address  %></a></span>
+                            <% if(company && company.main_address){ %>
+                                <div class="company-contact-info">
+                                    <span><i class="fa-solid fa-location-dot"></i><a href="#"><%= company.main_address  %></a></span>
+                                </div>
+                            <% } %>
                         </div>
-                    <% } %>
+                        <div class="col-lg-5">
+                            <div class="customer_support_details">
+                                <% if(company && company.tollfree_number){ %>
+                                    <div class="d-flex align-items-center"><i class="fa-regular fa-circle-phone"></i><a href="tel:<%= company.tollfree_number  %>"><%= company.tollfree_number  %></a></div>
+                                <% } %>
+                                <% if(support_data && support_data.support_email){ %>
+                                    <div class="d-flex align-items-center"><i class="fa-solid fa-envelope"></i><a href="mailto:<%= support_data.support_email %>"><%= support_data.support_email %></a></div>
+                                <% } %>
+                                <% if(support_data && support_data.escalation_one){ %>
+                                    <div class="d-flex align-items-center"><i class="fa-regular fa-circle-phone"></i><a href="#"><%= support_data.escalation_one %></a></div>
+                                <% } %>
+                                <% if(support_data && support_data.escalation_two){ %>
+                                    <div class="d-flex align-items-center"><i class="fa-regular fa-circle-phone"></i><a href="#"><%= support_data.escalation_two %></a></div>
+                                <% } %>
+                                <% if(support_data && support_data.escalation_three){ %>
+                                    <div class="d-flex align-items-center"><i class="fa-regular fa-circle-phone"></i><a href="#"><%= support_data.escalation_three %></a></div>
+                                <% } %>
+                                <!-- <div class="d-flex align-items-center"><i class="fa-regular fa-circle-phone"></i><a href="#">Escalation 2: 8974561890</a></div>
+                                <div class="d-flex align-items-center"><i class="fa-regular fa-circle-phone"></i><a href="#">Escalation 3: 8974561890</a></div> -->
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <% if(company && company.about_company){ %>

@@ -1873,7 +1873,7 @@ exports.contactFeedback = (req, res) => {
     const email = currentUserData.email;
     console.log(currentUserData.first_name, currentUserData.last_name, currentUserData.email);
     var mailOptions = {
-        from: 'vivek@scwebtech.com',
+        from: process.env.MAIL_USER,
         to: process.env.MAIL_SUPPORT,
         //to: 'pranab@scwebtech.com',
         subject: 'Feedback Mail From Contact',
@@ -3179,7 +3179,7 @@ exports.updateBasicCompany = (req, res) => {
     const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
     // Update company details in the company table
-    const updateQuery = 'UPDATE company SET  heading = ?, logo = ?, about_company = ?, comp_phone = ?, comp_email = ?, updated_date = ?, tollfree_number = ?, main_address = ?  WHERE ID = ?';
+    const updateQuery = 'UPDATE company SET  heading = ?, logo = ?, about_company = ?, comp_phone = ?, comp_email = ?, updated_date = ?, tollfree_number = ?, main_address = ?, operating_hours = ?  WHERE ID = ?';
     const updateValues = [
                             req.body.heading,
                             '',
@@ -3189,6 +3189,7 @@ exports.updateBasicCompany = (req, res) => {
                             formattedDate,
                             req.body.tollfree_number,
                             req.body.main_address,
+                            req.body.operating_hours,
                             companyID
                         ];
 
@@ -3247,7 +3248,7 @@ exports.updatePremiumCompany =async (req, res) => {
     const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
 
-    const { previous_cover_image, youtube_iframe, promotion_title, promotion_desc, promotion_discount, promotion_image, product_title, product_desc, product_image, facebook_url, twitter_url, instagram_url, linkedin_url, youtube_url } = req.body;
+    const { previous_cover_image, youtube_iframe, promotion_title, promotion_desc, promotion_discount, promotion_image, product_title, product_desc, product_image, facebook_url, twitter_url, instagram_url, linkedin_url, youtube_url, support_email, escalation_one, escalation_two, escalation_three } = req.body;
 
     const { cover_image, gallery_images } = req.files;
     let galleryImages = [];
@@ -3340,7 +3341,7 @@ exports.updatePremiumCompany =async (req, res) => {
 
 
     // Update company details in the company table
-    const updateQuery = 'UPDATE company SET  heading = ?, logo = ?, about_company = ?, comp_phone = ?, comp_email = ?, updated_date = ?, tollfree_number = ?, main_address = ?  WHERE ID = ?';
+    const updateQuery = 'UPDATE company SET  heading = ?, logo = ?, about_company = ?, comp_phone = ?, comp_email = ?, updated_date = ?, tollfree_number = ?, main_address = ?, operating_hours = ?  WHERE ID = ?';
     const updateValues = [
                             req.body.heading,
                             '',
@@ -3350,6 +3351,7 @@ exports.updatePremiumCompany =async (req, res) => {
                             formattedDate,
                             req.body.tollfree_number,
                             req.body.main_address,
+                            req.body.operating_hours,
                             companyID
                         ];
 
@@ -3436,8 +3438,8 @@ exports.updatePremiumCompany =async (req, res) => {
                         
 
                         //return false;
-                        const update_query = `UPDATE premium_company_data SET cover_img = ?, gallery_img = ?, youtube_iframe = ?,promotions = ?, products = ?, facebook_url = ?, twitter_url = ?, instagram_url = ?, linkedin_url = ?, youtube_url = ? WHERE company_id = ? `;
-                        const update_data = [coverImg, galleryimg, youtube_iframe, Promotion, Products, facebook_url, twitter_url, instagram_url, linkedin_url, youtube_url, companyID];
+                        const update_query = `UPDATE premium_company_data SET cover_img = ?, gallery_img = ?, youtube_iframe = ?,promotions = ?, products = ?, facebook_url = ?, twitter_url = ?, instagram_url = ?, linkedin_url = ?, youtube_url = ?, support_email = ?, escalation_one = ?, escalation_two = ?, escalation_three = ? WHERE company_id = ? `;
+                        const update_data = [coverImg, galleryimg, youtube_iframe, Promotion, Products, facebook_url, twitter_url, instagram_url, linkedin_url, youtube_url, support_email, escalation_one, escalation_two, escalation_three, companyID];
                         db.query(update_query, update_data, (update_err,update_result)=>{
                             if (update_err) {
                                 // Handle the error
@@ -3462,8 +3464,8 @@ exports.updatePremiumCompany =async (req, res) => {
                         const Products = JSON.stringify(ProductData);
                         const Promotion = JSON.stringify(PromotionalData);
 
-                        const premium_query = `INSERT INTO premium_company_data ( company_id, cover_img, gallery_img, youtube_iframe, promotions, products, facebook_url, twitter_url, instagram_url, linkedin_url, youtube_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-                        const premium_data = [companyID, coverImg, galleryimg, youtube_iframe, Promotion, Products, facebook_url, twitter_url, instagram_url, linkedin_url, youtube_url];
+                        const premium_query = `INSERT INTO premium_company_data ( company_id, cover_img, gallery_img, youtube_iframe, promotions, products, facebook_url, twitter_url, instagram_url, linkedin_url, youtube_url, support_email, escalation_one, escalation_two, escalation_three) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+                        const premium_data = [companyID, coverImg, galleryimg, youtube_iframe, Promotion, Products, facebook_url, twitter_url, instagram_url, linkedin_url, youtube_url, support_email, escalation_one, escalation_two, escalation_three];
                         db.query(premium_query, premium_data, (premium_err, premium_result)=>{
                             if (premium_err) {
                                 // Handle the error
@@ -3835,7 +3837,7 @@ exports.submitReviewReply = async (req, res) => {
                         const mailReplyData =await comFunction2.ReviewReplyTo(results.insertId)
 
                         console.log('MailSendTo',mailReplyData);
-                        if(mailReplyData.customer_id == req.body.reply_to ){
+                        if(mailReplyData[0].customer_id == req.body.reply_to ){
                             await comFunction2.ReviewReplyToCustomer(mailReplyData)
                         }else{
                             await comFunction2.ReviewReplyToCompany(mailReplyData)
@@ -3846,7 +3848,7 @@ exports.submitReviewReply = async (req, res) => {
                             {
                                 status: 'ok',
                                 data: '',
-                                message: 'Reply successfully submitted'
+                                message: 'Reply Successfully Sent'
                             }
                         );
                     }

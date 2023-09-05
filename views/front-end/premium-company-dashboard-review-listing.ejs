@@ -29,7 +29,7 @@
                                     <td>
                                         <% const dateString = review.created_at; %>
                                         <% const date = new Date(dateString); %>
-                                        <%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) %>,<br>
+                                        <%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %>,<br>
                                         <small><%= date.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true }) %></small></td>
                                     <td><%- review.review_content -%></td>
                                     <td>

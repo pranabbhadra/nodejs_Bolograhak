@@ -56,7 +56,7 @@
                             </div>
                             <% const dateString = finalsingleReviewData[0].created_at; %>
                             <% const date = new Date(dateString); %>
-                            <div class="user-review-date"><%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) %></div>
+                            <div class="user-review-date"><%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></div>
                         </div>
                         <div class="user-rating">
                             <span>
@@ -84,7 +84,7 @@
                 <div class="chat_box_wrapper">
                     <div class="chat_box">
                         <div class="heading">
-                            <h4>Your Responce</h4>
+                            <h4>Your Response</h4>
                         </div>
                         <div class="chat_area">
                             <% if(singleReviewReplyData.length > 0){ %>
@@ -105,7 +105,7 @@
                                                 <p class="text_box"><%- reply.comment -%></p>
                                                 <% const repdateString = reply.created_at; %>
                                                 <% const repdate = new Date(repdateString); %>
-                                                <p class="text-muted"><%= repdate.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true }) %></p>
+                                                <p class="text-muted"><%= repdate.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true }) %></p>
                                             </div>
                                         </div>
                                         <!--Owner Reply End-->
@@ -116,7 +116,7 @@
                                                 <p class="text_box"><%- reply.comment -%></p>
                                                 <% const repdateString = reply.created_at; %>
                                                 <% const repdate = new Date(repdateString); %>
-                                                <p class="text-muted"><%= repdate.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true }) %></p>
+                                                <p class="text-muted"><%= repdate.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true }) %></p>
                                             </div>
                                             <div>
                                                 <% if(privacy == 1){ %>

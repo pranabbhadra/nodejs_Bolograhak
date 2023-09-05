@@ -748,13 +748,14 @@ async function ReviewReplyTo(Id){
       return [];
     }
  }
+
 //Function to Send Reply To Company 
 function ReviewReplyToCompany(mailReplyData){
   var mailOptions = {
     from: process.env.MAIL_USER,
     //to: 'pranab@scwebtech.com',
     to: mailReplyData[0].email,
-    subject: 'Review Reply Email',
+    subject: 'Message Reply',
     html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
     <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
      <tbody>
@@ -771,7 +772,7 @@ function ReviewReplyToCompany(mailReplyData){
                    <tr>
                    <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
                     <td id="header_wrapper" style="padding: 36px 48px; display: block;">
-                       <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Review Reply Email</h1>
+                       <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Message Reply</h1>
                     </td>
 
                    </tr>
@@ -867,7 +868,7 @@ function ReviewReplyToCustomer(mailReplyData){
     from: process.env.MAIL_USER,
     //to: 'pranab@scwebtech.com',
     to: mailReplyData[0].email,
-    subject: 'Review Reply Email',
+    subject: 'Message Reply',
     html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
     <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
      <tbody>
@@ -884,7 +885,7 @@ function ReviewReplyToCustomer(mailReplyData){
                    <tr>
                    <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
                     <td id="header_wrapper" style="padding: 36px 48px; display: block;">
-                       <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Review Reply Email</h1>
+                       <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Message Reply</h1>
                     </td>
 
                    </tr>
@@ -911,7 +912,7 @@ function ReviewReplyToCustomer(mailReplyData){
                               <tr>
                                 <td colspan="2">
                                 <strong>Hello ${mailReplyData[0].first_name},</strong>
-                                <p style="font-size:15px; line-height:20px"><b>${mailReplyData[0].company_name}</b> has responded to your reviews, please visit <a  href="${process.env.MAIN_URL}company/${mailReplyData[0].company_id}">the link</a> to view the response.
+                                <p style="font-size:15px; line-height:20px"><b>${mailReplyData[0].company_name}</b> has responded to your reviews, please visit <a  href="${process.env.MAIN_URL}company/${mailReplyData[0].company_id}">the link</a> to view response.
                                 </td>
                               </tr>
                             </table>
