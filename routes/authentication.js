@@ -38,7 +38,7 @@ router.put('/editcompany',verifyToken, upload.single('logo') ,authenController.e
 router.post('/createcompanylocation',verifyToken, authenController.createcompanylocation);
 router.post('/submitReview',verifyToken, authenController.submitReview);
 //forget password
-router.post('/forgotPassword',verifyToken, authenController.forgotPassword);
+router.post('/forgotPassword', authenController.forgotPassword);
 router.post('/resetPassword', verifyToken, authenController.resetPassword);
 router.post('/changePassword', verifyToken, authenController.changePassword);
 //----------Get API Start----------------//

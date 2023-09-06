@@ -17,6 +17,7 @@ const path = require('path');
 const multer = require('multer');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
+const invalidTokens = new Set();
 
 const app = express();
 
@@ -528,16 +529,18 @@ exports.login = (req, res) => {
 //   }
   
 // };
-//new
 
+//new
 
 exports.edituser = (req, res) => {
   console.log(req.body);
   const authenticatedUserId = parseInt(req.user.user_id);
   console.log('authenticatedUserId: ', authenticatedUserId);
+  const user_type_id = 2;
   const userId=parseInt(req.body.user_id);
   console.log('req.body.user_id: ', parseInt(req.body.user_id));
   // Update the user's data
+ 
   const updateQuery = 'UPDATE users SET first_name = ?, last_name = ?, phone = ?, user_type_id = ? WHERE user_id = ?';
   console.log("user_id from request:", req.body.user_id);
   if (userId !== authenticatedUserId) {
@@ -546,7 +549,7 @@ exports.edituser = (req, res) => {
         message: 'Access denied: You are not authorized to update this user.',
     });
   }
-  db.query(updateQuery, [req.body.first_name, req.body.last_name, req.body.phone,req.body.user_type_id, userId], (updateError, updateResults) => {
+  db.query(updateQuery, [req.body.first_name, req.body.last_name, req.body.phone,'2', userId], (updateError, updateResults) => {
 
       if (updateError) {
           //console.log(updateError);
@@ -558,6 +561,23 @@ exports.edituser = (req, res) => {
               }
           )
       } else {
+        const selectQuery = 'SELECT * FROM users WHERE user_id = ?';
+        db.query(selectQuery, [userId], (selectError, selectResults) => {
+          if (selectError) {
+            // Handle the error
+            return res.send(
+              {
+                status: 'err',
+                data: '',
+                message: 'An error occurred while processing your request' + selectError
+              }
+            )
+          } else {
+            // Fetch the updated user data
+            const updatedUserData = selectResults[0];
+            if (req.file) {
+              updatedUserData.profile_pic = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+            }
           // Update the user's meta data
           if (req.file) {
               // delete the previous file
@@ -589,7 +609,7 @@ exports.edituser = (req, res) => {
                       return res.send(
                           {
                               status: 'ok',
-                              data: userId,
+                              data: updatedUserData,
                               message: 'Update Successfull'
                           }
                       )
@@ -597,8 +617,8 @@ exports.edituser = (req, res) => {
               });
 
           } else {
-              const updateQueryMeta = 'UPDATE user_customer_meta SET address = ?, country = ?, state = ?, city = ?, zip = ?, date_of_birth = ?, occupation = ?, gender = ?,profile_pic = ?, alternate_phone = ?, about = ? WHERE user_id = ?';
-              db.query(updateQueryMeta, [req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, req.body.date_of_birth, req.body.occupation, req.body.gender,req.file.filename,req.body.alternate_phone, req.body.about, userId], (updateError, updateResults) => {
+              const updateQueryMeta = 'UPDATE user_customer_meta SET address = ?, country = ?, state = ?, city = ?, zip = ?, date_of_birth = ?, occupation = ?, gender = ?,alternate_phone = ?, about = ? WHERE user_id = ?';
+              db.query(updateQueryMeta, [req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, req.body.date_of_birth, req.body.occupation, req.body.gender,req.body.alternate_phone, req.body.about, userId], (updateError, updateResults) => {
                   if (updateError) {
                       return res.send(
                           {
@@ -611,7 +631,7 @@ exports.edituser = (req, res) => {
                       return res.send(
                           {
                               status: 'ok',
-                              data: userId,
+                              data: updatedUserData,
                               message: 'Update Successfull'
                           }
                       )
@@ -622,6 +642,8 @@ exports.edituser = (req, res) => {
       }
 
   });
+}
+  })
 }
 
 
@@ -1049,8 +1071,8 @@ exports.submitReview = async (req, res) => {
   
       if (companyCheckResults.length === 0) {
         // Company does not exist, create it
-        const createCompanyQuery = 'INSERT INTO company (user_created_by, company_name, status, created_date, updated_date) VALUES (?, ?, ?, ?, ?)';
-        const createCompanyValues = [user_id, company_name, '2', formattedDate, formattedDate];
+        const createCompanyQuery = 'INSERT INTO company (user_created_by, company_name,main_address, status, created_date, updated_date) VALUES (?, ?, ?, ?, ?, ?)';
+        const createCompanyValues = [user_id, company_name, address, '2', formattedDate, formattedDate];
   
         const [createCompanyResults] = await db.promise().query(createCompanyQuery, createCompanyValues);
         companyID = createCompanyResults.insertId;
@@ -1091,20 +1113,20 @@ exports.submitReview = async (req, res) => {
       
       // Create the review
       const create_review_query = `
-        INSERT INTO reviews (
-          company_id,
-          customer_id,
-          company_location,
-          company_location_id,
-          review_title,
-          rating,
-          review_content,
-          user_privacy,
-          review_status,
-          created_at,
-          updated_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 2, ?, ?)
-      `;
+      INSERT INTO reviews (
+        company_id,
+        customer_id,
+        company_location,
+        company_location_id,
+        review_title,
+        rating,
+        review_content,
+        user_privacy,
+        review_status,
+        created_at,
+        updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, '2', ?, ?)
+    `;
       
       const create_review_values = [
         companyID,
@@ -1115,7 +1137,7 @@ exports.submitReview = async (req, res) => {
         rating,
         review_content,
         user_privacy,
-        //review_status,
+        '2',
         formattedDate,
         formattedDate
       ];
@@ -1161,51 +1183,6 @@ exports.submitReview = async (req, res) => {
       return res.status(500).send('An error occurred');
     }
   };
-
-
-// exports.submitReview = async (req, res) => {
-//   try {
-//     const authenticatedUserId = parseInt(req.user.user_id);
-//     console.log('authenticatedUserId: ', authenticatedUserId);
-//     const userId = req.user.user_id; 
-//     console.log('req.body.user_id: ', parseInt(req.body.user_id));
-//     const reviewInfo = req.body;
-//     console.log("user_id from request:", req.body.user_id);
-//     if (userId !== authenticatedUserId) {
-//       return res.status(403).json({
-//         status: 'error',
-//         message: 'Access denied: You are not authorized to update this user.',
-//       });
-//     }
-//     // Create the company
-//     const companyData = await comFunction.createCompany(req.body, userId);
-//     const review= await comFunction.createReview(req.body, userId, companyData);
-
-//       if (review) {
-//         // Both company and review were created successfully
-//         return res.status(201).json({
-//           status: 'ok',
-//           data: {
-//             company: companyData,
-//             review: review,
-//           },
-//           message: 'Review posted successfully',
-//         });
-//       } else {
-//         // Error occurred while creating the review
-//         return res.status(500).json({
-//           status: 'error',
-//           message: 'Error occurred while posting the review',
-//         });
-//       }
-//   } catch (error) {
-//     console.error('Error during review submission:', error);
-//     return res.status(500).json({
-//       status: 'error',
-//       message: 'An error occurred during review submission',
-//     });
-//   }
-// };
 
  
 // --searchCompany --//
@@ -1386,12 +1363,86 @@ exports.resetPassword = async (req, res) => {
 
 
 //change password
+// exports.changePassword = async (req, res) => {
+//   console.log('change password', req.body);
+//   const { userid, current_password, new_password } = req.body;
+//   try {
+//     const query = `SELECT password FROM users WHERE user_id = '${userid}'`;
+//     db.query(query, async (err, result) => {
+//       if (err) {
+//         return res.send({
+//           status: 'error',
+//           message: 'Something went wrong' + err,
+//         });
+//       } else {
+//         if (result.length > 0) {
+//           const userPassword = result[0].password;
+//           const isPasswordMatch = await bcrypt.compare(current_password, userPassword);
+
+//           if (isPasswordMatch) {
+//             const hashedNewPassword = await bcrypt.hash(new_password, 8);
+
+//             const updateQuery = 'UPDATE users SET password = ? WHERE user_id = ?';
+//             const data = [hashedNewPassword, userid];
+
+//             db.query(updateQuery, data, (err, result) => {
+//               if (err) {
+//                 return res.send({
+//                   status: 'error',
+//                   message: 'Something went wrong' + err,
+//                 });
+//               } else {
+//                 return res.send({
+//                   status: 'success',
+//                   data:data,
+//                   message: 'Password updated successfully',
+//                   token:newToken
+//                 });
+//               }
+//             });
+//           } else {
+//             return res.send({
+//               status: 'error',
+//               message: 'Current password does not match',
+//             });
+//           }
+//         } else {
+//           return res.send({
+//             status: 'error',
+
+
+//             message: 'User not found',
+//           });
+//         }
+//       }
+//     });
+//   } catch (error) {
+//     return res.send({
+//       status: 'error',
+//       message: 'Something went wrong' + error,
+//     });
+//   }
+// };
+
 exports.changePassword = async (req, res) => {
   console.log('change password', req.body);
-  const { userid, current_password, new_password } = req.body;
+  //const authorizationHeader = req.headers.authorization;
 
+// if (!authorizationHeader) {
+//   return res.status(401).json({
+//     status: 'error',
+//     message: 'Authorization header missing.',
+//   });
+// // }
+//   const oldToken = authorizationHeader.split(' ')[1];
+
+//   function addToInvalidTokenList(token) {
+//     invalidTokens.add(token);
+//   }
+  
+  const { email, current_password, new_password } = req.body;
   try {
-    const query = `SELECT password FROM users WHERE user_id = '${userid}'`;
+    const query = `SELECT password FROM users WHERE email = '${email}'`;
     db.query(query, async (err, result) => {
       if (err) {
         return res.send({
@@ -1399,6 +1450,8 @@ exports.changePassword = async (req, res) => {
           message: 'Something went wrong' + err,
         });
       } else {
+        
+        //addToInvalidTokenList(oldToken);
         if (result.length > 0) {
           const userPassword = result[0].password;
           const isPasswordMatch = await bcrypt.compare(current_password, userPassword);
@@ -1406,8 +1459,8 @@ exports.changePassword = async (req, res) => {
           if (isPasswordMatch) {
             const hashedNewPassword = await bcrypt.hash(new_password, 8);
 
-            const updateQuery = 'UPDATE users SET password = ? WHERE user_id = ?';
-            const data = [hashedNewPassword, userid];
+            const updateQuery = 'UPDATE users SET password = ? WHERE email = ?';
+            const data = [hashedNewPassword, email];
 
             db.query(updateQuery, data, (err, result) => {
               if (err) {
@@ -1445,3 +1498,13 @@ exports.changePassword = async (req, res) => {
   }
 };
 
+
+
+//
+  // function generateNewJWTToken(userid) {
+  //   const secretKey = 'grahak-secret-key';
+  //   const tokenExpiration = '1h'; 
+  //   const token = jwt.sign({ userid }, secretKey, { expiresIn: tokenExpiration });
+  //   return token;
+  // }
+  //const newToken = generateNewJWTToken(userid);
