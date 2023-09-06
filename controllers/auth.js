@@ -3786,7 +3786,7 @@ exports.forgotPassword = (req, res) => {
                             {
                                 status: 'ok',
                                 data: '',
-                                message: 'Password Send to your email please check to your email'
+                                message: 'Forgot password email sent. Please check the email for next steps.'
                             }
                         )
                       }
@@ -3797,7 +3797,7 @@ exports.forgotPassword = (req, res) => {
                     {
                         status: 'not found',
                         data: '',
-                        message: 'Your Email did not match with our record'
+                        message: 'Your Email did not match with our record.'
                     }
                 )
             }
