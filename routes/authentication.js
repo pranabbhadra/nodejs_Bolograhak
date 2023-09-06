@@ -697,6 +697,52 @@ router.get('/getstates/:country_id', verifyToken, async (req, res) => {
     }
 });
 
+router.get('/app-home',  async (req, res) => {
+    // return res.status(200).json({
+    //     status: 'success',
+    //     message: 'Home data successfully received'
+    // });
+    try {
+        const sql = `SELECT * FROM page_info where secret_Key = 'home' `;
+        db.query(sql, (err, results, fields) => {
+            if (err) throw err;
+            const home = results[0];
+            const meta_sql = `SELECT * FROM page_meta where page_id = ${home.id}`;
+            db.query(meta_sql, async (meta_err, _meta_result) => {
+                if (meta_err) throw meta_err;
+
+                const meta_values = _meta_result;
+                let meta_values_array = {};
+                await meta_values.forEach((item) => {
+                    meta_values_array[item.page_meta_key] = item.page_meta_value;
+                })
+
+                const featured_sql = `SELECT featured_companies.id,featured_companies.company_id,featured_companies.short_desc,featured_companies.link,company.logo,company.company_name FROM featured_companies 
+                        JOIN company ON featured_companies.company_id = company.ID 
+                        WHERE featured_companies.status = 'active' 
+                        ORDER BY featured_companies.ordering ASC `;
+                db.query(featured_sql, (featured_err, featured_result) => {
+                    var featured_comps = featured_result;
+                    return res.status(200).json({
+                        status: 'success',
+                        data: {
+                            meta_values_array:meta_values_array,
+                            featured_comps:featured_comps,
+                        },
+                        message: 'Home data successfully received'
+                    });
+                })
+
+            })
+
+        })
+    } catch (error) {
+        console.error("An error occurred:", error);
+        // Handle the error appropriately, e.g., sending an error response
+    }
+});
+
+
 
 
 

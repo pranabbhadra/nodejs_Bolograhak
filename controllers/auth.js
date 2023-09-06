@@ -2097,31 +2097,65 @@ exports.updateFAQImages =async (req,res) => {
 }
 // Update Home
 exports.updateHome = async (req, res) => {
-    // console.log('home', req.body);
-    // console.log('file', req.files);
+    //  console.log('home', req.body);
+    //     console.log('file', req.files);
+    //return false;
     const form_data = req.body;
 
     const { home_id, title, meta_title, meta_desc, meta_keyword, bannner_content, for_business,
         for_customer, cus_right_content, cus_right_button_link, cus_right_button_text,youtube_link,
         youtube_1, youtube_2, youtube_3, youtube_4, youtube_5, youtube_6, youtube_7, youtube_8, youtube_9, youtube_10, fb_widget, twitter_widget,
         org_responsibility_content, org_responsibility_buttton_link, org_responsibility_buttton_text,
-        about_us_content, about_us_button_link, about_us_button_text, bannner_content_2, bannner_hashtag, reviewers_guidelines_title,reviewers_guidelines_popup, review_form_demo_location, cus_right_facts_popup, org_responsibility_facts_popup } = req.body;
+        about_us_content, about_us_button_link, about_us_button_text, bannner_content_2, bannner_hashtag, reviewers_guidelines_title,reviewers_guidelines_popup, review_form_demo_location, cus_right_facts_popup, org_responsibility_facts_popup, app_banner_title_1, app_banner_title_2, app_features_for_customer, app_review_content, app_features_hashtag, app_cus_right_content, app_cus_right_point, app_org_responsibility_content, app_org_responsibility_points, app_about_us_content_1, app_about_us_content_2, app_about_us_button_text } = req.body;
 
     const { banner_img_1, banner_img_2, banner_img_3,banner_img_4, banner_img_5, banner_img_6, cus_right_img_1, cus_right_img_2, cus_right_img_3, cus_right_img_4, cus_right_img_5,
         cus_right_img_6, cus_right_img_7, cus_right_img_8, org_responsibility_img_1, org_responsibility_img_2, org_responsibility_img_3,
         org_responsibility_img_4, org_responsibility_img_5, org_responsibility_img_6, org_responsibility_img_7, org_responsibility_img_8,
         about_us_img, review_img_1, review_img_2, review_img_3, review_img_4, map_img } = req.files;
+    
+    let app_features = [];
+    if(typeof app_features_for_customer == 'string'){
+        app_features.push(app_features_for_customer) ;
+    } else {
+        app_features = [...app_features_for_customer];
+        //app_features = app_features.concat(app_features_for_customer);
+    }
+    const app_customer_feature = JSON.stringify(app_features);
+
+    let app_hashtag = [];
+    if(typeof app_features_hashtag == 'string'){
+        app_hashtag.push(app_features_hashtag) ;
+    } else {
+        app_hashtag = [...app_features_hashtag];
+    }
+    const app_feature_hashtag = JSON.stringify(app_hashtag); 
+
+    let cus_right_point = [];
+    if(typeof app_cus_right_point == 'string'){
+        cus_right_point.push(app_cus_right_point) ;
+    } else {
+        cus_right_point = [...app_features_hashtag];
+    }
+    const app_cus_right_points = JSON.stringify(cus_right_point); 
+
+    let org_responsibility_point = [];
+    if(typeof app_org_responsibility_points == 'string'){
+        org_responsibility_point.push(app_org_responsibility_points) ;
+    } else {
+        org_responsibility_point = [...app_org_responsibility_points];
+    }
+    const app_org_responsibility_point = JSON.stringify(org_responsibility_point); 
 
     const meta_value = [bannner_content, for_business,
         for_customer, cus_right_content, cus_right_button_link, cus_right_button_text,youtube_link,
         youtube_1, youtube_2, youtube_3, youtube_4, fb_widget, twitter_widget,
         org_responsibility_content, org_responsibility_buttton_link, org_responsibility_buttton_text,
-        about_us_content, about_us_button_link, about_us_button_text, bannner_content_2, bannner_hashtag, reviewers_guidelines_title,reviewers_guidelines_popup, review_form_demo_location, cus_right_facts_popup, org_responsibility_facts_popup,youtube_5, youtube_6, youtube_7, youtube_8, youtube_9, youtube_10];
+        about_us_content, about_us_button_link, about_us_button_text, bannner_content_2, bannner_hashtag, reviewers_guidelines_title,reviewers_guidelines_popup, review_form_demo_location, cus_right_facts_popup, org_responsibility_facts_popup,youtube_5, youtube_6, youtube_7, youtube_8, youtube_9, youtube_10, app_banner_title_1, app_banner_title_2, app_review_content, app_customer_feature,app_feature_hashtag, app_cus_right_content, app_cus_right_points, app_org_responsibility_content, app_org_responsibility_point, app_about_us_content_1, app_about_us_content_2, app_about_us_button_text];
 
     const meta_key = ['bannner_content', 'for_business',
         'for_customer', 'cus_right_content', 'cus_right_button_link', 'cus_right_button_text','youtube_link', 'youtube_1', 'youtube_2', 'youtube_3', 'youtube_4', 'fb_widget', 'twitter_widget',
         'org_responsibility_content', 'org_responsibility_buttton_link', 'org_responsibility_buttton_text',
-        'about_us_content', 'about_us_button_link', 'about_us_button_text', 'bannner_content_2', 'bannner_hashtag', 'reviewers_guidelines_title','reviewers_guidelines_popup', 'review_form_demo_location', 'cus_right_facts_popup', 'org_responsibility_facts_popup','youtube_5', 'youtube_6', 'youtube_7', 'youtube_8', 'youtube_9', 'youtube_10'];
+        'about_us_content', 'about_us_button_link', 'about_us_button_text', 'bannner_content_2', 'bannner_hashtag', 'reviewers_guidelines_title','reviewers_guidelines_popup', 'review_form_demo_location', 'cus_right_facts_popup', 'org_responsibility_facts_popup','youtube_5', 'youtube_6', 'youtube_7', 'youtube_8', 'youtube_9', 'youtube_10','app_banner_title_1', 'app_banner_title_2', 'app_review_content', 'app_customer_feature','app_feature_hashtag', 'app_cus_right_content', 'app_cus_right_points', 'app_org_responsibility_content', 'app_org_responsibility_point', 'app_about_us_content_1', 'app_about_us_content_2', 'app_about_us_button_text'];
 
     await meta_value.forEach((element, index) => {
         //console.log(element, index);
@@ -3786,7 +3820,7 @@ exports.forgotPassword = (req, res) => {
                             {
                                 status: 'ok',
                                 data: '',
-                                message: 'Password Send to your email please check to your email'
+                                message: 'Forgot password email sent. Please check the email for next steps. '
                             }
                         )
                       }
@@ -3797,7 +3831,7 @@ exports.forgotPassword = (req, res) => {
                     {
                         status: 'not found',
                         data: '',
-                        message: 'Your Email did not match with our record'
+                        message: 'Your Email did not match with our record. '
                     }
                 )
             }
