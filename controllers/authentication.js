@@ -572,9 +572,24 @@ exports.edituser = (req, res) => {
                 message: 'An error occurred while processing your request' + selectError
               }
             )
-          } else {
+          }
+          
+          const metaQuery = 'SELECT * FROM user_customer_meta WHERE user_id = ?';
+          db.query(metaQuery, [userId], (metaError, metaResults) => {
+            if (selectError) {
+              // Handle the error
+              return res.send(
+                {
+                  status: 'err',
+                  data: '',
+                  message: 'An error occurred while processing your request' + metaError
+                }
+              )
+            }
+          else {
             // Fetch the updated user data
             const updatedUserData = selectResults[0];
+            const metUserData = metaResults[0];
             if (req.file) {
               updatedUserData.profile_pic = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
             }
@@ -609,7 +624,7 @@ exports.edituser = (req, res) => {
                       return res.send(
                           {
                               status: 'ok',
-                              data: updatedUserData,
+                              data: [updatedUserData,metUserData],
                               message: 'Update Successfull'
                           }
                       )
@@ -631,7 +646,7 @@ exports.edituser = (req, res) => {
                       return res.send(
                           {
                               status: 'ok',
-                              data: updatedUserData,
+                              data: [updatedUserData,metUserData],
                               message: 'Update Successfull'
                           }
                       )
@@ -642,8 +657,9 @@ exports.edituser = (req, res) => {
       }
 
   });
+})
 }
-  })
+})
 }
 
 
@@ -1125,7 +1141,7 @@ exports.submitReview = async (req, res) => {
         review_status,
         created_at,
         updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, '2', ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
       
       const create_review_values = [
@@ -1140,6 +1156,7 @@ exports.submitReview = async (req, res) => {
         '2',
         formattedDate,
         formattedDate
+
       ];
       
       console.log("Inserting Review Data:", create_review_values);
@@ -1175,7 +1192,7 @@ exports.submitReview = async (req, res) => {
         console.error('Error during create_review_results:', error);
         return res.status(500).json({
           status: 'error',
-          message: 'An error occurred while posting the review'
+          message: 'An error occurred while posting the review',error
         });
       }
     } catch (err) {
