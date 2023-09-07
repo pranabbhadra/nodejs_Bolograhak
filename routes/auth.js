@@ -199,6 +199,9 @@ router.post('/update-business', upload.fields([
 
     { name: 'did_you_know_img', maxCount: 1 },
 
+    { name: 'app_banner_img_1', maxCount: 1 },
+    { name: 'app_banner_img_2', maxCount: 1 },
+
 ]), authController.updateBusiness);
 
 //Update Privacy Policy
