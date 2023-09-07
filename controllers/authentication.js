@@ -1515,8 +1515,6 @@ exports.changePassword = async (req, res) => {
   }
 };
 
-
-
 //
   // function generateNewJWTToken(userid) {
   //   const secretKey = 'grahak-secret-key';
@@ -1525,3 +1523,140 @@ exports.changePassword = async (req, res) => {
   //   return token;
   // }
   //const newToken = generateNewJWTToken(userid);
+//=======================================================================
+//Contact us Feedback Email
+exports.contactUsEmail = (req, res) => {
+  const phone = req.body.phone;
+  const message = req.body.message;
+  const fullname = req.body.name  ;
+  const email = req.body.email;
+  var mailOptions = {
+      from: process.env.MAIL_USER,
+      to: process.env.MAIL_SUPPORT,
+      //to: 'pranab@scwebtech.com',
+      subject: 'Feedback Mail From Contact',
+      //html: ejs.renderFile(path.join(process.env.BASE_URL, '/views/email-template/', 'feedback.ejs'), { phone: phone, message: message })
+      html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
+      <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
+       <tbody>
+        <tr>
+         <td align="center" valign="top">
+           <div id="template_header_image"><p style="margin-top: 0;"></p></div>
+           <table id="template_container" style="box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; background-color: #fdfdf0; border: 1px solid #dcdcdc; border-radius: 3px !important;" border="0" cellpadding="0" cellspacing="0" width="600">
+            <tbody>
+              <tr>
+               <td align="center" valign="top">
+                 <!-- Header -->
+                 <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffc107; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
+                   <tbody>
+                     <tr>
+              <td id="header_wrapper" style="padding: 36px 48px; display: block;">
+                         <h1 style="color: #ffc107; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 50px; font-weight: 400; line-height: 150%; margin: 0; text-align: left; text-shadow: 0 1px 0 #7797b4; -webkit-font-smoothing: antialiased;">Feedback Email</h1>
+                      </td>
+                     </tr>
+                   </tbody>
+                 </table>
+           <!-- End Header -->
+           </td>
+              </tr>
+              <tr>
+               <td align="center" valign="top">
+                 <!-- Body -->
+                 <table id="template_body" border="0" cellpadding="0" cellspacing="0" width="600">
+                   <tbody>
+                     <tr>
+                      <td id="body_content" style="background-color: #fdfdfd;" valign="top">
+                        <!-- Content -->
+                        <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                         <tbody>
+                          <tr>
+                           <td style="padding: 48px;" valign="top">
+                             <div id="body_content_inner" style="color: #737373; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
+                              
+                              <table border="0" cellpadding="4" cellspacing="0" width="90%">
+                                <tr>
+                                  <td colspan="2"><strong>Contact Info</strong></td>
+                                </tr>
+                                <tr>
+                                  <td style="width:35%;">&nbsp;</td>
+                                  <td>&nbsp;</td>
+                                </tr>
+                                <tr>
+                                  <td style="width:35%;">Name:</td>
+                                  <td>${fullname}</td>
+                                </tr>
+                                <tr>
+                                  <td style="width:35%;">Email Address:</td>
+                                  <td>${email}</td>
+                                </tr>
+                                <tr>
+                                  <td style="width:35%;">Phone Number:</td>
+                                  <td>${phone}</td>
+                                </tr>
+                                <tr>
+                                  <td style="width:35%;">Message:</td>
+                                  <td>${message}</td>
+                                </tr>
+                              </table>
+                              
+                             </div>
+                           </td>
+                          </tr>
+                         </tbody>
+                        </table>
+                      <!-- End Content -->
+                      </td>
+                     </tr>
+                   </tbody>
+                 </table>
+               <!-- End Body -->
+               </td>
+              </tr>
+              <tr>
+               <td align="center" valign="top">
+                 <!-- Footer -->
+                 <table id="template_footer" border="0" cellpadding="10" cellspacing="0" width="600">
+                  <tbody>
+                   <tr>
+                    <td style="padding: 0; -webkit-border-radius: 6px;" valign="top">
+                     <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                       <tbody>
+                         <tr>
+                          <td colspan="2" id="credit" style="padding: 0 48px 48px 48px; -webkit-border-radius: 6px; border: 0; color: #99b1c7; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center;" valign="middle">
+                               <p> (http://bolograhak.in/)</p>
+                          </td>
+                         </tr>
+                       </tbody>
+                     </table>
+                    </td>
+                   </tr>
+                  </tbody>
+                 </table>
+               <!-- End Footer -->
+               </td>
+              </tr>
+            </tbody>
+           </table>
+         </td>
+        </tr>
+       </tbody>
+      </table>
+     </div>`
+  }
+  mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
+      if (err) {
+          console.log(err);
+          return res.send({
+              status: 'error',
+              message: 'Something went wrong'
+          });
+      } else {
+          console.log('Mail Send: ', info.response);
+          return res.send({
+              status: 'success',
+              message: 'Thank you for your feedback'
+          });
+      }
+  })
+}
+//=======================================================================

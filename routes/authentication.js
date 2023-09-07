@@ -41,6 +41,11 @@ router.post('/submitReview',verifyToken, authenController.submitReview);
 router.post('/forgotPassword', authenController.forgotPassword);
 router.post('/resetPassword', verifyToken, authenController.resetPassword);
 router.post('/changePassword', verifyToken, authenController.changePassword);
+
+//==========================================================================
+//Contact us Feedback Email
+router.post('/contact-us-email', verifyToken, authenController.contactUsEmail);
+//==========================================================================
 //----------Get API Start----------------//
 //get user details
 router.get('/getUserDetails/:user_id', verifyToken, async (req, res) => {
@@ -697,10 +702,158 @@ router.get('/getstates/:country_id', verifyToken, async (req, res) => {
     }
 });
 
+//===============================================================================
+// Api for home page content
+router.get('/app-home', verifyToken,   async (req, res) => {
+    try {
+        const [latestReviews] = await Promise.all([
+            comFunction2.getlatestReviews(20)
+        ]);
+        const sql = `SELECT * FROM page_info where secret_Key = 'home' `;
+        db.query(sql, (err, results, fields) => {
+            if (err) throw err;
+            const home = results[0];
+            const meta_sql = `SELECT * FROM page_meta where page_id = ${home.id}`;
+            db.query(meta_sql, async (meta_err, _meta_result) => {
+                if (meta_err) throw meta_err;
+
+                const meta_values = _meta_result;
+                let meta_values_array = {};
+                await meta_values.forEach((item) => {
+                    meta_values_array[item.page_meta_key] = item.page_meta_value;
+                })
+
+                const featured_sql = `SELECT featured_companies.id,featured_companies.company_id,featured_companies.short_desc,featured_companies.link,company.logo,company.company_name FROM featured_companies 
+                        JOIN company ON featured_companies.company_id = company.ID 
+                        WHERE featured_companies.status = 'active' 
+                        ORDER BY featured_companies.ordering ASC `;
+                db.query(featured_sql, (featured_err, featured_result) => {
+                    var featured_comps = featured_result;
+                    return res.status(200).json({
+                        status: 'success',
+                        data: {
+                            meta_values_array:meta_values_array,
+                            featured_comps:featured_comps,
+                            latestReviews:latestReviews
+                        },
+                        message: 'Home data successfully received'
+                    });
+                })
+
+            })
+
+        })
+    } catch (error) {
+        console.error("An error occurred:", error);
+        // Handle the error appropriately, e.g., sending an error response
+    }
+});
+
+// Api for home page customer-rights content
+router.get('/app-home-customer-rights',  verifyToken,  async (req, res) => {
+    try {
+        const sql = `SELECT * FROM page_info where secret_Key = 'home' `;
+        db.query(sql, (err, results, fields) => {
+            if (err) throw err;
+            const home = results[0];
+            const meta_sql = `SELECT * FROM page_meta where page_id = ${home.id}`;
+            db.query(meta_sql, async (meta_err, _meta_result) => {
+                if (meta_err) throw meta_err;
+
+                const meta_values = _meta_result;
+                let meta_values_array = {};
+                await meta_values.forEach((item) => {
+                    if(item.page_meta_key == 'app_cus_right_content' || item.page_meta_key == 'app_cus_right_points') {
+                        meta_values_array[item.page_meta_key] = item.page_meta_value;
+                    }
+                })
+                return res.status(200).json({
+                    status: 'success',
+                    data: {
+                        meta_values_array:meta_values_array,
+                    },
+                    message: 'Home data successfully received'
+                });
+            })
+
+        })
+    } catch (error) {
+        console.error("An error occurred:", error);
+        // Handle the error appropriately, e.g., sending an error response
+    }
+});
+
+// Api for home page Organization Responsibility content
+router.get('/app-home-org-responsibility',  verifyToken,  async (req, res) => {
+    try {
+        const sql = `SELECT * FROM page_info where secret_Key = 'home' `;
+        db.query(sql, (err, results, fields) => {
+            if (err) throw err;
+            const home = results[0];
+            const meta_sql = `SELECT * FROM page_meta where page_id = ${home.id}`;
+            db.query(meta_sql, async (meta_err, _meta_result) => {
+                if (meta_err) throw meta_err;
+
+                const meta_values = _meta_result;
+                let meta_values_array = {};
+                await meta_values.forEach((item) => {
+                    if(item.page_meta_key == 'app_org_responsibility_content' || item.page_meta_key == 'app_org_responsibility_point') {
+                        meta_values_array[item.page_meta_key] = item.page_meta_value;
+                    }
+                })
+                return res.status(200).json({
+                    status: 'success',
+                    data: {
+                        meta_values_array:meta_values_array,
+                    },
+                    message: 'Home data successfully received'
+                });
+            })
+
+        })
+    } catch (error) {
+        console.error("An error occurred:", error);
+        // Handle the error appropriately, e.g., sending an error response
+    }
+});
+
+// Api for home page About Us content
+router.get('/app-home-about-us',  verifyToken,  async (req, res) => {
+    try {
+        const sql = `SELECT * FROM page_info where secret_Key = 'home' `;
+        db.query(sql, (err, results, fields) => {
+            if (err) throw err;
+            const home = results[0];
+            const meta_sql = `SELECT * FROM page_meta where page_id = ${home.id}`;
+            db.query(meta_sql, async (meta_err, _meta_result) => {
+                if (meta_err) throw meta_err;
+
+                const meta_values = _meta_result;
+                let meta_values_array = {};
+                await meta_values.forEach((item) => {
+                    if(item.page_meta_key == 'app_about_us_content_1' || item.page_meta_key == 'app_about_us_content_2' || item.page_meta_key == 'app_about_us_button_text') {
+                        meta_values_array[item.page_meta_key] = item.page_meta_value;
+                    }
+                })
+                return res.status(200).json({
+                    status: 'success',
+                    data: {
+                        meta_values_array:meta_values_array,
+                    },
+                    message: 'Home data successfully received'
+                });
+            })
+
+        })
+    } catch (error) {
+        console.error("An error occurred:", error);
+        // Handle the error appropriately, e.g., sending an error response
+    }
+});
 
 
 
-
+//================================================================================
 
 function verifyToken(req, res, next){
     let token = req.headers['authorization'];
