@@ -6,6 +6,7 @@ const jwtsecretKey = 'grahak-secret-key';
 const db = require('../config');
 const comFunction = require('../common_function_api');
 const comFunction2 = require('../common_function2');
+const commonFunction = require('../common_function');
 
 const router = express.Router();
 //const publicPath = path.join(__dirname,'../public');
@@ -704,10 +705,11 @@ router.get('/getstates/:country_id', verifyToken, async (req, res) => {
 
 //===============================================================================
 // Api for home page content
-router.get('/app-home', verifyToken,   async (req, res) => {
+router.get('/app-home',  verifyToken,  async (req, res) => {
     try {
-        const [latestReviews] = await Promise.all([
-            comFunction2.getlatestReviews(20)
+        const [latestReviews,AllReviewTags] = await Promise.all([
+            comFunction2.getlatestReviews(20),
+            comFunction2.getAllReviewTags()
         ]);
         const sql = `SELECT * FROM page_info where secret_Key = 'home' `;
         db.query(sql, (err, results, fields) => {
@@ -723,6 +725,23 @@ router.get('/app-home', verifyToken,   async (req, res) => {
                     meta_values_array[item.page_meta_key] = item.page_meta_value;
                 })
 
+                if (latestReviews.length > 0) {
+                    const reviewTagsMap = {};
+                    AllReviewTags.forEach(tag => {
+                        if (!reviewTagsMap[tag.review_id]) {
+                          reviewTagsMap[tag.review_id] = [];
+                        }
+                        reviewTagsMap[tag.review_id].push({ review_id: tag.review_id, tag_name: tag.tag_name });
+                    });
+                
+                    var latest_reviews = latestReviews.map(review => {
+                        return {
+                            ...review,
+                            Tags: reviewTagsMap[review.id] || []
+                        };
+                    });
+                }
+
                 const featured_sql = `SELECT featured_companies.id,featured_companies.company_id,featured_companies.short_desc,featured_companies.link,company.logo,company.company_name FROM featured_companies 
                         JOIN company ON featured_companies.company_id = company.ID 
                         WHERE featured_companies.status = 'active' 
@@ -734,7 +753,7 @@ router.get('/app-home', verifyToken,   async (req, res) => {
                         data: {
                             meta_values_array:meta_values_array,
                             featured_comps:featured_comps,
-                            latestReviews:latestReviews
+                            latestReviews:latest_reviews,
                         },
                         message: 'Home data successfully received'
                     });
@@ -848,6 +867,48 @@ router.get('/app-home-about-us',  verifyToken,  async (req, res) => {
     } catch (error) {
         console.error("An error occurred:", error);
         // Handle the error appropriately, e.g., sending an error response
+    }
+});
+
+// Api for home page About Us content
+router.get('/app-business', verifyToken, async (req, res) => {
+    try {
+        const sql = `SELECT * FROM page_info where secret_Key = 'business' `;
+        db.query(sql, (err, results, fields) => {
+            if (err) throw err;
+            const common = results[0];
+            const meta_sql = `SELECT * FROM page_meta where page_id = ${common.id}`;
+            db.query(meta_sql, async (meta_err, _meta_result) => {
+                if (meta_err) throw meta_err;
+
+                const meta_values = _meta_result;
+                let meta_values_array = {};
+                console.log(meta_values);
+                await meta_values.forEach((item) => {
+                    if(item.page_meta_key == 'app_bannner_content_title' || item.page_meta_key == 'app_bannner_content_1' || item.page_meta_key == 'app_bannner_content_2'|| item.page_meta_key == 'app_advantage_points' || item.page_meta_key == 'app_dont_forget_content_1_title'|| item.page_meta_key == 'app_dont_forget_content_1' || item.page_meta_key == 'app_dont_forget_content_2_title'|| item.page_meta_key == 'app_dont_forget_content_2' || item.page_meta_key == 'bottom_content'|| item.page_meta_key == 'app_banner_img_1' || item.page_meta_key == 'app_banner_img_2') {
+                        meta_values_array[item.page_meta_key] = item.page_meta_value;
+                    }
+                })
+
+                const UpcomingBusinessFeature = await comFunction2.getUpcomingBusinessFeature();
+                const BusinessFeature = await comFunction2.getBusinessFeature();
+                //console.log(meta_values_array);
+                return res.status(200).json({
+                    status: 'success',
+                    data: {
+                        meta_values_array:meta_values_array,
+                        UpcomingBusinessFeature:UpcomingBusinessFeature,
+                        BusinessFeature:BusinessFeature,
+                    },
+                    message: 'Business data successfully received'
+                });
+            })
+
+        })
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
     }
 });
 
