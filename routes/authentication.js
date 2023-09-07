@@ -32,6 +32,8 @@ const upload = multer({ storage: storage });
 router.post('/register',upload.single('profile_pic') ,authenController.register);
 router.post('/login', authenController.login);
 router.put('/edituser', verifyToken, upload.single('profile_pic') ,authenController.edituser);
+
+
 router.post('/createcategories',verifyToken, upload.single('c_image'),authenController.createcategories);
 router.post('/createcompany',verifyToken, upload.single('logo') ,authenController.createcompany);
 router.put('/editcompany',verifyToken, upload.single('logo') ,authenController.editcompany);
@@ -39,7 +41,7 @@ router.post('/createcompanylocation',verifyToken, authenController.createcompany
 router.post('/submitReview',verifyToken, authenController.submitReview);
 //forget password
 router.post('/forgotPassword', authenController.forgotPassword);
-router.post('/resetPassword', verifyToken, authenController.resetPassword);
+router.post('/resetPassword',  authenController.resetPassword);
 router.post('/changePassword', verifyToken, authenController.changePassword);
 //----------Get API Start----------------//
 //get user details
