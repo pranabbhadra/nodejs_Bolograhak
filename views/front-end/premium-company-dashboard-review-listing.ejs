@@ -16,10 +16,11 @@
                         <table class="table table-hover custom-table">
                             <thead>
                                 <tr>
-                                    <th scope="col">Date & Time</th>
-                                    <th scope="col" style="width: 450px;">Comment</th>
+                                    <th scope="col">Date</th>
+                                    <th scope="col" style="width: 450px;">Review</th>
                                     <th scope="col">Tags</th>
                                     <th scope="col">Rating</th>
+                                    <th scope="col">Replied</th>
                                     <th scope="col">Acticon</th>
                                 </tr>
                             </thead>
@@ -29,8 +30,10 @@
                                     <td>
                                         <% const dateString = review.created_at; %>
                                         <% const date = new Date(dateString); %>
-                                        <%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %>,<br>
-                                        <small><%= date.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true }) %></small></td>
+                                        <%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %>
+                                        <!-- ,<br>
+                                        <small><%= date.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true }) %></small> -->
+                                    </td>
                                     <td><%- review.review_content -%></td>
                                     <td>
                                         <% review.Tags.forEach(tag => { %>
@@ -45,6 +48,11 @@
                                         <% }else{%>
                                             <span class="badge badge-square badge-danger"><%= review.rating %></span>
                                         <% }%>
+                                    </td>
+                                    <td>
+                                        <% if(review.reply_count > 0 ){ %>
+                                            <span class="badge badge-square badge-success">Replied</span>
+                                        <% } %>
                                     </td>
                                     <td><a class="rply_btn" href="/company-dashboard-review-replay/<%- company.ID -%>/<%- review.id -%>">Reply</a></td>
                                 </tr>
