@@ -636,6 +636,7 @@
                             <input type="hidden" name="review_id" value="<%- review.id -%>">
                             <input type="hidden" name="reply_by" value="<%- currentUserData.user_id -%>">
                             <input type="hidden" name="reply_to" value="<%- company.claimed_by -%>">
+                            <input type="hidden" name="company_id" value="<%- company.ID -%>">
                             <button type="submit">Reply</button>
                             <div class="submit-loading" style="display: none;">Please wait..</div>
                             </form>

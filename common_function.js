@@ -508,14 +508,16 @@ async function getAllReviews() {
 
 async function getAllReviewsByCompanyID(companyId) {
   const all_review_query = `
-    SELECT r.*, c.company_name, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic
-      FROM reviews r
-      JOIN company c ON r.company_id = c.ID
-      JOIN company_location cl ON r.company_location_id = cl.ID
-      JOIN users u ON r.customer_id = u.user_id
-      LEFT JOIN user_customer_meta ucm ON u.user_id = ucm.user_id
-      WHERE r.company_id = ? AND r.review_status = '1'
-      ORDER BY r.created_at DESC;
+  SELECT r.*, c.company_name, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic, count(rr.ID) as reply_count
+  FROM reviews r
+  JOIN company c ON r.company_id = c.ID
+  JOIN company_location cl ON r.company_location_id = cl.ID
+  JOIN users u ON r.customer_id = u.user_id
+  LEFT JOIN user_customer_meta ucm ON u.user_id = ucm.user_id
+  LEFT JOIN review_reply rr ON r.id = rr.review_id
+  WHERE r.company_id = ? AND r.review_status = '1'
+  GROUP BY r.id
+  ORDER BY r.created_at DESC;
   `;
   try{
     const all_review_results = await query(all_review_query, companyId);

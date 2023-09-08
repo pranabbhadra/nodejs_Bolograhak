@@ -554,6 +554,18 @@ router.get('/company/:id', checkCookieValue, async (req, res) => {
                 getCompanyReviews,
                 globalPageMeta:globalPageMeta
             });
+            // res.json(
+            // {
+            //     menu_active_id: 'company',
+            //     page_title: 'Organization Details',
+            //     currentUserData,
+            //     allRatingTags,
+            //     company:CompanyInfo,
+            //     CompanyInfo,
+            //     companyReviewNumbers,
+            //     getCompanyReviews,
+            //     globalPageMeta:globalPageMeta
+            // });
         }
     }else{
         res.render('front-end/404', {
@@ -843,7 +855,7 @@ router.get('/company-review-listing/:compID', checkClientClaimedCompany, async (
         res.render('front-end/basic-company-dashboard-review-listing',
         {
             menu_active_id: 'company-review-listing',
-            page_title: 'Company Review Listing',
+            page_title: 'Review Listing',
             currentUserData,
             globalPageMeta:globalPageMeta,
             company:company,
@@ -879,7 +891,7 @@ router.get('/company-review-listing/:compID', checkClientClaimedCompany, async (
         res.render('front-end/premium-company-dashboard-review-listing',
         {
             menu_active_id: 'company-review-listing',
-            page_title: 'Company Review Listing',
+            page_title: 'Review Listing',
             currentUserData,
             globalPageMeta:globalPageMeta,
             company:company,
@@ -948,7 +960,7 @@ router.get('/company-dashboard-review-replay/:compID/:reviewID', checkClientClai
                     finalsingleReviewData,
                     singleReviewReplyData
                 });
-                // res.render('front-end/basic-company-review-replay', 
+                // res.json(
                 // { 
                 //     menu_active_id: 'company-review-listing', 
                 //     page_title: 'Company Review Replay', 
