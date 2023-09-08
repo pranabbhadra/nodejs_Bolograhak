@@ -1400,7 +1400,7 @@ exports.editCompany = (req, res) => {
                     // Insert claim request if req.body.claimed_by exists
                     if (req.body.claimed_by) {
                         const checkClaimRequestQuery = 'SELECT * FROM company_claim_request WHERE company_id = ?';
-                        db.query(checkClaimRequestQuery, [companyID], (err, claimRequestResults) => {
+                        db.query(checkClaimRequestQuery, [companyID], async (err, claimRequestResults) => {
                             if (err) {
                                 // Handle the error
                                 return res.send({
@@ -1411,27 +1411,39 @@ exports.editCompany = (req, res) => {
                             }
                             
                             if (claimRequestResults.length > 0) {
-                                // Claim request already exists, handle accordingly
-                                const updateClaimRequestQuery = 'UPDATE company_claim_request SET claimed_by = ?, claimed_date = ? WHERE company_id = ?';
-                                const updateClaimRequestValues = [req.body.claimed_by, formattedDate, companyID];
 
-                                db.query(updateClaimRequestQuery, updateClaimRequestValues, (err) => {
-                                    if (err) {
-                                        // Handle the error
-                                        return res.send({
-                                            status: 'err',
-                                            data: '',
-                                            message: 'An error occurred while updating company claim request: ' + err
+                                console.log('checkClaimRequestQuery',claimRequestResults)
+                                const ReviewReplyByQuery = 'UPDATE review_reply SET reply_by = ? WHERE company_id = ? AND reply_by = ?';
+                                const ReviewReplyByData = [req.body.claimed_by,companyID,claimRequestResults[0].claimed_by]
+                                 db.query(ReviewReplyByQuery,ReviewReplyByData,(ReviewReplyByErr,ReviewReplyByResult)=>{
+                                    const ReviewReplyToQuery = 'UPDATE review_reply SET reply_to = ? WHERE company_id = ? AND reply_to = ?';
+                                    const ReviewReplyToData = [req.body.claimed_by,companyID,claimRequestResults[0].claimed_by]
+                                    db.query(ReviewReplyToQuery,ReviewReplyToData,(ReviewReplyToErr,ReviewReplyToResult)=>{
+                                        // Claim request already exists, handle accordingly
+                                        const updateClaimRequestQuery = 'UPDATE company_claim_request SET claimed_by = ?, claimed_date = ? WHERE company_id = ?';
+                                        const updateClaimRequestValues = [req.body.claimed_by, formattedDate, companyID];
+
+                                        db.query(updateClaimRequestQuery, updateClaimRequestValues, (err) => {
+                                            if (err) {
+                                                // Handle the error
+                                                return res.send({
+                                                    status: 'err',
+                                                    data: '',
+                                                    message: 'An error occurred while updating company claim request: ' + err
+                                                });
+                                            }
+
+                                            // Return success response
+                                            return res.send({
+                                                status: 'ok',
+                                                data: companyID,
+                                                message: 'Company details updated successfully'
+                                            });
                                         });
-                                    }
-
-                                    // Return success response
-                                    return res.send({
-                                        status: 'ok',
-                                        data: companyID,
-                                        message: 'Company details updated successfully'
-                                    });
-                                });
+                                    })
+                                })
+                                
+                                
                             }else{
                                 const claimRequestQuery = 'INSERT INTO company_claim_request (company_id, claimed_by, status, claimed_date) VALUES (?, ?, ?, ?)';
                                 const claimRequestValues = [companyID, req.body.claimed_by, '1', formattedDate];
@@ -1479,27 +1491,38 @@ exports.editCompany = (req, res) => {
                         }
                         
                         if (claimRequestResults.length > 0) {
-                            // Claim request already exists, handle accordingly
-                            const updateClaimRequestQuery = 'UPDATE company_claim_request SET claimed_by = ?, claimed_date = ? WHERE company_id = ?';
-                            const updateClaimRequestValues = [req.body.claimed_by, formattedDate, companyID];
 
-                            db.query(updateClaimRequestQuery, updateClaimRequestValues, (err) => {
-                                if (err) {
-                                    // Handle the error
-                                    return res.send({
-                                        status: 'err',
-                                        data: '',
-                                        message: 'An error occurred while updating company claim request: ' + err
+                            console.log('checkClaimRequestQuery',claimRequestResults)
+                            const ReviewReplyByQuery = 'UPDATE review_reply SET reply_by = ? WHERE company_id = ? AND reply_by = ?';
+                            const ReviewReplyByData = [req.body.claimed_by,companyID,claimRequestResults[0].claimed_by]
+                                db.query(ReviewReplyByQuery,ReviewReplyByData,(ReviewReplyByErr,ReviewReplyByResult)=>{
+                                const ReviewReplyToQuery = 'UPDATE review_reply SET reply_to = ? WHERE company_id = ? AND reply_to = ?';
+                                const ReviewReplyToData = [req.body.claimed_by,companyID,claimRequestResults[0].claimed_by]
+                                db.query(ReviewReplyToQuery,ReviewReplyToData,(ReviewReplyToErr,ReviewReplyToResult)=>{
+                                    // Claim request already exists, handle accordingly
+                                    const updateClaimRequestQuery = 'UPDATE company_claim_request SET claimed_by = ?, claimed_date = ? WHERE company_id = ?';
+                                    const updateClaimRequestValues = [req.body.claimed_by, formattedDate, companyID];
+
+                                    db.query(updateClaimRequestQuery, updateClaimRequestValues, (err) => {
+                                        if (err) {
+                                            // Handle the error
+                                            return res.send({
+                                                status: 'err',
+                                                data: '',
+                                                message: 'An error occurred while updating company claim request: ' + err
+                                            });
+                                        }
+
+                                        // Return success response
+                                        return res.send({
+                                            status: 'ok',
+                                            data: companyID,
+                                            message: 'Company details updated successfully'
+                                        });
                                     });
-                                }
-
-                                // Return success response
-                                return res.send({
-                                    status: 'ok',
-                                    data: companyID,
-                                    message: 'Company details updated successfully'
-                                });
-                            });
+                                })
+                            })
+                            
                         }else{
                             const claimRequestQuery = 'INSERT INTO company_claim_request (company_id, claimed_by, status, claimed_date) VALUES (?, ?, ?, ?)';
                             const claimRequestValues = [companyID, req.body.claimed_by, '1', formattedDate];
@@ -3856,20 +3879,15 @@ exports.submitReviewReply = async (req, res) => {
     try {
         if (encodedUserData) {
             const currentUserData = JSON.parse(encodedUserData);
-            //console.log(currentUserData);
+            console.log(currentUserData);
             const loginCompanyUserId = currentUserData.user_id;
             if(loginCompanyUserId == req.body.reply_by){
                 const currentDate = new Date();
                 const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
-                const replyInsertData = {
-                    review_id: req.body.review_id,
-                    reply_by: req.body.reply_by,
-                    reply_to: req.body.reply_to,
-                    comment: req.body.comment,
-                    created_at: formattedDate,
-                    updated_at: formattedDate
-                };
-                db.query('INSERT INTO review_reply SET ?', replyInsertData, async (err, results) => {
+
+                const replyData = [req.body.review_id,req.body.company_id,req.body.reply_by,req.body.reply_to,req.body.comment,formattedDate,formattedDate]
+
+                db.query('INSERT INTO review_reply (review_id, company_id, reply_by, reply_to, comment, created_at, updated_at) VALUES (?,?,?,?,?,?,?)', replyData, async (err, results) => {
                     if (err) {
                         return res.status(500).json({
                           status: 'error',
