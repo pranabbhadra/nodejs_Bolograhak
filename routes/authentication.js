@@ -782,7 +782,7 @@ router.get('/app-home-customer-rights',  verifyToken,  async (req, res) => {
                 const meta_values = _meta_result;
                 let meta_values_array = {};
                 await meta_values.forEach((item) => {
-                    if(item.page_meta_key == 'app_cus_right_content' || item.page_meta_key == 'app_cus_right_points') {
+                    if(item.page_meta_key == 'app_cus_right_content' || item.page_meta_key == 'app_cus_right_points'|| item.page_meta_key == 'app_cus_right_img') {
                         meta_values_array[item.page_meta_key] = item.page_meta_value;
                     }
                 })
@@ -816,7 +816,7 @@ router.get('/app-home-org-responsibility',  verifyToken,  async (req, res) => {
                 const meta_values = _meta_result;
                 let meta_values_array = {};
                 await meta_values.forEach((item) => {
-                    if(item.page_meta_key == 'app_org_responsibility_content' || item.page_meta_key == 'app_org_responsibility_point') {
+                    if(item.page_meta_key == 'app_org_responsibility_content' || item.page_meta_key == 'app_org_responsibility_point'|| item.page_meta_key == 'app_org_responsibility_img') {
                         meta_values_array[item.page_meta_key] = item.page_meta_value;
                     }
                 })
@@ -870,7 +870,7 @@ router.get('/app-home-about-us',  verifyToken,  async (req, res) => {
     }
 });
 
-// Api for home page About Us content
+// Api for business page content
 router.get('/app-business', verifyToken, async (req, res) => {
     try {
         const sql = `SELECT * FROM page_info where secret_Key = 'business' `;
@@ -901,6 +901,43 @@ router.get('/app-business', verifyToken, async (req, res) => {
                         BusinessFeature:BusinessFeature,
                     },
                     message: 'Business data successfully received'
+                });
+            })
+
+        })
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+
+// Api for about us page content
+router.get('/app-about-us', verifyToken, async (req, res) => {
+    try {
+        const sql = `SELECT * FROM page_info where secret_Key = 'about' `;
+        db.query(sql, (err, results, fields) => {
+            if (err) throw err;
+            const common = results[0];
+            const meta_sql = `SELECT * FROM page_meta where page_id = ${common.id}`;
+            db.query(meta_sql, async (meta_err, _meta_result) => {
+                if (meta_err) throw meta_err;
+
+                const meta_values = _meta_result;
+                let meta_values_array = {};
+                //console.log(meta_values);
+                await meta_values.forEach((item) => {
+                    if(item.page_meta_key == 'app_banner_content_1' || item.page_meta_key == 'app_banner_content_2' || item.page_meta_key == 'app_platform_content_1'|| item.page_meta_key == 'app_platform_content_2' || item.page_meta_key == 'app_banner_img_1'|| item.page_meta_key == 'app_banner_img_2' || item.page_meta_key == 'mission_title'|| item.page_meta_key == 'mission_content') {
+                        meta_values_array[item.page_meta_key] = item.page_meta_value;
+                    }
+                })
+
+                return res.status(200).json({
+                    status: 'success',
+                    data: {
+                        meta_values_array:meta_values_array,
+                    },
+                    message: 'About Us data successfully received'
                 });
             })
 

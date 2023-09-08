@@ -2111,7 +2111,7 @@ exports.updateHome = async (req, res) => {
     const { banner_img_1, banner_img_2, banner_img_3,banner_img_4, banner_img_5, banner_img_6, cus_right_img_1, cus_right_img_2, cus_right_img_3, cus_right_img_4, cus_right_img_5,
         cus_right_img_6, cus_right_img_7, cus_right_img_8, org_responsibility_img_1, org_responsibility_img_2, org_responsibility_img_3,
         org_responsibility_img_4, org_responsibility_img_5, org_responsibility_img_6, org_responsibility_img_7, org_responsibility_img_8,
-        about_us_img, review_img_1, review_img_2, review_img_3, review_img_4, map_img } = req.files;
+        about_us_img, review_img_1, review_img_2, review_img_3, review_img_4, map_img, app_cus_right_img, app_org_responsibility_img } = req.files;
     
     let app_features = [];
     if(typeof app_features_for_customer == 'string'){
@@ -2191,12 +2191,12 @@ exports.updateHome = async (req, res) => {
     const file_meta_value = [banner_img_1, banner_img_2, banner_img_3,banner_img_4, banner_img_5, banner_img_6, cus_right_img_1, cus_right_img_2, cus_right_img_3, cus_right_img_4, cus_right_img_5,
         cus_right_img_6, cus_right_img_7, cus_right_img_8, org_responsibility_img_1, org_responsibility_img_2, org_responsibility_img_3,
         org_responsibility_img_4, org_responsibility_img_5, org_responsibility_img_6, org_responsibility_img_7, org_responsibility_img_8,
-        about_us_img, review_img_1, review_img_2, review_img_3, review_img_4, map_img ];
+        about_us_img, review_img_1, review_img_2, review_img_3, review_img_4, map_img, app_cus_right_img, app_org_responsibility_img ];
 
     const file_meta_key = ['banner_img_1', 'banner_img_2', 'banner_img_3','banner_img_4', 'banner_img_5', 'banner_img_6', 'cus_right_img_1', 'cus_right_img_2', 'cus_right_img_3', 'cus_right_img_4', 'cus_right_img_5',
         'cus_right_img_6', 'cus_right_img_7', 'cus_right_img_8', 'org_responsibility_img_1', 'org_responsibility_img_2', 'org_responsibility_img_3',
         'org_responsibility_img_4', 'org_responsibility_img_5', 'org_responsibility_img_6', 'org_responsibility_img_7', 'org_responsibility_img_8',
-        'about_us_img', 'review_img_1', 'review_img_2', 'review_img_3', 'review_img_4', 'map_img' ];
+        'about_us_img', 'review_img_1', 'review_img_2', 'review_img_3', 'review_img_4', 'map_img' , 'app_cus_right_img', 'app_org_responsibility_img'];
 
     await file_meta_key.forEach((item, key) => {
         //console.log(item, key);
@@ -2436,19 +2436,19 @@ exports.updateAbout = async (req, res) => {
 
     const { about_id, title, meta_title, meta_desc, meta_keyword, banner_content, mission_title,
         mission_content, platform_content, bolograhak_would_content, customers_content,
-        service_providers_content } = req.body;
+        service_providers_content, app_banner_content_1, app_banner_content_2, app_platform_content_1, app_platform_content_2 } = req.body;
 
     const { banner_img_1, banner_img_2, banner_img_3, banner_img_4, banner_img_5, banner_img_6, banner_img_7, banner_img_8,
         platform_img_1, platform_img_2, platform_img_3, platform_img_4, platform_img_5, platform_img_6, platform_img_7,
-        platform_img_8, right_img_1, right_img_2 } = req.files;
+        platform_img_8, right_img_1, right_img_2, app_banner_img_1, app_banner_img_2 } = req.files;
 
     const meta_value = [banner_content, mission_title,
         mission_content, platform_content, bolograhak_would_content, customers_content,
-        service_providers_content];
+        service_providers_content, app_banner_content_1, app_banner_content_2, app_platform_content_1, app_platform_content_2];
 
     const meta_key = ['banner_content', 'mission_title',
         'mission_content', 'platform_content', 'bolograhak_would_content', 'customers_content',
-        'service_providers_content'];
+        'service_providers_content', 'app_banner_content_1', 'app_banner_content_2', 'app_platform_content_1', 'app_platform_content_2'];
 
     await meta_value.forEach((element, index) => {
         //console.log(element, index);
@@ -2483,11 +2483,11 @@ exports.updateAbout = async (req, res) => {
 
     const file_meta_value = [banner_img_1, banner_img_2, banner_img_3, banner_img_4, banner_img_5, banner_img_6, banner_img_7, banner_img_8,
         platform_img_1, platform_img_2, platform_img_3, platform_img_4, platform_img_5, platform_img_6, platform_img_7,
-        platform_img_8, right_img_1, right_img_2];
+        platform_img_8, right_img_1, right_img_2, app_banner_img_1, app_banner_img_2];
 
     const file_meta_key = ['banner_img_1', 'banner_img_2', 'banner_img_3', 'banner_img_4', 'banner_img_5', 'banner_img_6', 'banner_img_7', 'banner_img_8',
         'platform_img_1', 'platform_img_2', 'platform_img_3', 'platform_img_4', 'platform_img_5', 'platform_img_6', 'platform_img_7',
-        'platform_img_8', 'right_img_1', 'right_img_2'];
+        'platform_img_8', 'right_img_1', 'right_img_2', 'app_banner_img_1', 'app_banner_img_2'];
 
     await file_meta_key.forEach((item, key) => {
         //console.log(item, key);
