@@ -951,7 +951,7 @@ async function getCompanyRatings(companyID) {
     FROM 
       reviews
     WHERE 
-      company_id = ?
+    company_id = ? AND review_status = "1"
     GROUP BY 
       company_id`;
 
