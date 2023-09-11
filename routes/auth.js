@@ -86,7 +86,9 @@ router.post('/faq_images',upload.fields([
     { name: 'banner_img_5', maxCount: 1 },
     { name: 'banner_img_6', maxCount: 1 },
     { name: 'banner_img_7', maxCount: 1 },
-    { name: 'banner_img_8', maxCount: 1 }
+    { name: 'banner_img_8', maxCount: 1 },
+    
+    { name: 'app_banner_img', maxCount: 1 }
 ]), authController.updateFAQImages);
 
 // Update Contacts
@@ -130,6 +132,9 @@ router.post('/update-home', upload.fields([
     { name: 'about_us_img', maxCount: 1 },
 
     { name: 'map_img', maxCount: 1 },
+    
+    { name: 'app_cus_right_img', maxCount: 1 },
+    { name: 'app_org_responsibility_img', maxCount: 1 },
 
 ]), authController.updateHome);
 
@@ -155,6 +160,10 @@ router.post('/update-about', upload.fields([
 
     { name: 'right_img_1', maxCount: 1 },
     { name: 'right_img_2', maxCount: 1 },
+    
+    { name: 'app_banner_img_1', maxCount: 1 },
+    { name: 'app_banner_img_2', maxCount: 1 },
+
 
 ]), authController.updateAbout);
 

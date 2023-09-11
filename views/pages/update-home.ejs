@@ -757,6 +757,25 @@
                                             placeholder="Grahak Rights Content (App)"><%= meta_values_array.app_cus_right_content %></textarea>
                                     </div>
                                 </div>
+                                
+                                <div class="row mb-6">
+                                    <!--begin::Label-->
+                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
+                                        <span class="">Grahak Rights  Image</span>
+                                    </label>
+                                    <!--end::Label-->
+                                    <!--begin::Col-->
+                                    <div class="col-lg-7 fv-row">
+                                        <input type="file" name="app_cus_right_img" id="about_us_img"
+                                            class="form-control form-control-lg form-control-solid" placeholder=""
+                                            value="" />
+                                    </div>
+                                    <div class="col-lg-1 fv-row">
+                                        <img src="/<%= meta_values_array.app_cus_right_img %>" alt="img" width="50"
+                                            height="50" loading="">
+                                    </div>
+                                    <!--end::Col-->
+                                </div>
                                 <% 
                                     let cus_right_points = [];
                                     if(typeof meta_values_array.app_cus_right_points !== 'undefined'){
@@ -1214,6 +1233,24 @@
                                             class="form-control form-control-lg form-control-solid"
                                             placeholder="Organization Responsibility Content (App)"><%= meta_values_array.app_org_responsibility_content %></textarea>
                                     </div>
+                                </div>
+                                <div class="row mb-6">
+                                    <!--begin::Label-->
+                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
+                                        <span class="">Organization Responsibility Image </span>
+                                    </label>
+                                    <!--end::Label-->
+                                    <!--begin::Col-->
+                                    <div class="col-lg-7 fv-row">
+                                        <input type="file" name="app_org_responsibility_img" id="org_responsibility_img_1"
+                                            class="form-control form-control-lg form-control-solid" placeholder=""
+                                            value="" />
+                                    </div>
+                                    <div class="col-lg-1 fv-row">
+                                        <img src="/<%= meta_values_array.app_org_responsibility_img %>" alt="img"
+                                            width="50" height="50" loading="">
+                                    </div>
+                                    <!--end::Col-->
                                 </div>
                                 <% 
                                     let org_responsibility_points = [];

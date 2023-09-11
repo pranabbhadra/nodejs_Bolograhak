@@ -302,7 +302,16 @@ router.get('/faq', checkCookieValue, async (req, res) => {
             comFunction2.getPageMetaValues('global'),
         ]);
         // Render the 'add-page' EJS view and pass the data
-        res.render('front-end/faq', {
+        // res.render('front-end/faq', {
+        //     menu_active_id: 'faq',
+        //     page_title: 'FAQ ',
+        //     currentUserData,
+        //     faqPageData,
+        //     faqCategoriesData,
+        //     faqItemsData,
+        //     globalPageMeta:globalPageMeta
+        // });
+        res.json( {
             menu_active_id: 'faq',
             page_title: 'FAQ ',
             currentUserData,
@@ -761,7 +770,7 @@ router.get('/company-profile-management/:compID', checkClientClaimedCompany, asy
         res.render('front-end/basic-company-profile-management', 
         { 
             menu_active_id: 'company-profile-management', 
-            page_title: 'Company Profile Management', 
+            page_title: 'Profile Management', 
             currentUserData, 
             globalPageMeta:globalPageMeta,
             company:company,
@@ -799,7 +808,7 @@ router.get('/company-profile-management/:compID', checkClientClaimedCompany, asy
         res.render('front-end/premium-company-profile-management', 
         { 
             menu_active_id: 'company-profile-management', 
-            page_title: 'Company Profile Management', 
+            page_title: 'Profile Management', 
             currentUserData, 
             globalPageMeta:globalPageMeta,
             company:company,
@@ -1688,7 +1697,7 @@ router.get('/edit-review/:id', checkLoggedIn, async (req, res) => {
             comFunction.getAllCompany()
         ]);
         //console.log(reviewData);
-        // Render the 'edit-user' EJS view and pass the data
+       // Render the 'edit-user' EJS view and pass the data
         // res.json({
         //     reviewData: reviewData,
         //     reviewTagData: reviewTagData,

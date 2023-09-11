@@ -20,6 +20,8 @@ const nodemailer = require('nodemailer');
 const invalidTokens = new Set();
 const otpValidityMinutes = 5;
 const cron = require('node-cron');
+const randomstring = require('randomstring');
+
 const app = express();
 
 const comFunction = require('../common_function_api');
@@ -242,7 +244,7 @@ exports.login = (req, res) => {
             message: 'Invalid credentials',
           });
         }
-    
+
         const token = jwt.sign(payload, secretKey, {
           expiresIn: '10h', 
         });
@@ -546,6 +548,7 @@ exports.edituser = (req, res) => {
   console.log("user_id from request:", req.body.user_id);
   if (userId !== authenticatedUserId) {
     return res.status(403).json({
+      
         status: 'error',
         message: 'Access denied: You are not authorized to update this user.',
     });
@@ -1236,52 +1239,52 @@ exports.searchCompany = async (req, res) => {
 
 
 //reset password
-exports.resetPassword = async (req, res) => {
-  const { otp, new_password,confirm_passsword } = req.body;
-  const hashedPassword = await bcrypt.hash(new_password, 8);
+// exports.resetPassword = async (req, res) => {
+//   const { otp, new_password,confirm_passsword } = req.body;
+//   const hashedPassword = await bcrypt.hash(new_password, 8);
 
-  // Check if the provided OTP exists in the user_code_verify table
-  const query = `SELECT user_id, email FROM user_code_verify WHERE otp = '${otp}'`;
+//   // Check if the provided OTP exists in the user_code_verify table
+//   const query = `SELECT user_id, email FROM user_code_verify WHERE otp = '${otp}'`;
 
-  db.query(query, (err, result) => {
-    if (err) {
-      return res.send({
-        status: 'not ok',
-        message: 'Something went wrong: ' + err,
-      });
-    } else {
-      if (result.length > 0) {
-        const userId = result[0].user_id;
-        const email = result[0].email;
+//   db.query(query, (err, result) => {
+//     if (err) {
+//       return res.send({
+//         status: 'not ok',
+//         message: 'Something went wrong: ' + err,
+//       });
+//     } else {
+//       if (result.length > 0) {
+//         const userId = result[0].user_id;
+//         const email = result[0].email;
 
-        // Update the password in the users table
-        const updateSql = 'UPDATE users SET password = ? WHERE email = ?';
-        const data = [hashedPassword, email];
+//         // Update the password in the users table
+//         const updateSql = 'UPDATE users SET password = ? WHERE email = ?';
+//         const data = [hashedPassword, email];
 
-        db.query(updateSql, data, (updateErr) => {
-          if (updateErr) {
-            console.log(updateErr);
-            return res.send({
-              status: 'not ok',
-              message: 'Something went wrong: ' + updateErr,
-            });
-          } else {
-            return res.send({
-              status: 'ok',
-              data: data,
-              message: 'Password reset successfully.',
-            });
-          }
-        });
-      } else {
-        return res.send({
-          status: 'not ok',
-          message: 'Invalid OTP. Please check or request another OTP.',
-        });
-      }
-    }
-  });
-};
+//         db.query(updateSql, data, (updateErr) => {
+//           if (updateErr) {
+//             console.log(updateErr);
+//             return res.send({
+//               status: 'not ok',
+//               message: 'Something went wrong: ' + updateErr,
+//             });
+//           } else {
+//             return res.send({
+//               status: 'ok',
+//               data: data,
+//               message: 'Password reset successfully.',
+//             });
+//           }
+//         });
+//       } else {
+//         return res.send({
+//           status: 'not ok',
+//           message: 'Invalid OTP. Please check or request another OTP.',
+//         });
+//       }
+//     }
+//   });
+// };
 
 
 //change password
@@ -1575,7 +1578,7 @@ function generateOTP(length) {
     const randomIndex = Math.floor(Math.random() * digits.length);
     otp += digits[randomIndex];
   }
-  const expirationTimestamp = Date.now() + 5 * 60 * 1000; // 5 minutes validity
+  const expirationTimestamp = Date.now() + 5* 60 * 1000; // 5 minutes validity
   return { otp, expirationTimestamp };
 }
 
@@ -1590,6 +1593,8 @@ function generateOTP(length) {
 //   }
 //   return otp;
 // }
+
+//actual
 
 exports.forgotPassword = (req, res) => {
   const { email } = req.body;
@@ -1651,7 +1656,7 @@ exports.forgotPassword = (req, res) => {
                 from: process.env.MAIL_USER,
                 to: email,
                 subject: 'Forgot password Email',
-                text: `Your OTP is for forgot password: ${otp.otp}`,
+                text: `Your OTP for forgot password is: ${otp.otp}. Please use it within 5 minutes.`,
               };
 
               transporter.sendMail(mailOptions, function (err, info) {
@@ -1686,8 +1691,105 @@ exports.forgotPassword = (req, res) => {
   });
 };
 
+// exports.forgotPassword = (req, res) => {
+//   const { email } = req.body;
+//   const passphrase = process.env.ENCRYPT_DECRYPT_SECRET;
+//   console.log('Passphrase:', passphrase);
+//   const otp = generateOTP(6);
+//   //const expirationTimestamp = Date.now() + 1 * 60 * 1000; // 5 minutes validity
+//   const currentTime = new Date();
+//   console.log(otp);
+
+//   const sql = `SELECT user_id, first_name FROM users WHERE email = '${email}' `;
+
+//   db.query(sql, (error, result) => {
+//     if (error) {
+//       return res.status(500).json({
+//         status: 'error',
+//         message: 'An error occurred while processing your request.',
+//       });
+//     } else {
+//       if (result.length > 0) {
+//         if (typeof passphrase !== 'string') {
+//           console.error('Passphrase is not a string:', passphrase);
+//           // Handle the error or set a default passphrase value if needed.
+//         } else {
+//           const userId = result[0].user_id;
+          
 
 
+//           // Insert the OTP and expiration timestamp into the user_code_verify table
+
+//           const insertOtpQuery = `
+//           INSERT INTO user_code_verify (user_id, phone, otp, email, created_at, otp_expiration, used)
+//           VALUES (?, ?, ?, ?, ?, ?, ?) 
+//         `;
+//         const usedValue = false;
+//         db.query(
+//           insertOtpQuery,
+//           [userId, null, otp.otp, email, currentTime, new Date(otp.expirationTimestamp), usedValue],
+//           (insertError) => {
+//             if (insertError) {
+//               console.error(insertError);
+//               return res.status(500).json({
+//                 status: 'error',
+//                 message: 'Failed to store OTP in the database.',
+//               })
+//             }
+
+//               const transporter = nodemailer.createTransport({
+//                 host: process.env.MAIL_HOST,
+//                 port: process.env.MAIL_PORT,
+//                 secure: false,
+//                 requireTLS: true,
+//                 auth: {
+//                   user: process.env.MAIL_USER,
+//                   pass: process.env.MAIL_PASSWORD,
+//                 },
+//               });
+
+//               var mailOptions = {
+//                 from: process.env.MAIL_USER,
+//                 to: email,
+//                 subject: 'Forgot password Email',
+//                 text: `Your OTP for forgot password is: ${otp.otp}. Please use it within 5 minutes.`,
+//               };
+
+//               transporter.sendMail(mailOptions, function (err, info) {
+//                 if (err) {
+//                   console.log(err);
+//                   return res.json({
+//                     status: 'not ok',
+//                     message: 'Something went wrong',
+//                     err,
+//                   });
+//                 } else {
+//                   console.log('Mail Send: ', info.response);
+//                   return res.json({
+//                     status: 'ok',
+//                     data: '',
+//                     message:
+//                       'Password reset OTP sent to your email. Please check your email.',
+//                   });
+//                 }
+//               });
+//             }
+//           );
+//         }
+//       } else {
+//         return res.json({
+//           status: 'not found',
+//           data: '',
+//           message: 'Your Email did not match with our record',
+//         });
+//       }
+//     }
+//   });
+// };
+
+
+
+//actual
 exports.resetPassword = async (req, res) => {
   const { otp, newPassword, confirm_password } = req.body;
 
@@ -1776,7 +1878,10 @@ exports.resetPassword = async (req, res) => {
               console.error(deleteError);
             }
           
-          return res.json({ message: 'Password reset successfully' });
+          return res.json({
+            status: 'ok',
+            message: 'Password reset successfully'
+          });
         });
       })
      } else {
@@ -1791,6 +1896,191 @@ exports.resetPassword = async (req, res) => {
   })
 }
 
+//renew token
+const renewToken = (userId) => {
+  const payload = {};
+  const newSecretJwt = randomstring.generate();
+
+  // Log the new secret key
+  console.log('New Secret JWT:', newSecretJwt);
+
+  fs.readFile('config.js', 'utf-8', function (err, data) {
+    if (err) throw err;
+
+    const newValue = data.replace(new RegExp(secretKey, 'g'), newSecretJwt);
+
+    fs.writeFile('config.js', newValue, 'utf-8', function (err, data) {
+      if (err) throw err;
+      console.log('Secret key updated in config.js');
+    });
+  });
+  console.log('JWT Payload:', payload);
+
+  const token = jwt.sign(payload, newSecretJwt, {
+    expiresIn: '10h',
+  });
+
+  return token;
+};
+
+
+
+
+exports.refreshToken = async (req, res) => {
+  try {
+    const authenticatedUserId = parseInt(req.user.user_id);
+    console.log('authenticatedUserId: ', authenticatedUserId);
+    
+    const ApiuserId = (req.body.user_id); 
+    console.log('req.body.user_id: ', ApiuserId);
+
+    const userId = req.body.user_id;
+    console.log("user_id from request", userId);
+    
+    const userData = await new Promise((resolve, reject) => {
+      db.query('SELECT * FROM users WHERE user_id = ?', [userId], (error, results) => {
+        if (error) {
+          reject(error);
+
+        } else {
+          resolve(results);
+        }
+      });
+    })
+    console.log(userData)
+    console.log(userId)
+
+
+    if (userData.length > 0) {
+      console.log("User found")
+      const tokenData = await renewToken(userId);
+      const response = {
+        user_id: userId,
+        refreshtoken: tokenData,
+      };
+      console.log(tokenData)
+      res.status(200).send({ success: true, message: 'Refresh Token Details', data: response });
+    } else {
+      res.status(404).send({ success: false, message: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).send({ success: false, message: error.message });
+    console.log("error",error)
+  }
+};
+
+
+
+//new
+// exports.resetPassword = async (req, res) => {
+//   const { otp, newPassword, confirm_password } = req.body;
+
+//   if (!newPassword || newPassword !== confirm_password) {
+//     return res.status(400).json({
+//       status: 'error',
+//       message: 'New password and confirmation do not match or are missing.',
+//     });
+//   }
+
+//   const currentTimestamp = Date.now();
+//   const formattedDateTime = new Date(currentTimestamp);
+
+//   // Retrieve stored OTP, its expiration timestamp, and whether it has been used
+//   const selectOtpQuery = `
+//     SELECT user_id, otp, otp_expiration, email, used
+//     FROM user_code_verify
+//     WHERE otp = ?
+//   `;
+
+//   db.query(selectOtpQuery, [otp], (error, result) => {
+//     if (error) {
+//       return res.status(500).json({
+//         status: 'error',
+//         message: 'An error occurred while processing your request.',
+//       });
+//     }
+
+//     if (result.length > 0) {
+//       const { user_id, otp: storedOTP, otp_expiration, email, used } = result[0];
+//       console.log('OTP Expiration Time:', otp_expiration);
+
+//       // Check if the OTP has been marked as used
+//       if (used) {
+//         console.log('OTP has already been used');
+//         return res.status(400).json({ message: 'OTP has already been used' });
+//       }
+
+//       // Check if the OTP has expired
+//       if (formattedDateTime > otp_expiration) {
+//         console.log('OTP Expired');
+
+//         // Set the OTP column to null when the OTP has expired
+//         const updateOtpQuery = `
+//           UPDATE user_code_verify
+//           SET otp = NULL
+//           WHERE otp = ?
+//         `;
+
+//         db.query(updateOtpQuery, [otp], (updateError) => {
+//           if (updateError) {
+//             console.error(updateError);
+//           }
+//         });
+
+//         // Return an error message when the OTP has expired
+//         return res.status(400).json({ message: 'OTP expired' });
+//       }
+
+//       if (otp === storedOTP) {
+//         // Hash the new password here (you may use a library like bcrypt)
+//         const hashedPassword = bcrypt.hashSync(newPassword, 8);
+
+//         // OTP is valid, reset the user's password
+//         const updatePasswordQuery = `
+//           UPDATE users
+//           SET password = ?
+//           WHERE email = ?
+//         `;
+
+//         const data = [hashedPassword, email];
+//         db.query(updatePasswordQuery, data, (updateError) => {
+//           if (updateError) {
+//             console.error(updateError);
+//             return res.status(500).json({
+//               status: 'error',
+//               message: 'Failed to reset the password.',
+//             });
+//           }
+
+//           // Mark the OTP as used by updating the used column
+//           const markOtpAsUsedQuery = `
+//             UPDATE user_code_verify
+//             SET used = TRUE
+//             WHERE otp = ?
+//           `;
+
+//           db.query(markOtpAsUsedQuery, [otp], (markError) => {
+//             if (markError) {
+//               console.error(markError);
+//             }
+
+//             return res.json({
+//               status: 'ok',
+//               message: 'Password reset successfully'
+//             });
+//           });
+//         });
+//       } else {
+//         // OTP is invalid
+//         console.log('Invalid OTP');
+//         return res.status(400).json({ message: 'Invalid OTP' });
+//       }
+//     } else {
+//       console.log('OTP Not Found or Expired');
+//       return res.status(400).json({ message: 'Invalid OTP' });
+//     }
+//   });
+// }
 
 
 // exports.resetPassword = async (req, res) => {

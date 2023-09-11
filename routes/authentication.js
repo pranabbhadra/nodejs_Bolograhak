@@ -44,11 +44,12 @@ router.post('/submitReview',verifyToken, authenController.submitReview);
 router.post('/forgotPassword', authenController.forgotPassword);
 router.post('/resetPassword',  authenController.resetPassword);
 router.post('/changePassword', verifyToken, authenController.changePassword);
-
 //==========================================================================
 //Contact us Feedback Email
 router.post('/contact-us-email', verifyToken, authenController.contactUsEmail);
 //==========================================================================
+router.post('/refresh-token',verifyToken, authenController.refreshToken);
+
 //----------Get API Start----------------//
 //get user details
 router.get('/getUserDetails/:user_id', verifyToken, async (req, res) => {
@@ -784,7 +785,7 @@ router.get('/app-home-customer-rights',  verifyToken,  async (req, res) => {
                 const meta_values = _meta_result;
                 let meta_values_array = {};
                 await meta_values.forEach((item) => {
-                    if(item.page_meta_key == 'app_cus_right_content' || item.page_meta_key == 'app_cus_right_points') {
+                    if(item.page_meta_key == 'app_cus_right_content' || item.page_meta_key == 'app_cus_right_points'|| item.page_meta_key == 'app_cus_right_img') {
                         meta_values_array[item.page_meta_key] = item.page_meta_value;
                     }
                 })
@@ -818,7 +819,7 @@ router.get('/app-home-org-responsibility',  verifyToken,  async (req, res) => {
                 const meta_values = _meta_result;
                 let meta_values_array = {};
                 await meta_values.forEach((item) => {
-                    if(item.page_meta_key == 'app_org_responsibility_content' || item.page_meta_key == 'app_org_responsibility_point') {
+                    if(item.page_meta_key == 'app_org_responsibility_content' || item.page_meta_key == 'app_org_responsibility_point'|| item.page_meta_key == 'app_org_responsibility_img') {
                         meta_values_array[item.page_meta_key] = item.page_meta_value;
                     }
                 })
@@ -872,7 +873,7 @@ router.get('/app-home-about-us',  verifyToken,  async (req, res) => {
     }
 });
 
-// Api for home page About Us content
+// Api for business page content
 router.get('/app-business', verifyToken, async (req, res) => {
     try {
         const sql = `SELECT * FROM page_info where secret_Key = 'business' `;
@@ -907,6 +908,93 @@ router.get('/app-business', verifyToken, async (req, res) => {
             })
 
         })
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+
+// Api for about us page content
+router.get('/app-about-us', verifyToken, async (req, res) => {
+    try {
+        const sql = `SELECT * FROM page_info where secret_Key = 'about' `;
+        db.query(sql, (err, results, fields) => {
+            if (err) throw err;
+            const common = results[0];
+            const meta_sql = `SELECT * FROM page_meta where page_id = ${common.id}`;
+            db.query(meta_sql, async (meta_err, _meta_result) => {
+                if (meta_err) throw meta_err;
+
+                const meta_values = _meta_result;
+                let meta_values_array = {};
+                //console.log(meta_values);
+                await meta_values.forEach((item) => {
+                    if(item.page_meta_key == 'app_banner_content_1' || item.page_meta_key == 'app_banner_content_2' || item.page_meta_key == 'app_platform_content_1'|| item.page_meta_key == 'app_platform_content_2' || item.page_meta_key == 'app_banner_img_1'|| item.page_meta_key == 'app_banner_img_2' || item.page_meta_key == 'mission_title'|| item.page_meta_key == 'mission_content') {
+                        meta_values_array[item.page_meta_key] = item.page_meta_value;
+                    }
+                })
+
+                return res.status(200).json({
+                    status: 'success',
+                    data: {
+                        meta_values_array:meta_values_array,
+                    },
+                    message: 'About Us data successfully received'
+                });
+            })
+
+        })
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+
+// Api for fAQ page content
+router.get('/app-faq',verifyToken, async (req, res) => {
+    try {
+        const [faqPageData,faqCategoriesData,faqItemsData] = await Promise.all([
+            comFunction2.getFaqPage(),
+            comFunction2.getFaqCategories(),
+            comFunction2.getFaqItems(),
+        ]);
+        
+        // Create an object to store questions and answers by category
+        const faqDataByCategory = {};
+
+        // Iterate through the categories and initialize them in the object
+        faqCategoriesData.forEach(category => {
+            faqDataByCategory[category.id] = {
+                category: category.category,
+                faqItems: []
+            };
+        });
+
+        // Populate the object with questions and answers by category
+        faqItemsData.forEach(faqItem => {
+            if (faqDataByCategory[faqItem.category_id]) {
+                faqDataByCategory[faqItem.category_id].faqItems.push({
+                    id: faqItem.id,
+                    question: faqItem.question,
+                    answer: faqItem.answer
+                });
+            }
+        });
+
+        // Convert the object to an array
+        const faqDataArray = Object.values(faqDataByCategory);
+
+        console.log(faqDataArray);
+        return res.status(200).json({
+            status: 'success',
+            data: {
+                faqPageContent:faqPageData,
+                faqDataArray:faqDataArray
+            },
+            message: 'FAQ data successfully received'
+        });
 
     } catch (err) {
         console.error(err);

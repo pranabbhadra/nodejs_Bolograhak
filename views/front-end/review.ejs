@@ -107,7 +107,7 @@
                               <div class="user-review-date"><%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></div>
                            </div>
                            
-                           <% if(latestReview.review_reply_count==1 && currentUserData.user_id == latestReview.customer_id ){ %>
+                           <% if(latestReview.review_reply_count==1 && currentUserData!= null && currentUserData.user_id == latestReview.customer_id ){ %>
                             <span class="user-select-tag review-reply-btn"><a href="/company/<%- latestReview.company_id -%>#review-reply-<%- latestReview.id -%>">Reply</a></span> 
                             <% } %>
                         </div>
@@ -202,7 +202,7 @@
                               <% const date = new Date(dateString); %>
                               <div class="user-review-date"><%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></div>
                            </div>
-                           <% if(TrendingReview.review_reply_count==1 && currentUserData.user_id == TrendingReview.customer_id){ %>
+                           <% if(TrendingReview.review_reply_count==1 && currentUserData!= null && currentUserData.user_id == TrendingReview.customer_id){ %>
                             <span class="user-select-tag review-reply-btn"><a href="/company/<%- TrendingReview.company_id -%>#review-reply-<%- TrendingReview.id -%>">Reply</a></span> 
                             <% } %>
                         </div>
@@ -300,7 +300,7 @@
                               <% const date = new Date(dateString); %>
                               <div class="user-review-date"><%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></div>
                            </div>
-                           <% if(allReview.review_reply_count==1 && currentUserData.user_id == allReview.customer_id){ %>
+                           <% if(allReview.review_reply_count==1 && currentUserData!= null && currentUserData.user_id == allReview.customer_id){ %>
                             <span class="user-select-tag review-reply-btn"><a href="/company/<%- allReview.company_id -%>#review-reply-<%- allReview.id -%>">Reply</a></span> 
                             <% } %>
                         </div>
