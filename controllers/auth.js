@@ -284,7 +284,7 @@ exports.frontendUserRegister = async (req, res) => {
                       console.log('Mail Send: ', info.response);
                       return res.send({
                           status: 'ok',
-                          message: 'Review Approve'
+                          message: ''
                       });
                   }
                 })
@@ -2048,10 +2048,11 @@ exports.updateFAQ = async (req, res) => {
         req.body.meta_title,
         req.body.meta_desc,
         req.body.keyword,
+        req.body.app_content,
     ];
     try {
         db.query('DELETE  FROM faq_categories', (del_faq_cat_err, del_faq_cat_res) => {
-            db.query('DELETE - FROM faq_item', async (del_faq_item_err, del_faq_item_res) => {
+            db.query('DELETE  FROM faq_item', async (del_faq_item_err, del_faq_item_res) => {
                 const faqPageId = await comFunction.insertIntoFaqPages(Faq_Page_insert_values);
                 console.log('ID:', faqPageId);
                 await comFunction.insertIntoFaqCategories(faqArray);
@@ -2079,9 +2080,9 @@ exports.updateFAQ = async (req, res) => {
 //Update FAQ Images
 exports.updateFAQImages =async (req,res) => {
     //console.log('files',req.files);
-    const {banner_img_1,banner_img_2,banner_img_3,banner_img_4,banner_img_5,banner_img_6,banner_img_7,banner_img_8} = req.files;
+    const {banner_img_1,banner_img_2,banner_img_3,banner_img_4,banner_img_5,banner_img_6,banner_img_7,banner_img_8,app_banner_img} = req.files;
     // const img_arr = [banner_img_1,banner_img_2,banner_img_3,banner_img_4,banner_img_5,banner_img_6,banner_img_7,banner_img_8];
-    const field_name = ['banner_img_1','banner_img_2','banner_img_3','banner_img_4','banner_img_5','banner_img_6','banner_img_7','banner_img_8'];
+    const field_name = ['banner_img_1','banner_img_2','banner_img_3','banner_img_4','banner_img_5','banner_img_6','banner_img_7','banner_img_8','app_banner_img'];
     await field_name.forEach((item, key) => {
         //console.log(item, key);
         if (req.files[item]) {

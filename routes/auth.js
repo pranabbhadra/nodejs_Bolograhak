@@ -86,7 +86,9 @@ router.post('/faq_images',upload.fields([
     { name: 'banner_img_5', maxCount: 1 },
     { name: 'banner_img_6', maxCount: 1 },
     { name: 'banner_img_7', maxCount: 1 },
-    { name: 'banner_img_8', maxCount: 1 }
+    { name: 'banner_img_8', maxCount: 1 },
+    
+    { name: 'app_banner_img', maxCount: 1 }
 ]), authController.updateFAQImages);
 
 // Update Contacts

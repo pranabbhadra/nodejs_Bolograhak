@@ -949,6 +949,56 @@ router.get('/app-about-us', verifyToken, async (req, res) => {
     }
 });
 
+// Api for fAQ page content
+router.get('/app-faq',verifyToken, async (req, res) => {
+    try {
+        const [faqPageData,faqCategoriesData,faqItemsData] = await Promise.all([
+            comFunction2.getFaqPage(),
+            comFunction2.getFaqCategories(),
+            comFunction2.getFaqItems(),
+        ]);
+        
+        // Create an object to store questions and answers by category
+        const faqDataByCategory = {};
+
+        // Iterate through the categories and initialize them in the object
+        faqCategoriesData.forEach(category => {
+            faqDataByCategory[category.id] = {
+                category: category.category,
+                faqItems: []
+            };
+        });
+
+        // Populate the object with questions and answers by category
+        faqItemsData.forEach(faqItem => {
+            if (faqDataByCategory[faqItem.category_id]) {
+                faqDataByCategory[faqItem.category_id].faqItems.push({
+                    id: faqItem.id,
+                    question: faqItem.question,
+                    answer: faqItem.answer
+                });
+            }
+        });
+
+        // Convert the object to an array
+        const faqDataArray = Object.values(faqDataByCategory);
+
+        console.log(faqDataArray);
+        return res.status(200).json({
+            status: 'success',
+            data: {
+                faqPageContent:faqPageData,
+                faqDataArray:faqDataArray
+            },
+            message: 'FAQ data successfully received'
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+
 
 
 //================================================================================
