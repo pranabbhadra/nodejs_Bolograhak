@@ -770,7 +770,7 @@ router.get('/company-profile-management/:compID', checkClientClaimedCompany, asy
         res.render('front-end/basic-company-profile-management', 
         { 
             menu_active_id: 'company-profile-management', 
-            page_title: 'Company Profile Management', 
+            page_title: 'Profile Management', 
             currentUserData, 
             globalPageMeta:globalPageMeta,
             company:company,
@@ -808,7 +808,7 @@ router.get('/company-profile-management/:compID', checkClientClaimedCompany, asy
         res.render('front-end/premium-company-profile-management', 
         { 
             menu_active_id: 'company-profile-management', 
-            page_title: 'Company Profile Management', 
+            page_title: 'Profile Management', 
             currentUserData, 
             globalPageMeta:globalPageMeta,
             company:company,
@@ -1697,7 +1697,7 @@ router.get('/edit-review/:id', checkLoggedIn, async (req, res) => {
             comFunction.getAllCompany()
         ]);
         //console.log(reviewData);
-        // Render the 'edit-user' EJS view and pass the data
+       // Render the 'edit-user' EJS view and pass the data
         // res.json({
         //     reviewData: reviewData,
         //     reviewTagData: reviewTagData,

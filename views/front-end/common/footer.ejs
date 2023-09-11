@@ -156,6 +156,7 @@
           $(formData).each(function (index, field) {
             jsonData[field.name] = field.value;
           });
+          jsonData['currentUrlPath'] = window.location.pathname;
           //console.log(jsonData);
           $.ajax({
             url: '/auth/frontend-user-register',
@@ -169,9 +170,11 @@
                 $('#user-signup').trigger('reset');
                 setTimeout(function() {
                   if(data.wp_user){
-                    window.location.href="<%= globalData.BLOG_URL %>?login_check="+data.wp_user;
+                    window.location.href="<%= globalData.BLOG_URL %>?login_check="+data.wp_user+"&currentUrlPath="+data.currentUrlPath;
+              
                   }else{
-                    window.location.href="/";
+                    //window.location.href="/";
+                    window.location.reload();
                   }
                 }, 2000 );             
               } else {
@@ -231,6 +234,8 @@
       $(formData).each(function (index, field) {
         jsonData[field.name] = field.value;
       });
+      jsonData['currentUrlPath'] = window.location.pathname;
+      //console.log(currentPath);
       //console.log(jsonData);
       $.ajax({
         url: '/auth/frontend-user-login',
@@ -243,9 +248,12 @@
             $('.frm-error-message').text(data.message).show();
             $('#user-signin').trigger('reset');
             if(data.wp_user){
-              window.location.href="<%= globalData.BLOG_URL %>?login_check="+data.wp_user;
+              window.location.href="<%= globalData.BLOG_URL %>?login_check="+data.wp_user+"&currentUrlPath="+data.currentUrlPath;
+              
             }else{
-              window.location.href="/";
+              //window.location.href="/";
+              console.log(data.currentUrlPath);
+              window.location.reload();
             }
           } else {
             $('.frm-loading').hide();

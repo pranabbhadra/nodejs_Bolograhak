@@ -124,7 +124,7 @@ exports.register = (req, res) => {
 
 //-- Frontend User Register Function--//
 exports.frontendUserRegister = async (req, res) => {
-    //console.log(req.body);
+    console.log(req.body);
 
     const { first_name, last_name, email, register_password, register_confirm_password } = req.body;
 
@@ -360,6 +360,7 @@ exports.frontendUserRegister = async (req, res) => {
                                                     status: 'ok',
                                                     data: userData,
                                                     wp_user: wp_user_data,
+                                                    currentUrlPath: req.body.currentUrlPath,
                                                     message: 'Registration successful you are automatically login to your dashboard'
                                                 }
                                             )
@@ -376,6 +377,7 @@ exports.frontendUserRegister = async (req, res) => {
                                                     status: 'ok',
                                                     data: userData,
                                                     wp_user: wp_user_data,
+                                                    currentUrlPath: req.body.currentUrlPath,
                                                     message: 'Registration successful you are automatically login to your dashboard'
                                                 }
                                             )
@@ -548,6 +550,7 @@ exports.frontendUserLogin = (req, res) => {
                                                             status: 'ok',
                                                             data: userData,
                                                             wp_user: wp_user_data,
+                                                            currentUrlPath: req.body.currentUrlPath,
                                                             message: 'Login Successful'
                                                         }
                                                     )
@@ -564,6 +567,7 @@ exports.frontendUserLogin = (req, res) => {
                                                             status: 'ok',
                                                             data: userData,
                                                             wp_user: wp_user_data,
+                                                            currentUrlPath: req.body.currentUrlPath,
                                                             message: 'Login Successful'
                                                         }
                                                     )
