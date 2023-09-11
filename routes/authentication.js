@@ -43,6 +43,10 @@ router.post('/submitReview',verifyToken, authenController.submitReview);
 router.post('/forgotPassword', authenController.forgotPassword);
 router.post('/resetPassword',  authenController.resetPassword);
 router.post('/changePassword', verifyToken, authenController.changePassword);
+router.post('/refresh-token',verifyToken, authenController.refreshToken);
+
+
+
 //----------Get API Start----------------//
 //get user details
 router.get('/getUserDetails/:user_id', verifyToken, async (req, res) => {
