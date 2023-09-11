@@ -44,11 +44,12 @@ router.post('/submitReview',verifyToken, authenController.submitReview);
 router.post('/forgotPassword', authenController.forgotPassword);
 router.post('/resetPassword',  authenController.resetPassword);
 router.post('/changePassword', verifyToken, authenController.changePassword);
-
 //==========================================================================
 //Contact us Feedback Email
 router.post('/contact-us-email', verifyToken, authenController.contactUsEmail);
 //==========================================================================
+router.post('/refresh-token',verifyToken, authenController.refreshToken);
+
 //----------Get API Start----------------//
 //get user details
 router.get('/getUserDetails/:user_id', verifyToken, async (req, res) => {
