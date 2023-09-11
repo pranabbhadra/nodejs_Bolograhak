@@ -2,7 +2,7 @@
 if(isset($_GET['login_check'])) {
     wp_set_current_user($_GET['login_check']);//Set current user
     wp_set_auth_cookie( $_GET['login_check'], true );
-    $home_url = MAIN_URL_BG;
+    $home_url = MAIN_URL_BG.ltrim($_GET['currentUrlPath'], '/');
     wp_redirect($home_url);
     exit;
 }

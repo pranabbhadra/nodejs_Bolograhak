@@ -287,6 +287,23 @@
          <script>
             window.onload = function () {
 
+               var dataPoints =  [
+                        { y: <%= reviewReatingChartArray[0].y %>, name: "<%= allRatingTags[0].review_rating_name %>", color: "red" },
+                        { y: <%= reviewReatingChartArray[1].y %>, name: "<%= allRatingTags[1].review_rating_name %>", color: "#fc3003" },
+                        { y: <%= reviewReatingChartArray[2].y %>, name: "<%= allRatingTags[2].review_rating_name %>", color: "#fc5603" },
+                        { y: <%= reviewReatingChartArray[3].y %>, name: "<%= allRatingTags[3].review_rating_name %>", color: "#fc9003" },
+                        { y: <%= reviewReatingChartArray[4].y %>, name: "<%= allRatingTags[4].review_rating_name %>", color: "#fcb503" },
+                        { y: <%= reviewReatingChartArray[5].y %>, name: "<%= allRatingTags[5].review_rating_name %>", color: "#e3fc03" },
+                        { y: <%= reviewReatingChartArray[6].y %>, name: "<%= allRatingTags[6].review_rating_name %>", color: "#bafc03" },
+                        { y: <%= reviewReatingChartArray[7].y %>, name: "<%= allRatingTags[7].review_rating_name %>", color: "#a1fc03" },
+                        { y: <%= reviewReatingChartArray[8].y %>, name: "<%= allRatingTags[8].review_rating_name %>", color: "#80fc03" },
+                        { y: <%= reviewReatingChartArray[9].y %>, name: "<%= allRatingTags[9].review_rating_name %>", color: "#03fc2c" },
+                     ];
+
+               var filteredDataPoints = dataPoints.filter(function(dataPoint) {
+                  return dataPoint.y !== 0;
+               });
+
                var chart = new CanvasJS.Chart("chartContainer", {
                   exportEnabled: false,
                   animationEnabled: true,
@@ -306,18 +323,7 @@
                      indexLabelFontColor: "black",
                      indexLabelFontSize: 13,
                      indexLabelFontWeight: "bold",
-                     dataPoints: [
-                        { y: <%= reviewReatingChartArray[0].y %>, name: "<%= allRatingTags[0].review_rating_name %>", color: "red" },
-                        { y: <%= reviewReatingChartArray[1].y %>, name: "<%= allRatingTags[1].review_rating_name %>", color: "#fc3003" },
-                        { y: <%= reviewReatingChartArray[2].y %>, name: "<%= allRatingTags[2].review_rating_name %>", color: "#fc5603" },
-                        { y: <%= reviewReatingChartArray[3].y %>, name: "<%= allRatingTags[3].review_rating_name %>", color: "#fc9003" },
-                        { y: <%= reviewReatingChartArray[4].y %>, name: "<%= allRatingTags[4].review_rating_name %>", color: "#fcb503" },
-                        { y: <%= reviewReatingChartArray[5].y %>, name: "<%= allRatingTags[5].review_rating_name %>", color: "#e3fc03" },
-                        { y: <%= reviewReatingChartArray[6].y %>, name: "<%= allRatingTags[6].review_rating_name %>", color: "#bafc03" },
-                        { y: <%= reviewReatingChartArray[7].y %>, name: "<%= allRatingTags[7].review_rating_name %>", color: "#a1fc03" },
-                        { y: <%= reviewReatingChartArray[8].y %>, name: "<%= allRatingTags[8].review_rating_name %>", color: "#80fc03" },
-                        { y: <%= reviewReatingChartArray[9].y %>, name: "<%= allRatingTags[9].review_rating_name %>", color: "#03fc2c" },
-                     ]
+                     dataPoints: filteredDataPoints
                   }]
                });
                chart.render();
