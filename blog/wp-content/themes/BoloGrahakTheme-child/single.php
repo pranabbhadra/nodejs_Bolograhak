@@ -109,13 +109,15 @@ get_header(); ?>
 </section>
 <!-- ============== Blog Cover End =============== -->
 <!-- ============== Liking Article Start =============== -->
-<?php if(get_field('poll_shortcode')){ ?>
+<?php if(get_field('poll_shortcode')){
+	$shortcode = "[ays_poll id=".get_field('poll_shortcode')."]";
+?>
 <section class="main-content liking-article">
 	<div class="container">
 		<!-- <h2 class="main-head text-center">How Are you Liking The Article</h2>
 		<img src="<?php echo get_stylesheet_directory_uri();?>/images/progress-bar.png" alt="img" class="w-100">
 		<div class="text-center"><input type="submit" class="btn-default btn-warning" name="" value="Submit"></div> -->
-		<?php echo do_shortcode( get_field('poll_shortcode') ); ?>
+		<?php echo do_shortcode( $shortcode ); ?>
 	</div>
 </section>
 <?php } ?>
