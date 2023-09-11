@@ -49,7 +49,9 @@
                                 </td>
                                 <td>
                                     <% if(review.reply_count > 0 ){ %>
-                                        <span class="badge badge-square badge-success">Replied</span>
+                                        <span class="badge badge-square badge-success">Yes</span>
+                                    <% }else{ %>
+                                        <span class="badge badge-square badge-info">No</span>
                                     <% } %>
                                 </td>
                                 <td><a class="rply_btn" href="/company-dashboard-review-replay/<%- company.ID -%>/<%- review.id -%>">Reply</a></td>
