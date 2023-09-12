@@ -647,7 +647,7 @@ function app_blog_details_api_handler($request) {
         $post_items[] = array(
                             'id' =>  $ID,
                             'title'  =>  $title,
-                            'content' => esc_html($content),
+                            'content' => $content,
                             'publish_date'  =>  get_the_time(__('M d, Y', 'kubrick')),
                             'thumbnail'  =>  $thumbnail['0'],
                             'full'  =>  $full['0'],
