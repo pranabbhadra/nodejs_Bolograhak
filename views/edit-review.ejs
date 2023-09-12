@@ -92,7 +92,7 @@
                             <div class="col-lg-8 fv-row">
                                 <select name="update_company_id" id="update_company_id" aria-label="Select a Company" data-control="select2" data-placeholder="Select a Company..." class="form-select form-control form-control-lg form-control-solid">
                                     <% allcompany.forEach( company => { %>
-                                        <option value="<%- company.ID %>" data-address="<%- company.main_address %>"> <%- company.company_name %> </option> <% if(company.ID == reviewData.company_id){ %>selected <% } %>><%- company.company_name %></option>
+                                        <option value="<%- company.ID %>" data-address="<%- company.main_address %>" <% if(company.ID == reviewData.company_id){ %>selected <% } %>><%- company.company_name %></option>
                                     <% }) %>
                                 </select>
                             </div>

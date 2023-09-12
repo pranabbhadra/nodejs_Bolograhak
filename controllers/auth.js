@@ -1232,6 +1232,28 @@ exports.editUserData = (req, res) => {
     });
 }
 
+//--- Delete User ----//
+exports.deleteUser = (req, res) => {
+    //console.log(req.body.companyid);
+    sql = `DELETE FROM users WHERE user_id = ?`;
+    const data = [req.body.userid];
+    db.query(sql, data, (err, result) => {
+        if (err) {
+            return res.send({
+                status: 'error',
+                message: 'Something went wrong'
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'User successfully deleted'
+            });
+        }
+
+    })
+
+}
+
 //--- Create New Company ----//
 exports.createCompany = (req, res) => {
     //console.log(req.body);
