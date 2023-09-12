@@ -15,6 +15,11 @@ if (is_user_logged_in()) {
     $user_email = '';
 }
 get_header(); ?>
+<?php
+	if( isset($_GET['from_app']) && $_GET['from_app']=='true' ){
+		// Hide header
+	}else{
+?>
 <!-- ============== Inner Heading Start =============== -->
 <section class="inner-page-heading">
 	<div class="container">
@@ -34,6 +39,7 @@ get_header(); ?>
 	</div>
 </section>
 <!-- ============== Inner Heading End =============== -->
+<?php }?>
 <!-- ============== Blog Cover Start =============== -->
 <section class="main-content">
 	<div class="container">
@@ -219,6 +225,11 @@ if($comments){
 	</div>
 </section>
 <?php } ?>
+<?php
+	if( isset($_GET['from_app']) && $_GET['from_app']=='true' ){
+	// Hide header
+	}else{
+?>
 <section class="main-content bottom-main-content pt-0">
   <div class="container">
 		<?php $categories = get_the_category($current_post_ID);
@@ -296,6 +307,7 @@ if($comments){
 	</div>
 </section>
 <!-- ============== Blog End =============== -->
+<?php }?>
 <?php get_footer();?>
 <script>
 	jQuery(document).ready(function($) {
