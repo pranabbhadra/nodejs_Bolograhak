@@ -488,12 +488,29 @@ function app_dynamic_blog_api_handler($request) {
     $meta_query = array();
     $tax_query = array();
 
+    
     if(isset($parameters['type'])){
+        //--meta---//
         if($parameters['type'] == 'trending'){
             $meta_query[] = array(
                 'key'   => 'trending_blog',
                 'value'   => '"yes"',
                 'compare' => 'LIKE'
+            );
+        }
+        //--tax---//
+        if($parameters['type'] == 'tag'){
+            $tax_query[] = array(
+                'taxonomy'   => 'post_tag',
+                'field'   => 'term_id',
+                'terms' => $parameters['term_id']
+            );
+        }
+        if($parameters['type'] == 'category'){
+            $tax_query[] = array(
+                'taxonomy'   => 'category',
+                'field'   => 'term_id',
+                'terms' => $parameters['term_id']
             );
         }
     }
@@ -503,6 +520,13 @@ function app_dynamic_blog_api_handler($request) {
     }
     if(count($meta_query) > 1) {
         $meta_query['relation'] = 'AND';
+    }
+
+    if(count($tax_query) > 0) {
+        $args['tax_query'] = $tax_query;
+    }
+    if(count($tax_query) > 1) {
+        $tax_query['relation'] = 'AND';
     }
 
     if(isset($parameters['count'])){
