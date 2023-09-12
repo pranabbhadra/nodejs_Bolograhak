@@ -2377,26 +2377,52 @@ router.get('/edit-user-review/:reviewId/:companyId', checkFrontEndLoggedIn, asyn
         const reviewId = req.params.reviewId;
         //console.log('editUserID: ', currentUserData);
        
-        const [allRatingTags, CompanyInfo, companyReviewNumbers, getCompanyReviews, globalPageMeta, 
-            PremiumCompanyData] = await Promise.all([
+        const [allRatingTags, CompanyInfo, reviewDataById, AllReviewTags, globalPageMeta ] = await Promise.all([
             comFunction.getAllRatingTags(),
             comFunction.getCompany(companyID),
-            comFunction.getCompanyReviewNumbers(companyID),
-            comFunction.getCompanyReviews(companyID),
+            comFunction2.reviewDataById(reviewId),
+            comFunction2.getAllReviewTags(),
             comFunction2.getPageMetaValues('global'),
-            comFunction2.getPremiumCompanyData(companyID),
         ]);
-        
 
+        // Create a mapping of review_id to tags
+            const reviewTagsMap = {};
+
+            AllReviewTags.forEach((tag) => {
+            const { review_id, tag_name } = tag;
+            if (!reviewTagsMap[review_id]) {
+                reviewTagsMap[review_id] = [];
+            }
+            reviewTagsMap[review_id].push(tag_name);
+            });
+
+            // Map the tags to reviewDataById by review_id
+            const reviewDataWithTags = reviewDataById.map((review) => {
+            var tags = reviewTagsMap[review.id] || [];
+            return {
+                ...review,
+                tags,
+            };
+            });
+
+        console.log(reviewDataWithTags)
         // Render the 'edit-user' EJS view and pass the data
-        res.render('front-end/edit-user-review', {
+         res.render('front-end/edit-user-review', {
             menu_active_id: 'edit-review',
             page_title: 'Edit Review',
             currentUserData,
-            CompanyInfo:CompanyInfo,
             allRatingTags:allRatingTags,
-            globalPageMeta:globalPageMeta
-        });
+            globalPageMeta:globalPageMeta,
+            reviewDataById:reviewDataWithTags[0]
+         });
+        // res.json({
+        //     menu_active_id: 'edit-review',
+        //     page_title: 'Edit Review',
+        //     currentUserData,
+        //     allRatingTags:allRatingTags,
+        //     globalPageMeta:globalPageMeta,
+        //     reviewDataById:reviewDataWithTags[0]
+        // });
     } catch (err) {
         console.error(err);
         res.status(500).send('An error occurred');
