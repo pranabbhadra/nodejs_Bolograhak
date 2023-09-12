@@ -908,7 +908,7 @@ function app_blog_comment_submit_api_handler($request) {
                         'status' => 'error',
                         'data' => '',
                         'success_message' => '',
-                        'error_message' => 'Error: ' .$comment_id->get_error_message()
+                        'error_message' => 'Error: ' . $comment_id->get_error_message()
                     );
                     return $data;
                 }
@@ -937,6 +937,74 @@ function app_blog_comment_submit_api_handler($request) {
             'data' => '',
             'success_message' => '',
             'error_message' => 'post_id, user_id and comment_content all parameters are required'
+            );
+        return $data;
+    }
+}
+
+//--------App Blog Submit Poll -----------------//
+function app_blog_poll_submit_api_init() {
+    register_rest_route('custom/v1', '/blog-submit-poll', array(
+        'methods' => 'POST',
+        'callback' => 'app_blog_poll_submit_api_handler',
+    ));
+}
+add_action('rest_api_init', 'app_blog_poll_submit_api_init');
+function app_blog_poll_submit_api_handler($request) {
+    $parameters = $request->get_params();
+
+    if( isset( $parameters['poll_id'] ) && isset( $parameters['user_id'] ) && isset( $parameters['answer_id'] ) ){
+        
+        $poll_id = $parameters['poll_id'];
+        $answer_id = $parameters['answer_id'];
+        $user_id = $parameters['user_id'];
+
+        // verify user id
+        $user_data = get_userdata($user_id);
+        if($user_data !== false){
+            // Submit Poll Vote
+            global $wpdb;
+            $sql = $wpdb->prepare(
+                "UPDATE `bg_ayspoll_answers`
+                SET votes = votes + 1 
+                WHERE poll_id = %d AND id = %d",
+                $poll_id,
+                $answer_id
+            );
+            $result = $wpdb->query($sql); 
+            if ($result === false) {
+                $data = array(
+                    'status' => 'error',
+                    'data' => '',
+                    'success_message' => '',
+                    'error_message' => "Error: " .$wpdb->last_error
+                );
+                return $data;
+            }else{
+                $data = array(
+                    'status' => 'success',
+                    'data' => '',
+                    'success_message' => 'Vote count updated successfully!',
+                    'error_message' => ''
+                );
+                return $data;
+            }
+        }else{
+            $data = array(
+                'status' => 'error',
+                'data' => '',
+                'success_message' => '',
+                'error_message' => 'Invalid User ID.'
+            );
+            return $data;
+        }
+
+    }else{
+        $data = array(
+            'status' => 'error',
+            'data' => '',
+            'success_message' => '',
+            'error_message' => 'poll_id, answer_id and user_id all parameters are required'
             );
         return $data;
     }
