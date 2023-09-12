@@ -2653,7 +2653,8 @@ body {
     font-family: var(--nunito) !important;
     padding-top: 116px;
 }
-body.home {
+body.home,
+body.new-home {
     padding-top: 0;
 }
 

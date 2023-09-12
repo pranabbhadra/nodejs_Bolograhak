@@ -469,10 +469,11 @@ jQuery(function ($) {
       }
     ]
   });
+
   // /////////////////////////////////////// Slick Slider end
 
 
-  // /////////////////////////////////////// language and custom Select start
+  // /////////////////////////////////////// language / Country and custom Select start
   $(".lang-arw").click(function (e) {
     e.preventDefault();
     $(".lang-dropdown").slideToggle();
@@ -491,6 +492,28 @@ jQuery(function ($) {
     var $clicked = $(e.target);
     if (!$clicked.parents().hasClass("language-select"))
       $(".lang-dropdown").slideUp();
+  });
+
+ // ================ Country-select-box start ====================
+
+  $(".country-arw").click(function (e) {
+    e.preventDefault();
+    $(".country-dropdown").slideToggle();
+  });
+
+  //SELECT OPTIONS AND HIDE OPTION AFTER SELECTION
+  $(".country-dropdown ul li a").click(function (e) {
+    e.preventDefault();
+    var text = $(this).html();
+    $(".country-select").find(".country-change").html(text);
+    $(".country-select").find(".country-dropdown").slideUp();
+  });
+
+  //HIDE OPTIONS IF CLICKED ANYWHERE ELSE ON PAGE
+  $(document).bind('click', function (e) {
+    var $clicked = $(e.target);
+    if (!$clicked.parents().hasClass("country-select"))
+      $(".country-dropdown").slideUp();
   });
 
   // ================ Custom-select-box start ====================
@@ -515,7 +538,7 @@ jQuery(function ($) {
       $(".custom-select-dropdown").slideUp();
   });
 
-  // /////////////////////////////////////// language and custom Select end
+  // /////////////////////////////////////// language / Country and custom Select end
 
   // /////////////////////////////////////// Load More Blog slice Start
   $(".more-blog-btn").click(function (e) {

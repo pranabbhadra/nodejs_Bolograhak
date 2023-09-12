@@ -1,10 +1,42 @@
+.top-text-scroll {
+    background: #FCCB06;
+    padding: 20px 0;
+    color: #252525;
+    font-family: Inter;
+    font-size: 15px;
+    line-height: 110.4%; 
+    text-align: center;
+}
+
+.top-text-scroll ul {
+    padding: 0;
+    margin: 0;
+}
+
+.top-text-scroll ul li {
+    display: inline-block;
+    margin: 0 29px;
+}
+
+.top-text-scroll ul li a {
+    color: #252525;
+}
+
+.top-text-scroll ul li a:hover {
+    text-decoration: underline !important;
+}
+
 header.main_header {
     padding: 18px 0;
     position: absolute;
-    width: 100%;
     top: 0;
+    width: 100%;
     z-index: 99;
     transition: all ease-in-out 0.5s;
+}
+
+body.new-home header.main_header {
+    top: 60px;
 }
 
 .header-wrapper {
@@ -29,14 +61,37 @@ header.main_header {
     margin-left: 20px;
 }
 
-.header-right-content span.language-select {
+.header-middle-menu-link ul {
+    padding: 0;
+    margin: 0;
+} 
+
+.header-middle-menu-link ul li {
+    display: inline-block;
+}
+
+.header-middle-menu-link ul li a {
+    color: #ffffff;
+    font-family: var(--nunito);
+    font-size: 18px;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.header-middle-menu-link ul li a:hover {
+    color: #FCCB06;
+}
+
+.header-right-content span.language-select,
+.header-right-content span.country-select {
     color: #FCCB06;
     font-size: 18px;
     font-weight: 700;
     text-transform: uppercase;
 }
 
-.header-right-content span.language-select i {
+.header-right-content span.language-select i,
+.header-right-content span.country-select i {
     display: inline-block;
     vertical-align: middle;
     font-size: 16px;
@@ -49,6 +104,7 @@ header.main_header {
 }
 
 .lang-dropdown,
+.country-dropdown,
 .user-log-profile-dropdown {
     position: absolute;
     background: #fccb06;
@@ -66,6 +122,7 @@ header.main_header {
     border-top: 1px solid #ffffff52;
 }
 .lang-dropdown ul li a,
+.country-dropdown ul li a,
 .user-log-profile-dropdown ul li a {
     font-size: 14px;
     color: #000000;
@@ -79,6 +136,7 @@ header.main_header {
 }
 
 .lang-dropdown ul li a:hover,
+.country-dropdown ul li a:hover,
 .user-log-profile-dropdown ul li a:hover {
     background: #f2f2f2;
 }
@@ -357,14 +415,17 @@ span.toggle-menu {
     background-color: #ffffff26;
 }
 
-.mbl-show-link {
+.mbl-show-link,
+.tab-show-link,
+.desk-991-show-link {
     display: none !important;
 }
 
-.fixed-top {
+header.main_header.fixed-top {
     position: fixed !important;
     background: rgb(0 0 0 / 95%);
     padding: 10px 0 !important;
+    top: 0 !important;
     transition: all ease-in-out 0.5s;
 }
 
@@ -570,6 +631,10 @@ span.toggle-menu {
     padding-left: 10px;
 }
 
+.banner-mas-img {
+    position: relative;
+}
+
 .banner-mas-img1 {
     margin-top: 110px;
 }
@@ -581,6 +646,95 @@ span.toggle-menu {
 .banner-mas-img img {
     border-radius: 20px;
 }
+
+.banner-counter-tag {
+    position: absolute;
+    border-radius: 10px;
+    background: #FFF;
+    box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.25);
+    min-width: 210px;
+    color: #000;
+    font-family: var(--nunito);
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 120.4%; 
+    padding: 10px 95px 10px 10px;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    z-index: 9;
+}
+
+.banner-mas-img1 .banner-counter-tag {
+    bottom: -62px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.banner-mas-img2 .banner-counter-tag {
+    top: -62px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.banner-counter-tag .counter-text {
+    position: absolute;
+    right: 0;
+    top: 0;
+    color: #222;
+    font-size: 32px;
+    font-weight: 900;
+    line-height: 120.4%;
+    border-radius: 10px;
+    background: #FCCB06;
+    min-width: 93px;
+    padding: 23px 9px 9px;
+    text-align: center;
+}
+
+.home-banner h1 {
+    line-height: 50px;
+}
+
+.home-banner h1 span {
+    color: #ffffff;
+}
+
+.banner-trending-scroll {
+    margin-top: 26px;
+}
+
+.like-dislike-tren-label {
+    color: #FFF;
+    font-size: 26px;
+    line-height: 110.4%; 
+    margin-bottom: 15px;
+}
+
+.like-dislike-company-scroll ul {
+    padding: 0;
+    margin: 0;
+}
+
+.like-dislike-company-scroll ul li {
+    display: inline-block;
+}
+
+.like-dislike-company-scroll ul li + li {
+    margin-left: 54px;
+}
+
+.like-dislike-company-scroll ul li a {
+    color: #FCCB06;
+    font-size: 26px;
+    font-weight: 500;
+    line-height: 110.4%; 
+}
+
+.like-dislike-company-scroll ul li a:hover {
+    color: #ffffff;
+}
+
 
 .custom-modal {
     position: fixed;
@@ -625,6 +779,7 @@ span.toggle-menu {
     color: #fccb06 !important;
     font-size: 28px;
 }
+
 
 /*================== Login Modal Css =================*/
 .login-modal {

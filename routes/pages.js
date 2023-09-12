@@ -587,6 +587,26 @@ router.get('/company/:id', checkCookieValue, async (req, res) => {
 
 });
 
+//New Home page
+router.get('/home', checkCookieValue, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
+    const [globalPageMeta] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+    ]);
+    try {
+
+        res.render('front-end/home', {
+            menu_active_id: 'home',
+            page_title: 'Home',
+            currentUserData,
+            globalPageMeta:globalPageMeta
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+    //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
+});
 //-----------------------------------------------------------------//
 
 

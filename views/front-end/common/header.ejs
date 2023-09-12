@@ -46,10 +46,21 @@
       }
     </style>
   </head>
-  <body <% if(menu_active_id=='landing'){ %>class="home"<% }%>>
+  <body <% if(menu_active_id=='landing'){ %>class="home"<% }%> <% if(menu_active_id=='home'){ %>class="new-home"<% }%>>
     <div id="preloder" class="preloder"><img src="/front-end/images/GIF_v2sec.gif" alt="preloder"></div>
     <!-- ============== Header Start =============== -->
-    <header class="main_header <% if(menu_active_id!='landing'){ %>inner_header<% }%>">
+    <% if( menu_active_id == 'home'){ %>
+      <section class="top-text-scroll">
+        <marquee behavior="scroll" direction="left" onmouseover="this.stop();" onmouseout="this.start();">
+          <ul>
+              <li><a href="#">Lorem Ipsum is simply dummy text</a></li>
+              <li><a href="#">Lorem Ipsum is simply dummy text</a></li>
+              <li><a href="#">Lorem Ipsum is simply dummy text</a></li>
+          </ul>
+      </marquee>
+      </section>
+    <% } %>
+    <header class="main_header <% if(menu_active_id!='landing' &&  menu_active_id != 'home'){ %>inner_header<% }%>">
       <div class="container">
         <div class="header-wrapper">
           <div class="logo">
@@ -114,7 +125,22 @@
             </a>
           </div>
           <div class="header-right-content">
-            <!-- <span class="language-select">
+            <% if( menu_active_id == 'home'){ %>
+              <span class="header-middle-menu-link mbl-hide-link">
+                <ul>
+                  <li><a href="#">Lodge A Complaint</a></li>
+                </ul>
+              </span>
+              <!-- <span class="country-select">
+                <span class="country-change">IND</span> <a href="" class="country-arw"><i class="fa-solid fa-angle-down"></i></a>
+                <div class="country-dropdown">
+                  <ul class="p-0 m-0">
+                    <li><a href="">IND</a></li>
+                    <li><a href="">UK</a></li>
+                  </ul>
+                </div>
+            </span> -->
+            <span class="language-select">
               <span class="lang-change">Eng</span> <a href="" class="lang-arw"><i class="fa-solid fa-angle-down"></i></a>
               <div class="lang-dropdown">
                 <ul class="p-0 m-0">
@@ -122,10 +148,11 @@
                   <li><a href="">Ben</a></li>
                 </ul>
               </div>
-            </span> -->
-            <span class="mbl-hide-link always"><a href="/review" class="btn-default btn-outline-warning">All Reviews</a></span>
+            </span>
+            <% } %>
+            <span class="tab-hide-link always"><a href="/review" class="btn-default btn-outline-warning">All Reviews</a></span>
             <% if(menu_active_id!='business'){%>
-            <span class="mbl-hide-link"><a href="/business" class="btn-default btn-outline-warning">For Business</a></span>
+            <span class="tab-hide-link"><a href="/business" class="btn-default btn-outline-warning">For Business</a></span>
             <% } %>
             <% if(currentUserData){ %>
             <span class="user-log-profile">
@@ -160,7 +187,9 @@
                 <li><a href="/about-us">About Us</a></li>
                 <li><a href="/business">Business</a></li>
                 <li><a href="/contact-us">Contact</a></li>
-                <li class="mbl-show-link"><a href="/business" class="btn-default btn-outline-warning">For business</a></li>
+                <li class="desk-991-show-link"><a href="#">Lodge A Complaint</a></li>
+                <li class="tab-show-link"><a href="/review" class="btn-default btn-outline-warning">All Reviews</a></li>
+                <li class="tab-show-link"><a href="/business" class="btn-default btn-outline-warning">For business</a></li>
                 <% if(currentUserData){ %>
                 <li class="mbl-show-link"><a href="/logout" class="btn-default btn-outline-warning">Log out</a></li>
                 <% } else { %>

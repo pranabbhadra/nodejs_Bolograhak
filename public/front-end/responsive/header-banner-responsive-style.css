@@ -62,6 +62,14 @@
 	span.user-log-profile {
 		margin-right: 12px;
 	}
+
+	.header-middle-menu-link.mbl-hide-link {
+		display: none;
+	}
+
+	.desk-991-show-link {
+		display: block !important;
+	} 
 }
 
 @media only screen and (max-width:767.98px) {
@@ -80,13 +88,30 @@
 	    padding: 15px 15px;
 	}
 
-	.header-right-content span.language-select {
+	.header-right-content span.language-select,
+	.header-right-content span.country-select {
 		font-size: 16px;
 	}
 
-	.header-right-content span.language-select i {
+	.header-right-content span.language-select i,
+	.header-right-content span.country-select i {
 		font-size: 14px;
 		margin-left: 4px;
+	}
+
+	.header-right-content .tab-hide-link {
+		display: none !important;
+	}
+
+	.tab-show-link {
+		display: block !important;
+		margin: 0 10px;
+	}
+
+	.nav_sec ul>li.tab-show-link a.btn-default {
+		padding: 12px 18px;
+		margin-top: 15px;
+		border-radius: 8px;
 	}
 
 	.main-banner {
@@ -255,13 +280,15 @@
 	.banner-left {
 		margin-bottom: 0;
 	}
-	.landing-banner .banner-right {
+	.landing-banner .banner-right,
+	.home-banner .banner-right {
 		display: none;
 	}
 
 	.header-right-content span.mbl-hide-link.always{
 		display: inline-block !important;
 	}
+	
 	.header-right-content span.mbl-hide-link.always a {
 		padding: 8px 10px;
 		min-width: auto;
