@@ -605,7 +605,7 @@ function app_blog_details_api_handler($request) {
         $full = wp_get_attachment_image_src( get_post_thumbnail_id( $ID ), 'full' );
         $alt_text = get_post_meta(get_post_thumbnail_id( $ID ), '_wp_attachment_image_alt', true);
         $title = get_the_title();
-        $content = get_the_content();
+        $content = wpautop(get_the_content());
         $categories = get_the_terms( $ID, 'category' );
         $tags = get_the_terms( $ID, 'post_tag' );
 
