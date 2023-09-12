@@ -945,7 +945,6 @@ async function getCompanyReviews(companyID){
 async function getCompanyRatings(companyID) {
   const getCompanyRatingsQuery = `
   SELECT 
-<<<<<<< HEAD
     company_id,
     SUM(CASE WHEN rating = 0.5 THEN 1 ELSE 0 END) AS rating_05_count,
     SUM(CASE WHEN rating = 1 THEN 1 ELSE 0 END) AS rating_1_count,
@@ -959,29 +958,6 @@ async function getCompanyRatings(companyID) {
     SUM(CASE WHEN rating = 5 THEN 1 ELSE 0 END) AS rating_5_count,
     COUNT(*) AS total_rating_count,
     ROUND(AVG(rating), 1) AS rating_average FROM reviews WHERE company_id = ? AND review_status = "1" GROUP BY company_id`;
-=======
-  company_id,
-  SUM(CASE WHEN rating = 0.5 THEN 1 ELSE 0 END) AS rating_05_count,
-  SUM(CASE WHEN rating = 1 THEN 1 ELSE 0 END) AS rating_1_count,
-  SUM(CASE WHEN rating = 1.5 THEN 1 ELSE 0 END) AS rating_15_count,
-  SUM(CASE WHEN rating = 2 THEN 1 ELSE 0 END) AS rating_2_count,
-  SUM(CASE WHEN rating = 2.5 THEN 1 ELSE 0 END) AS rating_25_count,
-  SUM(CASE WHEN rating = 3 THEN 1 ELSE 0 END) AS rating_3_count,
-  SUM(CASE WHEN rating = 3.5 THEN 1 ELSE 0 END) AS rating_35_count,
-  SUM(CASE WHEN rating = 4 THEN 1 ELSE 0 END) AS rating_4_count,
-  SUM(CASE WHEN rating = 4.5 THEN 1 ELSE 0 END) AS rating_45_count,
-  SUM(CASE WHEN rating = 5 THEN 1 ELSE 0 END) AS rating_5_count,
-  COUNT(*) AS total_rating_count,
-  ROUND(AVG(rating), 1) AS rating_average
-FROM 
-  reviews
-WHERE 
-  company_id = ? AND review_status = "1"
-GROUP BY 
-  company_id
-`;
-
->>>>>>> development-api-moumita-5-9-23
     const ratingsResultvalue = [companyID]
     try{
       const ratingsResult = await query(getCompanyRatingsQuery, ratingsResultvalue);
