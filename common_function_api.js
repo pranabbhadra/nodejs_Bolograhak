@@ -965,6 +965,7 @@ async function getCompanyRatings(companyID) {
   GROUP BY 
     company_id
 `;
+}
 
 
 
