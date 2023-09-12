@@ -614,8 +614,8 @@ exports.edituser = (req, res) => {
               const profilePicture = req.file;
               console.log(profilePicture);
 
-              const updateQueryMeta = 'UPDATE user_customer_meta SET address = ?, country = ?, state = ?, city = ?, zip = ?, date_of_birth = ?, occupation = ?, gender = ?, profile_pic = ?, alternate_phone = ?, about = ? WHERE user_id = ?';
-              db.query(updateQueryMeta, [req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, req.body.date_of_birth, req.body.occupation, req.body.gender, req.file.filename, req.body.alternate_phone, req.body.about, userId], (updateError, updateResults) => {
+              const updateQueryMeta = 'UPDATE user_customer_meta SET address = ?, country = ?, state = ?, city = ?, zip = ?, date_of_birth = ?, occupation = ?, gender = ?, profile_pic = ?, alternate_phone = ?,marital_status=?, about = ? WHERE user_id = ?';
+              db.query(updateQueryMeta, [req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, req.body.date_of_birth, req.body.occupation, req.body.gender, req.file.filename, req.body.alternate_phone, req.body.marital_status,req.body.about, userId], (updateError, updateResults) => {
                   if (updateError) {
                       return res.send(
                           {
@@ -636,8 +636,8 @@ exports.edituser = (req, res) => {
               });
 
           } else {
-              const updateQueryMeta = 'UPDATE user_customer_meta SET address = ?, country = ?, state = ?, city = ?, zip = ?, date_of_birth = ?, occupation = ?, gender = ?,alternate_phone = ?, about = ? WHERE user_id = ?';
-              db.query(updateQueryMeta, [req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, req.body.date_of_birth, req.body.occupation, req.body.gender,req.body.alternate_phone, req.body.about, userId], (updateError, updateResults) => {
+              const updateQueryMeta = 'UPDATE user_customer_meta SET address = ?, country = ?, state = ?, city = ?, zip = ?, date_of_birth = ?, occupation = ?, gender = ?,alternate_phone = ?,marital_status=?, about = ? WHERE user_id = ?';
+              db.query(updateQueryMeta, [req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, req.body.date_of_birth, req.body.occupation, req.body.gender,req.body.alternate_phone, req.body.marital_status, req.body.about, userId], (updateError, updateResults) => {
                   if (updateError) {
                       return res.send(
                           {
