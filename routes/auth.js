@@ -65,6 +65,7 @@ router.post('/update-category', upload.single('cat_image'), authController.updat
 //Create New User--------//
 router.post('/create-user', upload.single('profile_pic'), authController.createUser);
 router.put('/edit-user-data', upload.single('profile_pic'), authController.editUserData);
+router.post('/delete-user', authController.deleteUser);
 
 //---Company--------//
 router.post('/create-company', upload.single('logo'), authController.createCompany);
@@ -86,7 +87,9 @@ router.post('/faq_images',upload.fields([
     { name: 'banner_img_5', maxCount: 1 },
     { name: 'banner_img_6', maxCount: 1 },
     { name: 'banner_img_7', maxCount: 1 },
-    { name: 'banner_img_8', maxCount: 1 }
+    { name: 'banner_img_8', maxCount: 1 },
+    
+    { name: 'app_banner_img', maxCount: 1 }
 ]), authController.updateFAQImages);
 
 // Update Contacts
@@ -130,6 +133,9 @@ router.post('/update-home', upload.fields([
     { name: 'about_us_img', maxCount: 1 },
 
     { name: 'map_img', maxCount: 1 },
+    
+    { name: 'app_cus_right_img', maxCount: 1 },
+    { name: 'app_org_responsibility_img', maxCount: 1 },
 
 ]), authController.updateHome);
 
@@ -155,6 +161,10 @@ router.post('/update-about', upload.fields([
 
     { name: 'right_img_1', maxCount: 1 },
     { name: 'right_img_2', maxCount: 1 },
+    
+    { name: 'app_banner_img_1', maxCount: 1 },
+    { name: 'app_banner_img_2', maxCount: 1 },
+
 
 ]), authController.updateAbout);
 
@@ -198,6 +208,9 @@ router.post('/update-business', upload.fields([
     { name: 'advantage_img_8', maxCount: 1 },
 
     { name: 'did_you_know_img', maxCount: 1 },
+
+    { name: 'app_banner_img_1', maxCount: 1 },
+    { name: 'app_banner_img_2', maxCount: 1 },
 
 ]), authController.updateBusiness);
 

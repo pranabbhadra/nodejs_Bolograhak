@@ -284,7 +284,7 @@ exports.frontendUserRegister = async (req, res) => {
                       console.log('Mail Send: ', info.response);
                       return res.send({
                           status: 'ok',
-                          message: 'Review Approve'
+                          message: ''
                       });
                   }
                 })
@@ -1232,6 +1232,28 @@ exports.editUserData = (req, res) => {
     });
 }
 
+//--- Delete User ----//
+exports.deleteUser = (req, res) => {
+    //console.log(req.body.companyid);
+    sql = `DELETE FROM users WHERE user_id = ?`;
+    const data = [req.body.userid];
+    db.query(sql, data, (err, result) => {
+        if (err) {
+            return res.send({
+                status: 'error',
+                message: 'Something went wrong'
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'User successfully deleted'
+            });
+        }
+
+    })
+
+}
+
 //--- Create New Company ----//
 exports.createCompany = (req, res) => {
     //console.log(req.body);
@@ -1920,7 +1942,7 @@ exports.contactFeedback = (req, res) => {
                      <tbody>
                        <tr>
                 <td id="header_wrapper" style="padding: 36px 48px; display: block;">
-                           <h1 style="color: #ffc107; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 50px; font-weight: 400; line-height: 150%; margin: 0; text-align: left; text-shadow: 0 1px 0 #7797b4; -webkit-font-smoothing: antialiased;">Contact Form</h1>
+                           <h1 style="color: #ffc107; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 50px; font-weight: 400; line-height: 150%; margin: 0; text-align: left; text-shadow: 0 1px 0 #7797b4; -webkit-font-smoothing: antialiased;">Feedback Email</h1>
                         </td>
                        </tr>
                      </tbody>
@@ -2075,10 +2097,11 @@ exports.updateFAQ = async (req, res) => {
         req.body.meta_title,
         req.body.meta_desc,
         req.body.keyword,
+        req.body.app_content,
     ];
     try {
         db.query('DELETE  FROM faq_categories', (del_faq_cat_err, del_faq_cat_res) => {
-            db.query('DELETE - FROM faq_item', async (del_faq_item_err, del_faq_item_res) => {
+            db.query('DELETE  FROM faq_item', async (del_faq_item_err, del_faq_item_res) => {
                 const faqPageId = await comFunction.insertIntoFaqPages(Faq_Page_insert_values);
                 console.log('ID:', faqPageId);
                 await comFunction.insertIntoFaqCategories(faqArray);
@@ -2106,9 +2129,9 @@ exports.updateFAQ = async (req, res) => {
 //Update FAQ Images
 exports.updateFAQImages =async (req,res) => {
     //console.log('files',req.files);
-    const {banner_img_1,banner_img_2,banner_img_3,banner_img_4,banner_img_5,banner_img_6,banner_img_7,banner_img_8} = req.files;
+    const {banner_img_1,banner_img_2,banner_img_3,banner_img_4,banner_img_5,banner_img_6,banner_img_7,banner_img_8,app_banner_img} = req.files;
     // const img_arr = [banner_img_1,banner_img_2,banner_img_3,banner_img_4,banner_img_5,banner_img_6,banner_img_7,banner_img_8];
-    const field_name = ['banner_img_1','banner_img_2','banner_img_3','banner_img_4','banner_img_5','banner_img_6','banner_img_7','banner_img_8'];
+    const field_name = ['banner_img_1','banner_img_2','banner_img_3','banner_img_4','banner_img_5','banner_img_6','banner_img_7','banner_img_8','app_banner_img'];
     await field_name.forEach((item, key) => {
         //console.log(item, key);
         if (req.files[item]) {
@@ -2124,31 +2147,65 @@ exports.updateFAQImages =async (req,res) => {
 }
 // Update Home
 exports.updateHome = async (req, res) => {
-    // console.log('home', req.body);
-    // console.log('file', req.files);
+    //  console.log('home', req.body);
+    //     console.log('file', req.files);
+    //return false;
     const form_data = req.body;
 
     const { home_id, title, meta_title, meta_desc, meta_keyword, bannner_content, for_business,
         for_customer, cus_right_content, cus_right_button_link, cus_right_button_text,youtube_link,
         youtube_1, youtube_2, youtube_3, youtube_4, youtube_5, youtube_6, youtube_7, youtube_8, youtube_9, youtube_10, fb_widget, twitter_widget,
         org_responsibility_content, org_responsibility_buttton_link, org_responsibility_buttton_text,
-        about_us_content, about_us_button_link, about_us_button_text, bannner_content_2, bannner_hashtag, reviewers_guidelines_title,reviewers_guidelines_popup, review_form_demo_location, cus_right_facts_popup, org_responsibility_facts_popup } = req.body;
+        about_us_content, about_us_button_link, about_us_button_text, bannner_content_2, bannner_hashtag, reviewers_guidelines_title,reviewers_guidelines_popup, review_form_demo_location, cus_right_facts_popup, org_responsibility_facts_popup, app_banner_title_1, app_banner_title_2, app_features_for_customer, app_review_content, app_features_hashtag, app_cus_right_content, app_cus_right_point, app_org_responsibility_content, app_org_responsibility_points, app_about_us_content_1, app_about_us_content_2, app_about_us_button_text } = req.body;
 
     const { banner_img_1, banner_img_2, banner_img_3,banner_img_4, banner_img_5, banner_img_6, cus_right_img_1, cus_right_img_2, cus_right_img_3, cus_right_img_4, cus_right_img_5,
         cus_right_img_6, cus_right_img_7, cus_right_img_8, org_responsibility_img_1, org_responsibility_img_2, org_responsibility_img_3,
         org_responsibility_img_4, org_responsibility_img_5, org_responsibility_img_6, org_responsibility_img_7, org_responsibility_img_8,
-        about_us_img, review_img_1, review_img_2, review_img_3, review_img_4, map_img } = req.files;
+        about_us_img, review_img_1, review_img_2, review_img_3, review_img_4, map_img, app_cus_right_img, app_org_responsibility_img } = req.files;
+    
+    let app_features = [];
+    if(typeof app_features_for_customer == 'string'){
+        app_features.push(app_features_for_customer) ;
+    } else {
+        app_features = [...app_features_for_customer];
+        //app_features = app_features.concat(app_features_for_customer);
+    }
+    const app_customer_feature = JSON.stringify(app_features);
+
+    let app_hashtag = [];
+    if(typeof app_features_hashtag == 'string'){
+        app_hashtag.push(app_features_hashtag) ;
+    } else {
+        app_hashtag = [...app_features_hashtag];
+    }
+    const app_feature_hashtag = JSON.stringify(app_hashtag); 
+
+    let cus_right_point = [];
+    if(typeof app_cus_right_point == 'string'){
+        cus_right_point.push(app_cus_right_point) ;
+    } else {
+        cus_right_point = [...app_features_hashtag];
+    }
+    const app_cus_right_points = JSON.stringify(cus_right_point); 
+
+    let org_responsibility_point = [];
+    if(typeof app_org_responsibility_points == 'string'){
+        org_responsibility_point.push(app_org_responsibility_points) ;
+    } else {
+        org_responsibility_point = [...app_org_responsibility_points];
+    }
+    const app_org_responsibility_point = JSON.stringify(org_responsibility_point); 
 
     const meta_value = [bannner_content, for_business,
         for_customer, cus_right_content, cus_right_button_link, cus_right_button_text,youtube_link,
         youtube_1, youtube_2, youtube_3, youtube_4, fb_widget, twitter_widget,
         org_responsibility_content, org_responsibility_buttton_link, org_responsibility_buttton_text,
-        about_us_content, about_us_button_link, about_us_button_text, bannner_content_2, bannner_hashtag, reviewers_guidelines_title,reviewers_guidelines_popup, review_form_demo_location, cus_right_facts_popup, org_responsibility_facts_popup,youtube_5, youtube_6, youtube_7, youtube_8, youtube_9, youtube_10];
+        about_us_content, about_us_button_link, about_us_button_text, bannner_content_2, bannner_hashtag, reviewers_guidelines_title,reviewers_guidelines_popup, review_form_demo_location, cus_right_facts_popup, org_responsibility_facts_popup,youtube_5, youtube_6, youtube_7, youtube_8, youtube_9, youtube_10, app_banner_title_1, app_banner_title_2, app_review_content, app_customer_feature,app_feature_hashtag, app_cus_right_content, app_cus_right_points, app_org_responsibility_content, app_org_responsibility_point, app_about_us_content_1, app_about_us_content_2, app_about_us_button_text];
 
     const meta_key = ['bannner_content', 'for_business',
         'for_customer', 'cus_right_content', 'cus_right_button_link', 'cus_right_button_text','youtube_link', 'youtube_1', 'youtube_2', 'youtube_3', 'youtube_4', 'fb_widget', 'twitter_widget',
         'org_responsibility_content', 'org_responsibility_buttton_link', 'org_responsibility_buttton_text',
-        'about_us_content', 'about_us_button_link', 'about_us_button_text', 'bannner_content_2', 'bannner_hashtag', 'reviewers_guidelines_title','reviewers_guidelines_popup', 'review_form_demo_location', 'cus_right_facts_popup', 'org_responsibility_facts_popup','youtube_5', 'youtube_6', 'youtube_7', 'youtube_8', 'youtube_9', 'youtube_10'];
+        'about_us_content', 'about_us_button_link', 'about_us_button_text', 'bannner_content_2', 'bannner_hashtag', 'reviewers_guidelines_title','reviewers_guidelines_popup', 'review_form_demo_location', 'cus_right_facts_popup', 'org_responsibility_facts_popup','youtube_5', 'youtube_6', 'youtube_7', 'youtube_8', 'youtube_9', 'youtube_10','app_banner_title_1', 'app_banner_title_2', 'app_review_content', 'app_customer_feature','app_feature_hashtag', 'app_cus_right_content', 'app_cus_right_points', 'app_org_responsibility_content', 'app_org_responsibility_point', 'app_about_us_content_1', 'app_about_us_content_2', 'app_about_us_button_text'];
 
     await meta_value.forEach((element, index) => {
         //console.log(element, index);
@@ -2184,12 +2241,12 @@ exports.updateHome = async (req, res) => {
     const file_meta_value = [banner_img_1, banner_img_2, banner_img_3,banner_img_4, banner_img_5, banner_img_6, cus_right_img_1, cus_right_img_2, cus_right_img_3, cus_right_img_4, cus_right_img_5,
         cus_right_img_6, cus_right_img_7, cus_right_img_8, org_responsibility_img_1, org_responsibility_img_2, org_responsibility_img_3,
         org_responsibility_img_4, org_responsibility_img_5, org_responsibility_img_6, org_responsibility_img_7, org_responsibility_img_8,
-        about_us_img, review_img_1, review_img_2, review_img_3, review_img_4, map_img ];
+        about_us_img, review_img_1, review_img_2, review_img_3, review_img_4, map_img, app_cus_right_img, app_org_responsibility_img ];
 
     const file_meta_key = ['banner_img_1', 'banner_img_2', 'banner_img_3','banner_img_4', 'banner_img_5', 'banner_img_6', 'cus_right_img_1', 'cus_right_img_2', 'cus_right_img_3', 'cus_right_img_4', 'cus_right_img_5',
         'cus_right_img_6', 'cus_right_img_7', 'cus_right_img_8', 'org_responsibility_img_1', 'org_responsibility_img_2', 'org_responsibility_img_3',
         'org_responsibility_img_4', 'org_responsibility_img_5', 'org_responsibility_img_6', 'org_responsibility_img_7', 'org_responsibility_img_8',
-        'about_us_img', 'review_img_1', 'review_img_2', 'review_img_3', 'review_img_4', 'map_img' ];
+        'about_us_img', 'review_img_1', 'review_img_2', 'review_img_3', 'review_img_4', 'map_img' , 'app_cus_right_img', 'app_org_responsibility_img'];
 
     await file_meta_key.forEach((item, key) => {
         //console.log(item, key);
@@ -2429,19 +2486,19 @@ exports.updateAbout = async (req, res) => {
 
     const { about_id, title, meta_title, meta_desc, meta_keyword, banner_content, mission_title,
         mission_content, platform_content, bolograhak_would_content, customers_content,
-        service_providers_content } = req.body;
+        service_providers_content, app_banner_content_1, app_banner_content_2, app_platform_content_1, app_platform_content_2 } = req.body;
 
     const { banner_img_1, banner_img_2, banner_img_3, banner_img_4, banner_img_5, banner_img_6, banner_img_7, banner_img_8,
         platform_img_1, platform_img_2, platform_img_3, platform_img_4, platform_img_5, platform_img_6, platform_img_7,
-        platform_img_8, right_img_1, right_img_2 } = req.files;
+        platform_img_8, right_img_1, right_img_2, app_banner_img_1, app_banner_img_2 } = req.files;
 
     const meta_value = [banner_content, mission_title,
         mission_content, platform_content, bolograhak_would_content, customers_content,
-        service_providers_content];
+        service_providers_content, app_banner_content_1, app_banner_content_2, app_platform_content_1, app_platform_content_2];
 
     const meta_key = ['banner_content', 'mission_title',
         'mission_content', 'platform_content', 'bolograhak_would_content', 'customers_content',
-        'service_providers_content'];
+        'service_providers_content', 'app_banner_content_1', 'app_banner_content_2', 'app_platform_content_1', 'app_platform_content_2'];
 
     await meta_value.forEach((element, index) => {
         //console.log(element, index);
@@ -2476,11 +2533,11 @@ exports.updateAbout = async (req, res) => {
 
     const file_meta_value = [banner_img_1, banner_img_2, banner_img_3, banner_img_4, banner_img_5, banner_img_6, banner_img_7, banner_img_8,
         platform_img_1, platform_img_2, platform_img_3, platform_img_4, platform_img_5, platform_img_6, platform_img_7,
-        platform_img_8, right_img_1, right_img_2];
+        platform_img_8, right_img_1, right_img_2, app_banner_img_1, app_banner_img_2];
 
     const file_meta_key = ['banner_img_1', 'banner_img_2', 'banner_img_3', 'banner_img_4', 'banner_img_5', 'banner_img_6', 'banner_img_7', 'banner_img_8',
         'platform_img_1', 'platform_img_2', 'platform_img_3', 'platform_img_4', 'platform_img_5', 'platform_img_6', 'platform_img_7',
-        'platform_img_8', 'right_img_1', 'right_img_2'];
+        'platform_img_8', 'right_img_1', 'right_img_2', 'app_banner_img_1', 'app_banner_img_2'];
 
     await file_meta_key.forEach((item, key) => {
         //console.log(item, key);
@@ -2598,18 +2655,27 @@ exports.deleteFeaturedCompany = (req, res) => {
 exports.updateBusiness = async (req, res) => {
     console.log('business', req.body);
     console.log('file', req.files);
-
+    //return false;
     const { business_id, title, meta_title, meta_desc, meta_keyword, bannner_content, features_title,
         feature_content,feature_icon, advantage_title, advantage_content, dont_forget_title,
-        dont_forget_content_1, dont_forget_content_2, did_you_know_title, did_you_know_content_1, did_you_know_content_2, upcoming_features_title, upcoming_features_content, bottom_content } = req.body;
+        dont_forget_content_1, dont_forget_content_2, did_you_know_title, did_you_know_content_1, did_you_know_content_2, upcoming_features_title, upcoming_features_content, bottom_content, app_bannner_content_title, app_bannner_content_1, app_bannner_content_2, app_advantage_point, app_dont_forget_content_1_title,app_dont_forget_content_1, app_dont_forget_content_2_title, app_dont_forget_content_2 } = req.body;
 
-    const { banner_img_1, banner_img_2, banner_img_3, banner_img_4, banner_img_5, banner_img_6,banner_img_7, banner_img_8,  advantage_img_1, advantage_img_2, advantage_img_3, advantage_img_4, advantage_img_5, advantage_img_6, advantage_img_7, advantage_img_8, did_you_know_img } = req.files;
+    const { banner_img_1, banner_img_2, banner_img_3, banner_img_4, banner_img_5, banner_img_6,banner_img_7, banner_img_8,  advantage_img_1, advantage_img_2, advantage_img_3, advantage_img_4, advantage_img_5, advantage_img_6, advantage_img_7, advantage_img_8, did_you_know_img, app_banner_img_1, app_banner_img_2 } = req.files;
+
+
+    let advantage_point = [];
+    if(typeof app_advantage_point == 'string'){
+        advantage_point.push(app_advantage_point) ;
+    } else {
+        advantage_point = [...app_advantage_point];
+    }
+    const app_advantage_points = JSON.stringify(advantage_point); 
 
     const meta_value = [bannner_content, features_title, advantage_title, advantage_content, dont_forget_title,
-        dont_forget_content_1, dont_forget_content_2, did_you_know_title, did_you_know_content_1, did_you_know_content_2, upcoming_features_title, bottom_content];
+        dont_forget_content_1, dont_forget_content_2, did_you_know_title, did_you_know_content_1, did_you_know_content_2, upcoming_features_title, bottom_content, app_bannner_content_title, app_bannner_content_1, app_bannner_content_2, app_dont_forget_content_1_title,app_dont_forget_content_1, app_dont_forget_content_2_title, app_dont_forget_content_2,app_advantage_points];
 
     const meta_key = ['bannner_content', 'features_title', 'advantage_title', 'advantage_content', 'dont_forget_title',
-        'dont_forget_content_1', 'dont_forget_content_2', 'did_you_know_title', 'did_you_know_content_1', 'did_you_know_content_2', 'upcoming_features_title', 'bottom_content'];
+        'dont_forget_content_1', 'dont_forget_content_2', 'did_you_know_title', 'did_you_know_content_1', 'did_you_know_content_2', 'upcoming_features_title', 'bottom_content', 'app_bannner_content_title', 'app_bannner_content_1', 'app_bannner_content_2', 'app_dont_forget_content_1_title','app_dont_forget_content_1', 'app_dont_forget_content_2_title', 'app_dont_forget_content_2','app_advantage_points'];
 
     await meta_value.forEach((element, index) => {
         //console.log(element, index);
@@ -2643,9 +2709,9 @@ exports.updateBusiness = async (req, res) => {
     });
 
     const file_meta_value = [banner_img_1, banner_img_2, banner_img_3, banner_img_4, banner_img_5, banner_img_6,banner_img_7, banner_img_8, advantage_img_1, advantage_img_2, advantage_img_3, advantage_img_4, advantage_img_5,
-        advantage_img_6, advantage_img_7, advantage_img_8, did_you_know_img];
+        advantage_img_6, advantage_img_7, advantage_img_8, did_you_know_img,app_banner_img_1, app_banner_img_2];
 
-    const file_meta_key = ['banner_img_1', 'banner_img_2', 'banner_img_3', 'banner_img_4', 'banner_img_5', 'banner_img_6','banner_img_7', 'banner_img_8', 'advantage_img_1', 'advantage_img_2', 'advantage_img_3', 'advantage_img_4', 'advantage_img_5', 'advantage_img_6', 'advantage_img_7', 'advantage_img_8', 'did_you_know_img'];
+    const file_meta_key = ['banner_img_1', 'banner_img_2', 'banner_img_3', 'banner_img_4', 'banner_img_5', 'banner_img_6','banner_img_7', 'banner_img_8', 'advantage_img_1', 'advantage_img_2', 'advantage_img_3', 'advantage_img_4', 'advantage_img_5', 'advantage_img_6', 'advantage_img_7', 'advantage_img_8', 'did_you_know_img','app_banner_img_1', 'app_banner_img_2'];
 
     await file_meta_key.forEach((item, key) => {
         //console.log(item, key);
