@@ -102,6 +102,7 @@
                                        <% if(review.review_reply_count==1){ %>
                                        <span class="user-select-tag review-reply-btn"><a href="/company/<%- review.company_id -%>#review-reply-<%- review.id -%>">Reply</a></span> 
                                        <% } %>
+                                       <span class="user-select-tag review-reply-btn"><a href="/edit-user-review/<%- review.id -%>/<%- review.company_id -%>">Edit</a></span> 
 
                                        <!-- <% var avg = review.rating %>
                                        <div class="user-rating">

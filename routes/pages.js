@@ -2365,6 +2365,43 @@ router.get('/change-password', checkFrontEndLoggedIn, async (req, res) => {
         res.status(500).send('An error occurred');
     }
 });
+
+//FrontEnd Edit Review page
+router.get('/edit-user-review/:reviewId/:companyId', checkFrontEndLoggedIn, async (req, res) => {  
+    
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+        const userId = currentUserData.user_id;
+        const companyID = req.params.companyId;
+        const reviewId = req.params.reviewId;
+        //console.log('editUserID: ', currentUserData);
+       
+        const [allRatingTags, CompanyInfo, companyReviewNumbers, getCompanyReviews, globalPageMeta, 
+            PremiumCompanyData] = await Promise.all([
+            comFunction.getAllRatingTags(),
+            comFunction.getCompany(companyID),
+            comFunction.getCompanyReviewNumbers(companyID),
+            comFunction.getCompanyReviews(companyID),
+            comFunction2.getPageMetaValues('global'),
+            comFunction2.getPremiumCompanyData(companyID),
+        ]);
+        
+
+        // Render the 'edit-user' EJS view and pass the data
+        res.render('front-end/edit-user-review', {
+            menu_active_id: 'edit-review',
+            page_title: 'Edit Review',
+            currentUserData,
+            CompanyInfo:CompanyInfo,
+            allRatingTags:allRatingTags,
+            globalPageMeta:globalPageMeta
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
 //-----------------------------------------------------------------//
 
 
