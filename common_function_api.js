@@ -958,7 +958,14 @@ async function getCompanyRatings(companyID) {
     SUM(CASE WHEN rating = 5 THEN 1 ELSE 0 END) AS rating_5_count,
     COUNT(*) AS total_rating_count,
     ROUND(AVG(rating), 1) AS rating_average FROM reviews WHERE company_id = ? AND review_status = "1" GROUP BY company_id`;
-}
+    const ratingsResultvalue = [companyID]
+    try{
+      const ratingsResult = await query(getCompanyRatingsQuery, ratingsResultvalue);
+      return ratingsResult;
+    }catch(error){
+      return 'Error during user get_company_rating_query:'+error;
+    }
+  }
 
 
 
