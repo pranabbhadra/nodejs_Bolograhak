@@ -970,6 +970,7 @@ async function getCompanyRatings(companyID) {
 
 
 
+
 async function getUserCompany(user_ID){
     const get_user_company_query = `
       SELECT c.*
