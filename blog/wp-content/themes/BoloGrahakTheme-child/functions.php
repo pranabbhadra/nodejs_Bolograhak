@@ -386,6 +386,47 @@ function app_popular_category_api_handler($request) {
     }
 }
 
+//----------Yearly Archive API -----------------//
+function app_yearly_archive_api_init() {
+    register_rest_route('custom/v1', '/all-archives', array(
+        'methods' => 'GET',
+        'callback' => 'app_yearly_archive_api_handler',
+    ));
+}
+add_action('rest_api_init', 'app_yearly_archive_api_init');
+
+function app_yearly_archive_api_handler($request) {
+    
+    global $wpdb;
+
+    // Query to get all distinct years from the posts table
+    $query = "SELECT DISTINCT YEAR(post_date) AS archive_year 
+              FROM $wpdb->posts 
+              WHERE post_type = 'post' 
+              AND post_status = 'publish' 
+              ORDER BY archive_year DESC";
+
+    $year_archives = $wpdb->get_col($query);
+
+    if(count($year_archives)>0){
+        $data = array(
+            'status' => 'success',
+            'data' => $year_archives,
+            'success_message' => count($year_archives). ' archive avilable',
+            'error_message' => ''
+            );        
+        return $data;
+    }else{
+        $data = array(
+            'status' => 'error',
+            'data' => '',
+            'success_message' => '',
+            'error_message' => 'No archive found'
+            );
+        return $data;
+    }
+}
+
 //----------Custom User Reset Password -----------------//
 function custom_user_resetpass_init() {
     register_rest_route('custom/v1', '/reset-password', array(
