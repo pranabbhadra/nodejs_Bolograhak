@@ -2,7 +2,7 @@
 if(isset($_GET['login_check'])) {
     wp_set_current_user($_GET['login_check']);//Set current user
     wp_set_auth_cookie( $_GET['login_check'], true );
-    $home_url = MAIN_URL_BG;
+    $home_url = MAIN_URL_BG.ltrim($_GET['currentUrlPath'], '/');
     wp_redirect($home_url);
     exit;
 }
@@ -312,4 +312,231 @@ function home_latest_blog_api_handler($request) {
         return $data;
     }
 }
+
+//----------App Latest Blog API -----------------//
+function app_latest_blog_api_init() {
+    register_rest_route('custom/v1', '/latest-blog', array(
+        'methods' => 'GET',
+        'callback' => 'app_latest_blog_api_handler',
+    ));
+}
+add_action('rest_api_init', 'app_latest_blog_api_init');
+
+function app_latest_blog_api_handler($request) {
+    $post_items = [];
+    $args = array(
+        'posts_per_page'  => 4,
+        'post_status' => 'publish',
+        'offset'  => 1,
+    );
+    query_posts($args);
+    if (have_posts()) : while (have_posts()) : the_post();
+    $ID = get_the_ID();
+    $thumbnail = wp_get_attachment_image_src( get_post_thumbnail_id( $ID ), 'trending-blog-thumb' );
+    $full = wp_get_attachment_image_src( get_post_thumbnail_id( $ID ), 'full' );
+    $alt_text = get_post_meta(get_post_thumbnail_id( $ID ), '_wp_attachment_image_alt', true);
+    $title = get_the_title();
+    $the_title = strip_tags($title);
+    $categories = get_the_terms( $ID, 'category' );
+    /*
+    if(strlen($the_title)>45){
+      $the_title = substr($the_title,0,45).'..';
+    }
+    */
+    $post_items[] = array(
+                        'id' =>  $ID,
+                        'title'  =>  $title,
+                        'publish_date'  =>  get_the_time(__('M d, Y', 'kubrick')),
+                        'thumbnail'  =>  $thumbnail['0'],
+                        'full'  =>  $full['0'],
+                        'thumbnail_alt'  =>  $alt_text,
+                        'thumbnail_alt'  =>  $alt_text,
+                        'permalink' => get_the_permalink(),
+                        'views_count'  =>  pvc_get_post_views( $ID ),
+                        'category'  => $categories,
+                      );
+    endwhile; endif; wp_reset_query();
+
+    if(count($post_items)>0){
+        $data = array(
+            'status' => 'success',
+            'data' => $post_items,
+            'success_message' => count($post_items). ' posts avilable',
+            'error_message' => ''
+            );        
+        return $data;
+    }else{
+        $data = array(
+            'status' => 'error',
+            'data' => '',
+            'success_message' => '',
+            'error_message' => 'No result found'
+            );
+        return $data;
+    }
+}
+
+//----------Popular Tags API -----------------//
+function app_popular_tags_api_init() {
+    register_rest_route('custom/v1', '/popular-tags', array(
+        'methods' => 'GET',
+        'callback' => 'app_popular_tags_api_handler',
+    ));
+}
+add_action('rest_api_init', 'app_popular_tags_api_init');
+
+function app_popular_tags_api_handler($request) {
+    $popular_tags = get_terms( array(
+              'taxonomy' => 'post_tag',
+              'orderby' => 'count',
+              'order' => 'DESC',
+              'number' => 10, // Specify the number of popular tags to retrieve
+    ) );
+
+    if(count($popular_tags)>0){
+        $data = array(
+            'status' => 'success',
+            'data' => $popular_tags,
+            'success_message' => count($popular_tags). ' tags avilable',
+            'error_message' => ''
+            );        
+        return $data;
+    }else{
+        $data = array(
+            'status' => 'error',
+            'data' => '',
+            'success_message' => '',
+            'error_message' => 'No result found'
+            );
+        return $data;
+    }
+}
+
+//----------Popular Category API -----------------//
+function app_popular_category_api_init() {
+    register_rest_route('custom/v1', '/popular-category', array(
+        'methods' => 'GET',
+        'callback' => 'app_popular_category_api_handler',
+    ));
+}
+add_action('rest_api_init', 'app_popular_category_api_init');
+
+function app_popular_category_api_handler($request) {
+    $popular_categories = get_terms( array(
+              'taxonomy' => 'category',
+              'orderby' => 'count',
+              'order' => 'DESC',
+              'number' => 10, // Specify the number of popular tags to retrieve
+    ) );
+
+    if(count($popular_categories)>0){
+        $data = array(
+            'status' => 'success',
+            'data' => $popular_categories,
+            'success_message' => count($popular_categories). ' category avilable',
+            'error_message' => ''
+            );        
+        return $data;
+    }else{
+        $data = array(
+            'status' => 'error',
+            'data' => '',
+            'success_message' => '',
+            'error_message' => 'No result found'
+            );
+        return $data;
+    }
+}
+
+//----------Custom User Reset Password -----------------//
+function custom_user_resetpass_init() {
+    register_rest_route('custom/v1', '/reset-password', array(
+        'methods' => 'POST',
+        'callback' => 'custom_user_resetpass_handler',
+    ));
+}
+add_action('rest_api_init', 'custom_user_resetpass_init');
+
+// Custom User Login Handler
+function custom_user_resetpass_handler($request) {
+    $parameters = $request->get_params();
+    $user_name = $parameters['email'];
+    $user_new_password = $parameters['password'];
+    //-- Check user exist by email ID
+    $user_id = username_exists($user_name);
+    if ($user_id) {
+        wp_set_password($user_new_password, $user_id);
+        return array(
+            'status' => 'ok',
+            'data' => $user_id,
+            'message' => 'WP user reset password success'
+        );
+    } else {
+        return array(
+            'status' => 'err',
+            'data' => '',
+            'message' => 'User ID doesnot exist'
+        );
+    }
+}
+
+// ---------------------Logout API--------------------------------//
+function custom_user_logout_init() {
+    register_rest_route('custom/v1', '/force-logout', array(
+        'methods' => 'POST',
+        'callback' => 'custom_logout_handler',
+        'permission_callback' => function ($request) {
+            return true;
+        },
+    ));
+}
+add_action('rest_api_init', 'custom_user_logout_init');
+function custom_logout_handler($request) {
+    /*
+    $parameters = $request->get_params();
+    $user_email = $parameters['email'];
+    $user = get_user_by('login', $user_email);
+    $user_id = $user->ID;
+    $user_nonce = wp_create_nonce('user_action_' . $user_id);
+
+    // Optionally, clear any user-related cookies
+    setcookie("user_cookie", "", time() - 3600, "/"); // Set cookie expiration to the past
+
+    // Return a response indicating successful logout
+    return rest_ensure_response(array('message' => 'Logged out successfully.', 'user_nonce' => $user_nonce));
+    */
+    // List of WordPress cookies to unset
+    $cookies = array(
+        'wordpress_logged_in',
+        'wp-settings-1',
+        'wp-settings-time-1',
+        'wp-postpass',
+        'wordpress_test_cookie',
+        // Add more cookies here if needed
+    );
+
+    // Unset each cookie
+    foreach ($cookies as $cookie) {
+        if (isset($_COOKIE[$cookie])) {
+            unset($_COOKIE[$cookie]);
+            setcookie($cookie, '', time() - 3600, '/');
+        }
+    }
+}
+//---------//
+function force_logout_if_action_logout() {
+    if (isset($_GET['action']) && $_GET['action'] === 'logout') {
+        // Add any additional actions you want before logging the user out
+        // For example, you can clear cookies or perform other tasks here
+        
+        // Log the user out
+        wp_logout();
+
+        // Redirect to a specific URL after logout
+        wp_redirect(MAIN_URL_BG); // Change the URL as needed
+        exit;
+    }
+}
+
+add_action('init', 'force_logout_if_action_logout');
 ?>

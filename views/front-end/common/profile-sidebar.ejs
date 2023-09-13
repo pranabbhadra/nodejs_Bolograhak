@@ -39,7 +39,7 @@
              <ul>
                 <li><a href="/profile-dashboard"><i class="fa-solid fa-gauge-simple-max"></i>Dashboard</a></li>
                 <li>
-                   <a href="/my-reviews"><i class="fa-solid fa-envelope"></i>My Reviews <span class="review-count"><%= userMeta && userMeta.review_count ? userMeta.review_count : '0' %></span></a>
+                   <a href="/my-reviews"><i class="fa-solid fa-envelope"></i>My Reviews <span class="review-count"><%= AllCompaniesReviews.length>0 ? AllCompaniesReviews.length : '0' %></a>
                    <!--<ul>
                       <li><a href="">item 1</a></li>
                       <li><a href="">item 1</a></li>
@@ -49,15 +49,10 @@
                 </li>
                 <li><a href="/myprofile"><i class="fa-solid fa-comments"></i>Profile</a></li>
                 <% if(userMeta && userMeta.claimed_comp_id) { %>
-                  <% if( userMeta.payment_status == 'free' ) {%>
-                     <li><a href="/basic-company-profile/<%= userMeta.claimed_comp_id %>"><i class="fa-solid fa-briefcase"></i>Company Dashboard </a></li>
-                     <% } else { %>
-                     <li><a href="/premium-company-profile/<%= userMeta.claimed_comp_id %>"><i class="fa-solid fa-briefcase"></i>Company Dashboard </a></li>
-                     <% } %>
-                  
+                     <li><a href="/company-dashboard/<%= userMeta.claimed_comp_id %>"><i class="fa-solid fa-briefcase"></i>Company Dashboard </a></li>
                   <% } %>
-                <li><a href="#"><i class="fa-solid fa-gear"></i>Settings</a></li>
-                <li><a href="#"><i class="fa-solid fa-lock-keyhole"></i>Change Password</a></li>
+                <!-- <li><a href="#"><i class="fa-solid fa-gear"></i>Settings</a></li> -->
+                <li><a href="/change-password"><i class="fa-solid fa-lock-keyhole"></i>Change Password</a></li>
                 <li><a href="/logout"><i class="fa-solid fa-right-from-bracket"></i>Logout</a></li>
              </ul>
           </div>

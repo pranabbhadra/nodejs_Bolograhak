@@ -258,6 +258,16 @@
 	.landing-banner .banner-right {
 		display: none;
 	}
+
+	.header-right-content span.mbl-hide-link.always{
+		display: inline-block !important;
+	}
+	.header-right-content span.mbl-hide-link.always a {
+		padding: 8px 10px;
+		min-width: auto;
+		border-radius: 4px;
+		font-size: 15px;
+	}
 	
 
 }
@@ -268,5 +278,8 @@
 	}
 	.review-content .review-right{
 		margin-top: 0px !important;
+	}
+	.logo svg {
+		width: 70px;
 	}
 }

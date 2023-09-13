@@ -65,6 +65,7 @@ router.post('/update-category', upload.single('cat_image'), authController.updat
 //Create New User--------//
 router.post('/create-user', upload.single('profile_pic'), authController.createUser);
 router.put('/edit-user-data', upload.single('profile_pic'), authController.editUserData);
+router.post('/delete-user', authController.deleteUser);
 
 //---Company--------//
 router.post('/create-company', upload.single('logo'), authController.createCompany);
@@ -86,7 +87,9 @@ router.post('/faq_images',upload.fields([
     { name: 'banner_img_5', maxCount: 1 },
     { name: 'banner_img_6', maxCount: 1 },
     { name: 'banner_img_7', maxCount: 1 },
-    { name: 'banner_img_8', maxCount: 1 }
+    { name: 'banner_img_8', maxCount: 1 },
+    
+    { name: 'app_banner_img', maxCount: 1 }
 ]), authController.updateFAQImages);
 
 // Update Contacts
@@ -130,6 +133,9 @@ router.post('/update-home', upload.fields([
     { name: 'about_us_img', maxCount: 1 },
 
     { name: 'map_img', maxCount: 1 },
+    
+    { name: 'app_cus_right_img', maxCount: 1 },
+    { name: 'app_org_responsibility_img', maxCount: 1 },
 
 ]), authController.updateHome);
 
@@ -155,11 +161,16 @@ router.post('/update-about', upload.fields([
 
     { name: 'right_img_1', maxCount: 1 },
     { name: 'right_img_2', maxCount: 1 },
+    
+    { name: 'app_banner_img_1', maxCount: 1 },
+    { name: 'app_banner_img_2', maxCount: 1 },
+
 
 ]), authController.updateAbout);
 
 router.post('/add-review', authController.submitReview);
 router.post('/delete-review', authController.deleteReview);
+router.post('/add-review-reply', authController.submitReviewReply);
 //---Rating Tags--------//
 router.post('/add-rating-tags', upload.single('rating_image'), authController.createRatingTags);
 router.put('/edit-rating-tags', upload.single('rating_image'), authController.editRatingTags);
@@ -198,6 +209,9 @@ router.post('/update-business', upload.fields([
 
     { name: 'did_you_know_img', maxCount: 1 },
 
+    { name: 'app_banner_img_1', maxCount: 1 },
+    { name: 'app_banner_img_2', maxCount: 1 },
+
 ]), authController.updateBusiness);
 
 //Update Privacy Policy
@@ -217,5 +231,38 @@ router.post('/update-global-content', authController.updateGlobalContent);
 
 //Update basic-company-profile-management 
 router.post('/basic_company_profile_update', upload.single('logo'), authController.updateBasicCompany);
+
+//Update basic-company-profile-management 
+router.post('/premium_company_profile_update',  upload.fields([
+    
+    { name: 'logo', maxCount: 1 },
+
+    { name: 'cover_image', maxCount: 1 },
+
+    { name: 'gallery_images', maxCount: 100 },
+
+    { name: 'promotion_image', maxCount: 100 },
+
+    { name: 'product_image', maxCount: 100 },
+
+]), authController.updatePremiumCompany);
+
+//Delete One Premium Gallery Image
+router.post('/deletePremiumImage', authController.deletePremiumImage);
+
+//Delete One Premium Promotion 
+router.post('/deletePremiumPromotion', authController.deletePremiumPromotion);
+
+//Delete one Premium Product
+router.post('/deletePremiumProduct', authController.deletePremiumProduct);
+
+//Delete one Premium Product
+router.post('/frontend-forgot-password', authController.forgotPassword);
+
+//Reset Password
+router.post('/reset_password', authController.resetPassword);
+
+//Change Password
+router.post('/change_password', authController.changePassword);
 
 module.exports = router;

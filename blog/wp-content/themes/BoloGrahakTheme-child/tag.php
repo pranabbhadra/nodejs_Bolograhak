@@ -28,7 +28,7 @@ get_header();?>
          <div class="right-inner-head">
             <div class="bread-crumb">
                <ul>
-                  <li><a href="https://bolograhak.com/">Home</a></li>
+                  <li><a href="<?php echo MAIN_URL_BG; ?>">Home</a></li>
                   <li><?php echo get_the_title(10); ?></li>
                </ul>
             </div>

@@ -8,119 +8,46 @@
       <section class="main-content premium_company_profile">
          <div class="container">
             <div class="main_box">
-               <div class="basic_info_of_company">
-                  <div class="row align-items-center">
-                     <div class="col-md-4 col-lg-3">
-                        <div class="company_logo">
-                           <% if(company && company.logo) { %>
-                              <a href="#"><img src="/<%= company.logo %>" alt="company"></a>
-                           <%} else {%>
-                              <a href="#"><img src="/front-end/images/company-placeholder-image.png" alt="company"></a>
-                           <% } %>
-                           <div class="premium_logo"><i class="fas fa-crown"></i></div>
-                        </div>
-                     </div>
-                     <div class="col-md-8 col-lg-6">
-                        <div class="company_details">
-                           <div class="row">
-                              <% if(company && company.company_name){ %>
-                                 <div class="col-sm-12">
-                                    <h2 class="company_name">
-                                       <%= company && company.company_name ? company.company_name : '' %>
-                                    </h2>
-                                    <h4 class="tag_line">Simpley creative</h4>
-                                 </div>
-                              <% } %>
-                              <% if(company && company.comp_email){ %>
-                                 <div class="col-sm-6">
-                                    <p class="common_style"><i class="fas fa-envelope"></i><a
-                                          href="mailto:<%= company.comp_email %>">
-                                          <%= company.comp_email %>
-                                       </a></p>
-                                 </div>
-                              <% } %>
-                              <% if(company && company.comp_phone ){ %>
-                                 <div class="col-sm-6">
-                                    <p class="common_style"><i class="fas fa-mobile"></i><a
-                                          href="tel:<%= company.comp_phone %>">
-                                          <%= company.comp_phone %>
-                                       </a></p>
-                                 </div>
-                              <% } %>
-                              <% if(company && company.main_address ){ %>
-                                 <div class="col-sm-12">
-                                    <p class="common_style"><i class="fas fa-map-marker-alt"></i>
-                                       <%= company.main_address %>
-                                    </p>
-                                 </div>
-                              <% } %>
-                           </div>
-                        </div>
-                     </div>
-                     <div class="col-md-12 col-lg-3">
-                        <div class="overall_score">
-                           <div class="social_links">
-                              <ul>
-                                 <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
-                                 <li><a href="#"><i class="fab fa-twitter"></i></a></li>
-                                 <li><a href="#"><i class="fab fa-instagram"></i></a></li>
-                                 <li><a href="#"><i class="fab fa-linkedin-in"></i></a></li>
-                                 <li><a href="#"><i class="fab fa-youtube"></i></a></li>
-                              </ul>
-                           </div>
-                           <div class="score_info">
-                              <div class="d-flex align-items-center mb-2">
-                                 <div class="review_count">4.5</div>
-                                 <div class="emoji_respective_review">
-                                    <img src="/front-end/images/4-5.gif" alt="">
-                                 </div>
-                              </div>
-                              <p>Total Review 1,117</p>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-               </div>
-               <div class="company_profile_navigation">
-                  <ul>
-                     <li class="active"><a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                     <li><a href="#"><i class="fas fa-envelope"></i> My Reviews</a></li>
-                     <li>
-                        <a href="#"><i class="fas fa-user-tie"></i> Profile</a>
-                        <ul>
-                           <li><a href="#">My Profile</a></li>
-                           <li><a href="#">Company Profile</a></li>
-                        </ul>
-                     </li>
-                     <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
-                     <li><a href="#"><i class="fas fa-lock"></i> Change Password</a></li>
-                     <li><a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-                  </ul>
-               </div>
+               <%- include('common/premium-company-sidebar') -%>
                <div class="analytics_data analytics_data_row1">
                   <div class="row">
+                     <% var company_total_review = companyReviewNumbers.rewiew_count.total_review_count %>
                      <div class="col-lg-4">
                         <div class="total_reviews">
                            <p>Total Reviews</p>
-                           <div class="count">405</div>
+                           <div class="count"><%- company_total_review -%></div>
                         </div>
                      </div>
                      <div class="col-lg-4">
                         <div class="total_reviews total_replied">
                            <p>Total Replied</p>
-                           <div class="count">200</div>
+                           <div class="count"><%= TotalReplied.totalReplied %></div>
                         </div>
                      </div>
+                     <% var positive_count = 0;
+                        var negative_count = 0;
+                        if (companyReviewNumbers && Array.isArray(companyReviewNumbers.rewiew_rating_count)) {
+                           companyReviewNumbers.rewiew_rating_count.forEach((item, index) => {
+                              if(parseFloat(item.rating)>=4){
+                                 positive_count += parseInt(item.cnt_rat);
+                              }
+                              if(parseFloat(item.rating)<=2){
+                                 negative_count += parseInt(item.cnt_rat);
+                              }
+                           })
+                        }
+                     %>
                      <div class="col-lg-4">
                         <div class="positive_reviews">
                            <h4>positive reviews</h4>
-                           <div class="count">125</div>
+                           <div class="count"><%- positive_count -%></div>
                         </div>
                         <div class="negative_reviews">
                            <h4>negative reviews</h4>
-                           <div class="count">125</div>
+                           <div class="count"><%- negative_count -%></div>
                         </div>
                      </div>
+                     
                   </div>
                </div>
 
@@ -132,13 +59,16 @@
                      <div class="col-lg-5">
                         <div class="user_viewed">
                            <div>
-                              <h4>Total Visitors</h4>
+                              <div class="d-flex align-items-center justify-content-start mb-3">
+                                 <h4 class="mb-0">Total Visitors</h4><img style="margin-left: 5px;" src="/front-end/images/coming-soon.png" alt="image" />
+                              </div>
                               <div class="count">1500</div>
                            </div>
                         </div>
                      </div>
                      <div class="col-lg-7">
                         <div class="all_ratings_progressbar">
+                           <h4>Ratings graph</h4>
                            <div id="columnChart" style="height: 250px; width: 100%;"></div>
                         </div>
                      </div>
@@ -152,87 +82,23 @@
                      </div>
                      <div class="col-lg-7">
                         <div class="display_tags">
-                           <p>Below are the review tags you got</p>
+                           <p>Tags you got</p>
                            <div class="all_tags">
+                              <% if(reviewTagsCount && reviewTagsCount.length>0 ){ %>
                               <div class="row">
-                                 <div class="col-6 col-md-3">
+                                 <% reviewTagsCount.forEach((item, index) => { %>
+                                 <div class="col-md-4 col-6">
                                     <div class="each_tag_info">
-                                       <div class="circale"></div>
-                                       <div class="tag_count">510</div>
-                                       <div class="tag_name">Good</div>
+                                       <!-- <div class="circale"></div> -->
+                                       <div class="tag_name"><%- item.tag_name -%></div>
+                                       <div class="tag_count"><%- item.count -%></div>
                                     </div>
                                  </div>
-                                 <div class="col-6 col-md-3">
-                                    <div class="each_tag_info">
-                                       <div class="circale"></div>
-                                       <div class="tag_count">410</div>
-                                       <div class="tag_name">Agerage</div>
-                                    </div>
-                                 </div>
-                                 <div class="col-6 col-md-3">
-                                    <div class="each_tag_info">
-                                       <div class="circale"></div>
-                                       <div class="tag_count">210</div>
-                                       <div class="tag_name">not good</div>
-                                    </div>
-                                 </div>
-                                 <div class="col-6 col-md-3">
-                                    <div class="each_tag_info">
-                                       <div class="circale"></div>
-                                       <div class="tag_count">110</div>
-                                       <div class="tag_name">Nice</div>
-                                    </div>
-                                 </div>
-                                 <div class="col-6 col-md-3">
-                                    <div class="each_tag_info">
-                                       <div class="circale"></div>
-                                       <div class="tag_count">510</div>
-                                       <div class="tag_name">Good</div>
-                                    </div>
-                                 </div>
-                                 <div class="col-6 col-md-3">
-                                    <div class="each_tag_info">
-                                       <div class="circale"></div>
-                                       <div class="tag_count">410</div>
-                                       <div class="tag_name">Agerage</div>
-                                    </div>
-                                 </div>
-                                 <div class="col-6 col-md-3">
-                                    <div class="each_tag_info">
-                                       <div class="circale"></div>
-                                       <div class="tag_count">210</div>
-                                       <div class="tag_name">not good</div>
-                                    </div>
-                                 </div>
-                                 <div class="col-6 col-md-3">
-                                    <div class="each_tag_info">
-                                       <div class="circale"></div>
-                                       <div class="tag_count">110</div>
-                                       <div class="tag_name">Nice</div>
-                                    </div>
-                                 </div>
-                                 <div class="col-6 col-md-3">
-                                    <div class="each_tag_info">
-                                       <div class="circale"></div>
-                                       <div class="tag_count">410</div>
-                                       <div class="tag_name">Agerage</div>
-                                    </div>
-                                 </div>
-                                 <div class="col-6 col-md-3">
-                                    <div class="each_tag_info">
-                                       <div class="circale"></div>
-                                       <div class="tag_count">210</div>
-                                       <div class="tag_name">not good</div>
-                                    </div>
-                                 </div>
-                                 <div class="col-6 col-md-3">
-                                    <div class="each_tag_info">
-                                       <div class="circale"></div>
-                                       <div class="tag_count">110</div>
-                                       <div class="tag_name">Nice</div>
-                                    </div>
-                                 </div>
+                                 <% }) %>
                               </div>
+                              <% }else{ %>
+                                 <p>No tags found</p>
+                              <% } %>
                            </div>
                         </div>
                      </div>
@@ -242,17 +108,21 @@
                <div class="analytics_data analytics_data_row3">
                   <div class="row">
                      <div class="col-lg-6">
-                        <h4 class="sec_heading">Viewer use device</h4>
+                        <div class="d-flex align-items-center justify-content-start mb-3">
+                           <h4 class="sec_heading mb-0">Viewer use device</h4><img style="margin-left: 5px;" src="/front-end/images/coming-soon.png" alt="image" />
+                        </div>
                         <div id="chartContainerByDevice" style="height: 370px; width: 100%;"></div>
                      </div>
                      <div class="col-lg-6">
-                        <h4 class="sec_heading">Visited by age category</h4>
+                        <div class="d-flex align-items-center justify-content-start mb-3">
+                           <h4 class="sec_heading mb-0">Visited by age category</h4><img style="margin-left: 5px;" src="/front-end/images/coming-soon.png" alt="image" />
+                        </div>
                         <div id="ageChartContainer" style="width: 100%; height: 360px"></div>
                      </div>
                   </div>
                </div>
 
-               <div class="analytics_data analytics_data_row4">
+               <!-- <div class="analytics_data analytics_data_row4">
                   <div class="select_box_and_btn">
                      <div class="select_location">
                         <label>Select locations</label>
@@ -273,71 +143,115 @@
                         <div class="col-lg-4">
                            <div class="total_reviews">
                               <p>Total Reviews</p>
-                              <div class="count">405</div>
+                              <div class="count"><%- company_total_review -%></div>
                            </div>
                         </div>
                         <div class="col-lg-4">
                            <div class="total_reviews total_replied">
                               <p>Total Replied</p>
-                              <div class="count">200</div>
+                              <div class="count">0</div>
                            </div>
                         </div>
                         <div class="col-lg-4">
                            <div class="positive_reviews">
                               <h4>positive reviews</h4>
-                              <div class="count">125</div>
+                              <div class="count">00</div>
                            </div>
                            <div class="negative_reviews">
                               <h4>negative reviews</h4>
-                              <div class="count">125</div>
+                              <div class="count">00</div>
                            </div>
                         </div>
                      </div>
                   </div>
-               </div>
-
+               </div> -->
+               <% if (finalCompanyallReviews.length > 0) { %>
                <div class="company_dashboard_all_reviews_slider">
                   <div class="review-slider">   
+                     <% finalCompanyallReviews.forEach( review => { %>
                      <div class="item">
                         <div class="review-box">
-                           <h3>Reliance Industries</h3>
+                           <div class="head_box d-flex align-items-center justify-content-between mb-2">
+                             <h3 style="margin:0"><a href="/company/<%= review.company_id %>"><%= company && company.company_name ? company.company_name : '' %></a></h3>
+                             <% var avg = review.rating %>
+                             <div class="user-rating">
+                               <% allRatingTags.forEach( tag => { %>
+                                   <% if(tag.review_rating_value == avg){ %>
+                                     <span><img src="/<%= tag.rating_image %>" alt="" style="display: inline-block;" width="35"></span>
+                                   <% } %>
+                                   <% }) %> 
+                               <span><%= review.rating %>/5</span>
+                             </div>
+                           </div>
+                           <% if(review.address){ %>
                            <div class="user-info-panel">
                               <span><i class="fa-solid fa-location-dot"></i></span>
                               <p class="m-0">
                                  <strong>Location</strong><br>
-                                 2/6 Sree Colony 
+                                 <%- review.address -%> 
                               </p>
                            </div>
+                           <% } %>
+                           <% if(review.review_title){ %>
                            <div class="user-info-panel">
                               <span><i class="fa-solid fa-box"></i></span>
                               <p class="m-0">
                                  <strong>Product/division</strong><br>
-                                 Test
+                                 <%- review.review_title -%> 
                               </p>
                            </div>
+                           <% } %>
                            <div class="user-review-text">
-                              <span class="user-select-tag">Decent</span>
-                              <span class="user-select-tag">Middle of the road</span>
+                              <% review.Tags.forEach(tag => { %>
+                              <span class="user-select-tag"><%= tag.tag_name %></span>
+                              <% }); %>
+                              <% var review_content = review.review_content
+                                 const review_content_words = review_content.split(' ');
+                              %>
                               <div class="review-description-wrap">
-                                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum eu metus eget...
-                                    <div class="review-full-description">
-                                       Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum eu metus eget. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                    </div>
-                                    <a href="" class="read-review">View More</a>
+                                 <% if(review_content_words.length <= 35){%>
+                                 <%- review_content -%>
+                                 <% }else{
+                                    const firstPart = review_content_words.slice(0, 35).join(' ');
+                                    const secondPart = review_content_words.slice(35).join(' ');
+                                 %>
+                                    <%- firstPart -%> ...
+                                 <div class="review-full-description">
+                                    <%- secondPart -%>
+                                 </div>
+                                 <a href="" class="read-review">View More</a>
+                                 <% }%>
                               </div>
                            </div>
                            <div class="user-bio_rating">
                               <div class="user-profile-info">
                                  <div class="user-name-show position-relative">
-                                    <span><img src="/1692354088064-feature-man2.png" alt="img" width="20px"></span>
-                                    <span>Vivek Roy</span>
+                                 <% if(review.user_privacy == '1'){ %>
+                                    <% if(review.profile_pic != null){ %>
+                                    <span><img src="/<%- review.profile_pic -%>" alt="<%- review.first_name+' '+review.last_name -%>" width="20px"></span>
+                                    <% }else{ %>
+                                    <span><img src="/assets/media/avatars/blank.png" alt="<%- review.first_name+' '+review.last_name -%>" width="20px"></span>
+                                    <% } %>   
+                                    <span><%- review.first_name+' '+review.last_name -%> </span>
+                                 <% }else{ %>
+                                    <span><img src="/front-end/images/blur-img.png" alt="img" width="20px"></span>
+                                    <span><img src="/front-end/images/blur-name.png" alt="img"></span>
+                                 <% } %>
                                  </div>
-                                 <div class="user-review-date">August 10, 2023</div>
+                                 <% const dateString = review.created_at; %>
+                                 <% const date = new Date(dateString); %>
+                                 <div class="user-review-date"><%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></div>
                               </div>
-                              <div class="user-rating">
-                                 <span><img src="/1691875935385-8.Awesome.gif" alt="" style="display: inline-block;" width="35"></span>
-                                 <span>3.5/5</span>
-                              </div>
+                              <!-- <div class="user-rating">
+                                 <span>
+                                    <% allRatingTags.forEach( tag => { %>
+                                       <% if(tag.review_rating_value == review.rating){ %>
+                                          <img src="/<%= tag.rating_image %>" alt="img-gif-<%- review.rating -%>" style="display: inline-block;" width="35">
+                                       <% } %>
+                                    <% }) %>
+                                 </span>
+                                 <span><%= review.rating %>/5</span>
+                              </div> -->
                            </div>
                            <!-- <div class="review-like-dislike">
                               <span><a href=""><i class="fa-solid fa-thumbs-up"></i> 10</a></span>
@@ -345,149 +259,10 @@
                               </div> -->
                         </div>
                      </div>
-                     <div class="item">
-                        <div class="review-box">
-                           <h3>Reliance Industries</h3>
-                           <div class="user-info-panel">
-                              <span><i class="fa-solid fa-location-dot"></i></span>
-                              <p class="m-0">
-                                 <strong>Location</strong><br>
-                                 2/6 Sree Colony 
-                              </p>
-                           </div>
-                           <div class="user-info-panel">
-                              <span><i class="fa-solid fa-box"></i></span>
-                              <p class="m-0">
-                                 <strong>Product/division</strong><br>
-                                 Test
-                              </p>
-                           </div>
-                           <div class="user-review-text">
-                              <span class="user-select-tag">Decent</span>
-                              <span class="user-select-tag">Middle of the road</span>
-                              <div class="review-description-wrap">
-                                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum eu metus eget...
-                                    <div class="review-full-description">
-                                       Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum eu metus eget. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                    </div>
-                                    <a href="" class="read-review">View More</a>
-                              </div>
-                           </div>
-                           <div class="user-bio_rating">
-                              <div class="user-profile-info">
-                                 <div class="user-name-show position-relative">
-                                    <span><img src="/1692354088064-feature-man2.png" alt="img" width="20px"></span>
-                                    <span>Vivek Roy</span>
-                                 </div>
-                                 <div class="user-review-date">August 10, 2023</div>
-                              </div>
-                              <div class="user-rating">
-                                 <span><img src="/1691875935385-8.Awesome.gif" alt="" style="display: inline-block;" width="35"></span>
-                                 <span>3.5/5</span>
-                              </div>
-                           </div>
-                           <!-- <div class="review-like-dislike">
-                              <span><a href=""><i class="fa-solid fa-thumbs-up"></i> 10</a></span>
-                              <span><a href=""><i class="fa-solid fa-thumbs-down"></i> 8</a></span>
-                              </div> -->
-                        </div>
-                     </div>
-                     <div class="item">
-                        <div class="review-box">
-                           <h3>Reliance Industries</h3>
-                           <div class="user-info-panel">
-                              <span><i class="fa-solid fa-location-dot"></i></span>
-                              <p class="m-0">
-                                 <strong>Location</strong><br>
-                                 2/6 Sree Colony 
-                              </p>
-                           </div>
-                           <div class="user-info-panel">
-                              <span><i class="fa-solid fa-box"></i></span>
-                              <p class="m-0">
-                                 <strong>Product/division</strong><br>
-                                 Test
-                              </p>
-                           </div>
-                           <div class="user-review-text">
-                              <span class="user-select-tag">Decent</span>
-                              <span class="user-select-tag">Middle of the road</span>
-                              <div class="review-description-wrap">
-                                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum eu metus eget...
-                                    <div class="review-full-description">
-                                       Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum eu metus eget. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                    </div>
-                                    <a href="" class="read-review">View More</a>
-                              </div>
-                           </div>
-                           <div class="user-bio_rating">
-                              <div class="user-profile-info">
-                                 <div class="user-name-show position-relative">
-                                    <span><img src="/1692354088064-feature-man2.png" alt="img" width="20px"></span>
-                                    <span>Vivek Roy</span>
-                                 </div>
-                                 <div class="user-review-date">August 10, 2023</div>
-                              </div>
-                              <div class="user-rating">
-                                 <span><img src="/1691875935385-8.Awesome.gif" alt="" style="display: inline-block;" width="35"></span>
-                                 <span>3.5/5</span>
-                              </div>
-                           </div>
-                           <!-- <div class="review-like-dislike">
-                              <span><a href=""><i class="fa-solid fa-thumbs-up"></i> 10</a></span>
-                              <span><a href=""><i class="fa-solid fa-thumbs-down"></i> 8</a></span>
-                              </div> -->
-                        </div>
-                     </div>
-                     <div class="item">
-                        <div class="review-box">
-                           <h3>Reliance Industries</h3>
-                           <div class="user-info-panel">
-                              <span><i class="fa-solid fa-location-dot"></i></span>
-                              <p class="m-0">
-                                 <strong>Location</strong><br>
-                                 2/6 Sree Colony 
-                              </p>
-                           </div>
-                           <div class="user-info-panel">
-                              <span><i class="fa-solid fa-box"></i></span>
-                              <p class="m-0">
-                                 <strong>Product/division</strong><br>
-                                 Test
-                              </p>
-                           </div>
-                           <div class="user-review-text">
-                              <span class="user-select-tag">Decent</span>
-                              <span class="user-select-tag">Middle of the road</span>
-                              <div class="review-description-wrap">
-                                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum eu metus eget...
-                                    <div class="review-full-description">
-                                       Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum eu metus eget. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                    </div>
-                                    <a href="" class="read-review">View More</a>
-                              </div>
-                           </div>
-                           <div class="user-bio_rating">
-                              <div class="user-profile-info">
-                                 <div class="user-name-show position-relative">
-                                    <span><img src="/1692354088064-feature-man2.png" alt="img" width="20px"></span>
-                                    <span>Vivek Roy</span>
-                                 </div>
-                                 <div class="user-review-date">August 10, 2023</div>
-                              </div>
-                              <div class="user-rating">
-                                 <span><img src="/1691875935385-8.Awesome.gif" alt="" style="display: inline-block;" width="35"></span>
-                                 <span>3.5/5</span>
-                              </div>
-                           </div>
-                           <!-- <div class="review-like-dislike">
-                              <span><a href=""><i class="fa-solid fa-thumbs-up"></i> 10</a></span>
-                              <span><a href=""><i class="fa-solid fa-thumbs-down"></i> 8</a></span>
-                              </div> -->
-                        </div>
-                     </div>
+                     <% }) %>
                   </div>
                </div>
+               <% } %>
 
                <div class="analytics_data analytics_data_row6">
                   <div class="row align-items-center">
@@ -498,9 +273,11 @@
                      </div>
                      <div class="col-md-6">
                         <div class="map_content">
-                           <h4>Hover on state to see top reviews</h4>
-                           <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum.</p>
-                           <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum.</p>
+                           <div class="d-flex align-items-center justify-content-start mb-3">
+                              <h4 class=" mb-0">State Wise Review Distribution</h4><img style="margin-left: 5px;" src="/front-end/images/coming-soon.png" alt="image" />
+                           </div>
+                           <!-- <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum.</p>
+                           <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed aliquam nulla, condimentum interdum lacus. Nullam erat diam, fermentum.</p> -->
                         </div>
                      </div>
                   </div>
@@ -517,6 +294,23 @@
          <script src="https://www.amcharts.com/lib/4/themes/animated.js"></script>
          <script>
             window.onload = function () {
+
+               var dataPoints =  [
+                        { y: <%= reviewReatingChartArray[0].y %>, name: "<%= allRatingTags[0].review_rating_name %>", color: "red" },
+                        { y: <%= reviewReatingChartArray[1].y %>, name: "<%= allRatingTags[1].review_rating_name %>", color: "#fc3003" },
+                        { y: <%= reviewReatingChartArray[2].y %>, name: "<%= allRatingTags[2].review_rating_name %>", color: "#fc5603" },
+                        { y: <%= reviewReatingChartArray[3].y %>, name: "<%= allRatingTags[3].review_rating_name %>", color: "#fc9003" },
+                        { y: <%= reviewReatingChartArray[4].y %>, name: "<%= allRatingTags[4].review_rating_name %>", color: "#fcb503" },
+                        { y: <%= reviewReatingChartArray[5].y %>, name: "<%= allRatingTags[5].review_rating_name %>", color: "#e3fc03" },
+                        { y: <%= reviewReatingChartArray[6].y %>, name: "<%= allRatingTags[6].review_rating_name %>", color: "#bafc03" },
+                        { y: <%= reviewReatingChartArray[7].y %>, name: "<%= allRatingTags[7].review_rating_name %>", color: "#a1fc03" },
+                        { y: <%= reviewReatingChartArray[8].y %>, name: "<%= allRatingTags[8].review_rating_name %>", color: "#80fc03" },
+                        { y: <%= reviewReatingChartArray[9].y %>, name: "<%= allRatingTags[9].review_rating_name %>", color: "#03fc2c" },
+                     ];
+
+               var filteredDataPoints = dataPoints.filter(function(dataPoint) {
+                  return dataPoint.y !== 0;
+               });
 
                var chart = new CanvasJS.Chart("chartContainer", {
                   exportEnabled: false,
@@ -537,18 +331,7 @@
                      indexLabelFontColor: "black",
                      indexLabelFontSize: 13,
                      indexLabelFontWeight: "bold",
-                     dataPoints: [
-                        { y: 10, name: "Disappointing", color: "red" },
-                        { y: 10, name: "Dissatisfied", color: "#fc3003" },
-                        { y: 10, name: "Unsatisfactory", color: "#fc5603" },
-                        { y: 10, name: "inadequate", color: "#fc9003" },
-                        { y: 10, name: "Moderate", color: "#fcb503" },
-                        { y: 10, name: "Acceptable", color: "#e3fc03" },
-                        { y: 10, name: "Satisfactory", color: "#bafc03" },
-                        { y: 10, name: "Good", color: "#a1fc03" },
-                        { y: 10, name: "Impressive", color: "#80fc03" },
-                        { y: 10, name: "Excellent", color: "#03fc2c" },
-                     ]
+                     dataPoints: filteredDataPoints
                   }]
                });
                chart.render();
@@ -574,16 +357,9 @@
                      indexLabelFontSize: 16,
                      indexLabelPlacement: "outside",
                      dataPoints: [
-                        { x: 0.5, y: 71, color: '#F8A401' },
-                        { x: 1, y: 55, color: '#F8A401' },
-                        { x: 1.5, y: 50, color: '#F8A401' },
-                        { x: 2, y: 65, color: '#F8A401' },
-                        { x: 2.5, y: 70, color: '#F8A401' },
-                        { x: 3, y: 68, color: '#F8A401' },
-                        { x: 3.5, y: 38, color: '#F8A401' },
-                        { x: 4, y: 99, color: '#F8A401' },
-                        { x: 4.5, y: 54, color: '#F8A401' },
-                        { x: 5, y: 60, color: '#F8A401' },
+                        <% reviewReatingChartArray.forEach((item, index) => { %>
+                        { x: <%= item.x %>, y: <%= item.y %>, color: '#F8A401' },
+                        <% }) %>
                      ]
                   }]
                });

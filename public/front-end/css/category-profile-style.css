@@ -206,9 +206,9 @@
     background-color: #FCCB06;
 }
 
-.customer-review-wrap {
+/* .customer-review-wrap {
     display: none;
-}
+} */
 
 .customer-review-wrap +  .customer-review-wrap,
 .btn-border-top {

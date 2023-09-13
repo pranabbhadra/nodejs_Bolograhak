@@ -166,11 +166,12 @@ function getReviewedCompanies(userId) {
 function getAllCompaniesReviews(userId) {
   return new Promise((resolve, reject) => {
     const reviewed_companies_query = `
-            SELECT reviews.id, reviews.company_id, reviews.customer_id, reviews.company_location, reviews.review_title,
-             reviews.review_content, reviews.rating, reviews.created_at, c.company_name as company_name, c.logo as logo
-            FROM  reviews 
-            JOIN company c ON reviews.company_id = c.ID
-            WHERE reviews.customer_id = ?
+            SELECT r.*, c.company_name as company_name, c.logo as logo, COUNT(review_reply.id) as review_reply_count
+            FROM  reviews r
+            JOIN company c ON r.company_id = c.ID
+            LEFT JOIN review_reply ON review_reply.review_id = r.id
+            WHERE r.customer_id = ?
+            GROUP BY r.id
             ORDER BY updated_at DESC
         `;
     db.query(reviewed_companies_query, [userId], (err, result) => {
@@ -204,13 +205,15 @@ function getAllReviewTags() {
 async function getlatestReviews(reviewCount){
   const get_latest_review_query = `
     SELECT r.*, c.company_name, c.logo, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, 
-    u.last_name, u.user_id, u.user_status, ucm.profile_pic
+    u.last_name, u.user_id, u.user_status, ucm.profile_pic, COUNT(review_reply.id) as review_reply_count
       FROM reviews r
       LEFT JOIN company c ON r.company_id = c.ID 
       LEFT JOIN company_location cl ON r.company_location_id = cl.ID 
       LEFT JOIN users u ON r.customer_id = u.user_id 
       LEFT JOIN user_customer_meta ucm ON ucm.user_id = u.user_id 
+      LEFT JOIN review_reply ON review_reply.review_id = r.id
       WHERE r.review_status = "1" AND c.status = "1" 
+      GROUP BY r.id
       ORDER BY r.created_at DESC
       LIMIT ${reviewCount};
   `;
@@ -232,13 +235,15 @@ async function getlatestReviews(reviewCount){
 async function getAllTrendingReviews(){
   const get_latest_review_query = `
     SELECT r.*, c.company_name, c.logo, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, 
-    u.last_name, u.user_id, u.user_status, ucm.profile_pic
+    u.last_name, u.user_id, u.user_status, ucm.profile_pic, COUNT(review_reply.id) as review_reply_count
       FROM reviews r
       LEFT JOIN company c ON r.company_id = c.ID 
       LEFT JOIN company_location cl ON r.company_location_id = cl.ID 
       LEFT JOIN users u ON r.customer_id = u.user_id 
       LEFT JOIN user_customer_meta ucm ON ucm.user_id = u.user_id 
+      LEFT JOIN review_reply ON review_reply.review_id = r.id
       WHERE r.review_status = "1" AND c.status = "1" AND c.trending = "1"
+      GROUP BY r.id
       ORDER BY r.created_at DESC
   `;
   try{
@@ -259,13 +264,15 @@ async function getAllTrendingReviews(){
 async function getAllReviews(){
   const get_latest_review_query = `
     SELECT r.*, c.company_name, c.logo, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, 
-    u.last_name, u.user_id, u.user_status, ucm.profile_pic
+    u.last_name, u.user_id, u.user_status, ucm.profile_pic, COUNT(review_reply.id) as review_reply_count
       FROM reviews r
       LEFT JOIN company c ON r.company_id = c.ID 
       LEFT JOIN company_location cl ON r.company_location_id = cl.ID 
       LEFT JOIN users u ON r.customer_id = u.user_id 
       LEFT JOIN user_customer_meta ucm ON ucm.user_id = u.user_id 
+      LEFT JOIN review_reply ON review_reply.review_id = r.id
       WHERE r.review_status = "1" AND c.status = "1"
+      GROUP BY r.id
       ORDER BY r.created_at DESC
   `;
   try{
@@ -313,10 +320,12 @@ async function reviewApprovedEmail(req) {
   //console.log(req);
 
   const sql = `
-    SELECT r.created_at, r.company_id, c.company_name, u.first_name, u.email 
+    SELECT r.created_at, r.company_id, c.company_name, u.first_name, u.email, claimed_user.email claimed_user_email, claimed_user.first_name claimed_user_name
     FROM reviews r
     LEFT JOIN company c ON r.company_id = c.ID 
     LEFT JOIN users u ON r.customer_id = u.user_id 
+    LEFT JOIN company_claim_request ccr ON ccr.company_id = c.ID 
+    LEFT JOIN users claimed_user ON ccr.claimed_by = claimed_user.user_id 
     WHERE r.review_status = "1" AND r.id = "${req.review_id}"
 `;
 
@@ -426,7 +435,7 @@ async function reviewApprovedEmail(req) {
       </table>
      </div>`
     }
-      mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
+      await mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
         if (err) {
             console.log(err);
             return res.send({
@@ -441,12 +450,128 @@ async function reviewApprovedEmail(req) {
             });
         }
       })
+    
+      if(approveReviewData[0].claimed_user_email != null){
+        var claimed_user_mail = {
+          from: process.env.MAIL_USER,
+          //to: 'pranab@scwebtech.com',
+          to: approveReviewData[0].claimed_user_email,
+          subject: 'Add a new review',
+          html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
+          <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
+           <tbody>
+            <tr>
+             <td align="center" valign="top">
+               <div id="template_header_image"><p style="margin-top: 0;"></p></div>
+               <table id="template_container" style="box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; background-color: #fdfdfd; border: 1px solid #dcdcdc; border-radius: 3px !important;" border="0" cellpadding="0" cellspacing="0" width="600">
+                <tbody>
+                  <tr>
+                   <td align="center" valign="top">
+                     <!-- Header -->
+                     <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
+                       <tbody>
+                         <tr>
+                         <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
+                          <td id="header_wrapper" style="padding: 36px 48px; display: block;">
+                             <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Review received</h1>
+                          </td>
+    
+                         </tr>
+                       </tbody>
+                     </table>
+               <!-- End Header -->
+               </td>
+                  </tr>
+                  <tr>
+                   <td align="center" valign="top">
+                     <!-- Body -->
+                     <table id="template_body" border="0" cellpadding="0" cellspacing="0" width="600">
+                       <tbody>
+                         <tr>
+                          <td id="body_content" style="background-color: #fdfdfd;" valign="top">
+                            <!-- Content -->
+                            <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                             <tbody>
+                              <tr>
+                               <td style="padding: 48px;" valign="top">
+                                 <div id="body_content_inner" style="color: #737373; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
+                                  
+                                  <table border="0" cellpadding="4" cellspacing="0" width="90%">
+                                    <tr>
+                                      <td colspan="2">
+                                      <strong>Hello ${approveReviewData[0].claimed_user_name},</strong>
+                                      <p style="font-size:15px; line-height:20px">A user reviewed on your organization <i><b>"on ${reviewDate}"</b></i>. Now you can see this review on the <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a> website.</p>
+                                      </td>
+                                    </tr>
+                                  </table>
+                                  
+                                 </div>
+                               </td>
+                              </tr>
+                             </tbody>
+                            </table>
+                          <!-- End Content -->
+                          </td>
+                         </tr>
+                       </tbody>
+                     </table>
+                   <!-- End Body -->
+                   </td>
+                  </tr>
+                  <tr>
+                   <td align="center" valign="top">
+                     <!-- Footer -->
+                     <table id="template_footer" border="0" cellpadding="10" cellspacing="0" width="600">
+                      <tbody>
+                       <tr>
+                        <td style="padding: 0; -webkit-border-radius: 6px;" valign="top">
+                         <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                           <tbody>
+                             <tr>
+                              <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
+                                   <p>This email was sent from <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a></p>
+                              </td>
+                             </tr>
+                           </tbody>
+                         </table>
+                        </td>
+                       </tr>
+                      </tbody>
+                     </table>
+                   <!-- End Footer -->
+                   </td>
+                  </tr>
+                </tbody>
+               </table>
+             </td>
+            </tr>
+           </tbody>
+          </table>
+         </div>`
+        }
+          await mdlconfig.transporter.sendMail(claimed_user_mail, function (err, info) {
+            if (err) {
+                console.log(err);
+                return res.send({
+                    status: 'not ok',
+                    message: 'Something went wrong'
+                });
+            } else {
+                console.log('Mail Send: ', info.response);
+                // return res.send({
+                //     status: 'ok',
+                //     message: 'Review Approve'
+                // });
+            }
+          })
+      }
+    
   }
  
     return true;
 }
 
-//Function to send mail to client after approve
+//Function to send mail to client after reject
 async function reviewRejectdEmail(req) {
   const sql = `
     SELECT r.created_at,r.rejecting_reason, c.company_name, u.first_name, u.email 
@@ -587,8 +712,279 @@ async function reviewRejectdEmail(req) {
     return true;
 }
 
+//Function to fetch Premium company details Values from the  premium_company_data table
+async function getPremiumCompanyData(companyId) {
+  const sql = `SELECT * FROM premium_company_data where company_id = '${companyId}' `;
+  const PremiumCompanyData = await query(sql);
 
+  //console.log('PremiumCompanyData',PremiumCompanyData[0])
+  return PremiumCompanyData[0];
+}
 
+//Function to fetch User Name from the  users table
+async function getUserName(email){
+  const sql = `SELECT user_id, first_name  FROM users WHERE email = '${email}' `;
+  const get_user_name = await query(sql);
+    if(get_user_name.length > 0 ){
+      return get_latest_review_results;
+    }else{
+      return [];
+    }
+ }
+
+ //Function to fetch User email from the  users, review_reply table
+async function ReviewReplyTo(Id){
+  const sql = `SELECT users.email, users.first_name, c.company_name, c.ID as company_id, r.customer_id
+              FROM users 
+              LEFT JOIN review_reply rr ON rr.reply_to = users.user_id 
+              LEFT JOIN reviews r ON r.id = rr.review_id 
+              LEFT JOIN company c ON r.company_id = c.ID 
+              WHERE rr.ID = '${Id}'  `;
+
+  const get_user_email = await query(sql);
+    if(get_user_email.length > 0 ){
+      return get_user_email;
+    }else{
+      return [];
+    }
+ }
+
+//Function to Send Reply To Company 
+function ReviewReplyToCompany(mailReplyData){
+  var mailOptions = {
+    from: process.env.MAIL_USER,
+    //to: 'pranab@scwebtech.com',
+    to: mailReplyData[0].email,
+    subject: 'Message Reply',
+    html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
+    <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
+     <tbody>
+      <tr>
+       <td align="center" valign="top">
+         <div id="template_header_image"><p style="margin-top: 0;"></p></div>
+         <table id="template_container" style="box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; background-color: #fdfdfd; border: 1px solid #dcdcdc; border-radius: 3px !important;" border="0" cellpadding="0" cellspacing="0" width="600">
+          <tbody>
+            <tr>
+             <td align="center" valign="top">
+               <!-- Header -->
+               <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
+                 <tbody>
+                   <tr>
+                   <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
+                    <td id="header_wrapper" style="padding: 36px 48px; display: block;">
+                       <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Message Reply</h1>
+                    </td>
+
+                   </tr>
+                 </tbody>
+               </table>
+         <!-- End Header -->
+         </td>
+            </tr>
+            <tr>
+             <td align="center" valign="top">
+               <!-- Body -->
+               <table id="template_body" border="0" cellpadding="0" cellspacing="0" width="600">
+                 <tbody>
+                   <tr>
+                    <td id="body_content" style="background-color: #fdfdfd;" valign="top">
+                      <!-- Content -->
+                      <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                       <tbody>
+                        <tr>
+                         <td style="padding: 48px;" valign="top">
+                           <div id="body_content_inner" style="color: #737373; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
+                            
+                            <table border="0" cellpadding="4" cellspacing="0" width="90%">
+                              <tr>
+                                <td colspan="2">
+                                <strong>Hello ${mailReplyData[0].first_name},</strong>
+                                <p style="font-size:15px; line-height:20px">You got a reply from the customer for your message. 
+                                <a  href="${process.env.MAIN_URL}company-review-listing/${mailReplyData[0].company_id}">Click here</a> to view.</p>
+                                </td>
+                              </tr>
+                            </table>
+                            
+                           </div>
+                         </td>
+                        </tr>
+                       </tbody>
+                      </table>
+                    <!-- End Content -->
+                    </td>
+                   </tr>
+                 </tbody>
+               </table>
+             <!-- End Body -->
+             </td>
+            </tr>
+            <tr>
+             <td align="center" valign="top">
+               <!-- Footer -->
+               <table id="template_footer" border="0" cellpadding="10" cellspacing="0" width="600">
+                <tbody>
+                 <tr>
+                  <td style="padding: 0; -webkit-border-radius: 6px;" valign="top">
+                   <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                     <tbody>
+                       <tr>
+                        <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
+                             <p>This email was sent from <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a></p>
+                        </td>
+                       </tr>
+                     </tbody>
+                   </table>
+                  </td>
+                 </tr>
+                </tbody>
+               </table>
+             <!-- End Footer -->
+             </td>
+            </tr>
+          </tbody>
+         </table>
+       </td>
+      </tr>
+     </tbody>
+    </table>
+   </div>`
+  }
+ mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
+      if (err) {
+          console.log(err);
+          return res.send({
+              status: 'not ok',
+              message: 'Something went wrong'
+          });
+      } else {
+          console.log('Mail Send: ', info.response);
+          
+      }
+  })
+ }
+ //Function to Send Reply To Customer 
+function ReviewReplyToCustomer(mailReplyData){
+  var mailOptions = {
+    from: process.env.MAIL_USER,
+    //to: 'pranab@scwebtech.com',
+    to: mailReplyData[0].email,
+    subject: 'Message Reply',
+    html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
+    <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
+     <tbody>
+      <tr>
+       <td align="center" valign="top">
+         <div id="template_header_image"><p style="margin-top: 0;"></p></div>
+         <table id="template_container" style="box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; background-color: #fdfdfd; border: 1px solid #dcdcdc; border-radius: 3px !important;" border="0" cellpadding="0" cellspacing="0" width="600">
+          <tbody>
+            <tr>
+             <td align="center" valign="top">
+               <!-- Header -->
+               <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
+                 <tbody>
+                   <tr>
+                   <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
+                    <td id="header_wrapper" style="padding: 36px 48px; display: block;">
+                       <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Message Reply</h1>
+                    </td>
+
+                   </tr>
+                 </tbody>
+               </table>
+         <!-- End Header -->
+         </td>
+            </tr>
+            <tr>
+             <td align="center" valign="top">
+               <!-- Body -->
+               <table id="template_body" border="0" cellpadding="0" cellspacing="0" width="600">
+                 <tbody>
+                   <tr>
+                    <td id="body_content" style="background-color: #fdfdfd;" valign="top">
+                      <!-- Content -->
+                      <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                       <tbody>
+                        <tr>
+                         <td style="padding: 48px;" valign="top">
+                           <div id="body_content_inner" style="color: #737373; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
+                            
+                            <table border="0" cellpadding="4" cellspacing="0" width="90%">
+                              <tr>
+                                <td colspan="2">
+                                <strong>Hello ${mailReplyData[0].first_name},</strong>
+                                <p style="font-size:15px; line-height:20px"><b>${mailReplyData[0].company_name}</b> has responded to your reviews, please visit <a  href="${process.env.MAIN_URL}company/${mailReplyData[0].company_id}">the link</a> to view response.
+                                </td>
+                              </tr>
+                            </table>
+                            
+                           </div>
+                         </td>
+                        </tr>
+                       </tbody>
+                      </table>
+                    <!-- End Content -->
+                    </td>
+                   </tr>
+                 </tbody>
+               </table>
+             <!-- End Body -->
+             </td>
+            </tr>
+            <tr>
+             <td align="center" valign="top">
+               <!-- Footer -->
+               <table id="template_footer" border="0" cellpadding="10" cellspacing="0" width="600">
+                <tbody>
+                 <tr>
+                  <td style="padding: 0; -webkit-border-radius: 6px;" valign="top">
+                   <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                     <tbody>
+                       <tr>
+                        <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
+                             <p>This email was sent from <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a></p>
+                        </td>
+                       </tr>
+                     </tbody>
+                   </table>
+                  </td>
+                 </tr>
+                </tbody>
+               </table>
+             <!-- End Footer -->
+             </td>
+            </tr>
+          </tbody>
+         </table>
+       </td>
+      </tr>
+     </tbody>
+    </table>
+   </div>`
+  }
+  mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
+      if (err) {
+          console.log(err);
+          return res.send({
+              status: 'not ok',
+              message: 'Something went wrong'
+          });
+      } else {
+          console.log('Mail Send: ', info.response);
+          
+      }
+  })
+ }
+
+ //Function to fetch User total replied from the  review_reply table
+async function TotalReplied(Id){
+  const sql = `SELECT COUNT(ID) AS totalReplied
+              FROM review_reply 
+              WHERE reply_by = '${Id}'  `;
+
+  const noOfReplied = await query(sql);
+  //console.log(noOfReplied[0])
+  return noOfReplied[0];
+ }
 
 
 module.exports = {
@@ -610,5 +1006,11 @@ module.exports = {
   getPageMetaValues,
   getPageInfo,
   reviewApprovedEmail,
-  reviewRejectdEmail
+  reviewRejectdEmail,
+  getPremiumCompanyData,
+  getUserName,
+  ReviewReplyTo,
+  TotalReplied,
+  ReviewReplyToCompany,
+  ReviewReplyToCustomer
 };

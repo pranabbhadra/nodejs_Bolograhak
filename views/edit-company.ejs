@@ -49,12 +49,12 @@
                             <!--begin::Col-->
                             <div class="col-lg-8">
                                 <!--begin::Image input-->
-                                <div class="image-input image-input-outline" data-kt-image-input="true" style="background-image: url(/assets/media/avatars/blank.png)">
+                                <div class="image-input image-input-outline" data-kt-image-input="true" style="background-image: url(/front-end/images/company-placeholder-image.png)">
                                     <!--begin::Preview existing avatar-->
                                     <% if(company && company.logo){ %>
                                     <div class="image-input-wrapper w-125px h-125px" style="background-image: url('/<%= company.logo %>')" ></div>
                                     <% }else{ %>
-                                    <div class="image-input-wrapper w-125px h-125px" style="background-image: url('/assets/media/avatars/blank.png')" ></div>
+                                    <div class="image-input-wrapper w-125px h-125px" style="background-image: url('/front-end/images/company-placeholder-image.png')" ></div>
                                     <% } %>
                                     <!--end::Preview existing avatar-->
                                     <!--begin::Label-->
@@ -339,7 +339,7 @@
                         </div>
                         <div class="row mb-6">
                             <!--begin::Label-->
-                            <label class="col-lg-4 col-form-label fw-bold fs-6">Climed User</label>
+                            <label class="col-lg-4 col-form-label fw-bold fs-6">Claimed User</label>
                             <!--end::Label-->
                             <!--begin::Col-->
                             <!--begin::Col-->
@@ -347,7 +347,7 @@
                                 <select id="claimed_by" name="claimed_by" aria-label="Select a User" data-control="select2" data-placeholder="Select a User..." class="form-select">
                                     <option value="">Select a User...</option>
                                     <% Allusers.forEach( user=> { %>
-                                    <option value="<%= user.user_id %>" <% if(user.user_id == company.claimed_by ){ %>selected <% } %> ><%= user.first_name+' '+user.last_name %> - <%= user.email %></option>
+                                    <option value="<%= user.user_id %>" <% if(user.user_id == company.claimed_by ){ %>selected <% } %> <% if(user.company_id != null && user.status == 1){ %>disabled <% } %> ><%= user.first_name+' '+user.last_name %> - <%= user.email %></option>
                                     <% }) %>
                                 </select>
                             </div>
@@ -390,13 +390,13 @@
                                     <!--begin::Option-->
                                     <label class="form-check form-check-inline form-check-solid me-5">
                                         <input class="form-check-input mt-1" name="payment_status" type="radio" value="free" <% if(company.paid_status == 'free'){ %>checked <% } %> />
-                                        <span class="fw-bold fs-6 badge badge-light-danger fw-bolder px-4 py-3">Free</span>
+                                        <span class="fw-bold fs-6 badge badge-light-danger fw-bolder px-4 py-3">Basic</span>
                                     </label>
                                     <!--end::Option-->
                                     <!--begin::Option-->
                                     <label class="form-check form-check-inline form-check-solid me-5">
                                         <input class="form-check-input mt-1" name="payment_status" type="radio" value="paid" <% if(company.paid_status == 'paid'){ %>checked <% } %> />
-                                        <span class="fw-bold fs-6 badge badge-light-success fw-bolder px-4 py-3">Paid</span>
+                                        <span class="fw-bold fs-6 badge badge-light-success fw-bolder px-4 py-3">Premium</span>
                                     </label>
                                     <!--end::Option-->
                                     <!--end::Option-->
@@ -482,6 +482,7 @@
 <!--end::Content-->
 <%- include('common/footer') -%>
 <script> 
+//$("input[name='verified']").prop("disabled", true);
 $('#select_country').change(function() {
     $('#select_state').empty();
     $("#select_state").prop('required',false);
@@ -676,4 +677,15 @@ KTUtil.onDOMContentLoaded(function() {
 /******/ })()
 ;
 //# sourceMappingURL=profile-details.js.map    
+
+//-------Climed User on select Verified status auto change --------//
+$('#claimed_by').on('change', function (e) {
+    var claimed_user_id = this.value;
+    if(claimed_user_id){
+        var verified_value = '1';
+        var payment_status_value = 'free';
+        $("input[name=verified][value=" + verified_value + "]").prop('checked', true);
+        $("input[name=payment_status][value=" + payment_status_value + "]").prop('checked', true);
+    }
+});
 </script>

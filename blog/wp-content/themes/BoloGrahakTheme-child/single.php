@@ -22,7 +22,7 @@ get_header(); ?>
 			<div class="left-inner-head">
 				<div class="bread-crumb">
 					<ul>
-						<li><a href="https://bolograhak.com/">Home</a></li>
+						<li><a href="<?php echo MAIN_URL_BG; ?>">Home</a></li>
 						<li><a href="<?php echo site_url(); ?>/"><?php echo get_the_title(10); ?></a></li>
 						<li><?php the_title(); ?></li>
 					</ul>

@@ -12,7 +12,7 @@ const useragent = require('useragent');
 const requestIp = require('request-ip');
 const FacebookStrategy = require('passport-facebook').Strategy;
 const querystring = require('querystring');
-
+const bodyParser = require('body-parser');
 const comFunction = require('./common_function');
 
 dotenv.config({ path: './.env' });
@@ -152,7 +152,7 @@ app.get('/facebook-user-data', async (req, res) => {
     const user = req.user;
     //res.json(user);
     try {
-        const UserResponse = await comFunction.saveUserFacebookLoginDataToDB(user); // Replace 'saveUserDataToDatabase' with your custom function
+        const UserResponse = await comFunction.saveUserFacebookLoginDataToDB(user);
         console.log('aaaa',UserResponse);
 
         if(UserResponse.status == 1){
@@ -173,9 +173,10 @@ app.get('/facebook-user-data', async (req, res) => {
 });
 
 // Define Routes
+app.use('/authentication', require('./routes/authentication'));
 app.use('/', require('./routes/pages'));
 app.use('/auth', require('./routes/auth'));
 app.use('/api', require('./routes/api'));
 
 
-app.listen(5000);
+app.listen(2000);

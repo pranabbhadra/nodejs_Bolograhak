@@ -15,6 +15,7 @@ const bodyParser = require('body-parser');
 const querystring = require('querystring');
 const app = express();
 const path = require('path');
+const crypto = require('crypto');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -31,7 +32,17 @@ const secretKey = 'grahak-secret-key';
 const comFunction = require('../common_function');
 const comFunction2 = require('../common_function2');
 const axios = require('axios');
-//const cookieParser = require('cookie-parser');
+
+const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: process.env.DESIRED_TIMEZONE,
+    hour12: true, // Set to true or false based on your preference
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric'
+  });
 
 
 //-- Register Function--//
@@ -80,11 +91,12 @@ exports.register = (req, res) => {
 
         const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
-        db.query('INSERT INTO users SET ?', { first_name: first_name, last_name: last_name, email: email, phone: phone, password: hasPassword, user_registered: formattedDate, user_status: 1, user_type_id: 2 }, (err, results) => {
+         db.query('INSERT INTO users SET ?', { first_name: first_name, last_name: last_name, email: email, phone: phone, password: hasPassword, user_registered: formattedDate, user_status: 1, user_type_id: 2 },  (err, results) => {
             if (err) {
                 // return res.render('sign-up', {
                 //     message: 'An error occurred while processing your request' + err
                 // })
+                
                 return res.send(
                     {
                         status: 'err',
@@ -96,6 +108,7 @@ exports.register = (req, res) => {
                 //console.log(results,'User Table');
                 //-- Insert User data to meta table--------//
                 db.query('INSERT INTO user_customer_meta SET ?', { user_id: results.insertId, address: '', country: '', state: '', city: '', zip: '', review_count: 0, date_of_birth: '', occupation: '', gender: '', profile_pic: '' }, (err, results) => {
+
                     return res.send(
                         {
                             status: 'ok',
@@ -111,7 +124,7 @@ exports.register = (req, res) => {
 
 //-- Frontend User Register Function--//
 exports.frontendUserRegister = async (req, res) => {
-    //console.log(req.body);
+    console.log(req.body);
 
     const { first_name, last_name, email, register_password, register_confirm_password } = req.body;
 
@@ -152,7 +165,7 @@ exports.frontendUserRegister = async (req, res) => {
         const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
         const userInsertQuery = 'INSERT INTO users (first_name, last_name, email, password, register_from, user_registered, user_status, user_type_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-        db.query(userInsertQuery, [first_name, last_name, email, hashedPassword, 'web', formattedDate, 1, 2], (err, userResults) => {
+        db.query(userInsertQuery, [first_name, last_name, email, hashedPassword, 'web', formattedDate, 1, 2], async (err, userResults) => {
             if (err) {
                 console.error('Error inserting user into "users" table:', err);
                 return res.send(
@@ -163,7 +176,118 @@ exports.frontendUserRegister = async (req, res) => {
                     }
                 )
             }
-
+            var mailOptions = {
+                from: process.env.MAIL_USER,
+                //to: 'pranab@scwebtech.com',
+                to: email,
+                subject: 'Welcome Email',
+                html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
+                <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
+                 <tbody>
+                  <tr>
+                   <td align="center" valign="top">
+                     <div id="template_header_image"><p style="margin-top: 0;"></p></div>
+                     <table id="template_container" style="box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; background-color: #fdfdfd; border: 1px solid #dcdcdc; border-radius: 3px !important;" border="0" cellpadding="0" cellspacing="0" width="600">
+                      <tbody>
+                        <tr>
+                         <td align="center" valign="top">
+                           <!-- Header -->
+                           <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
+                             <tbody>
+                               <tr>
+                               <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
+                                <td id="header_wrapper" style="padding: 36px 48px; display: block;">
+                                   <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Welcome Email</h1>
+                                </td>
+          
+                               </tr>
+                             </tbody>
+                           </table>
+                     <!-- End Header -->
+                     </td>
+                        </tr>
+                        <tr>
+                         <td align="center" valign="top">
+                           <!-- Body -->
+                           <table id="template_body" border="0" cellpadding="0" cellspacing="0" width="600">
+                             <tbody>
+                               <tr>
+                                <td id="body_content" style="background-color: #fdfdfd;" valign="top">
+                                  <!-- Content -->
+                                  <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                                   <tbody>
+                                    <tr>
+                                     <td style="padding: 48px;" valign="top">
+                                       <div id="body_content_inner" style="color: #737373; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
+                                        
+                                        <table border="0" cellpadding="4" cellspacing="0" width="90%">
+                                          <tr>
+                                            <td colspan="2">
+                                            <strong>Hello ${first_name},</strong>
+                                            <p style="font-size:15px; line-height:20px">Welcome to our <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a> family.</p>
+                                            </td>
+                                          </tr>
+                                        </table>
+                                        
+                                       </div>
+                                     </td>
+                                    </tr>
+                                   </tbody>
+                                  </table>
+                                <!-- End Content -->
+                                </td>
+                               </tr>
+                             </tbody>
+                           </table>
+                         <!-- End Body -->
+                         </td>
+                        </tr>
+                        <tr>
+                         <td align="center" valign="top">
+                           <!-- Footer -->
+                           <table id="template_footer" border="0" cellpadding="10" cellspacing="0" width="600">
+                            <tbody>
+                             <tr>
+                              <td style="padding: 0; -webkit-border-radius: 6px;" valign="top">
+                               <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                                 <tbody>
+                                   <tr>
+                                    <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
+                                         <p>This email was sent from <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a></p>
+                                    </td>
+                                   </tr>
+                                 </tbody>
+                               </table>
+                              </td>
+                             </tr>
+                            </tbody>
+                           </table>
+                         <!-- End Footer -->
+                         </td>
+                        </tr>
+                      </tbody>
+                     </table>
+                   </td>
+                  </tr>
+                 </tbody>
+                </table>
+               </div>`
+              }
+                await mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
+                  if (err) {
+                      console.log(err);
+                      return res.send({
+                          status: 'not ok',
+                          message: 'Something went wrong'
+                      });
+                  } else {
+                      console.log('Mail Send: ', info.response);
+                      return res.send({
+                          status: 'ok',
+                          message: ''
+                      });
+                  }
+                })
             // Insert the user into the "user_customer_meta" table
             const userMetaInsertQuery = 'INSERT INTO user_customer_meta (user_id, review_count) VALUES (?, ?)';
             db.query(userMetaInsertQuery, [userResults.insertId, 0], (err, metaResults) => {
@@ -236,6 +360,7 @@ exports.frontendUserRegister = async (req, res) => {
                                                     status: 'ok',
                                                     data: userData,
                                                     wp_user: wp_user_data,
+                                                    currentUrlPath: req.body.currentUrlPath,
                                                     message: 'Registration successful you are automatically login to your dashboard'
                                                 }
                                             )
@@ -252,6 +377,7 @@ exports.frontendUserRegister = async (req, res) => {
                                                     status: 'ok',
                                                     data: userData,
                                                     wp_user: wp_user_data,
+                                                    currentUrlPath: req.body.currentUrlPath,
                                                     message: 'Registration successful you are automatically login to your dashboard'
                                                 }
                                             )
@@ -326,8 +452,8 @@ exports.frontendUserLogin = (req, res) => {
                             const query = `
                                         SELECT user_meta.*, c.name as country_name, s.name as state_name, ccr.company_id as claimed_comp_id
                                         FROM user_customer_meta user_meta
-                                        JOIN countries c ON user_meta.country = c.id
-                                        JOIN states s ON user_meta.state = s.id
+                                        LEFT JOIN countries c ON user_meta.country = c.id
+                                        LEFT JOIN states s ON user_meta.state = s.id
                                         LEFT JOIN company_claim_request ccr ON user_meta.user_id = ccr.claimed_by
                                         WHERE user_id = ?
                                         `;
@@ -424,7 +550,8 @@ exports.frontendUserLogin = (req, res) => {
                                                             status: 'ok',
                                                             data: userData,
                                                             wp_user: wp_user_data,
-                                                            message: 'Login Successfull'
+                                                            currentUrlPath: req.body.currentUrlPath,
+                                                            message: 'Login Successful'
                                                         }
                                                     )
                                                 })
@@ -440,7 +567,8 @@ exports.frontendUserLogin = (req, res) => {
                                                             status: 'ok',
                                                             data: userData,
                                                             wp_user: wp_user_data,
-                                                            message: 'Login Successfull'
+                                                            currentUrlPath: req.body.currentUrlPath,
+                                                            message: 'Login Successful'
                                                         }
                                                     )
                                                 })
@@ -534,8 +662,8 @@ exports.login = (req, res) => {
                             const query = `
                                         SELECT user_meta.*, c.name as country_name, s.name as state_name, ccr.company_id as claimed_comp_id
                                         FROM user_customer_meta user_meta
-                                        JOIN countries c ON user_meta.country = c.id
-                                        JOIN states s ON user_meta.state = s.id
+                                        LEFT JOIN countries c ON user_meta.country = c.id
+                                        LEFT JOIN states s ON user_meta.state = s.id
                                         LEFT JOIN company_claim_request ccr ON user_meta.user_id = ccr.claimed_by
                                         WHERE user_id = ?
                                         `;
@@ -1104,6 +1232,28 @@ exports.editUserData = (req, res) => {
     });
 }
 
+//--- Delete User ----//
+exports.deleteUser = (req, res) => {
+    //console.log(req.body.companyid);
+    sql = `DELETE FROM users WHERE user_id = ?`;
+    const data = [req.body.userid];
+    db.query(sql, data, (err, result) => {
+        if (err) {
+            return res.send({
+                status: 'error',
+                message: 'Something went wrong'
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'User successfully deleted'
+            });
+        }
+
+    })
+
+}
+
 //--- Create New Company ----//
 exports.createCompany = (req, res) => {
     //console.log(req.body);
@@ -1123,9 +1273,9 @@ exports.createCompany = (req, res) => {
 
     var insert_values = [];
     if (req.file) {
-        insert_values = [currentUserData.user_id, req.body.company_name, req.body.heading, req.file.filename, req.body.about_company, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, req.body.status, req.body.trending, formattedDate, formattedDate, req.body.tollfree_number, req.body.main_address, req.body.main_address_pin_code, req.body.address_map_url, req.body.main_address_country, req.body.main_address_state, req.body.main_address_city, req.body.verified, req.body.payment_status];
+        insert_values = [currentUserData.user_id, req.body.company_name, req.body.heading, req.file.filename, req.body.about_company, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, req.body.status, req.body.trending, formattedDate, formattedDate, req.body.tollfree_number, req.body.main_address, req.body.main_address_pin_code, req.body.address_map_url, req.body.main_address_country, req.body.main_address_state, req.body.main_address_city, '0', 'free'];
     } else {
-        insert_values = [currentUserData.user_id, req.body.company_name, req.body.heading, '', req.body.about_company, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, req.body.status, req.body.trending, formattedDate, formattedDate, req.body.tollfree_number, req.body.main_address, req.body.main_address_pin_code, req.body.address_map_url, req.body.main_address_country, req.body.main_address_state, req.body.main_address_city, req.body.verified,req.body.payment_status];
+        insert_values = [currentUserData.user_id, req.body.company_name, req.body.heading, '', req.body.about_company, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, req.body.status, req.body.trending, formattedDate, formattedDate, req.body.tollfree_number, req.body.main_address, req.body.main_address_pin_code, req.body.address_map_url, req.body.main_address_country, req.body.main_address_state, req.body.main_address_city, '0', 'free'];
     }
 
     const insertQuery = 'INSERT INTO company (user_created_by, company_name, heading, logo, about_company, comp_phone, comp_email, comp_registration_id, status, trending, created_date, updated_date, tollfree_number, main_address, main_address_pin_code, address_map_url, main_address_country, main_address_state, main_address_city, verified, paid_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
@@ -1141,25 +1291,40 @@ exports.createCompany = (req, res) => {
         } else {
             const companyId = results.insertId;
             const categoryArray = Array.isArray(req.body.category) ? req.body.category : [req.body.category];
-            const companyCategoryData = categoryArray.map((categoryID) => [companyId, categoryID]);
-            db.query('INSERT INTO company_cactgory_relation (company_id, category_id) VALUES ?', [companyCategoryData], function (error, results) {
-                if (error) {
-                    console.log(error);
-                    res.status(400).json({
-                        status: 'err',
-                        message: 'Error while creating company category'
-                    });
-                }
-                else {
-                    return res.send(
-                        {
-                            status: 'ok',
-                            data: companyId,
-                            message: 'New company created'
-                        }
-                    )
-                }
-            });
+            
+            // Filter out undefined values from categoryArray
+            const validCategoryArray = categoryArray.filter(categoryID => categoryID !== undefined);
+
+            console.log('categoryArray:', categoryArray);
+            if (validCategoryArray.length > 0) {
+                const companyCategoryData = validCategoryArray.map((categoryID) => [companyId, categoryID]);
+                db.query('INSERT INTO company_cactgory_relation (company_id, category_id) VALUES ?', [companyCategoryData], function (error, results) {
+                    if (error) {
+                        console.log(error);
+                        res.status(400).json({
+                            status: 'err',
+                            message: 'Error while creating company category'
+                        });
+                    }
+                    else {
+                        return res.send(
+                            {
+                                status: 'ok',
+                                data: companyId,
+                                message: 'New company created'
+                            }
+                        )
+                    }
+                });
+            }else{
+                return res.send(
+                    {
+                        status: 'ok',
+                        data: companyId,
+                        message: 'New company created without any category.'
+                    }
+                )
+            }
         }
     })
 }
@@ -1261,7 +1426,7 @@ exports.editCompany = (req, res) => {
                     // Insert claim request if req.body.claimed_by exists
                     if (req.body.claimed_by) {
                         const checkClaimRequestQuery = 'SELECT * FROM company_claim_request WHERE company_id = ?';
-                        db.query(checkClaimRequestQuery, [companyID], (err, claimRequestResults) => {
+                        db.query(checkClaimRequestQuery, [companyID], async (err, claimRequestResults) => {
                             if (err) {
                                 // Handle the error
                                 return res.send({
@@ -1272,27 +1437,39 @@ exports.editCompany = (req, res) => {
                             }
                             
                             if (claimRequestResults.length > 0) {
-                                // Claim request already exists, handle accordingly
-                                const updateClaimRequestQuery = 'UPDATE company_claim_request SET claimed_by = ?, claimed_date = ? WHERE company_id = ?';
-                                const updateClaimRequestValues = [req.body.claimed_by, formattedDate, companyID];
 
-                                db.query(updateClaimRequestQuery, updateClaimRequestValues, (err) => {
-                                    if (err) {
-                                        // Handle the error
-                                        return res.send({
-                                            status: 'err',
-                                            data: '',
-                                            message: 'An error occurred while updating company claim request: ' + err
+                                console.log('checkClaimRequestQuery',claimRequestResults)
+                                const ReviewReplyByQuery = 'UPDATE review_reply SET reply_by = ? WHERE company_id = ? AND reply_by = ?';
+                                const ReviewReplyByData = [req.body.claimed_by,companyID,claimRequestResults[0].claimed_by]
+                                 db.query(ReviewReplyByQuery,ReviewReplyByData,(ReviewReplyByErr,ReviewReplyByResult)=>{
+                                    const ReviewReplyToQuery = 'UPDATE review_reply SET reply_to = ? WHERE company_id = ? AND reply_to = ?';
+                                    const ReviewReplyToData = [req.body.claimed_by,companyID,claimRequestResults[0].claimed_by]
+                                    db.query(ReviewReplyToQuery,ReviewReplyToData,(ReviewReplyToErr,ReviewReplyToResult)=>{
+                                        // Claim request already exists, handle accordingly
+                                        const updateClaimRequestQuery = 'UPDATE company_claim_request SET claimed_by = ?, claimed_date = ? WHERE company_id = ?';
+                                        const updateClaimRequestValues = [req.body.claimed_by, formattedDate, companyID];
+
+                                        db.query(updateClaimRequestQuery, updateClaimRequestValues, (err) => {
+                                            if (err) {
+                                                // Handle the error
+                                                return res.send({
+                                                    status: 'err',
+                                                    data: '',
+                                                    message: 'An error occurred while updating company claim request: ' + err
+                                                });
+                                            }
+
+                                            // Return success response
+                                            return res.send({
+                                                status: 'ok',
+                                                data: companyID,
+                                                message: 'Company details updated successfully'
+                                            });
                                         });
-                                    }
-
-                                    // Return success response
-                                    return res.send({
-                                        status: 'ok',
-                                        data: companyID,
-                                        message: 'Company details updated successfully'
-                                    });
-                                });
+                                    })
+                                })
+                                
+                                
                             }else{
                                 const claimRequestQuery = 'INSERT INTO company_claim_request (company_id, claimed_by, status, claimed_date) VALUES (?, ?, ?, ?)';
                                 const claimRequestValues = [companyID, req.body.claimed_by, '1', formattedDate];
@@ -1340,27 +1517,38 @@ exports.editCompany = (req, res) => {
                         }
                         
                         if (claimRequestResults.length > 0) {
-                            // Claim request already exists, handle accordingly
-                            const updateClaimRequestQuery = 'UPDATE company_claim_request SET claimed_by = ?, claimed_date = ? WHERE company_id = ?';
-                            const updateClaimRequestValues = [req.body.claimed_by, formattedDate, companyID];
 
-                            db.query(updateClaimRequestQuery, updateClaimRequestValues, (err) => {
-                                if (err) {
-                                    // Handle the error
-                                    return res.send({
-                                        status: 'err',
-                                        data: '',
-                                        message: 'An error occurred while updating company claim request: ' + err
+                            console.log('checkClaimRequestQuery',claimRequestResults)
+                            const ReviewReplyByQuery = 'UPDATE review_reply SET reply_by = ? WHERE company_id = ? AND reply_by = ?';
+                            const ReviewReplyByData = [req.body.claimed_by,companyID,claimRequestResults[0].claimed_by]
+                                db.query(ReviewReplyByQuery,ReviewReplyByData,(ReviewReplyByErr,ReviewReplyByResult)=>{
+                                const ReviewReplyToQuery = 'UPDATE review_reply SET reply_to = ? WHERE company_id = ? AND reply_to = ?';
+                                const ReviewReplyToData = [req.body.claimed_by,companyID,claimRequestResults[0].claimed_by]
+                                db.query(ReviewReplyToQuery,ReviewReplyToData,(ReviewReplyToErr,ReviewReplyToResult)=>{
+                                    // Claim request already exists, handle accordingly
+                                    const updateClaimRequestQuery = 'UPDATE company_claim_request SET claimed_by = ?, claimed_date = ? WHERE company_id = ?';
+                                    const updateClaimRequestValues = [req.body.claimed_by, formattedDate, companyID];
+
+                                    db.query(updateClaimRequestQuery, updateClaimRequestValues, (err) => {
+                                        if (err) {
+                                            // Handle the error
+                                            return res.send({
+                                                status: 'err',
+                                                data: '',
+                                                message: 'An error occurred while updating company claim request: ' + err
+                                            });
+                                        }
+
+                                        // Return success response
+                                        return res.send({
+                                            status: 'ok',
+                                            data: companyID,
+                                            message: 'Company details updated successfully'
+                                        });
                                     });
-                                }
-
-                                // Return success response
-                                return res.send({
-                                    status: 'ok',
-                                    data: companyID,
-                                    message: 'Company details updated successfully'
-                                });
-                            });
+                                })
+                            })
+                            
                         }else{
                             const claimRequestQuery = 'INSERT INTO company_claim_request (company_id, claimed_by, status, claimed_date) VALUES (?, ?, ?, ?)';
                             const claimRequestValues = [companyID, req.body.claimed_by, '1', formattedDate];
@@ -1681,7 +1869,7 @@ exports.editCustomerReview = async (req, res) => {
     //console.log('controller',req.body);
     // const ratingTagsArray = JSON.parse(req.body.rating_tags);
     // console.log(ratingTagsArray);
-    const editResponse1 = await comFunction.editCustomerReview( req.body );
+    //const editResponse1 = await comFunction.editCustomerReview( req.body );
     const [editResponse, ApproveMailSend,RejectdEmailSend] = await Promise.all([
         comFunction.editCustomerReview( req.body ),
         comFunction2.reviewApprovedEmail(req.body),
@@ -1734,7 +1922,7 @@ exports.contactFeedback = (req, res) => {
     const email = currentUserData.email;
     console.log(currentUserData.first_name, currentUserData.last_name, currentUserData.email);
     var mailOptions = {
-        from: 'vivek@scwebtech.com',
+        from: process.env.MAIL_USER,
         to: process.env.MAIL_SUPPORT,
         //to: 'pranab@scwebtech.com',
         subject: 'Feedback Mail From Contact',
@@ -1754,7 +1942,7 @@ exports.contactFeedback = (req, res) => {
                      <tbody>
                        <tr>
                 <td id="header_wrapper" style="padding: 36px 48px; display: block;">
-                           <h1 style="color: #ffc107; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 50px; font-weight: 400; line-height: 150%; margin: 0; text-align: left; text-shadow: 0 1px 0 #7797b4; -webkit-font-smoothing: antialiased;">Contact Form</h1>
+                           <h1 style="color: #ffc107; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 50px; font-weight: 400; line-height: 150%; margin: 0; text-align: left; text-shadow: 0 1px 0 #7797b4; -webkit-font-smoothing: antialiased;">Feedback Email</h1>
                         </td>
                        </tr>
                      </tbody>
@@ -1909,10 +2097,11 @@ exports.updateFAQ = async (req, res) => {
         req.body.meta_title,
         req.body.meta_desc,
         req.body.keyword,
+        req.body.app_content,
     ];
     try {
         db.query('DELETE  FROM faq_categories', (del_faq_cat_err, del_faq_cat_res) => {
-            db.query('DELETE - FROM faq_item', async (del_faq_item_err, del_faq_item_res) => {
+            db.query('DELETE  FROM faq_item', async (del_faq_item_err, del_faq_item_res) => {
                 const faqPageId = await comFunction.insertIntoFaqPages(Faq_Page_insert_values);
                 console.log('ID:', faqPageId);
                 await comFunction.insertIntoFaqCategories(faqArray);
@@ -1940,9 +2129,9 @@ exports.updateFAQ = async (req, res) => {
 //Update FAQ Images
 exports.updateFAQImages =async (req,res) => {
     //console.log('files',req.files);
-    const {banner_img_1,banner_img_2,banner_img_3,banner_img_4,banner_img_5,banner_img_6,banner_img_7,banner_img_8} = req.files;
+    const {banner_img_1,banner_img_2,banner_img_3,banner_img_4,banner_img_5,banner_img_6,banner_img_7,banner_img_8,app_banner_img} = req.files;
     // const img_arr = [banner_img_1,banner_img_2,banner_img_3,banner_img_4,banner_img_5,banner_img_6,banner_img_7,banner_img_8];
-    const field_name = ['banner_img_1','banner_img_2','banner_img_3','banner_img_4','banner_img_5','banner_img_6','banner_img_7','banner_img_8'];
+    const field_name = ['banner_img_1','banner_img_2','banner_img_3','banner_img_4','banner_img_5','banner_img_6','banner_img_7','banner_img_8','app_banner_img'];
     await field_name.forEach((item, key) => {
         //console.log(item, key);
         if (req.files[item]) {
@@ -1958,31 +2147,65 @@ exports.updateFAQImages =async (req,res) => {
 }
 // Update Home
 exports.updateHome = async (req, res) => {
-    // console.log('home', req.body);
-    // console.log('file', req.files);
+    //  console.log('home', req.body);
+    //     console.log('file', req.files);
+    //return false;
     const form_data = req.body;
 
     const { home_id, title, meta_title, meta_desc, meta_keyword, bannner_content, for_business,
         for_customer, cus_right_content, cus_right_button_link, cus_right_button_text,youtube_link,
         youtube_1, youtube_2, youtube_3, youtube_4, youtube_5, youtube_6, youtube_7, youtube_8, youtube_9, youtube_10, fb_widget, twitter_widget,
         org_responsibility_content, org_responsibility_buttton_link, org_responsibility_buttton_text,
-        about_us_content, about_us_button_link, about_us_button_text, bannner_content_2, bannner_hashtag, reviewers_guidelines_title,reviewers_guidelines_popup, review_form_demo_location, cus_right_facts_popup, org_responsibility_facts_popup } = req.body;
+        about_us_content, about_us_button_link, about_us_button_text, bannner_content_2, bannner_hashtag, reviewers_guidelines_title,reviewers_guidelines_popup, review_form_demo_location, cus_right_facts_popup, org_responsibility_facts_popup, app_banner_title_1, app_banner_title_2, app_features_for_customer, app_review_content, app_features_hashtag, app_cus_right_content, app_cus_right_point, app_org_responsibility_content, app_org_responsibility_points, app_about_us_content_1, app_about_us_content_2, app_about_us_button_text } = req.body;
 
     const { banner_img_1, banner_img_2, banner_img_3,banner_img_4, banner_img_5, banner_img_6, cus_right_img_1, cus_right_img_2, cus_right_img_3, cus_right_img_4, cus_right_img_5,
         cus_right_img_6, cus_right_img_7, cus_right_img_8, org_responsibility_img_1, org_responsibility_img_2, org_responsibility_img_3,
         org_responsibility_img_4, org_responsibility_img_5, org_responsibility_img_6, org_responsibility_img_7, org_responsibility_img_8,
-        about_us_img, review_img_1, review_img_2, review_img_3, review_img_4, map_img } = req.files;
+        about_us_img, review_img_1, review_img_2, review_img_3, review_img_4, map_img, app_cus_right_img, app_org_responsibility_img } = req.files;
+    
+    let app_features = [];
+    if(typeof app_features_for_customer == 'string'){
+        app_features.push(app_features_for_customer) ;
+    } else {
+        app_features = [...app_features_for_customer];
+        //app_features = app_features.concat(app_features_for_customer);
+    }
+    const app_customer_feature = JSON.stringify(app_features);
+
+    let app_hashtag = [];
+    if(typeof app_features_hashtag == 'string'){
+        app_hashtag.push(app_features_hashtag) ;
+    } else {
+        app_hashtag = [...app_features_hashtag];
+    }
+    const app_feature_hashtag = JSON.stringify(app_hashtag); 
+
+    let cus_right_point = [];
+    if(typeof app_cus_right_point == 'string'){
+        cus_right_point.push(app_cus_right_point) ;
+    } else {
+        cus_right_point = [...app_features_hashtag];
+    }
+    const app_cus_right_points = JSON.stringify(cus_right_point); 
+
+    let org_responsibility_point = [];
+    if(typeof app_org_responsibility_points == 'string'){
+        org_responsibility_point.push(app_org_responsibility_points) ;
+    } else {
+        org_responsibility_point = [...app_org_responsibility_points];
+    }
+    const app_org_responsibility_point = JSON.stringify(org_responsibility_point); 
 
     const meta_value = [bannner_content, for_business,
         for_customer, cus_right_content, cus_right_button_link, cus_right_button_text,youtube_link,
         youtube_1, youtube_2, youtube_3, youtube_4, fb_widget, twitter_widget,
         org_responsibility_content, org_responsibility_buttton_link, org_responsibility_buttton_text,
-        about_us_content, about_us_button_link, about_us_button_text, bannner_content_2, bannner_hashtag, reviewers_guidelines_title,reviewers_guidelines_popup, review_form_demo_location, cus_right_facts_popup, org_responsibility_facts_popup,youtube_5, youtube_6, youtube_7, youtube_8, youtube_9, youtube_10];
+        about_us_content, about_us_button_link, about_us_button_text, bannner_content_2, bannner_hashtag, reviewers_guidelines_title,reviewers_guidelines_popup, review_form_demo_location, cus_right_facts_popup, org_responsibility_facts_popup,youtube_5, youtube_6, youtube_7, youtube_8, youtube_9, youtube_10, app_banner_title_1, app_banner_title_2, app_review_content, app_customer_feature,app_feature_hashtag, app_cus_right_content, app_cus_right_points, app_org_responsibility_content, app_org_responsibility_point, app_about_us_content_1, app_about_us_content_2, app_about_us_button_text];
 
     const meta_key = ['bannner_content', 'for_business',
         'for_customer', 'cus_right_content', 'cus_right_button_link', 'cus_right_button_text','youtube_link', 'youtube_1', 'youtube_2', 'youtube_3', 'youtube_4', 'fb_widget', 'twitter_widget',
         'org_responsibility_content', 'org_responsibility_buttton_link', 'org_responsibility_buttton_text',
-        'about_us_content', 'about_us_button_link', 'about_us_button_text', 'bannner_content_2', 'bannner_hashtag', 'reviewers_guidelines_title','reviewers_guidelines_popup', 'review_form_demo_location', 'cus_right_facts_popup', 'org_responsibility_facts_popup','youtube_5', 'youtube_6', 'youtube_7', 'youtube_8', 'youtube_9', 'youtube_10'];
+        'about_us_content', 'about_us_button_link', 'about_us_button_text', 'bannner_content_2', 'bannner_hashtag', 'reviewers_guidelines_title','reviewers_guidelines_popup', 'review_form_demo_location', 'cus_right_facts_popup', 'org_responsibility_facts_popup','youtube_5', 'youtube_6', 'youtube_7', 'youtube_8', 'youtube_9', 'youtube_10','app_banner_title_1', 'app_banner_title_2', 'app_review_content', 'app_customer_feature','app_feature_hashtag', 'app_cus_right_content', 'app_cus_right_points', 'app_org_responsibility_content', 'app_org_responsibility_point', 'app_about_us_content_1', 'app_about_us_content_2', 'app_about_us_button_text'];
 
     await meta_value.forEach((element, index) => {
         //console.log(element, index);
@@ -2018,12 +2241,12 @@ exports.updateHome = async (req, res) => {
     const file_meta_value = [banner_img_1, banner_img_2, banner_img_3,banner_img_4, banner_img_5, banner_img_6, cus_right_img_1, cus_right_img_2, cus_right_img_3, cus_right_img_4, cus_right_img_5,
         cus_right_img_6, cus_right_img_7, cus_right_img_8, org_responsibility_img_1, org_responsibility_img_2, org_responsibility_img_3,
         org_responsibility_img_4, org_responsibility_img_5, org_responsibility_img_6, org_responsibility_img_7, org_responsibility_img_8,
-        about_us_img, review_img_1, review_img_2, review_img_3, review_img_4, map_img ];
+        about_us_img, review_img_1, review_img_2, review_img_3, review_img_4, map_img, app_cus_right_img, app_org_responsibility_img ];
 
     const file_meta_key = ['banner_img_1', 'banner_img_2', 'banner_img_3','banner_img_4', 'banner_img_5', 'banner_img_6', 'cus_right_img_1', 'cus_right_img_2', 'cus_right_img_3', 'cus_right_img_4', 'cus_right_img_5',
         'cus_right_img_6', 'cus_right_img_7', 'cus_right_img_8', 'org_responsibility_img_1', 'org_responsibility_img_2', 'org_responsibility_img_3',
         'org_responsibility_img_4', 'org_responsibility_img_5', 'org_responsibility_img_6', 'org_responsibility_img_7', 'org_responsibility_img_8',
-        'about_us_img', 'review_img_1', 'review_img_2', 'review_img_3', 'review_img_4', 'map_img' ];
+        'about_us_img', 'review_img_1', 'review_img_2', 'review_img_3', 'review_img_4', 'map_img' , 'app_cus_right_img', 'app_org_responsibility_img'];
 
     await file_meta_key.forEach((item, key) => {
         //console.log(item, key);
@@ -2086,17 +2309,133 @@ exports.submitReview = async (req, res) => {
             //console.log(currentUserData);
             const userId = currentUserData.user_id;
             const company = await comFunction.createCompany(req.body, userId);
-            const review = comFunction.createReview(req.body, userId, company);
+            const review = await comFunction.createReview(req.body, userId, company);
             // Render the 'edit-user' EJS view and pass the data
             if(company && review){
+                console.log('submit review:',review)
+                const template = `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
+                <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
+                 <tbody>
+                  <tr>
+                   <td align="center" valign="top">
+                     <div id="template_header_image"><p style="margin-top: 0;"></p></div>
+                     <table id="template_container" style="box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; background-color: #fdfdfd; border: 1px solid #dcdcdc; border-radius: 3px !important;" border="0" cellpadding="0" cellspacing="0" width="600">
+                      <tbody>
+                        <tr>
+                         <td align="center" valign="top">
+                           <!-- Header -->
+                           <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
+                             <tbody>
+                               <tr>
+                               <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
+                                <td id="header_wrapper" style="padding: 36px 48px; display: block;">
+                                   <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">New Review</h1>
+                                </td>
+          
+                               </tr>
+                             </tbody>
+                           </table>
+                     <!-- End Header -->
+                     </td>
+                        </tr>
+                        <tr>
+                         <td align="center" valign="top">
+                           <!-- Body -->
+                           <table id="template_body" border="0" cellpadding="0" cellspacing="0" width="600">
+                             <tbody>
+                               <tr>
+                                <td id="body_content" style="background-color: #fdfdfd;" valign="top">
+                                  <!-- Content -->
+                                  <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                                   <tbody>
+                                    <tr>
+                                     <td style="padding: 48px;" valign="top">
+                                       <div id="body_content_inner" style="color: #737373; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
+                                        
+                                        <table border="0" cellpadding="4" cellspacing="0" width="90%">
+                                          <tr>
+                                            <td colspan="2">
+                                            <strong>Hello,</strong>
+                                            <p style="font-size:15px; line-height:20px">A new review submitted. <a class="btn btn-primary" href="${process.env.MAIN_URL}edit-review/${review}">Click here </a>to check this review.</p>
+                                            </td>
+                                          </tr>
+                                        </table>
+                                        
+                                       </div>
+                                     </td>
+                                    </tr>
+                                   </tbody>
+                                  </table>
+                                <!-- End Content -->
+                                </td>
+                               </tr>
+                             </tbody>
+                           </table>
+                         <!-- End Body -->
+                         </td>
+                        </tr>
+                        <tr>
+                         <td align="center" valign="top">
+                           <!-- Footer -->
+                           <table id="template_footer" border="0" cellpadding="10" cellspacing="0" width="600">
+                            <tbody>
+                             <tr>
+                              <td style="padding: 0; -webkit-border-radius: 6px;" valign="top">
+                               <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                                 <tbody>
+                                   <tr>
+                                    <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
+                                         <p>This email was sent from <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a></p>
+                                    </td>
+                                   </tr>
+                                 </tbody>
+                               </table>
+                              </td>
+                             </tr>
+                            </tbody>
+                           </table>
+                         <!-- End Footer -->
+                         </td>
+                        </tr>
+                      </tbody>
+                     </table>
+                   </td>
+                  </tr>
+                 </tbody>
+                </table>
+               </div>`;
+                var mailOptions = {
+                    from: process.env.MAIL_USER,
+                    //to: 'pranab@scwebtech.com',
+                    to: process.env.MAIL_USER,
+                    subject: 'New review added',
+                    html: template
+                  }
+              
+                mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
+                    if (err) {
+                        console.log(err);
+                        return res.send({
+                            status: 'not ok',
+                            message: 'Something went wrong'
+                        });
+                    } else {
+                        console.log('Mail Send: ', info.response);
+                        return res.send(
+                        {
+                            status: 'ok',
+                            data: '',
+                            message: 'Password Send to your email please check to your email'
+                        }
+                    )
+                    }
+                })
                 return res.send(
                     {
                         status: 'ok',
-                        data: {
-                                company,
-                                review
-                        },
-                        message: 'Review posted successfully'
+                        data:   '',
+                        company,
+                        message: 'Review successfully posted, please wait for admin approval'
                     }
                 );
             }else{
@@ -2147,19 +2486,19 @@ exports.updateAbout = async (req, res) => {
 
     const { about_id, title, meta_title, meta_desc, meta_keyword, banner_content, mission_title,
         mission_content, platform_content, bolograhak_would_content, customers_content,
-        service_providers_content } = req.body;
+        service_providers_content, app_banner_content_1, app_banner_content_2, app_platform_content_1, app_platform_content_2 } = req.body;
 
     const { banner_img_1, banner_img_2, banner_img_3, banner_img_4, banner_img_5, banner_img_6, banner_img_7, banner_img_8,
         platform_img_1, platform_img_2, platform_img_3, platform_img_4, platform_img_5, platform_img_6, platform_img_7,
-        platform_img_8, right_img_1, right_img_2 } = req.files;
+        platform_img_8, right_img_1, right_img_2, app_banner_img_1, app_banner_img_2 } = req.files;
 
     const meta_value = [banner_content, mission_title,
         mission_content, platform_content, bolograhak_would_content, customers_content,
-        service_providers_content];
+        service_providers_content, app_banner_content_1, app_banner_content_2, app_platform_content_1, app_platform_content_2];
 
     const meta_key = ['banner_content', 'mission_title',
         'mission_content', 'platform_content', 'bolograhak_would_content', 'customers_content',
-        'service_providers_content'];
+        'service_providers_content', 'app_banner_content_1', 'app_banner_content_2', 'app_platform_content_1', 'app_platform_content_2'];
 
     await meta_value.forEach((element, index) => {
         //console.log(element, index);
@@ -2194,11 +2533,11 @@ exports.updateAbout = async (req, res) => {
 
     const file_meta_value = [banner_img_1, banner_img_2, banner_img_3, banner_img_4, banner_img_5, banner_img_6, banner_img_7, banner_img_8,
         platform_img_1, platform_img_2, platform_img_3, platform_img_4, platform_img_5, platform_img_6, platform_img_7,
-        platform_img_8, right_img_1, right_img_2];
+        platform_img_8, right_img_1, right_img_2, app_banner_img_1, app_banner_img_2];
 
     const file_meta_key = ['banner_img_1', 'banner_img_2', 'banner_img_3', 'banner_img_4', 'banner_img_5', 'banner_img_6', 'banner_img_7', 'banner_img_8',
         'platform_img_1', 'platform_img_2', 'platform_img_3', 'platform_img_4', 'platform_img_5', 'platform_img_6', 'platform_img_7',
-        'platform_img_8', 'right_img_1', 'right_img_2'];
+        'platform_img_8', 'right_img_1', 'right_img_2', 'app_banner_img_1', 'app_banner_img_2'];
 
     await file_meta_key.forEach((item, key) => {
         //console.log(item, key);
@@ -2316,18 +2655,27 @@ exports.deleteFeaturedCompany = (req, res) => {
 exports.updateBusiness = async (req, res) => {
     console.log('business', req.body);
     console.log('file', req.files);
-
+    //return false;
     const { business_id, title, meta_title, meta_desc, meta_keyword, bannner_content, features_title,
         feature_content,feature_icon, advantage_title, advantage_content, dont_forget_title,
-        dont_forget_content_1, dont_forget_content_2, did_you_know_title, did_you_know_content_1, did_you_know_content_2, upcoming_features_title, upcoming_features_content, bottom_content } = req.body;
+        dont_forget_content_1, dont_forget_content_2, did_you_know_title, did_you_know_content_1, did_you_know_content_2, upcoming_features_title, upcoming_features_content, bottom_content, app_bannner_content_title, app_bannner_content_1, app_bannner_content_2, app_advantage_point, app_dont_forget_content_1_title,app_dont_forget_content_1, app_dont_forget_content_2_title, app_dont_forget_content_2 } = req.body;
 
-    const { banner_img_1, banner_img_2, banner_img_3, banner_img_4, banner_img_5, banner_img_6,banner_img_7, banner_img_8,  advantage_img_1, advantage_img_2, advantage_img_3, advantage_img_4, advantage_img_5, advantage_img_6, advantage_img_7, advantage_img_8, did_you_know_img } = req.files;
+    const { banner_img_1, banner_img_2, banner_img_3, banner_img_4, banner_img_5, banner_img_6,banner_img_7, banner_img_8,  advantage_img_1, advantage_img_2, advantage_img_3, advantage_img_4, advantage_img_5, advantage_img_6, advantage_img_7, advantage_img_8, did_you_know_img, app_banner_img_1, app_banner_img_2 } = req.files;
+
+
+    let advantage_point = [];
+    if(typeof app_advantage_point == 'string'){
+        advantage_point.push(app_advantage_point) ;
+    } else {
+        advantage_point = [...app_advantage_point];
+    }
+    const app_advantage_points = JSON.stringify(advantage_point); 
 
     const meta_value = [bannner_content, features_title, advantage_title, advantage_content, dont_forget_title,
-        dont_forget_content_1, dont_forget_content_2, did_you_know_title, did_you_know_content_1, did_you_know_content_2, upcoming_features_title, bottom_content];
+        dont_forget_content_1, dont_forget_content_2, did_you_know_title, did_you_know_content_1, did_you_know_content_2, upcoming_features_title, bottom_content, app_bannner_content_title, app_bannner_content_1, app_bannner_content_2, app_dont_forget_content_1_title,app_dont_forget_content_1, app_dont_forget_content_2_title, app_dont_forget_content_2,app_advantage_points];
 
     const meta_key = ['bannner_content', 'features_title', 'advantage_title', 'advantage_content', 'dont_forget_title',
-        'dont_forget_content_1', 'dont_forget_content_2', 'did_you_know_title', 'did_you_know_content_1', 'did_you_know_content_2', 'upcoming_features_title', 'bottom_content'];
+        'dont_forget_content_1', 'dont_forget_content_2', 'did_you_know_title', 'did_you_know_content_1', 'did_you_know_content_2', 'upcoming_features_title', 'bottom_content', 'app_bannner_content_title', 'app_bannner_content_1', 'app_bannner_content_2', 'app_dont_forget_content_1_title','app_dont_forget_content_1', 'app_dont_forget_content_2_title', 'app_dont_forget_content_2','app_advantage_points'];
 
     await meta_value.forEach((element, index) => {
         //console.log(element, index);
@@ -2361,9 +2709,9 @@ exports.updateBusiness = async (req, res) => {
     });
 
     const file_meta_value = [banner_img_1, banner_img_2, banner_img_3, banner_img_4, banner_img_5, banner_img_6,banner_img_7, banner_img_8, advantage_img_1, advantage_img_2, advantage_img_3, advantage_img_4, advantage_img_5,
-        advantage_img_6, advantage_img_7, advantage_img_8, did_you_know_img];
+        advantage_img_6, advantage_img_7, advantage_img_8, did_you_know_img,app_banner_img_1, app_banner_img_2];
 
-    const file_meta_key = ['banner_img_1', 'banner_img_2', 'banner_img_3', 'banner_img_4', 'banner_img_5', 'banner_img_6','banner_img_7', 'banner_img_8', 'advantage_img_1', 'advantage_img_2', 'advantage_img_3', 'advantage_img_4', 'advantage_img_5', 'advantage_img_6', 'advantage_img_7', 'advantage_img_8', 'did_you_know_img'];
+    const file_meta_key = ['banner_img_1', 'banner_img_2', 'banner_img_3', 'banner_img_4', 'banner_img_5', 'banner_img_6','banner_img_7', 'banner_img_8', 'advantage_img_1', 'advantage_img_2', 'advantage_img_3', 'advantage_img_4', 'advantage_img_5', 'advantage_img_6', 'advantage_img_7', 'advantage_img_8', 'did_you_know_img','app_banner_img_1', 'app_banner_img_2'];
 
     await file_meta_key.forEach((item, key) => {
         //console.log(item, key);
@@ -2716,11 +3064,12 @@ exports.updateMyProfile = (req, res) => {
                     } else {
                         const query = `
                                 SELECT user_meta.*, c.name as country_name, s.name as state_name, u.first_name
-                                , u.last_name, u.email, u.phone, u.user_type_id
+                                , u.last_name, u.email, u.phone, u.user_type_id, ccr.company_id as claimed_comp_id
                                 FROM user_customer_meta user_meta
-                                JOIN users u ON u.user_id = user_meta.user_id
-                                JOIN countries c ON user_meta.country = c.id
-                                JOIN states s ON user_meta.state = s.id
+                                LEFT JOIN users u ON u.user_id = user_meta.user_id
+                                LEFT JOIN countries c ON user_meta.country = c.id
+                                LEFT JOIN states s ON user_meta.state = s.id
+                                LEFT JOIN company_claim_request ccr ON user_meta.user_id = ccr.claimed_by
                                 WHERE user_meta.user_id = ?
                                 `;
                             db.query(query, [userId], async (err, results) => {
@@ -2751,7 +3100,8 @@ exports.updateMyProfile = (req, res) => {
                                     date_of_birth: formattedDate,
                                     occupation: user_meta.occupation,
                                     gender: user_meta.gender,
-                                    profile_pic: user_meta.profile_pic
+                                    profile_pic: user_meta.profile_pic,
+                                    claimed_comp_id: user_meta.claimed_comp_id
                                 };
                                 const encodedUserData = JSON.stringify(userData);
                                 res.cookie('user', encodedUserData);
@@ -2922,7 +3272,7 @@ exports.updateBasicCompany = (req, res) => {
     const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
     // Update company details in the company table
-    const updateQuery = 'UPDATE company SET  heading = ?, logo = ?, about_company = ?, comp_phone = ?, comp_email = ?, updated_date = ?, tollfree_number = ?, main_address = ?  WHERE ID = ?';
+    const updateQuery = 'UPDATE company SET  heading = ?, logo = ?, about_company = ?, comp_phone = ?, comp_email = ?, updated_date = ?, tollfree_number = ?, main_address = ?, operating_hours = ?  WHERE ID = ?';
     const updateValues = [
                             req.body.heading,
                             '',
@@ -2932,6 +3282,7 @@ exports.updateBasicCompany = (req, res) => {
                             formattedDate,
                             req.body.tollfree_number,
                             req.body.main_address,
+                            req.body.operating_hours,
                             companyID
                         ];
 
@@ -2971,3 +3322,817 @@ exports.updateBasicCompany = (req, res) => {
         
     })
 }
+
+//--Front end- Update Basic Company profile --//
+exports.updatePremiumCompany =async (req, res) => {
+    //console.log('PremiumCompany:',req.body);
+    //console.log('PremiumCompany File:',req.files);
+
+    const companyID = req.body.company_id;
+    const currentDate = new Date();
+
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+    const day = String(currentDate.getDate()).padStart(2, '0');
+    const hours = String(currentDate.getHours()).padStart(2, '0');
+    const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+    const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+
+    const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+
+    const { previous_cover_image, youtube_iframe, promotion_title, promotion_desc, promotion_discount, promotion_image, product_title, product_desc, product_image, facebook_url, twitter_url, instagram_url, linkedin_url, youtube_url, support_email, escalation_one, escalation_two, escalation_three } = req.body;
+
+    const { cover_image, gallery_images } = req.files;
+    let galleryImages = [];
+    if(gallery_images){
+         galleryImages = gallery_images.map((title, index) => ({
+            gallery_images:req.files.gallery_images[index].filename
+        }));
+    }
+
+    //return false;
+    if(typeof product_image == 'undefined' || typeof promotion_image == 'undefined' ){
+        let product_image = [];
+        let promotion_image = [];
+    }
+    let ProductData = [];
+    if( Array.isArray(product_title) && product_title.length >0 ){
+        let count = 0;
+        ProductData = product_title.map((title, index) => {
+            let productImage = null;
+            if (product_image[index] !== '') {
+                productImage = req.files.product_image[count].filename;
+                count++;
+            }else{
+                productImage = null;
+            }
+        
+            return {
+            product_title: title,
+            product_desc: product_desc[index],
+            product_image: productImage
+            };
+        });
+    } else {
+        let prodkImg = null;
+        if(typeof product_image != 'undefined'){
+            if(product_image[0] !== ''){
+                prodkImg = req.files.product_image[0].filename;
+            }
+        }
+        
+        ProductData = [{
+            "product_title":product_title,
+            "product_desc":product_desc,
+            "product_image":prodkImg
+        }]
+    }
+
+    
+
+    let PromotionalData = [];
+    if( Array.isArray(promotion_title) && promotion_title.length >0 ){
+        let i = 0;
+        PromotionalData = promotion_title.map((title, index) => {
+            let promotionImage = null;
+            if (promotion_image[index] !== '') {
+                promotionImage = req.files.promotion_image[i].filename;
+                i++;
+            }
+        
+            return {
+                promotion_title: title,
+                promotion_desc: promotion_desc[index],
+                promotion_discount: promotion_discount[index],
+                promotion_image: promotionImage
+            };
+        });
+    }else{
+        let promoImg = null;
+        if(typeof promotion_image != 'undefined'){
+            if(promotion_image[0] !== ''){
+                promoImg = req.files.promotion_image[0].filename;
+            }
+        }
+        
+        PromotionalData = [{
+            "promotion_title":promotion_title,
+            "promotion_desc":promotion_desc,
+            "promotion_discount":promotion_discount,
+            "promotion_image":promoImg
+        }]
+    }
+    //console.log('PromotionalData:',PromotionalData)
+
+    let coverImg = null;
+    if(cover_image){
+         coverImg = cover_image[0].filename;
+    }else{
+        coverImg = previous_cover_image;
+    }
+
+
+    // Update company details in the company table
+    const updateQuery = 'UPDATE company SET  heading = ?, logo = ?, about_company = ?, comp_phone = ?, comp_email = ?, updated_date = ?, tollfree_number = ?, main_address = ?, operating_hours = ?  WHERE ID = ?';
+    const updateValues = [
+                            req.body.heading,
+                            '',
+                            req.body.about_company,
+                            req.body.comp_phone,
+                            req.body.comp_email,
+                            formattedDate,
+                            req.body.tollfree_number,
+                            req.body.main_address,
+                            req.body.operating_hours,
+                            companyID
+                        ];
+
+    if (req.files.logo) {
+        // Unlink (delete) the previous file
+        const unlinkcompanylogo = "uploads/" + req.body.previous_logo;
+        fs.unlink(unlinkcompanylogo, (err) => {
+            if (err) {
+                //console.error('Error deleting file:', err);
+            } else {
+                //console.log('Previous file deleted');
+            }
+        });
+
+        updateValues[1] = req.files.logo[0].filename;
+    }else{
+        updateValues[1] = req.body.previous_logo;
+    }
+    db.query(updateQuery, updateValues, (err, results) => {
+        if (err) {
+            // Handle the error
+            return res.send({
+                status: 'err',
+                data: '',
+                message: 'An error occurred while updating the company details: ' + err
+            });
+        }else{
+            const check_sql = `SELECT * FROM premium_company_data WHERE company_id = ? `;
+            const check_data = [companyID];
+            db.query(check_sql, check_data, (check_err, check_result) => {
+                if (check_err) {
+                    return res.send(
+                        {
+                            status: 'err',
+                            data: '',
+                            message: 'An error occurred while processing your request'
+                        }
+                    )
+                } else {
+                    if (check_result.length > 0) {
+                        
+                        //console.log(check_result[0]);
+                        //return false;
+                        const gallery_img = JSON.parse(check_result[0].gallery_img);
+                        
+                        if(galleryImages.length > 0){
+                            galleryImages.forEach(function(img, index, arr) {
+                                gallery_img.push(img);
+                            })
+                        }
+                        //gallery_img.push(galleryImages);
+        
+                        //console.log('merge_img:',gallery_img);
+                        
+                        
+                        const promotionSQL = JSON.parse(check_result[0].promotions);
+                        //console.log('promotionSQL',promotionSQL);
+                        //return false;
+                        if(promotionSQL.length > 0){
+                            promotionSQL.forEach(function(promotionImg, index, arr) {
+                                if(promotionImg.promotion_image != null) {
+                                    if(promotion_image[index] == ''){
+                                        
+                                        PromotionalData[index].promotion_image = promotionSQL[index].promotion_image;
+                                    }
+                                }
+                            })
+                        }
+                        const productSQL = JSON.parse(check_result[0].products);
+                        if(productSQL.length > 0){
+                            productSQL.forEach(function(productImg, index, arr) {
+                                if(productImg.product_image != null) {
+                                    if(product_image[index]== ''){
+                                        ProductData[index].product_image = productSQL[index].product_image;
+                                    }
+                                }
+                            })
+                        }
+                        // console.log('allPromotionalData',PromotionalData);
+                        // console.log('allProductData',ProductData);
+                        const galleryimg = JSON.stringify(gallery_img);
+                        const Products = JSON.stringify(ProductData);
+                        const Promotion = JSON.stringify(PromotionalData);
+                        
+
+                        //return false;
+                        const update_query = `UPDATE premium_company_data SET cover_img = ?, gallery_img = ?, youtube_iframe = ?,promotions = ?, products = ?, facebook_url = ?, twitter_url = ?, instagram_url = ?, linkedin_url = ?, youtube_url = ?, support_email = ?, escalation_one = ?, escalation_two = ?, escalation_three = ? WHERE company_id = ? `;
+                        const update_data = [coverImg, galleryimg, youtube_iframe, Promotion, Products, facebook_url, twitter_url, instagram_url, linkedin_url, youtube_url, support_email, escalation_one, escalation_two, escalation_three, companyID];
+                        db.query(update_query, update_data, (update_err,update_result)=>{
+                            if (update_err) {
+                                // Handle the error
+                                return res.send({
+                                    status: 'err',
+                                    data: '',
+                                    message: 'An error occurred while updating the company details: ' + update_err
+                                });
+                            } else {
+                                return res.send(
+                                    {
+                                        status: 'ok',
+                                        data: companyID,
+                                        message: 'Successfully Updated'
+                                    }
+                                )
+                            }
+                        })
+                        
+                    }else {
+                        const galleryimg = JSON.stringify(galleryImages);
+                        const Products = JSON.stringify(ProductData);
+                        const Promotion = JSON.stringify(PromotionalData);
+
+                        const premium_query = `INSERT INTO premium_company_data ( company_id, cover_img, gallery_img, youtube_iframe, promotions, products, facebook_url, twitter_url, instagram_url, linkedin_url, youtube_url, support_email, escalation_one, escalation_two, escalation_three) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+                        const premium_data = [companyID, coverImg, galleryimg, youtube_iframe, Promotion, Products, facebook_url, twitter_url, instagram_url, linkedin_url, youtube_url, support_email, escalation_one, escalation_two, escalation_three];
+                        db.query(premium_query, premium_data, (premium_err, premium_result)=>{
+                            if (premium_err) {
+                                // Handle the error
+                                return res.send({
+                                    status: 'err',
+                                    data: '',
+                                    message: 'An error occurred while updating the company details: ' + premium_err
+                                });
+                            } else {
+                                return res.send(
+                                    {
+                                        status: 'ok',
+                                        data: companyID,
+                                        message: 'Successfully Updated'
+                                    }
+                                )
+                            }
+                        })
+                    }
+                }
+            });
+        }
+    })
+}
+
+// Delete premium gallery image
+exports.deletePremiumImage = (req, res) => {
+    //console.log('deletePremiumImage', req.body);
+    ///return false;
+    const { companyId, imgIndex } = req.body;
+
+
+    const check_sql = `SELECT gallery_img FROM premium_company_data WHERE company_id = ? `;
+    const check_data = [companyId];
+    db.query(check_sql, check_data, (check_err, check_result) => {
+        if (check_err) {
+            return res.send(
+                {
+                    status: 'err',
+                    data: '',
+                    message: 'An error occurred while processing your request'
+                }
+            )
+        } else {
+            if (check_result.length > 0) {
+                const gallery_img = JSON.parse(check_result[0].gallery_img);
+                //console.log(gallery_img);
+
+                const indexToRemove = imgIndex;
+                if (indexToRemove >= 0 && indexToRemove < gallery_img.length) {
+                    gallery_img.splice(indexToRemove, 1);
+                }
+                
+                const galleryImg = JSON.stringify(gallery_img);
+
+                const update_sql = `UPDATE premium_company_data SET gallery_img = ? WHERE company_id = ? `;
+                const update_data = [galleryImg, companyId];
+                db.query(update_sql, update_data, (update_err, update_result) => {
+                    if (update_err) throw update_err;
+                    return res.send(
+                        {
+                            status: 'ok',
+                            data: '',
+                            message: 'Image Deleted successfully'
+                        }
+                    )
+                })
+            }
+        }
+    });
+
+    
+}
+
+// Delete premium gallery image
+exports.deletePremiumPromotion = (req, res) => {
+    //console.log('deletePremiumImage', req.body);
+    ///return false;
+    const { companyId, dataIndex } = req.body;
+
+
+    const check_sql = `SELECT promotions FROM premium_company_data WHERE company_id = ? `;
+    const check_data = [companyId];
+    db.query(check_sql, check_data, (check_err, check_result) => {
+        if (check_err) {
+            return res.send(
+                {
+                    status: 'err',
+                    data: '',
+                    message: 'An error occurred while processing your request'
+                }
+            )
+        } else {
+            if (check_result.length > 0) {
+                
+                //console.log(check_result[0]);
+                //return false;
+                const promotions = JSON.parse(check_result[0].promotions);
+                //console.log(gallery_img);
+
+                const indexToRemove = dataIndex;
+                if (indexToRemove >= 0 && indexToRemove < promotions.length) {
+                    promotions.splice(indexToRemove, 1);
+                }
+                
+                const promotionData = JSON.stringify(promotions);
+
+                const update_sql = `UPDATE premium_company_data SET promotions = ? WHERE company_id = ? `;
+                const update_data = [promotionData, companyId];
+                db.query(update_sql, update_data, (update_err, update_result) => {
+                    if (update_err) throw update_err;
+                    return res.send(
+                        {
+                            status: 'ok',
+                            data: '',
+                            message: 'Promotion Deleted successfully'
+                        }
+                    )
+                })
+            }
+        }
+    });
+
+    
+}
+
+// Delete premium gallery image
+exports.deletePremiumProduct = (req, res) => {
+    //console.log('deletePremiumImage', req.body);
+    ///return false;
+    const { companyId, dataIndex } = req.body;
+
+
+    const check_sql = `SELECT products FROM premium_company_data WHERE company_id = ? `;
+    const check_data = [companyId];
+    db.query(check_sql, check_data, (check_err, check_result) => {
+        if (check_err) {
+            return res.send(
+                {
+                    status: 'err',
+                    data: '',
+                    message: 'An error occurred while processing your request'
+                }
+            )
+        } else {
+            if (check_result.length > 0) {
+                
+                //console.log(check_result[0]);
+                //return false;
+                const products = JSON.parse(check_result[0].products);
+                //console.log(gallery_img);
+
+                const indexToRemove = dataIndex;
+                if (indexToRemove >= 0 && indexToRemove < products.length) {
+                    products.splice(indexToRemove, 1);
+                }
+                
+                const productsData = JSON.stringify(products);
+
+                const update_sql = `UPDATE premium_company_data SET products = ? WHERE company_id = ? `;
+                const update_data = [productsData, companyId];
+                db.query(update_sql, update_data, (update_err, update_result) => {
+                    if (update_err) throw update_err;
+                    return res.send(
+                        {
+                            status: 'ok',
+                            data: '',
+                            message: 'Product Deleted successfully'
+                        }
+                    )
+                })
+            }
+        }
+    });
+
+    
+}
+
+//forgot pssword
+exports.forgotPassword = (req, res) => {
+    //console.log('forgot',req.body);
+    const {email} = req.body;
+    //let hasEmail =  bcrypt.hash(email, 8);
+    const passphrase = process.env.ENCRYPT_DECRYPT_SECRET;
+
+   
+    
+   
+
+    //return false;
+    const sql = `SELECT user_id, first_name  FROM users WHERE email = '${email}' `;
+    db.query(sql, (error, result)=>{
+        if(error){
+            return res.send(
+                {
+                    status: 'err',
+                    data: '',
+                    message: 'An error occurred while processing your request'
+                }
+            )
+        }else{
+            if (result.length > 0) {
+                
+                const cipher = crypto.createCipher('aes-256-cbc', passphrase);
+                let encrypted = cipher.update(email, 'utf8', 'hex');
+                encrypted += cipher.final('hex');
+                //console.log('Encrypted:', encrypted);
+
+                const template = `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
+                <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
+                 <tbody>
+                  <tr>
+                   <td align="center" valign="top">
+                     <div id="template_header_image"><p style="margin-top: 0;"></p></div>
+                     <table id="template_container" style="box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; background-color: #fdfdfd; border: 1px solid #dcdcdc; border-radius: 3px !important;" border="0" cellpadding="0" cellspacing="0" width="600">
+                      <tbody>
+                        <tr>
+                         <td align="center" valign="top">
+                           <!-- Header -->
+                           <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
+                             <tbody>
+                               <tr>
+                               <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
+                                <td id="header_wrapper" style="padding: 36px 48px; display: block;">
+                                   <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Forgot Password</h1>
+                                </td>
+          
+                               </tr>
+                             </tbody>
+                           </table>
+                     <!-- End Header -->
+                     </td>
+                        </tr>
+                        <tr>
+                         <td align="center" valign="top">
+                           <!-- Body -->
+                           <table id="template_body" border="0" cellpadding="0" cellspacing="0" width="600">
+                             <tbody>
+                               <tr>
+                                <td id="body_content" style="background-color: #fdfdfd;" valign="top">
+                                  <!-- Content -->
+                                  <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                                   <tbody>
+                                    <tr>
+                                     <td style="padding: 48px;" valign="top">
+                                       <div id="body_content_inner" style="color: #737373; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
+                                        
+                                        <table border="0" cellpadding="4" cellspacing="0" width="90%">
+                                          <tr>
+                                            <td colspan="2">
+                                            <strong>Hello ${result[0].first_name},</strong>
+                                            <p style="font-size:15px; line-height:20px">A request has been received to change the password for your <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a>  account. <a class="btn btn-primary" href="${process.env.MAIN_URL}reset-password/${encrypted}">Click here </a>to reset your password</p>
+                                            </td>
+                                          </tr>
+                                        </table>
+                                        
+                                       </div>
+                                     </td>
+                                    </tr>
+                                   </tbody>
+                                  </table>
+                                <!-- End Content -->
+                                </td>
+                               </tr>
+                             </tbody>
+                           </table>
+                         <!-- End Body -->
+                         </td>
+                        </tr>
+                        <tr>
+                         <td align="center" valign="top">
+                           <!-- Footer -->
+                           <table id="template_footer" border="0" cellpadding="10" cellspacing="0" width="600">
+                            <tbody>
+                             <tr>
+                              <td style="padding: 0; -webkit-border-radius: 6px;" valign="top">
+                               <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                                 <tbody>
+                                   <tr>
+                                    <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
+                                         <p>This email was sent from <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a></p>
+                                    </td>
+                                   </tr>
+                                 </tbody>
+                               </table>
+                              </td>
+                             </tr>
+                            </tbody>
+                           </table>
+                         <!-- End Footer -->
+                         </td>
+                        </tr>
+                      </tbody>
+                     </table>
+                   </td>
+                  </tr>
+                 </tbody>
+                </table>
+               </div>`;
+                var mailOptions = {
+                    from: process.env.MAIL_USER,
+                    //to: 'pranab@scwebtech.com',
+                    to: email,
+                    subject: 'Forgot password Email',
+                    html: template
+                  }
+              
+                    mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
+                      if (err) {
+                          console.log(err);
+                          return res.send({
+                              status: 'not ok',
+                              message: 'Something went wrong'
+                          });
+                      } else {
+                          console.log('Mail Send: ', info.response);
+                          return res.send(
+                            {
+                                status: 'ok',
+                                data: '',
+                                message: 'Forgot password email sent. Please check the email for next steps.'
+                            }
+                        )
+                      }
+                    })
+                
+            } else {
+                return res.send(
+                    {
+                        status: 'not found',
+                        data: '',
+                        message: 'Your Email did not match with our record.'
+                    }
+                )
+            }
+        }
+    })
+}
+
+
+//--Submit Review Reply----//
+exports.submitReviewReply = async (req, res) => {
+    const encodedUserData = req.cookies.user;
+    console.log(req.body);
+    try {
+        if (encodedUserData) {
+            const currentUserData = JSON.parse(encodedUserData);
+            console.log(currentUserData);
+            const loginCompanyUserId = currentUserData.user_id;
+            if(loginCompanyUserId == req.body.reply_by){
+                const currentDate = new Date();
+                const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+
+                const replyData = [req.body.review_id,req.body.company_id,req.body.reply_by,req.body.reply_to,req.body.comment,formattedDate,formattedDate]
+
+                db.query('INSERT INTO review_reply (review_id, company_id, reply_by, reply_to, comment, created_at, updated_at) VALUES (?,?,?,?,?,?,?)', replyData, async (err, results) => {
+                    if (err) {
+                        return res.status(500).json({
+                          status: 'error',
+                          message: 'An error occurred while processing your request'+err,
+                        });
+                    }else {
+                        console.log(results.insertId);
+                        const mailReplyData =await comFunction2.ReviewReplyTo(results.insertId)
+
+                        console.log('MailSendTo',mailReplyData);
+                        if(mailReplyData[0].customer_id == req.body.reply_to ){
+                            await comFunction2.ReviewReplyToCustomer(mailReplyData)
+                        }else{
+                            await comFunction2.ReviewReplyToCompany(mailReplyData)
+                        }
+                       
+
+                        return res.send(
+                            {
+                                status: 'ok',
+                                data: '',
+                                message: 'Reply Successfully Sent'
+                            }
+                        );
+                    }
+                    
+
+                });
+            }else{
+                return res.send(
+                    {
+                        status: 'error',
+                        data: '',
+                        message: 'Error occurred : Illegal activities'
+                    }
+                ); 
+            }
+        } else {
+            //res.redirect('sign-in');
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred '+ err);
+    }
+}
+
+// Reset Password
+exports.resetPassword = async (req, res) => {
+    //console.log('resetPassword', req.body);
+    const  { email, new_password } = req.body;
+    let hasPassword = await bcrypt.hash(new_password, 8);
+    //console.log(hasPassword);
+    const check_query = `SELECT user_id, email FROM users WHERE email = '${email}' `;
+    db.query(check_query,(check_err, check_result)=>{
+        if (check_err) {
+            //console.log(check_err);
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong'+check_err
+            });
+        } else {
+            if (check_result.length > 0) {
+                const sql = `UPDATE users SET password = ?  WHERE email = ? `;
+                const data = [hasPassword, email];
+                db.query(sql, data, (err, result) =>{
+                    if (err) {
+                        console.log(err);
+                        return res.send({
+                            status: 'not ok',
+                            message: 'Something went wrong'+err
+                        });
+                    } else {
+                        //Wprdpress User reset password.
+                        (async () => {
+                            try {
+                                const wpUserLoginData = {
+                                    email: email,
+                                    password: new_password,
+                                };
+                                const response = await axios.post(process.env.BLOG_API_ENDPOINT + '/reset-password', wpUserLoginData);
+                                //console.log(response);
+                                const wp_user_data = response.data;
+                                //console.log(wp_user_data);
+                                if(wp_user_data.status=='ok'){
+                                    return res.send(
+                                        {
+                                            status: 'ok',
+                                            data: wp_user_data.data,
+                                            message: 'Password Update Successfully'
+                                        }
+                                    )
+                                }else{
+                                    return res.send(
+                                        {
+                                            status: 'err',
+                                            data: '',
+                                            message: wp_user_data.message
+                                        }
+                                    )
+                                }
+                            } catch (error) {
+                                console.log('axaxa', error);
+                                return res.send(
+                                    {
+                                        status: 'err',
+                                        data: '',
+                                        message: ''
+                                    }
+                                )
+                            }
+                        })();
+                    }
+                })
+            } else {
+                return res.send({
+                    status: 'not ok',
+                    message: 'Your URL is not valid please check or request for another URL'
+                });
+            }
+        }
+    })
+    
+}
+// Change Password
+exports.changePassword = async (req, res) => {
+    console.log('changePassword', req.body);
+    const {userid, current_password, new_password } = req.body;
+    let CurrentHasPassword = await bcrypt.hash(current_password, 8);
+    let hasPassword = await bcrypt.hash(new_password, 8);
+    const check_query = `SELECT password, email  FROM users WHERE user_id = '${userid}' `;
+    db.query(check_query,(check_err, check_result)=>{
+        if (check_err) {
+            //console.log(check_err);
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong'+check_err
+            });
+        } else {
+            if (check_result.length > 0) {
+                const userPassword = check_result[0].password
+                console.log('userPassword',userPassword,'CurrentHasPassword',CurrentHasPassword)
+                bcrypt.compare(current_password, userPassword, (err, result) => {
+                    if (err) {
+                        return res.send(
+                            {
+                                status: 'err',
+                                data: '',
+                                message: 'Error: ' + err
+                            }
+                        )
+                    }
+                    if (result) {
+                        const sql = `UPDATE users SET password = ?  WHERE user_id = '${userid}' `;
+                        const data = [hasPassword, userid];
+                        db.query(sql, data, (err, result) =>{
+                            if (err) {
+                                console.log(err);
+                                return res.send({
+                                    status: 'not ok',
+                                    message: 'Something went wrong'+err
+                                });
+                            } else {
+                                //Wprdpress User reset password.
+                                (async () => {
+                                    try {
+                                        const wpUserLoginData = {
+                                            email: check_result[0].email,
+                                            password: new_password,
+                                        };
+                                        const response = await axios.post(process.env.BLOG_API_ENDPOINT + '/reset-password', wpUserLoginData);
+                                        //console.log(response);
+                                        const wp_user_data = response.data;
+                                        //console.log(wp_user_data);
+                                        if(wp_user_data.status=='ok'){
+                                            return res.send(
+                                                {
+                                                    status: 'ok',
+                                                    data: wp_user_data.data,
+                                                    message: 'Password Update Successfully'
+                                                }
+                                            )
+                                        }else{
+                                            return res.send(
+                                                {
+                                                    status: 'err',
+                                                    data: '',
+                                                    message: wp_user_data.message
+                                                }
+                                            )
+                                        }
+                                    } catch (error) {
+                                        console.log('axaxa', error);
+                                        return res.send(
+                                            {
+                                                status: 'err',
+                                                data: '',
+                                                message: ''
+                                            }
+                                        )
+                                    }
+                                })();
+                            }
+                        })
+                    }else {
+                        return res.send({
+                            status: 'not ok',
+                            message: 'Current Password is not correct!'
+                        });
+                    }
+                })
+                
+            } else {
+                return res.send({
+                    status: 'not ok',
+                    message: 'User is not valid'
+                });
+            }
+        }
+    })
+}
+

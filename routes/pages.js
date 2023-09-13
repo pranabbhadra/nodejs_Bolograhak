@@ -3,17 +3,50 @@ const path = require('path');
 const fs = require('fs');
 const db = require('../config');
 var moment = require('moment');
-const { error } = require('console');
+const { error, log, Console } = require('console');
 const async = require('async');
 const axios = require('axios');
 const dotenv = require('dotenv');
 dotenv.config({ path: './.env' });
+const crypto = require('crypto');
 
 const comFunction = require('../common_function');
 const comFunction2 = require('../common_function2');
 
 const router = express.Router();
 const publicPath = path.join(__dirname, '../public');
+
+
+router.get('/countries', (req, res) => {
+    db.query('SELECT * FROM countries', (err, results) => {
+        if (err) {
+            return res.send(
+                {
+                    status: 'err',
+                    data: '',
+                    message: 'An error occurred while processing your request' + err
+                }
+            )
+        } else {
+            if (results.length > 0) {
+                return res.status(200).json({
+                    status: 'ok',
+                    data: results,
+                    message: 'All countries received',
+                });
+            }
+        }
+    })
+});
+
+router.get('/admin-login', (req, res) => {
+    const encodedUserData = req.cookies.user;
+    if (encodedUserData) {
+        res.redirect('dashboard');
+    } else {
+        res.render('sign-in', { message: '' })
+    }
+});
 
 router.get('/register-user', async (req, res) => {
     console.log(req.query);
@@ -47,9 +80,11 @@ const checkCookieValue = (req, res, next) => {
 router.get('', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
 
-    const [allRatingTags,globalPageMeta] = await Promise.all([
+    const [allRatingTags,globalPageMeta,latestReviews,AllReviewTags] = await Promise.all([
         comFunction.getAllRatingTags(),
         comFunction2.getPageMetaValues('global'),
+        comFunction2.getlatestReviews(20),
+        comFunction2.getAllReviewTags()
     ]);
     const rangeTexts = {};
 
@@ -87,7 +122,10 @@ router.get('', checkCookieValue, async (req, res) => {
                     //     meta_values_array,
                     //     featured_comps,
                     //     allRatingTags: allRatingTags,
-                    //     AddressapiKey: process.env.ADDRESS_GOOGLE_API_Key
+                    //     AddressapiKey: process.env.ADDRESS_GOOGLE_API_Key,
+                    //     globalPageMeta:globalPageMeta,
+                    //     latestReviews: latestReviews,
+                    //     AllReviewTags: AllReviewTags
                     // });
                     res.render('front-end/landing', {
                         menu_active_id: 'landing',
@@ -99,7 +137,9 @@ router.get('', checkCookieValue, async (req, res) => {
                         featured_comps,
                         allRatingTags: allRatingTags,
                         AddressapiKey: process.env.ADDRESS_GOOGLE_API_Key,
-                        globalPageMeta:globalPageMeta
+                        globalPageMeta:globalPageMeta,
+                        latestReviews: latestReviews,
+                        AllReviewTags: AllReviewTags
                     });
                 })
 
@@ -138,7 +178,9 @@ router.get('', checkCookieValue, async (req, res) => {
                         featured_comps,
                         allRatingTags: allRatingTags,
                         AddressapiKey: process.env.ADDRESS_GOOGLE_API_Key,
-                        globalPageMeta:globalPageMeta
+                        globalPageMeta:globalPageMeta,
+                        latestReviews: latestReviews,
+                        AllReviewTags: AllReviewTags
                     });
                 })
 
@@ -175,38 +217,6 @@ router.get('/contact-us', checkCookieValue,async (req, res) => {
 router.get('/about-us', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
     try {
-        // const sql = `SELECT * FROM page_info where secret_Key = 'about' `;
-        // db.query(sql, (err, results, fields) => {
-        //     if (err) throw err;
-        //     const common = results[0];
-        //     const meta_sql = `SELECT * FROM page_meta where page_id = ${common.id}`;
-        //     db.query(meta_sql, async (meta_err, _meta_result) => {
-        //         if (meta_err) throw meta_err;
-
-        //         const meta_values = _meta_result;
-        //         let meta_values_array = {};
-        //         await meta_values.forEach((item) => {
-        //             meta_values_array[item.page_meta_key] = item.page_meta_value;
-        //         })
-
-                
-        //         /*res.json({
-        //             menu_active_id: 'about',
-        //             page_title: common.title,
-        //             currentUserData: currentUserData,
-        //             common,
-        //             meta_values_array
-        //         });*/
-        //         res.render('front-end/about', {
-        //              menu_active_id: 'about',
-        //              page_title: common.title,
-        //              currentUserData: currentUserData,
-        //              common,
-        //              meta_values_array
-        //          });
-        //     })
-
-        // })
         const [PageInfo,PageMetaValues,globalPageMeta] = await Promise.all([
             comFunction2.getPageInfo('about'),
             comFunction2.getPageMetaValues('about'),
@@ -309,8 +319,6 @@ router.get('/faq', checkCookieValue, async (req, res) => {
     //res.render('front-end/faq', { menu_active_id: 'faq', page_title: 'FAQ', currentUserData });
 });
 
-
-
 router.get('/business', checkCookieValue, async (req, res) => {
     
     const [globalPageMeta] = await Promise.all([
@@ -355,170 +363,6 @@ router.get('/business', checkCookieValue, async (req, res) => {
         res.status(500).send('An error occurred');
     }
 });
-
-
-router.get('/company/:id', checkCookieValue, async (req, res) => {
-    const companyID = req.params.id;
-    const [allRatingTags, CompanyInfo, companyReviewNumbers, getCompanyReviews,globalPageMeta] = await Promise.all([
-        comFunction.getAllRatingTags(),
-        comFunction.getCompany(companyID),
-        comFunction.getCompanyReviewNumbers(companyID),
-        comFunction.getCompanyReviews(companyID),
-        comFunction2.getPageMetaValues('global'),
-    ]);
-    let currentUserData = JSON.parse(req.userData);
-    // res.json({
-    //     allRatingTags,
-    //     CompanyInfo,
-    //     companyReviewNumbers,
-    //     getCompanyReviews
-    // });
-    res.render('front-end/company-details',
-    {
-        menu_active_id: 'company',
-        page_title: 'Organization Details',
-        currentUserData,
-        allRatingTags,
-        CompanyInfo,
-        companyReviewNumbers,
-        getCompanyReviews,
-        globalPageMeta:globalPageMeta
-    });
-});
-
-router.get('/category-details-premium', checkCookieValue, async (req, res) => {
-    let currentUserData = JSON.parse(req.userData);
-    const [globalPageMeta] = await Promise.all([
-        comFunction2.getPageMetaValues('global'),
-    ]);
-
-    res.render('front-end/category-details-premium', { menu_active_id: 'category-details-premium', page_title: 'Categories Details', currentUserData, globalPageMeta:globalPageMeta });
-});
-
-// Middleware function to check if user is Claimed a Company or not
-async function checkClientClaimedCompany(req, res, next) {
-    res.locals.globalData = {
-        BLOG_URL: process.env.BLOG_URL,
-        MAIN_URL: process.env.MAIN_URL,
-        // Add other variables as needed
-    };    
-    const encodedUserData = req.cookies.user;
-    //console.log('aaaaaaaaa',encodedUserData);
-    //let currentUserData = JSON.parse(req.userData);
-    try {
-        
-        if (encodedUserData) {
-            const UserJsonData = JSON.parse(encodedUserData);
-            //console.log('checkClientClaimedCompany',UserJsonData);
-            // User is logged in, proceed to the next middleware or route handler
-            if(UserJsonData && UserJsonData.claimed_comp_id == req.params.compID ){
-                next();
-            }else{
-                res.redirect('/');
-            }
-            
-        } else {
-            res.redirect('/');
-        }
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('An error occurred');
-    }
-}
-//Basic company profile dashboard Page 
-router.get('/basic-company-profile/:compID', checkClientClaimedCompany, async (req, res) => {
-    
-    const encodedUserData = req.cookies.user;
-    const currentUserData = JSON.parse(encodedUserData);
-    //let currentUserData = JSON.parse(req.userData);
-
-    const companyId = req.params.compID;
-    const [globalPageMeta, company] = await Promise.all([
-        comFunction2.getPageMetaValues('global'),
-        comFunction.getCompany(companyId),
-    ]);
-    //console.log(company);
-    res.render('front-end/basic-company-profile-dashboard', 
-    { 
-        menu_active_id: 'basic-company-dashboard', 
-        page_title: 'Company Dashboard', 
-        currentUserData, 
-        globalPageMeta:globalPageMeta,
-        company
-    });
-});
-
-//Premium company profile dashboard Page 
-router.get('/premium-company-profile/:compID', checkClientClaimedCompany, async (req, res) => {
-    //let currentUserData = JSON.parse(req.userData);
-    const encodedUserData = req.cookies.user;
-    const currentUserData = JSON.parse(encodedUserData);
-    const companyId = req.params.compID;
-
-    const [globalPageMeta, company] = await Promise.all([
-        comFunction2.getPageMetaValues('global'),
-        comFunction.getCompany(companyId),
-    ]);
-
-    res.render('front-end/premium-company-profile-dashboard', 
-    { 
-        menu_active_id: 'company-dashboard', 
-        page_title: 'Company Dashboard', 
-        currentUserData, 
-        globalPageMeta:globalPageMeta,
-        company
-    });
-});
-
-//company dashboard management Page 
-router.get('/company-profile-management', checkCookieValue, async (req, res) => {
-    let currentUserData = JSON.parse(req.userData);
-    const [globalPageMeta] = await Promise.all([
-        comFunction2.getPageMetaValues('global'),
-    ]);
-
-    res.render('front-end/company-profile-management', { menu_active_id: 'company-profile', page_title: 'Company Profile', currentUserData, globalPageMeta:globalPageMeta });
-});
-
-//Basic company dashboard management Page 
-router.get('/basic-company-profile-management/:compId', checkCookieValue, async (req, res) => {
-    let currentUserData = JSON.parse(req.userData);
-    const companyId = req.params.compId;
-    const [globalPageMeta, company] = await Promise.all([
-        comFunction2.getPageMetaValues('global'),
-        comFunction.getCompany(companyId),
-    ]);
-
-    res.render('front-end/basic-company-profile-management', 
-    { 
-        menu_active_id: 'basic-company-management', 
-        page_title: 'Company Profile Management', 
-        currentUserData, 
-        globalPageMeta:globalPageMeta,
-        company:company
-    });
-});
-
-//company dashboard Review listing Page 
-router.get('/company-dashboard-review-listing', checkCookieValue, async (req, res) => {
-    let currentUserData = JSON.parse(req.userData);
-    const [globalPageMeta] = await Promise.all([
-        comFunction2.getPageMetaValues('global'),
-    ]);
-
-    res.render('front-end/company-dashboard-review-listing', { menu_active_id: 'company-dashboard-review-listing', page_title: 'Company Review Listing', currentUserData, globalPageMeta:globalPageMeta });
-});
-
-//company dashboard Review replay Page 
-router.get('/company-dashboard-review-replay', checkCookieValue, async (req, res) => {
-    let currentUserData = JSON.parse(req.userData);
-    const [globalPageMeta] = await Promise.all([
-        comFunction2.getPageMetaValues('global'),
-    ]);
-
-    res.render('front-end/company-dashboard-review-replay', { menu_active_id: 'company-dashboard-review-replay', page_title: 'Company Review Replay', currentUserData, globalPageMeta:globalPageMeta });
-});
-
 
 router.get('/privacy-policy', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
@@ -633,126 +477,577 @@ router.get('/terms-of-service', checkCookieValue, async (req, res) => {
     //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
 });
 
-//FrontEnd users-all-reviews page
-router.get('/users-all-reviews', checkFrontEndLoggedIn, async (req, res) => {
-    try {
-        const encodedUserData = req.cookies.user;
-        const currentUserData = JSON.parse(encodedUserData);
-        const userId = currentUserData.user_id;
-        console.log('editUserID: ', userId);
-
-        // Fetch all the required data asynchronously
-        const [ AllCompaniesReviews, AllReviewTags, allRatingTags,globalPageMeta] = await Promise.all([
-            comFunction2.getAllCompaniesReviews(userId),
-            comFunction2.getAllReviewTags(),
-            comFunction.getAllRatingTags(),
-            comFunction2.getPageMetaValues('global'),
-        ]);
-        //console.log(AllReviewTags);
-        // Render the 'edit-user' EJS view and pass the data
-        res.render('front-end/user-all-reviews', {
-            menu_active_id: 'profile-dashboard',
-            page_title: 'My Reviews',
-            currentUserData,
-            AllCompaniesReviews: AllCompaniesReviews,
-            allRatingTags:allRatingTags,
-            AllReviewTags:AllReviewTags,
-            globalPageMeta:globalPageMeta
-        });
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('An error occurred');
-    }
-    //res.render('front-end/profile-dashboard', { menu_active_id: 'profile-dashboard', page_title: 'My Dashboard', currentUserData });
-});
-
-//FrontEnd myprofile page
-router.get('/edit-myprofile', checkFrontEndLoggedIn, async (req, res) => {  
+router.get('/company/:id', checkCookieValue, async (req, res) => {
+    const companyID = req.params.id;
+    const [allRatingTags, CompanyInfo, companyReviewNumbers, getCompanyReviews, globalPageMeta, PremiumCompanyData] = await Promise.all([
+        comFunction.getAllRatingTags(),
+        comFunction.getCompany(companyID),
+        comFunction.getCompanyReviewNumbers(companyID),
+        comFunction.getCompanyReviews(companyID),
+        comFunction2.getPageMetaValues('global'),
+        comFunction2.getPremiumCompanyData(companyID),
+    ]);
+    let currentUserData = JSON.parse(req.userData);
     
-    try {
-        const encodedUserData = req.cookies.user;
-        const currentUserData = JSON.parse(encodedUserData);
-        const userId = currentUserData.user_id;
-        console.log('editUserID: ', userId);
+    let cover_img = '';
+    let youtube_iframe = '';
+    let gallery_img = [];
+    let products = [];
+    let promotions = [];
+    let facebook_url = '';
+    let twitter_url = '';
+    let instagram_url = '';
+    let linkedin_url = '';
+    let youtube_url = '';
+    let support_data = {};
 
-        // Fetch all the required data asynchronously
-        const [user, userMeta, countries, states, globalPageMeta] = await Promise.all([
-            comFunction.getUser(userId),
-            comFunction.getUserMeta(userId),
-            comFunction.getCountries(),
-            comFunction.getStatesByUserID(userId),
-            comFunction2.getPageMetaValues('global'),
-        ]);
+    if(typeof PremiumCompanyData !== 'undefined' ){
+         cover_img = PremiumCompanyData.cover_img;
+         youtube_iframe = PremiumCompanyData.youtube_iframe;
+         gallery_img = JSON.parse(PremiumCompanyData.gallery_img);
+         products = JSON.parse(PremiumCompanyData.products);
+         promotions = JSON.parse(PremiumCompanyData.promotions);
+         facebook_url = PremiumCompanyData.facebook_url;
+         twitter_url = PremiumCompanyData.twitter_url;
+         instagram_url = PremiumCompanyData.instagram_url;
+         linkedin_url = PremiumCompanyData.linkedin_url;
+         youtube_url = PremiumCompanyData.youtube_url;
+         support_data = {support_email:PremiumCompanyData.support_email,	escalation_one:PremiumCompanyData.escalation_one, escalation_two:PremiumCompanyData.escalation_two, escalation_three:PremiumCompanyData.escalation_three}
+        
+    }
 
-        // Render the 'edit-user' EJS view and pass the data
-        res.render('front-end/update-myprofile', {
-            menu_active_id: 'edit-myprofile',
-            page_title: 'Update My Profile',
+    if(CompanyInfo){
+        if(CompanyInfo.paid_status == 'paid'){
+            res.render('front-end/category-details-premium',
+            {
+                menu_active_id: 'company',
+                page_title: 'Organization Details',
+                currentUserData,
+                allRatingTags,
+                company:CompanyInfo,
+                CompanyInfo,
+                companyReviewNumbers,
+                getCompanyReviews,
+                globalPageMeta:globalPageMeta,
+                cover_img:cover_img,
+                gallery_img:gallery_img,
+                youtube_iframe:youtube_iframe,
+                products:products,
+                promotions:promotions,
+                facebook_url:facebook_url,
+                twitter_url:twitter_url,
+                instagram_url:instagram_url,
+                linkedin_url:linkedin_url,
+                youtube_url:youtube_url,
+                support_data:support_data,
+            });
+        }else{
+            res.render('front-end/company-details',
+            {
+                menu_active_id: 'company',
+                page_title: 'Organization Details',
+                currentUserData,
+                allRatingTags,
+                company:CompanyInfo,
+                CompanyInfo,
+                companyReviewNumbers,
+                getCompanyReviews,
+                globalPageMeta:globalPageMeta
+            });
+            // res.json(
+            // {
+            //     menu_active_id: 'company',
+            //     page_title: 'Organization Details',
+            //     currentUserData,
+            //     allRatingTags,
+            //     company:CompanyInfo,
+            //     CompanyInfo,
+            //     companyReviewNumbers,
+            //     getCompanyReviews,
+            //     globalPageMeta:globalPageMeta
+            // });
+        }
+    }else{
+        res.render('front-end/404', {
+            menu_active_id: '404',
+            page_title: '404',
             currentUserData,
-            user: user,
-            userMeta: userMeta,
-            countries: countries,
-            states: states,
             globalPageMeta:globalPageMeta
         });
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('An error occurred');
     }
+
 });
-// Front-End Page Routes End--------------------//
+//-----------------------------------------------------------------//
 
 
-router.get('/countries', (req, res) => {
-    db.query('SELECT * FROM countries', (err, results) => {
-        if (err) {
-            return res.send(
-                {
-                    status: 'err',
-                    data: '',
-                    message: 'An error occurred while processing your request' + err
-                }
-            )
-        } else {
-            if (results.length > 0) {
-                return res.status(200).json({
-                    status: 'ok',
-                    data: results,
-                    message: 'All countries received',
-                });
+
+// Middleware function to check if user is Claimed a Company or not
+async function checkClientClaimedCompany(req, res, next) {
+    res.locals.globalData = {
+        BLOG_URL: process.env.BLOG_URL,
+        MAIN_URL: process.env.MAIN_URL,
+        // Add other variables as needed
+    };    
+   
+    //const userId = UserJsonData.user_id;
+    //try {
+        
+        if (req.cookies.user) {
+            const encodedUserData = req.cookies.user;
+            const UserJsonData = JSON.parse(encodedUserData);
+            if(UserJsonData && UserJsonData.claimed_comp_id == req.params.compID ){
+                next();
+            }else{
+                res.redirect('/logout');
             }
+            
+        } else {
+            res.redirect('/');
         }
-    })
-});
-
-router.get('/admin-login', (req, res) => {
-    const encodedUserData = req.cookies.user;
-    if (encodedUserData) {
-        res.redirect('dashboard');
-    } else {
-        res.render('sign-in', { message: '' })
-    }
-});
-
-// router.get('/sign-up', (req, res) => {
-//     res.render('sign-up', { message: '' })
-// });
-
-router.get('/logout', (req, res) => {
+    // } catch (err) {
+    //     console.error(err);
+    //     res.status(500).send('An error occurred');
+    // }
+}
+//Basic company profile dashboard Page 
+router.get('/company-dashboard/:compID', checkClientClaimedCompany, async (req, res) => {
+    
     const encodedUserData = req.cookies.user;
     const currentUserData = JSON.parse(encodedUserData);
-    if (currentUserData.user_type_id == 2) {
-        res.clearCookie('user');
-        res.redirect('/');
-    } else {
-        res.clearCookie('user');
-        res.redirect('/admin-login');
+    //let currentUserData = JSON.parse(req.userData);
+    const userId = currentUserData.user_id;
+    const companyId = req.params.compID;
+    const [globalPageMeta, company, companyReviewNumbers, allRatingTags, allCompanyReviews, allCompanyReviewTags, PremiumCompanyData, reviewTagsCount, TotalReplied] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+        comFunction.getCompany(companyId),
+        comFunction.getCompanyReviewNumbers(companyId),
+        comFunction.getAllRatingTags(),
+        comFunction.getAllReviewsByCompanyID(companyId),
+        comFunction2.getAllReviewTags(),
+        comFunction2.getPremiumCompanyData(companyId),
+        comFunction.reviewTagsCountByCompanyID(companyId),
+        comFunction2.TotalReplied(userId),
+    ]);
+    //console.log('TotalReplied:', currentUserData.user_id);
+
+    let facebook_url = '';
+    let twitter_url = '';
+    let instagram_url = '';
+    let linkedin_url = '';
+    let youtube_url = '';
+
+    if(typeof PremiumCompanyData !== 'undefined' ){
+            facebook_url = PremiumCompanyData.facebook_url;
+            twitter_url = PremiumCompanyData.twitter_url;
+            instagram_url = PremiumCompanyData.instagram_url;
+            linkedin_url = PremiumCompanyData.linkedin_url;
+            youtube_url = PremiumCompanyData.youtube_url;
+    }
+
+    const reviewTagsMap = {};
+    allCompanyReviewTags.forEach(tag => {
+        if (!reviewTagsMap[tag.review_id]) {
+            reviewTagsMap[tag.review_id] = [];
+        }
+        reviewTagsMap[tag.review_id].push({ review_id: tag.review_id, tag_name: tag.tag_name });
+    });
+    // Merge allReviews with their associated tags
+    const finalCompanyallReviews = allCompanyReviews.map(review => {
+        return {
+            ...review,
+            Tags: reviewTagsMap[review.id] || []
+        };
+    }); 
+
+    const xValues = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
+    const reviewReatingChartArray = xValues.map(xValue => {
+        const matchingItem = companyReviewNumbers.rewiew_rating_count.find(item => item.rating === xValue);
+        const yValue = matchingItem ? matchingItem.cnt_rat : 0;
+        return { x: xValue, y: yValue, color: '#F8A401' };
+    });
+
+    const companyPaidStatus = company.paid_status;
+    //console.log(companyPaidStatus);
+    if(companyPaidStatus=='free'){
+        res.render('front-end/basic-company-profile-dashboard', 
+        { 
+            menu_active_id: 'company-dashboard', 
+            page_title: 'Company Dashboard', 
+            currentUserData, 
+            globalPageMeta:globalPageMeta,
+            company,
+            companyReviewNumbers,
+            allRatingTags,
+            finalCompanyallReviews,
+            reviewReatingChartArray,
+            reviewTagsCount,
+            TotalReplied:TotalReplied
+        });
+    }else{
+        // res.json( 
+        // { 
+        //     company,
+        //     companyReviewNumbers,
+        //     allRatingTags,
+        //     finalCompanyallReviews,
+        //     reviewReatingChartArray,
+        //     facebook_url:facebook_url,
+        //     twitter_url:twitter_url,
+        //     instagram_url:instagram_url,
+        //     linkedin_url:linkedin_url,
+        //     youtube_url:youtube_url,
+        //     reviewTagsCount
+        // });
+        res.render('front-end/premium-company-profile-dashboard', 
+        { 
+            menu_active_id: 'company-dashboard', 
+            page_title: 'Company Dashboard', 
+            currentUserData, 
+            globalPageMeta:globalPageMeta,
+            company,
+            companyReviewNumbers,
+            allRatingTags,
+            finalCompanyallReviews,
+            reviewReatingChartArray,
+            facebook_url:facebook_url,
+            twitter_url:twitter_url,
+            instagram_url:instagram_url,
+            linkedin_url:linkedin_url,
+            youtube_url:youtube_url,
+            reviewTagsCount,
+            TotalReplied:TotalReplied
+        });
+
+        // res.json(
+        // { 
+        //     menu_active_id: 'company-dashboard', 
+        //     page_title: 'Company Dashboard', 
+        //     currentUserData, 
+        //     globalPageMeta:globalPageMeta,
+        //     company,
+        //     companyReviewNumbers,
+        //     allRatingTags,
+        //     finalCompanyallReviews,
+        //     reviewReatingChartArray,
+        //     facebook_url:facebook_url,
+        //     twitter_url:twitter_url,
+        //     instagram_url:instagram_url,
+        //     linkedin_url:linkedin_url,
+        //     youtube_url:youtube_url,
+        //     reviewTagsCount,
+        //     TotalReplied:TotalReplied
+        // });
+    }
+});
+
+//company dashboard management Page 
+router.get('/company-profile-management/:compID', checkClientClaimedCompany, async (req, res) => {
+    const encodedUserData = req.cookies.user;
+    const currentUserData = JSON.parse(encodedUserData);
+    const companyId = req.params.compID;
+
+    const [globalPageMeta, company, PremiumCompanyData, companyReviewNumbers, getCompanyReviews, allRatingTags] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+        comFunction.getCompany(companyId),
+        comFunction2.getPremiumCompanyData(companyId),
+        comFunction.getCompanyReviewNumbers(companyId),
+        comFunction.getCompanyReviews(companyId),
+        comFunction.getAllRatingTags(),
+    ]);
+
+    const companyPaidStatus = company.paid_status;
+    if(companyPaidStatus=='free'){
+        res.render('front-end/basic-company-profile-management', 
+        { 
+            menu_active_id: 'company-profile-management', 
+            page_title: 'Profile Management', 
+            currentUserData, 
+            globalPageMeta:globalPageMeta,
+            company:company,
+            companyReviewNumbers,
+            getCompanyReviews,
+            allRatingTags
+        }); 
+    }else{
+        let cover_img = '';
+        let youtube_iframe = '';
+        let gallery_img = [];
+        let product = [];
+        let promotions = [];
+        let facebook_url = '';
+        let twitter_url = '';
+        let instagram_url = '';
+        let linkedin_url = '';
+        let youtube_url = '';
+        let support_data = {};
+    
+        if(typeof PremiumCompanyData !== 'undefined' ){
+             cover_img = PremiumCompanyData.cover_img;
+             youtube_iframe = PremiumCompanyData.youtube_iframe;
+             gallery_img = JSON.parse(PremiumCompanyData.gallery_img);
+             product = JSON.parse(PremiumCompanyData.products);
+             promotions = JSON.parse(PremiumCompanyData.promotions);
+             facebook_url = PremiumCompanyData.facebook_url;
+             twitter_url = PremiumCompanyData.twitter_url;
+             instagram_url = PremiumCompanyData.instagram_url;
+             linkedin_url = PremiumCompanyData.linkedin_url;
+             youtube_url = PremiumCompanyData.youtube_url;
+             support_data = {support_email:PremiumCompanyData.support_email,	escalation_one:PremiumCompanyData.escalation_one, escalation_two:PremiumCompanyData.escalation_two, escalation_three:PremiumCompanyData.escalation_three}
+        }
+        
+        res.render('front-end/premium-company-profile-management', 
+        { 
+            menu_active_id: 'company-profile-management', 
+            page_title: 'Profile Management', 
+            currentUserData, 
+            globalPageMeta:globalPageMeta,
+            company:company,
+            cover_img:cover_img,
+            gallery_img:gallery_img,
+            youtube_iframe:youtube_iframe,
+            products:product,
+            promotions:promotions,
+            facebook_url:facebook_url,
+            twitter_url:twitter_url,
+            instagram_url:instagram_url,
+            linkedin_url:linkedin_url,
+            youtube_url:youtube_url,
+            support_data:support_data,
+            companyReviewNumbers,
+            getCompanyReviews,
+            allRatingTags
+        });  
+    }
+});
+
+//company dashboard Review listing Page 
+router.get('/company-review-listing/:compID', checkClientClaimedCompany, async (req, res) => {
+    const encodedUserData = req.cookies.user;
+    const currentUserData = JSON.parse(encodedUserData);
+    const companyId = req.params.compID;
+    const [globalPageMeta, company, allReviews, allReviewTags, companyReviewNumbers, getCompanyReviews, allRatingTags, PremiumCompanyData] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+        comFunction.getCompany(companyId),
+        comFunction.getAllReviewsByCompanyID(companyId),
+        comFunction2.getAllReviewTags(),
+        comFunction.getCompanyReviewNumbers(companyId),
+        comFunction.getCompanyReviews(companyId),
+        comFunction.getAllRatingTags(),
+        comFunction2.getPremiumCompanyData(companyId)
+    ]);
+    
+    const reviewTagsMap = {};
+    allReviewTags.forEach(tag => {
+        if (!reviewTagsMap[tag.review_id]) {
+        reviewTagsMap[tag.review_id] = [];
+        }
+        reviewTagsMap[tag.review_id].push({ review_id: tag.review_id, tag_name: tag.tag_name });
+    });
+    // Merge allReviews with their associated tags
+    const finalallReviews = allReviews.map(review => {
+        return {
+            ...review,
+            Tags: reviewTagsMap[review.id] || []
+        };
+    });
+    const companyPaidStatus = company.paid_status;
+    if(companyPaidStatus=='free'){
+        res.render('front-end/basic-company-dashboard-review-listing',
+        {
+            menu_active_id: 'company-review-listing',
+            page_title: 'Review Listing',
+            currentUserData,
+            globalPageMeta:globalPageMeta,
+            company:company,
+            finalallReviews,
+            companyReviewNumbers,
+            getCompanyReviews,
+            allRatingTags
+        });
+    }else{
+        let cover_img = '';
+        let youtube_iframe = '';
+        let gallery_img = [];
+        let product = [];
+        let promotions = [];
+        let facebook_url = '';
+        let twitter_url = '';
+        let instagram_url = '';
+        let linkedin_url = '';
+        let youtube_url = '';
+    
+        if(typeof PremiumCompanyData !== 'undefined' ){
+             cover_img = PremiumCompanyData.cover_img;
+             youtube_iframe = PremiumCompanyData.youtube_iframe;
+             gallery_img = JSON.parse(PremiumCompanyData.gallery_img);
+             product = JSON.parse(PremiumCompanyData.products);
+             promotions = JSON.parse(PremiumCompanyData.promotions);
+             facebook_url = PremiumCompanyData.facebook_url;
+             twitter_url = PremiumCompanyData.twitter_url;
+             instagram_url = PremiumCompanyData.instagram_url;
+             linkedin_url = PremiumCompanyData.linkedin_url;
+             youtube_url = PremiumCompanyData.youtube_url;
+        }
+        res.render('front-end/premium-company-dashboard-review-listing',
+        {
+            menu_active_id: 'company-review-listing',
+            page_title: 'Review Listing',
+            currentUserData,
+            globalPageMeta:globalPageMeta,
+            company:company,
+            finalallReviews,
+            companyReviewNumbers,
+            getCompanyReviews,
+            allRatingTags,
+            facebook_url:facebook_url,
+            twitter_url:twitter_url,
+            instagram_url:instagram_url,
+            linkedin_url:linkedin_url,
+            youtube_url:youtube_url
+        });
+    }
+});
+
+//company dashboard Review replay Page 
+router.get('/company-dashboard-review-replay/:compID/:reviewID', checkClientClaimedCompany, async (req, res) => {
+    const encodedUserData = req.cookies.user;
+    const currentUserData = JSON.parse(encodedUserData);
+    //let currentUserData = JSON.parse(req.userData);
+
+    const companyId = req.params.compID;
+    const reviewId = req.params.reviewID;
+    const [globalPageMeta, company, companyReviewNumbers, allRatingTags, allCompanyReviews, allCompanyReviewTags, singleReviewData, singleReviewReplyData, PremiumCompanyData] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+        comFunction.getCompany(companyId),
+        comFunction.getCompanyReviewNumbers(companyId),
+        comFunction.getAllRatingTags(),
+        comFunction.getAllReviewsByCompanyID(companyId),
+        comFunction2.getAllReviewTags(),
+        comFunction.getReviewByID(reviewId),
+        comFunction.getReviewReplyDataByID(reviewId),
+        comFunction2.getPremiumCompanyData(companyId),
+    ]);
+
+    const reviewTagsMap = {};
+    allCompanyReviewTags.forEach(tag => {
+        if (!reviewTagsMap[tag.review_id]) {
+            reviewTagsMap[tag.review_id] = [];
+        }
+        reviewTagsMap[tag.review_id].push({ review_id: tag.review_id, tag_name: tag.tag_name });
+    });
+    // Merge allReviews with their associated tags
+    const finalsingleReviewData = singleReviewData.map(review => {
+        return {
+            ...review,
+            Tags: reviewTagsMap[review.id] || []
+        };
+    });
+
+    const companyPaidStatus = company.paid_status;
+    //console.log(companyPaidStatus);
+    if(companyPaidStatus=='free'){
+        if(Array.isArray(singleReviewData) && singleReviewData.length>0){
+            if(Array.isArray(singleReviewData) && singleReviewData[0].company_owner == currentUserData.user_id && singleReviewData[0].company_id == company.ID){
+                res.render('front-end/basic-company-review-replay', 
+                { 
+                    menu_active_id: 'company-review-listing', 
+                    page_title: 'Company Review Replay', 
+                    currentUserData, 
+                    globalPageMeta:globalPageMeta,
+                    company,
+                    companyReviewNumbers,
+                    allRatingTags,
+                    finalsingleReviewData,
+                    singleReviewReplyData
+                });
+                // res.json(
+                // { 
+                //     menu_active_id: 'company-review-listing', 
+                //     page_title: 'Company Review Replay', 
+                //     currentUserData, 
+                //     globalPageMeta:globalPageMeta,
+                //     company,
+                //     companyReviewNumbers,
+                //     allRatingTags,
+                //     finalsingleReviewData,
+                //     singleReviewReplyData
+                // });
+            }else{
+                res.redirect('/company-review-listing/'+company.ID);
+            }
+        }else{
+            res.redirect('/company-review-listing/'+company.ID);
+        }
+    }else{
+        let cover_img = '';
+        let youtube_iframe = '';
+        let gallery_img = [];
+        let product = [];
+        let promotions = [];
+        let facebook_url = '';
+        let twitter_url = '';
+        let instagram_url = '';
+        let linkedin_url = '';
+        let youtube_url = '';
+    
+        if(typeof PremiumCompanyData !== 'undefined' ){
+             cover_img = PremiumCompanyData.cover_img;
+             youtube_iframe = PremiumCompanyData.youtube_iframe;
+             gallery_img = JSON.parse(PremiumCompanyData.gallery_img);
+             product = JSON.parse(PremiumCompanyData.products);
+             promotions = JSON.parse(PremiumCompanyData.promotions);
+             facebook_url = PremiumCompanyData.facebook_url;
+             twitter_url = PremiumCompanyData.twitter_url;
+             instagram_url = PremiumCompanyData.instagram_url;
+             linkedin_url = PremiumCompanyData.linkedin_url;
+             youtube_url = PremiumCompanyData.youtube_url;
+        }
+        if(Array.isArray(singleReviewData) && singleReviewData.length>0){
+            if(Array.isArray(singleReviewData) && singleReviewData[0].company_owner == currentUserData.user_id && singleReviewData[0].company_id == company.ID){
+                res.render('front-end/premium-company-review-replay', 
+                { 
+                    menu_active_id: 'company-review-listing', 
+                    page_title: 'Company Review Replay', 
+                    currentUserData, 
+                    globalPageMeta:globalPageMeta,
+                    company,
+                    companyReviewNumbers,
+                    allRatingTags,
+                    finalsingleReviewData,
+                    singleReviewReplyData,
+                    facebook_url:facebook_url,
+                    twitter_url:twitter_url,
+                    instagram_url:instagram_url,
+                    linkedin_url:linkedin_url,
+                    youtube_url:youtube_url
+                });
+                // res.json( 
+                // { 
+                //     menu_active_id: 'company-review-listing', 
+                //     page_title: 'Company Review Replay', 
+                //     currentUserData, 
+                //     globalPageMeta:globalPageMeta,
+                //     company,
+                //     companyReviewNumbers,
+                //     allRatingTags,
+                //     finalsingleReviewData,
+                //     singleReviewReplyData,
+                //     facebook_url:facebook_url,
+                //     twitter_url:twitter_url,
+                //     instagram_url:instagram_url,
+                //     linkedin_url:linkedin_url,
+                //     youtube_url:youtube_url
+                // });
+            }else{
+                res.redirect('/company-review-listing/'+company.ID);
+            }
+        }else{
+            res.redirect('/company-review-listing/'+company.ID);
+        }
     }
 
 });
 
-
-// Protected route example
 
 // Middleware function to check if user is logged in
 async function checkLoggedIn(req, res, next) {
@@ -781,7 +1076,6 @@ async function checkLoggedIn(req, res, next) {
         res.status(500).send('An error occurred');
     }
 }
-
 // Middleware function to check if user is Administrator or not
 async function checkLoggedInAdministrator(req, res, next) {
     res.locals.globalData = {
@@ -809,7 +1103,6 @@ async function checkLoggedInAdministrator(req, res, next) {
         res.status(500).send('An error occurred');
     }
 }
-
 
 router.get('/dashboard', checkLoggedIn, (req, res) => {
     const encodedUserData = req.cookies.user;
@@ -1142,8 +1435,6 @@ router.get('/delete-category', checkLoggedIn, (req, res, next) => {
 
 });
 
-
-
 router.get('/edit-user/:id', checkLoggedIn, async (req, res) => {
     try {
         const encodedUserData = req.cookies.user;
@@ -1186,7 +1477,6 @@ router.get('/edit-user/:id', checkLoggedIn, async (req, res) => {
         res.status(500).send('An error occurred');
     }
 });
-
 
 //---Company--//
 router.get('/add-company', checkLoggedIn, async (req, res) => {
@@ -1391,23 +1681,35 @@ router.get('/edit-review/:id', checkLoggedIn, async (req, res) => {
         const review_Id = req.params.id;
 
         // Fetch all the required data asynchronously
-        const [reviewData, reviewTagData] = await Promise.all([
+        const [reviewData, reviewTagData, allcompany] = await Promise.all([
             comFunction.getCustomerReviewData(review_Id),
             comFunction.getCustomerReviewTagRelationData(review_Id),
+            comFunction.getAllCompany()
         ]);
         //console.log(reviewData);
-        // Render the 'edit-user' EJS view and pass the data
+       // Render the 'edit-user' EJS view and pass the data
         // res.json({
         //     reviewData: reviewData,
-        //     reviewTagData: reviewTagData,        
+        //     reviewTagData: reviewTagData,
+        //     allcompany      
         // });
-        res.render('edit-review', {
-            menu_active_id: 'review',
-            page_title: 'Edit Review',
-            currentUserData,
-            reviewData,
-            reviewTagData: reviewTagData,            
-        });
+        if(reviewData){
+            res.render('edit-review', {
+                menu_active_id: 'review',
+                page_title: 'Edit Review',
+                currentUserData,
+                reviewData,
+                reviewTagData: reviewTagData,
+                allcompany            
+            });
+        }else{
+            res.render('front-end/404', {
+                menu_active_id: '404',
+                page_title: '404',
+                currentUserData,
+                globalPageMeta:[]
+            });
+        }
     } catch (err) {
         console.error(err);
         res.status(500).send('An error occurred');
@@ -1644,7 +1946,6 @@ router.get('/delete-featured-companies/:id', checkLoggedIn, async (req, res) => 
     }
 });
 
-
 //---View Featured Company--//
 router.get('/view-featured-companies', checkLoggedIn, async (req, res) => {
     try {
@@ -1813,6 +2114,44 @@ router.get('/edit-terms-of-service', checkLoggedIn, (req, res) => {
     }
 });
 
+//Edit Global Page Management
+router.get('/edit-global', checkLoggedIn, (req, res) => {
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+        const sql = `SELECT * FROM page_info where secret_Key = 'global' `;
+        db.query(sql, (err, results, fields) => {
+            if (err) throw err;
+            const common = results[0];
+            const meta_sql = `SELECT * FROM page_meta where page_id = ${common.id}`;
+            db.query(meta_sql, async (meta_err, _meta_result) => {
+                if (meta_err) throw meta_err;
+
+                const meta_values = _meta_result;
+                let meta_values_array = {};
+                await meta_values.forEach((item) => {
+                    meta_values_array[item.page_meta_key] = item.page_meta_value;
+                })
+                //console.log(meta_values_array);
+                res.render('pages/update-global', {
+                    menu_active_id: 'pages',
+                    page_title: 'Global Content',
+                    currentUserData,
+                    common,
+                    meta_values_array,
+                });
+            })
+
+        })
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+//-----------------------------------------------------------------//
+
+
+
 // Middleware function to check if user is logged in Frontend
 async function checkFrontEndLoggedIn(req, res, next) {
 
@@ -1846,10 +2185,11 @@ router.get('/myprofile', checkFrontEndLoggedIn, async (req, res) => {
         //console.log('editUserID: ', currentUserData);
 
         // Fetch all the required data asynchronously
-        const [user, userMeta, globalPageMeta] = await Promise.all([
+        const [user, userMeta, globalPageMeta, AllCompaniesReviews] = await Promise.all([
             comFunction.getUser(userId),
             comFunction.getUserMeta(userId),
             comFunction2.getPageMetaValues('global'),
+            comFunction2.getAllCompaniesReviews(userId),
         ]);
 
         // Render the 'edit-user' EJS view and pass the data
@@ -1859,7 +2199,8 @@ router.get('/myprofile', checkFrontEndLoggedIn, async (req, res) => {
             currentUserData,
             user: user,
             userMeta: userMeta,
-            globalPageMeta:globalPageMeta
+            globalPageMeta:globalPageMeta,
+            AllCompaniesReviews: AllCompaniesReviews
         });
     } catch (err) {
         console.error(err);
@@ -1876,7 +2217,7 @@ router.get('/profile-dashboard', checkFrontEndLoggedIn, async (req, res) => {
         console.log('editUserID: ', userId);
 
         // Fetch all the required data asynchronously
-        const [user, userMeta, ReviewedCompanies, AllCompaniesReviews, AllReviewTags, allRatingTags,globalPageMeta] = await Promise.all([
+        const [user, userMeta, ReviewedCompanies, AllCompaniesReviews, AllReviewTags, allRatingTags, globalPageMeta] = await Promise.all([
             comFunction.getUser(userId),
             comFunction.getUserMeta(userId),
             comFunction2.getReviewedCompanies(userId),
@@ -1885,8 +2226,20 @@ router.get('/profile-dashboard', checkFrontEndLoggedIn, async (req, res) => {
             comFunction.getAllRatingTags(),
             comFunction2.getPageMetaValues('global'),
         ]);
-        console.log(userMeta);
+        //console.log(userMeta);
         // Render the 'edit-user' EJS view and pass the data
+        // res.json({
+        //     menu_active_id: 'profile-dashboard',
+        //     page_title: 'My Dashboard',
+        //     currentUserData,
+        //     user: user,
+        //     userMeta: userMeta,
+        //     ReviewedCompanies: ReviewedCompanies,
+        //     AllCompaniesReviews: AllCompaniesReviews,
+        //     allRatingTags:allRatingTags,
+        //     AllReviewTags:AllReviewTags,
+        //     globalPageMeta:globalPageMeta
+        // });
         res.render('front-end/profile-dashboard', {
             menu_active_id: 'profile-dashboard',
             page_title: 'My Dashboard',
@@ -1939,50 +2292,184 @@ router.get('/my-reviews', checkFrontEndLoggedIn, async (req, res) => {
     //res.render('front-end/profile-dashboard', { menu_active_id: 'profile-dashboard', page_title: 'My Dashboard', currentUserData });
 });
 
-
-//Edit terms-of-service Page
-router.get('/edit-global', checkLoggedIn, (req, res) => {
+//FrontEnd myprofile page
+router.get('/edit-myprofile', checkFrontEndLoggedIn, async (req, res) => {  
+    
     try {
         const encodedUserData = req.cookies.user;
         const currentUserData = JSON.parse(encodedUserData);
-        const sql = `SELECT * FROM page_info where secret_Key = 'global' `;
-        db.query(sql, (err, results, fields) => {
-            if (err) throw err;
-            const common = results[0];
-            const meta_sql = `SELECT * FROM page_meta where page_id = ${common.id}`;
-            db.query(meta_sql, async (meta_err, _meta_result) => {
-                if (meta_err) throw meta_err;
+        const userId = currentUserData.user_id;
+        console.log('editUserID: ', userId);
 
-                const meta_values = _meta_result;
-                let meta_values_array = {};
-                await meta_values.forEach((item) => {
-                    meta_values_array[item.page_meta_key] = item.page_meta_value;
-                })
-                //console.log(meta_values_array);
-                res.render('pages/update-global', {
-                    menu_active_id: 'pages',
-                    page_title: 'Global Content',
-                    currentUserData,
-                    common,
-                    meta_values_array,
-                });
-            })
+        // Fetch all the required data asynchronously
+        const [user, userMeta, countries, states, globalPageMeta, AllCompaniesReviews] = await Promise.all([
+            comFunction.getUser(userId),
+            comFunction.getUserMeta(userId),
+            comFunction.getCountries(),
+            comFunction.getStatesByUserID(userId),
+            comFunction2.getPageMetaValues('global'),
+            comFunction2.getAllCompaniesReviews(userId),
+        ]);
 
-        })
+        // Render the 'edit-user' EJS view and pass the data
+        res.render('front-end/update-myprofile', {
+            menu_active_id: 'edit-myprofile',
+            page_title: 'Update My Profile',
+            currentUserData,
+            user: user,
+            userMeta: userMeta,
+            countries: countries,
+            states: states,
+            globalPageMeta:globalPageMeta,
+            AllCompaniesReviews: AllCompaniesReviews
+        });
     } catch (err) {
         console.error(err);
         res.status(500).send('An error occurred');
     }
 });
 
+//FrontEnd Change Password page
+router.get('/change-password', checkFrontEndLoggedIn, async (req, res) => {  
+    
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+        const userId = currentUserData.user_id;
+        //console.log('editUserID: ', currentUserData);
 
-router.get('/help/:id', (_, resp) => {
-    resp.sendFile(`${publicPath}/help.html`)
+        // Fetch all the required data asynchronously
+        const [globalPageMeta ] = await Promise.all([
+            comFunction2.getPageMetaValues('global'),
+        ]);
+
+        // Render the 'edit-user' EJS view and pass the data
+        res.render('front-end/change-password', {
+            menu_active_id: 'change-password',
+            page_title: 'Change Password',
+            currentUserData,
+            globalPageMeta:globalPageMeta
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+//-----------------------------------------------------------------//
+
+
+
+router.get('/reset-password/:email', checkCookieValue, async (req, res) => {
+
+    try {
+            let currentUserData = JSON.parse(req.userData);
+            
+            const encryptEmail = req.params.email;
+            //console.log(encryptEmail);
+            const passphrase = process.env.ENCRYPT_DECRYPT_SECRET;
+             const decipher = crypto.createDecipher('aes-256-cbc', passphrase);
+             let decrypted = decipher.update(encryptEmail, 'hex', 'utf8');
+             decrypted += decipher.final('utf8');
+             const decrypted_email = decrypted;
+             //console.log('Decrypted:', decrypted);
+            const [globalPageMeta] = await Promise.all([
+                comFunction2.getPageMetaValues('global'),
+            ]);
+
+        res.render('front-end/reset-password', {
+            menu_active_id: 'reset-password',
+            page_title: 'Reset Password',
+            currentUserData,
+            globalPageMeta:globalPageMeta,
+            decrypted_email,
+            error_message:''
+        });
+    } catch (err) {
+        console.error(err);
+        let currentUserData = JSON.parse(req.userData);
+            const [globalPageMeta] = await Promise.all([
+                comFunction2.getPageMetaValues('global'),
+            ]);
+        //res.status(500).send('An error occurred');
+        res.render('front-end/reset-password', {
+            menu_active_id: 'reset-password',
+            page_title: 'Reset Password',
+            currentUserData,
+            globalPageMeta:globalPageMeta,
+            error_message:'urlNotCorrect'
+        });
+    }
+    
+    //res.sendFile(`${publicPath}/nopage.html`)
+});
+
+router.get('/logout', (req, res) => {
+    const encodedUserData = req.cookies.user;
+    const currentUserData = JSON.parse(encodedUserData);
+    //console.log(currentUserData);
+
+    //--WP Logout--//
+    (async () => {
+        try {
+            const wpUserLoginData = {
+                email: currentUserData.email,
+                user_type: currentUserData.user_type_id
+            };
+            const response = await axios.post(process.env.BLOG_API_ENDPOINT + '/force-logout', wpUserLoginData);
+            //console.log(response);
+            const wp_user_data = response.data;
+            //console.log(wp_user_data);
+            if(wp_user_data.user_nonce!=''){
+                if (currentUserData.user_type_id == 2) {
+                    res.clearCookie('user');
+                    //res.redirect('/');
+                    res.redirect(process.env.BLOG_URL+'wp-login.php?action=logout&redirect_to='+process.env.MAIN_URL+'&_wpnonce='+wp_user_data.user_nonce);
+                } else {
+                    res.clearCookie('user');
+                    res.redirect(process.env.BLOG_URL+'wp-login.php?action=logout&redirect_to='+process.env.MAIN_URL+'admin-login&_wpnonce='+wp_user_data.user_nonce);
+                }
+            }else{
+                //Logout Only From Node.
+                if (currentUserData.user_type_id == 2) {
+                    res.clearCookie('user');
+                    res.redirect('/');
+                } else {
+                    res.clearCookie('user');
+                    res.redirect('/admin-login');
+                }                
+            }
+        } catch (error) {
+            console.log('Error: ', error);
+            // return res.send(
+            //     {
+            //         status: 'err',
+            //         data: '',
+            //         message: ''
+            //     }
+            // )
+        }
+    })();
+
 });
 
 //-- 404---//
-router.get('*', (_, resp) => {
-    resp.sendFile(`${publicPath}/nopage.html`)
+router.get('*',checkCookieValue, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
+    const [globalPageMeta] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+    ]);
+    try {
+        res.render('front-end/404', {
+            menu_active_id: '404',
+            page_title: '404',
+            currentUserData,
+            globalPageMeta:globalPageMeta
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+    //res.sendFile(`${publicPath}/nopage.html`)
 });
 
 

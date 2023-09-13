@@ -50492,3 +50492,80 @@ body {
 }
 
 /*# sourceMappingURL=style.bundle.css.map*/
+
+
+/*======================== Custom CSS ===========================*/
+
+.aside-dark .menu .menu-item .menu-link .menu-title {
+  color: #fff;
+}
+
+.aside-dark .menu .menu-item .menu-section {
+  color: #fff !important;
+}
+
+.aside.aside-dark .aside-logo,
+.aside-dark .hover-scroll-overlay-y,
+.aside-footer,
+.aside .aside-menu {
+  background-color: #000;
+}
+
+.aside-dark .menu .menu-item .menu-link:hover:not(.disabled):not(.active) .menu-title,
+.aside-dark .menu .menu-item.here > .menu-link .menu-title, .aside-dark .menu .menu-item.show > .menu-link .menu-title,
+.aside-dark .menu .menu-item.hover > .menu-link:not(.disabled):not(.active) .menu-title, .aside-dark .menu .menu-item .menu-link:hover:not(.disabled):not(.active) .menu-title,
+.aside-dark .menu .menu-item .menu-link.active .menu-title {
+  color: #fccb06;
+}
+
+.menu-item .svg-icon svg [fill]:not(.permanent):not(g) {
+  fill: #fccb06 !important;
+}
+
+.aside-dark .menu .menu-item .menu-link.active .menu-bullet .bullet,
+.aside-dark .menu .menu-item .menu-link:hover:not(.disabled):not(.active) .menu-bullet .bullet {
+  background-color: #fccb06 !important;
+}
+
+.col-form-label,
+.table tr, 
+.table th, 
+.table td,
+.btn.btn-light,
+.form-text {
+  color: #000;
+}
+
+.btn.btn-light .svg-icon svg [fill]:not(.permanent):not(g) {
+  fill: #000000;
+}
+
+.text-gray-800 {
+  color: #000 !important;
+}
+
+.badge-light-info {
+  margin: 2px 0;
+}
+
+input.form-control,
+select.form-select,
+textarea.form-control,
+.form-select span{
+  color: #000000 !important;
+}
+
+input.form-control::placeholder,
+textarea.form-control::placeholder{
+  color:rgba(0,0,0,0.7) !important;
+}
+.col-lg-8.fv-row > ul {
+	height: 300px;
+	overflow-y: scroll;
+	background: #f5f8fa;
+	border-radius: 6px;
+}
+.col-lg-8.fv-row > ul li,
+.col-lg-8.fv-row > ul > li > ul > li{
+  list-style: none;
+}

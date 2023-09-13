@@ -85,39 +85,111 @@
     </div>
   </div>
   <!-- ============== Banner End =============== -->
-  <!-- ============== Business Start =============== -->
-  <section class="main-content business-content pt-md-0">
+
+  <!-- ============== Latest Reviews Start =============== -->
+  <section class="home-latest-reviews">
     <div class="container">
-      <!-- <div class="toggle-blink text-center">
-        <span>Toogle to change</span>
-        <div class="toogle-pointer-blink">
-          <i class="fa-solid fa-arrow-down"></i>
-        </div>
-        <div class="form-check form-switch d-flex justify-content-center p-0 mb-3">
-          <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked">
-        </div>
-      </div> -->
-      <div class="row">
-        <!-- <div class="col-md-12">
-          <div class="business-left">
-            <%- meta_values_array.for_business -%>
-          </div>
-        </div> -->
-        <div class="col-md-12">
-          <%- meta_values_array.for_customer -%>
-          <!-- <div class="business-right">
-          </div> -->
+      <div class="review-slider-wrap">
+        <h2 class="inner-main-head">Latest Customer Reviews</h2>
+        <div class="review-slider">
+          
+          <% if(latestReviews) { %>
+              <% latestReviews.forEach( (latestReview, index)=> {%>
+                <div class="item">
+                    <div class="review-box">
+                      <div class="head_box d-flex align-items-center justify-content-between mb-2">
+                        <h3 style="margin:0"><a href="/company/<%= latestReview.company_id %>"><%= latestReview.company_name %></a></h3>
+                        <% var avg = latestReview.rating %>
+                        <div class="user-rating">
+                          <% allRatingTags.forEach( tag => { %>
+                              <% if(tag.review_rating_value == avg){ %>
+                                <span><img src="/<%= tag.rating_image %>" alt="" style="display: inline-block;" width="35"></span>
+                              <% } %>
+                              <% }) %> 
+                          <span><%= latestReview.rating %>/5</span>
+                        </div>
+                      </div>
+                      <div class="user-info-panel">
+                          <span><i class="fa-solid fa-location-dot"></i></span>
+                          <p class="m-0">
+                            <strong>Location</strong><br>
+                            <%= latestReview.company_location %> 
+                          </p>
+                      </div>
+                      <% if(latestReview && latestReview.review_title) { %>
+                      <div class="user-info-panel">
+                          <span><i class="fa-solid fa-box"></i></span>
+                          <p class="m-0">
+                            <strong>Product/division</strong><br>
+                            <%= latestReview.review_title %>
+                          </p>
+                      </div>
+                      <% } %>
+                      <div class="user-review-text">
+                          <% AllReviewTags.forEach( (tag,index)=> {%>
+                            <% if(tag.review_id == latestReview.id) { %>
+                                <span class="user-select-tag"><%= tag.tag_name %></span>
+                            <% } %>
+                          <% }) %>
+                          
+                          <% var review_content = latestReview.review_content
+                            const review_content_words = review_content.split(' ');
+                          %>
+                          <div class="review-description-wrap">
+                            <% if(review_content_words.length <= 35){%>
+                            <%- review_content -%>
+                            <% }else{
+                              const firstPart = review_content_words.slice(0, 35).join(' ');
+                              const secondPart = review_content_words.slice(35).join(' ');
+                            %>
+                              <%- firstPart -%> ...
+                            <div class="review-full-description">
+                              <%- secondPart -%>
+                            </div>
+                            <a href="" class="read-review">View More</a>
+                            <% }%>
+                          </div>
+                        
+                      </div>
+                      <div class="user-bio_rating">
+                          <div class="user-profile-info">
+                            <div class="user-name-show position-relative">
+                                <% if(latestReview.user_privacy == 1) { %>
+                                  <% if(latestReview && latestReview.profile_pic ) { %>
+                                      <span><img src="/<%= latestReview.profile_pic %>" alt="img" width="20px"></span>
+                                      <% } else { %>
+                                        <span><img src="/assets/media/avatars/blank.png" alt="img" width="20px"></span>
+                                        <% } %>
+                                  <span><%= latestReview.first_name %> <%= latestReview.last_name %></span>
+                                  <% } else { %>
+                                      <span><img src="front-end/images/blur-img.png" alt="img"></span>
+                                      <span><img src="front-end/images/blur-name.png" alt="img"></span>
+                                  <% } %>
+                                
+                            </div>
+                            <% const dateString = latestReview.created_at; %>
+                            <% const date = new Date(dateString); %>
+                            <div class="user-review-date"><%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></div>
+                          </div>
+                          
+                          <% if(latestReview.review_reply_count==1 && currentUserData!= null && currentUserData.user_id == latestReview.customer_id ){ %>
+                          <span class="user-select-tag review-reply-btn"><a href="/company/<%- latestReview.company_id -%>#review-reply-<%- latestReview.id -%>">Reply</a></span> 
+                          <% } %>
+                      </div>
+                      <!-- <div class="review-like-dislike">
+                          <span><a href=""><i class="fa-solid fa-thumbs-up"></i> 10</a></span>
+                          <span><a href=""><i class="fa-solid fa-thumbs-down"></i> 8</a></span>
+                      </div> -->
+                    </div>
+                </div>
+              <% }) %>
+          <% } %>
+        
         </div>
       </div>
     </div>
-    <div class="business-left-cartoon" data-aos="zoom-in-right" data-aos-delay="500">
-      <img src="/front-end/images/business-left-cartoon-img.png" alt="img" width="373" height="248" loading="lazy">
-    </div>
-    <div class="business-right-cartoon" data-aos="zoom-in-left" data-aos-delay="1200">
-      <img src="/front-end/images/business-right-cartoon-img.png" alt="img" width="358" height="270" loading="lazy">
-    </div>
   </section>
-  <!-- ============== Business End =============== -->
+  <!-- ============== Latest Reviews End =============== -->
 
   <!-- ============== Review section Start =============== -->
   <section class="main-content review-content">
@@ -263,15 +335,16 @@
                 <div class="review-submit d-flex justify-content-between align-items-center">
                   <% if(currentUserData){ %>
                     <input type="submit" class="btn-default btn-warning" value="Submit">
-                    <% } else { %>
-                      <a href="#" class="btn-default btn-outline-warning login">Submit</a>
-                      <% } %>
-                        <a href="/review" class="view-more mt-0"><span class="position-relative"><i
-                              class="fa-solid fa-angle-right"></i>View All Reviews</span></a>
+                  <% } else { %>
+                    <a href="#" class="btn-default btn-outline-warning login">Submit</a>
+                  <% } %>
+                  <a href="/review" class="view-more mt-0" id="all-review-hidden-btn" style="display: none;">
+                    <span class="position-relative"><i class="fa-solid fa-angle-right"></i>View All Reviews</span>
+                  </a>
+                  <div class="submit-message"></div>
                 </div>
               </div>
           </div>
-          <div class="submit-message"></div>
           </form>
         </div>
       </div>
@@ -348,68 +421,6 @@
     </div>
   </section>
   <!-- ============== Featured Section End =============== -->
-
-  <!-- ============== Blog Start =============== -->
-  <section class="main-content landing-blog-content">
-    <div class="container">
-      <h2 class="main-head text-center">Did You <span>Know?</span></h2>
-      <% if (homePosts.length> 0) { %>
-        <div class="row">
-          <div class="col-md-6">
-            <div class="blog-left position-relative" data-aos="fade-right">
-              <img src="<%= homePosts[0].thumbnail %>" alt="<%= homePosts[0].thumbnail_alt %>" loading="lazy"
-                width="564" height="387" class="w-100">
-              <div class="blog-overlay-caption">
-                <span class="date-tag">
-                  <%= homePosts[0].publish_date %>
-                </span>
-                <h3 title="<%= homePosts[0].title %>"><a href="<%= homePosts[0].permalink %>">
-                    <%= homePosts[0].title %>
-                  </a> <span><a href="<%= homePosts[0].permalink %>"><i class="fa-solid fa-angle-right"></i></a></span>
-                </h3>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <% if (homePosts.length> 1) { %>
-              <div class="blog-right position-relative" data-aos="fade-left">
-                <% let counter=0; %>
-                  <% homePosts.forEach((post)=> { %>
-                    <% if (counter> 0) { %>
-                      <div class="row">
-                        <div class="col-6 my-auto">
-                          <div class="small-blog-img">
-                            <img src="<%= post.thumbnail %>" alt="<%= post.thumbnail_alt %>" loading="lazy" width="264"
-                              height="215">
-                          </div>
-                        </div>
-                        <div class="col-6 my-auto">
-                          <div class="small-blog-text">
-                            <span class="date-tag">
-                              <%= post.publish_date %>
-                            </span>
-                            <h4 title="<%= post.title %>" class="m-0"><a href="<%= post.permalink %>">
-                                <%= post.title %>
-                              </a>
-                            </h4>
-                          </div>
-                        </div>
-                      </div>
-                      <% } %>
-                        <% counter++; %>
-                          <% }); %>
-              </div>
-              <% } %>
-          </div>
-        </div>
-        <% } %>
-          <div class="text-center">
-            <a href="<%= globalData.BLOG_URL %>" class="view-more"><span class="position-relative"><i
-                  class="fa-solid fa-angle-right"></i>View All</span></a>
-          </div>
-    </div>
-  </section>
-  <!-- ============== Blog End =============== -->
 
   <!-- ============== Social Widgets Start =============== -->
   <section class="main-content social-widgets-content py-0">
@@ -619,6 +630,102 @@
     </div>
   </section>
   <!-- ============== Social Widgets End =============== -->
+
+  <!-- ============== Business Start =============== -->
+  <section class="main-content business-content pt-md-0">
+    <div class="container">
+      <!-- <div class="toggle-blink text-center">
+        <span>Toogle to change</span>
+        <div class="toogle-pointer-blink">
+          <i class="fa-solid fa-arrow-down"></i>
+        </div>
+        <div class="form-check form-switch d-flex justify-content-center p-0 mb-3">
+          <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked">
+        </div>
+      </div> -->
+      <div class="row">
+        <!-- <div class="col-md-12">
+          <div class="business-left">
+            <%- meta_values_array.for_business -%>
+          </div>
+        </div> -->
+        <div class="col-md-12">
+          <%- meta_values_array.for_customer -%>
+          <!-- <div class="business-right">
+          </div> -->
+        </div>
+      </div>
+    </div>
+    <div class="business-left-cartoon" data-aos="zoom-in-right" data-aos-delay="500">
+      <img src="/front-end/images/business-left-cartoon-img.png" alt="img" width="373" height="248" loading="lazy">
+    </div>
+    <div class="business-right-cartoon" data-aos="zoom-in-left" data-aos-delay="1200">
+      <img src="/front-end/images/business-right-cartoon-img.png" alt="img" width="358" height="270" loading="lazy">
+    </div>
+  </section>
+  <!-- ============== Business End =============== -->
+
+  <!-- ============== Blog Start =============== -->
+  <section class="main-content landing-blog-content">
+    <div class="container">
+      <h2 class="main-head text-center">Did You <span>Know?</span></h2>
+      <% if (homePosts.length> 0) { %>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="blog-left position-relative" data-aos="fade-right">
+              <img src="<%= homePosts[0].thumbnail %>" alt="<%= homePosts[0].thumbnail_alt %>" loading="lazy"
+                width="564" height="387" class="w-100">
+              <div class="blog-overlay-caption">
+                <span class="date-tag">
+                  <%= homePosts[0].publish_date %>
+                </span>
+                <h3 title="<%= homePosts[0].title %>"><a href="<%= homePosts[0].permalink %>">
+                    <%= homePosts[0].title %>
+                  </a> <span><a href="<%= homePosts[0].permalink %>"><i class="fa-solid fa-angle-right"></i></a></span>
+                </h3>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <% if (homePosts.length> 1) { %>
+              <div class="blog-right position-relative" data-aos="fade-left">
+                <% let counter=0; %>
+                  <% homePosts.forEach((post)=> { %>
+                    <% if (counter> 0) { %>
+                      <div class="row">
+                        <div class="col-6 my-auto">
+                          <div class="small-blog-img">
+                            <img src="<%= post.thumbnail %>" alt="<%= post.thumbnail_alt %>" loading="lazy" width="264"
+                              height="215">
+                          </div>
+                        </div>
+                        <div class="col-6 my-auto">
+                          <div class="small-blog-text">
+                            <span class="date-tag">
+                              <%= post.publish_date %>
+                            </span>
+                            <h4 title="<%= post.title %>" class="m-0"><a href="<%= post.permalink %>">
+                                <%= post.title %>
+                              </a>
+                            </h4>
+                          </div>
+                        </div>
+                      </div>
+                      <% } %>
+                        <% counter++; %>
+                          <% }); %>
+              </div>
+              <% } %>
+          </div>
+        </div>
+        <% } %>
+          <div class="text-center">
+            <a href="<%= globalData.BLOG_URL %>" class="view-more"><span class="position-relative"><i
+                  class="fa-solid fa-angle-right"></i>View All</span></a>
+          </div>
+    </div>
+  </section>
+  <!-- ============== Blog End =============== -->
 
   <!-- ============== About Start =============== -->
   <section class="main-content about-content">
@@ -1061,6 +1168,10 @@
               $('#review_submit_frm')[0].reset();
               $('.submit-message').text(data.message);
               $('.submit-message').show();
+              setTimeout( function(){
+                $('.submit-message').hide();
+                $('#all-review-hidden-btn').fadeIn();
+              }, 2000 );
             } else {
               $('.submit-message').text(data.message);
               $('.submit-message').show();

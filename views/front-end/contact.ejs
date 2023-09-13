@@ -30,11 +30,16 @@
                     <textarea type="text" rows="5" class="form-control" name="message" required></textarea>
                   </div>
                   <div class="env-btn">
-                    <input type="submit" value="SEND" class="btn-default btn-warning w-100">
+                    <input type="submit" value="SEND" class="btn-default btn-warning w-100" id="feedback_submit_btn">
                   </div>
                 </div>
               </div>
-              <div class="submit-message" style="color: black;"></div>
+              <div class="register-now frm-loading-feedback" style="display: none;">
+                <span class="indicator-progress">Please wait...
+                  <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                </span>
+              </div>
+              <div class="submit-message" style="color: black; text-align: center;"></div>
             </form>
           </div>
           <div class="envelope-inner-social-info text-center">
@@ -43,11 +48,21 @@
               <a href="#"><img src="/front-end/images/app-store.png" alt="img" width="178" height="56"></a>
             </div>
             <div class="social-icons">
-              <a href="<%= socials.facabook %>" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
-              <a href="<%= socials.twitter %>" target="_blank"><i class="fa-brands fa-twitter"></i></a>
-              <a href="<%= socials.linkedin %>" target="_blank"><i class="fa-brands fa-linkedin-in"></i></a>
-              <a href="<%= socials.instagram %>" target="_blank"><i class="fa-brands fa-instagram"></i></a>
-              <a href="<%= socials.youtube %>" target="_blank"><i class="fa-brands fa-youtube"></i></a>
+              <% if(socials && socials.facabook){ %>
+                <a href="<%= socials.facabook %>" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
+              <% } %>
+              <% if(socials && socials.twitter){ %>
+                <a href="<%= socials.twitter %>" target="_blank"><i class="fa-brands fa-twitter"></i></a>
+              <% } %>
+              <% if(socials && socials.linkedin){ %>
+                <a href="<%= socials.linkedin %>" target="_blank"><i class="fa-brands fa-linkedin-in"></i></a>
+              <% } %>
+              <% if(socials && socials.instagram){ %>
+                <a href="<%= socials.instagram %>" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+              <% } %>
+              <% if(socials && socials.youtube){ %>
+                <a href="<%= socials.youtube %>" target="_blank"><i class="fa-brands fa-youtube"></i></a>
+              <% } %>
             </div>
             <div class="env-contact-info">
               <div class="row justify-content-center">
@@ -105,6 +120,8 @@
         $(document).ready(function () {
           $('form#feedback_form').submit(function (e) {
             e.preventDefault();
+            $('#feedback_submit_btn').prop('disabled', true);
+            $('.frm-loading-feedback').show();
             $('.submit-message').hide();
             $('.submit-message').text('');
             const formData = $('#feedback_form').serializeArray();
@@ -123,10 +140,16 @@
                 if (data.status == 'ok') {
                   $('.submit-message').text(data.message);
                   $('.submit-message').show();
+                  $('#feedback_submit_btn').prop('disabled', false);
+                  $('.frm-loading-feedback').hide();
+                  $('#feedback_form').trigger('reset');
                   //window.location.href = "/contact-us";
                 } else {
                   $('.submit-message').text(data.message);
                   $('.submit-message').show();
+                  $('#feedback_submit_btn').prop('disabled', false);
+                  $('.frm-loading-feedback').hide();
+                  $('#feedback_form').trigger('reset');
                   console.log('Some thting went wrong');
                 }
               },

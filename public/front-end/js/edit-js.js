@@ -1,5 +1,9 @@
 jQuery(function ($) {
 
+  $(document).ready(function() {
+    $('#preloder').fadeOut();
+  });
+  
   // /////////////////////////////////////// Nav Menu start
   function sidemenu() {
     $('.nav_sec').toggleClass('slidein');
@@ -441,14 +445,14 @@ jQuery(function ($) {
       {
         breakpoint: 1080,
         settings: {
-          slidesToShow: 1
+          slidesToShow: 3
         }
       },
 
       {
         breakpoint: 991,
         settings: {
-          slidesToShow: 1
+          slidesToShow: 3
         }
       },
       {
@@ -537,16 +541,18 @@ jQuery(function ($) {
       $(".load-slice-btn").hide();
     }
   });
-  $(".customer-review-wrap").slice(0, 3).show();
-  $(".show-comment-slice").click(function (e) {
-    e.preventDefault();
-    $(".customer-review-wrap:hidden").slice(0, 3).fadeIn("slow");
 
-    if ($(".customer-review-wrap:hidden").length == 0) {
-      $(".show-comment-slice").hide();
-      $(".btn-border-top").hide();
-    }
-  });
+  // $(".customer-review-wrap").slice(0, 3).show();
+  // $(".show-comment-slice").click(function (e) {
+  //   e.preventDefault();
+  //   $(".customer-review-wrap:hidden").slice(0, 3).fadeIn("slow");
+
+  //   if ($(".customer-review-wrap:hidden").length == 0) {
+  //     $(".show-comment-slice").hide();
+  //     $(".btn-border-top").hide();
+  //   }
+  // });
+  
   // /////////////////////////////////////// Load More Blog slice end
 
   // /////////////////////////////////////// Archive Slide Start
@@ -614,11 +620,17 @@ jQuery(function ($) {
 
   });
 
-  $(window).load(function () {
-    setTimeout(function () {
-      $("#quickloginmodal").modal('show');
-    }, 10000);
-  });
+  // $(window).load(function () {
+  //   setTimeout(function () {
+  //     $("#quickloginmodal").modal('show');
+  //   }, 10000);
+  // });
+
+  
+
+  setTimeout(function () {
+    $("body").find('.login').trigger('click');
+  }, 10000);
 
   $(".quicklog").click(function (e) {
     e.preventDefault();

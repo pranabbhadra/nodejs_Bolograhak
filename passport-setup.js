@@ -7,8 +7,8 @@ const dotenv = require('dotenv');
 dotenv.config({ path: './.env' });
 // Configure the Google Strategy
 passport.use(new GoogleStrategy({
-    clientID: '825215517444-kp2rhjhk3nlqur8n0sbvfhug29t9hko3.apps.googleusercontent.com',
-    clientSecret: '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',
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     callbackURL: process.env.MAIN_URL+'/auth/google/callback'
 }, (accessToken, refreshToken, profile, done) => {
     // This function is called when the user logs in successfully
@@ -19,8 +19,8 @@ passport.use(new GoogleStrategy({
 passport.use(
     new FacebookStrategy(
       {
-        clientID: '2692849054189060',
-        clientSecret: 'f3b521b44540c58e0f3de34bdaf40c01',
+        clientID: process.env.FB_CLIENT_ID,
+        clientSecret: process.env.FB_CLIENT_SECRET,
         callbackURL: process.env.MAIN_URL+'auth/facebook/callback',
         profileFields: ['id', 'displayName', 'name', 'gender', 'email', 'picture.type(large)'],
       },

@@ -156,6 +156,7 @@
           $(formData).each(function (index, field) {
             jsonData[field.name] = field.value;
           });
+          jsonData['currentUrlPath'] = window.location.pathname;
           //console.log(jsonData);
           $.ajax({
             url: '/auth/frontend-user-register',
@@ -169,9 +170,11 @@
                 $('#user-signup').trigger('reset');
                 setTimeout(function() {
                   if(data.wp_user){
-                    window.location.href="<%= globalData.BLOG_URL %>?login_check="+data.wp_user;
+                    window.location.href="<%= globalData.BLOG_URL %>?login_check="+data.wp_user+"&currentUrlPath="+data.currentUrlPath;
+              
                   }else{
-                    window.location.href="/";
+                    //window.location.href="/";
+                    window.location.reload();
                   }
                 }, 2000 );             
               } else {
@@ -231,6 +234,8 @@
       $(formData).each(function (index, field) {
         jsonData[field.name] = field.value;
       });
+      jsonData['currentUrlPath'] = window.location.pathname;
+      //console.log(currentPath);
       //console.log(jsonData);
       $.ajax({
         url: '/auth/frontend-user-login',
@@ -243,9 +248,12 @@
             $('.frm-error-message').text(data.message).show();
             $('#user-signin').trigger('reset');
             if(data.wp_user){
-              window.location.href="<%= globalData.BLOG_URL %>?login_check="+data.wp_user;
+              window.location.href="<%= globalData.BLOG_URL %>?login_check="+data.wp_user+"&currentUrlPath="+data.currentUrlPath;
+              
             }else{
-              window.location.href="/";
+              //window.location.href="/";
+              console.log(data.currentUrlPath);
+              window.location.reload();
             }
           } else {
             $('.frm-loading').hide();
@@ -262,6 +270,51 @@
 
     }); 
     
+
+    $("#forgotPassword").submit(function(e){
+      e.preventDefault();
+      $('#forgot_submit_btn').prop('disabled', true);
+      $('.frm-loading-forgot').show();
+      const formData = $('#forgotPassword').serialize();
+      //console.log(formData);
+      //return false;
+      $.ajax({
+        url: '/auth/frontend-forgot-password',
+        method: 'POST',
+        data: formData,
+        // processData: false,
+        // contentType: false,
+        success: function (data) {
+          if (data.status == 'ok') {
+            $('.frm-error-message-forgot').text(data.message).show();
+            $('#forgot_submit_btn').prop('disabled', false);
+            $('.frm-loading-forgot').hide();
+            $('#forgotPassword').trigger('reset');
+            setTimeout(function() {
+              $('#exampleModal').modal('hide');
+            }, 2000 );             
+          } else if (data.status == 'not found'){
+            $('.frm-error-message-forgot').text(data.message).show();
+            $('#forgot_submit_btn').prop('disabled', false);
+            $('.frm-loading-forgot').hide();
+            $('#forgotPassword').trigger('reset');
+          } else {
+            $('.frm-error-message-forgot').text(data.message).show();
+            $('#forgot_submit_btn').prop('disabled', false);
+            $('.frm-loading-forgot').hide();
+            $('#forgotPassword').trigger('reset');
+          }
+
+        },
+        error: function (error) {
+          $('.frm-error-message-forgot').text(error).show();
+          $('#forgot_submit_btn').prop('disabled', false);
+          $('.frm-loading-forgot').hide();
+        }
+      });          
+      
+    }); 
+
     // Function to check password strength
     function checkPasswordStrength(password) {
       var strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");
@@ -275,6 +328,8 @@
         return 'weak';
       }
     }
+    
+    /*====================== loding persentage ====================*/
     
   });    
 </script>
