@@ -152,7 +152,7 @@ app.get('/facebook-user-data', async (req, res) => {
     const user = req.user;
     //res.json(user);
     try {
-        const UserResponse = await comFunction.saveUserFacebookLoginDataToDB(user); // Replace 'saveUserDataToDatabase' with your custom function
+        const UserResponse = await comFunction.saveUserFacebookLoginDataToDB(user);
         console.log('aaaa',UserResponse);
 
         if(UserResponse.status == 1){
