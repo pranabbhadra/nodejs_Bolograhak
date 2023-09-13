@@ -588,11 +588,11 @@ async function insertIntoFaqPages(data) {
     const checkQuery = `SELECT * FROM faq_pages WHERE 1`;
     db.query(checkQuery, async (checkErr, checkResult) => {
       if (checkResult.length > 0) {
-        const updateQuery = `UPDATE faq_pages SET title=?, content = ?, meta_title = ?, meta_desc = ?, keyword = ? WHERE id = ${checkResult[0].id}`;
+        const updateQuery = `UPDATE faq_pages SET title=?, content = ?, meta_title = ?, meta_desc = ?, keyword = ?, app_banner_content = ? WHERE id = ${checkResult[0].id}`;
         const results = await query(updateQuery, data);
         return checkResult[0].id;
       } else {
-        const insertQuery = 'INSERT INTO faq_pages (title, content, meta_title, meta_desc, keyword) VALUES (?, ?, ?, ?, ?)';
+        const insertQuery = 'INSERT INTO faq_pages (title, content, meta_title, meta_desc, keyword, app_banner_content) VALUES (?, ?, ?, ?, ?, ?)';
         const results = await query(insertQuery, data);
         return results.insertId;
       }

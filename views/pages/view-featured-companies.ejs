@@ -593,6 +593,8 @@
                 $('.company-id').click(function (e) {
                     e.preventDefault();
                     const comp_id = $(this).attr('data-cat-id');
+                    alert('aaaaa');
+                    console.log(comp_id)
                     $.ajax({
                         url: `/delete-featured-companies/${comp_id}`,
                         type: 'GET',

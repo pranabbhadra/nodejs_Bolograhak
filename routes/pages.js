@@ -302,7 +302,16 @@ router.get('/faq', checkCookieValue, async (req, res) => {
             comFunction2.getPageMetaValues('global'),
         ]);
         // Render the 'add-page' EJS view and pass the data
-        res.render('front-end/faq', {
+        // res.render('front-end/faq', {
+        //     menu_active_id: 'faq',
+        //     page_title: 'FAQ ',
+        //     currentUserData,
+        //     faqPageData,
+        //     faqCategoriesData,
+        //     faqItemsData,
+        //     globalPageMeta:globalPageMeta
+        // });
+        res.json( {
             menu_active_id: 'faq',
             page_title: 'FAQ ',
             currentUserData,
@@ -577,6 +586,7 @@ router.get('/company/:id', checkCookieValue, async (req, res) => {
     }
 
 });
+
 //-----------------------------------------------------------------//
 
 
@@ -2350,6 +2360,69 @@ router.get('/change-password', checkFrontEndLoggedIn, async (req, res) => {
             currentUserData,
             globalPageMeta:globalPageMeta
         });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+
+//FrontEnd Edit Review page
+router.get('/edit-user-review/:reviewId/:companyId', checkFrontEndLoggedIn, async (req, res) => {  
+    
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+        const userId = currentUserData.user_id;
+        const companyID = req.params.companyId;
+        const reviewId = req.params.reviewId;
+        //console.log('editUserID: ', currentUserData);
+       
+        const [allRatingTags, CompanyInfo, reviewDataById, AllReviewTags, globalPageMeta ] = await Promise.all([
+            comFunction.getAllRatingTags(),
+            comFunction.getCompany(companyID),
+            comFunction2.reviewDataById(reviewId),
+            comFunction2.getAllReviewTags(),
+            comFunction2.getPageMetaValues('global'),
+        ]);
+
+        // Create a mapping of review_id to tags
+            const reviewTagsMap = {};
+
+            AllReviewTags.forEach((tag) => {
+            const { review_id, tag_name } = tag;
+            if (!reviewTagsMap[review_id]) {
+                reviewTagsMap[review_id] = [];
+            }
+            reviewTagsMap[review_id].push(tag_name);
+            });
+
+            // Map the tags to reviewDataById by review_id
+            const reviewDataWithTags = reviewDataById.map((review) => {
+            var tags = reviewTagsMap[review.id] || [];
+            return {
+                ...review,
+                tags,
+            };
+            });
+
+        console.log(reviewDataWithTags)
+        // Render the 'edit-user' EJS view and pass the data
+         res.render('front-end/edit-user-review', {
+            menu_active_id: 'edit-review',
+            page_title: 'Edit Review',
+            currentUserData,
+            allRatingTags:allRatingTags,
+            globalPageMeta:globalPageMeta,
+            reviewDataById:reviewDataWithTags[0]
+         });
+        // res.json({
+        //     menu_active_id: 'edit-review',
+        //     page_title: 'Edit Review',
+        //     currentUserData,
+        //     allRatingTags:allRatingTags,
+        //     globalPageMeta:globalPageMeta,
+        //     reviewDataById:reviewDataWithTags[0]
+        // });
     } catch (err) {
         console.error(err);
         res.status(500).send('An error occurred');

@@ -986,6 +986,18 @@ async function TotalReplied(Id){
   return noOfReplied[0];
  }
 
+  //Function to fetch User review data by Id from the  review table
+async function reviewDataById(Id){
+  const sql = `SELECT r.* , c.company_name
+              FROM reviews r
+              JOIN company c ON r.company_id = c.ID 
+              WHERE r.id = '${Id}'  `;
+
+  const reviewData = await query(sql);
+  //console.log(noOfReplied[0])
+  return reviewData;
+ }
+
 
 module.exports = {
   getFaqPage,
@@ -1012,5 +1024,6 @@ module.exports = {
   ReviewReplyTo,
   TotalReplied,
   ReviewReplyToCompany,
-  ReviewReplyToCustomer
+  ReviewReplyToCustomer,
+  reviewDataById
 };

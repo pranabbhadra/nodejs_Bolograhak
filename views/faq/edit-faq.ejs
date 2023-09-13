@@ -183,6 +183,24 @@
                                     </div>
                                     <!--end::Col-->
                                 </div>
+                                <div class="row mb-6">
+                                    <!--begin::Label-->
+                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
+                                        <span class="">App Banner Image </span>
+                                    </label>
+                                    <!--end::Label-->
+                                    <!--begin::Col-->
+                                    <div class="col-lg-7 fv-row">
+                                        <input type="file" name="app_banner_img" id=""
+                                            class="form-control form-control-lg form-control-solid" placeholder=""
+                                            value="" />
+                                    </div>
+                                    <div class="col-lg-1 fv-row">
+                                        <img src="/<%= faqPageData.app_banner_img %>" alt="img" width="50"
+                                            height="50" loading="">
+                                    </div>
+                                    <!--end::Col-->
+                                </div>
                             </div>
                             <div class="card-footer d-flex justify-content-end py-6 px-9">
                                 <button type="reset"
@@ -237,6 +255,19 @@
                                     <div class="col-lg-8 fv-row">
                                         <textarea name="content" class="content"
                                             id="content-editor"><%= faqPageData.content %></textarea>
+                                    </div>
+                                    <!--end::Col-->
+                                </div>
+                                <div class="row mb-6">
+                                    <!--begin::Label-->
+                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
+                                        <span class="">App Content</span>
+                                    </label>
+                                    <!--end::Label-->
+                                    <!--begin::Col-->
+                                    <div class="col-lg-8 fv-row">
+                                        <textarea name="app_content" class="form-control form-control-lg form-control-solid"
+                                          placeholder="App Content"  id=""><%= faqPageData.app_content %></textarea>
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -472,7 +503,7 @@
                                     jsonResponse.forEach(item => {
                                         const { name, value } = item;
 
-                                        if (name === 'title' || name === 'content' || name === 'meta_title' || name === 'meta_desc' || name === 'keyword') {
+                                        if (name === 'title' || name === 'content' || name === 'meta_title' || name === 'meta_desc' || name === 'keyword' || name === 'app_content') {
                                             transformedResponse[name] = value;
                                         } else if (name === 'category_name') {
                                             // If a new category is encountered, reset the currentFAQ and start a new one
