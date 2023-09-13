@@ -529,6 +529,10 @@ header.main_header.fixed-top {
     background-size: cover;
 }
 
+.main-banner.home-banner:after {
+    background: url(../images/banner-bottom-shape-white.png) no-repeat center bottom;
+}
+
 .search-area {
     max-width: 519px;
     margin-top: 34px;
@@ -610,6 +614,11 @@ header.main_header.fixed-top {
     background-color: #f2f2f2;
 }
 
+.banner-left {
+    position: relative;
+    z-index: 9;
+}
+
 .banner-left p {
     max-width: 519px; 
     margin-top: 25px; 
@@ -658,11 +667,13 @@ header.main_header.fixed-top {
     font-size: 20px;
     font-weight: 800;
     line-height: 120.4%; 
-    padding: 10px 95px 10px 10px;
+    padding: 10px 110px 10px 10px;
     min-height: 80px;
     display: flex;
     align-items: center;
     z-index: 9;
+    background-repeat: no-repeat;
+    background-position: left center;
 }
 
 .banner-mas-img1 .banner-counter-tag {
@@ -671,10 +682,14 @@ header.main_header.fixed-top {
     transform: translateX(-50%);
 }
 
-.banner-mas-img2 .banner-counter-tag {
-    top: -62px;
-    left: 50%;
-    transform: translateX(-50%);
+.banner-mas-img2:first-child .banner-counter-tag {
+    top: 0;
+    left: -180px;
+}
+
+.banner-mas-img2+.banner-mas-img2 .banner-counter-tag {
+    bottom: 26px;
+    right: 10px;
 }
 
 .banner-counter-tag .counter-text {
@@ -702,6 +717,7 @@ header.main_header.fixed-top {
 
 .banner-trending-scroll {
     margin-top: 26px;
+    position: relative;
 }
 
 .like-dislike-tren-label {

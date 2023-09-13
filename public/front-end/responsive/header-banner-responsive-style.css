@@ -9,6 +9,10 @@
 		background: url(../images/banner-bottom-shape2.png) no-repeat center bottom;
 		background-size: cover;
 	}
+
+	.main-banner.home-banner:after {
+		background: url(../images/banner-bottom-shape2-white.png) no-repeat center bottom;
+	}
 }
 
 @media only screen and (max-width:1199.98px) {

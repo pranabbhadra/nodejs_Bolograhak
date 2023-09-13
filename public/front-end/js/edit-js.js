@@ -470,6 +470,18 @@ jQuery(function ($) {
     ]
   });
 
+  $('.home-popular-review-slider1').slick({
+    dots: false,
+    infinite: true,
+    speed: 1800,
+    autoplay: true,
+    autoplaySpeed: 4000,
+    pauseOnHover: false,
+    arrows: false,
+    slidesToShow: 1,
+    slidesToScroll: 1
+  });
+
   // /////////////////////////////////////// Slick Slider end
 
 
