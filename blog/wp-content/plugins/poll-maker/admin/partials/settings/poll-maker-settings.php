@@ -431,7 +431,7 @@ $poll_wp_editor_height = (isset($options['poll_wp_editor_height']) && $options['
                                     </div>
                                     <div class="form-group row">
                                         <div class="col-sm-4">
-                                            <label for="ays_user_roles">
+                                            <label>
                                                 <?php echo __( "Select user role", $this->plugin_name ); ?>
                                                 <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" title="<?php echo __('Control and manage who can have access to the plugin from the dashboard.',$this->plugin_name)?>">
                                                     <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
@@ -566,7 +566,6 @@ $poll_wp_editor_height = (isset($options['poll_wp_editor_height']) && $options['
                                                 <div class="col-sm-9">
                                                     <input type="text"
                                                            class="ays-text-input"
-                                                           id="ays_monitor_client"
                                                            name="ays_monitor_client"
                                                            value=""
                                                     >
@@ -582,7 +581,6 @@ $poll_wp_editor_height = (isset($options['poll_wp_editor_height']) && $options['
                                                 <div class="col-sm-9">
                                                     <input type="text"
                                                            class="ays-text-input"
-                                                           id="ays_monitor_api_key"
                                                            name="ays_monitor_api_key"
                                                            value=""
                                                     >
@@ -626,7 +624,6 @@ $poll_wp_editor_height = (isset($options['poll_wp_editor_height']) && $options['
                                                 <div class="col-sm-9">
                                                     <input type="text"
                                                            class="ays-text-input"
-                                                           id="ays_zapier_hook"
                                                            name="ays_zapier_hook"
                                                            value=""
                                                     >
@@ -673,7 +670,6 @@ $poll_wp_editor_height = (isset($options['poll_wp_editor_height']) && $options['
                                                 <div class="col-sm-9">
                                                     <input type="text"
                                                            class="ays-text-input"
-                                                           id="ays_active_camp_url"
                                                            name="ays_active_camp_url"
                                                            value=""
                                                     >
@@ -689,7 +685,6 @@ $poll_wp_editor_height = (isset($options['poll_wp_editor_height']) && $options['
                                                 <div class="col-sm-9">
                                                     <input type="text"
                                                            class="ays-text-input"
-                                                           id="ays_active_camp_api_key"
                                                            name="ays_active_camp_api_key"
                                                            value=""
                                                     >
@@ -741,7 +736,6 @@ $poll_wp_editor_height = (isset($options['poll_wp_editor_height']) && $options['
                                                 <div class="col-sm-9">
                                                     <input type="text"
                                                            class="ays-text-input"
-                                                           id="ays_slack_client"
                                                            name="ays_slack_client"
                                                            value=""
                                                     >
@@ -750,7 +744,7 @@ $poll_wp_editor_height = (isset($options['poll_wp_editor_height']) && $options['
                                             <hr/>
                                             <div class="form-group row" aria-describedby="aaa">
                                                 <div class="col-sm-3">
-                                                    <label for="ays_slack_oauth">
+                                                    <label>
                                                         <?= __('Slack Authorization', $this->plugin_name) ?>
                                                     </label>
                                                 </div>
@@ -770,7 +764,6 @@ $poll_wp_editor_height = (isset($options['poll_wp_editor_height']) && $options['
                                                 <div class="col-sm-9">
                                                     <input type="text"
                                                            class="ays-text-input"
-                                                           id="ays_slack_secret"
                                                            name="ays_slack_secret"
                                                            value="" >
                                                 </div>
@@ -778,7 +771,7 @@ $poll_wp_editor_height = (isset($options['poll_wp_editor_height']) && $options['
                                             <hr/>
                                             <div class="form-group row" aria-describedby="aaa">
                                                 <div class="col-sm-3">
-                                                    <label for="ays_slack_oauth">
+                                                    <label>
                                                         <?= __('App Access Token', $this->plugin_name) ?>
                                                     </label>
                                                 </div>
@@ -862,7 +855,7 @@ $poll_wp_editor_height = (isset($options['poll_wp_editor_height']) && $options['
                                             <hr/>
                                             <div class="form-group row">
                                                 <div class="col-sm-3">
-                                                    <label for="ays_poll_google_secret">
+                                                    <label for="">
                                                         <?= __('Google Client Secret', $this->plugin_name) ?>
                                                     </label>
                                                 </div>
@@ -988,7 +981,7 @@ $poll_wp_editor_height = (isset($options['poll_wp_editor_height']) && $options['
                                                     </label>
                                                 </div>
                                                 <div class="col-sm-9">
-                                                    <input type="text" class="ays-text-input" id="ays_poll_mad_mimi_user_name">
+                                                    <input type="text" class="ays-text-input">
                                                 </div>
                                             </div>
                                             <hr/>
@@ -1030,7 +1023,7 @@ $poll_wp_editor_height = (isset($options['poll_wp_editor_height']) && $options['
                                         <div class="col-sm-12">
                                             <div class="form-group row" aria-describedby="aaa">
                                                 <div class="col-sm-3">
-                                                    <label for="ays_poll_getresponse_api_key">
+                                                    <label for="">
                                                         <?= __('GetResponse API Key', $this->plugin_name) ?>
                                                     </label>
                                                 </div>
@@ -1074,7 +1067,7 @@ $poll_wp_editor_height = (isset($options['poll_wp_editor_height']) && $options['
                                         <div class="col-sm-12">
                                             <div class="form-group row" aria-describedby="aaa">
                                                 <div class="col-sm-3">
-                                                    <label for="ays_poll_convert_kit">
+                                                    <label for="">
                                                         ConvertKit <?= __('API Key', $this->plugin_name) ?>
                                                     </label>
                                                 </div>
@@ -1295,7 +1288,7 @@ $poll_wp_editor_height = (isset($options['poll_wp_editor_height']) && $options['
                                             </label>
                                         </div>
                                         <div class="col-sm-8">
-                                            <input type="text" id="ays_invidLead" class="ays-text-input" onclick="this.setSelectionRange(0, this.value.length)" readonly="" value='[ays_poll_cat id="Your Poll Cat ID" display="all/random" count="5" layout="list/grid"]'>
+                                            <input type="text" class="ays-text-input" onclick="this.setSelectionRange(0, this.value.length)" readonly="" value='[ays_poll_cat id="Your Poll Cat ID" display="all/random" count="5" layout="list/grid"]'>
                                         </div>
                                     </div>
                                     <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" class="ays-poll-new-upgrade-button-link">
@@ -1334,7 +1327,7 @@ $poll_wp_editor_height = (isset($options['poll_wp_editor_height']) && $options['
                                             </label>
                                         </div>
                                         <div class="col-sm-8">
-                                            <input type="text" id="ays_globLead" class="ays-text-input" value='[ays_poll_gleaderboard]'>
+                                            <input type="text" class="ays-text-input" value='[ays_poll_gleaderboard]'>
                                         </div>
                                     </div>
                                     <div class="form-group row">
@@ -1349,7 +1342,6 @@ $poll_wp_editor_height = (isset($options['poll_wp_editor_height']) && $options['
                                         <div class="col-sm-8">
                                             <input type="number"
                                                 class="ays-text-input"                 
-                                                id="ays_gleadboard_count" 
                                                 name="ays_gleadboard_count">
                                         </div>
                                     </div>
@@ -1365,7 +1357,6 @@ $poll_wp_editor_height = (isset($options['poll_wp_editor_height']) && $options['
                                         <div class="col-sm-8">
                                             <input type="number"
                                                 class="ays-text-input"                 
-                                                id="ays_gleadboard_width" 
                                                 name="ays_gleadboard_width">
                                             <span style="display:block;" class="ays_poll_small_hint_text"><?php echo __("For 100% leave blank", $this->plugin_name);?></span>
                                         </div>
@@ -1400,7 +1391,7 @@ $poll_wp_editor_height = (isset($options['poll_wp_editor_height']) && $options['
                                             </label>
                                         </div>
                                         <div class="col-sm-8">
-                                            <input type="text" id="ays_gleadboard_color" name="ays_gleadboard_color" data-alpha="true">
+                                            <input type="text" name="ays_gleadboard_color" data-alpha="true">
                                         </div>
                                     </div>
                                     <div class="form-group row">
@@ -1413,7 +1404,7 @@ $poll_wp_editor_height = (isset($options['poll_wp_editor_height']) && $options['
                                             </label>
                                         </div>
                                         <div class="col-sm-8">
-                                            <textarea class="ays-textarea" id="ays_gleadboard_custom_css" name="ays_gleadboard_custom_css" cols="30"
+                                            <textarea class="ays-textarea" name="ays_gleadboard_custom_css" cols="30"
                                                 rows="10" style="height: 80px;"></textarea>
                                         </div>
                                     </div> <!-- Custom global leadboard CSS -->
@@ -1452,7 +1443,7 @@ $poll_wp_editor_height = (isset($options['poll_wp_editor_height']) && $options['
                                     </div>
                                     <div class="form-group row">
                                         <div class="col-sm-4">
-                                            <label for="ays_poll_cat_globLead">
+                                            <label for="">
                                                 <?php echo __( "Shortcode", $this->plugin_name ); ?>
                                                 <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" title="<?php echo __('Paste the shortcode into any of your posts or pages to show the list of the top users who have voted your polls. It will print the attempts count of each poll participant, as well.',$this->plugin_name)?>">
                                                     <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
@@ -1467,7 +1458,7 @@ $poll_wp_editor_height = (isset($options['poll_wp_editor_height']) && $options['
                                     <!-- users count  -->
                                     <div class="form-group row">
                                         <div class="col-sm-4">
-                                            <label for="ays_poll_cat_gleadboard_count">
+                                            <label for="">
                                                 <?php echo __('Users count',$this->plugin_name)?>
                                                 <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" title="<?php echo __('Specify how many users’ results to be shown on the leaderboard.',$this->plugin_name)?>">
                                                     <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
@@ -1484,7 +1475,7 @@ $poll_wp_editor_height = (isset($options['poll_wp_editor_height']) && $options['
                                     <!-- witdth  -->
                                     <div class="form-group row">
                                         <div class="col-sm-4">
-                                            <label for="ays_poll_cat_gleadboard_width">
+                                            <label for="">
                                                 <?php echo __('Width',$this->plugin_name)?>
                                                 <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" title="<?php echo __("Set the width of the leaderboard's box. It accepts only numeric values. For 100%, leave the field blank.",$this->plugin_name)?>">
                                                     <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
@@ -1526,7 +1517,7 @@ $poll_wp_editor_height = (isset($options['poll_wp_editor_height']) && $options['
                                     <!-- color  -->
                                     <div class="form-group row">
                                         <div class="col-sm-4">
-                                            <label for="ays_poll_cat_gleadboard_color">
+                                            <label for="">
                                                 <?php echo __('Color',$this->plugin_name)?>
                                                 <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" title="<?php echo __("Choose the color of the leaderboard's box.",$this->plugin_name)?>">
                                                     <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
@@ -1549,7 +1540,7 @@ $poll_wp_editor_height = (isset($options['poll_wp_editor_height']) && $options['
                                             </label>
                                         </div>
                                         <div class="col-sm-8">
-                                            <textarea class="ays-textarea" id="ays_poll_cat_gleadboard_custom_css" name="ays_poll_cat_gleadboard_custom_css" cols="30"
+                                            <textarea class="ays-textarea" name="ays_poll_cat_gleadboard_custom_css" cols="30"
                                                 rows="10" style="height: 80px;"></textarea>
                                         </div>
                                     </div>
@@ -1592,7 +1583,7 @@ $poll_wp_editor_height = (isset($options['poll_wp_editor_height']) && $options['
                                     </div>
                                     <div class="form-group row">
                                         <div class="col-sm-4">
-                                            <label for="ays_glob_lead">
+                                            <label for="">
                                                 <?php echo __( "Shortcode", $this->plugin_name ); ?>
                                                 <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" title="<?php echo __('Copy the following shortcode and paste it into your desired post. It will allow users to send a request for building a poll with simple settings (Poll title, question, answers). Find the list of the requests in the Requests page, which is located on the Poll Maker left navbar. For accepting the request, the admin needs to click on the Approve button next to the given poll.',$this->plugin_name)?>">
                                                     <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
@@ -1600,7 +1591,7 @@ $poll_wp_editor_height = (isset($options['poll_wp_editor_height']) && $options['
                                             </label>
                                         </div>
                                         <div class="col-sm-8">
-                                            <input type="text" id="ays_glob_lead" class="ays-text-input" onclick="this.setSelectionRange(0, this.value.length)" readonly="" value='[ays_poll_request_form]'>
+                                            <input type="text" class="ays-text-input" onclick="this.setSelectionRange(0, this.value.length)" readonly="" value='[ays_poll_request_form]'>
                                         </div>
                                     </div>
                                     <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" class="ays-poll-new-upgrade-button-link">
@@ -1617,7 +1608,7 @@ $poll_wp_editor_height = (isset($options['poll_wp_editor_height']) && $options['
                                     <p style="margin:0;"><?php echo __( "Ability to allow users to create a poll from the front-end.", $this->plugin_name ); ?></p>
                                 </blockquote>
                             </div>
-                        </fieldset>  
+                        </fieldset>
                         <hr>
                         <fieldset>
                             <legend>
@@ -1630,7 +1621,7 @@ $poll_wp_editor_height = (isset($options['poll_wp_editor_height']) && $options['
                                     </div>
                                     <div class="form-group row">
                                         <div class="col-sm-4">
-                                            <label for="ays_poll_user_history">
+                                            <label for="">
                                                 <?php echo __( "Shortcode", $this->plugin_name ); ?>
                                                 <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" title="<?php echo __('Paste the shortcode into any of your posts or pages to show the current user’s votes history. Each user will see individually presented content based on their taken polls.',$this->plugin_name)?>">
                                                     <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
@@ -1638,7 +1629,7 @@ $poll_wp_editor_height = (isset($options['poll_wp_editor_height']) && $options['
                                             </label>
                                         </div>
                                         <div class="col-sm-8">
-                                            <input type="text" id="ays_poll_user_history" class="ays-text-input" onclick="this.setSelectionRange(0, this.value.length)" readonly="" value='[ays_poll_user_history]'>
+                                            <input type="text" class="ays-text-input" onclick="this.setSelectionRange(0, this.value.length)" readonly="" value='[ays_poll_user_history]'>
                                         </div>
                                     </div>
                                     <hr>
@@ -1701,13 +1692,13 @@ $poll_wp_editor_height = (isset($options['poll_wp_editor_height']) && $options['
                                             </label>
                                         </div>
                                         <div class="col-sm-8">
-                                            <input type="text" id="ays_all_results" class="ays-text-input" onclick="this.setSelectionRange(0, this.value.length)" readonly="" value='[ays_poll_all_results]'>
+                                            <input type="text" id="" class="ays-text-input" onclick="this.setSelectionRange(0, this.value.length)" readonly="" value='[ays_poll_all_results]'>
                                         </div>
                                     </div>
                                     <hr>
                                     <div class="form-group row">
                                         <div class="col-sm-3">
-                                            <label for="ays_poll_all_results_show_publicly">
+                                            <label for="">
                                                 <?php echo __( "Show to guests too", $this->plugin_name ); ?>
                                                 <a class="ays_help" data-toggle="tooltip" title="<?php echo __('Show the All results table to guests as well. By default, it is displayed only for logged-in users. If this option is disabled, then only the logged-in users will be able to see the table. Note: Despite the fact of showing the table to the guests, the table will contain only info of the logged-in users.',$this->plugin_name)?>">
                                                     <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
@@ -1715,7 +1706,7 @@ $poll_wp_editor_height = (isset($options['poll_wp_editor_height']) && $options['
                                             </label>
                                         </div>
                                         <div class="col-sm-9">
-                                            <input type="checkbox" class="ays-checkbox-input" id="ays_poll_all_results_show_publicly" value="on" checked/>
+                                            <input type="checkbox" class="ays-checkbox-input" value="on" checked/>
                                         </div>
                                     </div>
                                     <hr>
@@ -1779,7 +1770,7 @@ $poll_wp_editor_height = (isset($options['poll_wp_editor_height']) && $options['
                                             </label>
                                         </div>
                                         <div class="col-sm-9">
-                                            <input type="text" name="ays_poll_shortcodes_recent_by_id" id="ays_poll_shortcodes_recent_by_id" onclick="this.setSelectionRange(0, this.value.length)"readonly="" class="ays-text-input" value='[ays_poll_frontend_statistics id="Your_Poll_ID"]'>
+                                            <input type="text" name="ays_poll_shortcodes_recent_by_id" onclick="this.setSelectionRange(0, this.value.length)"readonly="" class="ays-text-input" value='[ays_poll_frontend_statistics id="Your_Poll_ID"]'>
                                         </div>
                                     </div>
                                     <blockquote>

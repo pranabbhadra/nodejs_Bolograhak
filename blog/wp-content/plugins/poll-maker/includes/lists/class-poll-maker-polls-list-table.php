@@ -52,9 +52,9 @@ class Polls_List_Table extends WP_List_Table {
             $cat_id = intval($_GET['filterby']);
         }
 
-		// if( isset( $_GET['filterbyuser'] )){            
-        //     $author_id_select = absint( sanitize_text_field( $_GET['filterbyuser'] ) );
-        // }
+		if( isset( $_GET['filterbyauthor'] )){            
+            $author_id_select = absint( sanitize_text_field( $_GET['filterbyauthor'] ) );
+        }
 		
         $categories_select = array();
         foreach($cat_titles as $key => $cat_title){
@@ -70,29 +70,29 @@ class Polls_List_Table extends WP_List_Table {
 
         $cat_id = null;
 
-		// $authors = array();
-		// $users_sql = "SELECT `styles` FROM " .$wpdb->prefix . "ayspoll_polls";
-        // $users = $wpdb->get_results( $users_sql, "ARRAY_A");
+		$authors = array();
+		$users_sql = "SELECT `styles` FROM " .$wpdb->prefix . "ayspoll_polls";
+        $users = $wpdb->get_results( $users_sql, "ARRAY_A");
 
-		// foreach($users as $user_key => $user){
+		foreach($users as $user_key => $user){
 
-		// 	$options = (isset($user['styles']) && $user['styles'] != '') ? json_decode( $user['styles'], 'ARRAY_A' ) : '';
-		// 	$author = ( isset( $options['author'] ) && !empty($options['author']) ) ? $options['author'] : array();
+			$options = (isset($user['styles']) && $user['styles'] != '') ? json_decode( $user['styles'], 'ARRAY_A' ) : '';
+			$author = ( isset( $options['author'] ) && !empty($options['author']) ) ? $options['author'] : array();
 
-		// 	if( ! is_array($author) ){
-		// 		$author = json_decode($author, 'ARRAY_A');
-		// 	}
+			if( ! is_array($author) ){
+				$author = json_decode($author, 'ARRAY_A');
+			}
 
-		// 	if( ! empty( $author ) ){
-		// 		$author_id = ( isset( $author['id'] ) && $author['id'] != '') ? intval($author['id']) : '';
-		// 		$author_name = ( isset( $author['name'] ) && $author['name'] != '') ? sanitize_text_field($author['name']) : '';
-		// 		$authors[$author_id] = $author_name;
-		// 	}
-		// }
+			if( ! empty( $author ) ){
+				$author_id = ( isset( $author['id'] ) && $author['id'] != '') ? intval($author['id']) : '';
+				$author_name = ( isset( $author['name'] ) && $author['name'] != '') ? sanitize_text_field($author['name']) : '';
+				$authors[$author_id] = $author_name;
+			}
+		}
 
         ?>
-        <div id="category-filter-div-polllist" class="alignleft actions bulkactions">
-            <select name="filterby-<?php echo esc_attr($which); ?>" id="bulk-action-selector-top-select-<?php echo esc_attr($which); ?>">
+        <div id="poll-filter-div-<?php echo esc_attr( $which ); ?>" class="alignleft actions bulkactions">
+            <select name="filterby-<?php echo esc_attr($which); ?>" id="bulk-action-selector-<?php echo esc_attr($which); ?>">
                 <option value=""><?php echo __('Select Category',$this->plugin_name)?></option>
                 <?php
                     foreach($categories_select as $key => $cat_title){
@@ -100,21 +100,19 @@ class Polls_List_Table extends WP_List_Table {
                     }
                 ?>
             </select>
-            <input type="button" id="doactions-<?php echo esc_attr($which); ?>" class="cat-filter-apply-<?php echo esc_attr($which); ?> button" value="Filter">
+			<select name="filterbyauthor-<?php echo esc_attr( $which ); ?>" id="bulk-action-selector-<?php echo esc_attr( $which ); ?>">
+				<option value=""><?php echo __('Select Author',$this->plugin_name)?></option>
+				<?php
+					   foreach( $authors as $author_key => $author){
+							$user_selected = ( isset($author_id_select) && $author_key == $author_id_select ) ? "selected" : "";
+						
+						    echo "<option ".$user_selected." value='".$author_key."'>".$author."</option>";
+						}
+						?>
+			</select>
+			<input type="button" id="doaction-<?php echo esc_attr($which); ?>" class="ays-poll-question-tab-all-filter-button-<?php echo esc_attr($which); ?> button" value="Filter">
         </div>
-		<!-- <div id="user-filter-div-polllist" class="alignleft actions bulkactions">
-            <select name="filterbyuser-<?php //echo esc_attr( $which ); ?>" id="poll-user-filter-<?php //echo esc_attr( $which ); ?>">
-                <option value=""><?php //echo __('Select Author',$this->plugin_name)?></option> -->
-                <?php
-                //    foreach( $authors as $author_key => $author){
-					// 	$user_selected = ( isset($author_id_select) && $author_key == $author_id_select ) ? "selected" : "";
-
-                    //     echo "<option ".$user_selected." value='".$author_key."'>".$author."</option>";
-					// }
-                ?>
-            <!--</select>
-			<input type="button" id="doactions-<?php //echo esc_attr($which); ?>" class="user-filter-apply-<?php //echo esc_attr($which); ?> button" value="Filter">
-        </div> -->
+		<a style="" href="?page=<?php echo esc_attr( $_REQUEST['page'] ); ?>" class="button"><?php echo __( "Clear filters", $this->plugin_name ); ?></a>
         <?php
     }
 
@@ -1127,7 +1125,7 @@ class Polls_List_Table extends WP_List_Table {
 				}
 				if ($type == 'rating' && $poll['type'] == 'rating' && count($poll['answers']) != $rate_value) {
 					if (count($poll['answers']) > $rate_value) {
-						for ( $i = $rate_value; $i < count($poll['answers']); $i++ ) {
+						for ( $i = intval($rate_value); $i < count($poll['answers']); $i++ ) {
 							$wpdb->delete(
 								"{$wpdb->prefix}ayspoll_reports",
 								array('answer_id' => $poll['answers'][$i]['id']),
@@ -1145,6 +1143,7 @@ class Polls_List_Table extends WP_List_Table {
 								$answer_table,
 								array(
 									'poll_id' => $id,
+									'ordering'=> wp_filter_kses($answers[$i]),
 									'answer'  => wp_filter_kses($answers[$i]),
 								),
 								array('%d', '%s')
@@ -1829,11 +1828,11 @@ class Polls_List_Table extends WP_List_Table {
             }
         }
 
-		// if(isset( $_REQUEST['filterbyuser'] ) && $_REQUEST['filterbyuser'] > 0 ){
-		// 	$author_id = esc_sql( sanitize_text_field( $_REQUEST['filterbyuser'] ) );
+		if(isset( $_REQUEST['filterbyauthor'] ) && $_REQUEST['filterbyauthor'] > 0 ){
+			$author_id = esc_sql( sanitize_text_field( $_REQUEST['filterbyauthor'] ) );
 
-        //     $where[] = sprintf(" categories LIKE('%%,%s,%%') ", esc_sql( $wpdb->esc_like( $author_id ) ) );
-		// }
+            $where[] = sprintf(" categories LIKE('%%,%s,%%') ", esc_sql( $wpdb->esc_like( $author_id ) ) );
+		}
 			
 		if( !empty($where) ){
 			$sql = " WHERE " . implode( " AND ", $where );
@@ -1867,6 +1866,12 @@ class Polls_List_Table extends WP_List_Table {
 
             $where[] = sprintf(" categories LIKE('%%,%s,%%') ", esc_sql( $wpdb->esc_like( $cat_id ) ) );
 		}
+
+		if ( isset($_REQUEST['filterbyauthor'] ) && $_REQUEST['filterbyauthor'] > 0) {
+			$poll_author = esc_sql( sanitize_text_field( $_REQUEST['filterbyauthor'] ) );
+			
+			$where[] = " JSON_EXTRACT(styles, '$.poll_create_author') = " . ($poll_author);
+        }
 
 		if( isset( $_REQUEST['fstatus'] ) && is_numeric( $_REQUEST['fstatus'] ) && ! is_null( sanitize_text_field( $_REQUEST['fstatus'] ) ) ){
             if( esc_sql( $_REQUEST['fstatus'] ) != '' ){
