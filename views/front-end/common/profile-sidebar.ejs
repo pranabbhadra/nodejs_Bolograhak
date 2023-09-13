@@ -4,7 +4,13 @@
         <% if(userMeta && userMeta.profile_pic){ %>
          <input type="hidden" name="previous_profile_pic" value="<%= userMeta.profile_pic %>">
          <!-- <img id="image" alt="img" width="189" height="189"> -->
-          <a href="/myprofile"><img src="/<%= userMeta.profile_pic %>" class="profile_pic" alt="img" width="189" height="189"></a>
+          <a href="/myprofile">
+            <% if (userMeta.profile_pic.includes('https')) { %>
+               <img src="<%= userMeta.profile_pic %>" class="profile_pic" alt="img" width="189" height="189">
+            <% } else { %>
+               <img src="/<%= userMeta.profile_pic %>" class="profile_pic" alt="img" width="189" height="189">
+            <% } %>
+         </a>
       <% }else{ %>
          <input type="hidden" name="previous_profile_pic" value="">
          <!-- <img id="image" alt="img" width="189" height="189"> -->
