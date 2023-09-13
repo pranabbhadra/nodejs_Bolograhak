@@ -212,7 +212,11 @@
             <span class="user-log-profile">
               <span class="user-login-profile-icon">
                 <% if(currentUserData.profile_pic){ %>
-                  <img src="/<%= currentUserData.profile_pic %>" alt="<%= currentUserData.first_name+' '+currentUserData.last_name %>" width="189" height="189" loading="lazy">
+                  <% if (currentUserData.profile_pic.includes('https')) { %>
+                    <img src="<%= currentUserData.profile_pic %>" alt="<%= currentUserData.first_name+' '+currentUserData.last_name %>" width="189" height="189" loading="lazy">
+                  <% } else { %>
+                    <img src="/<%= currentUserData.profile_pic %>" alt="<%= currentUserData.first_name+' '+currentUserData.last_name %>" width="189" height="189" loading="lazy">
+                  <% } %>
                 <% } else { %>
                   <i class="fa-regular fa-user"></i>
                 <% } %>
@@ -325,12 +329,12 @@
             <div class="login-left">
               <h5 style="margin:0 0 5px; font-size: 15; font-weight: 700;">Quick Login</h5>
               <h4 class="text-center mb-2">Existing User</h4>
-              <%#<h5>Log in with</h5>
+              <h5>Log in with</h5>
               <div class="log-browse-content">
-                <a href="" target="_blank"><i class="fa-brands fa-google"></i></a>
-                <a href="" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
-              </div>#%>
-              <!-- <div class="or-connect"><span>Or continue with</span></div> -->
+                <%#<a href="" target="_blank"><i class="fa-brands fa-google"></i></a>#%>
+                <a href="/auth/facebook" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
+              </div>
+              <div class="or-connect"><span>Or continue with</span></div>
               <form id="user-signin" name="user-signin-frm" method="post">
                 <div class="custom-form">
                   <label><span>Email</span></label>
@@ -369,11 +373,11 @@
           <div class="col-md-6">
             <div class="signup-right mt-md-0 mt-4">
               <h4 class="text-center mb-2">New User</h4>
-              <%#<h5>Log in with</h5>
+              <h5>Log in with</h5>
                 <div class="log-browse-content">
-                  <a href="" target="_blank"><i class="fa-brands fa-google"></i></a>
-                  <a href="" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
-                </div>#%>
+                  <%#<a href="" target="_blank"><i class="fa-brands fa-google"></i></a>#%>
+                  <a href="/auth/facebook" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
+                </div>
               <form id="user-signup" name="user-signup-frm" method="post">
                 <div class="custom-form">
                   <label><span>First Name</span></label>
@@ -427,13 +431,13 @@
                 <%#<a href="/auth/google" target="_blank" class="quick-login">
                 <span><i class="fa-brands fa-google"></i></span>
                 <span>Log in with Google</span>
-                </a>
+                </a>#%>
                 <a href="/auth/facebook" target="_blank" class="quick-login">
                 <span><i class="fa-brands fa-facebook-f"></i></span>
                 <span>Log in with Facebook</span>
-                </a>#%>
+                </a>
                 <div style="clear: both;"></div>
-                <%#<span class="my-3 d-inline-block">Or</span>#%>
+                <span class="my-3 d-inline-block">Or</span>
                 <div style="clear: both;"></div>
                 <a href="#" class="fw-bold quicklog"><i class="fa-solid fa-envelope"></i> Log in with Email</a>
               </div>
