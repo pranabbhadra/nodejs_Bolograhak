@@ -289,7 +289,6 @@ function home_latest_blog_api_handler($request) {
                         'publish_date'  =>  get_the_time(__('M d, Y', 'kubrick')),
                         'thumbnail'  =>  $thumbnail['0'],
                         'thumbnail_alt'  =>  $alt_text,
-                        'thumbnail_alt'  =>  $alt_text,
                         'permalink' => get_the_permalink()
                       );
     endwhile; endif; wp_reset_query();
@@ -487,6 +486,7 @@ function app_dynamic_blog_api_handler($request) {
     $args = array();
     $meta_query = array();
     $tax_query = array();
+    $archive_query = array();
 
     
     if(isset($parameters['type'])){
@@ -513,6 +513,12 @@ function app_dynamic_blog_api_handler($request) {
                 'terms' => $parameters['term_id']
             );
         }
+        //--Archive------//
+        if($parameters['type'] == 'archive'){
+            $archive_query[] = array(
+                'year' => $parameters['term_id']
+            );
+        }
     }
 
     if(count($meta_query) > 0) {
@@ -527,6 +533,10 @@ function app_dynamic_blog_api_handler($request) {
     }
     if(count($tax_query) > 1) {
         $tax_query['relation'] = 'AND';
+    }
+
+    if(count($archive_query) > 0) {
+        $args['date_query'] = $archive_query;
     }
 
     if(isset($parameters['count'])){
@@ -776,7 +786,7 @@ function app_home_api_handler($request) {
     $trending_posts_items = array();
     $popular_tags = array();
     $popular_categories = array();
-    $all_posts_items = array();
+    $year_archives = array();
 
     //------latest-----------//
     $latest_args = array(
@@ -872,6 +882,23 @@ function app_home_api_handler($request) {
 
     if(count($popular_categories)>0){
         $home_items[] = array('popular_categories' => $popular_categories);
+    }
+
+    //------Archives-----------//
+
+    global $wpdb;
+
+    // Query to get all distinct years from the posts table
+    $query = "SELECT DISTINCT YEAR(post_date) AS archive_year 
+              FROM $wpdb->posts 
+              WHERE post_type = 'post' 
+              AND post_status = 'publish' 
+              ORDER BY archive_year DESC";
+
+    $year_archives = $wpdb->get_col($query);
+
+    if(count($year_archives)>0){
+        $home_items[] = array('archives' => $year_archives);
     }
 
     $data = array(
@@ -1029,6 +1056,75 @@ function app_blog_poll_submit_api_handler($request) {
             'data' => '',
             'success_message' => '',
             'error_message' => 'poll_id, answer_id and user_id all parameters are required'
+            );
+        return $data;
+    }
+}
+
+//--------App Blog Search By Keyword -----------------//
+function app_blog_search_submit_api_init() {
+    register_rest_route('custom/v1', '/blog-search', array(
+        'methods' => 'GET',
+        'callback' => 'app_blog_search_api_handler',
+    ));
+}
+add_action('rest_api_init', 'app_blog_search_submit_api_init');
+function app_blog_search_api_handler($request) {
+    $parameters = $request->get_params();
+    $post_items = [];
+    $args = array();
+    if(isset($parameters['keyword'])){
+        $args['posts_per_page'] = -1;
+        $args['s'] = $parameters['keyword'];
+        $args['post_type'] = 'post';
+        $args['post_status'] = 'publish';
+        query_posts($args);
+        if (have_posts()) : while (have_posts()) : the_post();
+        $ID = get_the_ID();
+        $thumbnail = wp_get_attachment_image_src( get_post_thumbnail_id( $ID ), 'trending-blog-thumb' );
+        $full = wp_get_attachment_image_src( get_post_thumbnail_id( $ID ), 'full' );
+        $alt_text = get_post_meta(get_post_thumbnail_id( $ID ), '_wp_attachment_image_alt', true);
+        $title = get_the_title();
+        $categories = get_the_terms( $ID, 'category' );
+        $tags = get_the_terms( $ID, 'post_tag' );
+        
+        $post_items[] = array(
+                            'id' =>  $ID,
+                            'title'  =>  $title,
+                            'publish_date'  =>  get_the_time(__('M d, Y', 'kubrick')),
+                            'thumbnail'  =>  $thumbnail['0'],
+                            'full'  =>  $full['0'],
+                            'thumbnail_alt'  =>  $alt_text,
+                            'permalink' => get_the_permalink(),
+                            'views_count'  =>  pvc_get_post_views( $ID ),
+                            'category'  => $categories,
+                            'tag'  => $tags
+                        );
+        endwhile; endif; wp_reset_query();
+
+        if(count($post_items)>0){
+            $data = array(
+                'status' => 'success',
+                'data' => $post_items,
+                'success_message' => count($post_items). ' posts data successfully received',
+                'error_message' => ''
+                );        
+            return $data;
+        }else{
+            $data = array(
+                'status' => 'error',
+                'data' => '',
+                'success_message' => '',
+                'error_message' => 'No result found'
+                );
+            return $data;
+        }
+    }else{
+        $data = array(
+            'status' => 'error',
+            'data' => '',
+            'success_message' => '',
+            'error_message' => 'keyword parameter is required'
             );
         return $data;
     }
