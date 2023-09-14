@@ -282,4 +282,21 @@
 	.logo svg {
 		width: 70px;
 	}
+	.logo img{
+		width: 80px;
+	}
+	.user-login-profile-icon {
+		width: 40px;
+		height: 40px;
+	}
+	.user-login-profile-icon:after {
+		width: 15px;
+		height: 15px;
+		bottom: 10px;
+		font-size: 10px;
+	}
+	.user-login-profile-icon img {
+		width: 40px;
+		height: 36px !important;
+	}	
 }
