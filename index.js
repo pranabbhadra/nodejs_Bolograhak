@@ -296,7 +296,7 @@ app.get('/facebook-user-data', async(req, res) => {
                             })
                             .catch((error) => {
                                 //console.error('User registration failed:', );
-                                res.json(error.response.data);
+                                res.json(error);
                                 // return res.send(
                                 //     {
                                 //         status: 'err',
