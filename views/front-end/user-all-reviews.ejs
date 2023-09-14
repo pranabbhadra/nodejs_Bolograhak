@@ -106,10 +106,13 @@
                                  <span class="user-select-tag review-reply-btn"><a href="/edit-user-review/<%- review.id -%>">Edit</a></span> 
                               <% } %>
                            </div>
-                           <!-- <div class="review-like-dislike">
-                              <span><a href=""><i class="fa-solid fa-thumbs-up"></i> 10</a></span>
-                              <span><a href=""><i class="fa-solid fa-thumbs-down"></i> 8</a></span>
-                           </div> -->
+                           <% if(currentUserData  && currentUserData.user_id  ){ %>
+                              <div class="review-like-dislike" id="rev_<%= review.id %>">
+                                 <span><a href="#" class="review-voting like_class <% if(review.user_voting_value == '1'){ %> active <% } %>" data-voting="1" data-userId="<%= currentUserData.user_id %>" data-reviewId="<%= review.id %>"><i class="fa-solid fa-thumbs-up"></i> <span class="like_count"><%= review.total_like %></span></a></span>
+
+                                 <span><a href="#" class="review-voting dislike_class <% if(review.user_voting_value == '0'){ %> active <% } %>"  data-voting="0" data-userId="<%= currentUserData.user_id %>" data-reviewId="<%= review.id %>"><i class="fa-solid fa-thumbs-down"></i> <span class="dislike_count"><%= review.total_dislike %></span></a></span>
+                              </div>
+                           <% } %>
                         </div>
                      </div>
                 <% }) %>
@@ -125,3 +128,48 @@
 </section>
 <!-- ============== Section1 End =============== -->
 <%- include('common/footer') -%>
+<script>
+   $(document).ready(()=>{
+      $(".review-voting").click(function(e){
+         e.preventDefault();
+         var votingValue = $(this).attr("data-voting");
+         var userId = $(this).attr("data-userId");
+         var reviewId = $(this).attr("data-reviewId");
+         console.log(votingValue,userId,reviewId);
+         var votingData = {
+            votingValue:votingValue,
+            userId:userId,
+            reviewId:reviewId
+         };
+         var jsonData = JSON.stringify(votingData);
+         console.log(votingData)
+         $.ajax({
+            url:'/auth/reviewVoting',
+            method:'POST',
+            data:votingData,
+            success: function(data) {
+               if (data.status == 'ok') {
+                  var updatedLike = data.totalLike.totalLike;
+                  var updatedDislike = data.totalDislike.totalDislike;
+                  var responseReviewId = data.reviewId;
+                  var votingValue = data.votingValue;
+                  if (votingValue == '1') {
+                     $('#rev_'+responseReviewId).find('.like_class').addClass('active')
+                     $('#rev_'+responseReviewId).find('.dislike_class').removeClass('active')
+                  } else {
+                     
+                     $('#rev_'+responseReviewId).find('.like_class').removeClass('active')
+                     $('#rev_'+responseReviewId).find('.dislike_class').addClass('active')
+                  }
+                  // Update the value displayed on the page thumbs-down-link
+                  $('#rev_'+responseReviewId).find('.like_count').text(updatedLike);
+                  $('#rev_'+responseReviewId).find('.dislike_count').text(updatedDislike);
+                  
+               }else{
+                  console.log('Error on response')
+               }
+            }
+         })
+      })
+   })
+</script>

@@ -79,11 +79,11 @@ const checkCookieValue = (req, res, next) => {
 
 router.get('', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
-
+    let userId = currentUserData.user_id;
     const [allRatingTags,globalPageMeta,latestReviews,AllReviewTags] = await Promise.all([
         comFunction.getAllRatingTags(),
         comFunction2.getPageMetaValues('global'),
-        comFunction2.getlatestReviews(20),
+        comFunction2.getlatestReviews(20, userId),
         comFunction2.getAllReviewTags()
     ]);
     const rangeTexts = {};
@@ -247,12 +247,13 @@ router.get('/about-us', checkCookieValue, async (req, res) => {
 router.get('/review', checkCookieValue, async (req, res) => {
     try {
         let currentUserData = JSON.parse(req.userData);
-
+        let userId = currentUserData.user_id;
+        //console.log(userId);
         // Fetch all the required data asynchronously
         const [latestReviews, AllReviews, AllTrendingReviews, AllReviewTags, allRatingTags, globalPageMeta, homePageMeta] = await Promise.all([
-            comFunction2.getlatestReviews(20),
-            comFunction2.getAllReviews(),
-            comFunction2.getAllTrendingReviews(),
+            comFunction2.getlatestReviews(20,userId),
+            comFunction2.getAllReviews(userId),
+            comFunction2.getAllTrendingReviews(userId),
             comFunction2.getAllReviewTags(),
             comFunction.getAllRatingTags(),
             comFunction2.getPageMetaValues('global'),
@@ -2286,6 +2287,15 @@ router.get('/my-reviews', checkFrontEndLoggedIn, async (req, res) => {
         ]);
         //console.log(AllReviewTags);
         // Render the 'edit-user' EJS view and pass the data
+        // res.json( {
+        //     menu_active_id: 'profile-dashboard',
+        //     page_title: 'My Reviews',
+        //     currentUserData,
+        //     AllCompaniesReviews: AllCompaniesReviews,
+        //     allRatingTags:allRatingTags,
+        //     AllReviewTags:AllReviewTags,
+        //     globalPageMeta:globalPageMeta
+        // });
         res.render('front-end/user-all-reviews', {
             menu_active_id: 'profile-dashboard',
             page_title: 'My Reviews',

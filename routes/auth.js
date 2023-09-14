@@ -266,4 +266,7 @@ router.post('/reset_password', authController.resetPassword);
 //Change Password
 router.post('/change_password', authController.changePassword);
 
+//Review Voting (like dislike)
+router.post('/reviewVoting', authController.reviewVoting);
+
 module.exports = router;

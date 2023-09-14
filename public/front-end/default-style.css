@@ -3512,3 +3512,7 @@ img.user_img{
     object-fit: contain;
     object-position: center;
 }
+
+.review-voting.active {
+    color: #f1ae00;
+}

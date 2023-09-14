@@ -4162,3 +4162,70 @@ exports.changePassword = async (req, res) => {
     })
 }
 
+// Review voting (like dislike)
+exports.reviewVoting = async (req, res) => {
+    console.log('reviewVoting', req.body);
+    const {votingValue, userId, reviewId} = req.body;
+    const checkQuery = `SELECT id FROM review_voting WHERE 	review_id = '${reviewId}' AND customer_id = '${userId}' `;
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+    db.query(checkQuery, (checkErr, checkResult) => {
+        if(checkErr){
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong '+checkErr
+            });
+        }else{
+            if(checkResult.length > 0){
+                const updateQuery = `UPDATE review_voting SET voting = ?, updated_at = ? WHERE 	review_id = ? AND customer_id = ? `;
+                const updateData = [votingValue, formattedDate, reviewId, userId];
+                db.query(updateQuery, updateData, async (updateErr, updateRes)=>{
+                    if(updateErr){
+                        return res.send({
+                            status: 'not ok',
+                            message: 'Something went wrong '+updateErr
+                        });
+                    } else {
+                        const totalLike = await comFunction2.countLike(reviewId);
+                        const totalDislike = await comFunction2.countDislike(reviewId);
+                        console.log('update:',totalLike,totalDislike)
+                        return res.send({
+                            status: 'ok',
+                            data:updateRes,
+                            totalLike:totalLike,
+                            totalDislike:totalDislike,
+                            reviewId:reviewId,
+                            votingValue:votingValue,
+                            message: 'Voting successfully updated'
+                        });
+                    }
+                })
+            } else {
+                const insertQuery = `INSERT INTO review_voting( review_id, customer_id, voting, created_at, updated_at) VALUES (?,?,?,?,?)`;
+                const insertData = [reviewId, userId, votingValue, formattedDate, formattedDate ];
+                db.query(insertQuery, insertData, async (insertErr, insertRes)=>{
+                    if(insertErr){
+                        return res.send({
+                            status: 'not ok',
+                            message: 'Something went wrong '+insertErr
+                        });
+                    } else {
+                        const totalLike = await comFunction2.countLike(reviewId);
+                        const totalDislike = await comFunction2.countDislike(reviewId);
+                        console.log('insert:',totalLike,totalDislike)
+                        return res.send({
+                            status: 'ok',
+                            data:insertRes,
+                            totalLike:totalLike,
+                            totalDislike:totalDislike,
+                            reviewId:reviewId,
+                            votingValue:votingValue,
+                            message: 'Voting successfully inserted'
+                        });
+                    }
+                })
+            }
+        }
+    })
+}
+
