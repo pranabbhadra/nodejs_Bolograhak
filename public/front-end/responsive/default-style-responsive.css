@@ -275,6 +275,7 @@
 	.social-widgets {
 		height: 324px;
 	}
+
 }
 
 @media only screen and (max-width:1040.98px) {
@@ -706,11 +707,88 @@
 	.popular-category-part svg {
 		max-width: 100px;
 	}
+
+	.home-popular-review-info p {
+		font-size: 14px;
+	}
+
+	.home-popular-client h4 {
+		font-size: 18px;
+	}
+
+	.home-popular-client p {
+		font-size: 15px;
+	}
+
+	.home-popular-client p i {
+		font-size: 15px;
+	}
+
+	.home-popular-review-info h3 {
+		font-size: 18px;
+	}
+
+	.home-client-img img {
+		width: 70px;
+		height: 70px !important;
+	}
+
+	.home-popular-client {
+		padding-left: 80px;
+	}
+
+	.home-popular-review-box {
+		max-width: 385px;
+	}
+
+	ul.resp-tabs-list {
+		padding: 0px 15px;
+		max-width: 395px;
+	}
+
+	.discussion-review-panel {
+		padding-right: 25px;
+	}
+
+	.resp-tabs-list li {
+		font-size: 15px;
+	}
+
+	.discussion-user-info {
+		padding-right: 0;
+	}
+
+	.dis-comment-views {
+		position: relative;
+		bottom: 0;
+		right: 0;
+		margin-top: 30px;
+	}
+
+	.discussions-right-panel h4 {
+		font-size: 18px;
+	}
+
+	.discussions-right-panel {
+		font-size: 16px;
+	}
+
 }
 
 @media only screen and (max-width:840.98px) {
 	.about-bottom-text {
 	    padding: 20px 30px;
+	}
+
+	.discussion-view {
+		position: relative;
+		right: 0;
+		top: 0;
+		margin-bottom: 10px;
+	}
+
+	ul.resp-tabs-list {
+		max-width: 100%;
 	}
 }
 
@@ -1211,6 +1289,58 @@
 
 	.popular-category-part {
 		padding: 10px 15px;
+	}
+
+	 ul.resp-tabs-list {
+		display: none;
+	  }
+	
+	  h2.resp-accordion {
+		display: block;
+		margin-bottom: 12px;
+	}
+	
+	  .resp-vtabs .resp-tab-content {
+		border: 1px solid #C1C1C1;
+	  }
+	
+	  .resp-vtabs .resp-tabs-container {
+		border: none;
+		float: none;
+		width: 100%;
+		min-height: initial;
+		clear: none;
+	  }
+	
+	  .resp-accordion-closed {
+		display: none !important;
+	  }
+	
+	  .resp-vtabs .resp-tab-content:last-child {
+		border-bottom: 1px solid #c1c1c1 !important;
+	  }
+	  
+	  .discussion-user-img img {
+		width: 35px;
+		height: 35px !important;
+	}
+
+	.discussion-user-info {
+		padding-left: 50px;
+		min-height: 35px;
+	}
+
+	.discussion-user-info h4 {
+		font-size: 16px;
+	}
+
+	.discussion-review-panel {
+		margin-top: 15px;
+	}
+
+	h2.resp-tab-active {
+		padding: 15px 15px !important;
+		font-weight: 500 !important;
 	}
 
 }
@@ -1832,6 +1962,14 @@
 
 	.popular-category-part {
 		margin: 15px 0;
+	}
+
+	.dis-comment-views {
+		font-size: 14px;
+	}
+
+	.dis-right-panel-item {
+		margin-top: 22px;
 	}
 
 }

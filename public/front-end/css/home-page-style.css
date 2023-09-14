@@ -505,12 +505,13 @@ span#selected-range-emojis {
 /*=============== Social Widgets Start ==============*/
 
 .social-widgets-content {
-	background: rgb(241,174,0); /* Old browsers */
-	background: -moz-linear-gradient(left, rgba(241,174,0,1) 50%, rgba(252,203,6,1) 50%); /* FF3.6-15 */
-	background: -webkit-linear-gradient(left, rgba(241,174,0,1) 50%,rgba(252,203,6,1) 50%); /* Chrome10-25,Safari5.1-6 */
-	background: linear-gradient(to right, rgba(241,174,0,1) 50%,rgba(252,203,6,1) 50%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f1ae00', endColorstr='#fccb06',GradientType=1 ); /* IE6-9 */
+    background: #fccb06;
+    background: -moz-linear-gradient(left, rgba(241,174,0,1) 50%, rgba(252,203,6,1) 50%);
+    background: -webkit-linear-gradient(left, rgba(241,174,0,1) 50%,rgba(252,203,6,1) 50%);
+    background: linear-gradient(to right, rgba(241,174,0,1) 50%,rgba(252,203,6,1) 50%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f1ae00', endColorstr='#fccb06',GradientType=1 );
 }
+
 .social-widgets-wrapper {
 	overflow: hidden;
 	max-width: 1358px;
@@ -533,6 +534,7 @@ span#selected-range-emojis {
     background: #FCCB06;
     min-height: 620px;
     display: flex;
+	justify-content: center;
     align-items: center;
     position: relative;
 }
@@ -596,6 +598,18 @@ span#selected-range-emojis {
     z-index: 1;
 }
 
+.video-man1 {
+    position: absolute;
+    left: -28px;
+    bottom: -40px;
+}
+
+.video-man2 {
+    position: absolute;
+    right: -40px;
+    bottom: -40px;
+}
+
 .v-slider {
     padding: 14px;
 }
@@ -635,10 +649,27 @@ span#selected-range-emojis {
 
 .social-widgets {
     border-radius: 10px;
-    overflow: hidden;
+    overflow-y: auto;
     position: relative;
     z-index: 1;
+    overflow-x: hidden;
+    height: 425px;
 }
+
+
+.social-widgets iframe {
+    border-radius: 10px;
+}
+
+.social-widgets::-webkit-scrollbar {
+    display: none;
+}
+  
+.social-widgets{
+    -ms-overflow-style: none;  
+    scrollbar-width: none;  
+}
+
 .social-widgets img {
 	width: 100%;
 }
@@ -661,6 +692,17 @@ span#selected-range-emojis {
 	position: absolute;
 	right: 0;
 	bottom: 0;
+}
+
+.game-zone {
+	text-align: center;
+}
+
+.game-zone h3 {
+	color: #252525;
+	font-size: 64px;
+	font-weight: 800;
+	line-height: 110.4%; 
 }
 /*=============== Social Widgets End ==============*/
 
@@ -762,29 +804,47 @@ span#selected-range-emojis {
 	background: #FFF;
 	box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.11);
 	padding: 20px 25px;
+	-webkit-transform:scale(0);
+	transform:scale(0);
+	-webkit-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+.home-popular-review-box-wrapper {
+	position: relative;
+	margin-top: 30px;
+	min-height: 500px;
 }
 
 .home-popular-review-box1 {
 	max-width: 458px;
-    min-height: 310px
+	position: absolute;
+	left: 0;
+	top: 0;
 }
 
 .home-popular-review-box2 {
     max-width: 490px;
-    min-height: 310px;
-    margin: -75px auto 0 auto;
+	position: absolute;
+	top: 50%;
+	left: 0;
+	right: 0;
+	margin: 0 auto;
 }
 
 .home-popular-review-box3 {
     max-width: 465px;
-    min-height: 310px;
     position: absolute;
     top: 0;
     right: 0;
 }
 
-.home-popular-review-slider1 .item {
-	padding: 20px;;
+.home-popular-review-box_active,
+.home-popular-review-box_old {
+	-webkit-transform:scale(1);
+	transform:scale(1);
+	-webkit-transition: all 0.5s ease;
+    transition: all 0.5s ease;
 }
 
 .home-popular-client {
@@ -928,6 +988,172 @@ span#selected-range-emojis {
 	color: #000000;
 }
 /*=============== Most Popular Categories Content End ==============*/
+
+/*=============== Discussion Content Start ==============*/
+.discussion-content:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 60px;
+    background: url(../images/discussion-shape.svg) no-repeat left top;
+    width: 63px;
+    height: 120px;
+    z-index: -9;
+}
+
+.discussion-content:after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: 60px;
+    background: url(../images/discussion-shape2.svg) no-repeat right bottom;
+    width: 70px;
+    height: 120px;
+    z-index: -9;
+}
+
+.discussions-left {
+	position: relative;
+}
+
+.discussion-content h2 small {
+	font-size: 22px;
+	color: #161616;
+}
+
+.discussion-content h2 {
+	color: #FCCB06;
+	margin-bottom: 44px;
+}
+
+.discussion-view {
+    position: absolute;
+    right: 0;
+    top: 11px;
+}
+.discussion-review-panel {
+	border-radius: 20px;
+	background-color: #252525;
+	background-image: url(../images/discussion-object-bg1.svg);
+	background-repeat: no-repeat;
+	background-position: right top;
+	box-shadow: 0px 24px 54px 0px rgba(0, 0, 0, 0.12);
+	padding: 25px 65px 25px 18px;
+	position: relative;
+	color: #fff;
+	margin-top: 30px;
+}
+
+.discussion-review-panel:nth-child(even) {
+	background-image: url(../images/discussion-object-bg2.svg);
+}
+
+.discussion-user-img {
+	position: absolute;
+	left: 18px;
+	top: 25px;
+}
+
+.discussion-user-img img {
+	width: 60px;
+	height: 60px !important;
+	border-radius: 50%;
+	object-fit: cover;
+	object-position: center;
+}
+
+.discussion-user-info {
+    padding-left: 72px;
+    padding-right: 195px;
+    color: #F2F2F2;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: normal;
+    min-height: 60px;
+}
+
+.discussion-user-info h4 {
+	color: #FCCB06;
+	font-size: 20px;
+	font-style: normal;
+	font-weight: 600;
+	line-height: normal;
+}
+
+.discussion-user-info p:last-child {
+	margin: 0;
+}
+
+.dis-comment-views {
+	position: absolute;
+	bottom: 28px;
+	right: 65px;
+	font-size: 15px;
+	font-weight: 600;
+	line-height: normal;
+}
+
+.dis-comment-views a {
+	color: #FFF;
+}
+
+.dis-comment-views a:hover {
+	color: #F1AE00;
+}
+
+.dis-comment-views a + a {
+	margin-left: 10px;
+}
+
+.discussions-right-panel {
+	border-radius: 20px;
+    background: #252525;
+	padding: 45px 25px;
+	color: #FFF;
+	font-size: 18px;
+	font-weight: 400;
+	line-height: normal;
+}
+
+.discussions-right-panel + .discussions-right-panel {
+	margin-top: 30px;
+}
+
+.discussions-right-panel h4 {
+	font-family: var(--inter);
+	font-size: 22px;
+	font-weight: 500;
+	line-height: 110.4%;
+	border-bottom: 1px #484848 solid;
+	padding-bottom: 16px;
+	margin-bottom: 0;
+}
+
+.discussions-right-panel a {
+	color: #BDBDBD;
+}
+
+.discussions-right-panel a:hover {
+	color: #FCCB06;
+}
+
+.dis-right-panel-item {
+	display: flex;
+	justify-content: space-between;
+	margin-top: 35px;
+}
+
+.dis-r-panel-item-left a i {
+	display: inline-block;
+	vertical-align: middle;
+	margin-right: 10px;
+}
+
+.dis-r-panel-item-right {
+	margin-left: 12px;
+	font-weight: 700;
+}
+/*=============== Discussion Content End ==============*/
 
 /*=============== Bottom main Content Start ==============*/
 .bottom-main-content .about-right p {

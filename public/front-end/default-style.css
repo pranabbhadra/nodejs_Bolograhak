@@ -3513,3 +3513,120 @@ img.user_img{
     object-fit: contain;
     object-position: center;
 }
+
+
+/* =============== Easy Resposive tab start ================== */
+ul.resp-tabs-list {
+    margin: 0px;
+    padding: 0px 23px;
+    border-radius: 10px;
+    background: #252525;
+    overflow: hidden;
+    max-width: 457px;
+    text-align: center;
+}
+
+.resp-tabs-list li {
+    display: inline-block;
+    padding: 13px 12px;
+    margin: 0;
+    list-style: none;
+    cursor: pointer;
+    color: #FFF;
+    font-family: var(--nunito);
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 227%;
+}
+
+.resp-tabs-container {
+  padding: 0px;
+  background-color: #fff;
+  clear: left;
+}
+
+h2.resp-accordion {
+  cursor: pointer;
+  padding: 5px;
+  display: none;
+}
+
+.resp-tab-content {
+  display: none;
+}
+
+.resp-tab-active {
+  color: #ffc107 !important;
+  font-weight: 700 !important;
+}
+
+.resp-content-active,
+.resp-accordion-active {
+  display: block;
+}
+
+h2.resp-accordion {
+  font-size: 16px;
+  background: #252525;
+  margin: 0px;
+  padding: 15px 15px;
+  border-radius: 10px;
+}
+
+h2.resp-tab-active {
+  border-bottom: 0px solid #c1c1c1 !important;
+  margin-bottom: 0px !important;
+  padding: 10px 15px !important;
+}
+
+h2.resp-tab-title:last-child {
+  border-bottom: 12px solid #c1c1c1 !important;
+  background: blue;
+}
+
+.resp-arrow {
+    width: 0;
+    height: 0;
+    float: right;
+    margin-top: 3px;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 12px solid #c1c1c1;
+  }
+  
+  h2.resp-tab-active span.resp-arrow {
+    border: none;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 12px solid #9B9797;
+  }
+  
+  /*-----------Accordion styles-----------*/
+  
+  .resp-easy-accordion h2.resp-accordion {
+    display: block;
+  }
+  
+  .resp-easy-accordion .resp-tab-content {
+    border: 1px solid #c1c1c1;
+  }
+  
+  .resp-easy-accordion .resp-tab-content:last-child {
+    border-bottom: 1px solid #c1c1c1 !important;
+  }
+  
+  .resp-jfit {
+    width: 100%;
+    margin: 0px;
+  }
+  
+  .resp-tab-content-active {
+    display: block;
+  }
+  
+  h2.resp-accordion:first-child {
+    border-top: 1px solid #c1c1c1 !important;
+  }
+
+/* =============== Easy Resposive tab end ================== */

@@ -482,6 +482,19 @@ jQuery(function ($) {
     slidesToScroll: 1
   });
 
+  $('.home-popular-review-slider').slick({
+    dots: true,
+    infinite: true,
+    speed: 1400,
+    autoplay: true,
+    autoplaySpeed: 2000,
+    pauseOnHover: false,
+    arrows: false,
+    fade: true,
+    slidesToShow: 1,
+    slidesToScroll: 1
+  });
+
   // /////////////////////////////////////// Slick Slider end
 
 
@@ -908,5 +921,54 @@ jQuery(function ($) {
     });
 
   /*=========================== sandip counter js End =================*/
+
+/*=========================== Easy Responsive Tabs Start =================*/
+$('#horizontalTab').easyResponsiveTabs({
+    type: 'default', //Types: default, vertical, accordion           
+    width: 'auto', //auto or any width like 600px
+    fit: true,   // 100% fit in a container
+    closed: 'accordion', // Start closed if in accordion view
+    activate: function(event) { // Callback function if tab is switched
+    var $tab = $(this);
+    var $info = $('#tabInfo');
+    var $name = $('span', $info);
+    $name.text($tab.text());
+    $info.show();
+    }
+    });
+    $('#verticalTab').easyResponsiveTabs({
+    type: 'vertical',
+    width: 'auto',
+    fit: true
+  });
+  /*=========================== Easy Responsive Tabs End =================*/
+
+  /*=========================== Math random review box function start =================*/
+  $(function () {
+    setRandomClass();
+    setInterval(function () {
+      setRandomClass();
+    }, 2000);
+  
+    function setRandomClass() {
+      var teamList = $(".home-popular-review-box-wrapper");
+      var teamItem = teamList.find(".home-popular-review-box");
+      var number = teamItem.length;
+      var random = Math.floor(Math.random() * number);
+      if (teamItem.eq(random).hasClass("home-popular-review-box_active")) {
+        var random = random + 1;
+      }
+      $(".home-popular-review-box_active")
+        .addClass("home-popular-review-box_old")
+        .siblings()
+        .removeClass("home-popular-review-box_old");
+      teamItem
+        .eq(random)
+        .addClass("home-popular-review-box_active")
+        .siblings()
+        .removeClass("home-popular-review-box_active");
+    }
+  });
+/*=========================== Math random review box function End =================*/
 
 });
