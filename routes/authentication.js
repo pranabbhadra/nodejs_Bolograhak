@@ -48,7 +48,7 @@ router.post('/changePassword', verifyToken, authenController.changePassword);
 //Contact us Feedback Email
 router.post('/contact-us-email', verifyToken, authenController.contactUsEmail);
 //==========================================================================
-router.post('/refresh-token',verifyToken, authenController.refreshToken);
+router.post('/refresh-token',authenController.refreshToken);
 
 //----------Get API Start----------------//
 //get user details
