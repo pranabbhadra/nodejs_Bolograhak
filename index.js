@@ -186,8 +186,8 @@ app.get('/facebook-user-data', async(req, res) => {
                     const user_insert_results = await query(user_insert_query, user_insert_values);
                     if (user_insert_results.insertId) {
                         const newuserID = user_insert_results.insertId;
-                        const user_meta_insert_query = 'INSERT INTO user_customer_meta (user_id, profile_pic) VALUES (?, ?)';
-                        const user_meta_insert_values = [newuserID, userPicture];
+                        const user_meta_insert_query = 'INSERT INTO user_customer_meta (user_id, review_count, profile_pic) VALUES (?, ?, ?)';
+                        const user_meta_insert_values = [newuserID, 0, userPicture];
                         try{
                             const user_meta_insert_results = await query(user_meta_insert_query, user_meta_insert_values);
                             //**Send Welcome Email to User**/
