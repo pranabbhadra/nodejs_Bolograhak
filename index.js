@@ -158,7 +158,170 @@ app.get('/facebook-user-data', async(req, res) => {
         try {
             const UserResponse = await comFunction.saveUserFacebookLoginDataToDB(user);
             //console.log('FB Login User Response',UserResponse);
-            res.json(UserResponse);
+            //res.json(UserResponse);
+            if(UserResponse.status == 0){
+
+                //Register Code
+                const userFirstName = UserResponse.first_name;
+                const userLastName = UserResponse.last_name;
+                const userEmail = UserResponse.email;
+                const userPicture = UserResponse.profile_pic;
+                const external_id = UserResponse.external_registration_id;
+
+                const currentDate = new Date();
+                const year = currentDate.getFullYear();
+                const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+                const day = String(currentDate.getDate()).padStart(2, '0');
+                const hours = String(currentDate.getHours()).padStart(2, '0');
+                const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+                const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+
+                const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+            
+                const user_insert_query = 'INSERT INTO users (first_name, last_name, email, register_from, external_registration_id, user_registered, user_status, user_type_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+                const user_insert_values = [userFirstName, userLastName, userEmail, 'facebook', external_id, formattedDate, 1, 2];
+                if(userEmail){
+                    user_insert_values[6] = 1;
+                }else{
+                    user_insert_values[6] = 0;
+                }
+                try{
+                    const user_insert_results = await query(user_insert_query, user_insert_values);
+                    if (user_insert_results.insertId) {
+                        const newuserID = user_insert_results.insertId;
+                        const user_meta_insert_query = 'INSERT INTO user_customer_meta (user_id, profile_pic) VALUES (?, ?)';
+                        const user_meta_insert_values = [newuserID, userPicture];
+                        try{
+                            const user_meta_insert_results = await query(user_meta_insert_query, user_meta_insert_values);
+                            //**Send Welcome Email to User**/
+                
+                            //--- WP User Register-------//
+                            const userRegistrationData = {
+                                username: userEmail,
+                                email: userEmail,
+                                password: userEmail,
+                                first_name: userFirstName,
+                                last_name: userLastName,
+                            };
+                
+                            axios.post(process.env.BLOG_API_ENDPOINT + '/register', userRegistrationData)
+                            .then((response) => {
+                                //console.log('User registration successful. User ID:', response.data.user_id);
+                
+                                //-------User Auto Login --------------//
+                                const userAgent = req.headers['user-agent'];
+                                const agent = useragent.parse(userAgent);
+                
+                                // Set a cookie
+                                const userData = {
+                                    user_id: newuserID,
+                                    first_name: userFirstName,
+                                    last_name: userLastName,
+                                    email: userEmail,
+                                    user_type_id: 2,
+                                    profile_pic: userPicture
+                                };
+                                const encodedUserData = JSON.stringify(userData);
+                                res.cookie('user', encodedUserData);
+                
+                                (async () => {
+                                    //---- Login to Wordpress Blog-----//
+                                    //let wp_user_data;
+                                    try {
+                                        const userLoginData = {
+                                            email: userEmail,
+                                            password: userEmail,
+                                        };
+                                        const response = await axios.post(process.env.BLOG_API_ENDPOINT + '/login', userLoginData);
+                                        const wp_user_data = response.data.data;
+                
+                                        //-- check last Login Info-----//
+                                        const device_query = "SELECT * FROM user_device_info WHERE user_id = ?";
+                                        db.query(device_query, [newuserID], async (err, device_query_results) => {
+                                            const currentDate = new Date();
+                                            const year = currentDate.getFullYear();
+                                            const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+                                            const day = String(currentDate.getDate()).padStart(2, '0');
+                                            const hours = String(currentDate.getHours()).padStart(2, '0');
+                                            const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+                                            const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+                                            const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+                
+                                            if (device_query_results.length > 0) {
+                                                // User exist update info
+                                                const device_update_query = 'UPDATE user_device_info SET device_id = ?, IP_address = ?, last_logged_in = ? WHERE user_id = ?';
+                                                const values = [agent.toAgent() + ' ' + agent.os.toString(), requestIp.getClientIp(req), formattedDate, newuserID];
+                                                db.query(device_update_query, values, (err, device_update_query_results) => {
+                                                    //   return res.send(
+                                                    //       {
+                                                    //           status: 'ok',
+                                                    //           data: userData,
+                                                    //           wp_user: wp_user_data,
+                                                    //           currentUrlPath: '/',
+                                                    //           message: 'Registration successful you are automatically login to your dashboard'
+                                                    //       }
+                                                    //   )
+                                                    if(wp_user_data){
+                                                        res.redirect(process.env.BLOG_URL+"?login_check="+wp_user_data+"&currentUrlPath=");
+                                                    }
+                                                })
+                                            } else {
+                                                // User doesnot exist Insert New Row.
+                
+                                                const device_insert_query = 'INSERT INTO user_device_info (user_id, device_id, device_token, imei_no, model_name, make_name, IP_address, last_logged_in, created_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+                                                const values = [newuserID, agent.toAgent() + ' ' + agent.os.toString(), '', '', '', '', requestIp.getClientIp(req), formattedDate, formattedDate];
+                
+                                                db.query(device_insert_query, values, (err, device_insert_query_results) => {
+                                                    //   return res.send(
+                                                    //       {
+                                                    //           status: 'ok',
+                                                    //           data: userData,
+                                                    //           wp_user: wp_user_data,
+                                                    //           currentUrlPath: req.body.currentUrlPath,
+                                                    //           message: 'Registration successful you are automatically login to your dashboard'
+                                                    //       }
+                                                    //   )
+                                                    if(wp_user_data){
+                                                        res.redirect(process.env.BLOG_URL+"?login_check="+wp_user_data+"&currentUrlPath=");
+                                                    }
+                                                })
+                
+                                            }
+                                        })
+                                    } catch (error) {
+                                        // console.error('User login failed. Error:', error);
+                                        // if (error.response && error.response.data) {
+                                        //     console.log('Error response data:', error.response.data);
+                                        // }
+                                        res.json(error);
+                                    }
+                                })();
+                            })
+                            .catch((error) => {
+                                //console.error('User registration failed:', );
+                                res.json(error.response.data);
+                                // return res.send(
+                                //     {
+                                //         status: 'err',
+                                //         data: '',
+                                //         message: error.response.data
+                                //     }
+                                // )
+                            });
+            
+                        //return {first_name:userFullNameArray[0], last_name:userFullNameArray[1], user_id: newuserID, status: 0};
+                        }catch(error){
+                            res.json(error);
+                            //console.error('Error during user_meta_insert_query:', error);
+                        }
+                    }
+                }catch(error){
+                    res.json(error);
+                    //console.error('Error during user_insert_query:', error);
+                }
+
+
+            }            
         } catch (error) {
             console.error('Error saving user data:', error);
             return res.redirect('/error');
