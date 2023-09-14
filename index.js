@@ -152,9 +152,17 @@ app.get('/fail', async (req, res) => {
     res.send("Failed attempt");
 });
 
-app.get('/facebook-user-data', (req, res) => {
+app.get('/facebook-user-data', async(req, res) => {
         const user = req.user;
-        res.json(user);
+        //res.json(user);
+        try {
+            const UserResponse = await comFunction.saveUserFacebookLoginDataToDB(user);
+            //console.log('FB Login User Response',UserResponse);
+            res.json(UserResponse);
+        } catch (error) {
+            console.error('Error saving user data:', error);
+            return res.redirect('/error');
+        }
 });
 
 // Define Routes
