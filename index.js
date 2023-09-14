@@ -178,9 +178,9 @@ app.get('/facebook-user-data', async(req, res) => {
                 const user_insert_query = 'INSERT INTO users (first_name, last_name, email, password, register_from, external_registration_id, user_registered, user_status, user_type_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
                 const user_insert_values = [userFirstName, userLastName, userEmail, hasPassword, 'facebook', external_id, formattedDate, 1, 2];
                 if(userEmail){
-                    user_insert_values[6] = 1;
+                    user_insert_values[7] = 1;
                 }else{
-                    user_insert_values[6] = 0;
+                    user_insert_values[7] = 0;
                 }
                 try{
                     const user_insert_results = await query(user_insert_query, user_insert_values);
