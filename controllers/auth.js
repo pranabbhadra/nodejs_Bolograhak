@@ -2455,6 +2455,32 @@ exports.submitReview = async (req, res) => {
         res.status(500).send('An error occurred');
     }
 }
+//--Submit Review----//
+
+exports.editUserReview = async (req, res) => {
+    const encodedUserData = req.cookies.user;
+    console.log(req.body);
+    try {
+        if (encodedUserData) {
+            const currentUserData = JSON.parse(encodedUserData);
+            //console.log(currentUserData);
+            const userId = currentUserData.user_id;
+            const review = await comFunction2.updateReview(req.body);
+
+            return res.send(
+                {
+                    status: 'ok',
+                    data:   '',
+                    message: 'Review successfully updated'
+                }
+            );
+            
+        } 
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+}
 
 //--- Delete Review ----//
 exports.deleteReview = (req, res) => {

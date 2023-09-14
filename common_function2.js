@@ -987,17 +987,57 @@ async function TotalReplied(Id){
  }
 
   //Function to fetch User review data by Id from the  review table
-async function reviewDataById(Id){
+async function reviewDataById(reviewId,userId){
   const sql = `SELECT r.* , c.company_name
               FROM reviews r
               JOIN company c ON r.company_id = c.ID 
-              WHERE r.id = '${Id}'  `;
+              WHERE r.id = '${reviewId}' AND r.customer_id = '${userId}' `;
 
   const reviewData = await query(sql);
   //console.log(noOfReplied[0])
   return reviewData;
  }
 
+//Function to Update User review data by Id from the  review table
+ async function updateReview(reviewIfo){
+  // console.log('Review Info', reviewIfo);
+  // console.log('Company Info', comInfo);
+  // reviewIfo['tags[]'].forEach((tag) => {
+  //   console.log(tag);
+  // });
+  if (typeof reviewIfo['tags[]'] === 'string') {
+    // Convert it to an array containing a single element
+    reviewIfo['tags[]'] = [reviewIfo['tags[]']];
+  }
+  const currentDate = new Date();
+  // Format the date in 'YYYY-MM-DD HH:mm:ss' format (adjust the format as needed)
+  const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+
+  const updateQuery = 'UPDATE reviews SET review_title = ?, rating = ?, review_content = ?, user_privacy = ?, updated_at = ? WHERE id = ?';
+  const updateData = [ reviewIfo.review_title, reviewIfo.rating, reviewIfo.review_content, reviewIfo.user_privacy, formattedDate, reviewIfo.review_id]
+              
+  try {
+    const create_review_results = await query(updateQuery, updateData);
+      if (Array.isArray(reviewIfo['tags[]']) && reviewIfo['tags[]'].length > 0) {
+        //insert review_tag_relation
+
+        await query(`DELETE FROM review_tag_relation WHERE review_id = '${reviewIfo.review_id}'`);
+
+        const review_tag_relation_query = 'INSERT INTO review_tag_relation (review_id, tag_name) VALUES (?, ?)';
+        try{
+          for (const tag of reviewIfo['tags[]']) {
+            const review_tag_relation_values = [reviewIfo.review_id, tag];
+            const review_tag_relation_results = await query(review_tag_relation_query, review_tag_relation_values);
+          }
+
+        }catch(error){
+          console.error('Error during user review_tag_relation_results:', error);
+        }
+      }
+  }catch (error) {
+    console.error('Error during user update_review_results:', error);
+  }
+}
 
 module.exports = {
   getFaqPage,
@@ -1025,5 +1065,6 @@ module.exports = {
   TotalReplied,
   ReviewReplyToCompany,
   ReviewReplyToCustomer,
-  reviewDataById
+  reviewDataById,
+  updateReview
 };

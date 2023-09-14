@@ -2367,20 +2367,18 @@ router.get('/change-password', checkFrontEndLoggedIn, async (req, res) => {
 });
 
 //FrontEnd Edit Review page
-router.get('/edit-user-review/:reviewId/:companyId', checkFrontEndLoggedIn, async (req, res) => {  
+router.get('/edit-user-review/:reviewId', checkFrontEndLoggedIn, async (req, res) => {  
     
     try {
         const encodedUserData = req.cookies.user;
         const currentUserData = JSON.parse(encodedUserData);
         const userId = currentUserData.user_id;
-        const companyID = req.params.companyId;
         const reviewId = req.params.reviewId;
         //console.log('editUserID: ', currentUserData);
        
-        const [allRatingTags, CompanyInfo, reviewDataById, AllReviewTags, globalPageMeta ] = await Promise.all([
+        const [allRatingTags,  reviewDataById, AllReviewTags, globalPageMeta ] = await Promise.all([
             comFunction.getAllRatingTags(),
-            comFunction.getCompany(companyID),
-            comFunction2.reviewDataById(reviewId),
+            comFunction2.reviewDataById(reviewId, userId),
             comFunction2.getAllReviewTags(),
             comFunction2.getPageMetaValues('global'),
         ]);
@@ -2407,22 +2405,28 @@ router.get('/edit-user-review/:reviewId/:companyId', checkFrontEndLoggedIn, asyn
 
         console.log(reviewDataWithTags)
         // Render the 'edit-user' EJS view and pass the data
-         res.render('front-end/edit-user-review', {
-            menu_active_id: 'edit-review',
-            page_title: 'Edit Review',
-            currentUserData,
-            allRatingTags:allRatingTags,
-            globalPageMeta:globalPageMeta,
-            reviewDataById:reviewDataWithTags[0]
-         });
-        // res.json({
-        //     menu_active_id: 'edit-review',
+        
+        //  res.json({
+        //      menu_active_id: 'edit-review',
         //     page_title: 'Edit Review',
         //     currentUserData,
         //     allRatingTags:allRatingTags,
         //     globalPageMeta:globalPageMeta,
         //     reviewDataById:reviewDataWithTags[0]
-        // });
+        //  });
+        if( reviewDataById.length>0 ){
+            res.render('front-end/edit-user-review', {
+                menu_active_id: 'edit-review',
+                page_title: 'Edit Review',
+                currentUserData,
+                allRatingTags:allRatingTags,
+                globalPageMeta:globalPageMeta,
+                reviewDataById:reviewDataWithTags[0]
+             });
+        }else{
+            res.redirect('/profile-dashboard');
+        }
+         
     } catch (err) {
         console.error(err);
         res.status(500).send('An error occurred');
