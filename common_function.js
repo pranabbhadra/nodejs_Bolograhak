@@ -405,12 +405,21 @@ const saveUserGoogleLoginDataToDB = async (userData) => {
 
 //-------After Facebook Login Save User data Or Check User exist or Not.
 async function saveUserFacebookLoginDataToDB(userData) {
-  console.log(userData);
-  console.log(userData.id + ' ' + userData.displayName + ' ' + userData.photos[0].value);
-  const currentDate = new Date();
-  const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+  //console.log(userData);
+  //console.log(userData.id + ' ' + userData.displayName + ' ' + userData.photos[0].value);
+  //const currentDate = new Date();
+  //const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
 
-  //Checking external_registration_id exist or not and register_from facebook or not
+  const userFullName = userData.displayName;
+  const userFullNameArray = userFullName.split(" ");
+  const userFirstName = userData.name.givenName;
+  const userLastName = userData.name.familyName;
+  const userEmail = userData.emails[0].value;
+  const userPicture = userData.photos[0].value;
+  const external_registration_id = userData.id;
+  
+
+  //Checking external_registration_id and Email exist or not
   try{
     const user_exist_query = 'SELECT * FROM users WHERE register_from = ? AND external_registration_id = ? AND email = ?';
     const user_exist_values = ["facebook", userData.id, userData.emails[0].value];
@@ -418,43 +427,10 @@ async function saveUserFacebookLoginDataToDB(userData) {
     if (user_exist_results.length > 0) {
         //console.log(user_exist_results);
         // checking user status
-        if(user_exist_results[0].user_exist_results == 1){
-          return {first_name:user_exist_results[0].first_name, last_name:user_exist_results[0].last_name, user_id: user_exist_results[0].user_id, status: 1};
-        }else{
-          // return to frontend for registering with email ID
-          return {first_name:user_exist_results[0].first_name, last_name:user_exist_results[0].last_name, user_id: user_exist_results[0].user_id, status: 0};
-        }
+      return {user_id: user_exist_results[0].user_id, first_name:userFirstName, last_name:userLastName, email: userEmail, profile_pic: userPicture, status: 1};
+
     }else{
-      //user doesnot exist Insert initial data getting from facebook but user status 0
-      const userFullName = userData.displayName;
-      const userFullNameArray = userFullName.split(" ");
-      const userFirstName = userData.name.givenName;
-      const userLastName = userData.name.familyName;
-      const userEmail = userData.emails[0].value;
-      const user_insert_query = 'INSERT INTO users (first_name, last_name, email, register_from, external_registration_id, user_registered, user_status, user_type_id) VALUES (?, ?, ?, ?, ?, ?, ?)';
-      const user_insert_values = [userFirstName, userLastName, userEmail, 'facebook', userData.id, formattedDate, 0, 2];
-      if(userEmail){
-        user_insert_values[6] = 1;
-      }else{
-        user_insert_values[6] = 0;
-      }
-      try{
-        const user_insert_results = await query(user_insert_query, user_insert_values);
-        if (user_insert_results.insertId) {
-          const newuserID = user_insert_results.insertId;
-          const user_meta_insert_query = 'INSERT INTO user_customer_meta (user_id, profile_pic) VALUES (?, ?)';
-          const user_meta_insert_values = [newuserID, userData.photos[0].value];
-          try{
-            const user_meta_insert_results = await query(user_meta_insert_query, user_meta_insert_values);
-            // return to frontend for registering with email ID
-            return {first_name:userFullNameArray[0], last_name:userFullNameArray[1], user_id: newuserID, status: 0};
-          }catch(error){
-            console.error('Error during user_meta_insert_query:', error);
-          }
-        }
-      }catch(error){
-        console.error('Error during user_insert_query:', error);
-      }
+      return {first_name:userFirstName, last_name:userLastName, email: userEmail, profile_pic: userPicture, external_registration_id: external_registration_id, status: 0};
     }
   }catch(error){
       console.error('Error during user_exist_query:', error);
