@@ -3513,6 +3513,8 @@ img.user_img{
     object-position: center;
 }
 
-.review-voting.active {
+.review-voting.active,
+.review-voting-TrendingReview.active,
+.review-voting-allReview.active {
     color: #f1ae00;
 }

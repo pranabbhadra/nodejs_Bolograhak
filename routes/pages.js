@@ -79,12 +79,16 @@ const checkCookieValue = (req, res, next) => {
 
 router.get('', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
-    let userId = currentUserData.user_id;
-    const [allRatingTags,globalPageMeta,latestReviews,AllReviewTags] = await Promise.all([
+    let userId = '';
+    if (currentUserData) {
+        userId = currentUserData.user_id;
+    }
+    const [allRatingTags,globalPageMeta,latestReviews,AllReviewTags,AllReviewVoting] = await Promise.all([
         comFunction.getAllRatingTags(),
         comFunction2.getPageMetaValues('global'),
-        comFunction2.getlatestReviews(20, userId),
-        comFunction2.getAllReviewTags()
+        comFunction2.getlatestReviews(20),
+        comFunction2.getAllReviewTags(),
+        comFunction2.getAllReviewVoting(),
     ]);
     const rangeTexts = {};
 
@@ -125,7 +129,8 @@ router.get('', checkCookieValue, async (req, res) => {
                     //     AddressapiKey: process.env.ADDRESS_GOOGLE_API_Key,
                     //     globalPageMeta:globalPageMeta,
                     //     latestReviews: latestReviews,
-                    //     AllReviewTags: AllReviewTags
+                    //     AllReviewTags: AllReviewTags,
+                    //    AllReviewVoting:AllReviewVoting
                     // });
                     res.render('front-end/landing', {
                         menu_active_id: 'landing',
@@ -139,7 +144,8 @@ router.get('', checkCookieValue, async (req, res) => {
                         AddressapiKey: process.env.ADDRESS_GOOGLE_API_Key,
                         globalPageMeta:globalPageMeta,
                         latestReviews: latestReviews,
-                        AllReviewTags: AllReviewTags
+                        AllReviewTags: AllReviewTags,
+                        AllReviewVoting:AllReviewVoting
                     });
                 })
 
@@ -247,17 +253,17 @@ router.get('/about-us', checkCookieValue, async (req, res) => {
 router.get('/review', checkCookieValue, async (req, res) => {
     try {
         let currentUserData = JSON.parse(req.userData);
-        let userId = currentUserData.user_id;
         //console.log(userId);
         // Fetch all the required data asynchronously
-        const [latestReviews, AllReviews, AllTrendingReviews, AllReviewTags, allRatingTags, globalPageMeta, homePageMeta] = await Promise.all([
-            comFunction2.getlatestReviews(20,userId),
-            comFunction2.getAllReviews(userId),
-            comFunction2.getAllTrendingReviews(userId),
+        const [latestReviews, AllReviews, AllTrendingReviews, AllReviewTags, allRatingTags, globalPageMeta, homePageMeta,AllReviewVoting] = await Promise.all([
+            comFunction2.getlatestReviews(20),
+            comFunction2.getAllReviews(),
+            comFunction2.getAllTrendingReviews(),
             comFunction2.getAllReviewTags(),
             comFunction.getAllRatingTags(),
             comFunction2.getPageMetaValues('global'),
             comFunction2.getPageMetaValues('home'),
+            comFunction2.getAllReviewVoting(),
         ]);
         //console.log(getPageMetaValues);
         // res.json({
@@ -282,7 +288,8 @@ router.get('/review', checkCookieValue, async (req, res) => {
             AllReviewTags: AllReviewTags,
             AllTrendingReviews: AllTrendingReviews,
             globalPageMeta:globalPageMeta,
-            homePageMeta:homePageMeta
+            homePageMeta:homePageMeta,
+            AllReviewVoting:AllReviewVoting
         });
     } catch (err) {
         console.error(err);
@@ -2228,7 +2235,7 @@ router.get('/profile-dashboard', checkFrontEndLoggedIn, async (req, res) => {
         console.log('editUserID: ', userId);
 
         // Fetch all the required data asynchronously
-        const [user, userMeta, ReviewedCompanies, AllCompaniesReviews, AllReviewTags, allRatingTags, globalPageMeta] = await Promise.all([
+        const [user, userMeta, ReviewedCompanies, AllCompaniesReviews, AllReviewTags, allRatingTags, globalPageMeta,AllReviewVoting] = await Promise.all([
             comFunction.getUser(userId),
             comFunction.getUserMeta(userId),
             comFunction2.getReviewedCompanies(userId),
@@ -2236,6 +2243,7 @@ router.get('/profile-dashboard', checkFrontEndLoggedIn, async (req, res) => {
             comFunction2.getAllReviewTags(),
             comFunction.getAllRatingTags(),
             comFunction2.getPageMetaValues('global'),
+            comFunction2.getAllReviewVoting(),
         ]);
         //console.log(userMeta);
         // Render the 'edit-user' EJS view and pass the data
@@ -2261,7 +2269,8 @@ router.get('/profile-dashboard', checkFrontEndLoggedIn, async (req, res) => {
             AllCompaniesReviews: AllCompaniesReviews,
             allRatingTags:allRatingTags,
             AllReviewTags:AllReviewTags,
-            globalPageMeta:globalPageMeta
+            globalPageMeta:globalPageMeta,
+            AllReviewVoting:AllReviewVoting
         });
     } catch (err) {
         console.error(err);
@@ -2279,14 +2288,15 @@ router.get('/my-reviews', checkFrontEndLoggedIn, async (req, res) => {
         console.log('editUserID: ', userId);
 
         // Fetch all the required data asynchronously
-        const [ AllCompaniesReviews, AllReviewTags, allRatingTags,globalPageMeta] = await Promise.all([
+        const [ AllCompaniesReviews, AllReviewTags, allRatingTags,globalPageMeta, AllReviewVoting] = await Promise.all([
             comFunction2.getAllCompaniesReviews(userId),
             comFunction2.getAllReviewTags(),
             comFunction.getAllRatingTags(),
             comFunction2.getPageMetaValues('global'),
+            comFunction2.getAllReviewVoting(),
         ]);
         //console.log(AllReviewTags);
-        // Render the 'edit-user' EJS view and pass the data
+        //Render the 'edit-user' EJS view and pass the data
         // res.json( {
         //     menu_active_id: 'profile-dashboard',
         //     page_title: 'My Reviews',
@@ -2294,7 +2304,8 @@ router.get('/my-reviews', checkFrontEndLoggedIn, async (req, res) => {
         //     AllCompaniesReviews: AllCompaniesReviews,
         //     allRatingTags:allRatingTags,
         //     AllReviewTags:AllReviewTags,
-        //     globalPageMeta:globalPageMeta
+        //     globalPageMeta:globalPageMeta,
+        //     AllReviewVoting:AllReviewVoting
         // });
         res.render('front-end/user-all-reviews', {
             menu_active_id: 'profile-dashboard',
@@ -2303,7 +2314,8 @@ router.get('/my-reviews', checkFrontEndLoggedIn, async (req, res) => {
             AllCompaniesReviews: AllCompaniesReviews,
             allRatingTags:allRatingTags,
             AllReviewTags:AllReviewTags,
-            globalPageMeta:globalPageMeta
+            globalPageMeta:globalPageMeta,
+            AllReviewVoting:AllReviewVoting
         });
     } catch (err) {
         console.error(err);

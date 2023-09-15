@@ -177,10 +177,26 @@
                           <% } %>
                       </div>
                       <% if(currentUserData  && currentUserData.user_id  ){ %>
+                        <% 
+                           var totalLikes = 0;
+                           var totalDislikes = 0;
+                           var user_voting_value = '';
+                           AllReviewVoting.forEach( (reviewVoting, index) => {
+                              if(reviewVoting.review_id == latestReview.id && reviewVoting.voting == '1'){
+                                 totalLikes ++ ;
+                              }
+                              if(reviewVoting.review_id == latestReview.id && reviewVoting.voting == '0'){
+                                 totalDislikes ++ ;
+                              }
+                              if(reviewVoting.review_id == latestReview.id && reviewVoting.customer_id == currentUserData.user_id){
+                                 user_voting_value = reviewVoting.voting;
+                              }
+                           }) 
+                        %>
                         <div class="review-like-dislike" id="rev_<%= latestReview.id %>">
-                           <span><a href="#" class="review-voting like_class <% if(latestReview.user_voting_value == '1'){ %> active <% } %>" data-voting="1" data-userId="<%= currentUserData.user_id %>" data-reviewId="<%= latestReview.id %>"><i class="fa-solid fa-thumbs-up"></i> <span class="like_count"><%= latestReview.total_like %></span></a></span>
+                           <span><a href="#" class="review-voting like_class <% if(user_voting_value == '1'){ %> active <% } %>" data-voting="1" data-userId="<%= currentUserData.user_id %>" data-reviewId="<%= latestReview.id %>"><i class="fa-solid fa-thumbs-up"></i> <span class="like_count"><%= totalLikes %></span></a></span>
 
-                           <span><a href="#" class="review-voting dislike_class <% if(latestReview.user_voting_value == '0'){ %> active <% } %>"  data-voting="0" data-userId="<%= currentUserData.user_id %>" data-reviewId="<%= latestReview.id %>"><i class="fa-solid fa-thumbs-down"></i> <span class="dislike_count"><%= latestReview.total_dislike %></span></a></span>
+                           <span><a href="#" class="review-voting dislike_class <% if(user_voting_value == '0'){ %> active <% } %>"  data-voting="0" data-userId="<%= currentUserData.user_id %>" data-reviewId="<%= latestReview.id %>"><i class="fa-solid fa-thumbs-down"></i> <span class="dislike_count"><%= totalDislikes %></span></a></span>
                         </div>
                      <% } %>
                     </div>

@@ -112,10 +112,26 @@
                             <% } %>
                         </div>
                         <% if(currentUserData  && currentUserData.user_id  ){ %>
+                          <% 
+                             var totalLikes = 0;
+                             var totalDislikes = 0;
+                             var user_voting_value = '';
+                             AllReviewVoting.forEach( (reviewVoting, index) => {
+                                if(reviewVoting.review_id == latestReview.id && reviewVoting.voting == '1'){
+                                   totalLikes ++ ;
+                                }
+                                if(reviewVoting.review_id == latestReview.id && reviewVoting.voting == '0'){
+                                   totalDislikes ++ ;
+                                }
+                                if(reviewVoting.review_id == latestReview.id && reviewVoting.customer_id == currentUserData.user_id){
+                                   user_voting_value = reviewVoting.voting;
+                                }
+                             }) 
+                          %>
                           <div class="review-like-dislike" id="rev_<%= latestReview.id %>">
-                             <span><a href="#" class="review-voting like_class <% if(latestReview.user_voting_value == '1'){ %> active <% } %>" data-voting="1" data-userId="<%= currentUserData.user_id %>" data-reviewId="<%= latestReview.id %>"><i class="fa-solid fa-thumbs-up"></i> <span class="like_count"><%= latestReview.total_like %></span></a></span>
-
-                             <span><a href="#" class="review-voting dislike_class <% if(latestReview.user_voting_value == '0'){ %> active <% } %>"  data-voting="0" data-userId="<%= currentUserData.user_id %>" data-reviewId="<%= latestReview.id %>"><i class="fa-solid fa-thumbs-down"></i> <span class="dislike_count"><%= latestReview.total_dislike %></span></a></span>
+                             <span><a href="#" class="review-voting like_class <% if(user_voting_value == '1'){ %> active <% } %>" data-voting="1" data-userId="<%= currentUserData.user_id %>" data-reviewId="<%= latestReview.id %>"><i class="fa-solid fa-thumbs-up"></i> <span class="like_count"><%= totalLikes %></span></a></span>
+  
+                             <span><a href="#" class="review-voting dislike_class <% if(user_voting_value == '0'){ %> active <% } %>"  data-voting="0" data-userId="<%= currentUserData.user_id %>" data-reviewId="<%= latestReview.id %>"><i class="fa-solid fa-thumbs-down"></i> <span class="dislike_count"><%= totalDislikes %></span></a></span>
                           </div>
                        <% } %>
                      </div>
@@ -211,10 +227,26 @@
                         </div>
                         
                         <% if(currentUserData  && currentUserData.user_id  ){ %>
-                          <div class="review-like-dislike" id="rev_<%= TrendingReview.id %>">
-                             <span><a href="#" class="review-voting like_class <% if(TrendingReview.user_voting_value == '1'){ %> active <% } %>" data-voting="1" data-userId="<%= currentUserData.user_id %>" data-reviewId="<%= TrendingReview.id %>"><i class="fa-solid fa-thumbs-up"></i> <span class="like_count"><%= TrendingReview.total_like %></span></a></span>
-
-                             <span><a href="#" class="review-voting dislike_class <% if(TrendingReview.user_voting_value == '0'){ %> active <% } %>"  data-voting="0" data-userId="<%= currentUserData.user_id %>" data-reviewId="<%= TrendingReview.id %>"><i class="fa-solid fa-thumbs-down"></i> <span class="dislike_count"><%= TrendingReview.total_dislike %></span></a></span>
+                          <% 
+                             var totalLikes = 0;
+                             var totalDislikes = 0;
+                             var user_voting_value = '';
+                             AllReviewVoting.forEach( (reviewVoting, index) => {
+                                if(reviewVoting.review_id == TrendingReview.id && reviewVoting.voting == '1'){
+                                   totalLikes ++ ;
+                                }
+                                if(reviewVoting.review_id == TrendingReview.id && reviewVoting.voting == '0'){
+                                   totalDislikes ++ ;
+                                }
+                                if(reviewVoting.review_id == TrendingReview.id && reviewVoting.customer_id == currentUserData.user_id){
+                                   user_voting_value = reviewVoting.voting;
+                                }
+                             }) 
+                          %>
+                          <div class="review-like-dislike" id="Trending_rev_<%= TrendingReview.id %>">
+                             <span><a href="#" class="review-voting-TrendingReview like_class <% if(user_voting_value == '1'){ %> active <% } %>" data-voting="1" data-userId="<%= currentUserData.user_id %>" data-reviewId="<%= TrendingReview.id %>"><i class="fa-solid fa-thumbs-up"></i> <span class="like_count"><%= totalLikes %></span></a></span>
+  
+                             <span><a href="#" class="review-voting-TrendingReview dislike_class <% if(user_voting_value == '0'){ %> active <% } %>"  data-voting="0" data-userId="<%= currentUserData.user_id %>" data-reviewId="<%= TrendingReview.id %>"><i class="fa-solid fa-thumbs-down"></i> <span class="dislike_count"><%= totalDislikes %></span></a></span>
                           </div>
                        <% } %>
                      </div>
@@ -312,10 +344,26 @@
                             <% } %>
                         </div>
                         <% if(currentUserData  && currentUserData.user_id  ){ %>
-                          <div class="review-like-dislike" id="rev_<%= allReview.id %>">
-                             <span><a href="#" class="review-voting like_class <% if(allReview.user_voting_value == '1'){ %> active <% } %>" data-voting="1" data-userId="<%= currentUserData.user_id %>" data-reviewId="<%= allReview.id %>"><i class="fa-solid fa-thumbs-up"></i> <span class="like_count"><%= allReview.total_like %></span></a></span>
-
-                             <span><a href="#" class="review-voting dislike_class <% if(allReview.user_voting_value == '0'){ %> active <% } %>"  data-voting="0" data-userId="<%= currentUserData.user_id %>" data-reviewId="<%= allReview.id %>"><i class="fa-solid fa-thumbs-down"></i> <span class="dislike_count"><%= allReview.total_dislike %></span></a></span>
+                          <% 
+                             var totalLikes = 0;
+                             var totalDislikes = 0;
+                             var user_voting_value = '';
+                             AllReviewVoting.forEach( (reviewVoting, index) => {
+                                if(reviewVoting.review_id == allReview.id && reviewVoting.voting == '1'){
+                                   totalLikes ++ ;
+                                }
+                                if(reviewVoting.review_id == allReview.id && reviewVoting.voting == '0'){
+                                   totalDislikes ++ ;
+                                }
+                                if(reviewVoting.review_id == allReview.id && reviewVoting.customer_id == currentUserData.user_id){
+                                   user_voting_value = reviewVoting.voting;
+                                }
+                             }) 
+                          %>
+                          <div class="review-like-dislike" id="allReview_rev_<%= allReview.id %>">
+                             <span><a href="#" class="review-voting-allReview like_class <% if(user_voting_value == '1'){ %> active <% } %>" data-voting="1" data-userId="<%= currentUserData.user_id %>" data-reviewId="<%= allReview.id %>"><i class="fa-solid fa-thumbs-up"></i> <span class="like_count"><%= totalLikes %></span></a></span>
+  
+                             <span><a href="#" class="review-voting-allReview dislike_class <% if(user_voting_value == '0'){ %> active <% } %>"  data-voting="0" data-userId="<%= currentUserData.user_id %>" data-reviewId="<%= allReview.id %>"><i class="fa-solid fa-thumbs-down"></i> <span class="dislike_count"><%= totalDislikes %></span></a></span>
                           </div>
                        <% } %>
                      </div>
@@ -489,128 +537,128 @@
    jQuery(document).ready(function ($) {
     /////////////// Like Dislike start ////////////
     $(".review-voting").click(function(e){
-         e.preventDefault();
-         var votingValue = $(this).attr("data-voting");
-         var userId = $(this).attr("data-userId");
-         var reviewId = $(this).attr("data-reviewId");
-         console.log(votingValue,userId,reviewId);
-         var votingData = {
-            votingValue:votingValue,
-            userId:userId,
-            reviewId:reviewId
-         };
-         var jsonData = JSON.stringify(votingData);
-         console.log(votingData)
-         $.ajax({
-            url:'/auth/reviewVoting',
-            method:'POST',
-            data:votingData,
-            success: function(data) {
-               if (data.status == 'ok') {
-                  var updatedLike = data.totalLike.totalLike;
-                  var updatedDislike = data.totalDislike.totalDislike;
-                  var responseReviewId = data.reviewId;
-                  var votingValue = data.votingValue;
-                  if (votingValue == '1') {
-                     $('#rev_'+responseReviewId).find('.like_class').addClass('active')
-                     $('#rev_'+responseReviewId).find('.dislike_class').removeClass('active')
-                  } else {
-                     
-                     $('#rev_'+responseReviewId).find('.like_class').removeClass('active')
-                     $('#rev_'+responseReviewId).find('.dislike_class').addClass('active')
-                  }
-                  // Update the value displayed on the page thumbs-down-link
-                  $('#rev_'+responseReviewId).find('.like_count').text(updatedLike);
-                  $('#rev_'+responseReviewId).find('.dislike_count').text(updatedDislike);
-                  
-               }else{
-                  console.log('Error on response')
-               }
-            }
-         })
-      })
-      $(".review-voting").click(function(e){
-         e.preventDefault();
-         var votingValue = $(this).attr("data-voting");
-         var userId = $(this).attr("data-userId");
-         var reviewId = $(this).attr("data-reviewId");
-         console.log(votingValue,userId,reviewId);
-         var votingData = {
-            votingValue:votingValue,
-            userId:userId,
-            reviewId:reviewId
-         };
-         var jsonData = JSON.stringify(votingData);
-         console.log(votingData)
-         $.ajax({
-            url:'/auth/reviewVoting',
-            method:'POST',
-            data:votingData,
-            success: function(data) {
-               if (data.status == 'ok') {
-                  var updatedLike = data.totalLike.totalLike;
-                  var updatedDislike = data.totalDislike.totalDislike;
-                  var responseReviewId = data.reviewId;
-                  var votingValue = data.votingValue;
-                  if (votingValue == '1') {
-                     $('#rev_'+responseReviewId).find('.like_class').addClass('active')
-                     $('#rev_'+responseReviewId).find('.dislike_class').removeClass('active')
-                  } else {
-                     
-                     $('#rev_'+responseReviewId).find('.like_class').removeClass('active')
-                     $('#rev_'+responseReviewId).find('.dislike_class').addClass('active')
-                  }
-                  // Update the value displayed on the page thumbs-down-link
-                  $('#rev_'+responseReviewId).find('.like_count').text(updatedLike);
-                  $('#rev_'+responseReviewId).find('.dislike_count').text(updatedDislike);
-                  
-               }else{
-                  console.log('Error on response')
-               }
-            }
-         })
-      })
-      $(".review-voting").click(function(e){
-         e.preventDefault();
-         var votingValue = $(this).attr("data-voting");
-         var userId = $(this).attr("data-userId");
-         var reviewId = $(this).attr("data-reviewId");
-         console.log(votingValue,userId,reviewId);
-         var votingData = {
-            votingValue:votingValue,
-            userId:userId,
-            reviewId:reviewId
-         };
-         var jsonData = JSON.stringify(votingData);
-         console.log(votingData)
-         $.ajax({
-            url:'/auth/reviewVoting',
-            method:'POST',
-            data:votingData,
-            success: function(data) {
-               if (data.status == 'ok') {
-                  var updatedLike = data.totalLike.totalLike;
-                  var updatedDislike = data.totalDislike.totalDislike;
-                  var responseReviewId = data.reviewId;
-                  var votingValue = data.votingValue;
-                  if (votingValue == '1') {
-                     $('#rev_'+responseReviewId).find('.like_class').addClass('active')
-                     $('#rev_'+responseReviewId).find('.dislike_class').removeClass('active')
-                  } else {
-                     
-                     $('#rev_'+responseReviewId).find('.like_class').removeClass('active')
-                     $('#rev_'+responseReviewId).find('.dislike_class').addClass('active')
-                  }
-                  // Update the value displayed on the page thumbs-down-link
-                  $('#rev_'+responseReviewId).find('.like_count').text(updatedLike);
-                  $('#rev_'+responseReviewId).find('.dislike_count').text(updatedDislike);
-                  
-               }else{
-                  console.log('Error on response')
-               }
-            }
-         })
-      })
+        e.preventDefault();
+        var votingValue = $(this).attr("data-voting");
+        var userId = $(this).attr("data-userId");
+        var reviewId = $(this).attr("data-reviewId");
+        console.log(votingValue,userId,reviewId);
+        var votingData = {
+          votingValue:votingValue,
+          userId:userId,
+          reviewId:reviewId
+        };
+        var jsonData = JSON.stringify(votingData);
+        console.log(votingData)
+        $.ajax({
+          url:'/auth/reviewVoting',
+          method:'POST',
+          data:votingData,
+          success: function(data) {
+              if (data.status == 'ok') {
+                var updatedLike = data.totalLike.totalLike;
+                var updatedDislike = data.totalDislike.totalDislike;
+                var responseReviewId = data.reviewId;
+                var votingValue = data.votingValue;
+                if (votingValue == '1') {
+                    $('#rev_'+responseReviewId).find('.like_class').addClass('active')
+                    $('#rev_'+responseReviewId).find('.dislike_class').removeClass('active')
+                } else {
+                    
+                    $('#rev_'+responseReviewId).find('.like_class').removeClass('active')
+                    $('#rev_'+responseReviewId).find('.dislike_class').addClass('active')
+                }
+                // Update the value displayed on the page thumbs-down-link
+                $('#rev_'+responseReviewId).find('.like_count').text(updatedLike);
+                $('#rev_'+responseReviewId).find('.dislike_count').text(updatedDislike);
+                
+              }else{
+                console.log('Error on response')
+              }
+          }
+        })
+    })
+      $(".review-voting-TrendingReview").click(function(e){
+        e.preventDefault();
+        var votingValue = $(this).attr("data-voting");
+        var userId = $(this).attr("data-userId");
+        var reviewId = $(this).attr("data-reviewId");
+        console.log(votingValue,userId,reviewId);
+        var votingData = {
+          votingValue:votingValue,
+          userId:userId,
+          reviewId:reviewId
+        };
+        var jsonData = JSON.stringify(votingData);
+        console.log(votingData)
+        $.ajax({
+          url:'/auth/reviewVoting',
+          method:'POST',
+          data:votingData,
+          success: function(data) {
+              if (data.status == 'ok') {
+                var updatedLike = data.totalLike.totalLike;
+                var updatedDislike = data.totalDislike.totalDislike;
+                var responseReviewId = data.reviewId;
+                var votingValue = data.votingValue;
+                if (votingValue == '1') {
+                    $('#Trending_rev_'+responseReviewId).find('.like_class').addClass('active')
+                    $('#Trending_rev_'+responseReviewId).find('.dislike_class').removeClass('active')
+                } else {
+                    
+                    $('#Trending_rev_'+responseReviewId).find('.like_class').removeClass('active')
+                    $('#Trending_rev_'+responseReviewId).find('.dislike_class').addClass('active')
+                }
+                // Update the value displayed on the page thumbs-down-link
+                $('#Trending_rev_'+responseReviewId).find('.like_count').text(updatedLike);
+                $('#Trending_rev_'+responseReviewId).find('.dislike_count').text(updatedDislike);
+                
+              }else{
+                console.log('Error on response')
+              }
+          }
+        })
+    })
+      $(".review-voting-allReview").click(function(e){
+        e.preventDefault();
+        var votingValue = $(this).attr("data-voting");
+        var userId = $(this).attr("data-userId");
+        var reviewId = $(this).attr("data-reviewId");
+        console.log(votingValue,userId,reviewId);
+        var votingData = {
+          votingValue:votingValue,
+          userId:userId,
+          reviewId:reviewId
+        };
+        var jsonData = JSON.stringify(votingData);
+        console.log(votingData)
+        $.ajax({
+          url:'/auth/reviewVoting',
+          method:'POST',
+          data:votingData,
+          success: function(data) {
+              if (data.status == 'ok') {
+                var updatedLike = data.totalLike.totalLike;
+                var updatedDislike = data.totalDislike.totalDislike;
+                var responseReviewId = data.reviewId;
+                var votingValue = data.votingValue;
+                if (votingValue == '1') {
+                    $('#allReview_rev_'+responseReviewId).find('.like_class').addClass('active')
+                    $('#allReview_rev_'+responseReviewId).find('.dislike_class').removeClass('active')
+                } else {
+                    
+                    $('#allReview_rev_'+responseReviewId).find('.like_class').removeClass('active')
+                    $('#allReview_rev_'+responseReviewId).find('.dislike_class').addClass('active')
+                }
+                // Update the value displayed on the page thumbs-down-link
+                $('#allReview_rev_'+responseReviewId).find('.like_count').text(updatedLike);
+                $('#allReview_rev_'+responseReviewId).find('.dislike_count').text(updatedDislike);
+                
+              }else{
+                console.log('Error on response')
+              }
+          }
+        })
+    })
       //////////////////Like Dislike End //////////////////
 
      // /////////////////////////////////////// Auto Field Dropdown Start

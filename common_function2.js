@@ -166,13 +166,10 @@ function getReviewedCompanies(userId) {
 function getAllCompaniesReviews(userId) {
   return new Promise((resolve, reject) => {
     const reviewed_companies_query = `
-            SELECT r.*, c.company_name as company_name, c.logo as logo, COUNT(review_reply.id) as review_reply_count, rv.voting as user_voting_value, count(rv_like.review_id) as total_like, count(rv_dislike.review_id) as total_dislike
+            SELECT r.*, c.company_name as company_name, c.logo as logo, COUNT(review_reply.id) as review_reply_count
             FROM  reviews r
             JOIN company c ON r.company_id = c.ID
             LEFT JOIN review_reply ON review_reply.review_id = r.id
-            LEFT JOIN review_voting rv ON rv.review_id = r.id
-            LEFT JOIN review_voting rv_like ON rv_like.review_id = r.id AND rv_like.voting ='1'
-            LEFT JOIN review_voting rv_dislike ON rv_dislike.review_id = r.id AND rv_dislike.voting ='0'
             WHERE r.customer_id = ?
             GROUP BY r.id
             ORDER BY updated_at DESC
@@ -205,21 +202,16 @@ function getAllReviewTags() {
 }
 
 //Function to fetch latest Reviews from the  reviews,company,company_location,users,user_customer_meta table
-async function getlatestReviews(reviewCount, userId){
+async function getlatestReviews(reviewCount){
   const get_latest_review_query = `
     SELECT r.*, c.company_name, c.logo, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, 
-    u.last_name, u.user_id, u.user_status, ucm.profile_pic, COUNT(review_reply.id) as review_reply_count,
-    rv.voting as user_voting_value, count(rv_like.review_id) as total_like, 
-            count(rv_dislike.review_id) as total_dislike
+    u.last_name, u.user_id, u.user_status, ucm.profile_pic, COUNT(review_reply.id) as review_reply_count
       FROM reviews r
       LEFT JOIN company c ON r.company_id = c.ID 
       LEFT JOIN company_location cl ON r.company_location_id = cl.ID 
       LEFT JOIN users u ON r.customer_id = u.user_id 
       LEFT JOIN user_customer_meta ucm ON ucm.user_id = u.user_id 
       LEFT JOIN review_reply ON review_reply.review_id = r.id
-      LEFT JOIN review_voting rv ON rv.customer_id = ${userId}
-      LEFT JOIN review_voting rv_like ON rv_like.review_id = r.id AND rv_like.voting ='1'
-      LEFT JOIN review_voting rv_dislike ON rv_dislike.review_id = r.id AND rv_dislike.voting ='0'
       WHERE r.review_status = "1" AND c.status = "1" 
       GROUP BY r.id
       ORDER BY r.created_at DESC
@@ -240,21 +232,16 @@ async function getlatestReviews(reviewCount, userId){
 }
 
 //Function to fetch All Trending Reviews from the  reviews,company,company_location,users,user_customer_meta table
-async function getAllTrendingReviews(userId){
+async function getAllTrendingReviews(){
   const get_latest_review_query = `
     SELECT r.*, c.company_name, c.logo, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, 
-    u.last_name, u.user_id, u.user_status, ucm.profile_pic, COUNT(review_reply.id) as review_reply_count,
-    rv.voting as user_voting_value, count(rv_like.review_id) as total_like, 
-            count(rv_dislike.review_id) as total_dislike
+    u.last_name, u.user_id, u.user_status, ucm.profile_pic, COUNT(review_reply.id) as review_reply_count
       FROM reviews r
       LEFT JOIN company c ON r.company_id = c.ID 
       LEFT JOIN company_location cl ON r.company_location_id = cl.ID 
       LEFT JOIN users u ON r.customer_id = u.user_id 
       LEFT JOIN user_customer_meta ucm ON ucm.user_id = u.user_id 
       LEFT JOIN review_reply ON review_reply.review_id = r.id
-      LEFT JOIN review_voting rv ON rv.customer_id = ${userId}
-      LEFT JOIN review_voting rv_like ON rv_like.review_id = r.id AND rv_like.voting ='1'
-      LEFT JOIN review_voting rv_dislike ON rv_dislike.review_id = r.id AND rv_dislike.voting ='0'
       WHERE r.review_status = "1" AND c.status = "1" AND c.trending = "1"
       GROUP BY r.id
       ORDER BY r.created_at DESC
@@ -274,21 +261,16 @@ async function getAllTrendingReviews(userId){
 }
 
 //Function to fetch All  Reviews from the  reviews,company,company_location,users,user_customer_meta table
-async function getAllReviews(userId){
+async function getAllReviews(){
   const get_latest_review_query = `
     SELECT r.*, c.company_name, c.logo, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, 
-    u.last_name, u.user_id, u.user_status, ucm.profile_pic, COUNT(review_reply.id) as review_reply_count,
-    rv.voting as user_voting_value, count(rv_like.review_id) as total_like, 
-            count(rv_dislike.review_id) as total_dislike
+    u.last_name, u.user_id, u.user_status, ucm.profile_pic, COUNT(review_reply.id) as review_reply_count
       FROM reviews r
       LEFT JOIN company c ON r.company_id = c.ID 
       LEFT JOIN company_location cl ON r.company_location_id = cl.ID 
       LEFT JOIN users u ON r.customer_id = u.user_id 
       LEFT JOIN user_customer_meta ucm ON ucm.user_id = u.user_id 
       LEFT JOIN review_reply ON review_reply.review_id = r.id
-      LEFT JOIN review_voting rv ON rv.customer_id = ${userId}
-      LEFT JOIN review_voting rv_like ON rv_like.review_id = r.id AND rv_like.voting ='1'
-      LEFT JOIN review_voting rv_dislike ON rv_dislike.review_id = r.id AND rv_dislike.voting ='0'
       WHERE r.review_status = "1" AND c.status = "1"
       GROUP BY r.id
       ORDER BY r.created_at DESC
@@ -1076,6 +1058,17 @@ async function countDislike (reviewId){
   console.log('noOfDislike',noOfDislike)
   return noOfDislike[0];
 }
+
+// Function to fetch all review voting
+async function getAllReviewVoting (){
+  const sql = `SELECT *
+    FROM review_voting WHERE 1 `;
+
+  const ReviewVoting =await query(sql);
+  //console.log('ReviewVoting',ReviewVoting)
+  return ReviewVoting;
+}
+
 module.exports = {
   getFaqPage,
   getFaqCategories,
@@ -1105,5 +1098,6 @@ module.exports = {
   reviewDataById,
   updateReview,
   countLike,
-  countDislike
+  countDislike,
+  getAllReviewVoting
 };
