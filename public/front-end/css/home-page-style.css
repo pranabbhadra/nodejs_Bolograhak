@@ -931,6 +931,10 @@ span#selected-range-emojis {
 	background: url(../images/new-quote.svg) no-repeat left center;
 	z-index: -9;
 }
+
+.home-popular-review-slider {
+	display: none;
+}
 /*=============== Our Popular Review Content End ==============*/
 
 /*=============== Most Popular Review Content start ==============*/

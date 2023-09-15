@@ -575,7 +575,9 @@
 
 	.review-content:before ,
 	.most-popular-categories-content:before,
-	.most-popular-categories-content:after {
+	.most-popular-categories-content:after,
+	.discussion-page-content:before,
+	.discussion-page-content:after {
 		background-size: 52%;
 	}
 
@@ -773,6 +775,10 @@
 		font-size: 16px;
 	}
 
+	.discussions-left span.language-select {
+		top: 8px;
+	}
+
 }
 
 @media only screen and (max-width:840.98px) {
@@ -785,10 +791,48 @@
 		right: 0;
 		top: 0;
 		margin-bottom: 10px;
+		text-align: center;
 	}
 
 	ul.resp-tabs-list {
 		max-width: 100%;
+	}
+
+	.home-popular-review-box-wrapper {
+		display: none;
+	}
+
+	.home-popular-review-slider {
+		display: block;
+	}
+
+	.home-popular-review-box {
+		position: relative !important;
+		top: 0 !important;
+		bottom: 0 !important;
+		right: 0 !important;
+		left: 0 !important;
+		-webkit-transform:scale(1) !important;
+	    transform:scale(1) !important;
+		max-width: 100% !important;
+	}
+
+	.home-popular-review-slider .item {
+		margin: 20px;
+	}
+
+	.discussions-left span.language-select {
+		position: relative;
+		right: 0;
+		top: 0;
+	}
+
+	.discussions-left .lang-dropdown {
+		right: 0;
+	}
+
+	.discussions-left .lang-dropdown ul {
+		text-align: left;
 	}
 }
 
@@ -1297,7 +1341,8 @@
 	
 	  h2.resp-accordion {
 		display: block;
-		margin-bottom: 12px;
+		margin-top: 12px;
+		margin-bottom: 0;
 	}
 	
 	  .resp-vtabs .resp-tab-content {
@@ -1341,6 +1386,15 @@
 	h2.resp-tab-active {
 		padding: 15px 15px !important;
 		font-weight: 500 !important;
+	}
+
+	.discussions-right .search-area {
+		margin: 0 0 20px 0;
+		max-width: 100%;
+	}
+
+	.discussions-right-panel + .discussions-right-panel {
+		margin-top: 20px;
 	}
 
 }
@@ -1683,7 +1737,9 @@
 
 	.review-content:before,
 	.most-popular-categories-content:before,
-	.most-popular-categories-content:after {
+	.most-popular-categories-content:after,
+	.discussion-page-content:before,
+	.discussion-page-content:after {
 		background-size: 35%;
 	}
 
@@ -1970,6 +2026,18 @@
 
 	.dis-right-panel-item {
 		margin-top: 22px;
+	}
+
+	.default-content-area h4 {
+		font-size: 15px;
+	}
+	
+	.home-popular-client p {
+		margin-bottom: 5px;
+	}
+
+	.home-popular-client p i {
+		font-size: 12px;
 	}
 
 }

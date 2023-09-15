@@ -2753,6 +2753,17 @@ h4 {
     color: #000000;
 }
 
+.btn-dark {
+    background: #000000;
+    color: #FCCB06;
+    border-radius: 10px;
+}
+
+.btn-dark:hover {
+    background: #FCCB06;
+    color: #000000;
+}
+
 
 .main-content {
     padding: 55px 0;
@@ -3567,11 +3578,12 @@ h2.resp-accordion {
 }
 
 h2.resp-accordion {
-  font-size: 16px;
-  background: #252525;
-  margin: 0px;
-  padding: 15px 15px;
-  border-radius: 10px;
+    font-size: 16px;
+    background: #252525;
+    margin: 0px;
+    padding: 15px 15px;
+    border-radius: 10px;
+    color: #fff;
 }
 
 h2.resp-tab-active {

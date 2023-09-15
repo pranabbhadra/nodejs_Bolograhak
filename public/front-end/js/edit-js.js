@@ -483,14 +483,15 @@ jQuery(function ($) {
   });
 
   $('.home-popular-review-slider').slick({
-    dots: true,
+    dots: false,
     infinite: true,
     speed: 1400,
     autoplay: true,
     autoplaySpeed: 2000,
-    pauseOnHover: false,
+    pauseOnHover: true,
     arrows: false,
-    fade: true,
+    prevArrow: '<i class="fa-solid fa-chevron-left slick-arrow-left"></i>',
+    nextArrow: '<i class="fa-solid fa-chevron-right slick-arrow-right"></i>',
     slidesToShow: 1,
     slidesToScroll: 1
   });
@@ -589,6 +590,36 @@ jQuery(function ($) {
       $(".load-slice-btn").hide();
     }
   });
+
+  $(".tab-content-wrap").find(".discussion-load-panel").slice(0, 4).show();
+  $(".discussion-load-btn").click(function (e) {
+    e.preventDefault();
+    $(".tab-content-wrap").find(".discussion-load-panel:hidden").slice(0, 4).fadeIn("slow");
+
+    if ($(".tab-content-wrap").find(".discussion-load-panel:hidden").length == 0) {
+      $(".discussion-load-btn").hide();
+    }
+  });
+  $(window).on('load', function(){
+    if($(".tab-content-wrap").find(".discussion-load-panel:hidden").length == 0){
+         $(".discussion-load-btn").hide();
+    }
+  });
+
+  // $(".tab-content-wrap").find(".discussion-load-panel").slice(0, 4).show();
+  // $(".discussion-load-btn").click(function (e) {
+  //   e.preventDefault();
+  //   $(this).parent(".tab-content-wrap").find(".discussion-load-panel:hidden").slice(0, 4).fadeIn("slow");
+
+  //   if ($(".tab-content-wrap").find(".discussion-load-panel:hidden").length == 0) {
+  //     $(".discussion-load-btn").hide();
+  //   }
+  // });
+  // $(window).on('load', function(){
+  //   if($(".tab-content-wrap").find(".discussion-load-panel:hidden").length == 0){
+  //        $(".discussion-load-btn").hide();
+  //   }
+  // });
 
   // $(".customer-review-wrap").slice(0, 3).show();
   // $(".show-comment-slice").click(function (e) {
@@ -945,6 +976,7 @@ $('#horizontalTab').easyResponsiveTabs({
 
   /*=========================== Math random review box function start =================*/
   $(function () {
+    if($(window).width()>840){
     setRandomClass();
     setInterval(function () {
       setRandomClass();
@@ -968,7 +1000,17 @@ $('#horizontalTab').easyResponsiveTabs({
         .siblings()
         .removeClass("home-popular-review-box_active");
     }
+  }
   });
 /*=========================== Math random review box function End =================*/
+
+/*=========================== Discussion modal function Start =================*/
+$('#discussiontext').focus(function(){
+  //open bootsrap modal
+  $('#disscussionmodal').modal({
+     show: true
+  });
+});
+/*=========================== Discussion modal function End =================*/
 
 });
