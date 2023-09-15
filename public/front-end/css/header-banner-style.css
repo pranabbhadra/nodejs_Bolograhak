@@ -653,7 +653,7 @@ span.toggle-menu {
     background: url(../images/login-bg.png) no-repeat center;
     background-size: cover;
     position: relative;
-    margin: 1.75rem auto;
+    margin: 1rem auto;
     padding: 40px;
     max-width: 1020px;
     min-height: 661px;
@@ -692,14 +692,26 @@ span.toggle-menu {
     font-size: 16px;
 }
 
-.log-browse-content a {
-    display: inline-block;
-    padding: 0 5px;
-    width: 50px;
-    height: 50px;
+.log-browse-content > a {
     background: #fff;
-    border-radius: 100%;
-    line-height: 62px;
+    padding: 10px 15px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.log-browse-content > a:hover{
+    background-color: #ffc107;
+}
+.log-browse-content > a span{
+    font-size: 25px;
+    font-weight: 700;
+    color: #3c6ae3;
+    line-height: 30px;
+    margin-left: 10px;
+}
+.log-browse-content > a:hover span{
+    color: #000;
 }
 
 .log-browse-content .fa-google {
@@ -711,10 +723,10 @@ span.toggle-menu {
 }
 .log-browse-content .fa-facebook-f {
     color: #1773EA;
-    font-size: 28px;
+    font-size: 34px;
 }
-.log-browse-content a i {
-    font-size: 24px;
+.log-browse-content > a:hover .fa-facebook-f {
+    color: #000;
 }
 
 .or-connect {
