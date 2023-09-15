@@ -37,7 +37,7 @@
                             <div class="tag-label"><strong>Tags</strong></div>
                             <div class="range-tag-wrap">
                                 <% allRatingTags.forEach( (rev_tag, index) => { %>
-                                <div class="tag-items-wrapper range-tag<%= rev_tag.review_rating_value.replace(/\./g, "") %> <% if(rev_tag.review_rating_value.replace(/\./g, "")!=reviewDataById.rating){ %>d-none<% } %>">
+                                <div class="tag-items-wrapper range-tag<%= rev_tag.review_rating_value.replace(/\./g, "_") %> <% if(rev_tag.review_rating_value.replace(/\./g, "_")!=reviewDataById.rating){ %>d-none<% } %>">
                                     <% const tag_items = rev_tag.rating_tags.split('|'); %>
                                     <% tag_items.forEach(function(tag, key) { %>
                                         <div class="form-check custom-check position-relative">
@@ -96,14 +96,17 @@
         event.preventDefault();
         const formData = $('#review_submit_frm').serializeArray();
         const jsonData = {};
+        console.log('formData', formData);
         $(formData).each(function (index, field) {
             if(field.name==='tags'){
-            if (!jsonData.tags) {
-                jsonData.tags = [];
-            }
-            jsonData.tags.push(field.value);;
+                if (!jsonData.tags) {
+                    jsonData.tags = [];
+                }
+                if (!jsonData.tags.includes(field.value)) {
+                    jsonData.tags.push(field.value);
+                }
             }else{
-            jsonData[field.name] = field.value;
+                jsonData[field.name] = field.value;
             }
         });
         $.ajax({
@@ -163,7 +166,7 @@
         $("#ratingvalue").val(ui.value);
         // When slider values change, update the text
           var numberAsString = ui.value.toString();
-          var classnumber = numberAsString.replace(".", "");
+          var classnumber = numberAsString.replace(".", "_");
           //console.log('classnumber:',classnumber);
           $("#selected-range-text").text(rangeTexts[ui.value]);
           $("#selected-range-emojis").attr('src','/'+rangeEmojis[ui.value]);

@@ -2425,7 +2425,7 @@ router.get('/edit-user-review/:reviewId', checkFrontEndLoggedIn, async (req, res
             };
             });
 
-        console.log(reviewDataWithTags)
+        //console.log(reviewDataWithTags)
         // Render the 'edit-user' EJS view and pass the data
         
         //  res.json({
