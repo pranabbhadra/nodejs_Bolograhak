@@ -695,6 +695,11 @@ span.toggle-menu {
 .log-browse-content a {
     display: inline-block;
     padding: 0 5px;
+    width: 50px;
+    height: 50px;
+    background: #fff;
+    border-radius: 100%;
+    line-height: 62px;
 }
 
 .log-browse-content .fa-google {
@@ -706,6 +711,7 @@ span.toggle-menu {
 }
 .log-browse-content .fa-facebook-f {
     color: #1773EA;
+    font-size: 28px;
 }
 .log-browse-content a i {
     font-size: 24px;
