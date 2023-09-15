@@ -7,7 +7,6 @@ const db = require('../config');
 const comFunction = require('../common_function_api');
 const comFunction2 = require('../common_function2');
 const commonFunction = require('../common_function');
-
 const router = express.Router();
 //const publicPath = path.join(__dirname,'../public');
 
@@ -29,6 +28,153 @@ const storage = multer.diskStorage({
 });
 // Create multer instance
 const upload = multer({ storage: storage });
+
+
+
+
+// function verifyToken(req, res, next) {
+//     let accessToken = req.headers['authorization'];
+//     let refreshToken = req.headers['x-refresh-token'];
+  
+//     // Function to generate a new access token
+//     const generateAccessToken = (user) => {
+//       // Implement your logic to generate a new access token based on the user
+//       // For example:
+//       const newPayload = {
+//         user_id: user.user_id,
+//         // Add other relevant claims here
+//       };
+//       const newAccessToken = jwt.sign(newPayload, jwtsecretKey, {
+//         expiresIn: '1h', // Set the expiration time for the new access token
+//       });
+//       return newAccessToken;
+//     };
+  
+//     // Function to verify the access token
+//     const verifyAccessToken = () => {
+//       jwt.verify(accessToken, jwtsecretKey, (err, user) => {
+//         if (err) {
+//           // Access token is invalid, switch to refresh token
+//           useRefreshToken();
+//         } else {
+//           // Access token is valid, proceed with it
+//           req.user = user;
+//           next();
+//         }
+//       });
+//     };
+  
+//     // Function to use the refresh token
+//     const useRefreshToken = () => {
+//       if (refreshToken) {
+//         jwt.verify(refreshToken, jwtsecretKey, (err, refreshUser) => {
+//           if (err) {
+//             return res.status(401).json({
+//               status: 'error',
+//               message: 'Invalid refresh token',
+//             });
+//           } else {
+//             // Access token is invalid, but refresh token is valid
+//             req.user = refreshUser; // Set req.user to the user from the refresh token
+//             // Generate a new access token
+//             const newAccessToken = generateAccessToken(refreshUser);
+//             // Replace the existing Authorization header with the new access token
+//             req.headers['authorization'] = `Bearer ${newAccessToken}`;
+//             // Verify the new access token
+//             verifyAccessToken();
+//           }
+//         });
+//       } else {
+//         // No valid refresh token available, return an error
+//         return res.status(401).json({
+//           status: 'error',
+//           message: 'Invalid tokens',
+//         });
+//       }
+//     }
+  
+//     // Check if access token is missing
+//     if (!accessToken) {
+//       // Access token is missing, try to use the refresh token
+//       useRefreshToken();
+//     } else {
+//       accessToken = accessToken.split(' ')[1];
+//       verifyAccessToken();
+//     }
+//   }
+  
+// function verifyToken(req, res, next) {
+//     let accessToken = req.headers['authorization'];
+  
+    
+//     const generateAccessToken = (user) => {
+//       // Implement your logic to generate a new access token based on the user
+//       // For example:
+//       const newPayload = {
+//         user_id: user.user_id,
+//         // Add other relevant claims here
+//       };
+//       const newAccessToken = jwt.sign(newPayload, jwtsecretKey, {
+//         expiresIn: '1h', // Set the expiration time for the new access token
+//       });
+//       return newAccessToken;
+//     };
+  
+//     // Function to verify the access token
+//     const verifyAccessToken = () => {
+//       jwt.verify(accessToken, jwtsecretKey, (err, user) => {
+//         if (err) {
+//           // Access token is invalid, switch to refresh token
+//           useRefreshToken();
+//         } else {
+//           // Access token is valid, proceed with it
+//           req.user = user;
+//           next();
+//         }
+//       });
+//     };
+  
+//     // Function to use the refresh token
+//     const useRefreshToken = () => {
+//       const refreshToken = req.headers['authorization']; 
+  
+//       if (refreshToken) {
+//         jwt.verify(refreshToken, jwtsecretKey, (err, refreshUser) => {
+//           if (err) {
+//             return res.status(401).json({
+//               status: 'error',
+//               message: 'Invalid refresh token',
+//             });
+//           } else {
+//             // Access token is invalid, but refresh token is valid
+//             req.user = refreshUser; // Set req.user to the user from the refresh token
+//             // Generate a new access token
+//             const newAccessToken = generateAccessToken(refreshUser);
+//             // Replace the existing Authorization header with the new access token
+//             req.headers['authorization'] = `Bearer ${newAccessToken}`;
+//             // Verify the new access token
+//             verifyAccessToken();
+//           }
+//         });
+//       } else {
+//         // No valid refresh token available, return an error
+//         return res.status(401).json({
+//           status: 'error',
+//           message: 'Invalid tokens',
+//         });
+//       }
+//     }
+  
+//     // Check if access token is missing
+//     if (!accessToken) {
+//       // Access token is missing, try to use the refresh token
+//       useRefreshToken();
+//     } else {
+//       accessToken = accessToken.split(' ')[1];
+//       verifyAccessToken();
+//     }
+//   }
+  
 
 router.post('/register',upload.single('profile_pic') ,authenController.register);
 router.post('/login', authenController.login);
@@ -1006,24 +1152,166 @@ router.get('/app-faq',verifyToken, async (req, res) => {
 
 //================================================================================
 
-function verifyToken(req, res, next){
+// function generateTokens(user) {
+//     const accessToken = jwt.sign(user, jwtsecretKey, { expiresIn: '15m' }); // Set the expiration time for the access token
+//     const refreshToken = jwt.sign(user, jwtsecretKey, { expiresIn: '7d' }); // Set the expiration time for the refresh token
+//     return { accessToken, refreshToken };
+// }
+
+// function verifyToken(req, res, next) {
+//     let token = req.headers['authorization'];
+//     if (token) {
+//         token = token.split(' ')[1];
+//         jwt.verify(token, jwtsecretKey, (err, valid) => {
+//             if (err) {
+//                 console.error("Token verification error:", err);
+//                 return res.status(401).json({
+//                     status: 'error',
+//                     message: 'Invalid token',
+//                 });
+//             } else {
+//                 req.user = valid;
+//                 console.log("user ccc", req.user); // To store user information
+//                 next();
+//             }
+//         });
+//     } else {
+//         return res.status(403).json({
+//             status: 'error',
+//             message: 'Missing header token',
+//         });
+//     }
+// }
+
+
+  
+// function verifyToken(req, res, next) {
+//     let token = req.headers['authorization'];
+//     if (token) {
+//         token = token.split(' ')[1];
+//         console.log("Received token:", token);
+//         jwt.verify(token, jwtsecretKey, (err, valid) => {
+//             if (err) {
+//                 console.error("Token verification error:", err);
+//                 return res.status(401).json({
+//                     status: 'error',
+//                     message: 'Invalid token',
+//                 });
+//             } else {
+//                 const userId = req.body.user_id;
+//                 const generateRefreshToken = (userId) => {
+//                     try {
+//                       // Define the payload for the token
+//                       const payload = {
+//                         user_id: userId, // You can include any user-specific data here
+//                         // Add other claims as needed
+//                       };
+                  
+//                       // Sign the token using the secret key and set the expiration
+//                       const refreshToken = jwt.sign(payload, jwtsecretKey, {
+//                         expiresIn: '20h',
+//                       });
+                  
+//                       return refreshToken;
+//                     } catch (error) {
+//                       // Handle token generation error (e.g., log, throw, or return null)
+//                       console.error('Error generating refresh token:', error);
+//                       return null;
+//                     }
+//                   };
+//                 req.user = valid;
+//                 const refreshToken = generateRefreshToken(userId);
+//                 if (!refreshToken) {
+//                     return res.status(500).json({
+//                       status: 'error',
+//                       message: 'Failed to generate refresh token',
+//                     });
+//                   }
+//                   res.setHeader('x-refresh-token', refreshToken);
+//                   res.json({
+//                     status: 'success',
+//                     refresh_token: refreshToken,
+//                   });
+//                 // Use the refreshToken function to generate a new refresh token
+//                 refreshToken(req.user.user_id) // Assuming user_id is part of the user data
+//                     .then((newRefreshToken) => {
+//                         // Set the new refresh token in the response headers
+//                         res.setHeader('x-refresh-token', newRefreshToken);
+//                         next();
+//                     })
+//                     .catch((error) => {
+//                         console.error("Refresh token generation error:", error);
+//                         return res.status(500).json({
+//                             status: 'error',
+//                             message: 'Failed to generate refresh token',
+//                         });
+//                     });
+//             }
+//         });
+//     } else {
+//         return res.status(403).json({
+//             status: 'error',
+//             message: 'Missing header token',
+//         });
+//     }
+// }
+  
+function verifyToken(req, res, next) {
     let token = req.headers['authorization'];
-    if(token){
+    if (token) {
         token = token.split(' ')[1];
         console.log("Received token:", token);
         jwt.verify(token, jwtsecretKey, (err, valid) => {
-            if(err){
+            if (err) {
                 console.error("Token verification error:", err);
                 return res.status(401).json({
                     status: 'error',
                     message: 'Invalid token',
                 });
             } else {
-                req.user = valid; 
-                console.log("user ccc",req.user) //to store user information
+                const userId = req.body.user_id;
+
+                // Define the function to generate a refresh token
+                const generateRefreshToken = (userId) => {
+                    try {
+                        // Define the payload for the token
+                        const payload = {
+                            user_id: userId, // You can include any user-specific data here
+                            // Add other claims as needed
+                        };
+
+                        // Sign the token using the secret key and set the expiration
+                        const refreshToken = jwt.sign(payload, jwtsecretKey, {
+                            expiresIn: '20h',
+                        });
+
+                        return refreshToken;
+                    } catch (error) {
+                        // Handle token generation error (e.g., log, throw, or return null)
+                        console.error('Error generating refresh token:', error);
+                        return null;
+                    }
+                };
+
+                // Use the refreshToken function to generate a new refresh token
+                const refreshToken = generateRefreshToken(userId);
+
+                if (!refreshToken) {
+                    return res.status(500).json({
+                        status: 'error',
+                        message: 'Failed to generate refresh token',
+                    });
+                }
+
+                //res.setHeader('x-refresh-token', refreshToken);
+
+                // Store user data in req.user
+                req.user = valid;
+
+                // Continue to the next middleware or route
                 next();
             }
-        })
+        });
     } else {
         return res.status(403).json({
             status: 'error',
@@ -1035,6 +1323,13 @@ function verifyToken(req, res, next){
 
 
 module.exports = router;
+
+
+
+
+
+
+
 
 
 

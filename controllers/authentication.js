@@ -248,6 +248,7 @@ exports.login = (req, res) => {
         const token = jwt.sign(payload, secretKey, {
           expiresIn: '10h', 
         });
+
     
 
         const clientIp = requestIp.getClientIp(req);
@@ -1886,72 +1887,132 @@ exports.resetPassword = async (req, res) => {
 }
 
 //renew token
-const renewToken = (userId) => {
-  const payload = {};
-  const newSecretJwt = randomstring.generate();
+// const renewToken = (userId) => {
+//   const payload = {};
+//   const newSecretJwt = randomstring.generate();
 
-  // Log the new secret key
-  console.log('New Secret JWT:', newSecretJwt);
+//   // Log the new secret key
+//   console.log('New Secret JWT:', newSecretJwt);
 
-  fs.readFile('config.js', 'utf-8', function (err, data) {
-    if (err) throw err;
+//   fs.readFile('config.js', 'utf-8', function (err, data) {
+//     if (err) throw err;
 
-    const newValue = data.replace(new RegExp(secretKey, 'g'), newSecretJwt);
+//     const newValue = data.replace(new RegExp(secretKey, 'g'), newSecretJwt);
 
-    fs.writeFile('config.js', newValue, 'utf-8', function (err, data) {
-      if (err) throw err;
-      console.log('Secret key updated in config.js');
-    });
-  });
-  console.log('JWT Payload:', payload);
+//     fs.writeFile('config.js', newValue, 'utf-8', function (err, data) {
+//       if (err) throw err;
+//       console.log('Secret key updated in config.js');
+//     });
+//   });
+//   console.log('JWT Payload:', payload);
 
-  const token = jwt.sign(payload, newSecretJwt, {
-    expiresIn: '10h',
-  });
+//   const token = jwt.sign(payload, newSecretJwt, {
+//     expiresIn: '10h',
+//   });
 
-  return token;
-};
-
-
+//   return token;
+// };
 
 
-exports.refreshToken = async (req, res) => {
+
+
+
+
+
+
+//new renew token
+// const renewToken = (userId) => {
+//   // Create a payload with user-specific data
+//   const payload = {
+//     user_id: userId,
+//     // Add other relevant claims here
+//   };
+
+//   // Generate a new secret JWT
+//   const newSecretJwt = randomstring.generate();
+
+//   // Log the new secret key (use secure logging mechanisms)
+//   console.log('New Secret JWT:', newSecretJwt);
+
+//   // Update the secret key in the configuration file
+//   fs.readFile('config.js', 'utf-8', (err, data) => {
+//     if (err) {
+//       console.error('Error reading config.js:', err);
+//       return;
+//     }
+
+//     const newValue = data.replace(new RegExp(secretKey, 'g'), newSecretJwt);
+
+//     fs.writeFile('config.js', newValue, 'utf-8', (err) => {
+//       if (err) {
+//         console.error('Error writing to config.js:', err);
+//         return;
+//       }
+//       console.log('Secret key updated in config.js');
+//     });
+//   });
+
+//   // Sign a new token with the updated secret key
+//   const token = jwt.sign(payload, newSecretJwt, {
+//     expiresIn: '10h',
+//   });
+
+//   return token;
+// };
+
+
+
+
+// //new refresh token
+
+
+const generateRefreshToken = (userId) => {
   try {
-    const userId = req.body.user_id;
-    console.log("user_id from request", userId);
-    
-    const userData = await new Promise((resolve, reject) => {
-      db.query('SELECT * FROM users WHERE user_id = ?', [userId], (error, results) => {
-        if (error) {
-          reject(error);
+    // Define the payload for the token
+    const payload = {
+      user_id: userId, // You can include any user-specific data here
+      // Add other claims as needed
+    };
 
-        } else {
-          resolve(results);
-        }
-      });
-    })
-    console.log(userData)
-    console.log(userId)
+    // Sign the token using the secret key and set the expiration
+    const refreshToken = jwt.sign(payload, secretKey, {
+      expiresIn: '10h',
+    });
 
-
-    if (userData.length > 0) {
-      console.log("User found")
-      const tokenData = await renewToken(userId);
-      const response = {
-        user_id: userId,
-        refreshtoken: tokenData,
-      };
-      console.log(tokenData)
-      res.status(200).send({ success: true, message: 'Refresh Token Details', data: response });
-    } else {
-      res.status(404).send({ success: false, message: 'User not found' });
-    }
+    return refreshToken;
   } catch (error) {
-    res.status(500).send({ success: false, message: error.message });
-    console.log("error",error)
+    // Handle token generation error (e.g., log, throw, or return null)
+    console.error('Error generating refresh token:', error);
+    return null;
   }
 };
 
+// Refresh Token route
+exports.refreshToken = async (req, res) => {
+  const userId = req.body.user_id;
+
+  if (!userId) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'User ID missing in the request body',
+    });
+  }
+
+  // Generate a new refresh token for the specified user
+  const refreshToken = generateRefreshToken(userId);
+
+  if (!refreshToken) {
+    return res.status(500).json({
+      status: 'error',
+      message: 'Failed to generate refresh token',
+    });
+  }
+  res.setHeader('x-refresh-token', refreshToken);
+  res.json({
+    status: 'success',
+    refresh_token: refreshToken,
+  });
+};
 
 
 //new
