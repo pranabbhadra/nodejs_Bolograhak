@@ -246,7 +246,7 @@ exports.login = (req, res) => {
         }
 
         const token = jwt.sign(payload, secretKey, {
-          expiresIn: '10h', 
+          expiresIn: '5m', 
         });
 
     
@@ -1976,7 +1976,7 @@ const generateRefreshToken = (userId) => {
 
     // Sign the token using the secret key and set the expiration
     const refreshToken = jwt.sign(payload, secretKey, {
-      expiresIn: '10h',
+      expiresIn: '5m',
     });
 
     return refreshToken;
