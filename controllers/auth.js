@@ -1866,14 +1866,15 @@ exports.editRatingTags = (req, res) => {
 }
 
 exports.editCustomerReview = async (req, res) => {
-    //console.log('controller',req.body);
+    console.log('controller',req.body);
     // const ratingTagsArray = JSON.parse(req.body.rating_tags);
     // console.log(ratingTagsArray);
     //const editResponse1 = await comFunction.editCustomerReview( req.body );
-    const [editResponse, ApproveMailSend,RejectdEmailSend] = await Promise.all([
+    const [editResponse, ApproveMailSend,RejectdEmailSend, CustomerReply] = await Promise.all([
         comFunction.editCustomerReview( req.body ),
         comFunction2.reviewApprovedEmail(req.body),
         comFunction2.reviewRejectdEmail(req.body),
+        comFunction2.updateCustomerReply(req.body),
     ]);
 
     if(editResponse == true){

@@ -270,12 +270,66 @@
                                 <!--end::Options-->
                             </div>
                             
-                            <!--end::Col-->
-                        </div>
-                       
-                        <div id="reject_area">
+                            <div id="reject_area">
 
+                            </div>
                         </div>
+                        <% if(reviewData.company_reply_content) { %>
+                            <div class="row mb-6">
+                                <!--begin::Label-->
+                                <label class="col-lg-4 col-form-label fw-bold fs-6">
+                                    <span class="">Company Reply</span>
+                                </label>
+                                <!--end::Label-->
+                                <!--begin::Col-->
+                                <div class="col-lg-8 fv-row">
+                                    <textarea name="company_reply_content" rows="8" class="form-control form-control-lg form-control-solid" placeholder="Reply Content" readonly  ><% if(reviewData && reviewData.company_reply_content){ %><%= reviewData.company_reply_content %><% } %></textarea>
+                                </div>
+                                <!--end::Col-->
+                            </div>
+                        <% } %>
+                        <% if(reviewData.reply_id) { %>
+                            <div class="row mb-6">
+                                <!--begin::Label-->
+                                <label class="col-lg-4 col-form-label fw-bold fs-6">
+                                    <span class="">User Reply</span>
+                                </label>
+                                <!--end::Label-->
+                                <!--begin::Col-->
+                                <div class="col-lg-8 fv-row">
+                                    <textarea name="reply_content" rows="8" class="form-control form-control-lg form-control-solid" placeholder="Reply Content" <% if(currentUserData.user_type_id == 3) { %> readonly <% } %> ><% if(reviewData && reviewData.reply_content){ %><%= reviewData.reply_content %><% } %></textarea>
+                                </div>
+                                <!--end::Col-->
+                            </div>
+                            <div class="row mb-6">
+                                <input type="hidden" name="reply_id" value="<%= reviewData.reply_id %>" />
+                                <input type="hidden" name="reply_previous_reason" value="<%= reviewData.reply_rejecting_reason %>" />
+                                <!--begin::Label-->
+                                <label class="col-lg-4 col-form-label  fw-bold fs-6">Reply Status</label>
+                                <!--end::Label-->
+                                <!--begin::Col-->
+                                <div class="col-lg-8 fv-row">
+                                    <!--begin::Options-->
+                                    <div class="d-flex align-items-center mt-3">
+                                        <!--begin::Option-->
+                                        <label class="form-check form-check-inline form-check-solid me-5">
+                                            <input class="form-check-input mt-1" name="reply_status" type="radio" value="2" <% if(reviewData.reply_status == '2'){ %>checked <% } %>/>
+                                            <span class="fw-bold fs-6 badge badge-light-warning fw-bolder px-4 py-3">Pending</span>
+                                        </label>
+                                        <label class="form-check form-check-inline form-check-solid">
+                                            <input class="form-check-input mt-1" id="rejectId" name="reply_status" type="radio" value="0" <% if(reviewData.reply_status == '0'){ %>checked <% } %> />
+                                            <span class="fw-bold fs-6 badge badge-light-danger fw-bolder px-4 py-3">Rejected</span>
+                                        </label>
+                                        <!--end::Option-->
+                                    </div>
+                                    <!--end::Options-->
+                                </div>
+                                
+                                <div id="reply_reject_area">
+
+                                </div>
+                            </div>
+                        <% } %>
 
                     </div>
                     <!--end::Card body-->
@@ -451,9 +505,18 @@ $(document).ready(function() {
         if (this.value == '0') {
 
         $('#reject_area').html('<div class="row mb-6" id="reject_textarea"><label class="col-lg-4 col-form-label fw-bold fs-6"><span class="">Rejecting Comment</span></label><div class="col-lg-8 fv-row"><textarea class="form-control form-control-lg form-control-solid" name="review_rejecting_comment" ></textarea></div></div>');
-      } else {
-        $('#reject_area').html('');
-      }
+        } else {
+            $('#reject_area').html('');
+        }
+    });
+
+    $('input[type=radio][name=reply_status]').change(function() {
+        if (this.value == '0') {
+
+        $('#reply_reject_area').html('<div class="row mb-6" id="reply_reject_textarea"><label class="col-lg-4 col-form-label fw-bold fs-6"><span class="">Reply Rejecting Comment</span></label><div class="col-lg-8 fv-row"><textarea class="form-control form-control-lg form-control-solid" name="reply_rejecting_comment" ></textarea></div></div>');
+        } else {
+            $('#reply_reject_area').html('');
+        }
     });
 
     // Update the company location input with the selected company's address
