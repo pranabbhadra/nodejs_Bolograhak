@@ -1079,13 +1079,13 @@ async function updateCustomerReply(req){
       const currentDate = new Date();
       // Format the date in 'YYYY-MM-DD HH:mm:ss' format (adjust the format as needed)
       const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
-  
+      
       const update_reply_query ='UPDATE review_reply SET  comment = ?, status = ? , reason = ?, updated_at = ? WHERE ID = ? ';
   
       const update_reply_values = [
         req.reply_content || null,
-        req.reply_status || null,
-        req.reply_rejecting_comment || req.reply_previous_reason,
+        req.reply_status || '2',
+        req.reply_rejecting_comment || null,
         formattedDate,
         req.reply_id
       ];

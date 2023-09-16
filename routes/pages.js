@@ -535,6 +535,29 @@ router.get('/company/:id', checkCookieValue, async (req, res) => {
 
     if(CompanyInfo){
         if(CompanyInfo.paid_status == 'paid'){
+            // res.json(
+            // {
+            //     menu_active_id: 'company',
+            //     page_title: 'Organization Details',
+            //     currentUserData,
+            //     allRatingTags,
+            //     company:CompanyInfo,
+            //     CompanyInfo,
+            //     companyReviewNumbers,
+            //     getCompanyReviews,
+            //     globalPageMeta:globalPageMeta,
+            //     cover_img:cover_img,
+            //     gallery_img:gallery_img,
+            //     youtube_iframe:youtube_iframe,
+            //     products:products,
+            //     promotions:promotions,
+            //     facebook_url:facebook_url,
+            //     twitter_url:twitter_url,
+            //     instagram_url:instagram_url,
+            //     linkedin_url:linkedin_url,
+            //     youtube_url:youtube_url,
+            //     support_data:support_data,
+            // });
             res.render('front-end/category-details-premium',
             {
                 menu_active_id: 'company',

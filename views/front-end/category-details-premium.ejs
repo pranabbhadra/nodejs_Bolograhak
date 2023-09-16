@@ -588,7 +588,7 @@
                             <div class="customer-profile-info">
                                 <% const replydateString = reply.created_at; %>
                                 <% const replydate = new Date(replydateString); %>
-                                <% if(reply.reply_by == review.customer_id) { %>
+                                <% if(reply.reply_by == review.customer_id ) { %>
                                     <!-- Customer Reply -->
                                     <% if(review.user_privacy == 1) { %>
                                     <span>
@@ -626,7 +626,11 @@
                                     <!-- Company Owner Reply End-->
                                 <% } %>
                             </div>
-                            <p><%= reply.comment %></p>
+                            <% if(reply.status != '0') {%>
+                                <p><%= reply.comment %></p>
+                            <% } else {%>
+                                <span><img src="/front-end/images/blur-name.png" alt="img"></span>
+                            <% } %>
                         </div>
                         
                         <% if(review.review_reply.length==1 && currentUserData!= null && review.customer_id == currentUserData.user_id){ %>
@@ -647,7 +651,7 @@
                     <% } %>
                     <!--Review Replys End-->
                     </div>
-                    <% }) %>
+                <% }) %>
                     <!-- <% if(company_total_review>3){%> 
                     <div class="btn-border-top"><a href="#" class="view-more mt-0 show-comment-slice"><span class="position-relative"><i class="fa-solid fa-angle-right"></i>Show More</span></a></div>
                     <% } %> -->

@@ -311,13 +311,9 @@
                                 <div class="col-lg-8 fv-row">
                                     <!--begin::Options-->
                                     <div class="d-flex align-items-center mt-3">
-                                        <!--begin::Option-->
-                                        <label class="form-check form-check-inline form-check-solid me-5">
-                                            <input class="form-check-input mt-1" name="reply_status" type="radio" value="2" <% if(reviewData.reply_status == '2'){ %>checked <% } %>/>
-                                            <span class="fw-bold fs-6 badge badge-light-warning fw-bolder px-4 py-3">Pending</span>
-                                        </label>
+                                       
                                         <label class="form-check form-check-inline form-check-solid">
-                                            <input class="form-check-input mt-1" id="rejectId" name="reply_status" type="radio" value="0" <% if(reviewData.reply_status == '0'){ %>checked <% } %> />
+                                            <input class="form-check-input mt-1" id="rejectId" name="reply_status" type="checkbox" value="0" <% if(reviewData.reply_status == '0'){ %>checked <% } %> />
                                             <span class="fw-bold fs-6 badge badge-light-danger fw-bolder px-4 py-3">Rejected</span>
                                         </label>
                                         <!--end::Option-->
@@ -325,9 +321,10 @@
                                     <!--end::Options-->
                                 </div>
                                 
-                                <div id="reply_reject_area">
+                                
+                            </div>
+                            <div id="reply_reject_area">
 
-                                </div>
                             </div>
                         <% } %>
 
@@ -510,14 +507,24 @@ $(document).ready(function() {
         }
     });
 
-    $('input[type=radio][name=reply_status]').change(function() {
-        if (this.value == '0') {
+    // $('input[type=checked][name=reply_status]').change(function() {
+    //     if (this.value == '0') {
 
-        $('#reply_reject_area').html('<div class="row mb-6" id="reply_reject_textarea"><label class="col-lg-4 col-form-label fw-bold fs-6"><span class="">Reply Rejecting Comment</span></label><div class="col-lg-8 fv-row"><textarea class="form-control form-control-lg form-control-solid" name="reply_rejecting_comment" ></textarea></div></div>');
+    //     $('#reply_reject_area').html('<div class="row mb-6" id="reply_reject_textarea"><label class="col-lg-4 col-form-label fw-bold fs-6"><span class="">Reply Rejecting Comment</span></label><div class="col-lg-8 fv-row"><textarea class="form-control form-control-lg form-control-solid" name="reply_rejecting_comment" ></textarea></div></div>');
+    //     } else {
+    //         $('#reply_reject_area').html('');
+    //     }
+    // });
+    $('input[name="reply_status"]').change(function() {
+        if (this.checked && this.value === '0') { // Check if the checkbox is checked and has a value of '0'
+            $('#reply_reject_area').html('<div class="row mb-6" id="reply_reject_textarea"><label class="col-lg-4 col-form-label fw-bold fs-6 required"><span class="">Reply Rejecting Reason</span></label><div class="col-lg-8 fv-row"><textarea class="form-control form-control-lg form-control-solid" name="reply_rejecting_comment" required><%= reviewData.reply_rejecting_reason %></textarea></div></div>');
         } else {
-            $('#reply_reject_area').html('');
+            $('#reply_reject_area').html(''); // Clear the container if the checkbox is not checked or has a different value
         }
     });
+    if ($('input[name="reply_status"]').is(':checked')) {
+        $('#reply_reject_area').html('<div class="row mb-6" id="reply_reject_textarea"><label class="col-lg-4 col-form-label fw-bold fs-6 required "><span class="">Reply Rejecting Reason</span></label><div class="col-lg-8 fv-row"><textarea class="form-control form-control-lg form-control-solid" name="reply_rejecting_comment" required><%= reviewData.reply_rejecting_reason %></textarea></div></div>');
+    }
 
     // Update the company location input with the selected company's address
     $('#update_company_id').on('change', function() {

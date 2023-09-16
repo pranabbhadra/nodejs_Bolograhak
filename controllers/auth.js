@@ -3929,7 +3929,7 @@ exports.forgotPassword = (req, res) => {
 //--Submit Review Reply----//
 exports.submitReviewReply = async (req, res) => {
     const encodedUserData = req.cookies.user;
-    console.log(req.body);
+    //console.log(req.body);
     try {
         if (encodedUserData) {
             const currentUserData = JSON.parse(encodedUserData);
@@ -3939,9 +3939,9 @@ exports.submitReviewReply = async (req, res) => {
                 const currentDate = new Date();
                 const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
 
-                const replyData = [req.body.review_id,req.body.company_id,req.body.reply_by,req.body.reply_to,req.body.comment,formattedDate,formattedDate]
+                const replyData = [req.body.review_id, req.body.company_id, req.body.reply_by, req.body.reply_to, req.body.comment,'2',formattedDate, formattedDate]
 
-                db.query('INSERT INTO review_reply (review_id, company_id, reply_by, reply_to, comment, created_at, updated_at) VALUES (?,?,?,?,?,?,?)', replyData, async (err, results) => {
+                db.query('INSERT INTO review_reply (review_id, company_id, reply_by, reply_to, comment, status, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?)', replyData, async (err, results) => {
                     if (err) {
                         return res.status(500).json({
                           status: 'error',
@@ -4165,7 +4165,7 @@ exports.changePassword = async (req, res) => {
 
 // Review voting (like dislike)
 exports.reviewVoting = async (req, res) => {
-    console.log('reviewVoting', req.body);
+    //console.log('reviewVoting', req.body);
     const {votingValue, userId, reviewId} = req.body;
     const checkQuery = `SELECT id FROM review_voting WHERE 	review_id = '${reviewId}' AND customer_id = '${userId}' `;
     const currentDate = new Date();

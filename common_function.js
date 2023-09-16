@@ -946,7 +946,7 @@ async function getCompanyReviewNumbers(companyID){
 async function getCompanyReviews(companyID){
   const get_company_reviews_query = `
     SELECT r.*, ur.first_name, ur.last_name, ur.email, ucm.profile_pic,
-           rr.ID AS reply_id, rr.reply_by AS reply_by, rr.comment AS reply_comment , rr.created_at AS reply_created_at
+           rr.ID AS reply_id, rr.reply_by AS reply_by, rr.comment AS reply_comment , rr.created_at AS reply_created_at, rr.status AS reply_status
     FROM reviews r
     JOIN users ur ON r.customer_id = ur.user_id
     LEFT JOIN user_customer_meta ucm ON ur.user_id = ucm.user_id
@@ -974,6 +974,7 @@ async function getCompanyReviews(companyID){
           review_id: row.id,
           reply_by: row.reply_by,
           comment: row.reply_comment,
+          status: row.reply_status,
           created_at: row.reply_created_at
         });
       }
