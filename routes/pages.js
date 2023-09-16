@@ -186,7 +186,8 @@ router.get('', checkCookieValue, async (req, res) => {
                         AddressapiKey: process.env.ADDRESS_GOOGLE_API_Key,
                         globalPageMeta:globalPageMeta,
                         latestReviews: latestReviews,
-                        AllReviewTags: AllReviewTags
+                        AllReviewTags: AllReviewTags,
+                        AllReviewVoting:AllReviewVoting
                     });
                 })
 
