@@ -9,7 +9,7 @@ const axios = require('axios');
 const dotenv = require('dotenv');
 dotenv.config({ path: './.env' });
 const crypto = require('crypto');
-
+const app = express();
 const comFunction = require('../common_function');
 const comFunction2 = require('../common_function2');
 
@@ -507,6 +507,22 @@ router.get('/company/:id', checkCookieValue, async (req, res) => {
     ]);
     let currentUserData = JSON.parse(req.userData);
     
+    // const companyData = {
+    //     1: 'SC WebTech',
+    //     2: 'Another Company',
+    //     // Add more company IDs and names as needed
+    //  };
+
+    // const companyName = companyData[companyID]; // Get the company name from your data source
+  
+    // if (companyName) {
+    //     console.log('companyName')
+    //   // Replace the company ID in the URL with the company name
+    //   req.url = req.url.replace(`/company/${companyID}`, `/company/${companyName}`);
+    //   console.log(req.url);
+    // }
+    //res.send(`Requested URL: ${req.url}`);
+
     let cover_img = '';
     let youtube_iframe = '';
     let gallery_img = [];
