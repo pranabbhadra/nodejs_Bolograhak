@@ -1212,10 +1212,14 @@ exports.searchCompany = async (req, res) => {
   //console.log(req.body);
   const keyword = req.params.keyword; //Approved Company
   const get_company_query = `
-    SELECT ID, company_name, logo, about_company, main_address, main_address_pin_code FROM company
-    WHERE company_name LIKE '%${keyword}%'
-    ORDER BY created_date DESC
-  `;
+  SELECT c.ID, c.company_name, c.logo, c.about_company, c.main_address, c.main_address_pin_code, r.review_status AS review_status
+  FROM company c
+  LEFT JOIN reviews r ON c.ID = r.company_id
+  WHERE c.company_name LIKE '%${keyword}%' AND review_status="1"
+  GROUP BY c.ID, c.company_name, c.logo, c.about_company, c.main_address, c.main_address_pin_code
+  ORDER BY c.created_date DESC  
+`;
+
   try{
     const get_company_results = await query(get_company_query);
     if(get_company_results.length > 0 ){
