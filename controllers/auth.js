@@ -223,12 +223,16 @@ exports.frontendUserRegister = async (req, res) => {
                                         <table border="0" cellpadding="4" cellspacing="0" width="90%">
                                           <tr>
                                             <td colspan="2">
-                                            <strong>Hello ${first_name},</strong>
-                                            <p style="font-size:15px; line-height:20px">Welcome to our <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a> family.</p>
+                                                <strong>Hello ${first_name},</strong>
+                                                <p style="font-size:15px; line-height:20px">Warm greetings from the Bolo Grahak team!
+                                                You have joined a community dedicated to empowering all Grahaks (Customers) and ensuring their voices are heard <b>LOUD</b> and <b>C L E A R</b>.</p>
+                                                <p style="font-size:15px; line-height:20px"> Keep sharing your Customer experiences (positive or negative), read about others' experience and get to know Customer centric information.</p>
+                                                <p style="font-size:15px; line-height:20px">Share this platform with all your friends and family.
+                                                Together, we can make Organisations listen and improve because <b>#CustomersHavePower</b>.</p><p style="font-size:15px; line-height:20px">Let's usher in this Customer Revolution coz <b>#CustomerRightsMatter</b>.</p><p style="font-size:15px; line-height:20px">Welcome Onboard!</p><br><p style="font-size:15px; line-height:20px">Kind Regards,</p><p style="font-size:15px; line-height:20px">Bolo Grahak Team</p><br>
                                             </td>
                                           </tr>
                                         </table>
-                                        
+                                        <p style="font-size:15px; line-height:20px">Download the app from Google Playstore or visit  <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak.com </a>.</p>
                                        </div>
                                      </td>
                                     </tr>
@@ -870,19 +874,19 @@ exports.createUser = (req, res) => {
                         if (err) {
                             console.log(err);
                         } else {
-                            var mailOptions = {
-                                from: 'vivek@scwebtech.com',
-                                to: req.body.email,
-                                subject: 'Test Message From Bolo Grahak',
-                                text: 'Test Message bidy'
-                            }
-                            mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
-                                if (err) {
-                                    console.log(err);
-                                } else {
-                                    console.log('Mail Send: ', info.response);
-                                }
-                            })
+                            // var mailOptions = {
+                            //     from: 'vivek@scwebtech.com',
+                            //     to: req.body.email,
+                            //     subject: 'Test Message From Bolo Grahak',
+                            //     text: 'Test Message bidy'
+                            // }
+                            // mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
+                            //     if (err) {
+                            //         console.log(err);
+                            //     } else {
+                            //         console.log('Mail Send: ', info.response);
+                            //     }
+                            // })
                             return res.send(
                                 {
                                     status: 'ok',
@@ -2012,11 +2016,11 @@ exports.contactFeedback = (req, res) => {
                       <td style="padding: 0; -webkit-border-radius: 6px;" valign="top">
                        <table border="0" cellpadding="10" cellspacing="0" width="100%">
                          <tbody>
-                           <tr>
-                            <td colspan="2" id="credit" style="padding: 0 48px 48px 48px; -webkit-border-radius: 6px; border: 0; color: #99b1c7; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center;" valign="middle">
-                                 <p> (http://bolograhak.in/)</p>
+                            <tr>
+                            <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
+                                <p>This email was sent from <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a></p>
                             </td>
-                           </tr>
+                            </tr>
                          </tbody>
                        </table>
                       </td>
