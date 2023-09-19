@@ -512,6 +512,7 @@ router.get('/getcompanyreviewlisting/:company_id', verifyToken, (req, res) => {
     r.review_title,
     r.rating,
     r.review_content,
+    r.review_status,
     r.created_at AS review_created_at,
     c.created_date AS company_created_date
   FROM
@@ -519,7 +520,7 @@ router.get('/getcompanyreviewlisting/:company_id', verifyToken, (req, res) => {
   JOIN
     company c ON r.company_id = c.ID
   WHERE
-    c.ID = ?
+    c.ID = ? AND r.review_status="1"
   ORDER BY
     r.created_at ASC
 `;
@@ -534,6 +535,7 @@ router.get('/getcompanyreviewlisting/:company_id', verifyToken, (req, res) => {
             console.error('Error executing reviews query:', error);
             res.status(500).json({ error: 'Internal server error' });
           } else {
+            console.log(reviewsResult)
             const companyInfo = companyResult[0];
             const reviews = reviewsResult;
   
@@ -696,7 +698,7 @@ db.query(userQuery, [userId], (error, userResult) => {
 router.get('/reviewslistofallcompaniesbyuser/:user_id', verifyToken, (req, res) => {
     const userId = req.params.user_id;
     console.log(userId)
-       const query = `SELECT c.id AS company_id,MAX(r.created_at) AS latest_review_date,c.company_name,c.logo, COUNT(r.id) AS review_count FROM reviews r JOIN company c ON r.company_id = c.id WHERE r.customer_id = ? GROUP BY c.id, c.company_name ORDER BY latest_review_date DESC`;
+       const query = `SELECT c.id AS company_id,MAX(r.created_at) AS latest_review_date,c.company_name,c.logo, COUNT(r.id) AS review_count FROM reviews r JOIN company c ON r.company_id = c.id WHERE r.customer_id = ? AND r.review_status="1" GROUP BY c.id, c.company_name ORDER BY latest_review_date DESC`;
 
       db.query(query, [userId], (queryErr, rows) => {
         if (queryErr) {
@@ -1276,8 +1278,7 @@ function verifyToken(req, res, next) {
                     try {
                         // Define the payload for the token
                         const payload = {
-                            user_id: userId, // You can include any user-specific data here
-                            // Add other claims as needed
+                            user_id: userId,
                         };
 
                         // Sign the token using the secret key and set the expiration

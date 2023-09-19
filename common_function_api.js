@@ -500,6 +500,7 @@ async function getAllReviews() {
       JOIN company_location cl ON r.company_location_id = cl.ID
       JOIN users u ON r.customer_id = u.user_id
       LEFT JOIN user_customer_meta ucm ON u.user_id = ucm.user_id
+      WHERE r.review_status = "1"
       ORDER BY r.created_at DESC;
   `;
   try{
@@ -519,7 +520,7 @@ async function getTrendingReviews() {
     JOIN company_location cl ON r.company_location_id = cl.ID
     JOIN users u ON r.customer_id = u.user_id
     LEFT JOIN user_customer_meta ucm ON u.user_id = ucm.user_id
-    WHERE c.trending = 1
+    WHERE c.trending = 1 AND r.review_status = "1"
     ORDER BY r.created_at DESC;
 `;
 
@@ -541,6 +542,7 @@ async function getLatestReview(limit = null) {
       JOIN company_location cl ON r.company_location_id = cl.ID
       JOIN users u ON r.customer_id = u.user_id
       LEFT JOIN user_customer_meta ucm ON u.user_id = ucm.user_id
+      WHERE r.review_status = "1"
       ORDER BY r.created_at DESC
       ${limit !== null ? `LIMIT ${limit}` : ''};
   `;
@@ -995,7 +997,7 @@ async function getUserReview(user_ID){
       JOIN users c ON r.customer_id = c.user_id
       LEFT JOIN user_customer_meta ucm ON r.customer_id = ucm.user_id
       JOIN company co ON r.company_id = co.ID
-      WHERE c.user_id = ?
+      WHERE c.user_id = ? AND r.review_status = "1"
       ORDER BY r.created_at ASC;
     `;
     const get_review_query_value = [user_ID];
