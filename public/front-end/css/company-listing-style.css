@@ -1,0 +1,40 @@
+.company-listing-left {
+    border-radius: 20px;
+    background: #252525;
+    color: #ffffff;
+    padding: 35px 20px;
+}
+
+.company-listing-left h4 {
+    font-size: 22px;
+    font-weight: 500;
+    border-bottom: 1px #484848 solid;
+    padding-bottom: 16px;
+    margin-bottom: 40px;
+}
+
+.company-listing-left ul {
+    padding: 0;
+    margin: 0;
+}
+
+.company-listing-left ul li + li {
+    margin-top: 35px;
+}
+
+.company-listing-left ul li a {
+    color: #BDBDBD;
+    font-size: 18px;
+    font-weight: 400;
+}
+
+.company-listing-left ul li a i {
+    margin-right: 10px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.company-listing-left ul li a:hover,
+.company-listing-left ul li.active a {
+    color: #FCCB06;
+}

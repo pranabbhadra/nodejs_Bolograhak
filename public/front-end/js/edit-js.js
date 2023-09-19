@@ -606,6 +606,21 @@ jQuery(function ($) {
     }
   });
 
+  $(".all-cat-slice").slice(0,20).show();
+  $(".load-all-categories").click(function(e){
+    e.preventDefault();
+    $(".all-cat-slice:hidden").slice(0,4).fadeIn("slow");
+    
+    if($(".all-cat-slice:hidden").length == 0){
+       $(".load-all-categories").hide();
+      }
+  });
+  $(window).on('load', function(){
+    if($(".all-cat-slice:hidden").length == 0){
+         $(".load-all-categories").hide();
+    }
+  });
+
   // $(".tab-content-wrap").find(".discussion-load-panel").slice(0, 4).show();
   // $(".discussion-load-btn").click(function (e) {
   //   e.preventDefault();
@@ -1007,9 +1022,7 @@ $('#horizontalTab').easyResponsiveTabs({
 /*=========================== Discussion modal function Start =================*/
 $('#discussiontext').focus(function(){
   //open bootsrap modal
-  $('#disscussionmodal').modal({
-     show: true
-  });
+  $("#disscussionmodal").modal('show');
 });
 /*=========================== Discussion modal function End =================*/
 

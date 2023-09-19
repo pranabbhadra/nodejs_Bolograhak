@@ -76,9 +76,11 @@
 }
 
 .discussions-left .lang-dropdown {
-    width: 100%;
-    max-width: 110px;
+    width: auto;
+    min-width: 110px;
     z-index: 9;
+    right: 0;
+    text-align: left;
 }
 
 .discussion-content h2 small {
@@ -288,6 +290,9 @@
     color: #ffffff;
     box-shadow: 0px 24px 54px 0px rgba(0, 0, 0, 0.12);
     padding: 23px 100px 23px 36px;
+    background-image: url(../images/discussion-object-bg2.svg);
+    background-repeat: no-repeat;
+    background-position: right top;
 }
 
 .discussion-details-user-info h4 {
@@ -347,4 +352,11 @@
     background-color: #252525;
     color: #ffffff;
 }
+
+/* .discussionpage-nav {
+    overflow: auto;
+    position: -webkit-sticky;
+    position: sticky;
+    top: 5%;
+} */
 /*=============== Discussion Content End ==============*/

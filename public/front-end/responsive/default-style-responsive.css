@@ -220,7 +220,8 @@
 		background-size: 70%;
 	}
 
-	.business-didyou-know-content:after {
+	.business-didyou-know-content:after,
+	.business-choose-your-plan-content:after {
 		background-size: 60%;
 	}
 
@@ -276,11 +277,19 @@
 		height: 324px;
 	}
 
+	.business-choose-your-plan-content:before {
+		background-size: 55%;
+	}
+
 }
 
 @media only screen and (max-width:1040.98px) {
 	.login-modal-content {
 	    margin: 1.75rem 10px;
+	}
+
+	.popular-category-part p {
+		font-size: 15px;
 	}
 }
 
@@ -777,6 +786,28 @@
 
 	.discussions-left span.language-select {
 		top: 8px;
+	}
+
+	.choose-your-plan-box-step h4 {
+		font-size: 18px;
+	}
+
+	.choose-your-plan-box-step ul li {
+		font-size: 13px;
+	}
+
+	.choose-your-plan-box-step {
+		padding: 64px 15px 45px;
+	}
+
+	.choose-your-plan-box {
+		display: block;
+		max-width: 400px;
+        margin: 30px auto 0;
+	}
+
+	.discussion-details-user-info {
+		padding: 22px 30px;
 	}
 
 }
@@ -1365,9 +1396,14 @@
 		border-bottom: 1px solid #c1c1c1 !important;
 	  }
 	  
-	  .discussion-user-img img {
+	  .discussion-user-img img,
+	  .discussion-details-user-img img {
 		width: 35px;
 		height: 35px !important;
+	}
+
+	.discussion-details-panel {
+		padding-left: 48px;
 	}
 
 	.discussion-user-info {
@@ -1375,7 +1411,8 @@
 		min-height: 35px;
 	}
 
-	.discussion-user-info h4 {
+	.discussion-user-info h4,
+	.discussion-details-user-info h4 {
 		font-size: 16px;
 	}
 
@@ -1395,6 +1432,15 @@
 
 	.discussions-right-panel + .discussions-right-panel {
 		margin-top: 20px;
+	}
+
+	.popular-category-part p {
+		margin-bottom: 24px;
+	}
+
+	.all-cat-slice .popular-category-part svg {
+		height: 112px;
+		margin-bottom: 10px;
 	}
 
 }
@@ -1769,7 +1815,8 @@
 		background-size: 32%;
 	}
 
-	.business-didyou-know-content:after {
+	.business-didyou-know-content:after,
+	.business-choose-your-plan-content:after {
 		background-size: 42%;
 	}
 
@@ -2040,6 +2087,22 @@
 		font-size: 12px;
 	}
 
+	.discussion-details-user-info {
+		padding: 22px 18px;
+	}
+
+	.contribute-discussion {
+		font-size: 14px;
+	}
+
+	.contribute-discussion a i {
+		font-size: 18px;
+	}
+
+	.discussion-similar-thread h3 {
+		font-size: 20px;
+	}
+
 }
 
 @media only screen and (max-width:540.98px) {
@@ -2177,6 +2240,10 @@
 	}
 	.main-content.business-content{
 		background-color: #fff;
+	}
+
+	.popular-category-part p {
+		text-align: center !important;
 	}
 
 }
