@@ -246,8 +246,9 @@ exports.login = (req, res) => {
         }
 
         const token = jwt.sign(payload, secretKey, {
-          expiresIn: '10h', 
+          expiresIn: '5m', 
         });
+
     
 
         const clientIp = requestIp.getClientIp(req);
@@ -614,8 +615,8 @@ exports.edituser = (req, res) => {
               const profilePicture = req.file;
               console.log(profilePicture);
 
-              const updateQueryMeta = 'UPDATE user_customer_meta SET address = ?, country = ?, state = ?, city = ?, zip = ?, date_of_birth = ?, occupation = ?, gender = ?, profile_pic = ?, alternate_phone = ?, about = ? WHERE user_id = ?';
-              db.query(updateQueryMeta, [req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, req.body.date_of_birth, req.body.occupation, req.body.gender, req.file.filename, req.body.alternate_phone, req.body.about, userId], (updateError, updateResults) => {
+              const updateQueryMeta = 'UPDATE user_customer_meta SET address = ?, country = ?, state = ?, city = ?, zip = ?, date_of_birth = ?, occupation = ?, gender = ?, profile_pic = ?, alternate_phone = ?,marital_status=?, about = ? WHERE user_id = ?';
+              db.query(updateQueryMeta, [req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, req.body.date_of_birth, req.body.occupation, req.body.gender, req.file.filename, req.body.alternate_phone, req.body.marital_status,req.body.about, userId], (updateError, updateResults) => {
                   if (updateError) {
                       return res.send(
                           {
@@ -636,8 +637,8 @@ exports.edituser = (req, res) => {
               });
 
           } else {
-              const updateQueryMeta = 'UPDATE user_customer_meta SET address = ?, country = ?, state = ?, city = ?, zip = ?, date_of_birth = ?, occupation = ?, gender = ?,alternate_phone = ?, about = ? WHERE user_id = ?';
-              db.query(updateQueryMeta, [req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, req.body.date_of_birth, req.body.occupation, req.body.gender,req.body.alternate_phone, req.body.about, userId], (updateError, updateResults) => {
+              const updateQueryMeta = 'UPDATE user_customer_meta SET address = ?, country = ?, state = ?, city = ?, zip = ?, date_of_birth = ?, occupation = ?, gender = ?,alternate_phone = ?,marital_status=?, about = ? WHERE user_id = ?';
+              db.query(updateQueryMeta, [req.body.address, req.body.country, req.body.state, req.body.city, req.body.zip, req.body.date_of_birth, req.body.occupation, req.body.gender,req.body.alternate_phone, req.body.marital_status, req.body.about, userId], (updateError, updateResults) => {
                   if (updateError) {
                       return res.send(
                           {
@@ -1211,10 +1212,14 @@ exports.searchCompany = async (req, res) => {
   //console.log(req.body);
   const keyword = req.params.keyword; //Approved Company
   const get_company_query = `
-    SELECT ID, company_name, logo, about_company, main_address, main_address_pin_code FROM company
-    WHERE company_name LIKE '%${keyword}%'
-    ORDER BY created_date DESC
-  `;
+  SELECT c.ID, c.company_name, c.logo, c.about_company, c.main_address, c.main_address_pin_code, r.review_status AS review_status
+  FROM company c
+  LEFT JOIN reviews r ON c.ID = r.company_id
+  WHERE c.company_name LIKE '%${keyword}%' AND review_status="1"
+  GROUP BY c.ID, c.company_name, c.logo, c.about_company, c.main_address, c.main_address_pin_code
+  ORDER BY c.created_date DESC  
+`;
+
   try{
     const get_company_results = await query(get_company_query);
     if(get_company_results.length > 0 ){
@@ -1423,16 +1428,6 @@ exports.changePassword = async (req, res) => {
   }
 };
 
-//
-  // function generateNewJWTToken(userid) {
-  //   const secretKey = 'grahak-secret-key';
-  //   const tokenExpiration = '1h'; 
-  //   const token = jwt.sign({ userid }, secretKey, { expiresIn: tokenExpiration });
-  //   return token;
-  // }
-  //const newToken = generateNewJWTToken(userid);
-//=======================================================================
-//Contact us Feedback Email
 exports.contactUsEmail = (req, res) => {
   const phone = req.body.phone;
   const message = req.body.message;
@@ -1567,7 +1562,6 @@ exports.contactUsEmail = (req, res) => {
       }
   })
 }
-//=======================================================================
 
 //new forget password
 // Function to generate OTP
@@ -1897,78 +1891,132 @@ exports.resetPassword = async (req, res) => {
 }
 
 //renew token
-const renewToken = (userId) => {
-  const payload = {};
-  const newSecretJwt = randomstring.generate();
+// const renewToken = (userId) => {
+//   const payload = {};
+//   const newSecretJwt = randomstring.generate();
 
-  // Log the new secret key
-  console.log('New Secret JWT:', newSecretJwt);
+//   // Log the new secret key
+//   console.log('New Secret JWT:', newSecretJwt);
 
-  fs.readFile('config.js', 'utf-8', function (err, data) {
-    if (err) throw err;
+//   fs.readFile('config.js', 'utf-8', function (err, data) {
+//     if (err) throw err;
 
-    const newValue = data.replace(new RegExp(secretKey, 'g'), newSecretJwt);
+//     const newValue = data.replace(new RegExp(secretKey, 'g'), newSecretJwt);
 
-    fs.writeFile('config.js', newValue, 'utf-8', function (err, data) {
-      if (err) throw err;
-      console.log('Secret key updated in config.js');
-    });
-  });
-  console.log('JWT Payload:', payload);
+//     fs.writeFile('config.js', newValue, 'utf-8', function (err, data) {
+//       if (err) throw err;
+//       console.log('Secret key updated in config.js');
+//     });
+//   });
+//   console.log('JWT Payload:', payload);
 
-  const token = jwt.sign(payload, newSecretJwt, {
-    expiresIn: '10h',
-  });
+//   const token = jwt.sign(payload, newSecretJwt, {
+//     expiresIn: '10h',
+//   });
 
-  return token;
-};
-
-
+//   return token;
+// };
 
 
-exports.refreshToken = async (req, res) => {
+
+
+
+
+
+
+//new renew token
+// const renewToken = (userId) => {
+//   // Create a payload with user-specific data
+//   const payload = {
+//     user_id: userId,
+//     // Add other relevant claims here
+//   };
+
+//   // Generate a new secret JWT
+//   const newSecretJwt = randomstring.generate();
+
+//   // Log the new secret key (use secure logging mechanisms)
+//   console.log('New Secret JWT:', newSecretJwt);
+
+//   // Update the secret key in the configuration file
+//   fs.readFile('config.js', 'utf-8', (err, data) => {
+//     if (err) {
+//       console.error('Error reading config.js:', err);
+//       return;
+//     }
+
+//     const newValue = data.replace(new RegExp(secretKey, 'g'), newSecretJwt);
+
+//     fs.writeFile('config.js', newValue, 'utf-8', (err) => {
+//       if (err) {
+//         console.error('Error writing to config.js:', err);
+//         return;
+//       }
+//       console.log('Secret key updated in config.js');
+//     });
+//   });
+
+//   // Sign a new token with the updated secret key
+//   const token = jwt.sign(payload, newSecretJwt, {
+//     expiresIn: '10h',
+//   });
+
+//   return token;
+// };
+
+
+
+
+// //new refresh token
+
+
+const generateRefreshToken = (userId) => {
   try {
-    const authenticatedUserId = parseInt(req.user.user_id);
-    console.log('authenticatedUserId: ', authenticatedUserId);
-    
-    const ApiuserId = (req.body.user_id); 
-    console.log('req.body.user_id: ', ApiuserId);
+    // Define the payload for the token
+    const payload = {
+      user_id: userId, // You can include any user-specific data here
+      // Add other claims as needed
+    };
 
-    const userId = req.body.user_id;
-    console.log("user_id from request", userId);
-    
-    const userData = await new Promise((resolve, reject) => {
-      db.query('SELECT * FROM users WHERE user_id = ?', [userId], (error, results) => {
-        if (error) {
-          reject(error);
+    // Sign the token using the secret key and set the expiration
+    const refreshToken = jwt.sign(payload, secretKey, {
+      expiresIn: '5m',
+    });
 
-        } else {
-          resolve(results);
-        }
-      });
-    })
-    console.log(userData)
-    console.log(userId)
-
-
-    if (userData.length > 0) {
-      console.log("User found")
-      const tokenData = await renewToken(userId);
-      const response = {
-        user_id: userId,
-        refreshtoken: tokenData,
-      };
-      console.log(tokenData)
-      res.status(200).send({ success: true, message: 'Refresh Token Details', data: response });
-    } else {
-      res.status(404).send({ success: false, message: 'User not found' });
-    }
+    return refreshToken;
   } catch (error) {
-    res.status(500).send({ success: false, message: error.message });
-    console.log("error",error)
+    // Handle token generation error (e.g., log, throw, or return null)
+    console.error('Error generating refresh token:', error);
+    return null;
   }
 };
 
+// Refresh Token route
+exports.refreshToken = async (req, res) => {
+  const userId = req.body.user_id;
+
+  if (!userId) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'User ID missing in the request body',
+    });
+  }
+
+  // Generate a new refresh token for the specified user
+  const refreshToken = generateRefreshToken(userId);
+
+  if (!refreshToken) {
+    return res.status(500).json({
+      status: 'error',
+      message: 'Failed to generate refresh token',
+    });
+  }
+  res.setHeader('x-refresh-token', refreshToken);
+  res.json({
+    status: 'success',
+    refresh_token: refreshToken,
+  });
+};
 
 
 //new
@@ -2080,117 +2128,5 @@ exports.refreshToken = async (req, res) => {
 //       return res.status(400).json({ message: 'Invalid OTP' });
 //     }
 //   });
-// }
-
-
-// exports.resetPassword = async (req, res) => {
-//   const { otp, newPassword, confirm_password } = req.body;
-
-//   if (!newPassword || newPassword !== confirm_password) {
-//     return res.status(400).json({
-//       status: 'error',
-//       message: 'New password and confirmation do not match or are missing.',
-//     });
-//   }
-
-//   const currentTimestamp = Date.now();
-//   const currentDate = new Date(currentTimestamp);
-
-//   const year = currentDate.getFullYear();
-//   const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-//   const day = String(currentDate.getDate()).padStart(2, '0');
-//   const hours = String(currentDate.getHours()).padStart(2, '0');
-//   const minutes = String(currentDate.getMinutes()).padStart(2, '0');
-//   const seconds = String(currentDate.getSeconds()).padStart(2, '0');
-
-//   const formattedDateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-
-//   console.log(formattedDateTime);
-
-//   // Retrieve stored OTP and its expiration timestamp
-//   const selectOtpQuery = `
-//     SELECT user_id, otp, otp_expiration, email
-//     FROM user_code_verify
-//     WHERE otp = ?
-//   `;
-
-//   db.query(selectOtpQuery, [otp], (error, result) => {
-//     if (error) {
-//       return res.status(500).json({
-//         status: 'error',
-//         message: 'An error occurred while processing your request.',
-//       });
-//     }
-
-//     if (result.length > 0) {
-//       const { user_id, otp: storedOTP, otp_expiration, email } = result[0];
-//       console.log('OTP Expiration Time:', otp_expiration);
-
-//       if (formattedDateTime > otp_expiration) {
-//         console.log('OTP Expired');
-
-//         // Set the OTP column to null when the OTP has expired
-//         const updateOtpQuery = `
-//         UPDATE user_code_verify
-//         SET otp = NULL
-//         WHERE otp = ?
-//       `;
-//         db.query(updateOtpQuery, [otp], (updateError) => {
-//           if (updateError) {
-//             console.error(updateError);
-//             return res.status(500).json({
-//               status: 'error',
-//               message: 'Failed to update OTP to null.',
-//             });
-//           }
-//         });
-
-//         // Return an error message when the OTP has expired
-//         return res.status(400).json({ message: 'OTP expired' });
-//       }
-
-//       if (otp === storedOTP) {
-//         // Hash the new password here (you may use a library like bcrypt)
-//         const hashedPassword = bcrypt.hashSync(newPassword, 8);
-
-//         // OTP is valid, reset the user's password
-//         const updatePasswordQuery = `
-//           UPDATE users
-//           SET password = ?
-//           WHERE email = ?
-//         `;
-
-//         const data = [hashedPassword, email];
-//         db.query(updatePasswordQuery, data, (updateError) => {
-//           if (updateError) {
-//             console.error(updateError);
-//             return res.status(500).json({
-//               status: 'error',
-//               message: 'Failed to reset the password.',
-//             });
-//           }
-//           // const deleteOtpQuery = `
-//           //   DELETE FROM user_code_verify
-//           //   WHERE otp = ?
-//           // `;
-
-//           // db.query(deleteOtpQuery, [otp], (deleteError) => {
-//           //   if (deleteError) {
-//           //     console.error(deleteError);
-//           //   }
-          
-//           return res.json({ message: 'Password reset successfully' });
-//         });
-//       //})
-//      } else {
-//         // OTP is invalid
-//         console.log('Invalid OTP');
-//         return res.status(400).json({ message: 'Invalid OTP' });
-//       }
-//     } else {
-//       console.log('OTP Not Found or Expired');
-//       return res.status(400).json({ message: 'Invalid OTP' });
-//     }
-//   })
 // }
 

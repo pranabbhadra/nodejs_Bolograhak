@@ -500,6 +500,7 @@ async function getAllReviews() {
       JOIN company_location cl ON r.company_location_id = cl.ID
       JOIN users u ON r.customer_id = u.user_id
       LEFT JOIN user_customer_meta ucm ON u.user_id = ucm.user_id
+      WHERE r.review_status = "1"
       ORDER BY r.created_at DESC;
   `;
   try{
@@ -519,7 +520,7 @@ async function getTrendingReviews() {
     JOIN company_location cl ON r.company_location_id = cl.ID
     JOIN users u ON r.customer_id = u.user_id
     LEFT JOIN user_customer_meta ucm ON u.user_id = ucm.user_id
-    WHERE c.trending = 1
+    WHERE c.trending = 1 AND r.review_status = "1"
     ORDER BY r.created_at DESC;
 `;
 
@@ -541,6 +542,7 @@ async function getLatestReview(limit = null) {
       JOIN company_location cl ON r.company_location_id = cl.ID
       JOIN users u ON r.customer_id = u.user_id
       LEFT JOIN user_customer_meta ucm ON u.user_id = ucm.user_id
+      WHERE r.review_status = "1"
       ORDER BY r.created_at DESC
       ${limit !== null ? `LIMIT ${limit}` : ''};
   `;
@@ -944,17 +946,20 @@ async function getCompanyReviews(companyID){
 //new
 async function getCompanyRatings(companyID) {
   const getCompanyRatingsQuery = `
-    SELECT 
-      company_id,
-      COUNT(*) AS rating_count,
-      AVG(rating) AS rating_average
-    FROM 
-      reviews
-    WHERE 
-    company_id = ? AND review_status = "1"
-    GROUP BY 
-      company_id`;
-
+  SELECT 
+    company_id,
+    SUM(CASE WHEN rating = 0.5 THEN 1 ELSE 0 END) AS rating_05_count,
+    SUM(CASE WHEN rating = 1 THEN 1 ELSE 0 END) AS rating_1_count,
+    SUM(CASE WHEN rating = 1.5 THEN 1 ELSE 0 END) AS rating_15_count,
+    SUM(CASE WHEN rating = 2 THEN 1 ELSE 0 END) AS rating_2_count,
+    SUM(CASE WHEN rating = 2.5 THEN 1 ELSE 0 END) AS rating_25_count,
+    SUM(CASE WHEN rating = 3 THEN 1 ELSE 0 END) AS rating_3_count,
+    SUM(CASE WHEN rating = 3.5 THEN 1 ELSE 0 END) AS rating_35_count,
+    SUM(CASE WHEN rating = 4 THEN 1 ELSE 0 END) AS rating_4_count,
+    SUM(CASE WHEN rating = 4.5 THEN 1 ELSE 0 END) AS rating_45_count,
+    SUM(CASE WHEN rating = 5 THEN 1 ELSE 0 END) AS rating_5_count,
+    COUNT(*) AS total_rating_count,
+    ROUND(AVG(rating), 1) AS rating_average FROM reviews WHERE company_id = ? AND review_status = "1" GROUP BY company_id`;
     const ratingsResultvalue = [companyID]
     try{
       const ratingsResult = await query(getCompanyRatingsQuery, ratingsResultvalue);
@@ -963,6 +968,7 @@ async function getCompanyRatings(companyID) {
       return 'Error during user get_company_rating_query:'+error;
     }
   }
+
 
 
 
@@ -991,7 +997,7 @@ async function getUserReview(user_ID){
       JOIN users c ON r.customer_id = c.user_id
       LEFT JOIN user_customer_meta ucm ON r.customer_id = ucm.user_id
       JOIN company co ON r.company_id = co.ID
-      WHERE c.user_id = ?
+      WHERE c.user_id = ? AND r.review_status = "1"
       ORDER BY r.created_at ASC;
     `;
     const get_review_query_value = [user_ID];
@@ -1050,7 +1056,6 @@ module.exports = {
     editCustomerReview,
     searchCompany,
     getCompanyReviewNumbers,
-    //getCompany,//new
     getCompanyReviews,
     getCompanyRatings,//new
     getUsersByRole,

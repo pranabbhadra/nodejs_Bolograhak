@@ -16,7 +16,7 @@ ob_start();
  * Plugin Name:       Poll Maker
  * Plugin URI:        https://ays-pro.com/wordpress/poll-maker/
  * Description:       Create amazing online polls and conduct interactive elections super easily and quickly.
- * Version:           4.7.2
+ * Version:           4.7.6
  * Author:            Poll Maker Team
  * Author URI:        https://ays-pro.com/
  * License:           GPL-2.0+
@@ -35,7 +35,7 @@ if (!defined('WPINC')) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define('POLL_MAKER_AYS_VERSION', '4.7.2');
+define('POLL_MAKER_AYS_VERSION', '4.7.6');
 define('POLL_MAKER_AYS_NAME', 'poll-maker-ays');
 
 if (!defined('POLL_MAKER_AYS_DIR')) {
@@ -142,15 +142,20 @@ function poll_maker_admin_notice() {
         <div class="ays-notice-banner">
             <div class="navigation-bar">
                 <div id="navigation-container">
-                    <div class="logo-container">
-                        <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" style="box-shadow: none;">
-                            <img  class="poll-logo" src="<?php echo esc_attr(POLL_MAKER_AYS_ADMIN_URL) . '/images/icons/icon-poll-128x128.png'; ?>" alt="<?php echo __( "Poll Maker", POLL_MAKER_AYS_NAME ); ?>" title="<?php echo __( "Poll Maker", POLL_MAKER_AYS_NAME ); ?>"/>
-                        </a>
-                        <a href="https://ays-pro.com/wordpress/poll-maker?utm_source=poll-free-dashboard&utm_medium=poll-top-banner&utm_campaign=poll-upgrade-button" target="_blank" class="poll-maker-upgrade-to-pro">
-                            <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL . '/images/icons/lightning.svg' ?>" class="poll-maker-upgrade-green-icon">
-                            <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL . '/images/icons/lightning-white.svg' ?>" class="poll-maker-upgrade-white-icon" style="display: none">
-                            <span><?php echo __( "Upgrade", POLL_MAKER_AYS_NAME ); ?></span>
-                        </a>
+                    <div class="ays-poll-logo-container-upgrade">
+                        <div class="logo-container">
+                            <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" style="box-shadow: none;">
+                                <img  class="poll-logo" src="<?php echo esc_attr(POLL_MAKER_AYS_ADMIN_URL) . '/images/icons/icon-poll-128x128.png'; ?>" alt="<?php echo __( "Poll Maker", POLL_MAKER_AYS_NAME ); ?>" title="<?php echo __( "Poll Maker", POLL_MAKER_AYS_NAME ); ?>"/>
+                            </a>
+                        </div>
+                        <div class="ays-poll-upgrade-container">
+                            <a href="https://ays-pro.com/wordpress/poll-maker?utm_source=poll-free-dashboard&utm_medium=poll-top-banner&utm_campaign=poll-upgrade-button" target="_blank" class="poll-maker-upgrade-to-pro">
+                                <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL . '/images/icons/lightning.svg' ?>" class="poll-maker-upgrade-green-icon">
+                                <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL . '/images/icons/lightning-white.svg' ?>" class="poll-maker-upgrade-white-icon">
+                                <span><?php echo __( "Upgrade", POLL_MAKER_AYS_NAME ); ?></span>
+                            </a>
+                            <span class="ays-poll-logo-container-one-time-text"><?php echo __( "One-time payment", POLL_MAKER_AYS_NAME ); ?></span>
+                        </div>
                     </div>
                     <ul id="menu">
                             <li class="modile-ddmenu-lg"><a class="ays-btn" href="https://poll-plugin.com/wordpress-poll-plugin-free-demo/" target="_blank">Demo</a></li>

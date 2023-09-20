@@ -3,8 +3,8 @@ Contributors: ays-pro
 Donate link: https://ays-pro.com/wordpress/poll-maker
 Tags:  poll maker, WordPress Poll, vote, rating, elections, poll plugin, create poll, polls, polling, voting
 Requires at least: 4.0
-Tested up to: 6.2.2
-Stable tag: 4.7.2
+Tested up to: 6.3.1
+Stable tag: 4.7.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -355,6 +355,24 @@ By this, you will save your already created data (quizzes with questions). You c
 
 
 == Changelog ==
+
+= 4.7.6 =
+* Fixed: Banner security issue on the admin dashboard
+* Fixed: Some issues connected to the allow custom answer option
+
+= 4.7.5 =
+* Added: Author filter on the polls list table
+* Fixed: Responsive problem on the admin dashboard
+* Tested: Compatible up to 6.3.1
+
+= 4.7.4 =
+* Fixed: Some styles on the admin dashboard
+* Fixed: Issue connected to the create post for poll option
+
+= 4.7.3 =
+* Added: 7 and 10-star rating options for the Rating Poll Type
+* Improved: Styles on the admin dashboard
+* Tested: Compatible up to 6.3
 
 = 4.7.2 =
 * Fixed: Some styles on the admin dashboard
