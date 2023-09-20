@@ -2605,24 +2605,26 @@ router.get('/logout', (req, res) => {
 //         // } 
 //         if(results.length > 0){
 //             console.log(results)
+//             let count = 0;
 //             results.forEach((value, index)=>{
-//                 var company_slug = slugify(value.company_name, {
-//                     replacement: '-',  // replace spaces with replacement character, defaults to `-`
-//                     remove: undefined, // remove characters that match regex, defaults to `undefined`
-//                     lower: true,      // convert to lower case, defaults to `false`
-//                     strict: true,     // strip special characters except replacement, defaults to `false`
-//                     locale: 'vi',      // language code of the locale to use
-//                     trim: true ,        // trim leading and trailing replacement chars, defaults to `true`
-//                     remove: /[*+~.()'"!:@]/g
-//                   })
-//                   const updateQuery = `UPDATE company SET slug = '${company_slug}' WHERE ID = '${value.ID}' `;
-//                   db.query(updateQuery,(updateError,updateResult)=>{
-//                     if(updateError){
-//                         const newSlug = `${company_slug}_${Math.floor(Math.random() * 10000)}`;
-//                         const reUpdateQuery = `UPDATE company SET slug = '${newSlug}' WHERE ID = '${value.ID}' `;
-//                         db.query(reUpdateQuery);
+//                 comFunction2.generateUniqueSlug(value.company_name, (error, companySlug) => {
+//                     if (error) {
+//                       console.log('Err: ', error.message);
+//                     } else {
+//                       console.log('companySlug', companySlug);
+//                       const updateQuery = `UPDATE company SET slug = '${companySlug}' WHERE ID = '${value.ID}' `;
+//                         db.query(updateQuery,(updateError,updateResult)=>{
+//                             if(updateError){
+//                                 count ++;
+//                                 const newSlug = `${companySlug}_${count}`;
+//                                 const reUpdateQuery = `UPDATE company SET slug = '${companySlug}' WHERE ID = '${value.ID}' `;
+//                                 db.query(reUpdateQuery);
+//                             }
+//                         })
 //                     }
-//                   })
+//                 })
+               
+                  
 //             console.log(company_slug)
 //             })
             

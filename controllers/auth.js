@@ -1280,64 +1280,74 @@ exports.createCompany = async (req, res) => {
     // const [companySlug] = await Promise.all( [
     //     comFunction2.generateUniqueSlug(req.body.company_name)
     // ]);
-    const companySlug  = await comFunction2.generateUniqueSlug(req.body.company_name);
-    console.log('companySlug', companySlug);
-    var insert_values = [];
-    if (req.file) {
-        insert_values = [currentUserData.user_id, req.body.company_name, req.body.heading, req.file.filename, req.body.about_company, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, req.body.status, req.body.trending, formattedDate, formattedDate, req.body.tollfree_number, req.body.main_address, req.body.main_address_pin_code, req.body.address_map_url, req.body.main_address_country, req.body.main_address_state, req.body.main_address_city, '0', 'free', companySlug];
-    } else {
-        insert_values = [currentUserData.user_id, req.body.company_name, req.body.heading, '', req.body.about_company, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, req.body.status, req.body.trending, formattedDate, formattedDate, req.body.tollfree_number, req.body.main_address, req.body.main_address_pin_code, req.body.address_map_url, req.body.main_address_country, req.body.main_address_state, req.body.main_address_city, '0', 'free', companySlug];
-    }
-
-    const insertQuery = 'INSERT INTO company (user_created_by, company_name, heading, logo, about_company, comp_phone, comp_email, comp_registration_id, status, trending, created_date, updated_date, tollfree_number, main_address, main_address_pin_code, address_map_url, main_address_country, main_address_state, main_address_city, verified, paid_status, slug) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-    db.query(insertQuery, insert_values, (err, results, fields) => {
-        if (err) {
-            return res.send(
-                {
-                    status: 'err',
-                    data: '',
-                    message: 'An error occurred while processing your request' + err
-                }
-            )
+    comFunction2.generateUniqueSlug(req.body.company_name, (error, companySlug) => {
+        if (error) {
+          console.log('Err: ', error.message);
         } else {
-            const companyId = results.insertId;
-            const categoryArray = Array.isArray(req.body.category) ? req.body.category : [req.body.category];
-            
-            // Filter out undefined values from categoryArray
-            const validCategoryArray = categoryArray.filter(categoryID => categoryID !== undefined);
+          console.log('companySlug', companySlug);
+          var insert_values = [];
+          if (req.file) {
+              insert_values = [currentUserData.user_id, req.body.company_name, req.body.heading, req.file.filename, req.body.about_company, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, req.body.status, req.body.trending, formattedDate, formattedDate, req.body.tollfree_number, req.body.main_address, req.body.main_address_pin_code, req.body.address_map_url, req.body.main_address_country, req.body.main_address_state, req.body.main_address_city, '0', 'free', companySlug];
+          } else {
+              insert_values = [currentUserData.user_id, req.body.company_name, req.body.heading, '', req.body.about_company, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, req.body.status, req.body.trending, formattedDate, formattedDate, req.body.tollfree_number, req.body.main_address, req.body.main_address_pin_code, req.body.address_map_url, req.body.main_address_country, req.body.main_address_state, req.body.main_address_city, '0', 'free', companySlug];
+          }
+      
+          const insertQuery = 'INSERT INTO company (user_created_by, company_name, heading, logo, about_company, comp_phone, comp_email, comp_registration_id, status, trending, created_date, updated_date, tollfree_number, main_address, main_address_pin_code, address_map_url, main_address_country, main_address_state, main_address_city, verified, paid_status, slug) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+          db.query(insertQuery, insert_values, (err, results, fields) => {
+              if (err) {
+                  return res.send(
+                      {
+                          status: 'err',
+                          data: '',
+                          message: 'An error occurred while processing your request' + err
+                      }
+                  )
+              } else {
+                  const companyId = results.insertId;
+                  const categoryArray = Array.isArray(req.body.category) ? req.body.category : [req.body.category];
+                  
+                  // Filter out undefined values from categoryArray
+                  const validCategoryArray = categoryArray.filter(categoryID => categoryID !== undefined);
+      
+                  console.log('categoryArray:', categoryArray);
+                  if (validCategoryArray.length > 0) {
+                      const companyCategoryData = validCategoryArray.map((categoryID) => [companyId, categoryID]);
+                      db.query('INSERT INTO company_cactgory_relation (company_id, category_id) VALUES ?', [companyCategoryData], function (error, results) {
+                          if (error) {
+                              console.log(error);
+                              res.status(400).json({
+                                  status: 'err',
+                                  message: 'Error while creating company category'
+                              });
+                          }
+                          else {
+                              return res.send(
+                                  {
+                                      status: 'ok',
+                                      data: companyId,
+                                      message: 'New company created'
+                                  }
+                              )
+                          }
+                      });
+                  }else{
+                      return res.send(
+                          {
+                              status: 'ok',
+                              data: companyId,
+                              message: 'New company created without any category.'
+                          }
+                      )
+                  }
+              }
+          })
 
-            console.log('categoryArray:', categoryArray);
-            if (validCategoryArray.length > 0) {
-                const companyCategoryData = validCategoryArray.map((categoryID) => [companyId, categoryID]);
-                db.query('INSERT INTO company_cactgory_relation (company_id, category_id) VALUES ?', [companyCategoryData], function (error, results) {
-                    if (error) {
-                        console.log(error);
-                        res.status(400).json({
-                            status: 'err',
-                            message: 'Error while creating company category'
-                        });
-                    }
-                    else {
-                        return res.send(
-                            {
-                                status: 'ok',
-                                data: companyId,
-                                message: 'New company created'
-                            }
-                        )
-                    }
-                });
-            }else{
-                return res.send(
-                    {
-                        status: 'ok',
-                        data: companyId,
-                        message: 'New company created without any category.'
-                    }
-                )
-            }
         }
-    })
+    });
+
+
+
+
 }
 
 //-- Company Edit --//

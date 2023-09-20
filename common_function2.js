@@ -1117,31 +1117,41 @@ async function getCompanyIdBySlug(slug){
 
 
 // Function to generate a unique slug from a string
- function generateUniqueSlug(companyName) {
-  
+function generateUniqueSlug(companyName, callback) {
   // Check if the generated slug already exists in the database
-     db.query('SELECT slug FROM company', (err, existingSlugs )=>{
-      const baseSlug = slugify(companyName, {
-        replacement: '-',  // replace spaces with hyphens
-        lower: true,      // convert to lowercase
-        strict: true,     // strip special characters
-        remove: /[*+~.()'"!:@]/g,
-      });
-      console.log(baseSlug);
-      console.log(companyName);
-    
-      let slug = baseSlug;
-      existingSlugs.forEach((value)=>{
-        if(value.slug == baseSlug ){
-          console.log(value.slug,baseSlug);
-          slug = `${baseSlug}-${Math.floor(Math.random() * 10000)}`;
-        }
-      })
-      console.log(slug);
-      return slug;
-   });
-   
+  db.query('SELECT slug FROM company', (err, existingSlugs) => {
+    if (err) {
+      callback(err);
+      return;
+    }
+
+    const baseSlug = slugify(companyName, {
+      replacement: '-',  // replace spaces with hyphens
+      lower: true,      // convert to lowercase
+      strict: true,     // strip special characters
+      remove: /[*+~.()'"!:@]/g,
+    });
+
+    let slug = baseSlug;
+    let slugExists = false;
+    let count = 1;
+    // Check if the generated slug already exists in the existing slugs
+    existingSlugs.forEach((value) => {
+      if (value.slug === baseSlug) {
+        slugExists = true;
+      }
+    });
+
+    if (slugExists) {
+      count ++
+      slug = `${baseSlug}-${count}`;
+      //slug = `${baseSlug}-${Math.floor(Math.random() * 10000)}`;
+    }
+
+    callback(null, slug);
+  });
 }
+
 
 module.exports = {
   getFaqPage,
