@@ -57,6 +57,11 @@
 
 <body>
    <!-- ============== Header Start =============== -->
+   <?php
+      if( isset($_GET['from_app']) && $_GET['from_app']=='true' ){
+         // Hide header
+      }else{
+   ?>
    <header class="main_header inner_header">
       <div class="container">
          <div class="header-wrapper">
@@ -175,6 +180,7 @@
          </div>
       </div>
    </header>
+   <?php }?>
    <!-- ============== Header End =============== -->
    <?php /*if ( ! is_user_logged_in()) {?>
    <!-- ============== Login Modal Start =============== -->

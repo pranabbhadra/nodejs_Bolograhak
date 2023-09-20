@@ -9,7 +9,11 @@
  * @since Twenty Fourteen 1.0
  */
 ?>
-
+      <?php
+         if( isset($_GET['from_app']) && $_GET['from_app']=='true' ){
+            // Hide header
+         }else{
+      ?>
       <!-- ============== Footer Start =============== -->
       <footer class="main_footer">
          <div class="container">
@@ -112,6 +116,7 @@
          </div>
       </footer>
       <!-- ============== Footer End =============== -->
+      <?php }?>      
       <!-- <div class="floating-chat">
          <a href="#">
             <svg width="39" height="32" viewBox="0 0 39 32" fill="none" xmlns="http://www.w3.org/2000/svg">
