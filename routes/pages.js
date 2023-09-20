@@ -1755,6 +1755,14 @@ router.get('/edit-faq', checkLoggedIn, async (req, res) => {
         const faqCategoriesData = await comFunction2.getFaqCategories();
         const faqItemsData = await comFunction2.getFaqItems();
         // Render the 'add-page' EJS view and pass the data
+        // res.json({
+        //     menu_active_id: 'pages',
+        //     page_title: 'Edit FAQs ',
+        //     currentUserData,
+        //     faqPageData,
+        //     faqCategoriesData,
+        //     faqItemsData
+        // });
         res.render('faq/edit-faq', {
             menu_active_id: 'pages',
             page_title: 'Edit FAQs ',
