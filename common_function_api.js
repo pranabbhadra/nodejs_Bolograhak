@@ -1013,7 +1013,7 @@ async function getuserReviewCompany(user_ID){
     const user_review_company_query = `
     SELECT c.id AS company_id, MAX(r.created_at) AS latest_review_date, c.company_name, c.logo, COUNT(r.id) AS review_count
     FROM reviews r JOIN company c ON r.company_id = c.id
-    WHERE r.customer_id = ?
+    WHERE r.customer_id = ? AND r.review_status = "1"
     GROUP BY c.id, c.company_name
     ORDER BY latest_review_date DESC`;
     const user_review_company_value = [user_ID];
