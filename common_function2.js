@@ -593,7 +593,7 @@ async function reviewRejectdEmail(req) {
     //console.log('approve Function', reviewData)
     var mailOptions = {
       from: process.env.MAIL_USER,
-      //to: 'sandip@scwebtech.com',
+      //to: 'pranab@scwebtech.com',
       to: rejectReviewData[0].email,
       subject: 'Review Rejected Email',
       html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
