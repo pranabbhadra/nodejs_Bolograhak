@@ -34,7 +34,7 @@
                   <div class="item">
                      <div class="review-box">
                         <div class="head_box d-flex align-items-center justify-content-between mb-2">
-                          <h3 style="margin:0"><a href="/company/<%= latestReview.company_id %>"><%= latestReview.company_name %></a></h3>
+                          <h3 style="margin:0"><a href="/company/<%= latestReview.slug %>"><%= latestReview.company_name %></a></h3>
                           <% var avg = latestReview.rating %>
                           <div class="user-rating">
                             <% allRatingTags.forEach( tag => { %>
@@ -108,7 +108,7 @@
                            </div>
                            
                            <% if(latestReview.review_reply_count==1 && currentUserData!= null && currentUserData.user_id == latestReview.customer_id ){ %>
-                            <span class="user-select-tag review-reply-btn"><a href="/company/<%- latestReview.company_id -%>#review-reply-<%- latestReview.id -%>">Reply</a></span> 
+                            <span class="user-select-tag review-reply-btn"><a href="/company/<%- latestReview.slug -%>#review-reply-<%- latestReview.id -%>">Reply</a></span> 
                             <% } %>
                         </div>
                         <% if(currentUserData  && currentUserData.user_id  ){ %>
@@ -149,7 +149,7 @@
                   <div class="item">
                      <div class="review-box">
                         <div class="head_box d-flex align-items-center justify-content-between mb-2">
-                          <h3 style="margin:0"><a href="/company/<%= TrendingReview.company_id %>"><%= TrendingReview.company_name %></a></h3>
+                          <h3 style="margin:0"><a href="/company/<%= TrendingReview.slug %>"><%= TrendingReview.company_name %></a></h3>
                           <% var avg = TrendingReview.rating %>
                           <div class="user-rating">
                             <% allRatingTags.forEach( tag => { %>
@@ -222,7 +222,7 @@
                               <div class="user-review-date"><%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></div>
                            </div>
                            <% if(TrendingReview.review_reply_count==1 && currentUserData!= null && currentUserData.user_id == TrendingReview.customer_id){ %>
-                            <span class="user-select-tag review-reply-btn"><a href="/company/<%- TrendingReview.company_id -%>#review-reply-<%- TrendingReview.id -%>">Reply</a></span> 
+                            <span class="user-select-tag review-reply-btn"><a href="/company/<%- TrendingReview.slug -%>#review-reply-<%- TrendingReview.id -%>">Reply</a></span> 
                             <% } %>
                         </div>
                         
@@ -264,7 +264,7 @@
                   <div class="item">
                      <div class="review-box">
                         <div class="head_box d-flex align-items-center justify-content-between mb-2">
-                          <h3 style="margin:0"><a href="/company/<%= allReview.company_id %>"><%= allReview.company_name %></a></h3>
+                          <h3 style="margin:0"><a href="/company/<%= allReview.slug %>"><%= allReview.company_name %></a></h3>
                           <% var avg = allReview.rating %>
                           <div class="user-rating">
                             <% allRatingTags.forEach( tag => { %>
@@ -340,7 +340,7 @@
                               <div class="user-review-date"><%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></div>
                            </div>
                            <% if(allReview.review_reply_count==1 && currentUserData!= null && currentUserData.user_id == allReview.customer_id){ %>
-                            <span class="user-select-tag review-reply-btn"><a href="/company/<%- allReview.company_id -%>#review-reply-<%- allReview.id -%>">Reply</a></span> 
+                            <span class="user-select-tag review-reply-btn"><a href="/company/<%- allReview.slug -%>#review-reply-<%- allReview.id -%>">Reply</a></span> 
                             <% } %>
                         </div>
                         <% if(currentUserData  && currentUserData.user_id  ){ %>

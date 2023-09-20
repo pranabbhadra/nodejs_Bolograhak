@@ -27,7 +27,7 @@ function getUser(userId) {
 function getUserMeta(userId) {
   return new Promise((resolve, reject) => {
     const user_meta_query = `
-            SELECT user_meta.*, c.name as country_name, s.name as state_name, ccr.company_id as claimed_comp_id, company.paid_status as payment_status
+            SELECT user_meta.*, c.name as country_name, s.name as state_name, ccr.company_id as claimed_comp_id, company.paid_status as payment_status, company.slug
             FROM user_customer_meta user_meta
             LEFT JOIN countries c ON user_meta.country = c.id
             LEFT JOIN states s ON user_meta.state = s.id
@@ -509,7 +509,7 @@ async function getAllReviews() {
 
 async function getAllReviewsByCompanyID(companyId) {
   const all_review_query = `
-  SELECT r.*, c.company_name, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic, count(rr.ID) as reply_count
+  SELECT r.*, c.company_name, c.slug, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic, count(rr.ID) as reply_count
   FROM reviews r
   JOIN company c ON r.company_id = c.ID
   JOIN company_location cl ON r.company_location_id = cl.ID
@@ -901,7 +901,7 @@ async function editCustomerReview(req){
 
 async function searchCompany(keyword){
   const get_company_query = `
-    SELECT ID, company_name, logo, about_company, main_address, main_address_pin_code FROM company
+    SELECT ID, company_name, logo, about_company, slug, main_address, main_address_pin_code FROM company
     WHERE company_name LIKE '%${keyword}%' AND status = '1'
     ORDER BY created_date DESC
   `;

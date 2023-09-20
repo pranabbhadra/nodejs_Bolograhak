@@ -7,6 +7,7 @@ const useragent = require('useragent');
 const requestIp = require('request-ip');
 const axios = require('axios');
 const mdlconfig = require('./config-module');
+const slugify = require('slugify');
 
 dotenv.config({ path: './.env' });
 const query = util.promisify(db.query).bind(db);
@@ -146,7 +147,7 @@ async function getUpcomingBusinessFeature() {
 function getReviewedCompanies(userId) {
   return new Promise((resolve, reject) => {
     const reviewed_companies_query = `
-            SELECT reviews.company_id, reviews.customer_id, c.company_name as company_name, c.logo as logo
+            SELECT reviews.company_id, reviews.customer_id, c.company_name as company_name, c.logo as logo, c.slug
             FROM  reviews 
             JOIN company c ON reviews.company_id = c.ID
             WHERE reviews.customer_id = ?
@@ -166,7 +167,7 @@ function getReviewedCompanies(userId) {
 function getAllCompaniesReviews(userId) {
   return new Promise((resolve, reject) => {
     const reviewed_companies_query = `
-            SELECT r.*, c.company_name as company_name, c.logo as logo, COUNT(review_reply.id) as review_reply_count
+            SELECT r.*, c.company_name as company_name, c.logo as logo, c.slug, COUNT(review_reply.id) as review_reply_count
             FROM  reviews r
             JOIN company c ON r.company_id = c.ID
             LEFT JOIN review_reply ON review_reply.review_id = r.id
@@ -204,7 +205,7 @@ function getAllReviewTags() {
 //Function to fetch latest Reviews from the  reviews,company,company_location,users,user_customer_meta table
 async function getlatestReviews(reviewCount){
   const get_latest_review_query = `
-    SELECT r.*, c.company_name, c.logo, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, 
+    SELECT r.*, c.company_name, c.logo, c.slug, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, 
     u.last_name, u.user_id, u.user_status, ucm.profile_pic, COUNT(review_reply.id) as review_reply_count
       FROM reviews r
       LEFT JOIN company c ON r.company_id = c.ID 
@@ -234,7 +235,7 @@ async function getlatestReviews(reviewCount){
 //Function to fetch All Trending Reviews from the  reviews,company,company_location,users,user_customer_meta table
 async function getAllTrendingReviews(){
   const get_latest_review_query = `
-    SELECT r.*, c.company_name, c.logo, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, 
+    SELECT r.*, c.company_name, c.logo, c.slug, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, 
     u.last_name, u.user_id, u.user_status, ucm.profile_pic, COUNT(review_reply.id) as review_reply_count
       FROM reviews r
       LEFT JOIN company c ON r.company_id = c.ID 
@@ -263,7 +264,7 @@ async function getAllTrendingReviews(){
 //Function to fetch All  Reviews from the  reviews,company,company_location,users,user_customer_meta table
 async function getAllReviews(){
   const get_latest_review_query = `
-    SELECT r.*, c.company_name, c.logo, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, 
+    SELECT r.*, c.company_name, c.logo, c.slug, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, 
     u.last_name, u.user_id, u.user_status, ucm.profile_pic, COUNT(review_reply.id) as review_reply_count
       FROM reviews r
       LEFT JOIN company c ON r.company_id = c.ID 
@@ -1100,6 +1101,48 @@ async function updateCustomerReply(req){
   }  
 }
 
+//Function to Update User reply data by Id from the  review table
+async function getCompanyIdBySlug(slug){
+  //console.log(req)
+  try {
+    const get_company_query = `SELECT ID FROM company WHERE slug = '${slug}' `;
+    const get_company_Id = await query(get_company_query);
+    
+    console.log(get_company_Id[0]);
+    return get_company_Id[0];
+  }catch (error) {
+    return 'Error during fetch companyId:'+error;
+  }  
+}
+
+
+// Function to generate a unique slug from a string
+ function generateUniqueSlug(companyName) {
+  
+  // Check if the generated slug already exists in the database
+     db.query('SELECT slug FROM company', (err, existingSlugs )=>{
+      const baseSlug = slugify(companyName, {
+        replacement: '-',  // replace spaces with hyphens
+        lower: true,      // convert to lowercase
+        strict: true,     // strip special characters
+        remove: /[*+~.()'"!:@]/g,
+      });
+      console.log(baseSlug);
+      console.log(companyName);
+    
+      let slug = baseSlug;
+      existingSlugs.forEach((value)=>{
+        if(value.slug == baseSlug ){
+          console.log(value.slug,baseSlug);
+          slug = `${baseSlug}-${Math.floor(Math.random() * 10000)}`;
+        }
+      })
+      console.log(slug);
+      return slug;
+   });
+   
+}
+
 module.exports = {
   getFaqPage,
   getFaqCategories,
@@ -1131,5 +1174,7 @@ module.exports = {
   countLike,
   countDislike,
   getAllReviewVoting,
-  updateCustomerReply
+  updateCustomerReply,
+  getCompanyIdBySlug,
+  generateUniqueSlug
 };

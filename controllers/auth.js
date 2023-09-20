@@ -450,11 +450,12 @@ exports.frontendUserLogin = (req, res) => {
                         //check Customer Login
                         if (user.user_type_id == 2 && user.user_status == 1) {
                             const query = `
-                                        SELECT user_meta.*, c.name as country_name, s.name as state_name, ccr.company_id as claimed_comp_id
+                                        SELECT user_meta.*, c.name as country_name, s.name as state_name, ccr.company_id as claimed_comp_id, company.slug
                                         FROM user_customer_meta user_meta
                                         LEFT JOIN countries c ON user_meta.country = c.id
                                         LEFT JOIN states s ON user_meta.state = s.id
                                         LEFT JOIN company_claim_request ccr ON user_meta.user_id = ccr.claimed_by
+                                        LEFT JOIN company ON company.ID = ccr.company_id
                                         WHERE user_id = ?
                                         `;
                             db.query(query, [user.user_id], async (err, results) => {
@@ -486,7 +487,8 @@ exports.frontendUserLogin = (req, res) => {
                                         occupation: user_meta.occupation,
                                         gender: user_meta.gender,
                                         profile_pic: user_meta.profile_pic,
-                                        claimed_comp_id: user_meta.claimed_comp_id
+                                        claimed_comp_id: user_meta.claimed_comp_id,
+                                        claimed_comp_slug: user_meta.slug
                                     };
                                     const encodedUserData = JSON.stringify(userData);
                                     res.cookie('user', encodedUserData);
@@ -500,7 +502,8 @@ exports.frontendUserLogin = (req, res) => {
                                         email: user.email,
                                         phone: user.phone,
                                         user_type_id: user.user_type_id,
-                                        claimed_comp_id: ''
+                                        claimed_comp_id: '',
+                                        claimed_comp_slug: ''
                                     };
                                     const encodedUserData = JSON.stringify(userData);
                                     res.cookie('user', encodedUserData);
@@ -660,11 +663,12 @@ exports.login = (req, res) => {
                         //check Administrative Login
                         if ((user.user_type_id == 1 || user.user_type_id == 3) && user.user_status == 1) {
                             const query = `
-                                        SELECT user_meta.*, c.name as country_name, s.name as state_name, ccr.company_id as claimed_comp_id
+                                        SELECT user_meta.*, c.name as country_name, s.name as state_name, ccr.company_id as claimed_comp_id, company.slug
                                         FROM user_customer_meta user_meta
                                         LEFT JOIN countries c ON user_meta.country = c.id
                                         LEFT JOIN states s ON user_meta.state = s.id
                                         LEFT JOIN company_claim_request ccr ON user_meta.user_id = ccr.claimed_by
+                                        LEFT JOIN company ON company.ID = ccr.company_id
                                         WHERE user_id = ?
                                         `;
                             db.query(query, [user.user_id], async (err, results) => {
@@ -696,7 +700,8 @@ exports.login = (req, res) => {
                                         occupation: user_meta.occupation,
                                         gender: user_meta.gender,
                                         profile_pic: user_meta.profile_pic,
-                                        claimed_comp_id: user_meta.claimed_comp_id
+                                        claimed_comp_id: user_meta.claimed_comp_id,
+                                        claimed_comp_slug: user_meta.slug
                                     };
                                     const encodedUserData = JSON.stringify(userData);
                                     res.cookie('user', encodedUserData);
@@ -710,7 +715,8 @@ exports.login = (req, res) => {
                                         email: user.email,
                                         phone: user.phone,
                                         user_type_id: user.user_type_id,
-                                        claimed_comp_id: ''
+                                        claimed_comp_id: '',
+                                        claimed_comp_slug: ''
                                     };
                                     const encodedUserData = JSON.stringify(userData);
                                     res.cookie('user', encodedUserData);
@@ -1255,7 +1261,7 @@ exports.deleteUser = (req, res) => {
 }
 
 //--- Create New Company ----//
-exports.createCompany = (req, res) => {
+exports.createCompany = async (req, res) => {
     //console.log(req.body);
     const encodedUserData = req.cookies.user;
     const currentUserData = JSON.parse(encodedUserData);
@@ -1271,14 +1277,19 @@ exports.createCompany = (req, res) => {
 
     const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
+    // const [companySlug] = await Promise.all( [
+    //     comFunction2.generateUniqueSlug(req.body.company_name)
+    // ]);
+    const companySlug  = await comFunction2.generateUniqueSlug(req.body.company_name);
+    console.log('companySlug', companySlug);
     var insert_values = [];
     if (req.file) {
-        insert_values = [currentUserData.user_id, req.body.company_name, req.body.heading, req.file.filename, req.body.about_company, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, req.body.status, req.body.trending, formattedDate, formattedDate, req.body.tollfree_number, req.body.main_address, req.body.main_address_pin_code, req.body.address_map_url, req.body.main_address_country, req.body.main_address_state, req.body.main_address_city, '0', 'free'];
+        insert_values = [currentUserData.user_id, req.body.company_name, req.body.heading, req.file.filename, req.body.about_company, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, req.body.status, req.body.trending, formattedDate, formattedDate, req.body.tollfree_number, req.body.main_address, req.body.main_address_pin_code, req.body.address_map_url, req.body.main_address_country, req.body.main_address_state, req.body.main_address_city, '0', 'free', companySlug];
     } else {
-        insert_values = [currentUserData.user_id, req.body.company_name, req.body.heading, '', req.body.about_company, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, req.body.status, req.body.trending, formattedDate, formattedDate, req.body.tollfree_number, req.body.main_address, req.body.main_address_pin_code, req.body.address_map_url, req.body.main_address_country, req.body.main_address_state, req.body.main_address_city, '0', 'free'];
+        insert_values = [currentUserData.user_id, req.body.company_name, req.body.heading, '', req.body.about_company, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, req.body.status, req.body.trending, formattedDate, formattedDate, req.body.tollfree_number, req.body.main_address, req.body.main_address_pin_code, req.body.address_map_url, req.body.main_address_country, req.body.main_address_state, req.body.main_address_city, '0', 'free', companySlug];
     }
 
-    const insertQuery = 'INSERT INTO company (user_created_by, company_name, heading, logo, about_company, comp_phone, comp_email, comp_registration_id, status, trending, created_date, updated_date, tollfree_number, main_address, main_address_pin_code, address_map_url, main_address_country, main_address_state, main_address_city, verified, paid_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    const insertQuery = 'INSERT INTO company (user_created_by, company_name, heading, logo, about_company, comp_phone, comp_email, comp_registration_id, status, trending, created_date, updated_date, tollfree_number, main_address, main_address_pin_code, address_map_url, main_address_country, main_address_state, main_address_city, verified, paid_status, slug) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
     db.query(insertQuery, insert_values, (err, results, fields) => {
         if (err) {
             return res.send(

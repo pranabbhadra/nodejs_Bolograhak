@@ -12,7 +12,9 @@ const crypto = require('crypto');
 const app = express();
 const comFunction = require('../common_function');
 const comFunction2 = require('../common_function2');
-
+var slugify = require('slugify')
+const util = require('util');
+const query = util.promisify(db.query).bind(db);
 const router = express.Router();
 const publicPath = path.join(__dirname, '../public');
 
@@ -111,7 +113,7 @@ router.get('', checkCookieValue, async (req, res) => {
                     meta_values_array[item.page_meta_key] = item.page_meta_value;
                 })
                 //console.log(allRatingTags);
-                const featured_sql = `SELECT featured_companies.id,featured_companies.company_id,featured_companies.short_desc,featured_companies.link,company.logo,company.company_name FROM featured_companies 
+                const featured_sql = `SELECT featured_companies.id,featured_companies.company_id,featured_companies.short_desc,featured_companies.link,company.logo,company.slug, company.company_name FROM featured_companies 
                         JOIN company ON featured_companies.company_id = company.ID 
                         WHERE featured_companies.status = 'active' 
                         ORDER BY featured_companies.ordering ASC `;
@@ -495,8 +497,12 @@ router.get('/terms-of-service', checkCookieValue, async (req, res) => {
     //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
 });
 
-router.get('/company/:id', checkCookieValue, async (req, res) => {
-    const companyID = req.params.id;
+router.get('/company/:slug', checkCookieValue, async (req, res) => {
+    const slug = req.params.slug;
+    const comp_res =await comFunction2.getCompanyIdBySlug(slug);
+    const companyID = comp_res.ID;
+    // console.log(comp_res);
+    // console.log(companyID);
     const [allRatingTags, CompanyInfo, companyReviewNumbers, getCompanyReviews, globalPageMeta, PremiumCompanyData] = await Promise.all([
         comFunction.getAllRatingTags(),
         comFunction.getCompany(companyID),
@@ -505,24 +511,12 @@ router.get('/company/:id', checkCookieValue, async (req, res) => {
         comFunction2.getPageMetaValues('global'),
         comFunction2.getPremiumCompanyData(companyID),
     ]);
-    let currentUserData = JSON.parse(req.userData);
     
-    // const companyData = {
-    //     1: 'SC WebTech',
-    //     2: 'Another Company',
-    //     // Add more company IDs and names as needed
-    //  };
-
-    // const companyName = companyData[companyID]; // Get the company name from your data source
-  
-    // if (companyName) {
-    //     console.log('companyName')
-    //   // Replace the company ID in the URL with the company name
-    //   req.url = req.url.replace(`/company/${companyID}`, `/company/${companyName}`);
-    //   console.log(req.url);
-    // }
-    //res.send(`Requested URL: ${req.url}`);
-
+    //console.log(get_company_id.ID)
+    // console.log(slug)
+    // return false;
+    
+    let currentUserData = JSON.parse(req.userData);
     let cover_img = '';
     let youtube_iframe = '';
     let gallery_img = [];
@@ -653,7 +647,7 @@ async function checkClientClaimedCompany(req, res, next) {
         if (req.cookies.user) {
             const encodedUserData = req.cookies.user;
             const UserJsonData = JSON.parse(encodedUserData);
-            if(UserJsonData && UserJsonData.claimed_comp_id == req.params.compID ){
+            if(UserJsonData && UserJsonData.claimed_comp_slug == req.params.slug ){
                 next();
             }else{
                 res.redirect('/logout');
@@ -668,13 +662,15 @@ async function checkClientClaimedCompany(req, res, next) {
     // }
 }
 //Basic company profile dashboard Page 
-router.get('/company-dashboard/:compID', checkClientClaimedCompany, async (req, res) => {
+router.get('/company-dashboard/:slug', checkClientClaimedCompany, async (req, res) => {
     
     const encodedUserData = req.cookies.user;
     const currentUserData = JSON.parse(encodedUserData);
     //let currentUserData = JSON.parse(req.userData);
+    const slug = req.params.slug;
+    const comp_res =await comFunction2.getCompanyIdBySlug(slug);
     const userId = currentUserData.user_id;
-    const companyId = req.params.compID;
+    const companyId = comp_res.ID;
     const [globalPageMeta, company, companyReviewNumbers, allRatingTags, allCompanyReviews, allCompanyReviewTags, PremiumCompanyData, reviewTagsCount, TotalReplied] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
         comFunction.getCompany(companyId),
@@ -799,10 +795,13 @@ router.get('/company-dashboard/:compID', checkClientClaimedCompany, async (req, 
 });
 
 //company dashboard management Page 
-router.get('/company-profile-management/:compID', checkClientClaimedCompany, async (req, res) => {
+router.get('/company-profile-management/:slug', checkClientClaimedCompany, async (req, res) => {
     const encodedUserData = req.cookies.user;
     const currentUserData = JSON.parse(encodedUserData);
-    const companyId = req.params.compID;
+    const slug = req.params.slug;
+    const comp_res =await comFunction2.getCompanyIdBySlug(slug);
+    const companyId = comp_res.ID;
+    //const companyId = req.params.compID;
 
     const [globalPageMeta, company, PremiumCompanyData, companyReviewNumbers, getCompanyReviews, allRatingTags] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
@@ -879,10 +878,13 @@ router.get('/company-profile-management/:compID', checkClientClaimedCompany, asy
 });
 
 //company dashboard Review listing Page 
-router.get('/company-review-listing/:compID', checkClientClaimedCompany, async (req, res) => {
+router.get('/company-review-listing/:slug', checkClientClaimedCompany, async (req, res) => {
     const encodedUserData = req.cookies.user;
     const currentUserData = JSON.parse(encodedUserData);
-    const companyId = req.params.compID;
+    const slug = req.params.slug;
+    const comp_res =await comFunction2.getCompanyIdBySlug(slug);
+    const companyId = comp_res.ID;
+    //const companyId = req.params.compID;
     const [globalPageMeta, company, allReviews, allReviewTags, companyReviewNumbers, getCompanyReviews, allRatingTags, PremiumCompanyData] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
         comFunction.getCompany(companyId),
@@ -967,12 +969,14 @@ router.get('/company-review-listing/:compID', checkClientClaimedCompany, async (
 });
 
 //company dashboard Review replay Page 
-router.get('/company-dashboard-review-replay/:compID/:reviewID', checkClientClaimedCompany, async (req, res) => {
+router.get('/company-dashboard-review-replay/:slug/:reviewID', checkClientClaimedCompany, async (req, res) => {
     const encodedUserData = req.cookies.user;
     const currentUserData = JSON.parse(encodedUserData);
     //let currentUserData = JSON.parse(req.userData);
-
-    const companyId = req.params.compID;
+    const slug = req.params.slug;
+    const comp_res =await comFunction2.getCompanyIdBySlug(slug);
+    const companyId = comp_res.ID;
+    //const companyId = req.params.compID;
     const reviewId = req.params.reviewID;
     const [globalPageMeta, company, companyReviewNumbers, allRatingTags, allCompanyReviews, allCompanyReviewTags, singleReviewData, singleReviewReplyData, PremiumCompanyData] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
@@ -2348,7 +2352,7 @@ router.get('/my-reviews', checkFrontEndLoggedIn, async (req, res) => {
         //     AllReviewVoting:AllReviewVoting
         // });
         res.render('front-end/user-all-reviews', {
-            menu_active_id: 'profile-dashboard',
+            menu_active_id: 'user-all-review',
             page_title: 'My Reviews',
             currentUserData,
             AllCompaniesReviews: AllCompaniesReviews,
@@ -2590,6 +2594,41 @@ router.get('/logout', (req, res) => {
     })();
 
 });
+
+// auto fill database with slug 
+// router.get('/fill_database_with_slug', (req,res)=>{
+//     console.log('/fill_database_with_slug');
+//     sql = `SELECT ID, company_name FROM company WHERE 1`;
+//     db.query(sql,(err,results)=>{
+//         // if (err){
+//         //     console.log(err);
+//         // } 
+//         if(results.length > 0){
+//             console.log(results)
+//             results.forEach((value, index)=>{
+//                 var company_slug = slugify(value.company_name, {
+//                     replacement: '-',  // replace spaces with replacement character, defaults to `-`
+//                     remove: undefined, // remove characters that match regex, defaults to `undefined`
+//                     lower: true,      // convert to lower case, defaults to `false`
+//                     strict: true,     // strip special characters except replacement, defaults to `false`
+//                     locale: 'vi',      // language code of the locale to use
+//                     trim: true ,        // trim leading and trailing replacement chars, defaults to `true`
+//                     remove: /[*+~.()'"!:@]/g
+//                   })
+//                   const updateQuery = `UPDATE company SET slug = '${company_slug}' WHERE ID = '${value.ID}' `;
+//                   db.query(updateQuery,(updateError,updateResult)=>{
+//                     if(updateError){
+//                         const newSlug = `${company_slug}_${Math.floor(Math.random() * 10000)}`;
+//                         const reUpdateQuery = `UPDATE company SET slug = '${newSlug}' WHERE ID = '${value.ID}' `;
+//                         db.query(reUpdateQuery);
+//                     }
+//                   })
+//             console.log(company_slug)
+//             })
+            
+//         }
+//     })
+// })
 
 //-- 404---//
 router.get('*',checkCookieValue, async (req, res) => {

@@ -40,7 +40,7 @@
                                <div class="item">
                                  <div class="review-box">
                                     <div class="head_box d-flex align-items-center justify-content-between mb-2">
-                                      <h3 style="margin:0"><a href="/company/<%= review.company_id %>"><%= review.company_name %></a></h3>
+                                      <h3 style="margin:0"><a href="/company/<%= review.slug %>"><%= review.company_name %></a></h3>
                                       <% var avg = review.rating %>
                                       <div class="user-rating">
                                         <% allRatingTags.forEach( tag => { %>
@@ -102,7 +102,7 @@
                                           <div class="user-review-date"><%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></div>
                                        </div>
                                        <% if(review.review_reply_count==1){ %>
-                                       <span class="user-select-tag review-reply-btn"><a href="/company/<%- review.company_id -%>#review-reply-<%- review.id -%>">Reply</a></span> 
+                                       <span class="user-select-tag review-reply-btn"><a href="/company/<%- review.slug -%>#review-reply-<%- review.id -%>">Reply</a></span> 
                                        <% } %>
                                        
                                        <% if(daysDiff < 31) { %>
@@ -169,9 +169,9 @@
                            <% ReviewedCompanies.forEach( (company,index)=> {%>
                                  <div class="item">
                                     <% if(company && company.logo) { %>
-                                          <a href="/company/<%= company.company_id %>"><img src="/<%= company.logo %>" alt="img" width="88" height="88"></a>
+                                          <a href="/company/<%= company.slug %>"><img src="/<%= company.logo %>" alt="img" width="88" height="88"></a>
                                     <%} else {%>
-                                          <a href="/company/<%= company.company_id %>"><img src="/front-end/images/company-placeholder-image.png" alt="img" width="88" height="88" ></a>
+                                          <a href="/company/<%= company.slug %>"><img src="/front-end/images/company-placeholder-image.png" alt="img" width="88" height="88" ></a>
                                     <% } %>
                                     
                                     <h6><%= company.company_name %></h6>

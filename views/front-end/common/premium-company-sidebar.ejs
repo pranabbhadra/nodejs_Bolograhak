@@ -3,9 +3,9 @@
        <div class="col-md-4 col-lg-3">
           <div class="company_logo">
              <% if(company && company.logo) { %>
-                <a href="/company/<%- company.ID -%>"><img src="/<%= company.logo %>" alt="<%= company && company.company_name ? company.company_name : '' %>"></a>
+                <a href="/company/<%- company.slug -%>"><img src="/<%= company.logo %>" alt="<%= company && company.company_name ? company.company_name : '' %>"></a>
              <%} else {%>
-                <a href="/company/<%- company.ID -%>"><img src="/front-end/images/company-placeholder-image.png" alt="<%= company && company.company_name ? company.company_name : '' %>"></a>
+                <a href="/company/<%- company.slug -%>"><img src="/front-end/images/company-placeholder-image.png" alt="<%= company && company.company_name ? company.company_name : '' %>"></a>
              <% } %>
              <div class="premium_logo"><i class="fas fa-crown"></i></div>
           </div>
@@ -116,17 +116,17 @@
  <div class="company_profile_navigation">
 	<ul>
 		<li <% if( menu_active_id == 'company-dashboard') { %> class="active" <% } %>>
-         <a href="/company-dashboard/<%= company.ID  %>"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+         <a href="/company-dashboard/<%= company.slug  %>"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
       	</li>
 		<li <% if( menu_active_id == 'company-profile-management') { %>  class="active" <% } %>>
 			<a href="#"><i class="fas fa-user-tie"></i> Profile</a>
 			<ul>
 				<li><a href="/myprofile">User Profile</a></li>
-				<li <% if( menu_active_id == 'company-profile-management') { %>  class="active" <% } %>><a href="/company-profile-management/<%= company.ID  %>">Company Profile</a></li>
+				<li <% if( menu_active_id == 'company-profile-management') { %>  class="active" <% } %>><a href="/company-profile-management/<%= company.slug  %>">Company Profile</a></li>
 			</ul>
 		</li>
 		<li <% if( menu_active_id == 'company-review-listing') { %> class="active" <% } %>>
-         <a href="/company-review-listing/<%= company.ID  %>"><i class="fas fa-envelope"></i> Reviews</a>
+         <a href="/company-review-listing/<%= company.slug  %>"><i class="fas fa-envelope"></i> Reviews</a>
       	</li>
 		<!-- <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li> -->
 		<li><a href="/change-password"><i class="fas fa-lock"></i> Change Password</a></li>

@@ -98,7 +98,7 @@
                 <div class="item">
                     <div class="review-box">
                       <div class="head_box d-flex align-items-center justify-content-between mb-2">
-                        <h3 style="margin:0"><a href="/company/<%= latestReview.company_id %>"><%= latestReview.company_name %></a></h3>
+                        <h3 style="margin:0"><a href="/company/<%= latestReview.slug %>"><%= latestReview.company_name %></a></h3>
                         <% var avg = latestReview.rating %>
                         <div class="user-rating">
                           <% allRatingTags.forEach( tag => { %>
@@ -173,7 +173,7 @@
                           </div>
                           
                           <% if(latestReview.review_reply_count==1 && currentUserData!= null && currentUserData.user_id == latestReview.customer_id ){ %>
-                          <span class="user-select-tag review-reply-btn"><a href="/company/<%- latestReview.company_id -%>#review-reply-<%- latestReview.id -%>">Reply</a></span> 
+                          <span class="user-select-tag review-reply-btn"><a href="/company/<%- latestReview.slug -%>#review-reply-<%- latestReview.id -%>">Reply</a></span> 
                           <% } %>
                       </div>
                       <% if(currentUserData  && currentUserData.user_id  ){ %>
@@ -407,7 +407,7 @@
             <% featured_comps.forEach( company=> { %>
               <div class="item">
                 <div class="feature-box">
-                  <a href="company/<%= company.company_id %>"><img src="/<%= company.logo %>" alt="img" width="118"
+                  <a href="company/<%= company.slug %>"><img src="/<%= company.logo %>" alt="img" width="118"
                       height="45" class="mx-auto"></a>
                   <h5>
                     <%= company.company_name %>
@@ -982,7 +982,7 @@
                   let respData = data.data;
                   let html = '<ul class="p-0 m-0">';
                   respData.forEach(company => {
-                    html += '<li><a href="#" data-resulttitle="' + company.company_name + '" data-resultexcerpt="' + company.about_company + '" data-resultpermalink="/company/' + company.ID + '" >' + company.company_name + '</a></li>';
+                    html += '<li><a href="#" data-resulttitle="' + company.company_name + '" data-resultexcerpt="' + company.about_company + '" data-resultpermalink="/company/' + company.slug + '" >' + company.company_name + '</a></li>';
                   });
                   html += '</ul>';
                   $('.autofield-dropdown').html(html);

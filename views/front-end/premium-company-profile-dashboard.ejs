@@ -172,7 +172,7 @@
                      <div class="item">
                         <div class="review-box">
                            <div class="head_box d-flex align-items-center justify-content-between mb-2">
-                             <h3 style="margin:0"><a href="/company/<%= review.company_id %>"><%= company && company.company_name ? company.company_name : '' %></a></h3>
+                             <h3 style="margin:0"><a href="/company/<%= review.slug %>"><%= company && company.company_name ? company.company_name : '' %></a></h3>
                              <% var avg = review.rating %>
                              <div class="user-rating">
                                <% allRatingTags.forEach( tag => { %>
