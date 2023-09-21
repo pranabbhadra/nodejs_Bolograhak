@@ -1215,7 +1215,7 @@ exports.searchCompany = async (req, res) => {
   SELECT c.ID, c.company_name, c.logo, c.about_company, c.main_address, c.main_address_pin_code, r.review_status AS review_status
   FROM company c
   LEFT JOIN reviews r ON c.ID = r.company_id
-  WHERE c.company_name LIKE '%${keyword}%' AND review_status="1"
+  WHERE c.company_name LIKE '%${keyword}%' AND status="1"
   GROUP BY c.ID, c.company_name, c.logo, c.about_company, c.main_address, c.main_address_pin_code
   ORDER BY c.created_date DESC  
 `;
