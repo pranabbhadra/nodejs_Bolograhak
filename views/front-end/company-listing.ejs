@@ -1,34 +1,286 @@
 <%- include('common/header') -%>
-<link href="/front-end/css/company-listing-style.css" rel="stylesheet" type="text/css">
-<%- include('common/header-banner') -%>
-<!-- ============== Section1 Start =============== -->
-<section class="main-content">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-3">
-                <div class="company-listing-left">
-                    <h4>Sub Categories</h4>
-                    <ul>
-                        <li class="active"><a href="#"><i class="fa-regular fa-arrow-right-long"></i>Animal Health</a></li>
-                        <li><a href="#"><i class="fa-regular fa-arrow-right-long"></i>Animal Parks & Zoo</a></li>
-                        <li><a href="#"><i class="fa-regular fa-arrow-right-long"></i>Cats & Dogs</a></li>
-                        <li><a href="#"><i class="fa-regular fa-arrow-right-long"></i>Horses & Riding</a></li>
-                        <li><a href="#"><i class="fa-regular fa-arrow-right-long"></i>Pet Services</a></li>
-                        <li><a href="#"><i class="fa-regular fa-arrow-right-long"></i>Pet Stores</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="col-md-9">
-                <div class="company-listing-right">
-                    <div class="row">
-                        <div class="col-lg-4 col-md-6">
-
+    <link href="/front-end/css/company-listing-style.css" rel="stylesheet" type="text/css">
+    <%- include('common/header-banner') -%>
+        <!-- ============== Section1 Start =============== -->
+        <section class="main-content">
+            <div class="container">
+                <div class="row g-4">
+                    <div class="col-md-3">
+                        <div class="company-listing-left">
+                            <h4>Sub Categories</h4>
+                            <ul>
+                                <li class="active"><a href="#"><i class="fa-regular fa-arrow-right-long"></i>Animal
+                                        Health</a></li>
+                                <li><a href="#"><i class="fa-regular fa-arrow-right-long"></i>Animal Parks & Zoo</a>
+                                </li>
+                                <li><a href="#"><i class="fa-regular fa-arrow-right-long"></i>Cats & Dogs</a></li>
+                                <li><a href="#"><i class="fa-regular fa-arrow-right-long"></i>Horses & Riding</a></li>
+                                <li><a href="#"><i class="fa-regular fa-arrow-right-long"></i>Pet Services</a></li>
+                                <li><a href="#"><i class="fa-regular fa-arrow-right-long"></i>Pet Stores</a></li>
+                            </ul>
                         </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="company-listing-right">
+                            <div class="row">
+                                <div class="col-md-4 offset-md-8">
+                                    <div class="select_option">
+                                        <p>Short by</p>
+                                        <div class="select_option_content">
+                                            <select class="form-select" aria-label="Default select example">
+                                                <option selected>Select</option>
+                                                <option value="1">One</option>
+                                                <option value="2">Two</option>
+                                                <option value="3">Three</option>
+                                              </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row g-4">
+                                <div class="col-lg-4 col-md-6 col-sm-6 col-12">
+                                    <div class="company_listing_box">
+                                        <img src="front-end/images/company-listing-img1.jpg" alt="" class="img-fluid">
+                                        <div class="company_listing_logo">
+                                            <img src="front-end/images/total-review-icon2.png" alt="">
+                                        </div>
+                                        <h4>Nunc non posuere justo erat</h4>
+                                        <div class="company_listing_emoji">
+                                            <span class="company_listing_span"> <img
+                                                    src="front-end/images/fixed-emoji.png" alt=""> 4/5</span>
+                                            <p class=""><span>Based on</span> 30 reviews</p>
+                                            <span class="company_listing_span1">excellent</span>
+                                        </div>
+
+                                        <p class="company_listing_p"><img src="front-end/images/location-icon.png"
+                                                alt="">Akshya Nagar 1st Block 1st Cross, Rammurthy nagar,
+                                            Bangalore-560016
+                                        </p>
+                                        <div class="treading_content">
+                                            <p><img src="front-end/images/verifite-icon.png" alt="">verified business
+                                            </p>
+                                            <p class="treading_content_text"><img
+                                                    src="front-end/images/trending-icon.png" alt="">trending</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-6 col-sm-6 col-12">
+                                    <div class="company_listing_box">
+                                        <img src="front-end/images/company-listing-img2.jpg" alt="" class="img-fluid">
+                                        <div class="company_listing_logo">
+                                            <img src="front-end/images/total-review-icon2.png" alt="">
+                                        </div>
+                                        <h4>Nunc non posuere justo erat</h4>
+                                        <div class="company_listing_emoji">
+                                            <span class="company_listing_span"> <img
+                                                    src="front-end/images/fixed-emoji.png" alt=""> 2/5</span>
+                                            <p class=""><span>Based on</span> 10 reviews</p>
+                                            <span class="company_listing_span1">good</span>
+                                        </div>
+
+                                        <p class="company_listing_p"><img src="front-end/images/location-icon.png"
+                                                alt="">Akshya Nagar 1st Block 1st Cross, Rammurthy nagar,
+                                            Bangalore-560016
+                                        </p>
+                                        <div class="treading_content">
+                                            <p><img src="front-end/images/verifite-icon.png" alt="">verified business
+                                            </p>
+                                            <p class="treading_content_text"><img
+                                                    src="front-end/images/trending-icon.png" alt="">trending</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-6 col-sm-6 col-12">
+                                    <div class="company_listing_box">
+                                        <img src="front-end/images/company-listing-img3.jpg" alt="" class="img-fluid">
+                                        <div class="company_listing_logo">
+                                            <img src="front-end/images/total-review-icon2.png" alt="">
+                                        </div>
+                                        <h4>Nunc non posuere justo erat</h4>
+                                        <div class="company_listing_emoji">
+                                            <span class="company_listing_span"> <img
+                                                    src="front-end/images/fixed-emoji.png" alt=""> 4/5</span>
+                                            <p class=""><span>Based on</span> 60 reviews</p>
+                                            <span class="company_listing_span1"> average</span>
+                                        </div>
+
+                                        <p class="company_listing_p"><img src="front-end/images/location-icon.png"
+                                                alt="">Akshya Nagar 1st Block 1st Cross, Rammurthy nagar,
+                                            Bangalore-560016
+                                        </p>
+                                        <div class="treading_content">
+                                            <p><img src="front-end/images/verifite-icon.png" alt="">verified business
+                                            </p>
+                                            <p class="treading_content_text"><img
+                                                    src="front-end/images/trending-icon.png" alt="">trending</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-6 col-sm-6 col-12">
+                                    <div class="company_listing_box">
+                                        <img src="front-end/images/company-listing-img1.jpg" alt="" class="img-fluid">
+                                        <div class="company_listing_logo">
+                                            <img src="front-end/images/total-review-icon2.png" alt="">
+                                        </div>
+                                        <h4>Nunc non posuere justo erat</h4>
+                                        <div class="company_listing_emoji">
+                                            <span class="company_listing_span"> <img
+                                                    src="front-end/images/fixed-emoji.png" alt=""> 2/5</span>
+                                            <p class=""><span>Based on</span> 10 reviews</p>
+                                            <span class="company_listing_span1">excellent</span>
+                                        </div>
+
+                                        <p class="company_listing_p"><img src="front-end/images/location-icon.png"
+                                                alt="">Akshya Nagar 1st Block 1st Cross, Rammurthy nagar,
+                                            Bangalore-560016
+                                        </p>
+                                        <div class="treading_content">
+                                            <p><img src="front-end/images/verifite-icon.png" alt="">verified business
+                                            </p>
+                                            <p class="treading_content_text"><img
+                                                    src="front-end/images/trending-icon.png" alt="">trending</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-6 col-sm-6 col-12">
+                                    <div class="company_listing_box">
+                                        <img src="front-end/images/company-listing-img2.jpg" alt="" class="img-fluid">
+                                        <div class="company_listing_logo">
+                                            <img src="front-end/images/total-review-icon2.png" alt="">
+                                        </div>
+                                        <h4>Nunc non posuere justo erat</h4>
+                                        <div class="company_listing_emoji">
+                                            <span class="company_listing_span"> <img
+                                                    src="front-end/images/fixed-emoji.png" alt=""> 3/5</span>
+                                            <p class=""><span>Based on</span> 30 reviews</p>
+                                            <span class="company_listing_span1">Good</span>
+                                        </div>
+
+                                        <p class="company_listing_p"><img src="front-end/images/location-icon.png"
+                                                alt="">Akshya Nagar 1st Block 1st Cross, Rammurthy nagar,
+                                            Bangalore-560016
+                                        </p>
+                                        <div class="treading_content">
+                                            <p><img src="front-end/images/verifite-icon.png" alt="">verified business
+                                            </p>
+                                            <p class="treading_content_text"><img
+                                                    src="front-end/images/trending-icon.png" alt="">trending</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-6 col-sm-6 col-12">
+                                    <div class="company_listing_box">
+                                        <img src="front-end/images/company-listing-img3.jpg" alt="" class="img-fluid">
+                                        <div class="company_listing_logo">
+                                            <img src="front-end/images/total-review-icon2.png" alt="">
+                                        </div>
+                                        <h4>Nunc non posuere justo erat</h4>
+                                        <div class="company_listing_emoji">
+                                            <span class="company_listing_span"> <img
+                                                    src="front-end/images/fixed-emoji.png" alt=""> 4/5</span>
+                                            <p class=""><span>Based on</span> 30 reviews</p>
+                                            <span class="company_listing_span1">average</span>
+                                        </div>
+
+                                        <p class="company_listing_p"><img src="front-end/images/location-icon.png"
+                                                alt="">Akshya Nagar 1st Block 1st Cross, Rammurthy nagar,
+                                            Bangalore-560016
+                                        </p>
+                                        <div class="treading_content">
+                                            <p><img src="front-end/images/verifite-icon.png" alt="">verified business
+                                            </p>
+                                            <p class="treading_content_text"><img
+                                                    src="front-end/images/trending-icon.png" alt="">trending</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-6 col-sm-6 col-12">
+                                    <div class="company_listing_box">
+                                        <img src="front-end/images/company-listing-img1.jpg" alt="" class="img-fluid"> 
+                                        <div class="company_listing_logo">
+                                            <img src="front-end/images/total-review-icon2.png" alt="">
+                                        </div>
+                                        <h4>Nunc non posuere justo erat</h4>
+                                        <div class="company_listing_emoji">
+                                            <span class="company_listing_span"> <img
+                                                    src="front-end/images/fixed-emoji.png" alt=""> 3/5</span>
+                                            <p class=""><span>Based on</span> 30 reviews</p>
+                                            <span class="company_listing_span1">excellent</span>
+                                        </div>
+
+                                        <p class="company_listing_p"><img src="front-end/images/location-icon.png"
+                                                alt="">Akshya Nagar 1st Block 1st Cross, Rammurthy nagar,
+                                            Bangalore-560016
+                                        </p>
+                                        <div class="treading_content">
+                                            <p><img src="front-end/images/verifite-icon.png" alt="">verified business
+                                            </p>
+                                            <p class="treading_content_text"><img
+                                                    src="front-end/images/trending-icon.png" alt="">trending</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-6 col-sm-6 col-12">
+                                    <div class="company_listing_box">
+                                        <img src="front-end/images/company-listing-img2.jpg" alt="" class="img-fluid">
+                                        <div class="company_listing_logo">
+                                            <img src="front-end/images/total-review-icon2.png" alt="">
+                                        </div>
+                                        <h4>Nunc non posuere justo erat</h4>
+                                        <div class="company_listing_emoji">
+                                            <span class="company_listing_span"> <img
+                                                    src="front-end/images/fixed-emoji.png" alt=""> 4/5</span>
+                                            <p class=""><span>Based on</span> 30 reviews</p>
+                                            <span class="company_listing_span1">good</span>
+                                        </div>
+
+                                        <p class="company_listing_p"><img src="front-end/images/location-icon.png"
+                                                alt="">Akshya Nagar 1st Block 1st Cross, Rammurthy nagar,
+                                            Bangalore-560016
+                                        </p>
+                                        <div class="treading_content">
+                                            <p><img src="front-end/images/verifite-icon.png" alt="">verified business
+                                            </p>
+                                            <p class="treading_content_text"><img
+                                                    src="front-end/images/trending-icon.png" alt="">trending</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-6 col-sm-6 col-12">
+                                    <div class="company_listing_box">
+                                        <img src="front-end/images/company-listing-img3.jpg" alt="" class="img-fluid">
+                                        <div class="company_listing_logo">
+                                            <img src="front-end/images/total-review-icon2.png" alt="">
+                                        </div>
+                                        <h4>Nunc non posuere justo erat</h4>
+                                        <div class="company_listing_emoji">
+                                            <span class="company_listing_span"> <img
+                                                    src="front-end/images/fixed-emoji.png" alt=""> 4/5</span>
+                                            <p class=""><span>Based on</span> 30 reviews</p>
+                                            <span class="company_listing_span1">average</span>
+                                        </div>
+
+                                        <p class="company_listing_p"><img src="front-end/images/location-icon.png"
+                                                alt="">Akshya Nagar 1st Block 1st Cross, Rammurthy nagar,
+                                            Bangalore-560016
+                                        </p>
+                                        <div class="treading_content">
+                                            <p><img src="front-end/images/verifite-icon.png" alt="">verified business
+                                            </p>
+                                            <p class="treading_content_text"><img
+                                                    src="front-end/images/trending-icon.png" alt="">trending</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center company-listing-btn">
+                            <a href="http://localhost/bolograhak/blog/" class="view-more"><span class="position-relative"><i class="fa-solid fa-angle-right"></i>View All</span></a>
+                          </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-</section>
-<!-- ============== Section1 End =============== -->
-<%- include('common/footer') -%>        
+        </section>
+        <!-- ============== Section1 End =============== -->
+        <%- include('common/footer') -%>
