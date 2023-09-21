@@ -629,6 +629,86 @@ router.get('/company/:slug', checkCookieValue, async (req, res) => {
 
 });
 
+// category listing page
+router.get('/category-listing', checkCookieValue, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
+    const [globalPageMeta] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+    ]);
+    try {
+        const cat_query = `
+        SELECT category.ID AS category_id, category.category_slug, category.category_name AS category_name, category.category_img AS category_img, c.category_name AS parent_name, GROUP_CONCAT(countries.name) AS country_names
+        FROM category
+        JOIN category_country_relation ON category.id = category_country_relation.cat_id
+        JOIN countries ON category_country_relation.country_id = countries.id
+        LEFT JOIN category AS c ON c.ID = category.parent_id 
+        GROUP BY category.category_name `;
+        db.query(cat_query, (err, results) => {
+            if (err) {
+            return res.send(
+                {
+                    status: 'err',
+                    data: '',
+                    message: 'An error occurred while processing your request' + err
+                }
+            )
+            } else {
+            const categories = results.map((row) => ({
+                categoryId: row.category_id,
+                categoryName: row.category_name,
+                category_slug: row.category_slug,
+                parentName: row.parent_name,
+                categoryImage: row.category_img,
+                countryNames: row.country_names.split(','),
+            }));
+            //console.log(categories);
+            //res.json({ menu_active_id: 'category', page_title: 'Categories', currentUserData, 'categories': categories });
+            //res.render('categories', { menu_active_id: 'company', page_title: 'Categories', currentUserData, 'categories': categories });
+            // res.json({
+            //     menu_active_id: 'category-listing',
+            //     page_title: 'All Categories',
+            //     currentUserData,
+            //     globalPageMeta:globalPageMeta,
+            //     categories: categories 
+            // });    
+            res.render('front-end/category-listing', {
+                menu_active_id: 'category-listing',
+                page_title: 'All Categories',
+                currentUserData,
+                globalPageMeta:globalPageMeta,
+                categories: categories 
+            }); 
+        }
+            
+        })
+        
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+    //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
+});
+
+//company Listing page
+router.get('/company-listing', checkCookieValue, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
+    const [globalPageMeta] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+    ]);
+    try {
+
+        res.render('front-end/company-listing', {
+            menu_active_id: 'company-listing',
+            page_title: 'Company Name',
+            currentUserData,
+            globalPageMeta:globalPageMeta
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+    //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
+});
 //-----------------------------------------------------------------//
 
 
@@ -2595,8 +2675,8 @@ router.get('/logout', (req, res) => {
 
 });
 
-// auto fill database with slug 
-router.get('/fill_database_with_slug', (req,res)=>{
+// auto fill database with company slug 
+router.get('/fill_database_with_company_slug', (req,res)=>{
     console.log('/fill_database_with_slug');
     sql = `SELECT ID, company_name FROM company WHERE 1`;
     db.query(sql,(err,results)=>{
@@ -2624,13 +2704,48 @@ router.get('/fill_database_with_slug', (req,res)=>{
                     }
                 })
                
-                  
-            console.log(company_slug)
             })
             
         }
     })
 })
+
+// auto fill database with category slug 
+router.get('/fill_database_with_category_slug', (req,res)=>{
+    console.log('/fill_database_with_slug');
+    sql = `SELECT ID, category_name FROM category WHERE 1`;
+    db.query(sql,(err,results)=>{
+        // if (err){
+        //     console.log(err);
+        // } 
+        if(results.length > 0){
+            console.log(results)
+            let count = 0;
+            results.forEach((value, index)=>{
+                comFunction2.generateUniqueSlug(value.category_name, (error, categorySlug) => {
+                    if (error) {
+                      console.log('Err: ', error.message);
+                    } else {
+                      console.log('companySlug', categorySlug);
+                      const updateQuery = `UPDATE category SET category_slug  = '${categorySlug}' WHERE ID = '${value.ID}' `;
+                        db.query(updateQuery,(updateError,updateResult)=>{
+                            if(updateError){
+                                count ++;
+                                const newSlug = `${categorySlug}_${count}`;
+                                const reUpdateQuery = `UPDATE category SET category_slug  = '${categorySlug}' WHERE ID = '${value.ID}' `;
+                                db.query(reUpdateQuery);
+                            }
+                        })
+                    }
+                })
+               
+                  
+            })
+            
+        }
+    })
+})
+
 
 //-- 404---//
 router.get('*',checkCookieValue, async (req, res) => {
