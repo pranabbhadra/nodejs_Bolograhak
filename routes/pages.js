@@ -2596,41 +2596,41 @@ router.get('/logout', (req, res) => {
 });
 
 // auto fill database with slug 
-// router.get('/fill_database_with_slug', (req,res)=>{
-//     console.log('/fill_database_with_slug');
-//     sql = `SELECT ID, company_name FROM company WHERE 1`;
-//     db.query(sql,(err,results)=>{
-//         // if (err){
-//         //     console.log(err);
-//         // } 
-//         if(results.length > 0){
-//             console.log(results)
-//             let count = 0;
-//             results.forEach((value, index)=>{
-//                 comFunction2.generateUniqueSlug(value.company_name, (error, companySlug) => {
-//                     if (error) {
-//                       console.log('Err: ', error.message);
-//                     } else {
-//                       console.log('companySlug', companySlug);
-//                       const updateQuery = `UPDATE company SET slug = '${companySlug}' WHERE ID = '${value.ID}' `;
-//                         db.query(updateQuery,(updateError,updateResult)=>{
-//                             if(updateError){
-//                                 count ++;
-//                                 const newSlug = `${companySlug}_${count}`;
-//                                 const reUpdateQuery = `UPDATE company SET slug = '${companySlug}' WHERE ID = '${value.ID}' `;
-//                                 db.query(reUpdateQuery);
-//                             }
-//                         })
-//                     }
-//                 })
+router.get('/fill_database_with_slug', (req,res)=>{
+    console.log('/fill_database_with_slug');
+    sql = `SELECT ID, company_name FROM company WHERE 1`;
+    db.query(sql,(err,results)=>{
+        // if (err){
+        //     console.log(err);
+        // } 
+        if(results.length > 0){
+            console.log(results)
+            let count = 0;
+            results.forEach((value, index)=>{
+                comFunction2.generateUniqueSlug(value.company_name, (error, companySlug) => {
+                    if (error) {
+                      console.log('Err: ', error.message);
+                    } else {
+                      console.log('companySlug', companySlug);
+                      const updateQuery = `UPDATE company SET slug = '${companySlug}' WHERE ID = '${value.ID}' `;
+                        db.query(updateQuery,(updateError,updateResult)=>{
+                            if(updateError){
+                                count ++;
+                                const newSlug = `${companySlug}_${count}`;
+                                const reUpdateQuery = `UPDATE company SET slug = '${companySlug}' WHERE ID = '${value.ID}' `;
+                                db.query(reUpdateQuery);
+                            }
+                        })
+                    }
+                })
                
                   
-//             console.log(company_slug)
-//             })
+            console.log(company_slug)
+            })
             
-//         }
-//     })
-// })
+        }
+    })
+})
 
 //-- 404---//
 router.get('*',checkCookieValue, async (req, res) => {

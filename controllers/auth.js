@@ -1639,7 +1639,18 @@ exports.companyBulkUpload = async (req, res) => {
             //console.log('company:',company)
             try {
 
-                
+                const companySlug = await new Promise((resolve, reject) => {
+                    comFunction2.generateUniqueSlug(company[1], (error, generatedSlug) => {
+                        if (error) {
+                            console.log('Error:', error.message);
+                            reject(error);
+                        } else {
+                            // console.log('Generated Company Slug:', generatedSlug);
+                            resolve(generatedSlug);
+                        }
+                    });
+                });
+                await company.push(companySlug);
                 // Replace any undefined values with null
                 const cleanedCompany = company.map(value => (value !== undefined ? value : null));
                 //console.log(value);
@@ -1708,7 +1719,7 @@ exports.companyBulkUpload = async (req, res) => {
                         main_address_state =  VALUES(main_address_state),
                         main_address_city =  VALUES(main_address_city),
                         verified =  VALUES(verified),
-                        slug =  VALUES(slug),
+                        slug =  VALUES(slug)
                     `,
                     cleanedCompany
                 );
@@ -1745,30 +1756,28 @@ exports.companyBulkUpload = async (req, res) => {
 
 // Define a promise-based function for processing rows
 function processCompanyCSVRows(worksheet, formattedDate, connection, user_id) {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         const companies = [];
 
-         worksheet.eachRow(async (row, rowNumber) => {
+        await worksheet.eachRow(async (row, rowNumber) => {
             if (rowNumber !== 1) { // Skip the header row
-                const companySlug =await  new Promise((resolve, reject) => {
-                    comFunction2.generateUniqueSlug(row.values[1], (error, generatedSlug) => {
-                      if (error) {
-                        console.log('Error:', error.message);
-                        reject(error);
-                      } else {
-                        //console.log('Generated Company Slug:', generatedSlug);
-                        resolve(generatedSlug);
-                      }
-                    });
-                  });
-                  console.log(companySlug,row.values[1]);
-                companies.push([user_id, row.values[1], row.values[2], row.values[3], row.values[4], row.values[5], row.values[6], row.values[7], row.values[8], row.values[9], row.values[10], '1', '0', formattedDate, formattedDate, row.values[11], row.values[12], row.values[13], '0', companySlug]);
+                
+                companies.push([user_id, row.values[1], row.values[2], row.values[3], row.values[4], row.values[5], row.values[6], row.values[7], row.values[8], row.values[9], row.values[10], '1', '0', formattedDate, formattedDate, row.values[11], row.values[12], row.values[13], '0']);
+
             }
         });
 
+        // Resolve the promise after all rows have been processed
         resolve(companies);
     });
 }
+// processCompanyCSVRows(worksheet, formattedDate, connection, user_id)
+//     .then(companies => {
+//         console.log('Resolved companies', companies);
+//     })
+//     .catch(error => {
+//         console.error('Error:', error.message);
+//     });
 
 //--- Delete Company ----//
 exports.deleteCompany = (req, res) => {
