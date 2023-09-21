@@ -1119,7 +1119,7 @@ async function getCompanyIdBySlug(slug){
 // Function to generate a unique slug from a string
 function generateUniqueSlug(companyName, callback) {
   // Check if the generated slug already exists in the database
-  db.query('SELECT slug FROM company', (err, existingSlugs) => {
+  db.query('SELECT company_name, slug FROM company', (err, existingSlugs) => {
     if (err) {
       callback(err);
       return;
@@ -1140,10 +1140,12 @@ function generateUniqueSlug(companyName, callback) {
       if (value.slug === baseSlug) {
         slugExists = true;
       }
+      if (value.company_name == companyName) {
+        count ++
+      }
     });
 
     if (slugExists) {
-      count ++
       slug = `${baseSlug}-${count}`;
       //slug = `${baseSlug}-${Math.floor(Math.random() * 10000)}`;
     }

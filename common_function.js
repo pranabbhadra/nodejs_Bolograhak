@@ -7,6 +7,7 @@ const useragent = require('useragent');
 const requestIp = require('request-ip');
 const axios = require('axios');
 const { cache } = require('ejs');
+const comFunction2 = require('./common_function2');
 
 dotenv.config({ path: './.env' });
 const query = util.promisify(db.query).bind(db);
@@ -700,6 +701,20 @@ async function createCompany(comInfo, userId) {
       // Format the date in 'YYYY-MM-DD HH:mm:ss' format (adjust the format as needed)
       const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
       try {
+        const companySlug = await new Promise((resolve, reject) => {
+          comFunction2.generateUniqueSlug(comInfo.company_name, (error, generatedSlug) => {
+            if (error) {
+              console.log('Error:', error.message);
+              reject(error);
+            } else {
+              //console.log('Generated Company Slug:', generatedSlug);
+              resolve(generatedSlug);
+            }
+          });
+        });
+
+        //console.log('Outside of Callback - Company Slug:', companySlug);
+        //return false;
         const companyInsertData = {
           user_created_by : userId,
           company_name: comInfo.company_name || null,
@@ -708,6 +723,7 @@ async function createCompany(comInfo, userId) {
           updated_date: formattedDate,
           main_address: comInfo.address || null,
           verified: '0',
+          slug: companySlug,
         };
         const create_company_query = 'INSERT INTO company SET ?'
         const create_company_results = await query(create_company_query, companyInsertData);
@@ -726,10 +742,12 @@ async function createCompany(comInfo, userId) {
             if (create_company_address_results.insertId) {
               return_data.companyID = create_company_results.insertId;
               return_data.companyLocationID = create_company_address_results.insertId;
+              console.log('return_data',return_data)
               return return_data;
             }else{
               return_data.companyID = create_company_results.insertId;
               return_data.companyLocationID = '';
+              console.log('return_data.companyLocationID:',return_data)
               return return_data;
             }
           }catch(error){
@@ -739,6 +757,7 @@ async function createCompany(comInfo, userId) {
         }else{
           return [];
         }
+        
       }catch(error){
         console.error('Error during user create_company_query:', error);
         return error;

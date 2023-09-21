@@ -1634,11 +1634,16 @@ exports.companyBulkUpload = async (req, res) => {
 
         const worksheet = workbook.getWorksheet(1);
         const companies = await processCompanyCSVRows(worksheet, formattedDate, connection, currentUserData.user_id);
-
+        //console.log('companies',companies);
         for (const company of companies) {
+            //console.log('company:',company)
             try {
+
+                
                 // Replace any undefined values with null
                 const cleanedCompany = company.map(value => (value !== undefined ? value : null));
+                //console.log(value);
+                //return false;
                 
                 if (cleanedCompany[2] === null) {
                     cleanedCompany[2] = '';
@@ -1676,15 +1681,16 @@ exports.companyBulkUpload = async (req, res) => {
                 if (cleanedCompany[13] === null) {
                     cleanedCompany[13] = '';
                 }
-
+                
                 await connection.execute(
                     `
                     INSERT INTO company 
-                        (user_created_by, company_name, heading, about_company, comp_email, comp_phone, tollfree_number, main_address, main_address_pin_code, address_map_url, comp_registration_id, status, trending, created_date, updated_date, main_address_country, main_address_state, main_address_city, verified) 
+                        (user_created_by, company_name, heading, about_company, comp_email, comp_phone, tollfree_number, main_address, main_address_pin_code, address_map_url, comp_registration_id, status, trending, created_date, updated_date, main_address_country, main_address_state, main_address_city, verified, slug) 
                     VALUES 
-                        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) 
+                        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) 
                     ON DUPLICATE KEY UPDATE
                         user_created_by = VALUES(user_created_by),
+                        company_name = VALUES(company_name), 
                         heading = VALUES(heading), 
                         about_company = VALUES(about_company),
                         comp_email = VALUES(comp_email),
@@ -1701,7 +1707,8 @@ exports.companyBulkUpload = async (req, res) => {
                         main_address_country =  VALUES(main_address_country),
                         main_address_state =  VALUES(main_address_state),
                         main_address_city =  VALUES(main_address_city),
-                        verified =  VALUES(verified)
+                        verified =  VALUES(verified),
+                        slug =  VALUES(slug),
                     `,
                     cleanedCompany
                 );
@@ -1741,9 +1748,21 @@ function processCompanyCSVRows(worksheet, formattedDate, connection, user_id) {
     return new Promise((resolve, reject) => {
         const companies = [];
 
-        worksheet.eachRow((row, rowNumber) => {
+         worksheet.eachRow(async (row, rowNumber) => {
             if (rowNumber !== 1) { // Skip the header row
-                companies.push([user_id, row.values[1], row.values[2], row.values[3], row.values[4], row.values[5], row.values[6], row.values[7], row.values[8], row.values[9], row.values[10], '1', '0', formattedDate, formattedDate, row.values[11], row.values[12], row.values[13], '0']);
+                const companySlug =await  new Promise((resolve, reject) => {
+                    comFunction2.generateUniqueSlug(row.values[1], (error, generatedSlug) => {
+                      if (error) {
+                        console.log('Error:', error.message);
+                        reject(error);
+                      } else {
+                        //console.log('Generated Company Slug:', generatedSlug);
+                        resolve(generatedSlug);
+                      }
+                    });
+                  });
+                  console.log(companySlug,row.values[1]);
+                companies.push([user_id, row.values[1], row.values[2], row.values[3], row.values[4], row.values[5], row.values[6], row.values[7], row.values[8], row.values[9], row.values[10], '1', '0', formattedDate, formattedDate, row.values[11], row.values[12], row.values[13], '0', companySlug]);
             }
         });
 
@@ -2331,6 +2350,7 @@ exports.submitReview = async (req, res) => {
             //console.log(currentUserData);
             const userId = currentUserData.user_id;
             const company = await comFunction.createCompany(req.body, userId);
+            console.log('companyInfo',company)
             const review = await comFunction.createReview(req.body, userId, company);
             // Render the 'edit-user' EJS view and pass the data
             if(company && review){
