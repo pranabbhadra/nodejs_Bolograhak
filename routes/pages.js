@@ -661,9 +661,7 @@ router.get('/category-listing', checkCookieValue, async (req, res) => {
                 categoryImage: row.category_img,
                 countryNames: row.country_names.split(','),
             }));
-            //console.log(categories);
-            //res.json({ menu_active_id: 'category', page_title: 'Categories', currentUserData, 'categories': categories });
-            //res.render('categories', { menu_active_id: 'company', page_title: 'Categories', currentUserData, 'categories': categories });
+           
             // res.json({
             //     menu_active_id: 'category-listing',
             //     page_title: 'All Categories',
@@ -686,29 +684,102 @@ router.get('/category-listing', checkCookieValue, async (req, res) => {
         console.error(err);
         res.status(500).send('An error occurred');
     }
-    //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
 });
 
-//company Listing page
-router.get('/company-listing', checkCookieValue, async (req, res) => {
+//category Company Listing page
+router.get('/category/:category_slug', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
-    const [globalPageMeta] = await Promise.all([
+    const category_slug = req.params.category_slug;
+    const baseURL = process.env.MAIN_URL;
+    const [globalPageMeta, getSubCategories, companyDetails, AllRatingTags] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
+        comFunction2.getSubCategories(category_slug),
+        comFunction2.getCompanyDetails(category_slug),
+        comFunction.getAllRatingTags(),
     ]);
-    try {
+    try { 
 
+        const subcategories = getSubCategories.map((row) => ({
+            categoryName: row.category_name,
+            categorySlug: row.category_slug,
+            subCategoryNames: row.subcategories ? row.subcategories.split(',') : [],
+            subCategorySlug: row.subcategoriesSlug ? row.subcategoriesSlug.split(',') : [],
+        }));
+
+        // res.json( {
+        //     menu_active_id: 'company-listing',
+        //     page_title: 'Company Name',
+        //     currentUserData,
+        //     globalPageMeta:globalPageMeta,
+        //     subCategories:subcategories[0],
+        //     companyDetails:companyDetails,
+        //     AllRatingTags
+        // });
         res.render('front-end/company-listing', {
             menu_active_id: 'company-listing',
-            page_title: 'Company Name',
+            page_title: subcategories[0].categoryName,
             currentUserData,
-            globalPageMeta:globalPageMeta
+            globalPageMeta:globalPageMeta,
+            subCategories:subcategories[0],
+            companyDetails:companyDetails,
+            AllRatingTags:AllRatingTags,
+            baseURL:baseURL,
+            filter_value:''
         });
     } catch (err) {
         console.error(err);
         res.status(500).send('An error occurred');
     }
-    //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
 });
+
+//category filter company Listing page
+router.get('/category/:category_slug/:filter', checkCookieValue, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
+    const category_slug = req.params.category_slug;
+    const filter_value = req.params.filter;
+    const baseURL = process.env.MAIN_URL;
+    const [globalPageMeta, getSubCategories, companyDetails, AllRatingTags] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+        comFunction2.getSubCategories(category_slug),
+        comFunction2.getFilteredCompanyDetails(category_slug,filter_value),
+        comFunction.getAllRatingTags(),
+    ]);
+    try { 
+
+        const subcategories = getSubCategories.map((row) => ({
+            categoryName: row.category_name,
+            categorySlug: row.category_slug,
+            subCategoryNames: row.subcategories ? row.subcategories.split(',') : [],
+            subCategorySlug: row.subcategoriesSlug ? row.subcategoriesSlug.split(',') : [],
+        }));
+
+        // res.json( {
+        //     menu_active_id: 'company-listing',
+        //     page_title: 'Company Name',
+        //     currentUserData,
+        //     globalPageMeta:globalPageMeta,
+        //     subCategories:subcategories[0],
+        //     companyDetails:companyDetails,
+        //     AllRatingTags
+        // });
+        res.render('front-end/company-listing', {
+            menu_active_id: 'company-listing',
+            page_title: subcategories[0].categoryName,
+            currentUserData,
+            globalPageMeta:globalPageMeta,
+            subCategories:subcategories[0],
+            companyDetails:companyDetails,
+            AllRatingTags,
+            baseURL:baseURL,
+            filter_value:filter_value
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+
+
 //-----------------------------------------------------------------//
 
 

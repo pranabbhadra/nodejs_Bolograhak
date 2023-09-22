@@ -1154,7 +1154,103 @@ function generateUniqueSlug(companyName, callback) {
   });
 }
 
+// Function to fetch Sub Category
+async function getSubCategories(categorySlug) {
+  const sql = `SELECT category.category_name,category.category_slug, GROUP_CONCAT(c.category_name) AS subcategories, GROUP_CONCAT(c.category_slug ) AS subcategoriesSlug
+                FROM category 
+                LEFT JOIN category c ON category.ID = c.parent_id
+                WHERE category.category_slug = '${categorySlug}'
+                GROUP BY category.category_name `;
 
+  const result = await query(sql);
+  if(result.length > 0 ){
+    return result;
+  }else{
+    return [];
+  }
+  
+}
+
+// Function to fetch  Category Company details
+async function getCompanyDetails(categorySlug) {
+  const sql = `SELECT c.ID, c.company_name, c.logo, c.status, c.trending, c.main_address, c.verified, c.paid_status, c.slug , AVG(r.rating) as comp_avg_rating, COUNT(r.id) as comp_total_reviews, pcd.cover_img
+                FROM category  
+                JOIN company_cactgory_relation ccr ON ccr.category_id = category.ID
+                LEFT JOIN company c ON c.ID = ccr.company_id
+                LEFT JOIN reviews r ON r.company_id = c.ID
+                LEFT JOIN premium_company_data pcd ON pcd.company_id = c.ID
+                WHERE category.category_slug = '${categorySlug}' AND c.status = '1'
+                GROUP BY c.ID, c.company_name `;
+
+  const result = await query(sql);
+  if(result.length > 0 ){
+    return result;
+  }else{
+    return [];
+  }
+  
+}
+
+// Function to fetch Category Filtered Company details
+async function getFilteredCompanyDetails(categorySlug, filterValue) {
+  console.log('filterValue',filterValue)
+  if (filterValue == 'latest') {
+    const sql = `SELECT c.ID, c.company_name, c.logo, c.status, c.trending, c.main_address, c.verified, c.paid_status, c.slug , AVG(r.  rating) as comp_avg_rating, COUNT(r.id) as comp_total_reviews, pcd.cover_img
+                FROM category  
+                JOIN company_cactgory_relation ccr ON ccr.category_id = category.ID
+                LEFT JOIN company c ON c.ID = ccr.company_id
+                LEFT JOIN reviews r ON r.company_id = c.ID
+                LEFT JOIN premium_company_data pcd ON pcd.company_id = c.ID
+                WHERE category.category_slug = '${categorySlug}' AND c.status = '1'
+                GROUP BY c.ID, c.company_name 
+                ORDER BY c.created_date DESC 
+                LIMIT 20`;
+
+                const result = await query(sql);
+              if(result.length > 0 ){
+                return result;
+              }else{
+                return [];
+              }
+                
+  } else if(filterValue == 'trending') {
+    const sql = `SELECT c.ID, c.company_name, c.logo, c.status, c.trending, c.main_address, c.verified, c.paid_status, c.slug , AVG(r.  rating) as comp_avg_rating, COUNT(r.id) as comp_total_reviews, pcd.cover_img
+                FROM category  
+                JOIN company_cactgory_relation ccr ON ccr.category_id = category.ID
+                LEFT JOIN company c ON c.ID = ccr.company_id
+                LEFT JOIN reviews r ON r.company_id = c.ID
+                LEFT JOIN premium_company_data pcd ON pcd.company_id = c.ID
+                WHERE category.category_slug = '${categorySlug}' AND c.status = '1' AND c.trending = '1'
+                GROUP BY c.ID, c.company_name `;
+
+                const result = await query(sql);
+                if(result.length > 0 ){
+                  return result;
+                }else{
+                  return [];
+                }
+  } else {
+    const sql = `SELECT c.ID, c.company_name, c.logo, c.status, c.trending, c.main_address, c.verified, c.paid_status, c.slug , AVG(r.  rating) as comp_avg_rating, COUNT(r.id) as comp_total_reviews, pcd.cover_img
+                FROM category  
+                JOIN company_cactgory_relation ccr ON ccr.category_id = category.ID
+                LEFT JOIN company c ON c.ID = ccr.company_id
+                LEFT JOIN reviews r ON r.company_id = c.ID
+                LEFT JOIN premium_company_data pcd ON pcd.company_id = c.ID
+                WHERE category.category_slug = '${categorySlug}' AND c.status = '1' AND c.verified = '1'
+                GROUP BY c.ID, c.company_name `;
+
+                const result = await query(sql);
+                if(result.length > 0 ){
+                  return result;
+                }else{
+                  return [];
+                }
+  }
+  
+
+  
+  
+}
 module.exports = {
   getFaqPage,
   getFaqCategories,
@@ -1188,5 +1284,8 @@ module.exports = {
   getAllReviewVoting,
   updateCustomerReply,
   getCompanyIdBySlug,
-  generateUniqueSlug
+  generateUniqueSlug,
+  getSubCategories,
+  getCompanyDetails,
+  getFilteredCompanyDetails
 };
