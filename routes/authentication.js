@@ -186,6 +186,7 @@ router.post('/createcompany',verifyToken, upload.single('logo') ,authenControlle
 router.put('/editcompany',verifyToken, upload.single('logo') ,authenController.editcompany);
 router.post('/createcompanylocation',verifyToken, authenController.createcompanylocation);
 router.post('/submitReview',verifyToken, authenController.submitReview);
+router.post('/submitReviewReply',verifyToken, authenController.submitReviewReply);  
 //forget password
 router.post('/forgotPassword', authenController.forgotPassword);
 router.post('/resetPassword',  authenController.resetPassword);
@@ -214,6 +215,7 @@ router.get('/getUserDetails/:user_id', verifyToken, async (req, res) => {
             message: 'Access denied: You are not authorized to update this user.',
         });
     }
+    const ClaimCompany  = [];
     const [userBasicInfo, userMetaInfo, userCompany, userReview, userReviewCompany, allCompanyReviewTags] = await Promise.all([
         comFunction.getUser(user_ID),
         comFunction.getUserMeta(user_ID),
@@ -237,6 +239,8 @@ router.get('/getUserDetails/:user_id', verifyToken, async (req, res) => {
         }
 
         //if(userReview.length > 0){
+            const userCompany = await comFunction.getUserCompany(user_ID);
+            console.log('userCompany:', userCompany);
             const reviewTagsMap = {};
             allCompanyReviewTags.forEach(tag => {
                 if (!reviewTagsMap[tag.review_id]) {
@@ -251,6 +255,11 @@ router.get('/getUserDetails/:user_id', verifyToken, async (req, res) => {
                     Tags: reviewTagsMap[review.id] || []
                 };
             });
+            userCompany
+            .filter(company => company.ID !== null && company.ID !== undefined)
+            .forEach(company => {
+              ClaimCompany.push(company.ID); 
+            }); 
         //}
 
         return res.status(200).json({
@@ -260,6 +269,7 @@ router.get('/getUserDetails/:user_id', verifyToken, async (req, res) => {
                 userCompany,
                 finalCompanyallReviews,
                 userReviewCompany,
+                ClaimCompany
             },
             message: 'user data successfully recived'
         });
@@ -276,12 +286,15 @@ router.get('/getComapniesDetails/:ID', verifyToken, async (req, res) => {
     const companyId = req.params.ID; 
     console.log("companyId from request:", companyId); 
     try {
-        const [company, companyreviews, allCompanyReviewTags, userReview,copmanyratings] = await Promise.all([
+        const [company, companyreviews, allCompanyReviewTags, userReview,copmanyratings, PremiumCompanyData,Totalreplies,TotalReviewsAndCounts] = await Promise.all([
           comFunction.getCompany(companyId),
           comFunction.getCompanyReviews(companyId),
           comFunction2.getAllReviewTags(),
           comFunction.getUserReview(),
           comFunction.getCompanyRatings(companyId),
+          comFunction2.getPremiumCompanyData(companyId),
+          comFunction.getTotalreplies(companyId),
+          comFunction.getTotalReviewsAndCounts(companyId)
         ]);
 
         if (company) {
@@ -305,7 +318,10 @@ router.get('/getComapniesDetails/:ID', verifyToken, async (req, res) => {
                 data: {
                     company,
                     companyreviews: finalCompanyallReviews,
-                    copmanyratings
+                    copmanyratings,
+                    PremiumCompanyData,
+                    Totalreplies,
+                    TotalReviewsAndCounts
                     //allCompanyReviewTags
                 },
                 message: 'company data successfully received'
@@ -737,8 +753,10 @@ router.get('/getreviewlisting', verifyToken, async (req, res) => {
   
   
       let mergedData = {};
-      if (allreviews.length > 0) {
+    //   if (allreviews.length > 0) {
+        if (Array.isArray(allreviews) && allreviews.length > 0) {
         const reviewTagsMap = {};
+        //const reviewReplies = {};
         allCompanyReviewTags.forEach(tag => {
           if (!reviewTagsMap[tag.review_id]) {
             reviewTagsMap[tag.review_id] = [];
@@ -747,9 +765,11 @@ router.get('/getreviewlisting', verifyToken, async (req, res) => {
         });
   
         const all = allreviews.map(review => {
+        //const reviewReplies = comFunction.getReviewRepliesByReviewId(review.id);
           return {
             ...review,
-            Tags: reviewTagsMap[review.id] || []
+            Tags: reviewTagsMap[review.id] || [],
+            //ReviewReplies: reviewReplies[review.id] || []
           };
         });
   

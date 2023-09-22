@@ -21,6 +21,7 @@ const invalidTokens = new Set();
 const otpValidityMinutes = 5;
 const cron = require('node-cron');
 const randomstring = require('randomstring');
+const slugify = require('slugify');
 
 const app = express();
 
@@ -1051,6 +1052,62 @@ exports.createcompanylocation = (req, res) => {
 
 //submit review 
 
+// async function generateUniqueSlug(companyName) {
+//   let slug = slugify(companyName, { lower: true });
+//   let isUnique = false;
+
+//   // Loop until a unique slug is found
+//   while (!isUnique) {
+//     const checkQuery = 'SELECT id FROM company WHERE slug = ?';
+//     const [checkResults] = await db.promise().query(checkQuery, [slug]);
+
+//     if (checkResults.length === 0) {
+//       isUnique = true;
+//     } else {
+//       // Append a random string to make the slug unique
+//       const randomString = Math.random().toString(36).substring(2, 8);
+//       slug = `${slug}-${randomString}`;
+//     }
+//   }
+
+//   return slug;
+// }
+
+async function generateUniqueSlug(companyName) {
+  const baseSlug = slugify(companyName, {
+    replacement: '-',  // replace spaces with hyphens
+    lower: true,      // convert to lowercase
+    strict: true,     // strip special characters
+    remove: /[*+~.()'"!:@]/g,
+  });
+
+  let slug = baseSlug;
+  let slugExists = false;
+  let count = 1;
+
+  // Check if the generated slug already exists in the database
+  const checkQuery = 'SELECT slug FROM company WHERE slug = ?';
+  const [checkResults] = await db.promise().query(checkQuery, [slug]);
+
+  if (checkResults.length === 0) {
+    slugExists = true;
+  } else {
+    // Slug already exists, generate a unique one
+    while (slugExists) {
+      slug = `${baseSlug}-${count}`;
+      const [newCheckResults] = await db.promise().query(checkQuery, [slug]);
+      if (newCheckResults.length === 0) {
+        slugExists = false;
+      } else {
+        count++;
+      }
+    }
+  }
+
+  return slug;
+}
+
+
 exports.submitReview = async (req, res) => {
 
     try {
@@ -1086,17 +1143,21 @@ exports.submitReview = async (req, res) => {
   
       let companyID;
       let company_location_id;
+      let companyslug;
       // Check if the address already exists
       const addressCheckQuery = 'SELECT ID FROM company_location WHERE address = ?';
       const [addressCheckResults] = await db.promise().query(addressCheckQuery, [address]);
   
       if (companyCheckResults.length === 0) {
+        const slug =  await generateUniqueSlug(company_name);
+        console.log("aaa",slug)
         // Company does not exist, create it
-        const createCompanyQuery = 'INSERT INTO company (user_created_by, company_name,main_address, status, created_date, updated_date) VALUES (?, ?, ?, ?, ?, ?)';
-        const createCompanyValues = [user_id, company_name, address, '2', formattedDate, formattedDate];
+        const createCompanyQuery = 'INSERT INTO company (slug,user_created_by, company_name,main_address, status, created_date, updated_date) VALUES (?, ?, ?, ?, ?, ?, ?)';
+        const createCompanyValues = [slug,user_id, company_name, address, '2', formattedDate, formattedDate];
   
         const [createCompanyResults] = await db.promise().query(createCompanyQuery, createCompanyValues);
         companyID = createCompanyResults.insertId;
+        companyslug = slug.insertId;
   
         // Create company address
         const createAddressQuery = 'INSERT INTO company_location (company_id, address) VALUES (?, ?)';
@@ -1109,6 +1170,15 @@ exports.submitReview = async (req, res) => {
   
       } else {
         companyID = companyCheckResults[0].id;
+        const slug = await generateUniqueSlug(company_name);
+        const updateCompanySlugQuery = 'UPDATE company SET slug = ? WHERE id = ?';
+        await db.promise().query(updateCompanySlugQuery, [slug, companyID]);
+  
+        companyslug = slug; 
+  
+        // Check if the address already exists
+        const addressCheckQuery = 'SELECT ID FROM company_location WHERE address = ?';
+        const [addressCheckResults] = await db.promise().query(addressCheckQuery, [address]);
   
         if (addressCheckResults.length === 0) {
           // Address does not exist, create it
@@ -2129,4 +2199,86 @@ exports.refreshToken = async (req, res) => {
 //     }
 //   });
 // }
+
+
+
+// submitting review replies
+exports.submitReviewReply = async (req, res) => {
+  try {
+    const authenticatedUserId = parseInt(req.user.user_id); // Assuming the user_id is correct
+    console.log('authenticatedUserId: ', authenticatedUserId);
+    const ApiuserId = parseInt(req.body.reply_by); // Assuming user_id is the correct field name
+    console.log('req.body.user_id: ', parseInt(req.body.user_id));
+    const {
+      review_id,
+      company_id,
+      reply_to,
+      reply_by,
+      comment
+    } = req.body;
+    console.log(req.body);
+    console.log("user_id from request:", req.body.reply_by);
+    if (ApiuserId !== authenticatedUserId) {
+      return res.status(403).json({
+        status: 'error',
+        message: 'Access denied: You are not authorized to update this user.',
+      });
+    }
+
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+
+    const replyData = [
+      review_id,
+      company_id,
+      reply_by,
+      reply_to,
+      comment,
+      formattedDate, // Use the formatted date for created_at
+      formattedDate, // Use the formatted date for updated_at
+    ];
+
+    db.query(
+      'INSERT INTO review_reply (review_id, company_id, reply_by, reply_to, comment, created_at, updated_at) VALUES (?,?,?,?,?,?,?)',
+      replyData,
+      async (err, results) => {
+        if (err) {
+          return res.status(500).json({
+            status: 'error',
+            message: 'An error occurred while processing your request' + err,
+          });
+        } else {
+          console.log(results.insertId);
+          const mailReplyData =await comFunction2.ReviewReplyTo(results.insertId)
+
+          console.log('MailSendTo',mailReplyData);
+          // Check if mailReplyData is defined and has the expected properties
+          if (mailReplyData && mailReplyData[0] && mailReplyData[0].customer_id == req.body.reply_to) {
+            await comFunction.ReviewReplyToCustomer(mailReplyData);
+          } else if (mailReplyData) {
+            await comFunction.ReviewReplyToCompany(mailReplyData);
+          } else {
+            console.error('mailReplyData is undefined or missing expected properties');
+          }
+
+          return res.status(200).json({
+            status: 'ok',
+            data: '',
+            message: 'Reply Successfully Sent',
+          });
+        }
+      }
+    );
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      status: 'error',
+      message: 'An error occurred ' + err,
+    });
+  }
+};
+
+
+
+
 

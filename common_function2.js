@@ -200,7 +200,6 @@ function getAllReviewTags() {
     });
   });
 }
-
 //Function to fetch latest Reviews from the  reviews,company,company_location,users,user_customer_meta table
 async function getlatestReviews(reviewCount){
   const get_latest_review_query = `
@@ -864,6 +863,7 @@ function ReviewReplyToCompany(mailReplyData){
  }
  //Function to Send Reply To Customer 
 function ReviewReplyToCustomer(mailReplyData){
+  if (mailReplyData && mailReplyData.length > 0 && mailReplyData[0].email) {
   var mailOptions = {
     from: process.env.MAIL_USER,
     //to: 'pranab@scwebtech.com',
@@ -961,6 +961,7 @@ function ReviewReplyToCustomer(mailReplyData){
     </table>
    </div>`
   }
+
   mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
       if (err) {
           console.log(err);
@@ -974,6 +975,7 @@ function ReviewReplyToCustomer(mailReplyData){
       }
   })
  }
+}
 
  //Function to fetch User total replied from the  review_reply table
 async function TotalReplied(Id){
