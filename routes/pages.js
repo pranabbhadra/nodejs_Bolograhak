@@ -645,13 +645,13 @@ router.get('/category-listing', checkCookieValue, async (req, res) => {
         GROUP BY category.category_name `;
         db.query(cat_query, (err, results) => {
             if (err) {
-            return res.send(
-                {
-                    status: 'err',
-                    data: '',
-                    message: 'An error occurred while processing your request' + err
-                }
-            )
+                return res.send(
+                    {
+                        status: 'err',
+                        data: '',
+                        message: 'An error occurred while processing your request' + err
+                    }
+                )
             } else {
             const categories = results.map((row) => ({
                 categoryId: row.category_id,
@@ -738,6 +738,9 @@ router.get('/category/:category_slug/:filter', checkCookieValue, async (req, res
     const category_slug = req.params.category_slug;
     const filter_value = req.params.filter;
     const baseURL = process.env.MAIN_URL;
+    if (filter_value == 'all') {
+        res.redirect(`/category/${category_slug}`);
+    }
     const [globalPageMeta, getSubCategories, companyDetails, AllRatingTags] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
         comFunction2.getSubCategories(category_slug),

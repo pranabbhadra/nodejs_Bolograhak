@@ -542,6 +542,22 @@ jQuery(function ($) {
     }
   });
 
+
+  $(".all-cat-slice").slice(0,20).show();
+  $(".load-all-categories").click(function(e){
+    e.preventDefault();
+    $(".all-cat-slice:hidden").slice(0,4).fadeIn("slow");
+    
+    if($(".all-cat-slice:hidden").length == 0){
+       $(".load-all-categories").hide();
+      }
+  });
+  $(window).on('load', function(){
+    if($(".all-cat-slice:hidden").length == 0){
+         $(".load-all-categories").hide();
+    }
+  });
+
   // $(".customer-review-wrap").slice(0, 3).show();
   // $(".show-comment-slice").click(function (e) {
   //   e.preventDefault();
@@ -858,20 +874,4 @@ jQuery(function ($) {
 
   // ///////////////////////////// Login profile doropdown end
 
-  /*=========================== sandip counter js =================*/
-
-    $('.count').each(function () {
-      $(this).prop('Counter', 0).animate({
-        Counter: $(this).text()
-      }, {
-        duration: 3000,
-        easing: 'swing',
-        step: function (now) {
-          $(this).text(Math.ceil(now));
-        }
-      });
-    });
-
-  /*=========================== sandip counter js End =================*/
-
-});
+})

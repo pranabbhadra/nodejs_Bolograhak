@@ -5,20 +5,23 @@
         <section class="main-content">
             <div class="container">
                 <div class="row g-4">
-                    <div class="col-md-3">
-                        <div class="company-listing-left">
-                            
-                            <h4><%= subCategories.categoryName %></h4>
-                            <% if(subCategories.subCategoryNames) { %>
+                    <% if(subCategories.subCategoryNames.length > 0) { %>
+                        <h4><%= subCategories.categoryName %></h4>
+                        <div class="col-md-3">
+                            <div class="company-listing-left">
                                 <ul>
                                     <% subCategories.subCategoryNames.forEach((subCategoryName,index)=>{ %>
                                         <li class="active"><a href="<%= subCategories.subCategorySlug[index] %>"><i class="fa-regular fa-arrow-right-long"></i><%= subCategoryName %></a></li>
                                     <% }) %>
                                 </ul>
-                            <% } %>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-9">
+                    <% } %>
+                    <% if(subCategories.subCategoryNames.length > 0) { %>
+                        <div class="col-md-9">
+                    <% } else { %>
+                        <div class="col-md-12">
+                    <% } %>
                         <div class="company-listing-right">
                             <% if(companyDetails.length > 0){ %>
                                 <div class="row">
@@ -31,6 +34,7 @@
                                                     <option value="latest" <% if(filter_value == "latest" ) { %>selected <% } %>>Latest</option>
                                                     <option value="trending" <% if(filter_value == "trending" ) { %>selected <% } %>>Trending</option>
                                                     <option value="verified" <% if(filter_value == "verified" ) { %>selected <% } %>>Verified</option>
+                                                    <option value="all">All</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -51,12 +55,12 @@
                                                 <% } %>
                                                 <div class="company_listing_logo">
                                                     <% if(company.logo) { %>
-                                                        <img src="/<%= company.logo %>" alt="">
+                                                        <a href="<%= baseURL %>company/<%= company.slug %>"><img src="/<%= company.logo %>" alt=""></a>
                                                     <% } else {%>
-                                                        <img src="/front-end/images/company-placeholder-image.png" alt="img" loading="lazy" width="100" height="100">
+                                                        <a href="<%= baseURL %>company/<%= company.slug %>"><img src="/front-end/images/company-placeholder-image.png" alt="img" loading="lazy" width="100" height="100"></a>
                                                     <% } %>
                                                 </div>
-                                                <h4><%= company.company_name %></h4>
+                                                <a href="<%= baseURL %>company/<%= company.slug %>"><h4><%= company.company_name %></h4></a>
 
                                                 <% var average = company.comp_avg_rating %>
                                                 <% if (average > .4 && average <= 0.9 ) {
@@ -91,7 +95,7 @@
                                                             <% } %>
                                                         <% }) %>
                                                             
-                                                                <%= avg %> /5
+                                                                <%= avg %>/5
                                                     </span>
                                                     <p class=""><span>Based on</span> <%= company.comp_total_reviews %> reviews</p>
                                                     <% AllRatingTags.forEach((RatingTag)=>{  %>
