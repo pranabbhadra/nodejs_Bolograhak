@@ -395,27 +395,30 @@
                     <!--Review Replys -->
                     <% if(review.review_reply.length>0){ %>
                       <% review.review_reply.forEach( reply => { %>
+                        <% if(reply.status != '0') {%>
                         <div class="review-reply">
                           <div class="customer-profile-info">
                             <% const replydateString = reply.created_at; %>
                             <% const replydate = new Date(replydateString); %>
-                            <% if(reply.reply_by == review.customer_id) { %>
+                            <% if(reply.reply_by == review.customer_id ) { %>
                               <!-- Customer Reply -->
-                              <% if(review.user_privacy == 1) { %>
-                              <span>
-                                <% if(review.profile_pic) { %>
-                                  <img class="user_img" src="/<%= review.profile_pic %>" alt="img" width="23" height="23">
+                              <% if(reply.status != '0'){%>
+                                <% if(review.user_privacy == 1 ) { %>
+                                  <span>
+                                    <% if(review.profile_pic) { %>
+                                      <img class="user_img" src="/<%= review.profile_pic %>" alt="img" width="23" height="23">
+                                    <% }else{ %>
+                                      <img class="user_img" src="/assets/media/avatars/blank.png" alt="img" width="23" height="23">
+                                    <% } %>
+                                  </span>
+                                  <span><%= review.first_name+' '+review.last_name %> <span class="c-comment-date"><%= replydate.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></span></span>
                                 <% }else{ %>
-                                  <img class="user_img" src="/assets/media/avatars/blank.png" alt="img" width="23" height="23">
-                                <% } %>
-                              </span>
-                              <span><%= review.first_name+' '+review.last_name %> <span class="c-comment-date"><%= replydate.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></span></span>
-                              <% }else{ %>
-                              <span>
-                                <img class="user_img" src="/front-end/images/blur-img.png" alt="img" width="23" height="23">
-                              </span>
-                              <span><img src="/front-end/images/blur-name.png" alt="img"> <span class="c-comment-date"><%= replydate.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></span></span>
-                              <% }%>  
+                                  <span>
+                                    <img class="user_img" src="/front-end/images/blur-img.png" alt="img" width="23" height="23">
+                                  </span>
+                                  <span><img src="/front-end/images/blur-name.png" alt="img"> <span class="c-comment-date"><%= replydate.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></span></span>
+                                <% }%>  
+                              <% } %>
                               <!-- Customer Reply End-->
                             <% }else{ %>
                               <!-- Company Owner Reply -->
@@ -436,9 +439,11 @@
                               <!-- Company Owner Reply End-->
                             <% } %>
                           </div>
-                          <p><%= reply.comment %></p>
+                          <% if(reply.status != '0') {%>
+                            <p><%= reply.comment %></p>
+                          <% } %>
                         </div>
-                        
+                        <% } %>
                         <% if(review.review_reply.length==1 && currentUserData!= null && review.customer_id == currentUserData.user_id){ %>
                         <!--Review Replys Submit Form-->
                           <form action="" class="review_reply_form">

@@ -499,133 +499,148 @@ router.get('/terms-of-service', checkCookieValue, async (req, res) => {
 
 router.get('/company/:slug', checkCookieValue, async (req, res) => {
     const slug = req.params.slug;
-    const comp_res =await comFunction2.getCompanyIdBySlug(slug);
-    const companyID = comp_res.ID;
-    // console.log(comp_res);
-    // console.log(companyID);
-    const [allRatingTags, CompanyInfo, companyReviewNumbers, getCompanyReviews, globalPageMeta, PremiumCompanyData] = await Promise.all([
-        comFunction.getAllRatingTags(),
-        comFunction.getCompany(companyID),
-        comFunction.getCompanyReviewNumbers(companyID),
-        comFunction.getCompanyReviews(companyID),
-        comFunction2.getPageMetaValues('global'),
-        comFunction2.getPremiumCompanyData(companyID),
-    ]);
-    
-    //console.log(get_company_id.ID)
-    // console.log(slug)
-    // return false;
-    
     let currentUserData = JSON.parse(req.userData);
-    let cover_img = '';
-    let youtube_iframe = '';
-    let gallery_img = [];
-    let products = [];
-    let promotions = [];
-    let facebook_url = '';
-    let twitter_url = '';
-    let instagram_url = '';
-    let linkedin_url = '';
-    let youtube_url = '';
-    let support_data = {};
-
-    if(typeof PremiumCompanyData !== 'undefined' ){
-         cover_img = PremiumCompanyData.cover_img;
-         youtube_iframe = PremiumCompanyData.youtube_iframe;
-         gallery_img = JSON.parse(PremiumCompanyData.gallery_img);
-         products = JSON.parse(PremiumCompanyData.products);
-         promotions = JSON.parse(PremiumCompanyData.promotions);
-         facebook_url = PremiumCompanyData.facebook_url;
-         twitter_url = PremiumCompanyData.twitter_url;
-         instagram_url = PremiumCompanyData.instagram_url;
-         linkedin_url = PremiumCompanyData.linkedin_url;
-         youtube_url = PremiumCompanyData.youtube_url;
-         support_data = {support_email:PremiumCompanyData.support_email,	escalation_one:PremiumCompanyData.escalation_one, escalation_two:PremiumCompanyData.escalation_two, escalation_three:PremiumCompanyData.escalation_three}
-        
-    }
-
-    if(CompanyInfo){
-        if(CompanyInfo.paid_status == 'paid'){
-            // res.json(
-            // {
-            //     menu_active_id: 'company',
-            //     page_title: 'Organization Details',
-            //     currentUserData,
-            //     allRatingTags,
-            //     company:CompanyInfo,
-            //     CompanyInfo,
-            //     companyReviewNumbers,
-            //     getCompanyReviews,
-            //     globalPageMeta:globalPageMeta,
-            //     cover_img:cover_img,
-            //     gallery_img:gallery_img,
-            //     youtube_iframe:youtube_iframe,
-            //     products:products,
-            //     promotions:promotions,
-            //     facebook_url:facebook_url,
-            //     twitter_url:twitter_url,
-            //     instagram_url:instagram_url,
-            //     linkedin_url:linkedin_url,
-            //     youtube_url:youtube_url,
-            //     support_data:support_data,
-            // });
-            res.render('front-end/category-details-premium',
-            {
-                menu_active_id: 'company',
-                page_title: 'Organization Details',
-                currentUserData,
-                allRatingTags,
-                company:CompanyInfo,
-                CompanyInfo,
-                companyReviewNumbers,
-                getCompanyReviews,
-                globalPageMeta:globalPageMeta,
-                cover_img:cover_img,
-                gallery_img:gallery_img,
-                youtube_iframe:youtube_iframe,
-                products:products,
-                promotions:promotions,
-                facebook_url:facebook_url,
-                twitter_url:twitter_url,
-                instagram_url:instagram_url,
-                linkedin_url:linkedin_url,
-                youtube_url:youtube_url,
-                support_data:support_data,
-            });
-        }else{
-            res.render('front-end/company-details',
-            {
-                menu_active_id: 'company',
-                page_title: 'Organization Details',
-                currentUserData,
-                allRatingTags,
-                company:CompanyInfo,
-                CompanyInfo,
-                companyReviewNumbers,
-                getCompanyReviews,
-                globalPageMeta:globalPageMeta
-            });
-            // res.json(
-            // {
-            //     menu_active_id: 'company',
-            //     page_title: 'Organization Details',
-            //     currentUserData,
-            //     allRatingTags,
-            //     company:CompanyInfo,
-            //     CompanyInfo,
-            //     companyReviewNumbers,
-            //     getCompanyReviews,
-            //     globalPageMeta:globalPageMeta
-            // });
-        }
-    }else{
+    const comp_res =await comFunction2.getCompanyIdBySlug(slug);
+    if (typeof comp_res == 'undefined') {
+        const [ globalPageMeta] = await Promise.all([
+            comFunction2.getPageMetaValues('global'),
+        ]);
         res.render('front-end/404', {
             menu_active_id: '404',
             page_title: '404',
             currentUserData,
             globalPageMeta:globalPageMeta
         });
+    } else {
+        console.log('comp_res',comp_res);
+        const companyID = comp_res.ID;
+        // console.log(comp_res);
+        // console.log(companyID);
+        const [allRatingTags, CompanyInfo, companyReviewNumbers, getCompanyReviews, globalPageMeta, PremiumCompanyData] = await Promise.all([
+            comFunction.getAllRatingTags(),
+            comFunction.getCompany(companyID),
+            comFunction.getCompanyReviewNumbers(companyID),
+            comFunction.getCompanyReviews(companyID),
+            comFunction2.getPageMetaValues('global'),
+            comFunction2.getPremiumCompanyData(companyID),
+        ]);
+        
+        //console.log(get_company_id.ID)
+        // console.log(slug)
+        // return false;
+        
+        
+        let cover_img = '';
+        let youtube_iframe = '';
+        let gallery_img = [];
+        let products = [];
+        let promotions = [];
+        let facebook_url = '';
+        let twitter_url = '';
+        let instagram_url = '';
+        let linkedin_url = '';
+        let youtube_url = '';
+        let support_data = {};
+    
+        if(typeof PremiumCompanyData !== 'undefined' ){
+             cover_img = PremiumCompanyData.cover_img;
+             youtube_iframe = PremiumCompanyData.youtube_iframe;
+             gallery_img = JSON.parse(PremiumCompanyData.gallery_img);
+             products = JSON.parse(PremiumCompanyData.products);
+             promotions = JSON.parse(PremiumCompanyData.promotions);
+             facebook_url = PremiumCompanyData.facebook_url;
+             twitter_url = PremiumCompanyData.twitter_url;
+             instagram_url = PremiumCompanyData.instagram_url;
+             linkedin_url = PremiumCompanyData.linkedin_url;
+             youtube_url = PremiumCompanyData.youtube_url;
+             support_data = {support_email:PremiumCompanyData.support_email,	escalation_one:PremiumCompanyData.escalation_one, escalation_two:PremiumCompanyData.escalation_two, escalation_three:PremiumCompanyData.escalation_three}
+            
+        }
+    
+        if(CompanyInfo){
+            if(CompanyInfo.paid_status == 'paid'){
+                res.json(
+                {
+                    menu_active_id: 'company',
+                    page_title: 'Organization Details',
+                    currentUserData,
+                    allRatingTags,
+                    company:CompanyInfo,
+                    CompanyInfo,
+                    companyReviewNumbers,
+                    getCompanyReviews,
+                    globalPageMeta:globalPageMeta,
+                    cover_img:cover_img,
+                    gallery_img:gallery_img,
+                    youtube_iframe:youtube_iframe,
+                    products:products,
+                    promotions:promotions,
+                    facebook_url:facebook_url,
+                    twitter_url:twitter_url,
+                    instagram_url:instagram_url,
+                    linkedin_url:linkedin_url,
+                    youtube_url:youtube_url,
+                    support_data:support_data,
+                });
+                res.render('front-end/category-details-premium',
+                {
+                    menu_active_id: 'company',
+                    page_title: 'Organization Details',
+                    currentUserData,
+                    allRatingTags,
+                    company:CompanyInfo,
+                    CompanyInfo,
+                    companyReviewNumbers,
+                    getCompanyReviews,
+                    globalPageMeta:globalPageMeta,
+                    cover_img:cover_img,
+                    gallery_img:gallery_img,
+                    youtube_iframe:youtube_iframe,
+                    products:products,
+                    promotions:promotions,
+                    facebook_url:facebook_url,
+                    twitter_url:twitter_url,
+                    instagram_url:instagram_url,
+                    linkedin_url:linkedin_url,
+                    youtube_url:youtube_url,
+                    support_data:support_data,
+                });
+            }else{
+                res.render('front-end/company-details',
+                {
+                    menu_active_id: 'company',
+                    page_title: 'Organization Details',
+                    currentUserData,
+                    allRatingTags,
+                    company:CompanyInfo,
+                    CompanyInfo,
+                    companyReviewNumbers,
+                    getCompanyReviews,
+                    globalPageMeta:globalPageMeta
+                });
+                // res.json(
+                // {
+                //     menu_active_id: 'company',
+                //     page_title: 'Organization Details',
+                //     currentUserData,
+                //     allRatingTags,
+                //     company:CompanyInfo,
+                //     CompanyInfo,
+                //     companyReviewNumbers,
+                //     getCompanyReviews,
+                //     globalPageMeta:globalPageMeta
+                // });
+            }
+        }else{
+            res.render('front-end/404', {
+                menu_active_id: '404',
+                page_title: '404',
+                currentUserData,
+                globalPageMeta:globalPageMeta
+            });
+        }
     }
+
 
 });
 
@@ -728,7 +743,12 @@ router.get('/category/:category_slug', checkCookieValue, async (req, res) => {
         });
     } catch (err) {
         console.error(err);
-        res.status(500).send('An error occurred');
+        res.render('front-end/404', {
+            menu_active_id: '404',
+            page_title: '404',
+            currentUserData,
+            globalPageMeta:globalPageMeta
+        });
     }
 });
 
@@ -738,48 +758,55 @@ router.get('/category/:category_slug/:filter', checkCookieValue, async (req, res
     const category_slug = req.params.category_slug;
     const filter_value = req.params.filter;
     const baseURL = process.env.MAIN_URL;
-    if (filter_value == 'all') {
-        res.redirect(`/category/${category_slug}`);
-    }
     const [globalPageMeta, getSubCategories, companyDetails, AllRatingTags] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
         comFunction2.getSubCategories(category_slug),
         comFunction2.getFilteredCompanyDetails(category_slug,filter_value),
         comFunction.getAllRatingTags(),
     ]);
-    try { 
+    if (filter_value == 'latest' || filter_value == 'trending' || filter_value == 'verified' ) {
+        try { 
 
-        const subcategories = getSubCategories.map((row) => ({
-            categoryName: row.category_name,
-            categorySlug: row.category_slug,
-            subCategoryNames: row.subcategories ? row.subcategories.split(',') : [],
-            subCategorySlug: row.subcategoriesSlug ? row.subcategoriesSlug.split(',') : [],
-        }));
-
-        // res.json( {
-        //     menu_active_id: 'company-listing',
-        //     page_title: 'Company Name',
-        //     currentUserData,
-        //     globalPageMeta:globalPageMeta,
-        //     subCategories:subcategories[0],
-        //     companyDetails:companyDetails,
-        //     AllRatingTags
-        // });
-        res.render('front-end/company-listing', {
-            menu_active_id: 'company-listing',
-            page_title: subcategories[0].categoryName,
-            currentUserData,
-            globalPageMeta:globalPageMeta,
-            subCategories:subcategories[0],
-            companyDetails:companyDetails,
-            AllRatingTags,
-            baseURL:baseURL,
-            filter_value:filter_value
-        });
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('An error occurred');
+            const subcategories = getSubCategories.map((row) => ({
+                categoryName: row.category_name,
+                categorySlug: row.category_slug,
+                subCategoryNames: row.subcategories ? row.subcategories.split(',') : [],
+                subCategorySlug: row.subcategoriesSlug ? row.subcategoriesSlug.split(',') : [],
+            }));
+    
+            // res.json( {
+            //     menu_active_id: 'company-listing',
+            //     page_title: 'Company Name',
+            //     currentUserData,
+            //     globalPageMeta:globalPageMeta,
+            //     subCategories:subcategories[0],
+            //     companyDetails:companyDetails,
+            //     AllRatingTags
+            // });
+            res.render('front-end/company-listing', {
+                menu_active_id: 'company-listing',
+                page_title: subcategories[0].categoryName,
+                currentUserData,
+                globalPageMeta:globalPageMeta,
+                subCategories:subcategories[0],
+                companyDetails:companyDetails,
+                AllRatingTags,
+                baseURL:baseURL,
+                filter_value:filter_value
+            });
+        } catch (err) {
+            console.error(err);
+            res.render('front-end/404', {
+                menu_active_id: '404',
+                page_title: '404',
+                currentUserData,
+                globalPageMeta:globalPageMeta
+            });
+        }
+    }else {
+        res.redirect(`/category/${category_slug}`);
     }
+    
 });
 
 //New Home page

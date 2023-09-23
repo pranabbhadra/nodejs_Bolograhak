@@ -249,60 +249,53 @@
             <h2 class="inner-main-head">Ongoing Poll</h2>
             <div class="row">
                 <div class="col-md-12">
- 
+                    <form action="">
+                        <div class="ongoing_poll_content">
+                            <h3>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</h3>
+                                <label for="" class="ongoing-poll">
+                                    <div class="poll_flex">
+                                        <div class="column">
+                                            <span class="circle"></span>
+                                            <span class="text">Lorem Ipsum is simply dummy text</span>
+                                        </div>
+                                            <span class="progress" >30%</span>
+                                    </div>
+                                    <div class="progress-bar" style="--w:30">  </div>
+                                </label>
+                                <label for="" class="ongoing-poll">
+                                    <div class="poll_flex">
+                                        <div class="column">
+                                            <span class="circle"></span>
+                                            <span class="text">Lorem Ipsum is simply dummy text</span>
+                                        </div>
+                                            <span class="progress">80%</span>
+                                    </div>
+                                    <div class="progress-bar" style="--w:70">  </div>
+                                </label>
 
-<form action="">
-    <div class="ongoing_poll_content">
-        <h3>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</h3>
-            <label for="" class="ongoing-poll">
-                <div class="poll_flex">
-                    <div class="column">
-                        <span class="circle"></span>
-                        <span class="text">Lorem Ipsum is simply dummy text</span>
-                    </div>
-                        <span class="progress" >30%</span>
-                </div>
-                <div class="progress-bar" style="--w:30">  </div>
-            </label>
-            <label for="" class="ongoing-poll">
-                <div class="poll_flex">
-                    <div class="column">
-                        <span class="circle"></span>
-                        <span class="text">Lorem Ipsum is simply dummy text</span>
-                    </div>
-                        <span class="progress">80%</span>
-                </div>
-                <div class="progress-bar" style="--w:70">  </div>
-            </label>
+                                <label for="" class="ongoing-poll">
+                                    <div class="poll_flex">
+                                        <div class="column">
+                                            <span class="circle"></span>
+                                            <span class="text">Lorem Ipsum is simply dummy text</span>
+                                        </div>
+                                            <span class="progress">50%</span>
+                                    </div>
+                                    <div class="progress-bar" style="--w:50">  </div>
+                                </label>
+                            
+                            <div class="poll_btn">
+                                <button class="submit-btn" type="submit">Submit</button>
+                                <p>10 September, 2023</p>
+                            </div>
+                                        
+                            <div class="poll_box_icon">
+                                <img src="/front-end/images/poll-box-icons.png" alt="">
+                            </div>
+                        </div>
+                    </form>
+                </div> 
 
-            <label for="" class="ongoing-poll">
-                <div class="poll_flex">
-                    <div class="column">
-                        <span class="circle"></span>
-                        <span class="text">Lorem Ipsum is simply dummy text</span>
-                    </div>
-                        <span class="progress">50%</span>
-                </div>
-                <div class="progress-bar" style="--w:50">  </div>
-            </label>
-          
-<div class="poll_btn">
-    <button class="submit-btn" type="submit">Submit</button>
-    <p>10 September, 2023</p>
-</div>
-            
-<div class="poll_box_icon">
-    <img src="/front-end/images/poll-box-icons.png" alt="">
-</div>
-        </div>
-
-
-
-</form>
-
-    </div> 
-
-                </div>
             </div>
         </div>
     </section>
@@ -656,55 +649,54 @@
                     <!--Review Replys -->
                     <% if(review.review_reply.length>0){ %>
                         <% review.review_reply.forEach( reply => { %>
-                        <div class="review-reply">
-                            <div class="customer-profile-info">
-                                <% const replydateString = reply.created_at; %>
-                                <% const replydate = new Date(replydateString); %>
-                                <% if(reply.reply_by == review.customer_id ) { %>
-                                    <!-- Customer Reply -->
-                                    <% if(review.user_privacy == 1) { %>
-                                    <span>
-                                        <% if(review.profile_pic) { %>
-                                            <img class="user_img" src="/<%= review.profile_pic %>" alt="img" width="23" height="23">
-                                        <% }else{ %>
-                                            <img class="user_img" src="/assets/media/avatars/blank.png" alt="img" width="23" height="23">
-                                        <% } %>
-                                    </span>
-                                    <span><%= review.first_name+' '+review.last_name %> <span class="c-comment-date"><%= replydate.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></span></span>
-                                    <% }else{ %>
-                                    <span>
-                                    <img class="user_img" src="/front-end/images/blur-img.png" alt="img" width="23" height="23">
-                                    </span>
-                                    <span><img src="/front-end/images/blur-name.png" alt="img"> <span class="c-comment-date"><%= replydate.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></span></span>
-                                    <% }%>  
-                                    <!-- Customer Reply End-->
-                                <% }else{ %>
-                                    <!-- Company Owner Reply -->
-                                    <% /* %>
-                                    <span>
-                                        <% if(CompanyInfo.logo) { %>
-                                        <img class="user_img" src="/<%= CompanyInfo.logo %>" alt="img" width="23" height="23">
-                                        <% }else{ %>
-                                        <img class="user_img" src="/front-end/images/company-placeholder-image.png" alt="img" width="23" height="23">
-                                        <% } %>
-                                    </span>
-                                    <% */ %>
-                                    <span class="d-flex align-items-center justify-content-between">
-                                        <div class="reply-company">
-                                            <strong>Reply From:</strong> <%= CompanyInfo.company_name %>
-                                        </div>
-                                        <span class="c-comment-date"><%= replydate.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></span>
-                                    </span>
-                                    <!-- Company Owner Reply End-->
-                                <% } %>
-                            </div>
                             <% if(reply.status != '0') {%>
-                                <p><%= reply.comment %></p>
-                            <% } else {%>
-                                <span><img src="/front-end/images/blur-name.png" alt="img"></span>
+                                <div class="review-reply">
+                                    <div class="customer-profile-info">
+                                        <% const replydateString = reply.created_at; %>
+                                        <% const replydate = new Date(replydateString); %>
+                                        <% if(reply.reply_by == review.customer_id  ) { %>
+                                            <% if(reply.status != '0'){ %>
+                                            <!-- Customer Reply -->
+                                                <% if(review.user_privacy == 1 ) { %>
+                                                <span>
+                                                    <% if(review.profile_pic) { %>
+                                                        <img class="user_img" src="/<%= review.profile_pic %>" alt="img" width="23" height="23">
+                                                    <% }else{ %>
+                                                        <img class="user_img" src="/assets/media/avatars/blank.png" alt="img" width="23" height="23">
+                                                    <% } %>
+                                                </span>
+                                                <span><%= review.first_name+' '+review.last_name %> <span class="c-comment-date"><%= replydate.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></span></span>
+                                                <% }else{ %>
+                                                <span>
+                                                <img class="user_img" src="/front-end/images/blur-img.png" alt="img" width="23" height="23">
+                                                </span>
+                                                <span><img src="/front-end/images/blur-name.png" alt="img"> <span class="c-comment-date"><%= replydate.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></span></span>
+                                                <% }%>  
+                                            <% } %>
+                                            <!-- Customer Reply End-->
+                                        <% }else{ %>
+                                            <!-- Company Owner Reply -->
+                                            <% /* %>
+                                            <span>
+                                                <% if(CompanyInfo.logo) { %>
+                                                <img class="user_img" src="/<%= CompanyInfo.logo %>" alt="img" width="23" height="23">
+                                                <% }else{ %>
+                                                <img class="user_img" src="/front-end/images/company-placeholder-image.png" alt="img" width="23" height="23">
+                                                <% } %>
+                                            </span>
+                                            <% */ %>
+                                            <span class="d-flex align-items-center justify-content-between">
+                                                <div class="reply-company">
+                                                    <strong>Reply From:</strong> <%= CompanyInfo.company_name %>
+                                                </div>
+                                                <span class="c-comment-date"><%= replydate.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></span>
+                                            </span>
+                                            <!-- Company Owner Reply End-->
+                                        <% } %>
+                                    </div>
+                                        <p><%= reply.comment %></p>
+                                </div>
                             <% } %>
-                        </div>
-                        
                         <% if(review.review_reply.length==1 && currentUserData!= null && review.customer_id == currentUserData.user_id){ %>
                         <!--Review Replys Submit Form-->
                             <form action="" class="review_reply_form">
