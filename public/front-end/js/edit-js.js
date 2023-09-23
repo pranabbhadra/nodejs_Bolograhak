@@ -1026,4 +1026,41 @@ $('#discussiontext').focus(function(){
 });
 /*=========================== Discussion modal function End =================*/
 
+
+
+
+
+ 
+
+labels = document.querySelectorAll('.ongoing-poll')
+
+for(var i=0;i<labels.length;i++){
+    labels[i].addEventListener('click',function(){
+         
+        for(var j=0;j<labels.length;j++){
+            labels[j].classList.remove('selected')
+        }
+
+        for(var k=0;k<labels.length;k++){
+            labels[k].querySelector('.progress-bar').style.width='0%'
+            labels[k].querySelector('.progress').style.display='none'
+        }
+
+
+       setTimeout(function(){
+        for(var k=0;k<labels.length;k++){
+           values = labels[k].querySelector('.progress-bar').style.getPropertyValue('--w');
+           labels[k].querySelector('.progress-bar').style.width = values + "%"
+ 
+       
+            labels[k].querySelector('.progress').style.display='block'
+         
+        }
+       },500)
+        this.classList.add('selected')
+    })
+}
+
+
+
 });

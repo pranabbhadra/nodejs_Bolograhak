@@ -3642,3 +3642,30 @@ h2.resp-tab-title:last-child {
   }
 
 /* =============== Easy Resposive tab end ================== */
+
+.custom-progress {
+    justify-content: space-between;
+    margin: 20px 0;
+    cursor: pointer;
+    border-radius: 10px !important; 
+    border: 1px solid #FCCB06;
+    height: auto !important;
+    background-color: transparent !important;
+}
+
+.custom-progress .progress-bar {
+    background-color: #F4A835;
+    text-align: left;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 160%;
+}
+
+.custom-progress .progress-value-percentage {
+    font-size: 13px;
+}
+
+.custom-progress .progress-bar,
+.custom-progress .progress-value-percentage {
+    padding: 17px 25px;
+}
