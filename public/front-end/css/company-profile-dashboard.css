@@ -937,7 +937,8 @@
 
 /* ================== company Poll page ===================== */
 
-.c_accordion_wrap {
+.c_accordion_wrap,
+.creat-poll-field {
     border: 2px solid transparent;
     padding: 37px 28px;
     margin-bottom: 22px;
@@ -945,6 +946,16 @@
     font-family: var(--inter);
     background: var(--neutral-100, #FFF);
     box-shadow: 0px 5px 16px 0px rgba(8, 15, 52, 0.06);
+}
+
+.creat-poll-field {
+    display: none;
+    border: 2px solid #FCCB06;
+}
+
+.creat-poll-field .custom-form .form-control, 
+.creat-poll-field .custom-form .form-select {
+    padding-right: 18px;
 }
 
 .yellow-border {
@@ -1008,10 +1019,6 @@
 }
 .create-poll-btn {
     margin-bottom: 20px;
-}
-
-.creat-poll-field {
-    
 }
 
 
