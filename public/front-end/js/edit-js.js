@@ -621,6 +621,14 @@ jQuery(function ($) {
     }
   });
 
+  $(".multiple-ans-repeat").slice(0,0).show();
+  $(".add-ans-btn").click(function(e){
+    e.preventDefault();
+    $(".multiple-ans-repeat:hidden").slice(0,1).fadeIn("slow");
+  });
+
+
+
   // $(".tab-content-wrap").find(".discussion-load-panel").slice(0, 4).show();
   // $(".discussion-load-btn").click(function (e) {
   //   e.preventDefault();
@@ -1026,7 +1034,16 @@ $('#discussiontext').focus(function(){
 });
 /*=========================== Discussion modal function End =================*/
 
+/*=========================== Creat a Poll slidedown function start =================*/
+$(".create-poll-btn .btn-default").click(function(e){
+  e.preventDefault();
+  $(".creat-poll-field").slideToggle();
+  });
+  /*=========================== Creat a Poll slidedown function End =================*/
 
+$(".remove-ans").click(function(){
+$(this).parents(".multiple-ans-repeat").find(".custom-form").hide();
+});
 
 
 
