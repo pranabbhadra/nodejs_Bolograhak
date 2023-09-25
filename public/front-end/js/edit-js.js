@@ -791,7 +791,7 @@ jQuery(function ($) {
     setTimeout(function () {
       $("#premiumcompanymodal").modal('show');
       // $('.modal-slide-in').slick('reinit');
-    }, 300);
+    }, 10000);
   });
   
 

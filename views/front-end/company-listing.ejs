@@ -6,9 +6,9 @@
             <div class="container">
                 <div class="row g-4">
                     <% if(subCategories.subCategoryNames.length > 0) { %>
-                        <h4><%= subCategories.categoryName %></h4>
                         <div class="col-md-3">
                             <div class="company-listing-left">
+                               <h4><%= subCategories.categoryName %></h4>
                                 <ul>
                                     <% subCategories.subCategoryNames.forEach((subCategoryName,index)=>{ %>
                                         <li class="active"><a href="<%= subCategories.subCategorySlug[index] %>"><i class="fa-regular fa-arrow-right-long"></i><%= subCategoryName %></a></li>

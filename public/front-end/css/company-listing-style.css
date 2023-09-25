@@ -158,7 +158,9 @@
 }
 
 .company_listing_logo img {
-    width: 50px;
+    height: 55px !important;
+    width: 55px;
+    object-fit: contain;
 }
 
 .company_listing_logo {
@@ -172,6 +174,7 @@
     margin-top: -64px;
     z-index: 1;
     position: relative;
+    box-shadow: 0 0 5px #ccc;
 }
 
 .company_listing_box img {
