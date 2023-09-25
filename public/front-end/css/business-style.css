@@ -426,3 +426,27 @@
     height: 133px;
 
 }
+
+.choose-your-plan-box-step.overlay {
+    pointer-events: none;
+}
+
+.choose-your-plan-box-step.overlay:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    background-color: rgba(0, 0, 0, 70%);
+    width: 100%;
+    height: 100%;
+    z-index: 999;
+}
+
+span.cm-sn {
+    display: inline-block;
+    font-size: 10px;
+    background: #f00;
+    padding: 1px 3px;
+    border-radius: 3px;
+    color: #ffffff;
+}

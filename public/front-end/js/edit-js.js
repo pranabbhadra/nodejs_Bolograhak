@@ -496,6 +496,65 @@ jQuery(function ($) {
     slidesToScroll: 1
   });
 
+
+
+  var time = 2;
+  var $bar,
+    $slick,
+    isPause,
+    tick,
+    percentTime;
+
+  $slick = $('.modal-slide-in');
+  $slick.slick({
+    infinite: true,
+    speed: 1400,
+    autoplay: false,
+    autoplaySpeed: 12000,
+    pauseOnHover: true,
+    dots: true,
+    arrows: false,
+    slidesToShow: 1,
+    slidesToScroll: 1
+  });
+
+  $bar = $('.slider-progress .progress');
+
+  function startProgressbar() {
+    resetProgressbar();
+    percentTime = 0;
+    isPause = false;
+    tick = setInterval(interval, 30);
+  }
+
+  function interval() {
+    if (isPause === false) {
+      percentTime += 1 / (time + 0.1);
+      $bar.css({
+        width: percentTime + "%"
+      });
+      if (percentTime >= 100) {
+        $slick.slick('slickNext');
+        startProgressbar();
+      }
+    }
+  }
+
+  function resetProgressbar() {
+    $bar.css({
+      width: 0 + '%'
+    });
+    clearTimeout(tick);
+  }
+
+  startProgressbar();
+
+  $('.modal-slide-in .slick-dots li').click(function() {
+    startProgressbar();
+  });
+
+
+
   // /////////////////////////////////////// Slick Slider end
 
 
@@ -621,11 +680,11 @@ jQuery(function ($) {
     }
   });
 
-  $(".multiple-ans-repeat").slice(0,0).show();
-  $(".add-ans-btn").click(function(e){
-    e.preventDefault();
-    $(".multiple-ans-repeat:hidden").slice(0,1).fadeIn("slow");
-  });
+  // $(".multiple-ans-repeat").slice(0,0).show();
+  // $(".add-ans-btn").click(function(e){
+  //   e.preventDefault();
+  //   $(".multiple-ans-repeat:hidden").slice(0,1).fadeIn("slow");
+  // });
 
 
 
@@ -728,6 +787,12 @@ jQuery(function ($) {
   //   }, 10000);
   // });
 
+  $(window).load(function () {
+    setTimeout(function () {
+      $("#premiumcompanymodal").modal('show');
+      // $('.modal-slide-in').slick('reinit');
+    }, 300);
+  });
   
 
   setTimeout(function () {
@@ -1039,11 +1104,13 @@ $(".create-poll-btn .btn-default").click(function(e){
   e.preventDefault();
   $(".creat-poll-field").slideToggle();
   });
-  /*=========================== Creat a Poll slidedown function End =================*/
+/*=========================== Creat a Poll slidedown function End =================*/
 
+/*=========================== Remove multiple answer function End =================*/
 $(".remove-ans").click(function(){
 $(this).parents(".multiple-ans-repeat").find(".custom-form").hide();
 });
+/*=========================== Remove multiple answer function End =================*/
 
 
 
