@@ -88,7 +88,7 @@ router.get('', checkCookieValue, async (req, res) => {
     const [allRatingTags,globalPageMeta,latestReviews,AllReviewTags,AllReviewVoting, PopularCategories, ReviewCount, UserCount] = await Promise.all([
         comFunction.getAllRatingTags(),
         comFunction2.getPageMetaValues('global'),
-        comFunction2.getlatestReviews(20),
+        comFunction2.getlatestReviews(18),
         comFunction2.getAllReviewTags(),
         comFunction2.getAllReviewVoting(),
         comFunction.getPopularCategories(),

@@ -250,6 +250,7 @@
   </section> -->
   <!-- ============== Latest Reviews End =============== -->
 
+  <% if(latestReviews) { %>
   <!-- ============= Our popular review start =============== -->
   <section class="main-content pt-md-0">
     <div class="container">
@@ -259,228 +260,95 @@
              <!-- ================= box 1 start ======================= -->
              <!-- for desktop show -->
               <div class="home-popular-review-box-wrapper">
-                <!-- ================= Loop1 ======================= -->
-                <div class="home-popular-review-box home-popular-review-box1">
+                <% let rev_count = 0; %>
+                <% latestReviews.forEach( (latestReview, index)=> {%>
+                <% rev_count++; %>
+                <div class="home-popular-review-box home-popular-review-box<%= rev_count %>">
                   <div class="home-popular-client">
-                    <div class="home-client-img">
-                      <img src="../front-end/images/user-img-new1.jpg" alt="img">
-                    </div>
-                    <h4>Ronald Richards</h4>
-                    <p>Level</p>
+                    <% if(latestReview.user_privacy == 1) { %>
+                      <div class="home-client-img">
+                        <% if(latestReview && latestReview.profile_pic ) { %>
+                          <img src="/<%= latestReview.profile_pic %>" alt="img">
+                        <% } else { %>
+                          <img src="/assets/media/avatars/blank.png" alt="img">
+                        <% } %>
+                      </div>
+                      <h4><%= latestReview.first_name %> <%= latestReview.last_name %></h4>
+                    <% } else { %>
+                      <div class="home-client-img">
+                        <img src="front-end/images/blur-img.png" alt="img">
+                      </div>
+                      <h4><img src="front-end/images/blur-name.png" alt="img"></h4>
+                    <% } %>
+                    <!--<p>Level</p>-->
+                    <% var avg = latestReview.rating %>
                     <div class="user-rating">
-                      <span><img src="/1691875914544-9.Exellent.gif" alt="" style="display: inline-block;" width="35"></span>
-                      <span>4/5</span>
+                      <% allRatingTags.forEach( tag => { %>
+                        <% if(tag.review_rating_value == avg){ %>
+                        <span><img src="/<%= tag.rating_image %>" alt="" style="display: inline-block;" width="35"></span>
+                        <% } %>
+                      <% }) %> 
+                      <span><%= latestReview.rating %>/5</span>
                    </div>
                   </div>
                   <div class="home-popular-review-info">
-                    <h3>Company - product</h3>
-                    <p>Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet. Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia</p>
+                    <a href="/company/<%= latestReview.slug %>"><h3><%= latestReview.company_name %></h3></a>
+                    <p><%- latestReview.review_content -%></p>
                   </div>
                 </div>
-                <div class="home-popular-review-box home-popular-review-box2">
-                  <div class="home-popular-client">
-                    <div class="home-client-img">
-                      <img src="../front-end/images/user-img-new1.jpg" alt="img">
-                    </div>
-                    <h4>Ronald Richards</h4>
-                    <p>Level</p>
-                    <div class="user-rating">
-                      <span><img src="/1691875914544-9.Exellent.gif" alt="" style="display: inline-block;" width="35"></span>
-                      <span>4/5</span>
-                   </div>
-                  </div>
-                  <div class="home-popular-review-info">
-                    <p>Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet. Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia</p>
-                  </div>
-                </div>
-                <div class="home-popular-review-box home-popular-review-box3">
-                  <div class="home-popular-client">
-                    <div class="home-client-img">
-                      <img src="../front-end/images/user-img-new1.jpg" alt="img">
-                    </div>
-                    <h4>Ronald Richards</h4>
-                    <p>Level</p>
-                    <div class="user-rating">
-                      <span><img src="/1691875914544-9.Exellent.gif" alt="" style="display: inline-block;" width="35"></span>
-                      <span>4/5</span>
-                   </div>
-                  </div>
-                  <div class="home-popular-review-info">
-                    <p>Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet. Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia</p>
-                  </div>
-                </div>
-                <!-- ================= Loop2 ======================= -->
-                <div class="home-popular-review-box home-popular-review-box1">
-                  <div class="home-popular-client">
-                    <div class="home-client-img">
-                      <img src="../front-end/images/user-img-new1.jpg" alt="img">
-                    </div>
-                    <h4>John C</h4>
-                    <p>Level</p>
-                    <div class="user-rating">
-                      <span><img src="/1691875914544-9.Exellent.gif" alt="" style="display: inline-block;" width="35"></span>
-                      <span>4/5</span>
-                   </div>
-                  </div>
-                  <div class="home-popular-review-info">
-                    <h3>Company Name</h3>
-                    <p>Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet. Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia</p>
-                  </div>
-                </div>
-                <div class="home-popular-review-box home-popular-review-box2">
-                  <div class="home-popular-client">
-                    <div class="home-client-img">
-                      <img src="../front-end/images/user-img-new1.jpg" alt="img">
-                    </div>
-                    <h4>Bolo Grahak</h4>
-                    <p>Level</p>
-                    <div class="user-rating">
-                      <span><img src="/1691875914544-9.Exellent.gif" alt="" style="display: inline-block;" width="35"></span>
-                      <span>4/5</span>
-                   </div>
-                  </div>
-                  <div class="home-popular-review-info">
-                    <p>Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint.</p>
-                  </div>
-                </div>
-                <div class="home-popular-review-box home-popular-review-box3">
-                  <div class="home-popular-client">
-                    <div class="home-client-img">
-                      <img src="../front-end/images/user-img-new1.jpg" alt="img">
-                    </div>
-                    <h4>Mr. Ronald Richards</h4>
-                    <p>Level2</p>
-                    <div class="user-rating">
-                      <span><img src="/1691875914544-9.Exellent.gif" alt="" style="display: inline-block;" width="35"></span>
-                      <span>4/5</span>
-                   </div>
-                  </div>
-                  <div class="home-popular-review-info">
-                    <h3>Company</h3>
-                    <p>Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet. Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia</p>
-                  </div>
-                </div>
-                <!-- ================= Loop2 ======================= -->
+                <% if(rev_count == 3) { %>
+                  <% rev_count = 0; %>
+                <% } %>
+                <% }) %>
               </div>
+
               <!-- for mbl show -->
               <div class="home-popular-review-slider">
+                <% latestReviews.forEach( (latestReview, index)=> {%>
                 <div class="item">
                   <div class="home-popular-review-box">
                     <div class="home-popular-client">
+                      <% if(latestReview.user_privacy == 1) { %>
                       <div class="home-client-img">
-                        <img src="../front-end/images/user-img-new1.jpg" alt="img">
+                        <% if(latestReview && latestReview.profile_pic ) { %>
+                          <img src="/<%= latestReview.profile_pic %>" alt="img">
+                        <% } else { %>
+                          <img src="/assets/media/avatars/blank.png" alt="img">
+                        <% } %>
                       </div>
-                      <h4>Ronald Richards</h4>
-                      <p>Level</p>
+                      <h4><%= latestReview.first_name %> <%= latestReview.last_name %></h4>
+                      <% } else { %>
+                      <div class="home-client-img">
+                        <img src="front-end/images/blur-img.png" alt="img">
+                      </div>
+                      <h4><img src="front-end/images/blur-name.png" alt="img"></h4>
+                      <% } %>
+                      <!--<p>Level</p>-->
+                      <% var avg = latestReview.rating %>
                       <div class="user-rating">
-                        <span><img src="/1691875914544-9.Exellent.gif" alt="" style="display: inline-block;" width="35"></span>
-                        <span>4/5</span>
+                        <% allRatingTags.forEach( tag => { %>
+                          <% if(tag.review_rating_value == avg){ %>
+                          <span><img src="/<%= tag.rating_image %>" alt="" style="display: inline-block;" width="35"></span>
+                          <% } %>
+                        <% }) %>
+                        <span><%= latestReview.rating %>/5</span>
                      </div>
                     </div>
                     <div class="home-popular-review-info">
-                      <h3>Company - product</h3>
-                      <p>Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet. Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia</p>
+                      <a href="/company/<%= latestReview.slug %>"><h3><%= latestReview.company_name %></h3></a>
+                      <p><%- latestReview.review_content -%></p>
                     </div>
                   </div>
                 </div>
-                <div class="item">
-                  <div class="home-popular-review-box">
-                    <div class="home-popular-client">
-                      <div class="home-client-img">
-                        <img src="../front-end/images/user-img-new1.jpg" alt="img">
-                      </div>
-                      <h4>Ronald Richards</h4>
-                      <p>Level</p>
-                      <div class="user-rating">
-                        <span><img src="/1691875914544-9.Exellent.gif" alt="" style="display: inline-block;" width="35"></span>
-                        <span>4/5</span>
-                     </div>
-                    </div>
-                    <div class="home-popular-review-info">
-                      <p>Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet. Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="item">
-                  <div class="home-popular-review-box">
-                    <div class="home-popular-client">
-                      <div class="home-client-img">
-                        <img src="../front-end/images/user-img-new1.jpg" alt="img">
-                      </div>
-                      <h4>Ronald Richards</h4>
-                      <p>Level</p>
-                      <div class="user-rating">
-                        <span><img src="/1691875914544-9.Exellent.gif" alt="" style="display: inline-block;" width="35"></span>
-                        <span>4/5</span>
-                     </div>
-                    </div>
-                    <div class="home-popular-review-info">
-                      <p>Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet. Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="item">
-                  <div class="home-popular-review-box">
-                    <div class="home-popular-client">
-                      <div class="home-client-img">
-                        <img src="../front-end/images/user-img-new1.jpg" alt="img">
-                      </div>
-                      <h4>John C</h4>
-                      <p>Level</p>
-                      <div class="user-rating">
-                        <span><img src="/1691875914544-9.Exellent.gif" alt="" style="display: inline-block;" width="35"></span>
-                        <span>4/5</span>
-                     </div>
-                    </div>
-                    <div class="home-popular-review-info">
-                      <h3>Company Name</h3>
-                      <p>Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet. Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="item">
-                  <div class="home-popular-review-box">
-                    <div class="home-popular-client">
-                      <div class="home-client-img">
-                        <img src="../front-end/images/user-img-new1.jpg" alt="img">
-                      </div>
-                      <h4>Bolo Grahak</h4>
-                      <p>Level</p>
-                      <div class="user-rating">
-                        <span><img src="/1691875914544-9.Exellent.gif" alt="" style="display: inline-block;" width="35"></span>
-                        <span>4/5</span>
-                     </div>
-                    </div>
-                    <div class="home-popular-review-info">
-                      <p>Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint.</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="item">
-                  <div class="home-popular-review-box">
-                    <div class="home-popular-client">
-                      <div class="home-client-img">
-                        <img src="../front-end/images/user-img-new1.jpg" alt="img">
-                      </div>
-                      <h4>Mr. Ronald Richards</h4>
-                      <p>Level2</p>
-                      <div class="user-rating">
-                        <span><img src="/1691875914544-9.Exellent.gif" alt="" style="display: inline-block;" width="35"></span>
-                        <span>4/5</span>
-                     </div>
-                    </div>
-                    <div class="home-popular-review-info">
-                      <h3>Company</h3>
-                      <p>Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet. Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia</p>
-                    </div>
-                  </div>
-                </div>
+                <% }) %>
               </div>
+
             </div>
         </div>
     </div>
-</section>
+  </section>
   <!-- ============= Our popular review end =============== -->
+  <% } %>
 
   <% if(PopularCategories.length>0) { %>
   <!-- ============== Most Popular category Start =============== -->
@@ -745,7 +613,8 @@
   </div>
   <!-- ============== Review section End =============== -->
 
-  <!-- ============== Discussions section Start =============== -->
+<!-- ============== Discussions section Start =============== -->
+<%#
 <section class="main-content discussion-content">
   <div class="container">
     <h2 class="text-center main-head"><small>View Our</small> <br> Discussions</h2>
@@ -1157,6 +1026,7 @@
     </div>
   </div>
 </section>
+#%>
 <!-- ============== Discussions section End =============== -->
 
  
