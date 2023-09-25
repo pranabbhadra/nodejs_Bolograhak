@@ -55,6 +55,12 @@
 	margin-bottom: 25px;
 }
 
+.popular-category-part img {
+	height: 100px !important;
+	width: auto;
+	margin: 0 auto 20px;
+}
+
 .popular-category-part a {
     display: block;
 	color: #ffffff;

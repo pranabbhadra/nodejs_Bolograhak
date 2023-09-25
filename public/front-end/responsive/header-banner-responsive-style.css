@@ -6,7 +6,8 @@
 		width: 1440px;
 		height: 234px;
 		bottom: 0;
-		background: url(../images/banner-bottom-shape2.png) no-repeat center bottom;
+		/* background: url(../images/banner-bottom-shape2.png) no-repeat center bottom; */
+		background: url(../images/banner-bottom-shape2-white.png) no-repeat center bottom;
 		background-size: cover;
 	}
 

@@ -49,7 +49,7 @@
   <body <% if(menu_active_id=='landing'){ %>class="home"<% }%> <% if(menu_active_id=='home'){ %>class="new-home"<% }%>>
     <div id="preloder" class="preloder"><img src="/front-end/images/GIF_v2sec.gif" alt="preloder"></div>
     <!-- ============== Header Start =============== -->
-    <% if( menu_active_id == 'home'){ %>
+    <% if( menu_active_id == 'landing' || menu_active_id == 'home' ){ %>
       <section class="top-text-scroll">
         <marquee behavior="scroll" direction="left" onmouseover="this.stop();" onmouseout="this.start();">
           <ul>
