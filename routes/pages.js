@@ -85,12 +85,15 @@ router.get('', checkCookieValue, async (req, res) => {
     if (currentUserData) {
         userId = currentUserData.user_id;
     }
-    const [allRatingTags,globalPageMeta,latestReviews,AllReviewTags,AllReviewVoting] = await Promise.all([
+    const [allRatingTags,globalPageMeta,latestReviews,AllReviewTags,AllReviewVoting, PopularCompanies, ReviewCount, UserCount] = await Promise.all([
         comFunction.getAllRatingTags(),
         comFunction2.getPageMetaValues('global'),
         comFunction2.getlatestReviews(20),
         comFunction2.getAllReviewTags(),
         comFunction2.getAllReviewVoting(),
+        comFunction.getPopularCompanies(),
+        comFunction.getReviewCount(),
+        comFunction.getUserCount()
     ]);
     const rangeTexts = {};
 
@@ -119,21 +122,24 @@ router.get('', checkCookieValue, async (req, res) => {
                         ORDER BY featured_companies.ordering ASC `;
                 db.query(featured_sql, (featured_err, featured_result) => {
                     var featured_comps = featured_result;
-                    // res.json({
-                    //     menu_active_id: 'landing',
-                    //     page_title: home.title,
-                    //     currentUserData: currentUserData,
-                    //     homePosts: blogPosts.status === 'ok' ? blogPosts.data : [],
-                    //     home,
-                    //     meta_values_array,
-                    //     featured_comps,
-                    //     allRatingTags: allRatingTags,
-                    //     AddressapiKey: process.env.ADDRESS_GOOGLE_API_Key,
-                    //     globalPageMeta:globalPageMeta,
-                    //     latestReviews: latestReviews,
-                    //     AllReviewTags: AllReviewTags,
-                    //    AllReviewVoting:AllReviewVoting
-                    // });
+                    res.json({
+                        menu_active_id: 'landing',
+                        page_title: home.title,
+                        currentUserData: currentUserData,
+                        homePosts: blogPosts.status === 'ok' ? blogPosts.data : [],
+                        home,
+                        meta_values_array,
+                        featured_comps,
+                        allRatingTags: allRatingTags,
+                        AddressapiKey: process.env.ADDRESS_GOOGLE_API_Key,
+                        globalPageMeta:globalPageMeta,
+                        latestReviews: latestReviews,
+                        AllReviewTags: AllReviewTags,
+                        AllReviewVoting:AllReviewVoting,
+                        PopularCompanies,
+                        ReviewCount,
+                        UserCount
+                    });
                     res.render('front-end/landing', {
                         menu_active_id: 'landing',
                         page_title: home.title,

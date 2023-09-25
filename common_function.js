@@ -1057,6 +1057,65 @@ async function reviewTagsCountByCompanyID(companyId){
   }
 }
 
+async function getPopularCompanies(){
+  const get_popular_company_query = `
+  SELECT 
+  ccr.category_id,
+  cg.category_name,
+  cg.category_img,
+  cg.category_slug,
+  COUNT(*) AS review_count
+  FROM 
+    reviews r
+  INNER JOIN
+    company_cactgory_relation ccr ON r.company_id = ccr.company_id
+  INNER JOIN
+    category cg ON ccr.category_id = cg.ID
+  WHERE 
+    r.review_status = '1'
+  GROUP BY 
+    ccr.category_id
+  ORDER BY 
+    review_count DESC
+  LIMIT 4;
+  `;
+  try{
+    const get_popular_company_query_result = await query(get_popular_company_query);
+    return get_popular_company_query_result;
+  }catch(error){
+    return 'Error during user get_rewiew_tag_counts_query:'+error;
+  }
+}
+
+async function getReviewCount(){
+  const get_review_count_query = `
+  SELECT COUNT(*) AS total_reviews_count
+  FROM reviews
+  WHERE review_status = '1';
+  `;
+  try{
+    const get_review_count_query_result = await query(get_review_count_query);
+    return get_review_count_query_result;
+  }catch(error){
+    return 'Error during user get_rewiew_tag_counts_query:'+error;
+  }
+}
+
+async function getUserCount(){
+  const get_user_count_query = `
+  SELECT COUNT(*) AS total_user_count
+  FROM users
+  WHERE user_status = 1 AND user_type_id = 2;
+  `;
+  try{
+    const get_user_count_query_result = await query(get_user_count_query);
+    return get_user_count_query_result;
+  }catch(error){
+    return 'Error during user get_rewiew_tag_counts_query:'+error;
+  }
+}
+
+
 module.exports = {
     getUser,
     getUserMeta,
@@ -1090,5 +1149,8 @@ module.exports = {
     getAllReviewsByCompanyID,
     getReviewByID,
     getReviewReplyDataByID,
-    reviewTagsCountByCompanyID
+    reviewTagsCountByCompanyID,
+    getPopularCompanies,
+    getReviewCount,
+    getUserCount
 };
