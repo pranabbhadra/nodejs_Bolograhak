@@ -21,7 +21,7 @@
                   </div>
                   <div class="banner-counter-tag" style="background-image: url(../front-end/images/b-counter-bg2.svg);">
                     Reviews
-                    <div class="counter-text"><span class="count">90</span>+</div>
+                    <div class="counter-text"><span class="count"><%= ReviewCount[0].total_reviews_count %></span>+</div>
                   </div>
                 </div>
               </div>
@@ -55,7 +55,7 @@
                   </div>
                   <div class="banner-counter-tag" style="background-image: url(../front-end/images/b-counter-bg1.svg);">
                     Total Users
-                    <div class="counter-text"><span class="count">102</span>+</div>
+                    <div class="counter-text"><span class="count"><%= UserCount[0].total_user_count %></span>+</div>
                   </div>
                 </div>
               </div>
@@ -482,53 +482,37 @@
 </section>
   <!-- ============= Our popular review end =============== -->
 
+  <% if(PopularCategories.length>0) { %>
   <!-- ============== Most Popular category Start =============== -->
-<section class="main-content most-popular-categories-content">
-  <div class="container">
+  <section class="main-content most-popular-categories-content">
+    <div class="container">
       <div class="default-content-area">
         <h4>Most Popular</h4>
         <h2 class="main-head">Categories</h2>
         <div class="row">
+          <% PopularCategories.forEach( category=> { %>
           <div class="col-lg-3 col-sm-6">
             <div class="popular-category-part">
-              <a href="category/animals-and-pets">
-                 <img src="/1691400189186-AnimalsPets.png" alt="image" loading="lazy" width="100" height="100">
+              <a href="category/<%= category.category_slug %>">
+                <% if(category.category_img){ %>
+                <img src="<%= category.category_img %>" alt="<%= category.category_name %>" loading="lazy" width="100" height="100">
+                <% }else{ %>
+                <img src="/front-end/images/company-placeholder-image.png" alt="<%= category.category_name %>" loading="lazy" width="100" height="100">
+                <% } %>
               </a>
-              <a href="category/animals-and-pets">Animals & Pets</a>
-           </div>
+              <a href="category/<%= category.category_slug %>"><%= category.category_name %></a>
             </div>
-            <div class="col-lg-3 col-sm-6">
-              <div class="popular-category-part">
-                <a href="category/beauty-and-well-being">
-                   <img src="/1691400225370-BeautyWell-Being.png" alt="image" loading="lazy" width="100" height="100">
-                </a>
-                <a href="category/beauty-and-well-being">Beauty & Well-Being</a>
-             </div>
-           </div>
-           <div class="col-lg-3 col-sm-6">
-            <div class="popular-category-part">
-              <a href="category/beauty-and-well-being">
-                 <img src="/1691400225370-BeautyWell-Being.png" alt="image" loading="lazy" width="100" height="100">
-              </a>
-              <a href="category/beauty-and-well-being">Beauty & Well-Being</a>
-           </div>
-         </div>
-         <div class="col-lg-3 col-sm-6">
-          <div class="popular-category-part">
-            <a href="category/beauty-and-well-being">
-               <img src="/1691400225370-BeautyWell-Being.png" alt="image" loading="lazy" width="100" height="100">
-            </a>
-            <a href="category/beauty-and-well-being">Beauty & Well-Being</a>
-         </div>
-       </div>
+          </div>
+          <% }) %>
         </div>
         <div class="text-center">
-          <a href="http://localhost:5000/category-listing" class="view-more"><span class="position-relative"><i class="fa-solid fa-angle-right"></i>View More</span></a>
+          <a href="/categories" class="view-more"><span class="position-relative"><i class="fa-solid fa-angle-right"></i>View More</span></a>
         </div>
       </div>
-  </div>
-</section>
-<!-- ============== Most Popular category End =============== -->
+    </div>
+  </section>
+  <!-- ============== Most Popular category End =============== -->
+  <% } %>
 
  <!-- ============== Featured Section Start =============== -->
  <section class="main-content featured-content text-center">

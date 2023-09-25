@@ -1057,7 +1057,7 @@ async function reviewTagsCountByCompanyID(companyId){
   }
 }
 
-async function getPopularCompanies(){
+async function getPopularCategories(){
   const get_popular_company_query = `
   SELECT 
   ccr.category_id,
@@ -1150,7 +1150,7 @@ module.exports = {
     getReviewByID,
     getReviewReplyDataByID,
     reviewTagsCountByCompanyID,
-    getPopularCompanies,
+    getPopularCategories,
     getReviewCount,
     getUserCount
 };
