@@ -1363,8 +1363,8 @@
         max-width: 70px;
     }
 
-	.popular-category-part {
-		padding: 10px 15px;
+	.popular-category-part img {
+		height: 100px !important;
 	}
 
 	 ul.resp-tabs-list {
