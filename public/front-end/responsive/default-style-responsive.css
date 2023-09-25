@@ -1444,6 +1444,12 @@
 		margin-bottom: 10px;
 	}
 
+	.custom-progress .progress-questions,
+	.custom-progress .progress-value-percentage {
+		padding: 10px 15px;
+		font-size: 13px;
+	}
+
 }
 
 @media only screen and (max-width:660.98px) {

@@ -1051,6 +1051,7 @@
 
 .acc_heading_right {
     min-width: 190px;
+    text-align: right;
 }
 
 .premium_company_profile .acc_contents {
@@ -1122,6 +1123,7 @@
 
     .acc_heading_right {
         margin-top: 10px;
+        text-align: left;
     }
 }
 
@@ -1231,6 +1233,10 @@
     }
     .premium_company_profile .acc_contents {
         padding: 25px 15px;
+    }
+
+    .creat-poll-field {
+        padding: 37px 15px;
     }
 }
 
