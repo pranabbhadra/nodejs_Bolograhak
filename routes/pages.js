@@ -559,29 +559,29 @@ router.get('/company/:slug', checkCookieValue, async (req, res) => {
     
         if(CompanyInfo){
             if(CompanyInfo.paid_status == 'paid'){
-                res.json(
-                {
-                    menu_active_id: 'company',
-                    page_title: 'Organization Details',
-                    currentUserData,
-                    allRatingTags,
-                    company:CompanyInfo,
-                    CompanyInfo,
-                    companyReviewNumbers,
-                    getCompanyReviews,
-                    globalPageMeta:globalPageMeta,
-                    cover_img:cover_img,
-                    gallery_img:gallery_img,
-                    youtube_iframe:youtube_iframe,
-                    products:products,
-                    promotions:promotions,
-                    facebook_url:facebook_url,
-                    twitter_url:twitter_url,
-                    instagram_url:instagram_url,
-                    linkedin_url:linkedin_url,
-                    youtube_url:youtube_url,
-                    support_data:support_data,
-                });
+                // res.json(
+                // {
+                //     menu_active_id: 'company',
+                //     page_title: 'Organization Details',
+                //     currentUserData,
+                //     allRatingTags,
+                //     company:CompanyInfo,
+                //     CompanyInfo,
+                //     companyReviewNumbers,
+                //     getCompanyReviews,
+                //     globalPageMeta:globalPageMeta,
+                //     cover_img:cover_img,
+                //     gallery_img:gallery_img,
+                //     youtube_iframe:youtube_iframe,
+                //     products:products,
+                //     promotions:promotions,
+                //     facebook_url:facebook_url,
+                //     twitter_url:twitter_url,
+                //     instagram_url:instagram_url,
+                //     linkedin_url:linkedin_url,
+                //     youtube_url:youtube_url,
+                //     support_data:support_data,
+                // });
                 res.render('front-end/category-details-premium',
                 {
                     menu_active_id: 'company',
@@ -645,7 +645,7 @@ router.get('/company/:slug', checkCookieValue, async (req, res) => {
 });
 
 // category listing page
-router.get('/category-listing', checkCookieValue, async (req, res) => {
+router.get('/categories', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
     const [globalPageMeta] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
