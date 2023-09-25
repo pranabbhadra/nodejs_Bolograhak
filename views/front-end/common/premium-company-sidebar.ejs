@@ -128,6 +128,9 @@
 		<li <% if( menu_active_id == 'company-review-listing') { %> class="active" <% } %>>
          <a href="/company-review-listing/<%= company.slug  %>"><i class="fas fa-envelope"></i> Reviews</a>
       	</li>
+         <li <% if( menu_active_id == 'company-poll-listing') { %> class="active" <% } %>>
+            <a href="/company-poll-listing/<%= company.slug  %>"><i class="fas fa-poll"></i> Polls</a>
+         </li>
 		<!-- <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li> -->
 		<li><a href="/change-password"><i class="fas fa-lock"></i> Change Password</a></li>
 		<li><a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>

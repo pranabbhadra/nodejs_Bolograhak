@@ -871,6 +871,8 @@ router.get('/discussion-details', checkCookieValue, async (req, res) => {
     }
     //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
 });
+
+
 //-----------------------------------------------------------------//
 
 
@@ -1352,6 +1354,87 @@ router.get('/company-dashboard-review-replay/:slug/:reviewID', checkClientClaime
 
 });
 
+//company Poll Listing page
+router.get('/company-poll-listing/:slug', checkClientClaimedCompany, async (req, res) => {
+    const encodedUserData = req.cookies.user;
+    const currentUserData = JSON.parse(encodedUserData);
+    const slug = req.params.slug;
+    const comp_res =await comFunction2.getCompanyIdBySlug(slug);
+    const companyId = comp_res.ID;
+    const [globalPageMeta, company, PremiumCompanyData, companyReviewNumbers, CompanyPollDetails ] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+        comFunction.getCompany(companyId),
+        comFunction2.getPremiumCompanyData(companyId),
+        comFunction.getCompanyReviewNumbers(companyId),
+        comFunction2.getCompanyPollDetails(companyId),
+    ]);
+    //console.log(CompanyPollDetails);
+    const PollDetails = CompanyPollDetails.map((row) => ({
+        poll_id: row.id,
+        company_id: row.company_id,
+        poll_creator_id: row.poll_creator_id,
+        created_at: row.created_at,
+        expired_at: row.expired_at,
+        question: row.question,
+        poll_answer: row.poll_answer ? row.poll_answer.split(',') : [],
+        poll_answer_id: row.poll_answer_id ? row.poll_answer_id.split(',') : [],
+        voting_answer_id: row.voting_answer_id ? row.voting_answer_id.split(',') : [],
+    }));
+    try {
+        let cover_img = '';
+        let facebook_url = '';
+        let twitter_url = '';
+        let instagram_url = '';
+        let linkedin_url = '';
+        let youtube_url = '';
+    
+        if(typeof PremiumCompanyData !== 'undefined' ){
+             cover_img = PremiumCompanyData.cover_img;
+             facebook_url = PremiumCompanyData.facebook_url;
+             twitter_url = PremiumCompanyData.twitter_url;
+             instagram_url = PremiumCompanyData.instagram_url;
+             linkedin_url = PremiumCompanyData.linkedin_url;
+             youtube_url = PremiumCompanyData.youtube_url;
+        }
+        // res.json( {
+        //     menu_active_id: 'company-poll-listing',
+        //     page_title: 'Company Name',
+        //     currentUserData,
+        //     globalPageMeta:globalPageMeta,
+        //     company,
+        //     companyReviewNumbers,
+        //    PollDetails,
+        //     facebook_url:facebook_url,
+        //     twitter_url:twitter_url,
+        //     instagram_url:instagram_url,
+        //     linkedin_url:linkedin_url,
+        //     youtube_url:youtube_url
+        // });
+        res.render('front-end/company-poll-listing', {
+            menu_active_id: 'company-poll-listing',
+            page_title: 'Company Name',
+            currentUserData,
+            globalPageMeta:globalPageMeta,
+            company,
+            companyReviewNumbers,
+            PollDetails,
+            facebook_url:facebook_url,
+            twitter_url:twitter_url,
+            instagram_url:instagram_url,
+            linkedin_url:linkedin_url,
+            youtube_url:youtube_url
+        });
+    } catch (err) {
+        console.error(err);
+        res.render('front-end/404', {
+            menu_active_id: '404',
+            page_title: '404',
+            currentUserData,
+            globalPageMeta:globalPageMeta
+        });
+    }
+    //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
+});
 
 // Middleware function to check if user is logged in
 async function checkLoggedIn(req, res, next) {

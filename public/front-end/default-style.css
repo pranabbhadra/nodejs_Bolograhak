@@ -3655,21 +3655,34 @@ h2.resp-tab-title:last-child {
     border: 1px solid #FCCB06;
     height: auto !important;
     background-color: transparent !important;
+    position: relative;
+    align-items: center;
 }
 
 .custom-progress .progress-bar {
     background-color: #F4A835;
     text-align: left;
+    position: absolute;
+    height: 100%;
+}
+
+.custom-progress .progress-questions,
+.custom-progress .progress-value-percentage {
+    position: relative;
+    z-index: 9;
+    padding: 17px 25px;
     font-size: 16px;
     font-weight: 700;
     line-height: 160%;
+    color: #000;
 }
 
 .custom-progress .progress-value-percentage {
     font-size: 13px;
-}
-
-.custom-progress .progress-bar,
-.custom-progress .progress-value-percentage {
+    font-weight: 700;
+    line-height: 160%;
+    color: #000;
+    position: relative;
+    z-index: 9;
     padding: 17px 25px;
 }

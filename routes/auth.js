@@ -269,4 +269,7 @@ router.post('/change_password', authController.changePassword);
 //Review Voting (like dislike)
 router.post('/reviewVoting', authController.reviewVoting);
 
+//Create Poll
+router.post('/create-poll', authController.createPoll);
+
 module.exports = router;

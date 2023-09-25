@@ -1251,6 +1251,25 @@ async function getFilteredCompanyDetails(categorySlug, filterValue) {
   
   
 }
+
+// Function to fetch Company poll details
+async function getCompanyPollDetails(company_id) {
+  const sql = `SELECT poll_company.*, GROUP_CONCAT(pa.answer) AS poll_answer, GROUP_CONCAT(pa.id) AS poll_answer_id, GROUP_CONCAT(pv.answer_id) AS voting_answer_id
+                FROM poll_company  
+                JOIN poll_answer pa ON pa.poll_id = poll_company.id
+                LEFT JOIN poll_voting pv ON pv.poll_id = poll_company.id
+                WHERE poll_company.company_id = '${company_id}' 
+                GROUP BY poll_company.id
+                ORDER BY poll_company.id DESC `;
+
+  const result = await query(sql);
+  if(result.length > 0 ){
+    return result;
+  }else{
+    return [];
+  }
+  
+}
 module.exports = {
   getFaqPage,
   getFaqCategories,
@@ -1287,5 +1306,6 @@ module.exports = {
   generateUniqueSlug,
   getSubCategories,
   getCompanyDetails,
-  getFilteredCompanyDetails
+  getFilteredCompanyDetails,
+  getCompanyPollDetails
 };

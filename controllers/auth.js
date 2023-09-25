@@ -4279,4 +4279,39 @@ exports.reviewVoting = async (req, res) => {
         }
     })
 }
+// Create poll
+exports.createPoll = async (req, res) => {
+    console.log('createPoll',req.body );
+    const {company_id, user_id, poll_question, poll_answer, expire_date} = req.body;
+    //const answers = JSON.stringify(poll_answer);
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+    const sql = `INSERT INTO poll_company ( company_id, poll_creator_id, question, created_at, expired_at) VALUES (?,?,?,?,?)`;
+    const data = [company_id, user_id, poll_question, formattedDate, expire_date];
+    db.query(sql, data,async (err, result) => {
+        if(err){
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong '+err
+            });
+        } else {
+            await poll_answer.forEach((answer)=>{
+                const ansQuery = `INSERT INTO poll_answer ( poll_id, answer) VALUES (?,?)`;
+                const ansData = [result.insertId, answer];
+                 db.query(ansQuery, ansData, (ansErr, ansResult)=>{
+                    if(ansErr){
+                        return res.send({
+                            status: 'not ok',
+                            message: 'Something went wrong '+ansErr
+                        });
+                    } 
+                })
+            })
 
+            return res.send({
+                status: 'ok',
+                message: 'Poll Created Successfully'
+            });
+        }
+    })
+}
