@@ -2264,7 +2264,7 @@ exports.submitReviewReply = async (req, res) => {
     // Return a success response
     return res.status(200).json({
       status: 'ok',
-      data: '', 
+      data: replyData, 
       message: 'Reply Successfully Sent',
     });
   }
