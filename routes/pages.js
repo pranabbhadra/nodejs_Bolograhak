@@ -716,12 +716,18 @@ router.get('/category/:category_slug', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
     const category_slug = req.params.category_slug;
     const baseURL = process.env.MAIN_URL;
-    const [globalPageMeta, getSubCategories, companyDetails, AllRatingTags] = await Promise.all([
+    const [globalPageMeta, getSubCategories, companyDetails, AllRatingTags, CategoryDetails] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
         comFunction2.getSubCategories(category_slug),
         comFunction2.getCompanyDetails(category_slug),
         comFunction.getAllRatingTags(),
+        comFunction.getCategoryDetails(category_slug),
+        //comFunction.getParentCategories(category_slug),
     ]);
+
+    const categoryParentId = CategoryDetails[0].parent_id;
+    const ParentCategories = await comFunction.getParentCategories(categoryParentId);
+
     try { 
 
         const subcategories = getSubCategories.map((row) => ({
@@ -731,14 +737,18 @@ router.get('/category/:category_slug', checkCookieValue, async (req, res) => {
             subCategorySlug: row.subcategoriesSlug ? row.subcategoriesSlug.split(',') : [],
         }));
 
-        // res.json( {
+        // res.json({
         //     menu_active_id: 'company-listing',
-        //     page_title: 'Company Name',
+        //     page_title: subcategories[0].categoryName,
         //     currentUserData,
         //     globalPageMeta:globalPageMeta,
         //     subCategories:subcategories[0],
         //     companyDetails:companyDetails,
-        //     AllRatingTags
+        //     AllRatingTags:AllRatingTags,
+        //     baseURL:baseURL,
+        //     filter_value:'',
+        //     CategoryDetails,
+        //     ParentCategories
         // });
         res.render('front-end/company-listing', {
             menu_active_id: 'company-listing',
@@ -749,7 +759,9 @@ router.get('/category/:category_slug', checkCookieValue, async (req, res) => {
             companyDetails:companyDetails,
             AllRatingTags:AllRatingTags,
             baseURL:baseURL,
-            filter_value:''
+            filter_value:'',
+            CategoryDetails,
+            ParentCategories
         });
     } catch (err) {
         console.error(err);

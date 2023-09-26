@@ -1115,6 +1115,41 @@ async function getUserCount(){
   }
 }
 
+async function getCategoryDetails(category_slug){
+  const get_category_query = `
+  SELECT * FROM category
+  WHERE category_slug = ?;
+  `;
+  const get_category_slug = category_slug;
+  try{
+    const get_category_query_result = await query(get_category_query, get_category_slug);
+    // if(get_category_query_result[0].parent_id){
+    //   console.log(get_category_query_result);
+    // }
+    return get_category_query_result;
+  }catch(error){
+    return 'Error during user get_category_query:'+error;
+  }
+}
+
+async function getParentCategories(ID) {
+  const get_category_query = `
+  SELECT * FROM category
+  WHERE ID = ?;
+  `;
+  const cat_ID = ID;
+  try{
+    const get_category_query_result = await query(get_category_query, cat_ID);
+    // if(get_category_query_result[0].parent_id){
+    //   console.log(get_category_query_result);
+    // }
+    return get_category_query_result;
+  }catch(error){
+    return 'Error during user get_category_query:'+error;
+  }
+}
+
+
 
 module.exports = {
     getUser,
@@ -1152,5 +1187,7 @@ module.exports = {
     reviewTagsCountByCompanyID,
     getPopularCategories,
     getReviewCount,
-    getUserCount
+    getUserCount,
+    getCategoryDetails,
+    getParentCategories
 };
