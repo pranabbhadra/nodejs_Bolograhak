@@ -2403,7 +2403,7 @@ console.log("productData",ProductData)
         promotion_discount: promotion_discount[index],
         promotion_image: promotionImage,
       };
-    });;
+    });
   } else {
     // Handle the case where only one promotion is uploaded
     let promoImg = null;
