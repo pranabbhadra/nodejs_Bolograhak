@@ -950,21 +950,44 @@ async function getCompanyReviews(companyID){
 
 //new
 async function getCompanyRatings(companyID) {
-  const getCompanyRatingsQuery = `
-  SELECT 
-    company_id,
-    SUM(CASE WHEN rating = 0.5 THEN 1 ELSE 0 END) AS rating_05_count,
-    SUM(CASE WHEN rating = 1 THEN 1 ELSE 0 END) AS rating_1_count,
-    SUM(CASE WHEN rating = 1.5 THEN 1 ELSE 0 END) AS rating_15_count,
-    SUM(CASE WHEN rating = 2 THEN 1 ELSE 0 END) AS rating_2_count,
-    SUM(CASE WHEN rating = 2.5 THEN 1 ELSE 0 END) AS rating_25_count,
-    SUM(CASE WHEN rating = 3 THEN 1 ELSE 0 END) AS rating_3_count,
-    SUM(CASE WHEN rating = 3.5 THEN 1 ELSE 0 END) AS rating_35_count,
-    SUM(CASE WHEN rating = 4 THEN 1 ELSE 0 END) AS rating_4_count,
-    SUM(CASE WHEN rating = 4.5 THEN 1 ELSE 0 END) AS rating_45_count,
-    SUM(CASE WHEN rating = 5 THEN 1 ELSE 0 END) AS rating_5_count,
-    COUNT(*) AS total_rating_count,
-    ROUND(AVG(rating), 1) AS rating_average FROM reviews WHERE company_id = ? AND review_status = "1" GROUP BY company_id`;
+  // SELECT 
+  //   company_id,
+  //   SUM(CASE WHEN rating = 0.5 THEN 1 ELSE 0 END) AS rating_05_count,
+  //   SUM(CASE WHEN rating = 1 THEN 1 ELSE 0 END) AS rating_1_count,
+  //   SUM(CASE WHEN rating = 1.5 THEN 1 ELSE 0 END) AS rating_15_count,
+  //   SUM(CASE WHEN rating = 2 THEN 1 ELSE 0 END) AS rating_2_count,
+  //   SUM(CASE WHEN rating = 2.5 THEN 1 ELSE 0 END) AS rating_25_count,
+  //   SUM(CASE WHEN rating = 3 THEN 1 ELSE 0 END) AS rating_3_count,
+  //   SUM(CASE WHEN rating = 3.5 THEN 1 ELSE 0 END) AS rating_35_count,
+  //   SUM(CASE WHEN rating = 4 THEN 1 ELSE 0 END) AS rating_4_count,
+  //   SUM(CASE WHEN rating = 4.5 THEN 1 ELSE 0 END) AS rating_45_count,
+  //   SUM(CASE WHEN rating = 5 THEN 1 ELSE 0 END) AS rating_5_count,
+  //   COUNT(*) AS total_rating_count,
+  //   ROUND(AVG(rating), 1) AS rating_average FROM reviews WHERE company_id = ? AND review_status = "1" GROUP BY company_id`;
+  const getCompanyRatingsQuery = 
+  `SELECT 
+  company_id,
+  SUM(CASE WHEN rating = 0.5 THEN 1 ELSE 0 END) AS rating_05_count,
+  SUM(CASE WHEN rating = 1 THEN 1 ELSE 0 END) AS rating_1_count,
+  SUM(CASE WHEN rating = 1.5 THEN 1 ELSE 0 END) AS rating_15_count,
+  SUM(CASE WHEN rating = 2 THEN 1 ELSE 0 END) AS rating_2_count,
+  SUM(CASE WHEN rating = 2.5 THEN 1 ELSE 0 END) AS rating_25_count,
+  SUM(CASE WHEN rating = 3 THEN 1 ELSE 0 END) AS rating_3_count,
+  SUM(CASE WHEN rating = 3.5 THEN 1 ELSE 0 END) AS rating_35_count,
+  SUM(CASE WHEN rating = 4 THEN 1 ELSE 0 END) AS rating_4_count,
+  SUM(CASE WHEN rating = 4.5 THEN 1 ELSE 0 END) AS rating_45_count,
+  SUM(CASE WHEN rating = 5 THEN 1 ELSE 0 END) AS rating_5_count,
+  COUNT(*) AS total_rating_count,
+  ROUND(AVG(rating), 1) AS rating_average,
+  (
+    SELECT COUNT(*) FROM review_tag_relation AS t2
+    WHERE t2.review_id = t1.id
+  ) AS tag_name_count
+FROM reviews AS t1
+LEFT JOIN review_tag_relation AS t3 ON t1.id = t3.review_id
+WHERE company_id = ? AND review_status = "1"
+GROUP BY company_id;
+`;
     const ratingsResultvalue = [companyID]
     try{
       const ratingsResult = await query(getCompanyRatingsQuery, ratingsResultvalue);
@@ -1028,23 +1051,18 @@ async function getCompanyRatings(companyID) {
   
       // Calculate the review percentage
       const reviewPercentage = (totalPositiveReviews / totalReviews) * 100;
-  
+      const roundedReviewPercentage = Math.round(reviewPercentage);
       return {
         totalReviews,
         totalPositiveReviews,
         totalNegativeReviews,
-        reviewPercentage,
+        roundedReviewPercentage,
       };
     } catch (error) {
       return 'Error calculating review statistics: ' + error;
     }
   }
   
-    
-  
-
-
-
 async function getUserCompany(user_ID){
     const get_user_company_query = `
       SELECT c.*
@@ -1095,6 +1113,29 @@ async function getuserReviewCompany(user_ID){
     }catch(error){
       return 'Error during user user_review_company_query:'+error;
     }
+}
+
+async function ReviewReplyTo(Id) {
+  try {
+    const sql = `SELECT users.email, users.first_name, c.company_name, c.ID as company_id, r.customer_id
+                 FROM users 
+                 LEFT JOIN review_reply rr ON rr.reply_by = users.user_id 
+                 LEFT JOIN reviews r ON r.id = rr.review_id 
+                 LEFT JOIN company c ON r.company_id = c.ID 
+                 WHERE rr.ID = ?`;
+
+    // Use parameterized query with placeholders
+    const get_user_email = await query(sql, [Id]);
+
+    if (get_user_email.length > 0) {
+      return get_user_email;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.error('Error in ReviewReplyTo:', error);
+    throw error; // Rethrow the error to handle it at the higher level
+  }
 }
 
 
@@ -1209,13 +1250,13 @@ async function ReviewReplyToCompany(mailReplyData) {
 }
 
 // Example usage outside the function
-const exampleMailReplyData = [
-  {
-    comp_email: 'dev2.scwt@gmail.com', 
-  }
-];
+// const exampleMailReplyData = [
+//   {
+//     comp_email: 'dev2.scwt@gmail.com', 
+//   }
+// ];
 
-ReviewReplyToCompany(exampleMailReplyData);
+// ReviewReplyToCompany(exampleMailReplyData);
 
 
 // Example usage outside the function
@@ -1403,6 +1444,7 @@ module.exports = {
     getUserCompany,
     getUserReview,
     getuserReviewCompany,
+    ReviewReplyTo,
     ReviewReplyToCustomer, //new
     ReviewReplyToCompany
 };

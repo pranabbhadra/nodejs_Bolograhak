@@ -180,13 +180,27 @@ router.post('/register',upload.single('profile_pic') ,authenController.register)
 router.post('/login', authenController.login);
 router.put('/edituser', verifyToken, upload.single('profile_pic') ,authenController.edituser);
 
-
+   
 router.post('/createcategories',verifyToken, upload.single('c_image'),authenController.createcategories);
 router.post('/createcompany',verifyToken, upload.single('logo') ,authenController.createcompany);
 router.put('/editcompany',verifyToken, upload.single('logo') ,authenController.editcompany);
 router.post('/createcompanylocation',verifyToken, authenController.createcompanylocation);
 router.post('/submitReview',verifyToken, authenController.submitReview);
-router.post('/submitReviewReply',verifyToken, authenController.submitReviewReply);  
+router.post('/submitReviewReply',verifyToken, authenController.submitReviewReply); 
+//Update basic-company-profile-management 
+router.post('/profileManagement',  upload.fields([
+    
+    { name: 'logo', maxCount: 1 },
+
+    { name: 'cover_image', maxCount: 1 },
+
+    { name: 'gallery_images', maxCount: 100 },
+
+    { name: 'promotion_image', maxCount: 100 },
+
+    { name: 'product_image', maxCount: 100 },
+
+]), authenController.profileManagement);
 //forget password
 router.post('/forgotPassword', authenController.forgotPassword);
 router.post('/resetPassword',  authenController.resetPassword);
@@ -293,7 +307,7 @@ router.get('/getComapniesDetails/:ID', verifyToken, async (req, res) => {
           comFunction.getUserReview(),
           comFunction.getCompanyRatings(companyId),
           comFunction2.getPremiumCompanyData(companyId),
-          comFunction.getTotalreplies(companyId),
+          comFunction2.TotalReplied(companyId),
           comFunction.getTotalReviewsAndCounts(companyId)
         ]);
 

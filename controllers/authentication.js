@@ -36,14 +36,16 @@ const storage = multer.diskStorage({
       cb(null, 'uploads/');
   },
   filename: function (req, file, cb) {
-      const originalname = file.originalname;
-      const sanitizedFilename = originalname.replace(/[^a-zA-Z0-9\-\_\.]/g, ''); // Remove symbols and spaces
-      const filename = Date.now() + '-' + sanitizedFilename;
-      cb(null, filename);
+      // const originalname = file.originalname;
+      // const sanitizedFilename = originalname.replace(/[^a-zA-Z0-9\-\_\.]/g, ''); // Remove symbols and spaces
+      // const filename = Date.now() + '-' + sanitizedFilename;
+      // cb(null, filename);
       // const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
       // cb(null, file.fieldname + '-' + uniqueSuffix);
+      cb(null, file.originalname);
   }
 });
+
 // Create multer instance
 const upload = multer({ storage: storage });
 
@@ -2203,12 +2205,19 @@ exports.refreshToken = async (req, res) => {
 
 
 // submitting review replies
+//new 
 exports.submitReviewReply = async (req, res) => {
   try {
-    const authenticatedUserId = parseInt(req.user.user_id); // Assuming the user_id is correct
+    const authenticatedUserId = parseInt(req.user.user_id);  
     console.log('authenticatedUserId: ', authenticatedUserId);
-    const ApiuserId = parseInt(req.body.reply_by); // Assuming user_id is the correct field name
-    console.log('req.body.user_id: ', parseInt(req.body.user_id));
+    const ApiuserId = parseInt(req.body.reply_by); 
+    if (isNaN(ApiuserId)) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Invalid user_id provided in request body.',
+      });
+    }
+    console.log('req.body.user_id: ', parseInt(req.body.reply_by));
     const {
       review_id,
       company_id,
@@ -2227,58 +2236,402 @@ exports.submitReviewReply = async (req, res) => {
 
     const currentDate = new Date();
     const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
-
-    const replyData = [
-      review_id,
-      company_id,
-      reply_by,
-      reply_to,
-      comment,
-      formattedDate, // Use the formatted date for created_at
-      formattedDate, // Use the formatted date for updated_at
-    ];
-
+    const replyData = {
+      review_id: review_id,
+      company_id: company_id,
+      reply_by: reply_by,
+      reply_to: reply_to,
+      comment: comment,
+      created_at: formattedDate,
+      updated_at: formattedDate,
+    };
     db.query(
-      'INSERT INTO review_reply (review_id, company_id, reply_by, reply_to, comment, created_at, updated_at) VALUES (?,?,?,?,?,?,?)',
-      replyData,
-      async (err, results) => {
-        if (err) {
-          return res.status(500).json({
-            status: 'error',
-            message: 'An error occurred while processing your request' + err,
-          });
-        } else {
-          console.log(results.insertId);
-          const mailReplyData =await comFunction2.ReviewReplyTo(results.insertId)
-
-          console.log('MailSendTo',mailReplyData);
-          // Check if mailReplyData is defined and has the expected properties
-          if (mailReplyData && mailReplyData[0] && mailReplyData[0].customer_id == req.body.reply_to) {
-            await comFunction.ReviewReplyToCustomer(mailReplyData);
-          } else if (mailReplyData) {
-            await comFunction.ReviewReplyToCompany(mailReplyData);
-          } else {
-            console.error('mailReplyData is undefined or missing expected properties');
-          }
-
-          return res.status(200).json({
-            status: 'ok',
-            data: '',
-            message: 'Reply Successfully Sent',
-          });
-        }
-      }
-    );
-  } catch (err) {
-    console.error(err);
+            'INSERT INTO review_reply  SET ?', replyData, async (err, results) => {
+              if (err) {
+                return res.status(500).json({
+                  status: 'error',
+                  message: 'An error occurred while processing your request' + err,
+                });
+              } else {
+                console.log(results.insertId);
+                const mailReplyData =await comFunction2.ReviewReplyTo(results.insertId)
+                console.log('MailSendTo',mailReplyData);
+                if(mailReplyData[0].customer_id == req.body.reply_to ){
+                  await comFunction2.ReviewReplyToCustomer(mailReplyData)
+              }else{
+                  await comFunction2.ReviewReplyToCompany(mailReplyData)
+              }
+    // Return a success response
+    return res.status(200).json({
+      status: 'ok',
+      data: '', 
+      message: 'Reply Successfully Sent',
+    });
+  }
+})
+ } catch (error) {
+    console.error(error);
     res.status(500).json({
       status: 'error',
-      message: 'An error occurred ' + err,
+      message: 'An error occurred ' + error,
     });
   }
 };
 
 
+exports.profileManagement = async (req, res) => {
+  const companyID = req.body.company_id;
+  const currentDate = new Date();
 
+  const year = currentDate.getFullYear();
+  const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+  const day = String(currentDate.getDate()).padStart(2, '0');
+  const hours = String(currentDate.getHours()).padStart(2, '0');
+  const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+  const seconds = String(currentDate.getSeconds()).padStart(2, '0');
 
+  const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
+  const {
+    previous_cover_image,
+    youtube_iframe,
+    promotion_title,
+    promotion_desc,
+    promotion_discount,
+    promotion_image,
+    product_title,
+    product_desc,
+    product_image,
+    facebook_url,
+    twitter_url,
+    instagram_url,
+    linkedin_url,
+    youtube_url,
+    support_email,
+    escalation_one,
+    escalation_two,
+    escalation_three,
+  } = req.body;
+
+  const { cover_image, gallery_images } = req.files;
+
+  let galleryImages = [];
+
+  if (gallery_images) {
+    galleryImages = gallery_images.map((file) => ({
+      gallery_images: file.filename,
+    }));
+  }
+  console.log("Uploaded promotion images:", req.files.promotion_image);
+
+  let productImages = [];
+
+  if (
+    typeof product_image === 'undefined' ||
+    typeof promotion_image === 'undefined'
+  ) {
+    productImages = Array.isArray(req.files.product_image)
+      ? req.files.product_image.map((file) => file.filename)
+      : [];
+  }
+
+  // Use a single product image if there's only one uploaded
+  if (productImages.length === 0 && typeof product_image !== 'undefined') {
+    productImages = [product_image];
+  }
+
+  let ProductData = [];
+
+  if (Array.isArray(product_title) && product_title.length > 0) {
+    let count = 0;
+    ProductData = product_title.map((title, index) => {
+      let productImage = null;
+
+      // Check if product_image is an array and has an element at the current index
+      if (Array.isArray(productImages) && productImages.length > count) {
+        productImage = productImages[count];
+        count++; // Increment the counter
+      } else {
+        productImage = null; // Handle the case where productImages is not defined or has no more elements
+      }
+  
+
+      return {
+        product_title: title,
+        product_desc: product_desc[index],
+        product_image: productImage,
+      };
+    });
+  } else {
+    // Handle the case where only one product is uploaded
+    let prodkImg = null;
+    if (Array.isArray(product_image) && product_image.length > 0) {
+      prodkImg = product_image[0];
+
+    ProductData = [
+      {
+        product_title: product_title,
+        product_desc: product_desc,
+        product_image: prodkImg,
+      },
+    ];
+  }
+}
+console.log("productData",ProductData)
+
+  let PromotionalData = [];
+
+  if (Array.isArray(promotion_title) && promotion_title.length > 0) {
+    let i = 0;
+    PromotionalData = promotion_title.map((title, index) => {
+      let promotionImage = null;
+
+      // Check if promotion_image is an array and has an element at the current index
+      if (
+        Array.isArray(req.files.promotion_image) &&
+        req.files.promotion_image.length > index &&
+        req.files.promotion_image[index].filename !== ''
+      ) {
+        promotionImage = req.files.promotion_image[index].filename;
+      } else {
+        promotionImage = null; // Handle the case where promotion_image is not defined
+      }
+      
+      return {
+        promotion_title: title,
+        promotion_desc: promotion_desc[index],
+        promotion_discount: promotion_discount[index],
+        promotion_image: promotionImage,
+      };
+    });;
+  } else {
+    // Handle the case where only one promotion is uploaded
+    let promoImg = null;
+    if (
+      typeof promotion_image !== 'undefined' &&
+      Array.isArray(promotion_image) &&
+      promotion_image.length > 0 &&
+      promotion_image[0] !== ''
+    ) {
+      promoImg = req.files.promotion_image[0].filename;
+    }
+
+    PromotionalData = [
+      {
+        // promotion_title: promotion_title,
+        // promotion_desc: promotion_desc,
+        // promotion_discount: promotion_discount,
+        // promotion_image: promoImg,
+    promotion_title: [promotion_title], // Wrap single value in an array
+    promotion_desc: [promotion_desc],     // Wrap single value in an array
+    promotion_discount: [promotion_discount], // Wrap single value in an array
+    promotion_image: [promoImg],
+      },
+    ];
+  }
+  console.log("promotionData",PromotionalData)
+  let coverImg = null;
+
+  if (cover_image && cover_image.length > 0) {
+    coverImg = cover_image[0].filename;
+  } else {
+    coverImg = previous_cover_image;
+  }
+
+  // Update company details in the company table
+  const updateQuery = `
+  UPDATE company 
+  SET heading = ?, 
+      logo = ?, 
+      about_company = ?, 
+      comp_phone = ?, 
+      comp_email = ?, 
+      updated_date = ?, 
+      tollfree_number = ?, 
+      main_address = ?, 
+      operating_hours = ?
+  WHERE ID = ?`;
+
+  const updateValues = [
+    req.body.heading,
+    '',
+    req.body.about_company,
+    req.body.comp_phone,
+    req.body.comp_email,
+    formattedDate,
+    req.body.tollfree_number,
+    req.body.main_address,
+    req.body.operating_hours,
+    companyID,
+  ];
+
+  if (req.files.logo && req.files.logo.length > 0) {
+    // Unlink (delete) the previous file
+    const unlinkcompanylogo = "uploads/" + req.body.previous_logo;
+    fs.unlink(unlinkcompanylogo, (err) => {
+      if (err) {
+        console.error('Error deleting file:', err);
+      } else {
+        console.log('Previous file deleted');
+      }
+    });
+
+    updateValues[1] = req.files.logo[0].filename;
+  } else {
+    updateValues[1] = req.body.previous_logo;
+  }
+
+  db.query(updateQuery, updateValues, (err, results) => {
+    if (err) {
+      // Handle the error
+      return res.send({
+        status: 'err',
+        data: '',
+        message: 'An error occurred while updating the company details: ' + err,
+      });
+    } else {
+      const check_sql = `SELECT * FROM premium_company_data WHERE company_id = ? `;
+      const check_data = [companyID];
+      db.query(check_sql, check_data, (check_err, check_result) => {
+        if (check_err) {
+          return res.send({
+            status: 'err',
+            data: '',
+            message: 'An error occurred while processing your request',
+          });
+        } else {
+          if (check_result.length > 0) {
+            let gallery_img = [];
+
+            if (check_result[0].gallery_img) {
+              gallery_img = JSON.parse(check_result[0].gallery_img);
+
+              if (!Array.isArray(gallery_img)) {
+                gallery_img = [];
+              }
+            }
+            if (galleryImages.length > 0) {
+              galleryImages.forEach(function (img, index, arr) {
+                gallery_img.push(img);
+              });
+            }
+
+            const promotionSQL = JSON.parse(check_result[0].promotions);
+
+            if (promotionSQL.length > 0) {
+              promotionSQL.forEach(function (promotionImg, index, arr) {
+                if (promotionImg.promotion_image != null) {
+                  if (Array.isArray(promotion_image) && promotion_image.length > index && promotion_image[index] == '') {
+                    PromotionalData[index].promotion_image =
+                      promotionSQL[index].promotion_image;
+                  }
+                }
+              });
+            }
+            const productSQL = JSON.parse(check_result[0].products);
+
+            if (productSQL.length > 0) {
+              productSQL.forEach(function (productImg, index, arr) {
+                if (productImg.product_image != null) {
+                  if ( Array.isArray(product_image) &&
+                  product_image.length > index &&
+                  product_image[index] == '') {
+                    ProductData[index].product_image =
+                      productSQL[index].product_image;
+                  }
+                }
+              });
+            }
+            const galleryimg = JSON.stringify(gallery_img);
+            const Products = JSON.stringify(ProductData);
+            const Promotion = JSON.stringify(PromotionalData);
+
+            const update_query = `UPDATE premium_company_data SET cover_img = ?, gallery_img = ?, youtube_iframe = ?,promotions = ?, products = ?, facebook_url = ?, twitter_url = ?, instagram_url = ?, linkedin_url = ?, youtube_url = ?, support_email = ?, escalation_one = ?, escalation_two = ?, escalation_three = ? WHERE company_id = ? `;
+            const update_data = [
+              coverImg,
+              galleryimg,
+              youtube_iframe,
+              Promotion,
+              Products,
+              facebook_url,
+              twitter_url,
+              instagram_url,
+              linkedin_url,
+              youtube_url,
+              support_email,
+              escalation_one,
+              escalation_two,
+              escalation_three,
+              companyID,
+            ];
+            db.query(update_query, update_data, (update_err, update_result) => {
+              if (update_err) {
+                // Handle the error
+                return res.send({
+                  status: 'err',
+                  data: '',
+                  message:
+                    'An error occurred while updating the company details: ' +
+                    update_err,
+                });
+              } else {
+                return res.send({
+                  status: 'ok',
+                  data: {
+                    companyid: companyID,
+                    data: update_data
+                  },
+                  message: 'Successfully Updated',
+                });
+              }
+            });
+          } else {
+            const galleryimg = JSON.stringify(galleryImages);
+            const Products = JSON.stringify(ProductData);
+            const Promotion = JSON.stringify(PromotionalData);
+
+            const premium_query = `INSERT INTO premium_company_data ( company_id, cover_img, gallery_img, youtube_iframe, promotions, products, facebook_url, twitter_url, instagram_url, linkedin_url, youtube_url, support_email, escalation_one, escalation_two, escalation_three) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+            const premium_data = [
+              companyID,
+              coverImg,
+              galleryimg,
+              youtube_iframe,
+              Promotion,
+              Products,
+              facebook_url,
+              twitter_url,
+              instagram_url,
+              linkedin_url,
+              youtube_url,
+              support_email,
+              escalation_one,
+              escalation_two,
+              escalation_three,
+            ];
+            db.query(premium_query, premium_data, (premium_err, premium_result) => {
+              if (premium_err) {
+                // Handle the error
+                return res.send({
+                  status: 'err',
+                  data: '',
+                  message:
+                    'An error occurred while updating the company details: ' +
+                    premium_err,
+                });
+              } else {
+                return res.send({
+                  status: 'ok',
+                  data:{
+                    companyid: companyID,
+                    data: premium_data,
+                  },
+                  message: 'Successfully Updated',
+                });
+              }
+            });
+          }
+        }
+      });
+    }
+  });
+  }
