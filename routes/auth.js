@@ -272,4 +272,10 @@ router.post('/reviewVoting', authController.reviewVoting);
 //Create Poll
 router.post('/create-poll', authController.createPoll);
 
+//Update Poll Expire Date
+router.post('/update-poll-expire-date', authController.updatePollExpireDate);
+
+//Polling Route
+router.post('/user_polling', authController.userPolling);
+
 module.exports = router;

@@ -516,13 +516,14 @@ router.get('/company/:slug', checkCookieValue, async (req, res) => {
         const companyID = comp_res.ID;
         // console.log(comp_res);
         // console.log(companyID);
-        const [allRatingTags, CompanyInfo, companyReviewNumbers, getCompanyReviews, globalPageMeta, PremiumCompanyData] = await Promise.all([
+        const [allRatingTags, CompanyInfo, companyReviewNumbers, getCompanyReviews, globalPageMeta, PremiumCompanyData, CompanyPollDetails] = await Promise.all([
             comFunction.getAllRatingTags(),
             comFunction.getCompany(companyID),
             comFunction.getCompanyReviewNumbers(companyID),
             comFunction.getCompanyReviews(companyID),
             comFunction2.getPageMetaValues('global'),
             comFunction2.getPremiumCompanyData(companyID),
+            comFunction2.getCompanyPollDetails(companyID),
         ]);
         
         //console.log(get_company_id.ID)
@@ -559,29 +560,42 @@ router.get('/company/:slug', checkCookieValue, async (req, res) => {
     
         if(CompanyInfo){
             if(CompanyInfo.paid_status == 'paid'){
-                // res.json(
-                // {
-                //     menu_active_id: 'company',
-                //     page_title: 'Organization Details',
-                //     currentUserData,
-                //     allRatingTags,
-                //     company:CompanyInfo,
-                //     CompanyInfo,
-                //     companyReviewNumbers,
-                //     getCompanyReviews,
-                //     globalPageMeta:globalPageMeta,
-                //     cover_img:cover_img,
-                //     gallery_img:gallery_img,
-                //     youtube_iframe:youtube_iframe,
-                //     products:products,
-                //     promotions:promotions,
-                //     facebook_url:facebook_url,
-                //     twitter_url:twitter_url,
-                //     instagram_url:instagram_url,
-                //     linkedin_url:linkedin_url,
-                //     youtube_url:youtube_url,
-                //     support_data:support_data,
-                // });
+                const PollDetails = CompanyPollDetails.map((row) => ({
+                    poll_id: row.id,
+                    company_id: row.company_id,
+                    poll_creator_id: row.poll_creator_id,
+                    created_at: row.created_at,
+                    expired_at: row.expired_at,
+                    question: row.question,
+                    poll_answer: row.poll_answer ? row.poll_answer.split(',') : [],
+                    poll_answer_id: row.poll_answer_id ? row.poll_answer_id.split(',') : [],
+                    voting_answer_id: row.voting_answer_id ? row.voting_answer_id.split(',') : [],
+                    voting_user_id: row.voting_user_id ? row.voting_user_id.split(',') : [],
+                }));
+                res.json(
+                {
+                    menu_active_id: 'company',
+                    page_title: 'Organization Details',
+                    currentUserData,
+                    allRatingTags,
+                    company:CompanyInfo,
+                    CompanyInfo,
+                    companyReviewNumbers,
+                    getCompanyReviews,
+                    globalPageMeta:globalPageMeta,
+                    cover_img:cover_img,
+                    gallery_img:gallery_img,
+                    youtube_iframe:youtube_iframe,
+                    products:products,
+                    promotions:promotions,
+                    facebook_url:facebook_url,
+                    twitter_url:twitter_url,
+                    instagram_url:instagram_url,
+                    linkedin_url:linkedin_url,
+                    youtube_url:youtube_url,
+                    support_data:support_data,
+                   PollDetails,
+                });
                 res.render('front-end/category-details-premium',
                 {
                     menu_active_id: 'company',
@@ -604,6 +618,7 @@ router.get('/company/:slug', checkCookieValue, async (req, res) => {
                     linkedin_url:linkedin_url,
                     youtube_url:youtube_url,
                     support_data:support_data,
+                    PollDetails,
                 });
             }else{
                 res.render('front-end/company-details',

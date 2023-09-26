@@ -4315,3 +4315,47 @@ exports.createPoll = async (req, res) => {
         }
     })
 }
+
+// Update poll expire date
+exports.updatePollExpireDate = async (req, res) => {
+    console.log('updatePollExpireDate',req.body );
+    const {poll_id,change_expire_date} = req.body;
+    const sql = `UPDATE poll_company SET expired_at = ? WHERE id = ?`;
+    const data= [change_expire_date, poll_id]
+    db.query(sql,data, (err, result)=>{
+        if (err) {
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong '+err
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Expire Date Updated Successfully'
+            });
+        }
+    })
+}
+
+// User polling
+exports.userPolling = async (req, res) => {
+    console.log('userPolling',req.body );
+    const {ansId, pollId, userId} = req.body
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+    const sql = `INSERT INTO poll_voting ( poll_id, answer_id, user_id, voting_date) VALUES (?, ?, ?, ?)`;
+    const data = [pollId, ansId, userId, formattedDate ];
+    db.query(sql, data, (err, result)=>{
+        if (err) {
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong '+err
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Your Poll Submited Successfully'
+            });
+        }
+    } )
+}

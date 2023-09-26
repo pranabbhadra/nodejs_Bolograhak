@@ -8,8 +8,20 @@
       <div class="main_box">
          <%- include('common/premium-company-sidebar') -%>
       </div>
+      <% let daysCount = '' %>
+      <% PollDetails.forEach((poll)=>{ %>
+         <% const dateString = poll.expired_at; %>
+         <% const date = new Date(dateString); %>
+         <% const date2 = new Date(); %>
+         <% const daysDiff = Math.round((date - date2)/(1000 * 60 * 60 * 24)) %>
+         <% if(daysDiff >= 0 )  {
+            daysCount = daysDiff;
+         } %>
+       <% }) %>
+       <% if(daysCount == '') {%>
       <div class="all-poll-list-wrapper">
          <div class="create-new-poll-wrap">
+            
                <div class="create-poll-btn text-end">
                   <a href="#" class="btn-default btn-warning">Create New Poll</a>
                </div>
@@ -65,6 +77,7 @@
                </div>
          </div>
        </div>
+       <% } %>
        <!-- accordion -->
        <% if(PollDetails.length > 0 ){%>
        <div class="custom-accordion">
@@ -77,6 +90,12 @@
                         </div> 
                         <% const dateString = poll.expired_at; %>
                         <% const date = new Date(dateString); %>
+                        <%
+                           const year = date.getFullYear();
+                           const month = String(date.getMonth() + 1).padStart(2, '0');
+                           const day = String(date.getDate()).padStart(2, '0');
+                           const formattedDate = `${year}-${month}-${day}`;
+                        %>
                         <% const date2 = new Date(); %>
                         <% const daysDiff = Math.round((date - date2)/(1000 * 60 * 60 * 24)) %>
                         <div class="acc_heading_right">
@@ -89,31 +108,48 @@
                         </div> 
                      </div>
                      <div class="acc_contents">
-                        <% poll.poll_answer.forEach((ans)=>{%>
+                        <% poll.poll_answer.forEach((ans, index)=>{%>
+                           <% var voteCount = poll.voting_answer_id.length 
+                              var ansCount = 0;
+                           %>
+                           <% poll.voting_answer_id.forEach((ans_id) =>{ 
+                              if(ans_id == poll.poll_answer_id[index]){
+                                    ansCount++;
+                              }
+                           }) %>
+                           <% var percentOfVote = Math.round((ansCount/voteCount)*100) %>
+
                            <div class="custom-progress progress">
-                              <div class="progress-bar" style="width:70%"></div>
+                              <div class="progress-bar" style="width:<%= percentOfVote ? percentOfVote : 0 %>%"></div>
                               <div class="progress-questions"><%= ans %></div>
                               <div class="progress-value-percentage">
-                                    70%
+                                 <%= percentOfVote ? percentOfVote : 0 %>%
                               </div>
                            </div>
                         <% })  %>
-                        <div class="custom-progress progress">
+                        <!-- <div class="custom-progress progress">
                            <div class="progress-bar" style="width:30%"></div>
                            <div class="progress-questions">Lorem Ipsum is simply dummy text</div>
                            <div class="progress-value-percentage">
                                  30%
                            </div>
                         </div>
-                        <div class="custom-progress progress">
-                           <div class="progress-bar" style="width:50%"></div>
-                           <div class="progress-questions">Lorem Ipsum is simply dummy text</div>
-                           <div class="progress-value-percentage">
-                                 50%
-                           </div>
-                        </div>
+                         -->
                         <div class="text-end">
-                           <%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %>
+                           <% if(daysDiff >= 0){ %>
+                           <div>
+                              <div class="change-expire-date-btn">
+                                 <a href="#" class="btn-default badge badge-square badge-warning">Change Expire Date </a>
+                              </div>
+                              <div class="expire-date-field">
+                                 <form id="form_expire_date">
+                                    <input type="hidden" name="poll_id" value="<%= poll.poll_id %>" >
+                                    <input class="form-control" type="date" name="change_expire_date" value="<%- formattedDate %>" ><input class="form-control" id="expire_submit" type="submit" value="Submit" >
+                                 </form>
+                              </div>
+                           </div>
+                           <% } %>
+                           <span><%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></span>
                         </div>
                      </div>
                   </div>
@@ -157,118 +193,7 @@
                       </div>
                   </div>
               </div>
-           </div>
-           <div class="accordion-repeat">
-              <div class="c_accordion_wrap">
-                 <div class="acc_heading"><div class="acc_heading_left">
-                    Why is Lorem ipsum dolor sit tool Why?
-                   </div> 
-                   <div class="acc_heading_right">
-                    <span class="badge badge-square badge-dark">Past</span>
-                    <span class="p-date">Sep 23, 2023</span>
-                   </div> </div>
-                   <div class="acc_contents">
-                    <div class="custom-progress progress">
-                        <div class="progress-bar" style="width:70%"></div>
-                        <div class="progress-questions">Lorem Ipsum is simply dummy text</div>
-                        <div class="progress-value-percentage">
-                            70%
-                        </div>
-                      </div>
-                      <div class="custom-progress progress">
-                        <div class="progress-bar" style="width:30%"></div>
-                        <div class="progress-questions">Lorem Ipsum is simply dummy text</div>
-                        <div class="progress-value-percentage">
-                            30%
-                        </div>
-                      </div>
-                      <div class="custom-progress progress">
-                        <div class="progress-bar" style="width:50%"></div>
-                        <div class="progress-questions">Lorem Ipsum is simply dummy text</div>
-                        <div class="progress-value-percentage">
-                            50%
-                        </div>
-                      </div>
-                      <div class="text-end">
-                        10 September, 2023
-                      </div>
-                  </div>
-              </div>
-           </div>
-           <div class="accordion-repeat">
-              <div class="c_accordion_wrap">
-                 <div class="acc_heading"><div class="acc_heading_left">
-                    Why is Lorem ipsum dolor sit tool Why is Lorem ipsum?
-                   </div> 
-                   <div class="acc_heading_right">
-                    <span class="badge badge-square badge-success">ongoing</span>
-                    <span class="p-date">Sep 23, 2023</span>
-                   </div> </div>
-                   <div class="acc_contents">
-                    <div class="custom-progress progress">
-                        <div class="progress-bar" style="width:70%"></div>
-                        <div class="progress-questions">Lorem Ipsum is simply dummy text</div>
-                        <div class="progress-value-percentage">
-                            70%
-                        </div>
-                      </div>
-                      <div class="custom-progress progress">
-                        <div class="progress-bar" style="width:30%"></div>
-                        <div class="progress-questions">Lorem Ipsum is simply dummy text</div>
-                        <div class="progress-value-percentage">
-                            30%
-                        </div>
-                      </div>
-                      <div class="custom-progress progress">
-                        <div class="progress-bar" style="width:50%"></div>
-                        <div class="progress-questions">Lorem Ipsum is simply dummy text</div>
-                        <div class="progress-value-percentage">
-                            50%
-                        </div>
-                      </div>
-                      <div class="text-end">
-                        10 September, 2023
-                      </div>
-                  </div>
-              </div>
-           </div>
-           <div class="accordion-repeat">
-              <div class="c_accordion_wrap">
-                 <div class="acc_heading"><div class="acc_heading_left">
-                    Why is Lorem ipsum dolor sit tool Why is Lorem ipsum dolor sit tool?
-                   </div> 
-                   <div class="acc_heading_right">
-                    <span class="badge badge-square badge-success">ongoing</span>
-                    <span class="p-date">Sep 23, 2023</span>
-                   </div> </div>
-                   <div class="acc_contents">
-                    <div class="custom-progress progress">
-                        <div class="progress-bar" style="width:70%"></div>
-                        <div class="progress-questions">Lorem Ipsum is simply dummy text</div>
-                        <div class="progress-value-percentage">
-                            70%
-                        </div>
-                      </div>
-                      <div class="custom-progress progress">
-                        <div class="progress-bar" style="width:30%"></div>
-                        <div class="progress-questions">Lorem Ipsum is simply dummy text</div>
-                        <div class="progress-value-percentage">
-                            30%
-                        </div>
-                      </div>
-                      <div class="custom-progress progress">
-                        <div class="progress-bar" style="width:50%"></div>
-                        <div class="progress-questions">Lorem Ipsum is simply dummy text</div>
-                        <div class="progress-value-percentage">
-                            50%
-                        </div>
-                      </div>
-                      <div class="text-end">
-                        10 September, 2023
-                      </div>
-                  </div>
-              </div>
-           </div> -->
+           </div>-->
         </div>
         <% } %>
       </div>
@@ -280,76 +205,131 @@
 
 <script>
 $(document).ready(function () {
-$(document).on('click', '.add-ans-btn', function (e) {
-   e.preventDefault();
-   $(this).parents('.multiple-ans-wrap').append('<div class="multiple-ans-repeat"><div class="custom-form"><label><span>Answer</span></label><input type="text" class="form-control" name="poll_answer"><div class="remove-ans"><i class="fa-solid fa-circle-xmark"></i></div></div></div>');
-   $(this).parent().append('<a href="#" class="btn-default btn-warning add-ans-btn my-1">Add More Answer</a> ');
-   $(this).remove();
-});
+   $(document).on('click', '.add-ans-btn', function (e) {
+      e.preventDefault();
+      $(this).parents('.multiple-ans-wrap').append('<div class="multiple-ans-repeat"><div class="custom-form"><label><span>Answer</span></label><input type="text" class="form-control" name="poll_answer"><div class="remove-ans"><i class="fa-solid fa-circle-xmark"></i></div></div></div>');
+      $(this).parent().append('<a href="#" class="btn-default btn-warning add-ans-btn my-1">Add More Answer</a> ');
+      $(this).remove();
+   });
 
 // Remove Category
-$('.multiple-ans-wrap').on('click', '.remove-ans', function () {
-   $(this).parents('.multiple-ans-repeat').remove();
-});
-
-
-$('form#form-create-poll').submit(function (e) {
-   e.preventDefault();
-   //alert('aaaaaa')
-   $('.poll-create-message').hide();
-   $('.poll-create-message').text('');
-    $('#poll_submit').prop('disabled', true);
-    $('.frm-loading').show();  
-   
-   // Create a new FormData object from the form
-   // var formElement = document.getElementById('form-create-poll');
-   // const formData = new FormData(formElement);
-   const formData = new FormData($('#form-create-poll')[0]);
-   const jsonResponse = $('#form-create-poll').serializeArray();
-   const transformedResponse = {};
-   let poll_answer = []
-   jsonResponse.forEach(item => {
-      const { name, value } = item;
-      if (name == 'poll_answer' && value != '') {
-         poll_answer.push(value);
-      }else{
-      transformedResponse[name] = value;
-      }
-      transformedResponse['poll_answer'] = poll_answer;
+   $('.multiple-ans-wrap').on('click', '.remove-ans', function () {
+      $(this).parents('.multiple-ans-repeat').remove();
    });
-   console.log(jsonResponse);
-   //return false;
 
-   $.ajax({
-      url: '/auth/create-poll', // URL for your API endpoint
-      method: 'POST',
-      data: JSON.stringify(transformedResponse),
-      //data: formData,
-      processData: false,
-      //contentType: false,
-      contentType: 'application/json',
-      success: function (data) {
-         if (data.status == 'ok') {
-            $('.poll-create-message').text(data.message);
-            $('.poll-create-message').show();
-            $('#poll_submit').prop('disabled', false);
-            $('.frm-loading').hide();
-            window.location.reload();
-         } else {
-            $('.poll-create-message').text(data.message);
-            $('.poll-create-message').show();
-            $('#poll_submit').prop('disabled', false);
-            $('.frm-loading').hide();
-            console.log('Something went wrong');
+
+   $('form#form-create-poll').submit(function (e) {
+      e.preventDefault();
+      //alert('aaaaaa')
+      $('.poll-create-message').hide();
+      $('.poll-create-message').text('');
+      $('#poll_submit').prop('disabled', true);
+      $('.frm-loading').show();  
+      
+      // Create a new FormData object from the form
+      // var formElement = document.getElementById('form-create-poll');
+      // const formData = new FormData(formElement);
+      const formData = new FormData($('#form-create-poll')[0]);
+      const jsonResponse = $('#form-create-poll').serializeArray();
+      const transformedResponse = {};
+      let poll_answer = []
+      jsonResponse.forEach(item => {
+         const { name, value } = item;
+         if (name == 'poll_answer' && value != '') {
+            poll_answer.push(value);
+         }else{
+         transformedResponse[name] = value;
          }
-      },
-      error: function (xhr, status, error) {
-         // Handle any errors that occur during the request
-         console.log(error);
-      }
+         transformedResponse['poll_answer'] = poll_answer;
+      });
+      console.log(jsonResponse);
+      //return false;
+
+      $.ajax({
+         url: '/auth/create-poll', // URL for your API endpoint
+         method: 'POST',
+         data: JSON.stringify(transformedResponse),
+         //data: formData,
+         processData: false,
+         //contentType: false,
+         contentType: 'application/json',
+         success: function (data) {
+            if (data.status == 'ok') {
+               $('.poll-create-message').text(data.message);
+               $('.poll-create-message').show();
+               $('#poll_submit').prop('disabled', false);
+               $('.frm-loading').hide();
+               window.location.reload();
+            } else {
+               $('.poll-create-message').text(data.message);
+               $('.poll-create-message').show();
+               $('#poll_submit').prop('disabled', false);
+               $('.frm-loading').hide();
+               console.log('Something went wrong');
+            }
+         },
+         error: function (xhr, status, error) {
+            // Handle any errors that occur during the request
+            console.log(error);
+         }
+      });
    });
-});
 
+   $(".change-expire-date-btn .btn-default").click(function(e){
+   e.preventDefault();
+   $(".expire-date-field").slideToggle();
+   });
 
+   $('form#form_expire_date').submit(function (e) {
+      e.preventDefault();
+      alert('aaaaaa')
+      $('.poll-create-message').hide();
+      $('.poll-create-message').text('');
+      $('#expire_submit').prop('disabled', true);
+      $('.frm-loading').show();  
+      
+      // Create a new FormData object from the form
+      // var formElement = document.getElementById('form-create-poll');
+      // const formData = new FormData(formElement);
+      const formData = new FormData($('#form_expire_date')[0]);
+      
+      const jsonResponse = $('#form_expire_date').serializeArray();
+      const transformedResponse = {};
+      jsonResponse.forEach(item => {
+         const { name, value } = item;
+         transformedResponse[name] = value;
+      });
+      console.log(jsonResponse);
+      //return false;
+
+      $.ajax({
+         url: '/auth/update-poll-expire-date', // URL for your API endpoint
+         method: 'POST',
+         data: JSON.stringify(transformedResponse),
+         //data: formData,
+         processData: false,
+         //contentType: false,
+         contentType: 'application/json',
+         success: function (data) {
+            if (data.status == 'ok') {
+               $('.poll-create-message').text(data.message);
+               $('.poll-create-message').show();
+               $('#expire_submit').prop('disabled', false);
+               $('.frm-loading').hide();
+               window.location.reload();
+            } else {
+               $('.poll-create-message').text(data.message);
+               $('.poll-create-message').show();
+               $('#expire_submit').prop('disabled', false);
+               $('.frm-loading').hide();
+               console.log('Something went wrong');
+            }
+         },
+         error: function (xhr, status, error) {
+            // Handle any errors that occur during the request
+            console.log(error);
+         }
+      });
+   });
 })
 </script>

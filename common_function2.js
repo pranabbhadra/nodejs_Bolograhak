@@ -1254,13 +1254,46 @@ async function getFilteredCompanyDetails(categorySlug, filterValue) {
 
 // Function to fetch Company poll details
 async function getCompanyPollDetails(company_id) {
-  const sql = `SELECT poll_company.*, GROUP_CONCAT(pa.answer) AS poll_answer, GROUP_CONCAT(pa.id) AS poll_answer_id, GROUP_CONCAT(pv.answer_id) AS voting_answer_id
-                FROM poll_company  
-                JOIN poll_answer pa ON pa.poll_id = poll_company.id
-                LEFT JOIN poll_voting pv ON pv.poll_id = poll_company.id
-                WHERE poll_company.company_id = '${company_id}' 
-                GROUP BY poll_company.id
-                ORDER BY poll_company.id DESC `;
+  const sql = `SELECT
+                  pc.*,
+                  pa.poll_answer,
+                  pa.poll_answer_id,
+                  pv.voting_answer_id,
+                  voting_user_id
+                FROM
+                  poll_company pc
+                JOIN (
+                  SELECT
+                      p.poll_id,
+                      GROUP_CONCAT(DISTINCT p.answer) AS poll_answer,
+                      GROUP_CONCAT(DISTINCT p.id) AS poll_answer_id
+                  FROM
+                      poll_answer p
+                  GROUP BY
+                      p.poll_id
+                ) pa ON pc.id = pa.poll_id
+                LEFT JOIN (
+                  SELECT
+                      pv.poll_id,
+                      GROUP_CONCAT(pv.answer_id) AS voting_answer_id,
+                      GROUP_CONCAT(pv.user_id) AS voting_user_id
+                  FROM
+                      poll_voting pv
+                  GROUP BY
+                      pv.poll_id
+                ) pv ON pc.id = pv.poll_id
+                WHERE
+                  pc.company_id = '${company_id}' 
+                ORDER BY
+                  pc.id DESC;`;
+  
+  // const sql = `SELECT poll_company.*, GROUP_CONCAT(pa.answer) AS poll_answer, GROUP_CONCAT(pa.id) AS poll_answer_id, GROUP_CONCAT(pv.answer_id) AS voting_answer_id
+  // FROM poll_company  
+  // JOIN poll_answer pa ON pa.poll_id = poll_company.id
+  // LEFT JOIN poll_voting pv ON pv.poll_id = poll_company.id
+  // WHERE poll_company.company_id = '${company_id}' 
+  // GROUP BY poll_company.id
+  // ORDER BY poll_company.id DESC `;
 
   const result = await query(sql);
   if(result.length > 0 ){
