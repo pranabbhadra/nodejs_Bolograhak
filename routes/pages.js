@@ -85,7 +85,7 @@ router.get('', checkCookieValue, async (req, res) => {
     if (currentUserData) {
         userId = currentUserData.user_id;
     }
-    const [allRatingTags,globalPageMeta,latestReviews,AllReviewTags,AllReviewVoting, PopularCategories, ReviewCount, UserCount] = await Promise.all([
+    const [allRatingTags,globalPageMeta,latestReviews,AllReviewTags,AllReviewVoting, PopularCategories, ReviewCount, UserCount, PositiveReviewsCompany] = await Promise.all([
         comFunction.getAllRatingTags(),
         comFunction2.getPageMetaValues('global'),
         comFunction2.getlatestReviews(18),
@@ -93,7 +93,8 @@ router.get('', checkCookieValue, async (req, res) => {
         comFunction2.getAllReviewVoting(),
         comFunction.getPopularCategories(),
         comFunction.getReviewCount(),
-        comFunction.getUserCount()
+        comFunction.getUserCount(),
+        comFunction.getPositiveReviewsCompany()
     ]);
     const rangeTexts = {};
 
@@ -138,7 +139,8 @@ router.get('', checkCookieValue, async (req, res) => {
                     //     AllReviewVoting:AllReviewVoting,
                     //     PopularCategories,
                     //     ReviewCount,
-                    //     UserCount
+                    //     UserCount,
+                    //     PositiveReviewsCompany
                     // });
                     res.render('front-end/landing', {
                         menu_active_id: 'landing',
@@ -156,7 +158,8 @@ router.get('', checkCookieValue, async (req, res) => {
                         AllReviewVoting:AllReviewVoting,
                         PopularCategories,
                         ReviewCount,
-                        UserCount
+                        UserCount,
+                        PositiveReviewsCompany
                     });
                 })
 
@@ -977,7 +980,7 @@ router.get('/company-dashboard/:slug', checkClientClaimedCompany, async (req, re
     const comp_res =await comFunction2.getCompanyIdBySlug(slug);
     const userId = currentUserData.user_id;
     const companyId = comp_res.ID;
-    const [globalPageMeta, company, companyReviewNumbers, allRatingTags, allCompanyReviews, allCompanyReviewTags, PremiumCompanyData, reviewTagsCount, TotalReplied] = await Promise.all([
+    const [globalPageMeta, company, companyReviewNumbers, allRatingTags, allCompanyReviews, allCompanyReviewTags, PremiumCompanyData, reviewTagsCount, TotalReplied  ] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
         comFunction.getCompany(companyId),
         comFunction.getCompanyReviewNumbers(companyId),
@@ -986,7 +989,7 @@ router.get('/company-dashboard/:slug', checkClientClaimedCompany, async (req, re
         comFunction2.getAllReviewTags(),
         comFunction2.getPremiumCompanyData(companyId),
         comFunction.reviewTagsCountByCompanyID(companyId),
-        comFunction2.TotalReplied(userId),
+        comFunction2.TotalReplied(userId)
     ]);
     //console.log('TotalReplied:', currentUserData.user_id);
 
@@ -1044,20 +1047,25 @@ router.get('/company-dashboard/:slug', checkClientClaimedCompany, async (req, re
             TotalReplied:TotalReplied
         });
     }else{
-        // res.json( 
-        // { 
-        //     company,
-        //     companyReviewNumbers,
-        //     allRatingTags,
-        //     finalCompanyallReviews,
-        //     reviewReatingChartArray,
-        //     facebook_url:facebook_url,
-        //     twitter_url:twitter_url,
-        //     instagram_url:instagram_url,
-        //     linkedin_url:linkedin_url,
-        //     youtube_url:youtube_url,
-        //     reviewTagsCount
-        // });
+        res.json( 
+        { 
+            menu_active_id: 'company-dashboard', 
+            page_title: 'Company Dashboard', 
+            currentUserData, 
+            globalPageMeta:globalPageMeta,
+            company,
+            companyReviewNumbers,
+            allRatingTags,
+            finalCompanyallReviews,
+            reviewReatingChartArray,
+            facebook_url:facebook_url,
+            twitter_url:twitter_url,
+            instagram_url:instagram_url,
+            linkedin_url:linkedin_url,
+            youtube_url:youtube_url,
+            reviewTagsCount,
+            TotalReplied:TotalReplied
+        });
         res.render('front-end/premium-company-profile-dashboard', 
         { 
             menu_active_id: 'company-dashboard', 
@@ -1077,26 +1085,6 @@ router.get('/company-dashboard/:slug', checkClientClaimedCompany, async (req, re
             reviewTagsCount,
             TotalReplied:TotalReplied
         });
-
-        // res.json(
-        // { 
-        //     menu_active_id: 'company-dashboard', 
-        //     page_title: 'Company Dashboard', 
-        //     currentUserData, 
-        //     globalPageMeta:globalPageMeta,
-        //     company,
-        //     companyReviewNumbers,
-        //     allRatingTags,
-        //     finalCompanyallReviews,
-        //     reviewReatingChartArray,
-        //     facebook_url:facebook_url,
-        //     twitter_url:twitter_url,
-        //     instagram_url:instagram_url,
-        //     linkedin_url:linkedin_url,
-        //     youtube_url:youtube_url,
-        //     reviewTagsCount,
-        //     TotalReplied:TotalReplied
-        // });
     }
 });
 

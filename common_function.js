@@ -1149,6 +1149,23 @@ async function getParentCategories(ID) {
   }
 }
 
+async function getPositiveReviewsCompany() {
+  const get_positive_reviews_company_query = `
+  SELECT company_id, COUNT(*) AS review_count, com.company_name, com.slug
+  FROM reviews
+  JOIN company com ON reviews.company_id = com.ID
+  WHERE rating >= 4 AND review_status = '1'
+  GROUP BY company_id
+  ORDER BY review_count DESC
+  LIMIT 5;
+  `;
+  try{
+    const get_positive_reviews_result = await query(get_positive_reviews_company_query);
+    return get_positive_reviews_result;
+  }catch(error){
+    return 'Error during user get_positive_reviews_company_query:'+error;
+  }
+}
 
 
 module.exports = {
@@ -1189,5 +1206,6 @@ module.exports = {
     getReviewCount,
     getUserCount,
     getCategoryDetails,
-    getParentCategories
+    getParentCategories,
+    getPositiveReviewsCompany
 };
