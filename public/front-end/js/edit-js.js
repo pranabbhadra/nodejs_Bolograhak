@@ -790,9 +790,11 @@ jQuery(function ($) {
   $(window).load(function () {
     setTimeout(function () {
       $("#premiumcompanymodal").modal('show');
-      // $('.modal-slide-in').slick('reinit');
-    }, 10000);
+    }, 2000);
   });
+  $('.modal').on('shown.bs.modal', function (e) {
+    $('.modal-slide-in').slick('setPosition');
+  })
   
 
   setTimeout(function () {
@@ -1112,9 +1114,23 @@ $(this).parents(".multiple-ans-repeat").find(".custom-form").hide();
 });
 /*=========================== Remove multiple answer function End =================*/
 
+/*=========================== Send Review request tags start =================*/
+$("#sendreviewtags input").on({
+  focusout : function() {
+    var txt = this.value.replace(/[^a-z0-9\+\-\.\#]/ig,''); // allowed characters
+    if(txt) $("<span/>", {text:txt.toLowerCase(), insertBefore:this});
+    this.value = "";
+  },
+  keyup : function(ev) {
+    // if: comma|enter (delimit more keyCodes with | pipe)
+    if(/(188|13)/.test(ev.which)) $(this).focusout(); 
+  }
+});
+$('#sendreviewtags').on('click', 'span', function() {
+  if(confirm("Remove "+ $(this).text() +"?")) $(this).remove(); 
+});
+/*=========================== Send Review request tags End =================*/
 
-
- 
 
 labels = document.querySelectorAll('.ongoing-poll')
 

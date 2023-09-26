@@ -1073,6 +1073,74 @@
 }
 
 
+/* ============== add multiple email tag style start =============== */
+.send-review-invitation {
+    border-radius: 20px;
+    background: #ffffff;
+    box-shadow: 0px 24px 54px 0px rgba(0, 0, 0, 0.12);
+    padding: 25px 18px;
+}
+
+#sendreviewtags {
+    border: 2px solid #fccb06;
+    padding: 5px 9px;
+    border-radius: 6px;
+    margin-bottom: 32px;
+}
+
+#sendreviewtags > span {
+    cursor: pointer;
+    display: block;
+    float: left;
+    color: #fff;
+    background: #fccb06;
+    padding: 7px;
+    padding-right: 25px;
+    margin: 4px;
+    border-radius: 4px;
+}
+
+#sendreviewtags > span:hover{
+    opacity:0.7;
+}
+
+#sendreviewtags > span:after{
+    position:absolute;
+    content:"×";
+    border:1px solid;
+    padding:2px 5px;
+    margin-left:3px;
+    font-size:11px;
+}
+
+#sendreviewtags > input {
+    background: #f2f2f2;
+    border: 0;
+    margin: 4px;
+    padding: 7px;
+    width: auto;
+    border-radius: 4px;
+    outline: none;
+}
+
+.bulk-upload label {
+    font-weight: 600;
+    margin-bottom: 7px;
+    font-size: 18px;
+}
+
+.bulk-upload .form-control[type=file] {
+    border-color: #fccb06;
+    border-width: 2px;
+}
+
+.send-review-invitation .custom-form label span {
+    background-color: #ffffff;
+}
+
+/* ============== add multiple email tag style end =============== */
+
+
 /*========================================= responsive ====================================*/
 
 
@@ -1124,6 +1192,10 @@
     .acc_heading_right {
         margin-top: 10px;
         text-align: left;
+    }
+
+    .bulk-upload label {
+        font-size: 16px;
     }
 }
 

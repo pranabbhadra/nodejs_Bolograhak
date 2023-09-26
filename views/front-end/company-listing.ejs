@@ -25,7 +25,7 @@
                         <div class="company-listing-right">
                             <% if(companyDetails.length > 0){ %>
                                 <div class="row">
-                                    <div class="col-md-4 offset-md-8">
+                                    <div class="col-12">
                                         <div class="select_option">
                                             <p>Short by</p>
                                             <div class="select_option_content">
@@ -42,7 +42,7 @@
                                 </div>
                                 <div class="row g-4">
                                     <% companyDetails.forEach((company)=>{ %>
-                                        <div class="col-lg-4 col-md-6 col-sm-6 col-12">
+                                        <div class="col-lg-4 col-sm-6 col-12 my-3">
                                             <div class="company_listing_box">
                                                 <% if(company.paid_status == 'paid' ) { %>
                                                     <% if(company.cover_img) { %>
@@ -60,6 +60,8 @@
                                                         <a href="<%= baseURL %>company/<%= company.slug %>"><img src="/front-end/images/company-placeholder-image.png" alt="img" loading="lazy" width="100" height="100"></a>
                                                     <% } %>
                                                 </div>
+                                                <div class="company_listing_all_info_wrapper">
+                                                
                                                 <a href="<%= baseURL %>company/<%= company.slug %>"><h4><%= company.company_name %></h4></a>
 
                                                 <% var average = company.comp_avg_rating %>
@@ -97,13 +99,13 @@
                                                             
                                                                 <%= avg %>/5
                                                     </span>
-                                                    <p class=""><span>Based on</span> <%= company.comp_total_reviews %> reviews</p>
-                                                    <% AllRatingTags.forEach((RatingTag)=>{  %>
-                                                        <% if(RatingTag.review_rating_value == avg) { %>
-                                                            <span class="company_listing_span1"><%= RatingTag.review_rating_name %></span>
-                                                        <% } %>
-                                                    <% }) %>
+                                                    <p class="m-0"><span>Based on</span> <%= company.comp_total_reviews %> reviews</p>
                                                 </div>
+                                                <% AllRatingTags.forEach((RatingTag)=>{  %>
+                                                    <% if(RatingTag.review_rating_value == avg) { %>
+                                                        <span class="company_listing_span1"><%= RatingTag.review_rating_name %></span>
+                                                    <% } %>
+                                                <% }) %>
                                                 <% if(company.main_address){%>
                                                     <p class="company_listing_p"><img src="/front-end/images/location-icon.png"
                                                             alt=""><%= company.main_address %>
@@ -130,6 +132,7 @@
                                                     <% } %>
                                                     
                                                 </div>
+                                               </div>
                                             </div>
                                         </div>
                                     <% }) %>

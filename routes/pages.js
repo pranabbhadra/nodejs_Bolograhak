@@ -866,6 +866,27 @@ router.get('/company-poll-listing', checkCookieValue, async (req, res) => {
     }
     //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
 });
+
+//send review invitation page
+router.get('/send-review-invitation', checkCookieValue, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
+    const [globalPageMeta] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+    ]);
+    try {
+
+        res.render('front-end/send-review-invitation', {
+            menu_active_id: 'send-review-request',
+            page_title: 'Send Review Invitation',
+            currentUserData,
+            globalPageMeta:globalPageMeta
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+    //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
+});
 //-----------------------------------------------------------------//
 
 
