@@ -2418,14 +2418,14 @@ console.log("productData",ProductData)
 
     PromotionalData = [
       {
-        // promotion_title: promotion_title,
-        // promotion_desc: promotion_desc,
-        // promotion_discount: promotion_discount,
-        // promotion_image: promoImg,
-    promotion_title: [promotion_title], // Wrap single value in an array
-    promotion_desc: [promotion_desc],     // Wrap single value in an array
-    promotion_discount: [promotion_discount], // Wrap single value in an array
-    promotion_image: [promoImg],
+        promotion_title: promotion_title,
+        promotion_desc: promotion_desc,
+        promotion_discount: promotion_discount,
+        promotion_image: promoImg,
+    // promotion_title: [promotion_title],
+    // promotion_desc: [promotion_desc],     
+    // promotion_discount: [promotion_discount], 
+    // promotion_image: [promoImg],
       },
     ];
   }
