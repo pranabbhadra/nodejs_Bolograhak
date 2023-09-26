@@ -665,7 +665,8 @@ router.get('/categories', checkCookieValue, async (req, res) => {
         FROM category
         JOIN category_country_relation ON category.id = category_country_relation.cat_id
         JOIN countries ON category_country_relation.country_id = countries.id
-        LEFT JOIN category AS c ON c.ID = category.parent_id 
+        LEFT JOIN category AS c ON c.ID = category.parent_id
+        WHERE category.parent_id = 0
         GROUP BY category.category_name `;
         db.query(cat_query, (err, results) => {
             if (err) {
@@ -1563,7 +1564,7 @@ router.get('/add-user', checkLoggedIn, (req, res) => {
 
 
 //View Categories
-router.get('/categories', checkLoggedIn, (req, res) => {
+router.get('/manage-categories', checkLoggedIn, (req, res) => {
     const encodedUserData = req.cookies.user;
     const currentUserData = JSON.parse(encodedUserData);
     //res.render('users', { menu_active_id: 'user', page_title: 'Users', currentUserData });

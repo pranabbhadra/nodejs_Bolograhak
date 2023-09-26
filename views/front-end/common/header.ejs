@@ -50,15 +50,13 @@
     <div id="preloder" class="preloder"><img src="/front-end/images/GIF_v2sec.gif" alt="preloder"></div>
     <!-- ============== Header Start =============== -->
     <% if( menu_active_id == 'landing' || menu_active_id == 'home' ){ %>
+      <% if( meta_values_array.bannner_message ){ %>
       <section class="top-text-scroll">
         <marquee behavior="scroll" direction="left" onmouseover="this.stop();" onmouseout="this.start();">
-          <ul>
-              <li><a href="#">Lorem Ipsum is simply dummy text</a></li>
-              <li><a href="#">Lorem Ipsum is simply dummy text</a></li>
-              <li><a href="#">Lorem Ipsum is simply dummy text</a></li>
-          </ul>
-      </marquee>
+          <%- meta_values_array.bannner_message -%>
+        </marquee>
       </section>
+      <% } %>
     <% } %>
     <header class="main_header <% if(menu_active_id!='landing' &&  menu_active_id != 'home'){ %>inner_header<% }%>">
       <div class="container">
