@@ -4284,8 +4284,12 @@ exports.createPoll = async (req, res) => {
     console.log('createPoll',req.body );
     const {company_id, user_id, poll_question, poll_answer, expire_date} = req.body;
     //const answers = JSON.stringify(poll_answer);
-    const currentDate = new Date();
-    const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+     const currentDate = new Date();
+    // const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth() + 1; // Months are zero-based (0 = January, 11 = December), so add 1
+    const day = currentDate.getDate();
+    const formattedDate = `${year}-${month < 10 ? '0' : ''}${month}-${day < 10 ? '0' : ''}${day}`;
     const sql = `INSERT INTO poll_company ( company_id, poll_creator_id, question, created_at, expired_at) VALUES (?,?,?,?,?)`;
     const data = [company_id, user_id, poll_question, formattedDate, expire_date];
     db.query(sql, data,async (err, result) => {

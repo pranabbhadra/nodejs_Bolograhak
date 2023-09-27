@@ -244,82 +244,91 @@
 
 
     <!-- ONGOING POLL START -->
-    <% if(PollDetails.length > 0 ) { %>
-        <% PollDetails.forEach((poll)=>{  %>
-            <% const dateString = poll.expired_at; %>
-            <% const date = new Date(dateString); %>
-            <% const date2 = new Date(); %>
-            <% const daysDiff = Math.round((date - date2)/(1000 * 60 * 60 * 24)) %>
-            <% if(daysDiff >= 0 ) { %>
-            <section class="ongoing_poll_sec">
-                <div class="container">
-                    <h2 class="inner-main-head">Ongoing Poll</h2>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <form action="">
-                                <div class="ongoing_poll_content">
-                                    <h3><%= poll.question %></h3>
-                                        <% poll.poll_answer.forEach((ans, index )=>{%>
-                                            <% var voteCount = poll.voting_answer_id.length 
-                                                var ansCount = 0;
-                                            %>
-                                            <% poll.voting_answer_id.forEach((ans_id) =>{ 
-                                                if(ans_id == poll.poll_answer_id[index]){
-                                                    ansCount++;
-                                                }
-                                            }) %>
-                                            <% var percentOfVote = Math.round((ansCount/voteCount)*100) %>
-                                            
-                                            <label for="" class="ongoing-poll">
-                                                    <div class="poll_flex">
-                                                        <div class="column">
-                                                            <span class="circle"></span>
-                                                            <a href="#" class="polling" data-ans-id="<%= poll.poll_answer_id[index] %>" data-poll-id="<%= poll.poll_id %>" data-user-id="<%= currentUserData.user_id %>"><span class="text"> <%= ans %>  </span></a>
-                                                        </div>
-                                                            <span class="progress" ><%= percentOfVote %>% </span>
-                                                    </div>
-                                                    
-                                                <div class="progress-bar" style="--w:<%= percentOfVote %>; width: <%= percentOfVote %>%;" ></div>
-                                            </label>
-                                        <% }) %>
-                                        <!-- <label for="" class="ongoing-poll">
-                                            <div class="poll_flex">
-                                                <div class="column">
-                                                    <span class="circle"></span>
-                                                    <span class="text">Lorem Ipsum is simply dummy text</span>
-                                                </div>
-                                                    <span class="progress">80%</span>
-                                            </div>
-                                            <div class="progress-bar" style="--w:70">  </div>
-                                        </label>
-
-                                        <label for="" class="ongoing-poll">
-                                            <div class="poll_flex">
-                                                <div class="column">
-                                                    <span class="circle"></span>
-                                                    <span class="text">Lorem Ipsum is simply dummy text</span>
-                                                </div>
-                                                    <span class="progress">50%</span>
-                                            </div>
-                                            <div class="progress-bar" style="--w:50">  </div>
-                                        </label> -->
-                                    
-                                    <div class="poll_btn">
-                                        <p><%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></p>
-                                    </div>
+    <% if(currentUserData && currentUserData.user_id) { %>
+        <% if(PollDetails.length > 0 ) { %>
+            <% PollDetails.forEach((poll)=>{  %>
+                <% const dateString = poll.expired_at; %>
+                <% const date = new Date(dateString); %>
+                <% const date2 = new Date(); %>
+                <% const daysDiff = Math.round((date - date2)/(1000 * 60 * 60 * 24)) %>
+                <% if(daysDiff >= 0 ) { %>
+                <section class="ongoing_poll_sec">
+                    <div class="container">
+                        <h2 class="inner-main-head">Ongoing Poll</h2>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <form action="">
+                                    <div class="ongoing_poll_content">
+                                        <h3><%= poll.question %></h3>
+                                            <% poll.poll_answer.forEach((ans, index )=>{%>
+                                                <% var voteCount = poll.voting_answer_id.length 
+                                                    var ansCount = 0;
+                                                    var user_ans_id = '';
+                                                %>
+                                                <% poll.voting_answer_id.forEach((ans_id) =>{ 
+                                                    if(ans_id == poll.poll_answer_id[index]){
+                                                        ansCount++;
+                                                    }
+                                                }) %>
                                                 
-                                    <div class="poll_box_icon">
-                                        <img src="/front-end/images/poll-box-icons.png" alt="">
-                                    </div>
-                                </div>
-                            </form>
-                        </div> 
+                                                <% poll.voting_user_id.forEach((user_id, key) =>{ 
+                                                    if(user_id == currentUserData.user_id){
+                                                        user_ans_id = poll.voting_answer_id[key];
+                                                    }
+                                                }) %>
+                                                <% var percentOfVote = Math.round((ansCount/voteCount)*100) %>
+                                                <a class="poll-main-wrapper <%= user_ans_id ? '' : 'polling' %> " data-ans-id="<%= poll.poll_answer_id[index] %>" data-poll-id="<%= poll.poll_id %>" data-user-id="<%= currentUserData.user_id %>">
+                                                <label for="" class="ongoing-poll <%= user_ans_id  ? 'active' : '' %> <%= user_ans_id == poll.poll_answer_id[index] ? 'selected' : 'disable' %>">
+                                                        <div class="poll_flex">
+                                                            <div class="column">
+                                                                <span class="circle"></span>
+                                                                <span class="text"> <%= ans %> </span>
+                                                            </div>
+                                                                <span class="progress" ><%= user_ans_id ? percentOfVote : 0 %>% </span>
+                                                        </div>
+                                                        
+                                                    <div class="progress-bar" style="--w:<%= user_ans_id ? percentOfVote : 0 %>; width: <%= user_ans_id ? percentOfVote : 0 %>%;" ></div>
+                                                </label></a>
+                                            <% }) %>
+                                            <!-- <label for="" class="ongoing-poll">
+                                                <div class="poll_flex">
+                                                    <div class="column">
+                                                        <span class="circle"></span>
+                                                        <span class="text">Lorem Ipsum is simply dummy text</span>
+                                                    </div>
+                                                        <span class="progress">80%</span>
+                                                </div>
+                                                <div class="progress-bar" style="--w:70">  </div>
+                                            </label>
 
+                                            <label for="" class="ongoing-poll">
+                                                <div class="poll_flex">
+                                                    <div class="column">
+                                                        <span class="circle"></span>
+                                                        <span class="text">Lorem Ipsum is simply dummy text</span>
+                                                    </div>
+                                                        <span class="progress">50%</span>
+                                                </div>
+                                                <div class="progress-bar" style="--w:50">  </div>
+                                            </label> -->
+                                        
+                                        <div class="poll_btn">
+                                            <p><%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></p>
+                                        </div>
+                                                    
+                                        <div class="poll_box_icon">
+                                            <img src="/front-end/images/poll-box-icons.png" alt="">
+                                        </div>
+                                    </div>
+                                </form>
+                            </div> 
+
+                        </div>
                     </div>
-                </div>
-            </section>
-            <% } %>
-        <% }) %>
+                </section>
+                <% } %>
+            <% }) %>
+        <% } %>
     <% } %>
      <!-- ONGOING POLL END -->
 

@@ -979,6 +979,15 @@ span#selected-range-emojis {
     display: none;
 }
 
+.ongoing_poll_content label.ongoing-poll.selected .progress,
+.ongoing_poll_content label.ongoing-poll.active .progress {
+    display: block;
+}
+.ongoing_poll_content .poll-main-wrapper label.ongoing-poll.disable {
+    pointer-events: none;
+}
+
+
 .ongoing_poll_content label.selected .poll_flex .column .circle::after {
     display: block;
     background-color: #ffffff;
