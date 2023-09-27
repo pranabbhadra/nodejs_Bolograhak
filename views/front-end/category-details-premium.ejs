@@ -770,6 +770,7 @@
                     <div class="col-lg-6">
                         <div class="company-submit-review-form">
                             <form id="review_submit_frm" name="review_submit_frm" action="" method="post">
+                                <input type="hidden" name="review_lable" value="1" >
                             <div class="custom-form">
                                 <input type="hidden" class="form-control" id="search-input-review" name="company_name" placeholder="Business/Institute/Establishment Name" required value="<%= CompanyInfo.company_name %>" readonly>
                             </div>
@@ -854,14 +855,7 @@
 <%- include('common/footer') -%>  
 <script>
     ///////////////////// Polling /////////
-//     $(document).on("click", ".polling", function(e) {
-//   e.preventDefault();
-//   alert('aaaaaa');
-//   var ansId = $(this).attr("data-ans-id");
-//   var pollId = $(this).attr("data-poll-id");
-//   var userId = $(this).attr("data-user-id");
-//   console.log(ansId, pollId, userId);
-// });
+
     $(document).on("click", ".polling", function(e) {
         e.preventDefault();
         //alert('aaaaaa');

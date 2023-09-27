@@ -278,4 +278,7 @@ router.post('/update-poll-expire-date', authController.updatePollExpireDate);
 //Polling Route
 router.post('/user_polling', authController.userPolling);
 
+//Review Invitation Email
+router.post('/review_invitation', authController.reviewInvitation);
+
 module.exports = router;

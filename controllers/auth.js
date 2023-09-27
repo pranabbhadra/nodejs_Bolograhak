@@ -4363,3 +4363,9 @@ exports.userPolling = async (req, res) => {
         }
     } )
 }
+
+// Review Invitation
+exports.reviewInvitation = async (req, res) => {
+    console.log('reviewInvitation',req.body );
+   
+}

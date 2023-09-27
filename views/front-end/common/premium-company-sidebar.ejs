@@ -125,9 +125,12 @@
 				<li <% if( menu_active_id == 'company-profile-management') { %>  class="active" <% } %>><a href="/company-profile-management/<%= company.slug  %>">Company Profile</a></li>
 			</ul>
 		</li>
-		<li <% if( menu_active_id == 'company-review-listing') { %> class="active" <% } %>>
+		<li <% if( menu_active_id == 'company-review-listing' || menu_active_id == 'send-review-invitation') { %> class="active" <% } %>>
          <a href="/company-review-listing/<%= company.slug  %>"><i class="fas fa-envelope"></i> Reviews</a>
-      	</li>
+         <ul>
+				<li <% if( menu_active_id == 'send-review-invitation') { %>  class="active" <% } %>><a href="/send-review-invitation/<%= company.slug  %>">Review Invitation</a></li>
+			</ul>
+      </li>
          <li <% if( menu_active_id == 'company-poll-listing') { %> class="active" <% } %>>
             <a href="/company-poll-listing/<%= company.slug  %>"><i class="fas fa-poll"></i> Polls</a>
          </li>

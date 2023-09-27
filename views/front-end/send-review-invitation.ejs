@@ -6,88 +6,16 @@
 <section class="main-content premium_company_profile">
     <div class="container">
         <div class="main_box">
-            <div class="basic_info_of_company">
-               <div class="row align-items-center">
-                  <div class="col-md-4 col-lg-3">
-                     <div class="company_logo">
-                        <a href="/company/1"><img src="/1692865514410-1691580646587-1691402453374-1688989215485-logo.png" alt="SCWEBTECH"></a>
-                        <div class="premium_logo"><i class="fas fa-crown"></i></div>
-                     </div>
-                  </div>
-                  <div class="col-md-8 col-lg-6">
-                     <div class="company_details">
-                        <div class="row">
-                           <div class="col-sm-12">
-                              <h2 class="company_name">
-                                 SCWEBTECH
-                              </h2>
-                              <h4 class="tag_line">Simply Creative </h4>
-                           </div>
-                           <div class="col-sm-6">
-                              <p class="common_style"><i class="fas fa-envelope"></i><a href="mailto:info@scwebtech.com">
-                                 info@scwebtech.com
-                                 </a>
-                              </p>
-                           </div>
-                           <div class="col-sm-6">
-                              <p class="common_style"><i class="fas fa-mobile"></i><a href="tel:9885458745">
-                                 9885458745
-                                 </a>
-                              </p>
-                           </div>
-                           <div class="col-sm-12">
-                              <p class="common_style"><i class="fas fa-map-marker-alt"></i>
-                                 Bengal Eco Intelligent Park Module number 19, 13th Floor, Plot No. 3, EM Block, Sector V, Bidhannagar, Kolkata, West Bengal 700091
-                              </p>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-                  <div class="col-md-12 col-lg-3">
-                     <div class="overall_score">
-                        <div class="social_links">
-                           <ul>
-                              <li><a href="https://facebook.com" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
-                           </ul>
-                        </div>
-                        <div class="score_info">
-                           <div class="d-flex align-items-center mb-2">
-                           </div>
-                           <p>Total Reviews 5</p>
-                        </div>
-                     </div>
-                  </div>
-               </div>
-            </div>
-            <div class="company_profile_navigation">
-               <ul>
-                  <li>
-                     <a href="/company-dashboard/1"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-                  </li>
-                  <li>
-                     <a href="#"><i class="fas fa-user-tie"></i> Profile</a>
-                     <ul>
-                        <li><a href="/myprofile">User Profile</a></li>
-                        <li><a href="/company-profile-management/1">Company Profile</a></li>
-                     </ul>
-                  </li>
-                  <li class="active">
-                     <a href="/company-review-listing/1"><i class="fas fa-envelope"></i> Reviews</a>
-                  </li>
-                  <!-- <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li> -->
-                  <li><a href="/change-password"><i class="fas fa-lock"></i> Change Password</a></li>
-                  <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-               </ul>
-            </div>
+            <%- include('common/premium-company-sidebar') -%>
          </div>
         <div class="send-review-invitation">
-            <form>
+            <form id="form_review_invitation">
             <div id="sendreviewtags">
-                <input type="text" value="" placeholder="Add an email" />
+                <input type="text" name="emails" placeholder="Add an email" />
             </div>
             <div class="custom-form">
                 <label><span>Message</span></label>
-                <textarea name="" class="form-control mb-4"></textarea>
+                <textarea name="email_content" class="form-control mb-4"></textarea>
             </div>
             <!-- <div class="bulk-upload mb-4">
                 <label for="">Bulk Upload</label>
@@ -101,3 +29,56 @@
 <!-- ================ Section1 End ======================= -->
 
 <%- include('common/footer') -%>
+
+<script>
+$(document).ready(function () {
+   var allEmils = [];
+    $('form#form_review_invitation').submit(function (e) {
+      e.preventDefault();
+      alert('aaaaaa')
+      $(this).find('#sendreviewtags').find('span').each(function(){
+         var enteredEmail = $(this).text();
+         allEmils.push(enteredEmail);
+      });
+      console.log(allEmils);
+       
+      
+      // Create a new FormData object from the form
+      // var formElement = document.getElementById('form-create-poll');
+      // const formData = new FormData(formElement);
+      //const formData = new FormData($('#form_review_invitation')[0]);
+      
+      // const jsonResponse = $('#form_review_invitation').serializeArray();
+      // const transformedResponse = {};
+      // jsonResponse.forEach(item => {
+      //    const { name, value } = item;
+      //    transformedResponse[name] = value;
+      // });
+      //console.log(jsonResponse);
+      //return false;
+
+      $.ajax({
+         url: '/auth/review_invitation', // URL for your API endpoint
+         method: 'POST',
+         data: JSON.stringify(allEmils),
+         //data: formData,
+         processData: false,
+         //contentType: false,
+         contentType: 'application/json',
+         success: function (data) {
+            if (data.status == 'ok') {
+               
+               window.location.reload();
+            } else {
+               
+               console.log('Something went wrong');
+            }
+         },
+         error: function (xhr, status, error) {
+            // Handle any errors that occur during the request
+            console.log(error);
+         }
+      });
+   });
+});
+</script>
