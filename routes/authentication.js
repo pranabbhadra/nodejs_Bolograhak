@@ -201,6 +201,9 @@ router.post('/profileManagement',  upload.fields([
     { name: 'product_image', maxCount: 100 },
 
 ]), authenController.profileManagement);
+//reviewVoting
+router.post('/reviewVoting',verifyToken, authenController.reviewVoting);
+
 //forget password
 router.post('/forgotPassword', authenController.forgotPassword);
 router.post('/resetPassword',  authenController.resetPassword);
