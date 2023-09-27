@@ -1450,6 +1450,28 @@
 		font-size: 13px;
 	}
 
+	.prem-modal-company-info .company_listing_logo {
+		width: 95px;
+		height: 95px;
+		margin-top: -55px;
+	}
+
+	.prem-modal-company-info-right {
+		padding-left: 115px;
+	}
+
+	.company_listing_box h4 {
+		font-size: 20px;
+	}
+
+	#premiumcompanymodal .company_listing_box .company_listing_p {
+		font-size: 16px;
+	}
+
+	.company_listing_emoji {
+		display: block;
+	}
+
 }
 
 @media only screen and (max-width:660.98px) {
@@ -2109,6 +2131,40 @@
 	.discussion-similar-thread h3 {
 		font-size: 20px;
 	}
+
+	.prem-modal-company-info .company_listing_logo {
+		margin-top: -40px;
+		position: relative;
+	}
+
+	.prem-modal-company-info-right {
+		padding-left: 0;
+	}
+
+	.company-list-btm-part {
+		padding: 0 25px 40px;
+	}
+
+	#premiumcompanymodal .btn-close svg {
+		width: 35px;
+		height: 35px;
+	}
+
+	#premiumcompanymodal .company_listing_emoji .company_listing_span, 
+	#premiumcompanymodal .company_listing_emoji p, 
+	#premiumcompanymodal .company_listing_emoji .company_listing_span1 {
+		font-size: 14px;
+	}
+
+	.modal-slide-in .slick-dots li button {
+		width: 34px;
+		height: 12px;
+	}
+
+	.modal-slide-in .slick-dots li {
+		margin: 0 3px;
+	}
+	
 
 }
 

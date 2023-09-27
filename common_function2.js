@@ -1173,7 +1173,7 @@ async function getSubCategories(categorySlug) {
 
 // Function to fetch  Category Company details
 async function getCompanyDetails(categorySlug) {
-  const sql = `SELECT c.ID, c.company_name, c.logo, c.status, c.trending, c.main_address, c.verified, c.paid_status, c.slug , AVG(r.rating) as comp_avg_rating, COUNT(r.id) as comp_total_reviews, pcd.cover_img
+  const sql = `SELECT c.ID, c.company_name, c.logo, c.status, c.trending, c.main_address, c.verified, c.paid_status, c.about_company, c.slug , AVG(r.rating) as comp_avg_rating, COUNT(r.id) as comp_total_reviews, pcd.cover_img
                 FROM category  
                 JOIN company_cactgory_relation ccr ON ccr.category_id = category.ID
                 LEFT JOIN company c ON c.ID = ccr.company_id

@@ -99,7 +99,7 @@
     text-transform: capitalize;
 }
 
-.company_listing_emoji .company_listing_span1 {
+.company_listing_span1 {
     color: #169641;
     text-align: right;
     font-family: Nunito;
@@ -113,6 +113,7 @@
 .company_listing_box .company_listing_p {
     display: flex;
     align-items: flex-start;
+    align-items: center;
     gap: 8px;
     color: #000;
     font-family: Nunito;
@@ -157,7 +158,9 @@
 }
 
 .company_listing_logo img {
-    width: 50px;
+    height: 55px !important;
+    width: 55px;
+    object-fit: contain;
 }
 
 .company_listing_logo {
@@ -171,10 +174,16 @@
     margin-top: -64px;
     z-index: 1;
     position: relative;
+    box-shadow: 0 0 5px #ccc;
+    margin-left: 10px;
 }
 
 .company_listing_box img {
     border-radius: 18px;
+}
+
+#premiumcompanymodal .company_listing_box img {
+    border-radius: 0;
 }
 
 .select_option {
@@ -189,6 +198,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    max-width: 265px;
+    margin-left: auto;
 }
 
 .select_option p {
@@ -254,6 +265,137 @@
     appearance: none;
 }
 
+.company_listing_box {
+    box-shadow: 0px 0 14px 0px rgba(0, 0, 0, 0.22);
+    border-radius: 20px;
+    height: 100%;
+}
+
+.company_listing_all_info_wrapper {
+    padding: 20px 15px;
+}
+
 .company_listing_box .img-fluid {
     width: 100%;
+}
+
+
+.progress circle {
+    fill: #ccc;
+    stroke: #00d6d6;
+    stroke-width: 10;
+}
+
+#premiumcompanymodal .modal-dialog {
+    max-width: 645px;
+    margin-bottom: 70px;
+}
+
+.prem-modal-company-info {
+    position: relative;
+}
+
+.prem-modal-company-info .company_listing_logo {
+    width: 170px;
+    height: 170px;
+    box-shadow: 0px 14px 34px 0px rgba(0, 0, 0, 0.12);
+    position: absolute;
+    margin-top: -95px;
+    margin-left: 0;
+}
+
+.prem-modal-company-info .company_listing_logo img {
+    width: 115px;
+    height: 115px !important;
+    object-fit: contain;
+}
+
+.prem-modal-company-info .company_listing_box h4 {
+    font-size: 28px;
+}
+
+.prem-modal-company-info-right {
+    padding-left: 200px;
+}
+
+.company-list-btm-part {
+    padding: 0 40px 60px;
+}
+
+#premiumcompanymodal .treading_content {
+    margin-bottom: 35px;
+    justify-content: start;
+    gap: 14px;
+}
+
+#premiumcompanymodal .company_listing_emoji .company_listing_span,
+#premiumcompanymodal .company_listing_emoji p,
+#premiumcompanymodal .company_listing_emoji .company_listing_span1 {
+    font-size: 17px;
+}
+
+#premiumcompanymodal .company_listing_box .company_listing_p {
+    font-size: 18px;
+    margin: 25px 0;
+    line-height: normal;
+}
+
+#premiumcompanymodal::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+#premiumcompanymodal::-webkit-scrollbar {
+    background-color: transparent;
+}
+
+#premiumcompanymodal .modal-header {
+    z-index: 9;
+}
+
+#premiumcompanymodal .btn-close svg {
+    width: 50px;
+    height: 50px;
+}
+
+#premiumcompanymodal .modal-content,
+#premiumcompanymodal .modal-body {
+    border-radius: 20px 20px;
+}
+
+#premiumcompanymodal .slider-progress {
+    border-radius: 20px 20px 0 0;
+}
+
+#premiumcompanymodal .progress {
+    --bs-progress-height: 10px;
+    --bs-progress-bg: #FCCB06;
+    border-radius: 20px 20px 0 0;
+}
+
+.modal-slide-in ul.slick-dots {
+    position: absolute;
+    bottom: -40px;
+    z-index: 99999999;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+    width: 100%;
+}
+
+.modal-slide-in .slick-dots li {
+    display: inline-block;
+    margin: 0 10px;
+}
+
+.modal-slide-in .slick-dots li button {
+    font-size: 0;
+    width: 46px;
+    height: 17px;
+    border-radius: 900px;
+    border: 2px solid #FFF;
+    background-color: transparent;
+}
+.modal-slide-in .slick-dots li.slick-active button {
+    background: #FCCB06;
+    border-color: #FCCB06;
 }

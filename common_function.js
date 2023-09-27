@@ -1057,6 +1057,117 @@ async function reviewTagsCountByCompanyID(companyId){
   }
 }
 
+async function getPopularCategories(){
+  const get_popular_company_query = `
+  SELECT 
+  ccr.category_id,
+  cg.category_name,
+  cg.category_img,
+  cg.category_slug,
+  COUNT(*) AS review_count
+  FROM 
+    reviews r
+  INNER JOIN
+    company_cactgory_relation ccr ON r.company_id = ccr.company_id
+  INNER JOIN
+    category cg ON ccr.category_id = cg.ID
+  WHERE 
+    r.review_status = '1'
+  GROUP BY 
+    ccr.category_id
+  ORDER BY 
+    review_count DESC
+  LIMIT 4;
+  `;
+  try{
+    const get_popular_company_query_result = await query(get_popular_company_query);
+    return get_popular_company_query_result;
+  }catch(error){
+    return 'Error during user get_rewiew_tag_counts_query:'+error;
+  }
+}
+
+async function getReviewCount(){
+  const get_review_count_query = `
+  SELECT COUNT(*) AS total_reviews_count
+  FROM reviews
+  WHERE review_status = '1';
+  `;
+  try{
+    const get_review_count_query_result = await query(get_review_count_query);
+    return get_review_count_query_result;
+  }catch(error){
+    return 'Error during user get_rewiew_tag_counts_query:'+error;
+  }
+}
+
+async function getUserCount(){
+  const get_user_count_query = `
+  SELECT COUNT(*) AS total_user_count
+  FROM users
+  WHERE user_status = 1 AND user_type_id = 2;
+  `;
+  try{
+    const get_user_count_query_result = await query(get_user_count_query);
+    return get_user_count_query_result;
+  }catch(error){
+    return 'Error during user get_rewiew_tag_counts_query:'+error;
+  }
+}
+
+async function getCategoryDetails(category_slug){
+  const get_category_query = `
+  SELECT * FROM category
+  WHERE category_slug = ?;
+  `;
+  const get_category_slug = category_slug;
+  try{
+    const get_category_query_result = await query(get_category_query, get_category_slug);
+    // if(get_category_query_result[0].parent_id){
+    //   console.log(get_category_query_result);
+    // }
+    return get_category_query_result;
+  }catch(error){
+    return 'Error during user get_category_query:'+error;
+  }
+}
+
+async function getParentCategories(ID) {
+  const get_category_query = `
+  SELECT * FROM category
+  WHERE ID = ?;
+  `;
+  const cat_ID = ID;
+  try{
+    const get_category_query_result = await query(get_category_query, cat_ID);
+    // if(get_category_query_result[0].parent_id){
+    //   console.log(get_category_query_result);
+    // }
+    return get_category_query_result;
+  }catch(error){
+    return 'Error during user get_category_query:'+error;
+  }
+}
+
+async function getPositiveReviewsCompany() {
+  const get_positive_reviews_company_query = `
+  SELECT company_id, COUNT(*) AS review_count, com.company_name, com.slug
+  FROM reviews
+  JOIN company com ON reviews.company_id = com.ID
+  WHERE rating >= 4 AND review_status = '1'
+  GROUP BY company_id
+  ORDER BY review_count DESC
+  LIMIT 5;
+  `;
+  try{
+    const get_positive_reviews_result = await query(get_positive_reviews_company_query);
+    return get_positive_reviews_result;
+  }catch(error){
+    return 'Error during user get_positive_reviews_company_query:'+error;
+  }
+}
+
+
 module.exports = {
     getUser,
     getUserMeta,
@@ -1090,5 +1201,11 @@ module.exports = {
     getAllReviewsByCompanyID,
     getReviewByID,
     getReviewReplyDataByID,
-    reviewTagsCountByCompanyID
+    reviewTagsCountByCompanyID,
+    getPopularCategories,
+    getReviewCount,
+    getUserCount,
+    getCategoryDetails,
+    getParentCategories,
+    getPositiveReviewsCompany
 };

@@ -35,7 +35,8 @@ header.main_header {
     transition: all ease-in-out 0.5s;
 }
 
-body.new-home header.main_header {
+body.new-home header.main_header,
+body.home header.main_header {
     top: 60px;
 }
 
@@ -525,7 +526,8 @@ header.main_header.fixed-top {
     bottom: -1px;
     width: 1920px;
     height: 240px;
-    background: url(../images/banner-bottom-shape.png) no-repeat center bottom;
+    /* background: url(../images/banner-bottom-shape.png) no-repeat center bottom; */
+    background: url(../images/banner-bottom-shape-white.png) no-repeat center bottom;
     background-size: cover;
 }
 

@@ -496,6 +496,65 @@ jQuery(function ($) {
     slidesToScroll: 1
   });
 
+
+
+  var time = 2;
+  var $bar,
+    $slick,
+    isPause,
+    tick,
+    percentTime;
+
+  $slick = $('.modal-slide-in');
+  $slick.slick({
+    infinite: true,
+    speed: 1400,
+    autoplay: false,
+    autoplaySpeed: 12000,
+    pauseOnHover: true,
+    dots: true,
+    arrows: false,
+    slidesToShow: 1,
+    slidesToScroll: 1
+  });
+
+  $bar = $('.slider-progress .progress');
+
+  function startProgressbar() {
+    resetProgressbar();
+    percentTime = 0;
+    isPause = false;
+    tick = setInterval(interval, 30);
+  }
+
+  function interval() {
+    if (isPause === false) {
+      percentTime += 1 / (time + 0.1);
+      $bar.css({
+        width: percentTime + "%"
+      });
+      if (percentTime >= 100) {
+        $slick.slick('slickNext');
+        startProgressbar();
+      }
+    }
+  }
+
+  function resetProgressbar() {
+    $bar.css({
+      width: 0 + '%'
+    });
+    clearTimeout(tick);
+  }
+
+  startProgressbar();
+
+  $('.modal-slide-in .slick-dots li').click(function() {
+    startProgressbar();
+  });
+
+
+
   // /////////////////////////////////////// Slick Slider end
 
 
@@ -726,6 +785,14 @@ jQuery(function ($) {
   //   }, 10000);
   // });
 
+  $(window).load(function () {
+    setTimeout(function () {
+      $("#premiumcompanymodal").modal('show');
+    }, 2000);
+  });
+  $('.modal').on('shown.bs.modal', function (e) {
+    $('.modal-slide-in').slick('setPosition');
+  })
   
 
   setTimeout(function () {
@@ -1045,11 +1112,23 @@ $(this).parents(".multiple-ans-repeat").find(".custom-form").hide();
 });
 /*=========================== Remove multiple answer function End =================*/
 
+/*=========================== Send Review request tags start =================*/
+$("#sendreviewtags input").on({
+  focusout : function() {
+    var txt = this.value.replace(/[^a-z0-9\+\-\.\#]/ig,''); // allowed characters
+    if(txt) $("<span/>", {text:txt.toLowerCase(), insertBefore:this});
+    this.value = "";
+  },
+  keyup : function(ev) {
+    // if: comma|enter (delimit more keyCodes with | pipe)
+    if(/(188|13)/.test(ev.which)) $(this).focusout(); 
+  }
+});
+$('#sendreviewtags').on('click', 'span', function() {
+  if(confirm("Remove "+ $(this).text() +"?")) $(this).remove(); 
+});
+/*=========================== Send Review request tags End =================*/
 
-
-
-
- 
 
 labels = document.querySelectorAll('.ongoing-poll')
 

@@ -50,9 +50,21 @@
     margin: 15px 0;
 }
 
+.popular-category-part img {
+    margin: 0 auto 25px;
+    height: 120px !important;
+    width: auto;
+}
+
 .popular-category-part svg {
 	height: 135px;
 	margin-bottom: 25px;
+}
+
+.popular-category-part img {
+	height: 100px !important;
+	width: auto;
+	margin: 0 auto 20px;
 }
 
 .popular-category-part a {
