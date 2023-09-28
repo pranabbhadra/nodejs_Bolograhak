@@ -1115,7 +1115,7 @@ $(this).parents(".multiple-ans-repeat").find(".custom-form").hide();
 /*=========================== Send Review request tags start =================*/
 $("#sendreviewtags input").on({
   focusout : function() {
-    var txt = this.value.replace(/[^a-z0-9\+\-\.\#]/ig,''); // allowed characters
+    var txt = this.value.replace(/[^a-z0-9\+\-\.\@]/ig,''); // allowed characters
     if(txt) $("<span/>", {text:txt.toLowerCase(), insertBefore:this});
     this.value = "";
   },

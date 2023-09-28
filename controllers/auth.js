@@ -1240,24 +1240,46 @@ exports.editUserData = (req, res) => {
 
 //--- Delete User ----//
 exports.deleteUser = (req, res) => {
-    //console.log(req.body.companyid);
-    sql = `DELETE FROM users WHERE user_id = ?`;
+    console.log(req.body);
+    const sql = `DELETE FROM users WHERE user_id = ?`;
     const data = [req.body.userid];
-    db.query(sql, data, (err, result) => {
+     db.query(sql, data, (err, result) => {
         if (err) {
             return res.send({
                 status: 'error',
-                message: 'Something went wrong'
+                message: 'Something went wrong' +err
             });
         } else {
-            return res.send({
-                status: 'ok',
-                message: 'User successfully deleted'
-            });
+            const metaSql = `DELETE FROM user_customer_meta WHERE user_id = ${req.body.userid}`;
+            db.query(metaSql,  (metaErr, metaResult) => {
+                if (metaErr) {
+                    return res.send({
+                        status: 'error',
+                        message: 'Something went wrong' + metaErr
+                    });
+                }else{
+                    const delWPQuery = `DELETE FROM bg_users WHERE user_login = '${req.body.userEmail}'`;
+                     db.query(delWPQuery, (WPerr,WPresult)=>{
+                        if (WPerr) {
+                            return res.send({
+                                status: 'error',
+                                message: 'Something went wrong' + WPerr
+                            });
+                        } else {
+                            return res.send({
+                                status: 'ok',
+                                message: 'User successfully deleted'
+                            });
+                        }
+                    })
+                }
+            })
         }
-
     })
 
+    
+
+   
 }
 
 //--- Create New Company ----//
@@ -4367,5 +4389,14 @@ exports.userPolling = async (req, res) => {
 // Review Invitation
 exports.reviewInvitation = async (req, res) => {
     console.log('reviewInvitation',req.body );
-   
+    const {emails, email_body, user_id, company_id, company_name } = req.body;
+    const [InvitationDetails, sendInvitationEmail] = await Promise.all([
+        comFunction2.insertInvitationDetails(req.body),
+        comFunction2.sendInvitationEmail(req.body)
+    ]);
+
+    return res.send({
+        status: 'ok',
+        message: 'Invitation emails send successfully'
+    });
 }

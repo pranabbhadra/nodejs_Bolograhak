@@ -511,6 +511,8 @@ router.get('/terms-of-service', checkCookieValue, async (req, res) => {
 
 router.get('/company/:slug', checkCookieValue, async (req, res) => {
     const slug = req.params.slug;
+    const labeltype = req.query.type || null;
+    console.log(labeltype)
     let currentUserData = JSON.parse(req.userData);
     const comp_res =await comFunction2.getCompanyIdBySlug(slug);
     if (typeof comp_res == 'undefined') {
@@ -528,7 +530,8 @@ router.get('/company/:slug', checkCookieValue, async (req, res) => {
         const companyID = comp_res.ID;
         // console.log(comp_res);
         // console.log(companyID);
-        const [allRatingTags, CompanyInfo, companyReviewNumbers, getCompanyReviews, globalPageMeta, PremiumCompanyData, CompanyPollDetails] = await Promise.all([
+        // countInvitationLabels 1=No Labels,2=Invitation
+        const [allRatingTags, CompanyInfo, companyReviewNumbers, getCompanyReviews, globalPageMeta, PremiumCompanyData, CompanyPollDetails, countInvitationLabels] = await Promise.all([
             comFunction.getAllRatingTags(),
             comFunction.getCompany(companyID),
             comFunction.getCompanyReviewNumbers(companyID),
@@ -536,6 +539,7 @@ router.get('/company/:slug', checkCookieValue, async (req, res) => {
             comFunction2.getPageMetaValues('global'),
             comFunction2.getPremiumCompanyData(companyID),
             comFunction2.getCompanyPollDetails(companyID),
+            comFunction2.countInvitationLabels('2'),
         ]);
         
         //console.log(get_company_id.ID)
@@ -606,7 +610,9 @@ router.get('/company/:slug', checkCookieValue, async (req, res) => {
                 //     linkedin_url:linkedin_url,
                 //     youtube_url:youtube_url,
                 //     support_data:support_data,
-                //    PollDetails,
+                //     PollDetails,
+                //     labeltype,
+                //     countInvitationLabels
                 // });
                 res.render('front-end/category-details-premium',
                 {
@@ -631,6 +637,8 @@ router.get('/company/:slug', checkCookieValue, async (req, res) => {
                     youtube_url:youtube_url,
                     support_data:support_data,
                     PollDetails,
+                    labeltype,
+                    countInvitationLabels
                 });
             }else{
                 res.render('front-end/company-details',

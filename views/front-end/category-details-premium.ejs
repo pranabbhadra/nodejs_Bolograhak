@@ -770,7 +770,6 @@
                     <div class="col-lg-6">
                         <div class="company-submit-review-form">
                             <form id="review_submit_frm" name="review_submit_frm" action="" method="post">
-                                <input type="hidden" name="review_lable" value="1" >
                             <div class="custom-form">
                                 <input type="hidden" class="form-control" id="search-input-review" name="company_name" placeholder="Business/Institute/Establishment Name" required value="<%= CompanyInfo.company_name %>" readonly>
                             </div>
@@ -835,7 +834,20 @@
                                 </div>
                             </div>
                             <div class="review-submit d-sm-flex align-items-center">
+                                <% if(labeltype == 'invitation'){ %>
                                 
+                                    <% if(countInvitationLabels[0].label_count < 100){ %>
+                                        <input type="hidden" name="review_lable" value="2" >
+                                    <% }else{ %>
+                                        <input type="hidden" name="review_lable" value="1" >
+                                    <% } %>
+                                
+
+                                <% }else{ %>
+                                    <input type="hidden" name="review_lable" value="1" >
+                                <% } %>
+
+
                                 <% if(currentUserData){ %>
                                 <input type="submit" class="btn-default btn-warning me-3 mb-sm-0 mb-1" value="Submit">
                                 <% } else { %>
