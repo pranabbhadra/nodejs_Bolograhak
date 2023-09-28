@@ -79,7 +79,7 @@
             </button>
         </a>
     </div>
-    <div class="nav-tab-wrapper">
+    <div class="nav-tab-wrapper ays-poll-results-page-wrapper">
         <a href="#tab1" class="nav-tab <?php echo $active_tab == "tab1"  ? "nav-tab-active" : ""; ?>"><?= __('Results', $this->plugin_name); ?></a>
         <a href="#tab2" class="nav-tab <?php echo $active_tab == "tab2"  ? "nav-tab-active" : ""; ?> ays_poll_answer_chart_active"><?= __('Answer Chart', $this->plugin_name); ?></a>
         <a href="#tab3" class="nav-tab"><?= __('Statistics', $this->plugin_name); ?></a>
@@ -210,55 +210,55 @@
                                 <label class="screen-reader-text" for="cb-select-all-1">Select All</label>
                                 <input id="cb-select-all-1" type="checkbox">
                             </td>
-                            <th scope="col" id="" sortable asc">
+                            <th scope="col" id="" class="manage-column column-polls column-primary sortable asc" sortable asc>
                                 <a href="javascript:void(0)">
                                     <span>Polls</span>
                                     <span class="sorting-indicator"></span>
                                 </a>
                             </th>
-                            <th scope="col" id="" >
+                            <th scope="col" id="" class="manage-column column-answer sortable asc" >
                                 <a href="javascript:void(0)">
                                     <span>Answer</span>
                                     <span class="sorting-indicator"></span>
                                 </a>
                             </th>
-                            <th scope="col" id="" >
+                            <th scope="col" id="" class="manage-column column-user_ip sortable asc" >
                                 <a href="javascript:void(0)">
                                     <span>User IP</span>
                                     <span class="sorting-indicator"></span>
                                 </a>
                             </th>
-                            <th scope="col" id="" >
+                            <th scope="col" id="" class="manage-column column-wp_user sortable asc" >
                                 <a href="javascript:void(0)">
                                     <span>WP User</span>
                                     <span class="sorting-indicator"></span>
                                 </a>
                             </th>
-                            <th scope="col" id="" >
+                            <th scope="col" id="" class="manage-column column-user_email sortable asc >
                                 <a href="javascript:void(0)">
                                     <span>User Email</span>
                                     <span class="sorting-indicator"></span>
                                 </a>
                             </th>
-                            <th scope="col" id="" >
+                            <th scope="col" id="" class="manage-column column-user-name sortable asc" >
                                 <a href="javascript:void(0)">
                                     <span>User Name</span>
                                     <span class="sorting-indicator"></span>
                                 </a>
                             </th>
-                            <th scope="col" id="" class="manage-column column-vote_date sortable asc">
+                            <th scope="col" class="manage-column column-vote_date sortable asc">
                                 <a href="javascript:void(0)">
                                     <span>Vote Datetime</span>
                                     <span class="sorting-indicator"></span>
                                 </a>
                             </th>
-                            <th scope="col" id="" class="manage-column column-vote_reason sortable asc">
+                            <th scope="col" class="manage-column column-vote_reason sortable asc">
                                 <a href="javascript:void(0)">
                                     <span>Vote Reason</span>
                                     <span class="sorting-indicator"></span>
                                 </a>
                             </th>
-                            <th scope="col" id="" class="manage-column column-unread sortable asc">
+                            <th scope="col" class="manage-column column-unread sortable asc">
                                 <a href="javascript:void(0)">
                                     <span>Read Status</span>
                                     <span class="sorting-indicator"></span>
@@ -278,6 +278,8 @@
                                     <span class="view-details"><a href="javascript:void(0);" data-result="3" >View details</a> | </span>
                                     <span class="delete"><a class="ays_confirm_del" data-message="this report" href="">Delete</a></span>
                                 </div>
+                                <button type="button" class="toggle-row"><span class="screen-reader-text">Show more details</span></button>
+                                <button type="button" class="toggle-row"><span class="screen-reader-text">Show more details</span></button>
                             </td>
                             <td class="answer_id column-answer_id">12</td>
                             <td class="user_ip column-user_ip">::1</td>

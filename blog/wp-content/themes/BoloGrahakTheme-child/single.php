@@ -15,6 +15,11 @@ if (is_user_logged_in()) {
     $user_email = '';
 }
 get_header(); ?>
+<?php
+	if( isset($_GET['from_app']) && $_GET['from_app']=='true' ){
+		// Hide header
+	}else{
+?>
 <!-- ============== Inner Heading Start =============== -->
 <section class="inner-page-heading">
 	<div class="container">
@@ -34,6 +39,7 @@ get_header(); ?>
 	</div>
 </section>
 <!-- ============== Inner Heading End =============== -->
+<?php }?>
 <!-- ============== Blog Cover Start =============== -->
 <section class="main-content">
 	<div class="container">
@@ -95,7 +101,26 @@ get_header(); ?>
 		</div>
 
 		<div class="default-content">
-			<div class="inner-tags"><?php the_tags(__('Tags:', 'kubrick') . ' ', ', ', '<br />'); ?></div>
+			<?php if( isset($_GET['from_app']) && $_GET['from_app']=='true' ){ ?>
+				<div class="inner-tags">
+					<?php
+					$tags = get_the_tags(); // Get the tags associated with the current post
+
+					if ($tags) {
+						echo '<strong>Tags:</strong> ';
+
+						foreach ($tags as $tag) {
+							echo $tag->name; // Display the tag name without the link
+							if ($tag !== end($tags)) {
+								echo ', '; // Add a comma and space between tags
+							}
+						}
+					}
+					?>
+				</div>
+			<?php }else{?>
+				<div class="inner-tags"><?php the_tags(__('Tags:', 'kubrick') . ' ', ', ', '<br />'); ?></div>
+			<?php }?>
 			<?php the_content(); ?>
 			<div class="social-icons">
 				<a href="https://www.facebook.com/sharer?u=<?php echo urlencode(get_the_permalink($current_post_ID));?>&t=<?php echo urlencode(get_the_title($current_post_ID));?>" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-facebook-f"></i></a>
@@ -109,13 +134,15 @@ get_header(); ?>
 </section>
 <!-- ============== Blog Cover End =============== -->
 <!-- ============== Liking Article Start =============== -->
-<?php if(get_field('poll_shortcode')){ ?>
+<?php if(get_field('poll_shortcode')){
+	$shortcode = "[ays_poll id=".get_field('poll_shortcode')."]";
+?>
 <section class="main-content liking-article">
 	<div class="container">
 		<!-- <h2 class="main-head text-center">How Are you Liking The Article</h2>
 		<img src="<?php echo get_stylesheet_directory_uri();?>/images/progress-bar.png" alt="img" class="w-100">
 		<div class="text-center"><input type="submit" class="btn-default btn-warning" name="" value="Submit"></div> -->
-		<?php echo do_shortcode( get_field('poll_shortcode') ); ?>
+		<?php echo do_shortcode( $shortcode ); ?>
 	</div>
 </section>
 <?php } ?>
@@ -140,7 +167,8 @@ get_header(); ?>
 				      <div class="col-sm-6">
 				         <div class="input-wrap"><input id="email" name="email" type="email" placeholder="Email" class="form-control" value="<?php echo $user_email; ?>" required=""></div>
 				      </div>
-				      <div id="acf-form-data" class="acf-hidden">
+					  
+				      <!--<div id="acf-form-data" class="acf-hidden">
 							   <input type="hidden" id="_acf_screen" name="_acf_screen" value="comment">
 							   <input type="hidden" id="_acf_post_id" name="_acf_post_id" value="0">
 							   <input type="hidden" id="_acf_validation" name="_acf_validation" value="1">
@@ -158,7 +186,7 @@ get_header(); ?>
 				         <div class="input-wrap">
 				        	<input type="text" id="acf-field_64a7c8f963da8" class="form-control" placeholder="Designation" name="acf[field_64a7c8f963da8]">
 				         </div>
-				      </div>
+				      </div>-->
 				   </div>
 				   <div class="row">
 				      <div class="col-sm-12">
@@ -191,15 +219,28 @@ if($comments){
 	<div class="comments-show">
 		<h2 class="main-head text-center">All Comments</h2>
 		<div class="comment-slider">
-			<?php foreach ($comments as $comment) { ?>
+		<?php foreach ($comments as $comment) {
+			//-- Get Comment User Node Info
+			$user_query = $wpdb->prepare(
+				"
+				SELECT ur.user_id, ur.email, ur.first_name, ur.last_name, urm.profile_pic
+				FROM `users` ur
+				LEFT JOIN `user_customer_meta` urm ON ur.user_id = urm.user_id
+				WHERE ur.email = %s
+				",
+				$comment->comment_author_email
+			);
+			$user_query_results = $wpdb->get_results($user_query);
+			if($user_query_results[0]->profile_pic!=''){
+				$profile_pic = $user_query_results[0]->profile_pic;
+			}else{
+				$profile_pic = 'assets/media/avatars/blank.png';
+			}
+		?>
 		  <div class="item">
 		  	<div class="comments-box">
 		  		<div class="user-img">
-		  			<?php if(get_field('upload_image', $comment)){ ?>
-		  			<img src="<?php the_field('upload_image', $comment); ?>" alt="<?php echo $comment->comment_author; ?>" width="80" height="80" loading="lazy">
-			  		<?php }else{ ?>
-		  			<img src="<?php echo get_stylesheet_directory_uri();?>/images/client-img2.jpg" alt="img" width="80" height="80" loading="lazy">
-			  		<?php } ?>
+		  			<img src="<?php echo MAIN_URL_BG.$profile_pic;?>" alt="<?php echo $comment->comment_author; ?>" width="80" height="80" loading="lazy">
 		  		</div>
 		  		<div class="user-comments">
 		  			<div class="user-comments-wrap">
@@ -217,6 +258,11 @@ if($comments){
 	</div>
 </section>
 <?php } ?>
+<?php
+	if( isset($_GET['from_app']) && $_GET['from_app']=='true' ){
+	// Hide header
+	}else{
+?>
 <section class="main-content bottom-main-content pt-0">
   <div class="container">
 		<?php $categories = get_the_category($current_post_ID);
@@ -294,6 +340,7 @@ if($comments){
 	</div>
 </section>
 <!-- ============== Blog End =============== -->
+<?php }?>
 <?php get_footer();?>
 <script>
 	jQuery(document).ready(function($) {

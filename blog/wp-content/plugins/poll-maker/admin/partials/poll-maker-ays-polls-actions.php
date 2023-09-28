@@ -913,7 +913,7 @@ $emoji = array(
                     </div>
                 </div>
                 <hr>
-                <?php if($id === null || $ays_check_post == "off"): ?>
+                <?php if(!isset($post_id) || (isset($post_id) && $post_id == '') ): ?>
                 <div class="form-group row ays_toggle_parent">
                     <div class="col-sm-2">
                         <label for="ays_add_post_for_poll">
@@ -955,7 +955,7 @@ $emoji = array(
                     </div>
                 </div> <!-- Create post for poll -->
                 <hr/>
-                <?php elseif($post_id !== null): ?>
+                <?php else: ?>
                 <div class="form-group row">
                     <div class="col-sm-2">
                         <label for="ays_add_post_for_poll">
@@ -975,6 +975,7 @@ $emoji = array(
                             </div>
                         </div>
                     </div>
+                    <input type="hidden" name="ays_post_id_for_quiz" value="<?php echo $post_id; ?>">
                 </div>
                 <hr>
                 <?php endif; ?>
@@ -1035,35 +1036,50 @@ $emoji = array(
                                 value="on" <?= $poll_allow_answer ?>>
                             </div>
                             <div class="col-sm-9">
-                                <div class="form-group row allow_add_answers_not_show_up ays_toggle_target" <?= $poll_allow_answer ? '' : 'style="display:none;"'; ?>>
-                                    <div class="col-sm-3">
-                                        <label for="ays_poll_allow_answer_require">
-                                            <?= __('Require admin approval', $this->plugin_name); ?>
-                                            <a class="ays_help" data-toggle="tooltip"
-                                            data-placement="top"
-                                            title="<?= __("If the option is enabled, the answers added by users will require admin approval to be shown up inside the poll (public).", $this->plugin_name); ?>">
-                                                <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
-                                            </a>
-                                        </label>
-                                    </div>
-                                    <div class="col-sm-2">
-                                        <input type="checkbox" name="ays_poll_allow_answer_require" id="ays_poll_allow_answer_require"
-                                            value="on" <?= $poll_allow_answer_require ?> />
-                                    </div>
-                                    <div class="col-sm-7 row">
+                                <div class="ays_toggle_target" <?= $poll_allow_answer ? '' : 'style="display:none;"'; ?>>
+                                    <div class="form-group row allow_add_answers_not_show_up ays_toggle_parent">
                                         <div class="col-sm-3">
-                                            <label for="ays_poll_require_approve_select_all" style="padding-top: 5px;">
-                                                <?= __('Select all', $this->plugin_name); ?>
+                                            <label for="ays_poll_allow_answer_require">
+                                                <?= __('Require admin approval', $this->plugin_name); ?>
+                                                <a class="ays_help" data-toggle="tooltip"
+                                                data-placement="top"
+                                                title="<?= __("If the option is enabled, the answers added by users will require admin approval to be shown up inside the poll (public).", $this->plugin_name); ?>">
+                                                    <i class="ays_poll_fas ays_poll_fa-info-circle"></i>
+                                                </a>
                                             </label>
                                         </div>
-                                        <div class="col-sm-9 row" style="align-items: center;">
-                                            <input type="checkbox" id="ays_poll_require_approve_select_all"/>
+                                        <div class="col-sm-2">
+                                            <input type="checkbox" class="ays_toggle_checkbox" name="ays_poll_allow_answer_require" id="ays_poll_allow_answer_require"
+                                                value="on" <?= $poll_allow_answer_require ?> />
                                         </div>
+                                        <?php
+                                        $poll_answers = $poll['answers'];
+                                        $is_user_added_exist = 0;
+                                        foreach ($poll_answers as $index => $answer) {
+                                            if($answer['user_added'] == 1) {
+                                                $is_user_added_exist++;
+                                            }
+                                        }
+                                        if($is_user_added_exist > 0):
+                                        ?>
+                                        <div class="col-sm-7 row ays_toggle_target" <?= ($poll_allow_answer_require) == '' ? 'style="display:none;"' : '' ; ?>>
+                                            <div class="col-sm-3">
+                                                <label for="ays_poll_require_approve_select_all">
+                                                    <?= __('Select all', $this->plugin_name); ?>
+                                                </label>
+                                            </div>
+                                            <div class="col-sm-9 row" style="align-items: center;">
+                                                <input type="checkbox" id="ays_poll_require_approve_select_all"/>
+                                            </div>
+                                        </div>
+                                        <?php
+                                        endif;
+                                        ?>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div> 
+                    </div>
                 </div> <!-- Allow custom answer -->
                 <hr>
                 <div class="form-group row" style="margin: 0px;">
@@ -1082,7 +1098,7 @@ $emoji = array(
                                 </label>
                             </div>
                             <div class="col-10">
-                                <input type="checkbox" name="ays_add_f_votes" id="ays_add_f_votes"
+                                <input type="checkbox" name="ays_add_f_votes"
                                 value="on">
                             </div>
                         </div>
@@ -2669,7 +2685,7 @@ $emoji = array(
                                                     </label>
                                                 </div>
                                                 <div class="col-sm-7 ays_divider_left">
-                                                    <input type="checkbox" class="ays_toggle ays_toggle_slide" id="ays_answers_border" name="ays_answers_border" value="on"
+                                                    <input type="checkbox" class="ays_toggle ays_toggle_slide" name="ays_answers_border" value="on"
                                                         checked/>
                                                     <label for="ays_answers_border" class="ays_switch_toggle">Toggle</label>
                                                     <div class="col-sm-12 ays_toggle_target ays_divider_top" style="margin-top: 10px; padding-top: 10px;">
@@ -3233,7 +3249,7 @@ $emoji = array(
                                 </label>
                             </div>
                             <div class="col-sm-9">
-                                <input type="checkbox" name="ays_allow_anonymity" id="ays-poll-allow-anonymity"
+                                <input type="checkbox" name="ays_allow_anonymity"
                                     value="1" >
                             </div>
                         </div>
@@ -3844,7 +3860,7 @@ $emoji = array(
                             </div>
                         </div> <!-- Status -->
                         <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" class="ays-poll-new-upgrade-button-link">
-                            <div class="ays-poll-new-upgrade-button-box">
+                            <div class="ays-poll-new-upgrade-button-box" style="top: -20px;">
                                 <div>
                                     <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/locked_24x24.svg'?>">
                                     <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL.'/images/icons/pro-features-icons/unlocked_24x24.svg'?>" class="ays-poll-new-upgrade-button-hover">
@@ -4026,7 +4042,7 @@ $emoji = array(
                                             </label>
                                         </div>
                                         <div class="col-sm-9">
-                                            <input type="number" min="1" name="ays_attempts_count" id="ays_attempts_count" class="ays-enable-timerl ays-text-input">
+                                            <input type="number" min="1" name="ays_attempts_count" class="ays-enable-timerl ays-text-input">
                                         </div>
                                     </div>
                                     <a href="https://ays-pro.com/wordpress/poll-maker" target="_blank" class="ays-poll-new-upgrade-button-link">
@@ -4251,7 +4267,7 @@ $emoji = array(
                                 </label>
                             </div>
                             <div class="col-sm-1">
-                                <input type="checkbox" class="ays-enable-timer1 ays_toggle_checkbox" id="ays_enable_tackers_count"
+                                <input type="checkbox" class="ays-enable-timer1 ays_toggle_checkbox"
                                     name="ays_enable_tackers_count" value="on">
                             </div>
                             <div class="col-sm-8 ays_toggle_target ays_divider_left">
@@ -4265,7 +4281,7 @@ $emoji = array(
                                         </label>
                                     </div>
                                     <div class="col-sm-9">
-                                        <input type="number" name="ays_tackers_count" id="ays_tackers_count" class="ays-enable-timerl ays-text-input"
+                                        <input type="number" name="ays_tackers_count" class="ays-enable-timerl ays-text-input"
                                             >
                                     </div>
                                 </div>
@@ -4297,10 +4313,10 @@ $emoji = array(
                                 </label>
                             </div>
                             <div class="col-sm-1">
-                                <input type="checkbox" class="ays-enable-timer1 ays_toggle_checkbox" id="ays_enable_vote_limitation"
+                                <input type="checkbox" class="ays-enable-timer1 ays_toggle_checkbox"
                                     name="ays_enable_vote_limitation" value="on" >
                             </div>
-                            <div class="col-sm-8 ays_toggle_target ays_divider_left <">
+                            <div class="col-sm-8 ays_toggle_target ays_divider_left">
                                 <div class="form-group row">
                                     <div class="col-sm-3">
                                         <label for="ays_vote_limitation">
@@ -4311,10 +4327,10 @@ $emoji = array(
                                         </label>
                                     </div>
                                     <div class="col-sm-7">
-                                        <input type="text" name="ays_vote_limitation" id="ays_vote_limitation" class="ays-enable-timerl ays-text-input">
+                                        <input type="text" name="ays_vote_limitation" class="ays-enable-timerl ays-text-input">
                                         
                                     </div>
-                                    <div class="col-sm-2">
+                                    <div class="col-sm-2 ays_vote_limitation_time_period_box">
                                         <select name="ays_vote_limitation_time_period" id="ays_vote_limitation_period">                           
                                             <option>Minute(s)
                                             </option>
@@ -4323,7 +4339,7 @@ $emoji = array(
                                 </div>
                                 <div class="form-group row d-flex w-100">
                                     <div class="col-sm-3">
-                                        <label for="vote_limit_message">
+                                        <label for="">
                                             <?= __('Message', $this->plugin_name); ?>
                                             <a class="ays_help ays-poll-zindex-for-pro-tooltip" data-toggle="tooltip" data-placement="top"
                                             title="<?= __('Write the message, which will be shown during the restricted time, when the user has already passed his/her limit for the session.', $this->plugin_name); ?>">
@@ -4603,7 +4619,7 @@ $emoji = array(
                                 </label>
                             </div>
                             <div class="col-sm-1">                       
-                                    <input type="checkbox" id="ays_enable_mail_user" name="ays_enable_mail_user" value="on" />
+                                    <input type="checkbox" name="ays_enable_mail_user" value="on" />
                             </div>
                             <div class="col-sm-8 if-enable-email_note">
                             
@@ -4851,7 +4867,7 @@ $emoji = array(
                                     </label>
                                 </div>
                                 <div class="col-sm-8">
-                                    <input type="checkbox" class="ays-enable-timer1" id="ays_enable_monitor" name="ays_enable_monitor" value="on"/>
+                                    <input type="checkbox" class="ays-enable-timer1" name="ays_enable_monitor" value="on"/>
                                 </div>
                             </div>	                            
                             <hr>
@@ -4896,7 +4912,7 @@ $emoji = array(
                                     </label>
                                 </div>
                                 <div class="col-sm-1">
-                                    <input type="checkbox" class="ays-enable-timer1" id="ays_enable_zapier" name="ays_enable_zapier" value="on"/>
+                                    <input type="checkbox" class="ays-enable-timer1" name="ays_enable_zapier" value="on"/>
                                 </div>
                                 <div class="col-sm-3">
                                     <button type="button"                                           
@@ -4939,13 +4955,13 @@ $emoji = array(
                                     </label>
                                 </div>
                                 <div class="col-sm-1">
-                                    <input type="checkbox" class="ays-enable-timer1" id="ays_enable_active_camp" name="ays_enable_active_camp" value="on"/>
+                                    <input type="checkbox" class="ays-enable-timer1"name="ays_enable_active_camp" value="on"/>
                                 </div>
                             </div>
                             <hr>
                             <div class="form-group row">
                                 <div class="col-sm-4">
-                                    <label for="ays_active_camp_list">
+                                    <label>
                                         <?php echo __('ActiveCampaign list', $this->plugin_name) ?>
                                     </label>
                                 </div>
@@ -4960,7 +4976,7 @@ $emoji = array(
                             <hr>
                             <div class="form-group row">
                                 <div class="col-sm-4">
-                                    <label for="ays_active_camp_automation">
+                                    <label>
                                         <?php echo __('ActiveCampaign automation', $this->plugin_name) ?>
                                     </label>
                                 </div>
@@ -5001,13 +5017,13 @@ $emoji = array(
                                     </label>
                                 </div>
                                 <div class="col-sm-1">
-                                    <input type="checkbox" class="ays-enable-timer1" id="ays_enable_slack" name="ays_enable_slack" value="on"/>
+                                    <input type="checkbox" class="ays-enable-timer1"name="ays_enable_slack" value="on"/>
                                 </div>
                             </div>
                             <hr>
                             <div class="form-group row">
                                 <div class="col-sm-4">
-                                    <label for="ays_slack_conversation">
+                                    <label>
                                         <?php echo __('Slack conversation', $this->plugin_name) ?>
                                     </label>
                                 </div>
@@ -5087,7 +5103,7 @@ $emoji = array(
                             <hr>
                             <div class="form-group row">
                                 <div class="col-sm-4">
-                                    <label for="ays_poll_mad_mimi_list">
+                                    <label>
                                         <?php echo __('Select List', $this->plugin_name) ?>
                                     </label>
                                 </div>
@@ -5137,7 +5153,7 @@ $emoji = array(
                             <hr>
                             <div class="form-group row">
                                 <div class="col-sm-4">
-                                    <label for="ays_poll_getResponse_list">
+                                    <label>
                                         <?php echo __('GetResponse List', $this->plugin_name) ?>
                                     </label>
                                 </div>                                        
@@ -5186,7 +5202,7 @@ $emoji = array(
                             <hr>
                             <div class="form-group row">
                                 <div class="col-sm-4">
-                                    <label for="ays_poll_convertKit_list">
+                                    <label>
                                         <?php echo __('ConvertKit list',$this->plugin_name)?>
                                     </label>
                                 </div>
@@ -5976,7 +5992,7 @@ $emoji = array(
                             </a>
                         </label>
                     </div>
-                    <div class="col-sm-4" style="padding-right: 0">
+                    <div class="col-sm-4" style="padding:1px 10px 48px;">
                         <div style="display: flex; justify-content: flex-end;">
                             <div class="form-check form-check-inline ays_poll_loader">
                                 <label class="form-check-label ays_poll_check_label">
@@ -6051,7 +6067,7 @@ $emoji = array(
                                 </label>
                             </div>
                             <div class="col-sm-9">
-                                <input type="checkbox" class="ays-enable-timer1" id="ays_show_answer_message"
+                                <input type="checkbox" class="ays-enable-timer1"
                                 name=""
                                 value="on">
                             </div>

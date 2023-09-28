@@ -90,27 +90,6 @@
 
     $('[data-toggle="tooltip"]').tooltip();
 
-    $('.poll-maker-upgrade-to-pro').hover(
-        function() {
-            $(this).css({
-                'background-color': '#10a37f',
-                'color': "#fff",
-                'text-decoration': 'none'
-            });
-            $(this).find('.poll-maker-upgrade-green-icon').css('display', 'none');
-            $(this).find('.poll-maker-upgrade-white-icon').css('display', 'inline-block');
-        },
-        function() {
-            $(this).css({
-                'background-color': '#fff',
-                'color': "#10a37f",
-                'text-decoration': 'none'
-            });
-            $(this).find('.poll-maker-upgrade-green-icon').css('display', 'inline-block');
-            $(this).find('.poll-maker-upgrade-white-icon').css('display', 'none');
-        }
-    );
-
     // copy shortcode
     $(document).find('.ays-poll-copy-image').on('click', function(){
         var _this = this;
@@ -507,8 +486,9 @@
     function rateType() {
         var val = $('#ays-poll-rate-value').val();
         $('#ays-poll-rate-value').empty();
-        for (var i = 5; i > 2; i--) {
-            if ($('#ays-poll-rate-type').val() == 'emoji' && i == 4) continue;
+        for (var i = 10; i > 2; i--) {
+            if ($('#ays-poll-rate-type').val() == 'emoji' && (i == 4 || i > 5)) continue;
+            if (i == 9 || i == 8 || i == 6 ) continue;
             var selected = '';
             if (i == val) {
                 selected = 'selected';
@@ -1637,8 +1617,8 @@
 
     $(document).on('change', '.ays_toggle_checkbox', function (e) {
         var state = $(this).prop('checked');
-        var parent = $(this).parents('.ays_toggle_parent');
-        
+        var parent = $(this).closest('.ays_toggle_parent');
+
         if($(this).hasClass('ays_toggle_slide')){
             switch (state) {
                 case true:
@@ -1649,19 +1629,27 @@
                     break;
             }
         }else{
+            var targetEl = parent.find('.ays_toggle_target');
+            for (let i = 0; i<targetEl.length; i++) {
+                if(targetEl.eq(i).closest('.ays_toggle_parent')[0] != parent[0]) {
+                    targetEl.splice(i, 1);
+                    i--;
+                }
+            }
+
             switch (state) {
                 case true:
-                    if(parent.find('.ays_toggle_target').hasClass("display_none")){
-                        parent.find('.ays_toggle_target').removeClass("display_none");
+                    if(targetEl.hasClass("display_none")){
+                        targetEl.removeClass("display_none");
                     }
-                    if($(this).parents(".ays_toggle_parent").find('.ays_toggle_target').parent().hasClass("display_none")){
-                        $(this).parents(".ays_toggle_parent").find('.ays_toggle_target').parent().removeClass("display_none");
+                    if(targetEl.parent().hasClass("display_none")){
+                        targetEl.parent().removeClass("display_none");
                     }
-                    parent.find('.ays_toggle_target').show(250);
+                    targetEl.show(250);
                     break;
                 case false:
-                    
-                    parent.find('.ays_toggle_target').hide(250);
+
+                targetEl.hide(250);
                     break;
             }
         }
@@ -2192,8 +2180,7 @@
         }
     });
 
-    // Filter Polls by Category
-    $(document).find('.cat-filter-apply-top,.cat-filter-apply-bottom').on('click', function(e){
+    $(document).find('.ays-poll-question-tab-all-filter-button-top, .ays-poll-question-tab-all-filter-button-bottom').on('click', function(e) {
         e.preventDefault();
         var $this = $(this);
         var parent = $this.parents('.tablenav');
@@ -2205,62 +2192,50 @@
             top_or_bottom = 'bottom';
         }
 
-        if ( $this.hasClass('cat-filter-apply-'+ top_or_bottom) ) {
-            html_name = 'filterby';
-        }
-
-        if (html_name != '') {
-            aysPollFiltersForListTable( top_or_bottom , html_name);
-        }
-    });
-
-    //Filter by user
-    // $(document).find('.user-filter-apply-top, .user-filter-apply-bottom').on('click', function(e){
-    //     e.preventDefault();
-    //     var $this = $(this);
-    //     var parent = $this.parents('.tablenav');
-
-    //     var html_name = '';
-    //     var top_or_bottom = 'top';
-
-    //     if ( parent.hasClass('bottom') ) {
-    //         top_or_bottom = 'bottom';
-    //     }
-
-    //     if ( $this.hasClass('user-filter-apply-'+ top_or_bottom) ) {
-    //         html_name = 'filterbyuser';
-    //     }
-
-    //     if (html_name != '') {
-    //         aysPollFiltersForListTable( top_or_bottom , html_name);
-    //     }
-    // });
-
-    function aysPollFiltersForListTable(which, html_name){
-        var filter = $(document).find('select[name="'+ html_name +'-' + which + '"]').val();
-
+        var catFilter = $(document).find('select[name="filterby-'+ top_or_bottom +'"]').val();
+        var authorFilter = $(document).find('select[name="filterbyauthor-'+ top_or_bottom +'"]').val();
         var link = location.href;
-        if( filter != '' ){
-            filter = "&"+ html_name +"="+filter;
+
+        if (catFilter != "") {
+            link = catFilterForListTable(link, {
+                what: 'filterby',
+                value: catFilter
+            });
+        }
+        if (authorFilter != "") {
+            link = catFilterForListTable(link, {
+                what: 'filterbyauthor',
+                value: authorFilter
+            });
+        }
+        document.location.href = link;
+    })
+
+    function catFilterForListTable(link, options){
+        if( options.value != '' ){
+            options.value = "&" + options.what + "=" + options.value;
             var linkModifiedStart = link.split('?')[0];
             var linkModified = link.split('?')[1].split('&');
             for(var i = 0; i < linkModified.length; i++){
-                if(linkModified[i].split("=")[0] == html_name){
+                if ( linkModified[i].split("=")[0] == "ays_result_tab" ) {
+                    linkModified.splice(i, 1, "ays_result_tab=poststuff");
+                }
+                if(linkModified[i].split("=")[0] == options.what){
                     linkModified.splice(i, 1);
                 }
             }
             linkModified = linkModified.join('&');
-            document.location.href = linkModifiedStart + "?" + linkModified + filter;
+            return linkModifiedStart + "?" + linkModified + options.value;
         }else{
             var linkModifiedStart = link.split('?')[0];
             var linkModified = link.split('?')[1].split('&');
             for(var i = 0; i < linkModified.length; i++){
-                if(linkModified[i].split("=")[0] == html_name){
+                if(linkModified[i].split("=")[0] == options.what){
                     linkModified.splice(i, 1);
                 }
             }
             linkModified = linkModified.join('&');
-            document.location.href = linkModifiedStart + "?" + linkModified;
+            return linkModifiedStart + "?" + linkModified;
         }
     }
 
@@ -2506,7 +2481,9 @@
 
     function check_allow_add_answers_show_up() {
         var aa_show = $(document).find('input[type="checkbox"]#ays_poll_allow_add_answers');
-        if(aa_show.prop('checked') == false){
+        let requireAdminApprovalCbState = $(document).find('input[type="checkbox"]#ays_poll_allow_answer_require').prop('checked');
+
+        if(!requireAdminApprovalCbState){
             $(document).find('.ays_show_user_added').hide();
             $(document).find('.ays_show_user_added_hid').each(function () {
                 $(this).parent('.ays-sortable-answers').find('.ays_show_user_added').prop('checked', false);
@@ -2525,6 +2502,7 @@
     $(document).find('input[type="checkbox"]#ays_poll_allow_add_answers').on('change', function(e){
         if($(this).prop('checked') == false){
             $(document).find('.allow_add_answers_not_show_up').hide();
+            $(document).find('.allow_add_answers_not_show_up .ays_toggle_target').hide(250);
             $(document).find('#ays_poll_allow_answer_require').removeAttr('checked');
             check_allow_add_answers_show_up();
         }else{
@@ -2539,10 +2517,25 @@
     });
 
     $(document).find('input[type="checkbox"].ays_show_user_added').on('change', function(e){
+        let selectAllCb = $(document).find('input[type="checkbox"]#ays_poll_require_approve_select_all');
         if($(this).prop('checked') == true){
             $(this).parent().find('.ays_show_user_added_hid').val(1);
+            var isAllChecked = 0;
+            var allShowUserAddedCbArr = $(document).find('input[type="checkbox"].ays_show_user_added');
+            for (i = 0; i < allShowUserAddedCbArr.length; i++) {
+                if(allShowUserAddedCbArr.eq(i).prop('checked')) {
+                    isAllChecked++;
+                }
+            }
+            if (isAllChecked === allShowUserAddedCbArr.length && selectAllCb.prop('checked') === false) {
+                selectAllCb.prop('checked', true);
+            }
         }else{
             $(this).parent().find('.ays_show_user_added_hid').val(0);
+
+            if (selectAllCb.prop('checked')) {
+                selectAllCb.prop('checked', false);
+            }
         }
     });
 

@@ -20,7 +20,7 @@
             <iframe width="560" height="315" src="https://www.youtube.com/embed/LnaTowgH29c" loading="lazy" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </div>
     </div>
-    <div class="form-group row" style="margin: 0px;">
+    <div class="form-group row" style="margin: 20px 0 0 0;">
         <div class="col-sm-12 only_pro" style="padding:10px 0 0 10px;">
             <div class="pro_features" style="justify-content:flex-end;">
             </div>

@@ -6,7 +6,7 @@ const jwtsecretKey = 'grahak-secret-key';
 const db = require('../config');
 const comFunction = require('../common_function_api');
 const comFunction2 = require('../common_function2');
-
+const commonFunction = require('../common_function');
 const router = express.Router();
 //const publicPath = path.join(__dirname,'../public');
 
@@ -29,18 +29,191 @@ const storage = multer.diskStorage({
 // Create multer instance
 const upload = multer({ storage: storage });
 
+
+
+
+// function verifyToken(req, res, next) {
+//     let accessToken = req.headers['authorization'];
+//     let refreshToken = req.headers['x-refresh-token'];
+  
+//     // Function to generate a new access token
+//     const generateAccessToken = (user) => {
+//       // Implement your logic to generate a new access token based on the user
+//       // For example:
+//       const newPayload = {
+//         user_id: user.user_id,
+//         // Add other relevant claims here
+//       };
+//       const newAccessToken = jwt.sign(newPayload, jwtsecretKey, {
+//         expiresIn: '1h', // Set the expiration time for the new access token
+//       });
+//       return newAccessToken;
+//     };
+  
+//     // Function to verify the access token
+//     const verifyAccessToken = () => {
+//       jwt.verify(accessToken, jwtsecretKey, (err, user) => {
+//         if (err) {
+//           // Access token is invalid, switch to refresh token
+//           useRefreshToken();
+//         } else {
+//           // Access token is valid, proceed with it
+//           req.user = user;
+//           next();
+//         }
+//       });
+//     };
+  
+//     // Function to use the refresh token
+//     const useRefreshToken = () => {
+//       if (refreshToken) {
+//         jwt.verify(refreshToken, jwtsecretKey, (err, refreshUser) => {
+//           if (err) {
+//             return res.status(401).json({
+//               status: 'error',
+//               message: 'Invalid refresh token',
+//             });
+//           } else {
+//             // Access token is invalid, but refresh token is valid
+//             req.user = refreshUser; // Set req.user to the user from the refresh token
+//             // Generate a new access token
+//             const newAccessToken = generateAccessToken(refreshUser);
+//             // Replace the existing Authorization header with the new access token
+//             req.headers['authorization'] = `Bearer ${newAccessToken}`;
+//             // Verify the new access token
+//             verifyAccessToken();
+//           }
+//         });
+//       } else {
+//         // No valid refresh token available, return an error
+//         return res.status(401).json({
+//           status: 'error',
+//           message: 'Invalid tokens',
+//         });
+//       }
+//     }
+  
+//     // Check if access token is missing
+//     if (!accessToken) {
+//       // Access token is missing, try to use the refresh token
+//       useRefreshToken();
+//     } else {
+//       accessToken = accessToken.split(' ')[1];
+//       verifyAccessToken();
+//     }
+//   }
+  
+// function verifyToken(req, res, next) {
+//     let accessToken = req.headers['authorization'];
+  
+    
+//     const generateAccessToken = (user) => {
+//       // Implement your logic to generate a new access token based on the user
+//       // For example:
+//       const newPayload = {
+//         user_id: user.user_id,
+//         // Add other relevant claims here
+//       };
+//       const newAccessToken = jwt.sign(newPayload, jwtsecretKey, {
+//         expiresIn: '1h', // Set the expiration time for the new access token
+//       });
+//       return newAccessToken;
+//     };
+  
+//     // Function to verify the access token
+//     const verifyAccessToken = () => {
+//       jwt.verify(accessToken, jwtsecretKey, (err, user) => {
+//         if (err) {
+//           // Access token is invalid, switch to refresh token
+//           useRefreshToken();
+//         } else {
+//           // Access token is valid, proceed with it
+//           req.user = user;
+//           next();
+//         }
+//       });
+//     };
+  
+//     // Function to use the refresh token
+//     const useRefreshToken = () => {
+//       const refreshToken = req.headers['authorization']; 
+  
+//       if (refreshToken) {
+//         jwt.verify(refreshToken, jwtsecretKey, (err, refreshUser) => {
+//           if (err) {
+//             return res.status(401).json({
+//               status: 'error',
+//               message: 'Invalid refresh token',
+//             });
+//           } else {
+//             // Access token is invalid, but refresh token is valid
+//             req.user = refreshUser; // Set req.user to the user from the refresh token
+//             // Generate a new access token
+//             const newAccessToken = generateAccessToken(refreshUser);
+//             // Replace the existing Authorization header with the new access token
+//             req.headers['authorization'] = `Bearer ${newAccessToken}`;
+//             // Verify the new access token
+//             verifyAccessToken();
+//           }
+//         });
+//       } else {
+//         // No valid refresh token available, return an error
+//         return res.status(401).json({
+//           status: 'error',
+//           message: 'Invalid tokens',
+//         });
+//       }
+//     }
+  
+//     // Check if access token is missing
+//     if (!accessToken) {
+//       // Access token is missing, try to use the refresh token
+//       useRefreshToken();
+//     } else {
+//       accessToken = accessToken.split(' ')[1];
+//       verifyAccessToken();
+//     }
+//   }
+  
+
 router.post('/register',upload.single('profile_pic') ,authenController.register);
 router.post('/login', authenController.login);
 router.put('/edituser', verifyToken, upload.single('profile_pic') ,authenController.edituser);
+
+   
 router.post('/createcategories',verifyToken, upload.single('c_image'),authenController.createcategories);
 router.post('/createcompany',verifyToken, upload.single('logo') ,authenController.createcompany);
 router.put('/editcompany',verifyToken, upload.single('logo') ,authenController.editcompany);
 router.post('/createcompanylocation',verifyToken, authenController.createcompanylocation);
 router.post('/submitReview',verifyToken, authenController.submitReview);
+router.post('/submitReviewReply',verifyToken, authenController.submitReviewReply); 
+//Update basic-company-profile-management 
+router.post('/profileManagement',  upload.fields([
+    
+    { name: 'logo', maxCount: 1 },
+
+    { name: 'cover_image', maxCount: 1 },
+
+    { name: 'gallery_images', maxCount: 100 },
+
+    { name: 'promotion_image', maxCount: 100 },
+
+    { name: 'product_image', maxCount: 100 },
+
+]), authenController.profileManagement);
+//reviewVoting
+router.post('/reviewVoting',verifyToken, authenController.reviewVoting);
+
 //forget password
 router.post('/forgotPassword', authenController.forgotPassword);
-router.post('/resetPassword', verifyToken, authenController.resetPassword);
+router.post('/resetPassword',  authenController.resetPassword);
 router.post('/changePassword', verifyToken, authenController.changePassword);
+//==========================================================================
+//Contact us Feedback Email
+router.post('/contact-us-email', verifyToken, authenController.contactUsEmail);
+//==========================================================================
+router.post('/refresh-token',authenController.refreshToken);
+
 //----------Get API Start----------------//
 //get user details
 router.get('/getUserDetails/:user_id', verifyToken, async (req, res) => {
@@ -59,6 +232,7 @@ router.get('/getUserDetails/:user_id', verifyToken, async (req, res) => {
             message: 'Access denied: You are not authorized to update this user.',
         });
     }
+    const ClaimCompany  = [];
     const [userBasicInfo, userMetaInfo, userCompany, userReview, userReviewCompany, allCompanyReviewTags] = await Promise.all([
         comFunction.getUser(user_ID),
         comFunction.getUserMeta(user_ID),
@@ -82,6 +256,8 @@ router.get('/getUserDetails/:user_id', verifyToken, async (req, res) => {
         }
 
         //if(userReview.length > 0){
+            const userCompany = await comFunction.getUserCompany(user_ID);
+            console.log('userCompany:', userCompany);
             const reviewTagsMap = {};
             allCompanyReviewTags.forEach(tag => {
                 if (!reviewTagsMap[tag.review_id]) {
@@ -96,6 +272,11 @@ router.get('/getUserDetails/:user_id', verifyToken, async (req, res) => {
                     Tags: reviewTagsMap[review.id] || []
                 };
             });
+            userCompany
+            .filter(company => company.ID !== null && company.ID !== undefined)
+            .forEach(company => {
+              ClaimCompany.push(company.ID); 
+            }); 
         //}
 
         return res.status(200).json({
@@ -105,6 +286,7 @@ router.get('/getUserDetails/:user_id', verifyToken, async (req, res) => {
                 userCompany,
                 finalCompanyallReviews,
                 userReviewCompany,
+                ClaimCompany
             },
             message: 'user data successfully recived'
         });
@@ -121,12 +303,15 @@ router.get('/getComapniesDetails/:ID', verifyToken, async (req, res) => {
     const companyId = req.params.ID; 
     console.log("companyId from request:", companyId); 
     try {
-        const [company, companyreviews, allCompanyReviewTags, userReview,copmanyratings] = await Promise.all([
+        const [company, companyreviews, allCompanyReviewTags, userReview,copmanyratings, PremiumCompanyData,Totalreplies,TotalReviewsAndCounts] = await Promise.all([
           comFunction.getCompany(companyId),
           comFunction.getCompanyReviews(companyId),
           comFunction2.getAllReviewTags(),
           comFunction.getUserReview(),
           comFunction.getCompanyRatings(companyId),
+          comFunction2.getPremiumCompanyData(companyId),
+          comFunction2.TotalReplied(companyId),
+          comFunction.getTotalReviewsAndCounts(companyId)
         ]);
 
         if (company) {
@@ -150,7 +335,10 @@ router.get('/getComapniesDetails/:ID', verifyToken, async (req, res) => {
                 data: {
                     company,
                     companyreviews: finalCompanyallReviews,
-                    copmanyratings
+                    copmanyratings,
+                    PremiumCompanyData,
+                    Totalreplies,
+                    TotalReviewsAndCounts
                     //allCompanyReviewTags
                 },
                 message: 'company data successfully received'
@@ -357,6 +545,7 @@ router.get('/getcompanyreviewlisting/:company_id', verifyToken, (req, res) => {
     r.review_title,
     r.rating,
     r.review_content,
+    r.review_status,
     r.created_at AS review_created_at,
     c.created_date AS company_created_date
   FROM
@@ -364,7 +553,7 @@ router.get('/getcompanyreviewlisting/:company_id', verifyToken, (req, res) => {
   JOIN
     company c ON r.company_id = c.ID
   WHERE
-    c.ID = ?
+    c.ID = ? AND r.review_status="1"
   ORDER BY
     r.created_at ASC
 `;
@@ -379,6 +568,7 @@ router.get('/getcompanyreviewlisting/:company_id', verifyToken, (req, res) => {
             console.error('Error executing reviews query:', error);
             res.status(500).json({ error: 'Internal server error' });
           } else {
+            console.log(reviewsResult)
             const companyInfo = companyResult[0];
             const reviews = reviewsResult;
   
@@ -541,7 +731,7 @@ db.query(userQuery, [userId], (error, userResult) => {
 router.get('/reviewslistofallcompaniesbyuser/:user_id', verifyToken, (req, res) => {
     const userId = req.params.user_id;
     console.log(userId)
-       const query = `SELECT c.id AS company_id,MAX(r.created_at) AS latest_review_date,c.company_name,c.logo, COUNT(r.id) AS review_count FROM reviews r JOIN company c ON r.company_id = c.id WHERE r.customer_id = ? GROUP BY c.id, c.company_name ORDER BY latest_review_date DESC`;
+       const query = `SELECT c.id AS company_id,MAX(r.created_at) AS latest_review_date,c.company_name,c.logo, COUNT(r.id) AS review_count FROM reviews r JOIN company c ON r.company_id = c.id WHERE r.customer_id = ? AND r.review_status="1" GROUP BY c.id, c.company_name ORDER BY latest_review_date DESC`;
 
       db.query(query, [userId], (queryErr, rows) => {
         if (queryErr) {
@@ -580,8 +770,10 @@ router.get('/getreviewlisting', verifyToken, async (req, res) => {
   
   
       let mergedData = {};
-      if (allreviews.length > 0) {
+    //   if (allreviews.length > 0) {
+        if (Array.isArray(allreviews) && allreviews.length > 0) {
         const reviewTagsMap = {};
+        //const reviewReplies = {};
         allCompanyReviewTags.forEach(tag => {
           if (!reviewTagsMap[tag.review_id]) {
             reviewTagsMap[tag.review_id] = [];
@@ -590,9 +782,11 @@ router.get('/getreviewlisting', verifyToken, async (req, res) => {
         });
   
         const all = allreviews.map(review => {
+        //const reviewReplies = comFunction.getReviewRepliesByReviewId(review.id);
           return {
             ...review,
-            Tags: reviewTagsMap[review.id] || []
+            Tags: reviewTagsMap[review.id] || [],
+            //ReviewReplies: reviewReplies[review.id] || []
           };
         });
   
@@ -697,29 +891,465 @@ router.get('/getstates/:country_id', verifyToken, async (req, res) => {
     }
 });
 
+//===============================================================================
+// Api for home page content
+router.get('/app-home',  verifyToken,  async (req, res) => {
+    try {
+        const [latestReviews,AllReviewTags] = await Promise.all([
+            comFunction2.getlatestReviews(20),
+            comFunction2.getAllReviewTags()
+        ]);
+        const sql = `SELECT * FROM page_info where secret_Key = 'home' `;
+        db.query(sql, (err, results, fields) => {
+            if (err) throw err;
+            const home = results[0];
+            const meta_sql = `SELECT * FROM page_meta where page_id = ${home.id}`;
+            db.query(meta_sql, async (meta_err, _meta_result) => {
+                if (meta_err) throw meta_err;
+
+                const meta_values = _meta_result;
+                let meta_values_array = {};
+                await meta_values.forEach((item) => {
+                    meta_values_array[item.page_meta_key] = item.page_meta_value;
+                })
+
+                if (latestReviews.length > 0) {
+                    const reviewTagsMap = {};
+                    AllReviewTags.forEach(tag => {
+                        if (!reviewTagsMap[tag.review_id]) {
+                          reviewTagsMap[tag.review_id] = [];
+                        }
+                        reviewTagsMap[tag.review_id].push({ review_id: tag.review_id, tag_name: tag.tag_name });
+                    });
+                
+                    var latest_reviews = latestReviews.map(review => {
+                        return {
+                            ...review,
+                            Tags: reviewTagsMap[review.id] || []
+                        };
+                    });
+                }
+
+                const featured_sql = `SELECT featured_companies.id,featured_companies.company_id,featured_companies.short_desc,featured_companies.link,company.logo,company.company_name FROM featured_companies 
+                        JOIN company ON featured_companies.company_id = company.ID 
+                        WHERE featured_companies.status = 'active' 
+                        ORDER BY featured_companies.ordering ASC `;
+                db.query(featured_sql, (featured_err, featured_result) => {
+                    var featured_comps = featured_result;
+                    return res.status(200).json({
+                        status: 'success',
+                        data: {
+                            meta_values_array:meta_values_array,
+                            featured_comps:featured_comps,
+                            latestReviews:latest_reviews,
+                        },
+                        message: 'Home data successfully received'
+                    });
+                })
+
+            })
+
+        })
+    } catch (error) {
+        console.error("An error occurred:", error);
+        // Handle the error appropriately, e.g., sending an error response
+    }
+});
+
+// Api for home page customer-rights content
+router.get('/app-home-customer-rights',  verifyToken,  async (req, res) => {
+    try {
+        const sql = `SELECT * FROM page_info where secret_Key = 'home' `;
+        db.query(sql, (err, results, fields) => {
+            if (err) throw err;
+            const home = results[0];
+            const meta_sql = `SELECT * FROM page_meta where page_id = ${home.id}`;
+            db.query(meta_sql, async (meta_err, _meta_result) => {
+                if (meta_err) throw meta_err;
+
+                const meta_values = _meta_result;
+                let meta_values_array = {};
+                await meta_values.forEach((item) => {
+                    if(item.page_meta_key == 'app_cus_right_content' || item.page_meta_key == 'app_cus_right_points'|| item.page_meta_key == 'app_cus_right_img') {
+                        meta_values_array[item.page_meta_key] = item.page_meta_value;
+                    }
+                })
+                return res.status(200).json({
+                    status: 'success',
+                    data: {
+                        meta_values_array:meta_values_array,
+                    },
+                    message: 'Home data successfully received'
+                });
+            })
+
+        })
+    } catch (error) {
+        console.error("An error occurred:", error);
+        // Handle the error appropriately, e.g., sending an error response
+    }
+});
+
+// Api for home page Organization Responsibility content
+router.get('/app-home-org-responsibility',  verifyToken,  async (req, res) => {
+    try {
+        const sql = `SELECT * FROM page_info where secret_Key = 'home' `;
+        db.query(sql, (err, results, fields) => {
+            if (err) throw err;
+            const home = results[0];
+            const meta_sql = `SELECT * FROM page_meta where page_id = ${home.id}`;
+            db.query(meta_sql, async (meta_err, _meta_result) => {
+                if (meta_err) throw meta_err;
+
+                const meta_values = _meta_result;
+                let meta_values_array = {};
+                await meta_values.forEach((item) => {
+                    if(item.page_meta_key == 'app_org_responsibility_content' || item.page_meta_key == 'app_org_responsibility_point'|| item.page_meta_key == 'app_org_responsibility_img') {
+                        meta_values_array[item.page_meta_key] = item.page_meta_value;
+                    }
+                })
+                return res.status(200).json({
+                    status: 'success',
+                    data: {
+                        meta_values_array:meta_values_array,
+                    },
+                    message: 'Home data successfully received'
+                });
+            })
+
+        })
+    } catch (error) {
+        console.error("An error occurred:", error);
+        // Handle the error appropriately, e.g., sending an error response
+    }
+});
+
+// Api for home page About Us content
+router.get('/app-home-about-us',  verifyToken,  async (req, res) => {
+    try {
+        const sql = `SELECT * FROM page_info where secret_Key = 'home' `;
+        db.query(sql, (err, results, fields) => {
+            if (err) throw err;
+            const home = results[0];
+            const meta_sql = `SELECT * FROM page_meta where page_id = ${home.id}`;
+            db.query(meta_sql, async (meta_err, _meta_result) => {
+                if (meta_err) throw meta_err;
+
+                const meta_values = _meta_result;
+                let meta_values_array = {};
+                await meta_values.forEach((item) => {
+                    if(item.page_meta_key == 'app_about_us_content_1' || item.page_meta_key == 'app_about_us_content_2' || item.page_meta_key == 'app_about_us_button_text') {
+                        meta_values_array[item.page_meta_key] = item.page_meta_value;
+                    }
+                })
+                return res.status(200).json({
+                    status: 'success',
+                    data: {
+                        meta_values_array:meta_values_array,
+                    },
+                    message: 'Home data successfully received'
+                });
+            })
+
+        })
+    } catch (error) {
+        console.error("An error occurred:", error);
+        // Handle the error appropriately, e.g., sending an error response
+    }
+});
+
+// Api for business page content
+router.get('/app-business', verifyToken, async (req, res) => {
+    try {
+        const sql = `SELECT * FROM page_info where secret_Key = 'business' `;
+        db.query(sql, (err, results, fields) => {
+            if (err) throw err;
+            const common = results[0];
+            const meta_sql = `SELECT * FROM page_meta where page_id = ${common.id}`;
+            db.query(meta_sql, async (meta_err, _meta_result) => {
+                if (meta_err) throw meta_err;
+
+                const meta_values = _meta_result;
+                let meta_values_array = {};
+                console.log(meta_values);
+                await meta_values.forEach((item) => {
+                    if(item.page_meta_key == 'app_bannner_content_title' || item.page_meta_key == 'app_bannner_content_1' || item.page_meta_key == 'app_bannner_content_2'|| item.page_meta_key == 'app_advantage_points' || item.page_meta_key == 'app_dont_forget_content_1_title'|| item.page_meta_key == 'app_dont_forget_content_1' || item.page_meta_key == 'app_dont_forget_content_2_title'|| item.page_meta_key == 'app_dont_forget_content_2' || item.page_meta_key == 'bottom_content'|| item.page_meta_key == 'app_banner_img_1' || item.page_meta_key == 'app_banner_img_2') {
+                        meta_values_array[item.page_meta_key] = item.page_meta_value;
+                    }
+                })
+
+                const UpcomingBusinessFeature = await comFunction2.getUpcomingBusinessFeature();
+                const BusinessFeature = await comFunction2.getBusinessFeature();
+                //console.log(meta_values_array);
+                return res.status(200).json({
+                    status: 'success',
+                    data: {
+                        meta_values_array:meta_values_array,
+                        UpcomingBusinessFeature:UpcomingBusinessFeature,
+                        BusinessFeature:BusinessFeature,
+                    },
+                    message: 'Business data successfully received'
+                });
+            })
+
+        })
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+
+// Api for about us page content
+router.get('/app-about-us', verifyToken, async (req, res) => {
+    try {
+        const sql = `SELECT * FROM page_info where secret_Key = 'about' `;
+        db.query(sql, (err, results, fields) => {
+            if (err) throw err;
+            const common = results[0];
+            const meta_sql = `SELECT * FROM page_meta where page_id = ${common.id}`;
+            db.query(meta_sql, async (meta_err, _meta_result) => {
+                if (meta_err) throw meta_err;
+
+                const meta_values = _meta_result;
+                let meta_values_array = {};
+                //console.log(meta_values);
+                await meta_values.forEach((item) => {
+                    if(item.page_meta_key == 'app_banner_content_1' || item.page_meta_key == 'app_banner_content_2' || item.page_meta_key == 'app_platform_content_1'|| item.page_meta_key == 'app_platform_content_2' || item.page_meta_key == 'app_banner_img_1'|| item.page_meta_key == 'app_banner_img_2' || item.page_meta_key == 'mission_title'|| item.page_meta_key == 'mission_content') {
+                        meta_values_array[item.page_meta_key] = item.page_meta_value;
+                    }
+                })
+
+                return res.status(200).json({
+                    status: 'success',
+                    data: {
+                        meta_values_array:meta_values_array,
+                    },
+                    message: 'About Us data successfully received'
+                });
+            })
+
+        })
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+
+// Api for fAQ page content
+router.get('/app-faq',verifyToken, async (req, res) => {
+    try {
+        const [faqPageData,faqCategoriesData,faqItemsData] = await Promise.all([
+            comFunction2.getFaqPage(),
+            comFunction2.getFaqCategories(),
+            comFunction2.getFaqItems(),
+        ]);
+        
+        // Create an object to store questions and answers by category
+        const faqDataByCategory = {};
+
+        // Iterate through the categories and initialize them in the object
+        faqCategoriesData.forEach(category => {
+            faqDataByCategory[category.id] = {
+                category: category.category,
+                faqItems: []
+            };
+        });
+
+        // Populate the object with questions and answers by category
+        faqItemsData.forEach(faqItem => {
+            if (faqDataByCategory[faqItem.category_id]) {
+                faqDataByCategory[faqItem.category_id].faqItems.push({
+                    id: faqItem.id,
+                    question: faqItem.question,
+                    answer: faqItem.answer
+                });
+            }
+        });
+
+        // Convert the object to an array
+        const faqDataArray = Object.values(faqDataByCategory);
+
+        console.log(faqDataArray);
+        return res.status(200).json({
+            status: 'success',
+            data: {
+                faqPageContent:faqPageData,
+                faqDataArray:faqDataArray
+            },
+            message: 'FAQ data successfully received'
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
 
 
 
+//================================================================================
+
+// function generateTokens(user) {
+//     const accessToken = jwt.sign(user, jwtsecretKey, { expiresIn: '15m' }); // Set the expiration time for the access token
+//     const refreshToken = jwt.sign(user, jwtsecretKey, { expiresIn: '7d' }); // Set the expiration time for the refresh token
+//     return { accessToken, refreshToken };
+// }
+
+// function verifyToken(req, res, next) {
+//     let token = req.headers['authorization'];
+//     if (token) {
+//         token = token.split(' ')[1];
+//         jwt.verify(token, jwtsecretKey, (err, valid) => {
+//             if (err) {
+//                 console.error("Token verification error:", err);
+//                 return res.status(401).json({
+//                     status: 'error',
+//                     message: 'Invalid token',
+//                 });
+//             } else {
+//                 req.user = valid;
+//                 console.log("user ccc", req.user); // To store user information
+//                 next();
+//             }
+//         });
+//     } else {
+//         return res.status(403).json({
+//             status: 'error',
+//             message: 'Missing header token',
+//         });
+//     }
+// }
 
 
-function verifyToken(req, res, next){
+  
+// function verifyToken(req, res, next) {
+//     let token = req.headers['authorization'];
+//     if (token) {
+//         token = token.split(' ')[1];
+//         console.log("Received token:", token);
+//         jwt.verify(token, jwtsecretKey, (err, valid) => {
+//             if (err) {
+//                 console.error("Token verification error:", err);
+//                 return res.status(401).json({
+//                     status: 'error',
+//                     message: 'Invalid token',
+//                 });
+//             } else {
+//                 const userId = req.body.user_id;
+//                 const generateRefreshToken = (userId) => {
+//                     try {
+//                       // Define the payload for the token
+//                       const payload = {
+//                         user_id: userId, // You can include any user-specific data here
+//                         // Add other claims as needed
+//                       };
+                  
+//                       // Sign the token using the secret key and set the expiration
+//                       const refreshToken = jwt.sign(payload, jwtsecretKey, {
+//                         expiresIn: '20h',
+//                       });
+                  
+//                       return refreshToken;
+//                     } catch (error) {
+//                       // Handle token generation error (e.g., log, throw, or return null)
+//                       console.error('Error generating refresh token:', error);
+//                       return null;
+//                     }
+//                   };
+//                 req.user = valid;
+//                 const refreshToken = generateRefreshToken(userId);
+//                 if (!refreshToken) {
+//                     return res.status(500).json({
+//                       status: 'error',
+//                       message: 'Failed to generate refresh token',
+//                     });
+//                   }
+//                   res.setHeader('x-refresh-token', refreshToken);
+//                   res.json({
+//                     status: 'success',
+//                     refresh_token: refreshToken,
+//                   });
+//                 // Use the refreshToken function to generate a new refresh token
+//                 refreshToken(req.user.user_id) // Assuming user_id is part of the user data
+//                     .then((newRefreshToken) => {
+//                         // Set the new refresh token in the response headers
+//                         res.setHeader('x-refresh-token', newRefreshToken);
+//                         next();
+//                     })
+//                     .catch((error) => {
+//                         console.error("Refresh token generation error:", error);
+//                         return res.status(500).json({
+//                             status: 'error',
+//                             message: 'Failed to generate refresh token',
+//                         });
+//                     });
+//             }
+//         });
+//     } else {
+//         return res.status(403).json({
+//             status: 'error',
+//             message: 'Missing header token',
+//         });
+//     }
+// }
+  
+function verifyToken(req, res, next) {
     let token = req.headers['authorization'];
-    if(token){
+    if (token) {
         token = token.split(' ')[1];
         console.log("Received token:", token);
         jwt.verify(token, jwtsecretKey, (err, valid) => {
-            if(err){
+            if (err) {
                 console.error("Token verification error:", err);
                 return res.status(401).json({
                     status: 'error',
                     message: 'Invalid token',
                 });
             } else {
-                req.user = valid; 
-                console.log("user ccc",req.user) //to store user information
+                const userId = req.body.user_id;
+
+                // Define the function to generate a refresh token
+                const generateRefreshToken = (userId) => {
+                    try {
+                        // Define the payload for the token
+                        const payload = {
+                            user_id: userId,
+                        };
+
+                        // Sign the token using the secret key and set the expiration
+                        const refreshToken = jwt.sign(payload, jwtsecretKey, {
+                            expiresIn: '20h',
+                        });
+
+                        return refreshToken;
+                    } catch (error) {
+                        // Handle token generation error (e.g., log, throw, or return null)
+                        console.error('Error generating refresh token:', error);
+                        return null;
+                    }
+                };
+
+                // Use the refreshToken function to generate a new refresh token
+                const refreshToken = generateRefreshToken(userId);
+
+                if (!refreshToken) {
+                    return res.status(500).json({
+                        status: 'error',
+                        message: 'Failed to generate refresh token',
+                    });
+                }
+
+                //res.setHeader('x-refresh-token', refreshToken);
+
+                // Store user data in req.user
+                req.user = valid;
+
+                // Continue to the next middleware or route
                 next();
             }
-        })
+        });
     } else {
         return res.status(403).json({
             status: 'error',
@@ -731,6 +1361,13 @@ function verifyToken(req, res, next){
 
 
 module.exports = router;
+
+
+
+
+
+
+
 
 
 

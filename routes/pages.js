@@ -302,7 +302,16 @@ router.get('/faq', checkCookieValue, async (req, res) => {
             comFunction2.getPageMetaValues('global'),
         ]);
         // Render the 'add-page' EJS view and pass the data
-        res.render('front-end/faq', {
+        // res.render('front-end/faq', {
+        //     menu_active_id: 'faq',
+        //     page_title: 'FAQ ',
+        //     currentUserData,
+        //     faqPageData,
+        //     faqCategoriesData,
+        //     faqItemsData,
+        //     globalPageMeta:globalPageMeta
+        // });
+        res.json( {
             menu_active_id: 'faq',
             page_title: 'FAQ ',
             currentUserData,
@@ -577,6 +586,7 @@ router.get('/company/:id', checkCookieValue, async (req, res) => {
     }
 
 });
+
 //-----------------------------------------------------------------//
 
 

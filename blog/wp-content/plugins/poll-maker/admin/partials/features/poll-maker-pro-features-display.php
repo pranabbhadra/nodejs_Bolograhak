@@ -1,4 +1,4 @@
-<div class="wrap">
+<div class="wrap ays-poll-features-wrap-box">
     <div class="ays-poll-heading-box">
         <div class="ays-poll-wordpress-user-manual-box">
             <a href="https://ays-pro.com/wordpress-poll-maker-user-manual" target="_blank" style="text-decoration: none;font-size: 13px;">
@@ -40,8 +40,7 @@
                 <tr>
                     <th></th>
                     <th class="price-info">
-                        <div class="price-now"><span>
-                                    <?php echo __( 'Free', $this->plugin_name ); ?></span></div>
+                        <div class="price-now"><span><?php echo __( 'Free', $this->plugin_name ); ?></span></div>
                     </th>
                     <th class="price-info">
                         <div class="price-now"><span>$49</span></div>
@@ -54,6 +53,10 @@
                         <div class="price-now">
                             <span style="color: red; font-size: 12px;">Until November 27</span>
                         </div> -->
+                        <div class="ays-poll-pracing-table-td-flex">
+                            <a href="https://ays-pro.com/wordpress/poll-maker" class="price-buy"><?php echo __('Buy now',$this->plugin_name)?><span class="hide-mobile"></span></a>
+                            <span><?php echo __('(One-time payment)', $this->plugin_name); ?><span>
+                        </div>
                     </th>
                     <th class="price-info">
                         <div class="price-now">
@@ -68,6 +71,10 @@
                         <!-- <div class="price-now">
                             <span style="color: red; font-size: 12px;">Until November 27</span>
                         </div>  -->
+                        <div class="ays-poll-pracing-table-td-flex">
+                            <a href="https://ays-pro.com/wordpress/poll-maker" class="price-buy"><?php echo __('Buy now',$this->plugin_name)?><span class="hide-mobile"></span></a>
+                            <span><?php echo __('(One-time payment)', $this->plugin_name); ?><span>
+                        </div>
                     </th>
                 </tr>
                 </thead>
@@ -607,18 +614,25 @@
                 </tr>
                 <tr>
                     <td></td>
-                    <td><a href="https://wordpress.org/plugins/poll-maker/" class="price-buy">
-							<?php echo __( 'Download', $this->plugin_name ); ?><span class="hide-mobile"></span></a>
+                    <td></td>
+                    <td>
+                        <div class="ays-poll-pracing-table-td-flex">
+                            <a href="https://ays-pro.com/wordpress/poll-maker" class="price-buy"><?php echo __('Buy now',$this->plugin_name)?><span class="hide-mobile"></span></a>
+                            <span><?php echo __('(One-time payment)', $this->plugin_name); ?><span>
+                        </div>
                     </td>
-                    <td><a href="https://ays-pro.com/wordpress/poll-maker" class="price-buy">
-							<?php echo __( 'Buy now', $this->plugin_name ); ?><span class="hide-mobile"></span></a></td>
-                    <td><a href="https://ays-pro.com/wordpress/poll-maker" class="price-buy">
-							<?php echo __( 'Buy now', $this->plugin_name ); ?><span class="hide-mobile"></span></a></td>
+                    <td>
+                        <div class="ays-poll-pracing-table-td-flex">
+                            <a href="https://ays-pro.com/wordpress/poll-maker" class="price-buy"><?php echo __('Buy now',$this->plugin_name)?><span class="hide-mobile"></span></a>
+                            <span><?php echo __('(One-time payment)', $this->plugin_name); ?><span>
+                        </div>
+                    </td>
                 </tr>
                 </tbody>
             </table>
         </div>
-        <div class="ays-poll-row">
+
+        <!-- <div class="ays-poll-row">
             <div class="ays-poll-col-4">
                 <a href="<?php echo POLL_MAKER_AYS_ADMIN_URL . '/images/features/screenshot-3.png'; ?>"
                    class="open-lightbox">
@@ -666,6 +680,19 @@
                          width="100%"
                          alt="PRO Feature 4" title="PRO Feature 4"/>
                 </a>
+            </div>
+        </div> -->
+    </div>
+    <div class="ays-poll-sm-content-row-sg">
+        <div class="ays-poll-sm-guarantee-container-sg ays-poll-sm-center-box-sg">
+            <img src="<?php echo POLL_MAKER_AYS_ADMIN_URL ?>/images/money_back_logo.webp" alt="Best money-back guarantee logo">
+            <div class="ays-poll-sm-guarantee-text-container-sg">
+                <h3><?php echo __("30 day money back guarantee !!!", $this->plugin_name); ?></h3>
+                <p>
+                    <?php echo __("We're sure that you'll love our Poll Maker plugin, but, if for some reason, you're not
+                    satisfied in the first 30 days of using our product, there is a money-back guarantee and
+                    we'll issue a refund.", $this->plugin_name); ?>
+                </p>
             </div>
         </div>
     </div>
