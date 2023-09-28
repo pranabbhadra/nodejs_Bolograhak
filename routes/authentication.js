@@ -30,152 +30,6 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 
-
-
-// function verifyToken(req, res, next) {
-//     let accessToken = req.headers['authorization'];
-//     let refreshToken = req.headers['x-refresh-token'];
-  
-//     // Function to generate a new access token
-//     const generateAccessToken = (user) => {
-//       // Implement your logic to generate a new access token based on the user
-//       // For example:
-//       const newPayload = {
-//         user_id: user.user_id,
-//         // Add other relevant claims here
-//       };
-//       const newAccessToken = jwt.sign(newPayload, jwtsecretKey, {
-//         expiresIn: '1h', // Set the expiration time for the new access token
-//       });
-//       return newAccessToken;
-//     };
-  
-//     // Function to verify the access token
-//     const verifyAccessToken = () => {
-//       jwt.verify(accessToken, jwtsecretKey, (err, user) => {
-//         if (err) {
-//           // Access token is invalid, switch to refresh token
-//           useRefreshToken();
-//         } else {
-//           // Access token is valid, proceed with it
-//           req.user = user;
-//           next();
-//         }
-//       });
-//     };
-  
-//     // Function to use the refresh token
-//     const useRefreshToken = () => {
-//       if (refreshToken) {
-//         jwt.verify(refreshToken, jwtsecretKey, (err, refreshUser) => {
-//           if (err) {
-//             return res.status(401).json({
-//               status: 'error',
-//               message: 'Invalid refresh token',
-//             });
-//           } else {
-//             // Access token is invalid, but refresh token is valid
-//             req.user = refreshUser; // Set req.user to the user from the refresh token
-//             // Generate a new access token
-//             const newAccessToken = generateAccessToken(refreshUser);
-//             // Replace the existing Authorization header with the new access token
-//             req.headers['authorization'] = `Bearer ${newAccessToken}`;
-//             // Verify the new access token
-//             verifyAccessToken();
-//           }
-//         });
-//       } else {
-//         // No valid refresh token available, return an error
-//         return res.status(401).json({
-//           status: 'error',
-//           message: 'Invalid tokens',
-//         });
-//       }
-//     }
-  
-//     // Check if access token is missing
-//     if (!accessToken) {
-//       // Access token is missing, try to use the refresh token
-//       useRefreshToken();
-//     } else {
-//       accessToken = accessToken.split(' ')[1];
-//       verifyAccessToken();
-//     }
-//   }
-  
-// function verifyToken(req, res, next) {
-//     let accessToken = req.headers['authorization'];
-  
-    
-//     const generateAccessToken = (user) => {
-//       // Implement your logic to generate a new access token based on the user
-//       // For example:
-//       const newPayload = {
-//         user_id: user.user_id,
-//         // Add other relevant claims here
-//       };
-//       const newAccessToken = jwt.sign(newPayload, jwtsecretKey, {
-//         expiresIn: '1h', // Set the expiration time for the new access token
-//       });
-//       return newAccessToken;
-//     };
-  
-//     // Function to verify the access token
-//     const verifyAccessToken = () => {
-//       jwt.verify(accessToken, jwtsecretKey, (err, user) => {
-//         if (err) {
-//           // Access token is invalid, switch to refresh token
-//           useRefreshToken();
-//         } else {
-//           // Access token is valid, proceed with it
-//           req.user = user;
-//           next();
-//         }
-//       });
-//     };
-  
-//     // Function to use the refresh token
-//     const useRefreshToken = () => {
-//       const refreshToken = req.headers['authorization']; 
-  
-//       if (refreshToken) {
-//         jwt.verify(refreshToken, jwtsecretKey, (err, refreshUser) => {
-//           if (err) {
-//             return res.status(401).json({
-//               status: 'error',
-//               message: 'Invalid refresh token',
-//             });
-//           } else {
-//             // Access token is invalid, but refresh token is valid
-//             req.user = refreshUser; // Set req.user to the user from the refresh token
-//             // Generate a new access token
-//             const newAccessToken = generateAccessToken(refreshUser);
-//             // Replace the existing Authorization header with the new access token
-//             req.headers['authorization'] = `Bearer ${newAccessToken}`;
-//             // Verify the new access token
-//             verifyAccessToken();
-//           }
-//         });
-//       } else {
-//         // No valid refresh token available, return an error
-//         return res.status(401).json({
-//           status: 'error',
-//           message: 'Invalid tokens',
-//         });
-//       }
-//     }
-  
-//     // Check if access token is missing
-//     if (!accessToken) {
-//       // Access token is missing, try to use the refresh token
-//       useRefreshToken();
-//     } else {
-//       accessToken = accessToken.split(' ')[1];
-//       verifyAccessToken();
-//     }
-//   }
-  
-
 router.post('/register',upload.single('profile_pic') ,authenController.register);
 router.post('/login', authenController.login);
 router.put('/edituser', verifyToken, upload.single('profile_pic') ,authenController.edituser);
@@ -203,6 +57,17 @@ router.post('/profileManagement',  upload.fields([
 ]), authenController.profileManagement);
 //reviewVoting
 router.post('/reviewVoting',verifyToken, authenController.reviewVoting);
+//Create Poll
+router.post('/createPoll',verifyToken, authenController.createPoll);
+
+//Update Poll Expire Date
+router.post('/updatePollExpireDate', authenController.updatePollExpireDate);
+
+//Polling Route
+router.post('/userPolling',verifyToken, authenController.userPolling);
+
+
+
 
 //forget password
 router.post('/forgotPassword', authenController.forgotPassword);
@@ -1187,7 +1052,87 @@ router.get('/app-faq',verifyToken, async (req, res) => {
     }
 });
 
-
+router.get('/company-poll-listing/:slug', async (req, res) => {
+    const encodedUserData = req.cookies.user;
+    const currentUserData = JSON.parse(encodedUserData);
+    const slug = req.params.slug;
+    const comp_res =await comFunction2.getCompanyIdBySlug(slug);
+    const companyId = comp_res.ID;
+    const [globalPageMeta, company, PremiumCompanyData, companyReviewNumbers, CompanyPollDetails ] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+        comFunction.getCompany(companyId),
+        comFunction2.getPremiumCompanyData(companyId),
+        comFunction.getCompanyReviewNumbers(companyId),
+        comFunction2.getCompanyPollDetails(companyId),
+    ]);
+    //console.log(CompanyPollDetails);
+    const PollDetails = CompanyPollDetails.map((row) => ({
+        poll_id: row.id,
+        company_id: row.company_id,
+        poll_creator_id: row.poll_creator_id,
+        created_at: row.created_at,
+        expired_at: row.expired_at,
+        question: row.question,
+        poll_answer: row.poll_answer ? row.poll_answer.split(',') : [],
+        poll_answer_id: row.poll_answer_id ? row.poll_answer_id.split(',') : [],
+        voting_answer_id: row.voting_answer_id ? row.voting_answer_id.split(',') : [],
+    }));
+    try {
+        let cover_img = '';
+        let facebook_url = '';
+        let twitter_url = '';
+        let instagram_url = '';
+        let linkedin_url = '';
+        let youtube_url = '';
+    
+        if(typeof PremiumCompanyData !== 'undefined' ){
+             cover_img = PremiumCompanyData.cover_img;
+             facebook_url = PremiumCompanyData.facebook_url;
+             twitter_url = PremiumCompanyData.twitter_url;
+             instagram_url = PremiumCompanyData.instagram_url;
+             linkedin_url = PremiumCompanyData.linkedin_url;
+             youtube_url = PremiumCompanyData.youtube_url;
+        }
+        // res.json( {
+        //     menu_active_id: 'company-poll-listing',
+        //     page_title: 'Company Name',
+        //     currentUserData,
+        //     globalPageMeta:globalPageMeta,
+        //     company,
+        //     companyReviewNumbers,
+        //    PollDetails,
+        //     facebook_url:facebook_url,
+        //     twitter_url:twitter_url,
+        //     instagram_url:instagram_url,
+        //     linkedin_url:linkedin_url,
+        //     youtube_url:youtube_url
+        // });
+        res.render('front-end/company-poll-listing', {
+            menu_active_id: 'company-poll-listing',
+            page_title: 'Company Name',
+            currentUserData,
+            globalPageMeta:globalPageMeta,
+            company,
+            companyReviewNumbers,
+            PollDetails,
+            facebook_url:facebook_url,
+            twitter_url:twitter_url,
+            instagram_url:instagram_url,
+            linkedin_url:linkedin_url,
+            youtube_url:youtube_url
+        });
+    } catch (err) {
+        console.error(err);
+        res.render('front-end/404', {
+            menu_active_id: '404',
+            page_title: '404',
+            currentUserData,
+            globalPageMeta:globalPageMeta
+        });
+    }
+    //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
+  });
+  
 
 //================================================================================
 

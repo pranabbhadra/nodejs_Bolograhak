@@ -2718,3 +2718,166 @@ exports.reviewVoting = async (req, res) => {
     });
   }
 };
+
+exports.createPoll = async (req, res) => {
+  try {
+    console.log('req.user:', req.user);
+    console.log('req.body:', req.body);
+
+    const authenticatedUserId = parseInt(req.user.user_id);
+    console.log('authenticatedUserId: ', authenticatedUserId);
+    const ApiuserId = parseInt(req.body.user_id);
+    if (isNaN(ApiuserId)) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Invalid user_id provided in request body.',
+      });
+    }
+    console.log('req.body.user_id: ', parseInt(req.body.user_id));
+    console.log('createPoll', req.body);
+    const { company_id, user_id, poll_question, poll_answer, expire_date } = req.body;
+    console.log('user_id from request:', req.body.user_id);
+    if (ApiuserId !== authenticatedUserId) {
+      return res.status(403).json({
+        status: 'error',
+        message: 'Access denied: You are not authorized to update this user.',
+      });
+    }
+    //const answers = JSON.stringify(poll_answer);
+    const currentDate = new Date();
+    // const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth() + 1; // Months are zero-based (0 = January, 11 = December), so add 1
+    const day = currentDate.getDate();
+    const formattedDate = `${year}-${month < 10 ? '0' : ''}${month}-${day < 10 ? '0' : ''}${day}`;
+    const sql = `INSERT INTO poll_company ( company_id, poll_creator_id, question, created_at, expired_at) VALUES (?,?,?,?,?)`;
+    const data = [company_id, user_id, poll_question, formattedDate, expire_date];
+    db.query(sql, data, async (err, result) => {
+      if (err) {
+        return res.send({
+          status: 'not ok',
+          message: 'Something went wrong ' + err
+        });
+      } else {
+        await poll_answer.forEach((answer) => {
+          const ansQuery = `INSERT INTO poll_answer ( poll_id, answer) VALUES (?,?)`;
+          const ansData = [result.insertId, answer];
+          db.query(ansQuery, ansData, (ansErr, ansResult) => {
+            if (ansErr) {
+              return res.send({
+                status: 'not ok',
+                message: 'Something went wrong ' + ansErr
+              });
+            }
+          })
+        })
+
+        return res.send({
+          status: 'ok',
+          message: 'Poll Created Successfully'
+        });
+      }
+    })
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: 'error',
+      message: 'An error occurred ' + error,
+    });
+  }
+};
+
+// Update poll expire date
+exports.updatePollExpireDate = async (req, res) => {
+  try {
+    // const authenticatedUserId = parseInt(req.user.user_id);
+    // console.log('authenticatedUserId: ', authenticatedUserId);
+    // const ApiuserId = parseInt(req.body.user_id);
+    // if (isNaN(ApiuserId)) {
+    //   return res.status(400).json({
+    //     status: 'error',
+    //     message: 'Invalid user_id provided in request body.',
+    //   });
+    // }
+    // console.log('req.body.user_id: ', parseInt(req.body.user_id));
+    console.log('updatePollExpireDate', req.body);
+    const { poll_id, change_expire_date,user_id } = req.body;
+    // console.log('user_id from request:', req.body.user_id);
+    // if (ApiuserId !== authenticatedUserId) {
+    //   return res.status(403).json({
+    //     status: 'error',
+    //     message: 'Access denied: You are not authorized to update this user.',
+    //   });
+    // }
+    const sql = `UPDATE poll_company SET expired_at = ? WHERE id = ?`;
+    const data = [change_expire_date, poll_id]
+    db.query(sql, data, (err, result) => {
+      if (err) {
+        return res.send({
+          status: 'not ok',
+          message: 'Something went wrong ' + err
+        });
+      } else {
+        return res.send({
+          status: 'ok',
+          message: 'Expire Date Updated Successfully'
+        });
+      }
+    })
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: 'error',
+      message: 'An error occurred ' + error,
+    });
+  }
+}
+// User polling
+exports.userPolling = async (req, res) => {
+  try {
+    const authenticatedUserId = parseInt(req.user.user_id);
+    console.log('authenticatedUserId: ', authenticatedUserId);
+    const ApiuserId = parseInt(req.body.user_id);
+    if (isNaN(ApiuserId)) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Invalid user_id provided in request body.',
+      });
+    }
+    console.log('req.body.user_id: ', parseInt(req.body.user_id));
+    console.log('userPolling', req.body);
+    const { ans_id, poll_id, user_id } = req.body
+    console.log('user_id from request:', req.body.user_id);
+    if (ApiuserId !== authenticatedUserId) {
+      return res.status(403).json({
+        status: 'error',
+        message: 'Access denied: You are not authorized to update this user.',
+      });
+    }
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+    const sql = `INSERT INTO poll_voting ( poll_id, answer_id, user_id, voting_date) VALUES (?, ?, ?, ?)`;
+    const data = [poll_id, ans_id, user_id, formattedDate];
+    db.query(sql, data, (err, result) => {
+      if (err) {
+        return res.send({
+          status: 'not ok',
+          message: 'Something went wrong ' + err
+        });
+      } else {
+        return res.send({
+          status: 'ok',
+          message: 'Your Poll Submited Successfully'
+        });
+      }
+    })
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: 'error',
+      message: 'An error occurred ' + error,
+    });
+  }
+}
+
+
