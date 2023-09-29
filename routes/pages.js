@@ -194,7 +194,10 @@ router.get('', checkCookieValue, async (req, res) => {
                         globalPageMeta:globalPageMeta,
                         latestReviews: latestReviews,
                         AllReviewTags: AllReviewTags,
-                        AllReviewVoting:AllReviewVoting
+                        AllReviewVoting:AllReviewVoting,
+                        PositiveReviewsCompany,
+                        NegativeReviewsCompany,
+                        PopularCategories,
                     });
                 })
 
@@ -644,7 +647,9 @@ router.get('/company/:slug', checkCookieValue, async (req, res) => {
                     CompanyInfo,
                     companyReviewNumbers,
                     getCompanyReviews,
-                    globalPageMeta:globalPageMeta
+                    globalPageMeta:globalPageMeta,
+                    labeltype,
+                    countInvitationLabels
                 });
                 // res.json(
                 // {

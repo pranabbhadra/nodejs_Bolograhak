@@ -836,7 +836,7 @@
                             <div class="review-submit d-sm-flex align-items-center">
                                 <% if(labeltype == 'invitation'){ %>
                                 
-                                    <% if(countInvitationLabels[0].label_count < 100){ %>
+                                    <% if(countInvitationLabels.length == 0 || countInvitationLabels[0].label_count < 100){ %>
                                         <input type="hidden" name="review_lable" value="2" >
                                     <% }else{ %>
                                         <input type="hidden" name="review_lable" value="1" >
