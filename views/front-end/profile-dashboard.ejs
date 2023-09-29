@@ -101,6 +101,10 @@
                                        <div class="user-profile-info">
                                           <div class="user-review-date"><%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></div>
                                        </div>
+                                       <% if(review.labels == '2') { %>
+                                          <div><span class="invited-tag">Invited</span></div>
+                                       <% } %>
+
                                        <% if(review.review_reply_count==1){ %>
                                        <span class="user-select-tag review-reply-btn"><a href="/company/<%- review.slug -%>#review-reply-<%- review.id -%>">Reply</a></span> 
                                        <% } %>

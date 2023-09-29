@@ -2498,7 +2498,7 @@ exports.submitReview = async (req, res) => {
                         {
                             status: 'ok',
                             data: '',
-                            message: 'Password Send to your email please check to your email'
+                            message: 'Review Mail send successfully'
                         }
                     )
                     }

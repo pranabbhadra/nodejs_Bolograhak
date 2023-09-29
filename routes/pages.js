@@ -799,13 +799,17 @@ router.get('/category/:category_slug/:filter', checkCookieValue, async (req, res
     const category_slug = req.params.category_slug;
     const filter_value = req.params.filter;
     const baseURL = process.env.MAIN_URL;
-    const [globalPageMeta, getSubCategories, companyDetails, AllRatingTags] = await Promise.all([
+    const [globalPageMeta, getSubCategories, companyDetails, AllRatingTags, CategoryDetails] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
         comFunction2.getSubCategories(category_slug),
         comFunction2.getFilteredCompanyDetails(category_slug,filter_value),
         comFunction.getAllRatingTags(),
+        comFunction.getCategoryDetails(category_slug),
     ]);
     if (filter_value == 'latest' || filter_value == 'trending' || filter_value == 'verified' ) {
+        
+        const categoryParentId = CategoryDetails[0].parent_id;
+        const ParentCategories = await comFunction.getParentCategories(categoryParentId);
         try { 
 
             const subcategories = getSubCategories.map((row) => ({
@@ -822,7 +826,8 @@ router.get('/category/:category_slug/:filter', checkCookieValue, async (req, res
             //     globalPageMeta:globalPageMeta,
             //     subCategories:subcategories[0],
             //     companyDetails:companyDetails,
-            //     AllRatingTags
+            //     AllRatingTags,
+            //     ParentCategories
             // });
             res.render('front-end/company-listing', {
                 menu_active_id: 'company-listing',
@@ -833,7 +838,8 @@ router.get('/category/:category_slug/:filter', checkCookieValue, async (req, res
                 companyDetails:companyDetails,
                 AllRatingTags,
                 baseURL:baseURL,
-                filter_value:filter_value
+                filter_value:filter_value,
+                ParentCategories
             });
         } catch (err) {
             console.error(err);
@@ -1387,12 +1393,13 @@ router.get('/company-poll-listing/:slug', checkClientClaimedCompany, async (req,
     const slug = req.params.slug;
     const comp_res =await comFunction2.getCompanyIdBySlug(slug);
     const companyId = comp_res.ID;
-    const [globalPageMeta, company, PremiumCompanyData, companyReviewNumbers, CompanyPollDetails ] = await Promise.all([
+    const [globalPageMeta, company, PremiumCompanyData, companyReviewNumbers, CompanyPollDetails, allRatingTags ] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
         comFunction.getCompany(companyId),
         comFunction2.getPremiumCompanyData(companyId),
         comFunction.getCompanyReviewNumbers(companyId),
         comFunction2.getCompanyPollDetails(companyId),
+        comFunction.getAllRatingTags(),
     ]);
     //console.log(CompanyPollDetails);
     const PollDetails = CompanyPollDetails.map((row) => ({
@@ -1448,7 +1455,8 @@ router.get('/company-poll-listing/:slug', checkClientClaimedCompany, async (req,
             twitter_url:twitter_url,
             instagram_url:instagram_url,
             linkedin_url:linkedin_url,
-            youtube_url:youtube_url
+            youtube_url:youtube_url,
+            allRatingTags
         });
     } catch (err) {
         console.error(err);
@@ -1470,11 +1478,12 @@ router.get('/send-review-invitation/:slug', checkClientClaimedCompany, async (re
     const slug = req.params.slug;
     const comp_res =await comFunction2.getCompanyIdBySlug(slug);
     const companyId = comp_res.ID;
-    const [globalPageMeta, company, PremiumCompanyData, companyReviewNumbers ] = await Promise.all([
+    const [globalPageMeta, company, PremiumCompanyData, companyReviewNumbers, allRatingTags ] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
         comFunction.getCompany(companyId),
         comFunction2.getPremiumCompanyData(companyId),
-        comFunction.getCompanyReviewNumbers(companyId)
+        comFunction.getCompanyReviewNumbers(companyId),
+        comFunction.getAllRatingTags(),
     ]);
    
     try {
@@ -1517,7 +1526,8 @@ router.get('/send-review-invitation/:slug', checkClientClaimedCompany, async (re
             twitter_url:twitter_url,
             instagram_url:instagram_url,
             linkedin_url:linkedin_url,
-            youtube_url:youtube_url
+            youtube_url:youtube_url,
+            allRatingTags
         });
     } catch (err) {
         console.error(err);
