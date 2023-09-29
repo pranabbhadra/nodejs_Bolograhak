@@ -263,6 +263,7 @@
                                     <p class="treading_content_text"><img src="/front-end/images/trending-icon.png" alt="">trending</p>
                                     <% } %>
                                 </div>
+                                <% if(company.about_company){ %>
                                 <% var about_company = company.about_company
                                     const about_company_words = about_company.split(' ');
                                 %>
@@ -275,6 +276,7 @@
                                     <%- firstPart -%>
                                     <% } %>
                                 </p>
+                                <% } %>
                                 <div class="text-center">
                                 <a href="<%= baseURL %>company/<%= company.slug %>" class="view-more"><span class="position-relative"><i class="fa-solid fa-angle-right"></i>Read More</span></a>
                                 </div>
