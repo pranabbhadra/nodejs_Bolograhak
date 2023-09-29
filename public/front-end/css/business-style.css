@@ -234,16 +234,6 @@
     margin-left: 66px;
 }
 
-.business-didyou-know-content:after {
-    content: '';
-    position: absolute;
-    left: 13px;
-    bottom: 20px;
-    background: url(../images/did-you-shape1.png) no-repeat left bottom;
-    width: 46px;
-    height: 150px;
-
-}
 
 .busi-did-left-text p span {
     color: #f1ae00;
@@ -310,4 +300,153 @@
     background: url(../images/upcoming-feature-shape2.png) no-repeat;
     width: 116px;
     height: 138px;
+}
+
+.choose-your-plan-box {
+    border-radius: 20px;
+    background: #252525;
+    text-align: center;
+    overflow: hidden;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+    position: relative;
+    z-index: 9;
+}
+
+.choose-your-plan-box-step {
+    padding: 64px 25px 45px;
+    position: relative;
+    text-align: center;
+    color: #ffffff;
+    transition: all ease-in-out 0.5s;
+}
+
+.choose-your-plan-box-step:hover {
+    background: #FCCB06;
+    color: #000000;
+    transition: all ease-in-out 0.5s;
+}
+
+.choose-your-plan-box-step ul {
+    padding: 0;
+    margin: 0;
+}
+
+.choose-your-plan-box-step h4 {
+    color: #FCCB06;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 110.4%;
+    transition: all ease-in-out 0.5s; 
+}
+
+.choose-your-plan-box-step:hover h4 {
+    color: #232323;
+    transition: all ease-in-out 0.5s;
+}
+
+.choose-your-plan-box-step .btn-default {
+    margin: 30px 0;
+}
+
+.choose-your-plan-box-step:hover .btn-warning {
+    border-color: #000000;
+}
+
+.choose-your-plan-box-step:hover .btn-warning:hover {
+    background-color: #000000;
+}
+
+.choose-your-plan-box-step ul li {
+    font-family: var(--inter);
+    font-size: 15px;
+    font-weight: 400;
+}
+
+.choose-your-plan-box-step ul li + li {
+    margin-top: 30px;
+}
+
+.best-value-tag {
+    position: absolute;
+    top: 0;
+    right: 10px;
+    color: #FFF;
+    text-align: center;
+    font-family: var(--inter);
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 129.9%;
+    background: #252525;
+    border-radius: 10px;
+    min-width: 48px;
+    min-height: 64px;
+    display: flex;
+    justify-content: center;
+    padding: 12px 5px 0 5px;
+    overflow: hidden;
+    opacity: 0;
+    transition: all ease-in-out 0.5s;
+}
+
+.best-value-tag:after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -37px;
+    transform: translateX(-50%) rotate(45deg);
+    width: 42px;
+    height: 42px;
+    background: #FCCB06;
+}
+
+.choose-your-plan-box-step:hover .best-value-tag {
+    opacity: 1;
+    transition: all ease-in-out 0.5s;
+}
+
+.business-choose-your-plan-content:after {
+    content: '';
+    position: absolute;
+    left: 13px;
+    bottom: 20px;
+    background: url(../images/did-you-shape1.png) no-repeat left bottom;
+    width: 46px;
+    height: 150px;
+}
+
+.business-choose-your-plan-content:before {
+    content: '';
+    position: absolute;
+    right: 13px;
+    bottom: 20px;
+    background: url(../images/choose-plan-shape.svg) no-repeat right bottom;
+    width: 122px;
+    height: 133px;
+
+}
+
+.choose-your-plan-box-step.overlay {
+    pointer-events: none;
+}
+
+.choose-your-plan-box-step.overlay:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    background-color: rgba(0, 0, 0, 70%);
+    width: 100%;
+    height: 100%;
+    z-index: 999;
+}
+
+span.cm-sn {
+    display: inline-block;
+    font-size: 10px;
+    background: #f00;
+    padding: 1px 3px;
+    border-radius: 3px;
+    color: #ffffff;
 }

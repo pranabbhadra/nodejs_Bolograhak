@@ -469,10 +469,96 @@ jQuery(function ($) {
       }
     ]
   });
+
+  $('.home-popular-review-slider1').slick({
+    dots: false,
+    infinite: true,
+    speed: 1800,
+    autoplay: true,
+    autoplaySpeed: 4000,
+    pauseOnHover: false,
+    arrows: false,
+    slidesToShow: 1,
+    slidesToScroll: 1
+  });
+
+  $('.home-popular-review-slider').slick({
+    dots: false,
+    infinite: true,
+    speed: 1400,
+    autoplay: true,
+    autoplaySpeed: 2000,
+    pauseOnHover: true,
+    arrows: false,
+    prevArrow: '<i class="fa-solid fa-chevron-left slick-arrow-left"></i>',
+    nextArrow: '<i class="fa-solid fa-chevron-right slick-arrow-right"></i>',
+    slidesToShow: 1,
+    slidesToScroll: 1
+  });
+
+
+
+  var time = 2;
+  var $bar,
+    $slick,
+    isPause,
+    tick,
+    percentTime;
+
+  $slick = $('.modal-slide-in');
+  $slick.slick({
+    infinite: true,
+    speed: 1400,
+    autoplay: false,
+    autoplaySpeed: 12000,
+    pauseOnHover: true,
+    dots: true,
+    arrows: false,
+    slidesToShow: 1,
+    slidesToScroll: 1
+  });
+
+  $bar = $('.slider-progress .progress');
+
+  function startProgressbar() {
+    resetProgressbar();
+    percentTime = 0;
+    isPause = false;
+    tick = setInterval(interval, 30);
+  }
+
+  function interval() {
+    if (isPause === false) {
+      percentTime += 1 / (time + 0.1);
+      $bar.css({
+        width: percentTime + "%"
+      });
+      if (percentTime >= 100) {
+        $slick.slick('slickNext');
+        startProgressbar();
+      }
+    }
+  }
+
+  function resetProgressbar() {
+    $bar.css({
+      width: 0 + '%'
+    });
+    clearTimeout(tick);
+  }
+
+  startProgressbar();
+
+  $('.modal-slide-in .slick-dots li').click(function() {
+    startProgressbar();
+  });
+
+
+
   // /////////////////////////////////////// Slick Slider end
 
 
-  // /////////////////////////////////////// language and custom Select start
+  // /////////////////////////////////////// language / Country and custom Select start
   $(".lang-arw").click(function (e) {
     e.preventDefault();
     $(".lang-dropdown").slideToggle();
@@ -491,6 +577,28 @@ jQuery(function ($) {
     var $clicked = $(e.target);
     if (!$clicked.parents().hasClass("language-select"))
       $(".lang-dropdown").slideUp();
+  });
+
+ // ================ Country-select-box start ====================
+
+  $(".country-arw").click(function (e) {
+    e.preventDefault();
+    $(".country-dropdown").slideToggle();
+  });
+
+  //SELECT OPTIONS AND HIDE OPTION AFTER SELECTION
+  $(".country-dropdown ul li a").click(function (e) {
+    e.preventDefault();
+    var text = $(this).html();
+    $(".country-select").find(".country-change").html(text);
+    $(".country-select").find(".country-dropdown").slideUp();
+  });
+
+  //HIDE OPTIONS IF CLICKED ANYWHERE ELSE ON PAGE
+  $(document).bind('click', function (e) {
+    var $clicked = $(e.target);
+    if (!$clicked.parents().hasClass("country-select"))
+      $(".country-dropdown").slideUp();
   });
 
   // ================ Custom-select-box start ====================
@@ -515,7 +623,7 @@ jQuery(function ($) {
       $(".custom-select-dropdown").slideUp();
   });
 
-  // /////////////////////////////////////// language and custom Select end
+  // /////////////////////////////////////// language / Country and custom Select end
 
   // /////////////////////////////////////// Load More Blog slice Start
   $(".more-blog-btn").click(function (e) {
@@ -541,6 +649,57 @@ jQuery(function ($) {
       $(".load-slice-btn").hide();
     }
   });
+
+  $(".tab-content-wrap").find(".discussion-load-panel").slice(0, 4).show();
+  $(".discussion-load-btn").click(function (e) {
+    e.preventDefault();
+    $(".tab-content-wrap").find(".discussion-load-panel:hidden").slice(0, 4).fadeIn("slow");
+
+    if ($(".tab-content-wrap").find(".discussion-load-panel:hidden").length == 0) {
+      $(".discussion-load-btn").hide();
+    }
+  });
+  $(window).on('load', function(){
+    if($(".tab-content-wrap").find(".discussion-load-panel:hidden").length == 0){
+         $(".discussion-load-btn").hide();
+    }
+  });
+
+  $(".all-cat-slice").slice(0,20).show();
+  $(".load-all-categories").click(function(e){
+    e.preventDefault();
+    $(".all-cat-slice:hidden").slice(0,4).fadeIn("slow");
+    
+    if($(".all-cat-slice:hidden").length == 0){
+       $(".load-all-categories").hide();
+      }
+  });
+  $(window).on('load', function(){
+    if($(".all-cat-slice:hidden").length == 0){
+         $(".load-all-categories").hide();
+    }
+  });
+
+  //$(".multiple-ans-repeat").slice(0,0).show();
+  // $(".add-ans-btn").click(function(e){
+  //   e.preventDefault();
+  //   $(".multiple-ans-repeat:hidden").slice(0,1).fadeIn("slow");
+  // });
+
+  // $(".tab-content-wrap").find(".discussion-load-panel").slice(0, 4).show();
+  // $(".discussion-load-btn").click(function (e) {
+  //   e.preventDefault();
+  //   $(this).parent(".tab-content-wrap").find(".discussion-load-panel:hidden").slice(0, 4).fadeIn("slow");
+
+  //   if ($(".tab-content-wrap").find(".discussion-load-panel:hidden").length == 0) {
+  //     $(".discussion-load-btn").hide();
+  //   }
+  // });
+  // $(window).on('load', function(){
+  //   if($(".tab-content-wrap").find(".discussion-load-panel:hidden").length == 0){
+  //        $(".discussion-load-btn").hide();
+  //   }
+  // });
 
   // $(".customer-review-wrap").slice(0, 3).show();
   // $(".show-comment-slice").click(function (e) {
@@ -626,6 +785,14 @@ jQuery(function ($) {
   //   }, 10000);
   // });
 
+  $(window).load(function () {
+    setTimeout(function () {
+      $("#premiumcompanymodal").modal('show');
+    }, 2000);
+  });
+  $('.modal').on('shown.bs.modal', function (e) {
+    $('.modal-slide-in').slick('setPosition');
+  })
   
 
   setTimeout(function () {
@@ -873,5 +1040,125 @@ jQuery(function ($) {
     });
 
   /*=========================== sandip counter js End =================*/
+
+/*=========================== Easy Responsive Tabs Start =================*/
+$('#horizontalTab').easyResponsiveTabs({
+    type: 'default', //Types: default, vertical, accordion           
+    width: 'auto', //auto or any width like 600px
+    fit: true,   // 100% fit in a container
+    closed: 'accordion', // Start closed if in accordion view
+    activate: function(event) { // Callback function if tab is switched
+    var $tab = $(this);
+    var $info = $('#tabInfo');
+    var $name = $('span', $info);
+    $name.text($tab.text());
+    $info.show();
+    }
+    });
+    $('#verticalTab').easyResponsiveTabs({
+    type: 'vertical',
+    width: 'auto',
+    fit: true
+  });
+  /*=========================== Easy Responsive Tabs End =================*/
+
+  /*=========================== Math random review box function start =================*/
+  $(function () {
+    if($(window).width()>840){
+    setRandomClass();
+    setInterval(function () {
+      setRandomClass();
+    }, 2000);
+  
+    function setRandomClass() {
+      var teamList = $(".home-popular-review-box-wrapper");
+      var teamItem = teamList.find(".home-popular-review-box");
+      var number = teamItem.length;
+      var random = Math.floor(Math.random() * number);
+      if (teamItem.eq(random).hasClass("home-popular-review-box_active")) {
+        var random = random + 1;
+      }
+      $(".home-popular-review-box_active")
+        .addClass("home-popular-review-box_old")
+        .siblings()
+        .removeClass("home-popular-review-box_old");
+      teamItem
+        .eq(random)
+        .addClass("home-popular-review-box_active")
+        .siblings()
+        .removeClass("home-popular-review-box_active");
+    }
+  }
+  });
+/*=========================== Math random review box function End =================*/
+
+/*=========================== Discussion modal function Start =================*/
+$('#discussiontext').focus(function(){
+  //open bootsrap modal
+  $("#disscussionmodal").modal('show');
+});
+/*=========================== Discussion modal function End =================*/
+
+/*=========================== Creat a Poll slidedown function start =================*/
+$(".create-poll-btn .btn-default").click(function(e){
+  e.preventDefault();
+  $(".creat-poll-field").slideToggle();
+  });
+/*=========================== Creat a Poll slidedown function End =================*/
+
+/*=========================== Remove multiple answer function End =================*/
+$(".remove-ans").click(function(){
+$(this).parents(".multiple-ans-repeat").find(".custom-form").hide();
+});
+/*=========================== Remove multiple answer function End =================*/
+
+/*=========================== Send Review request tags start =================*/
+$("#sendreviewtags input").on({
+  focusout : function() {
+    var txt = this.value.replace(/[^a-z0-9\+\-\.\@]/ig,''); // allowed characters
+    if(txt) $("<span/>", {text:txt.toLowerCase(), insertBefore:this});
+    this.value = "";
+  },
+  keyup : function(ev) {
+    // if: comma|enter (delimit more keyCodes with | pipe)
+    if(/(188|13)/.test(ev.which)) $(this).focusout(); 
+  }
+});
+$('#sendreviewtags').on('click', 'span', function() {
+  if(confirm("Remove "+ $(this).text() +"?")) $(this).remove(); 
+});
+/*=========================== Send Review request tags End =================*/
+
+
+labels = document.querySelectorAll('.ongoing-poll')
+
+for(var i=0;i<labels.length;i++){
+    labels[i].addEventListener('click',function(){
+         
+        for(var j=0;j<labels.length;j++){
+            labels[j].classList.remove('selected')
+        }
+
+        for(var k=0;k<labels.length;k++){
+            labels[k].querySelector('.progress-bar').style.width='0%'
+            labels[k].querySelector('.progress').style.display='none'
+        }
+
+
+       setTimeout(function(){
+        for(var k=0;k<labels.length;k++){
+           values = labels[k].querySelector('.progress-bar').style.getPropertyValue('--w');
+           labels[k].querySelector('.progress-bar').style.width = values + "%"
+ 
+       
+            labels[k].querySelector('.progress').style.display='block'
+         
+        }
+       },500)
+        this.classList.add('selected')
+    })
+}
+
+
 
 });

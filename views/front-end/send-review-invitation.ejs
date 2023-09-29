@@ -1,0 +1,107 @@
+<%- include('common/header') -%>
+<link href="/front-end/css/company-profile-dashboard.css" rel="stylesheet" type="text/css">
+<%- include('common/header-banner') -%>
+
+<!-- ================ Section1 Start ======================= -->
+<section class="main-content premium_company_profile">
+    <div class="container">
+        <div class="main_box">
+            <%- include('common/premium-company-sidebar') -%>
+         </div>
+        <div class="send-review-invitation">
+            <form id="form_review_invitation">
+               <input type="hidden" name="company_id" id="company_id" value="<%= company.ID  %>" />
+               <input type="hidden" name="company_name" id="company_name" value="<%= company.company_name  %>" />
+               <input type="hidden" name="user_id" id="user_id" value="<%= currentUserData.user_id  %>" />
+               <input type="hidden" name="company_slug" id="company_slug" value="<%= company.slug  %>" />
+               <div id="sendreviewtags">
+                  <input type="text" name="emails" placeholder="Add an email" />
+               </div>
+               <div class="custom-form">
+                  <label><span>Message</span></label>
+                  <textarea name="email_body" id="email_body" class="form-control mb-4">Hello Dear,
+                     <%= company.company_name  %> cordially invite you to provide your valuable opinion regarding our company, through the platform of BoloGrahak. 
+                  </textarea>
+               </div>
+               <!-- <div class="bulk-upload mb-4">
+                  <label for="">Bulk Upload</label>
+                  <input type="file" class="form-control"> 
+               </div> -->
+               <input type="submit" name="" id="invitation_email" class="btn-default btn-warning" value="Send">
+         </form>
+         <div class="register-now frm-loading" style="display: none;">
+            <span class="indicator-progress">Please wait...
+               <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+            </span>
+         </div>
+         <div style=" width: 100%; text-align: center; display: block; border: 2px solid #fccb06; padding: 6px; margin-top: 20px; border-radius: 5px; display: none;" class="response-message"></div>
+        </div>
+    </div>
+</section>
+<!-- ================ Section1 End ======================= -->
+
+<%- include('common/footer') -%>
+
+<script>
+$(document).ready(function () {
+   var allEmails = [];
+    $('form#form_review_invitation').submit(function (e) {
+      e.preventDefault();
+      $('.response-message').hide();
+      $('.response-message').text('');
+      $('#invitation_email').prop('disabled', true);
+      $('.frm-loading').show(); 
+      //alert('aaaaaa')
+      $(this).find('#sendreviewtags').find('span').each(function(){
+         var enteredEmail = $(this).text();
+         allEmails.push(enteredEmail);
+      });
+      console.log(allEmails);
+      const transformedResponse = {};
+      transformedResponse['emails'] = allEmails;
+      transformedResponse['email_body'] = $('textarea#email_body').val();
+      transformedResponse['user_id'] = $('#user_id').val();
+      transformedResponse['company_id'] = $('#company_id').val();
+      transformedResponse['company_name'] = $('#company_name').val();
+      transformedResponse['company_slug'] = $('#company_slug').val();
+      if (allEmails.length > 100) {
+         $('.response-message').text('You can not add more than 100 email id`s in your current membership. ');
+         $('.response-message').show();
+         $('#invitation_email').prop('disabled', false);
+      } else {
+            $.ajax({
+            url: '/auth/review_invitation', // URL for your API endpoint
+            method: 'POST',
+            data: JSON.stringify(transformedResponse),
+            //data: formData,
+            processData: false,
+            //contentType: false,
+            contentType: 'application/json',
+            success: function (data) {
+               if (data.status == 'ok') {
+                  $('.response-message').text(data.message);
+                  $('.response-message').show();
+                  $('#invitation_email').prop('disabled', false);
+                  $('.frm-loading').hide();
+                  setTimeout(function() {
+                     window.location.reload();
+                  }, 2000);
+               } else {
+                  $('.response-message').text(data.message);
+                  $('.response-message').show();
+                  $('#invitation_email').prop('disabled', false);
+                  $('.frm-loading').hide();
+                  console.log('Something went wrong');
+               }
+            },
+            error: function (xhr, status, error) {
+               // Handle any errors that occur during the request
+               console.log(error);
+            }
+         });
+      }
+
+      
+   });
+});
+</script>

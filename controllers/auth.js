@@ -450,11 +450,12 @@ exports.frontendUserLogin = (req, res) => {
                         //check Customer Login
                         if (user.user_type_id == 2 && user.user_status == 1) {
                             const query = `
-                                        SELECT user_meta.*, c.name as country_name, s.name as state_name, ccr.company_id as claimed_comp_id
+                                        SELECT user_meta.*, c.name as country_name, s.name as state_name, ccr.company_id as claimed_comp_id, company.slug
                                         FROM user_customer_meta user_meta
                                         LEFT JOIN countries c ON user_meta.country = c.id
                                         LEFT JOIN states s ON user_meta.state = s.id
                                         LEFT JOIN company_claim_request ccr ON user_meta.user_id = ccr.claimed_by
+                                        LEFT JOIN company ON company.ID = ccr.company_id
                                         WHERE user_id = ?
                                         `;
                             db.query(query, [user.user_id], async (err, results) => {
@@ -486,7 +487,8 @@ exports.frontendUserLogin = (req, res) => {
                                         occupation: user_meta.occupation,
                                         gender: user_meta.gender,
                                         profile_pic: user_meta.profile_pic,
-                                        claimed_comp_id: user_meta.claimed_comp_id
+                                        claimed_comp_id: user_meta.claimed_comp_id,
+                                        claimed_comp_slug: user_meta.slug
                                     };
                                     const encodedUserData = JSON.stringify(userData);
                                     res.cookie('user', encodedUserData);
@@ -500,7 +502,8 @@ exports.frontendUserLogin = (req, res) => {
                                         email: user.email,
                                         phone: user.phone,
                                         user_type_id: user.user_type_id,
-                                        claimed_comp_id: ''
+                                        claimed_comp_id: '',
+                                        claimed_comp_slug: ''
                                     };
                                     const encodedUserData = JSON.stringify(userData);
                                     res.cookie('user', encodedUserData);
@@ -660,11 +663,12 @@ exports.login = (req, res) => {
                         //check Administrative Login
                         if ((user.user_type_id == 1 || user.user_type_id == 3) && user.user_status == 1) {
                             const query = `
-                                        SELECT user_meta.*, c.name as country_name, s.name as state_name, ccr.company_id as claimed_comp_id
+                                        SELECT user_meta.*, c.name as country_name, s.name as state_name, ccr.company_id as claimed_comp_id, company.slug
                                         FROM user_customer_meta user_meta
                                         LEFT JOIN countries c ON user_meta.country = c.id
                                         LEFT JOIN states s ON user_meta.state = s.id
                                         LEFT JOIN company_claim_request ccr ON user_meta.user_id = ccr.claimed_by
+                                        LEFT JOIN company ON company.ID = ccr.company_id
                                         WHERE user_id = ?
                                         `;
                             db.query(query, [user.user_id], async (err, results) => {
@@ -696,7 +700,8 @@ exports.login = (req, res) => {
                                         occupation: user_meta.occupation,
                                         gender: user_meta.gender,
                                         profile_pic: user_meta.profile_pic,
-                                        claimed_comp_id: user_meta.claimed_comp_id
+                                        claimed_comp_id: user_meta.claimed_comp_id,
+                                        claimed_comp_slug: user_meta.slug
                                     };
                                     const encodedUserData = JSON.stringify(userData);
                                     res.cookie('user', encodedUserData);
@@ -710,7 +715,8 @@ exports.login = (req, res) => {
                                         email: user.email,
                                         phone: user.phone,
                                         user_type_id: user.user_type_id,
-                                        claimed_comp_id: ''
+                                        claimed_comp_id: '',
+                                        claimed_comp_slug: ''
                                     };
                                     const encodedUserData = JSON.stringify(userData);
                                     res.cookie('user', encodedUserData);
@@ -1234,28 +1240,50 @@ exports.editUserData = (req, res) => {
 
 //--- Delete User ----//
 exports.deleteUser = (req, res) => {
-    //console.log(req.body.companyid);
-    sql = `DELETE FROM users WHERE user_id = ?`;
+    console.log(req.body);
+    const sql = `DELETE FROM users WHERE user_id = ?`;
     const data = [req.body.userid];
-    db.query(sql, data, (err, result) => {
+     db.query(sql, data, (err, result) => {
         if (err) {
             return res.send({
                 status: 'error',
-                message: 'Something went wrong'
+                message: 'Something went wrong' +err
             });
         } else {
-            return res.send({
-                status: 'ok',
-                message: 'User successfully deleted'
-            });
+            const metaSql = `DELETE FROM user_customer_meta WHERE user_id = ${req.body.userid}`;
+            db.query(metaSql,  (metaErr, metaResult) => {
+                if (metaErr) {
+                    return res.send({
+                        status: 'error',
+                        message: 'Something went wrong' + metaErr
+                    });
+                }else{
+                    const delWPQuery = `DELETE FROM bg_users WHERE user_login = '${req.body.userEmail}'`;
+                     db.query(delWPQuery, (WPerr,WPresult)=>{
+                        if (WPerr) {
+                            return res.send({
+                                status: 'error',
+                                message: 'Something went wrong' + WPerr
+                            });
+                        } else {
+                            return res.send({
+                                status: 'ok',
+                                message: 'User successfully deleted'
+                            });
+                        }
+                    })
+                }
+            })
         }
-
     })
 
+    
+
+   
 }
 
 //--- Create New Company ----//
-exports.createCompany = (req, res) => {
+exports.createCompany = async (req, res) => {
     //console.log(req.body);
     const encodedUserData = req.cookies.user;
     const currentUserData = JSON.parse(encodedUserData);
@@ -1271,62 +1299,77 @@ exports.createCompany = (req, res) => {
 
     const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
-    var insert_values = [];
-    if (req.file) {
-        insert_values = [currentUserData.user_id, req.body.company_name, req.body.heading, req.file.filename, req.body.about_company, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, req.body.status, req.body.trending, formattedDate, formattedDate, req.body.tollfree_number, req.body.main_address, req.body.main_address_pin_code, req.body.address_map_url, req.body.main_address_country, req.body.main_address_state, req.body.main_address_city, '0', 'free'];
-    } else {
-        insert_values = [currentUserData.user_id, req.body.company_name, req.body.heading, '', req.body.about_company, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, req.body.status, req.body.trending, formattedDate, formattedDate, req.body.tollfree_number, req.body.main_address, req.body.main_address_pin_code, req.body.address_map_url, req.body.main_address_country, req.body.main_address_state, req.body.main_address_city, '0', 'free'];
-    }
-
-    const insertQuery = 'INSERT INTO company (user_created_by, company_name, heading, logo, about_company, comp_phone, comp_email, comp_registration_id, status, trending, created_date, updated_date, tollfree_number, main_address, main_address_pin_code, address_map_url, main_address_country, main_address_state, main_address_city, verified, paid_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-    db.query(insertQuery, insert_values, (err, results, fields) => {
-        if (err) {
-            return res.send(
-                {
-                    status: 'err',
-                    data: '',
-                    message: 'An error occurred while processing your request' + err
-                }
-            )
+    // const [companySlug] = await Promise.all( [
+    //     comFunction2.generateUniqueSlug(req.body.company_name)
+    // ]);
+    comFunction2.generateUniqueSlug(req.body.company_name, (error, companySlug) => {
+        if (error) {
+          console.log('Err: ', error.message);
         } else {
-            const companyId = results.insertId;
-            const categoryArray = Array.isArray(req.body.category) ? req.body.category : [req.body.category];
-            
-            // Filter out undefined values from categoryArray
-            const validCategoryArray = categoryArray.filter(categoryID => categoryID !== undefined);
+          console.log('companySlug', companySlug);
+          var insert_values = [];
+          if (req.file) {
+              insert_values = [currentUserData.user_id, req.body.company_name, req.body.heading, req.file.filename, req.body.about_company, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, req.body.status, req.body.trending, formattedDate, formattedDate, req.body.tollfree_number, req.body.main_address, req.body.main_address_pin_code, req.body.address_map_url, req.body.main_address_country, req.body.main_address_state, req.body.main_address_city, '0', 'free', companySlug];
+          } else {
+              insert_values = [currentUserData.user_id, req.body.company_name, req.body.heading, '', req.body.about_company, req.body.comp_phone, req.body.comp_email, req.body.comp_registration_id, req.body.status, req.body.trending, formattedDate, formattedDate, req.body.tollfree_number, req.body.main_address, req.body.main_address_pin_code, req.body.address_map_url, req.body.main_address_country, req.body.main_address_state, req.body.main_address_city, '0', 'free', companySlug];
+          }
+      
+          const insertQuery = 'INSERT INTO company (user_created_by, company_name, heading, logo, about_company, comp_phone, comp_email, comp_registration_id, status, trending, created_date, updated_date, tollfree_number, main_address, main_address_pin_code, address_map_url, main_address_country, main_address_state, main_address_city, verified, paid_status, slug) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+          db.query(insertQuery, insert_values, (err, results, fields) => {
+              if (err) {
+                  return res.send(
+                      {
+                          status: 'err',
+                          data: '',
+                          message: 'An error occurred while processing your request' + err
+                      }
+                  )
+              } else {
+                  const companyId = results.insertId;
+                  const categoryArray = Array.isArray(req.body.category) ? req.body.category : [req.body.category];
+                  
+                  // Filter out undefined values from categoryArray
+                  const validCategoryArray = categoryArray.filter(categoryID => categoryID !== undefined);
+      
+                  console.log('categoryArray:', categoryArray);
+                  if (validCategoryArray.length > 0) {
+                      const companyCategoryData = validCategoryArray.map((categoryID) => [companyId, categoryID]);
+                      db.query('INSERT INTO company_cactgory_relation (company_id, category_id) VALUES ?', [companyCategoryData], function (error, results) {
+                          if (error) {
+                              console.log(error);
+                              res.status(400).json({
+                                  status: 'err',
+                                  message: 'Error while creating company category'
+                              });
+                          }
+                          else {
+                              return res.send(
+                                  {
+                                      status: 'ok',
+                                      data: companyId,
+                                      message: 'New company created'
+                                  }
+                              )
+                          }
+                      });
+                  }else{
+                      return res.send(
+                          {
+                              status: 'ok',
+                              data: companyId,
+                              message: 'New company created without any category.'
+                          }
+                      )
+                  }
+              }
+          })
 
-            console.log('categoryArray:', categoryArray);
-            if (validCategoryArray.length > 0) {
-                const companyCategoryData = validCategoryArray.map((categoryID) => [companyId, categoryID]);
-                db.query('INSERT INTO company_cactgory_relation (company_id, category_id) VALUES ?', [companyCategoryData], function (error, results) {
-                    if (error) {
-                        console.log(error);
-                        res.status(400).json({
-                            status: 'err',
-                            message: 'Error while creating company category'
-                        });
-                    }
-                    else {
-                        return res.send(
-                            {
-                                status: 'ok',
-                                data: companyId,
-                                message: 'New company created'
-                            }
-                        )
-                    }
-                });
-            }else{
-                return res.send(
-                    {
-                        status: 'ok',
-                        data: companyId,
-                        message: 'New company created without any category.'
-                    }
-                )
-            }
         }
-    })
+    });
+
+
+
+
 }
 
 //-- Company Edit --//
@@ -1613,11 +1656,27 @@ exports.companyBulkUpload = async (req, res) => {
 
         const worksheet = workbook.getWorksheet(1);
         const companies = await processCompanyCSVRows(worksheet, formattedDate, connection, currentUserData.user_id);
-
+        //console.log('companies',companies);
         for (const company of companies) {
+            //console.log('company:',company)
             try {
+
+                const companySlug = await new Promise((resolve, reject) => {
+                    comFunction2.generateUniqueSlug(company[1], (error, generatedSlug) => {
+                        if (error) {
+                            console.log('Error:', error.message);
+                            reject(error);
+                        } else {
+                            // console.log('Generated Company Slug:', generatedSlug);
+                            resolve(generatedSlug);
+                        }
+                    });
+                });
+                await company.push(companySlug);
                 // Replace any undefined values with null
                 const cleanedCompany = company.map(value => (value !== undefined ? value : null));
+                //console.log(value);
+                //return false;
                 
                 if (cleanedCompany[2] === null) {
                     cleanedCompany[2] = '';
@@ -1655,15 +1714,16 @@ exports.companyBulkUpload = async (req, res) => {
                 if (cleanedCompany[13] === null) {
                     cleanedCompany[13] = '';
                 }
-
+                
                 await connection.execute(
                     `
                     INSERT INTO company 
-                        (user_created_by, company_name, heading, about_company, comp_email, comp_phone, tollfree_number, main_address, main_address_pin_code, address_map_url, comp_registration_id, status, trending, created_date, updated_date, main_address_country, main_address_state, main_address_city, verified) 
+                        (user_created_by, company_name, heading, about_company, comp_email, comp_phone, tollfree_number, main_address, main_address_pin_code, address_map_url, comp_registration_id, status, trending, created_date, updated_date, main_address_country, main_address_state, main_address_city, verified, slug) 
                     VALUES 
-                        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) 
+                        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) 
                     ON DUPLICATE KEY UPDATE
                         user_created_by = VALUES(user_created_by),
+                        company_name = VALUES(company_name), 
                         heading = VALUES(heading), 
                         about_company = VALUES(about_company),
                         comp_email = VALUES(comp_email),
@@ -1680,7 +1740,8 @@ exports.companyBulkUpload = async (req, res) => {
                         main_address_country =  VALUES(main_address_country),
                         main_address_state =  VALUES(main_address_state),
                         main_address_city =  VALUES(main_address_city),
-                        verified =  VALUES(verified)
+                        verified =  VALUES(verified),
+                        slug =  VALUES(slug)
                     `,
                     cleanedCompany
                 );
@@ -1717,18 +1778,28 @@ exports.companyBulkUpload = async (req, res) => {
 
 // Define a promise-based function for processing rows
 function processCompanyCSVRows(worksheet, formattedDate, connection, user_id) {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         const companies = [];
 
-        worksheet.eachRow((row, rowNumber) => {
+        await worksheet.eachRow(async (row, rowNumber) => {
             if (rowNumber !== 1) { // Skip the header row
+                
                 companies.push([user_id, row.values[1], row.values[2], row.values[3], row.values[4], row.values[5], row.values[6], row.values[7], row.values[8], row.values[9], row.values[10], '1', '0', formattedDate, formattedDate, row.values[11], row.values[12], row.values[13], '0']);
+
             }
         });
 
+        // Resolve the promise after all rows have been processed
         resolve(companies);
     });
 }
+// processCompanyCSVRows(worksheet, formattedDate, connection, user_id)
+//     .then(companies => {
+//         console.log('Resolved companies', companies);
+//     })
+//     .catch(error => {
+//         console.error('Error:', error.message);
+//     });
 
 //--- Delete Company ----//
 exports.deleteCompany = (req, res) => {
@@ -1866,14 +1937,15 @@ exports.editRatingTags = (req, res) => {
 }
 
 exports.editCustomerReview = async (req, res) => {
-    //console.log('controller',req.body);
+    console.log('controller',req.body);
     // const ratingTagsArray = JSON.parse(req.body.rating_tags);
     // console.log(ratingTagsArray);
     //const editResponse1 = await comFunction.editCustomerReview( req.body );
-    const [editResponse, ApproveMailSend,RejectdEmailSend] = await Promise.all([
+    const [editResponse, ApproveMailSend,RejectdEmailSend, CustomerReply] = await Promise.all([
         comFunction.editCustomerReview( req.body ),
         comFunction2.reviewApprovedEmail(req.body),
         comFunction2.reviewRejectdEmail(req.body),
+        comFunction2.updateCustomerReply(req.body),
     ]);
 
     if(editResponse == true){
@@ -2156,7 +2228,7 @@ exports.updateHome = async (req, res) => {
         for_customer, cus_right_content, cus_right_button_link, cus_right_button_text,youtube_link,
         youtube_1, youtube_2, youtube_3, youtube_4, youtube_5, youtube_6, youtube_7, youtube_8, youtube_9, youtube_10, fb_widget, twitter_widget,
         org_responsibility_content, org_responsibility_buttton_link, org_responsibility_buttton_text,
-        about_us_content, about_us_button_link, about_us_button_text, bannner_content_2, bannner_hashtag, reviewers_guidelines_title,reviewers_guidelines_popup, review_form_demo_location, cus_right_facts_popup, org_responsibility_facts_popup, app_banner_title_1, app_banner_title_2, app_features_for_customer, app_review_content, app_features_hashtag, app_cus_right_content, app_cus_right_point, app_org_responsibility_content, app_org_responsibility_points, app_about_us_content_1, app_about_us_content_2, app_about_us_button_text } = req.body;
+        about_us_content, about_us_button_link, about_us_button_text, bannner_content_2, bannner_hashtag, reviewers_guidelines_title,reviewers_guidelines_popup, review_form_demo_location, cus_right_facts_popup, org_responsibility_facts_popup, app_banner_title_1, app_banner_title_2, app_features_for_customer, app_review_content, app_features_hashtag, app_cus_right_content, app_cus_right_point, app_org_responsibility_content, app_org_responsibility_points, app_about_us_content_1, app_about_us_content_2, app_about_us_button_text, bannner_message } = req.body;
 
     const { banner_img_1, banner_img_2, banner_img_3,banner_img_4, banner_img_5, banner_img_6, cus_right_img_1, cus_right_img_2, cus_right_img_3, cus_right_img_4, cus_right_img_5,
         cus_right_img_6, cus_right_img_7, cus_right_img_8, org_responsibility_img_1, org_responsibility_img_2, org_responsibility_img_3,
@@ -2200,12 +2272,12 @@ exports.updateHome = async (req, res) => {
         for_customer, cus_right_content, cus_right_button_link, cus_right_button_text,youtube_link,
         youtube_1, youtube_2, youtube_3, youtube_4, fb_widget, twitter_widget,
         org_responsibility_content, org_responsibility_buttton_link, org_responsibility_buttton_text,
-        about_us_content, about_us_button_link, about_us_button_text, bannner_content_2, bannner_hashtag, reviewers_guidelines_title,reviewers_guidelines_popup, review_form_demo_location, cus_right_facts_popup, org_responsibility_facts_popup,youtube_5, youtube_6, youtube_7, youtube_8, youtube_9, youtube_10, app_banner_title_1, app_banner_title_2, app_review_content, app_customer_feature,app_feature_hashtag, app_cus_right_content, app_cus_right_points, app_org_responsibility_content, app_org_responsibility_point, app_about_us_content_1, app_about_us_content_2, app_about_us_button_text];
+        about_us_content, about_us_button_link, about_us_button_text, bannner_content_2, bannner_hashtag, reviewers_guidelines_title,reviewers_guidelines_popup, review_form_demo_location, cus_right_facts_popup, org_responsibility_facts_popup,youtube_5, youtube_6, youtube_7, youtube_8, youtube_9, youtube_10, app_banner_title_1, app_banner_title_2, app_review_content, app_customer_feature,app_feature_hashtag, app_cus_right_content, app_cus_right_points, app_org_responsibility_content, app_org_responsibility_point, app_about_us_content_1, app_about_us_content_2, app_about_us_button_text, bannner_message];
 
     const meta_key = ['bannner_content', 'for_business',
         'for_customer', 'cus_right_content', 'cus_right_button_link', 'cus_right_button_text','youtube_link', 'youtube_1', 'youtube_2', 'youtube_3', 'youtube_4', 'fb_widget', 'twitter_widget',
         'org_responsibility_content', 'org_responsibility_buttton_link', 'org_responsibility_buttton_text',
-        'about_us_content', 'about_us_button_link', 'about_us_button_text', 'bannner_content_2', 'bannner_hashtag', 'reviewers_guidelines_title','reviewers_guidelines_popup', 'review_form_demo_location', 'cus_right_facts_popup', 'org_responsibility_facts_popup','youtube_5', 'youtube_6', 'youtube_7', 'youtube_8', 'youtube_9', 'youtube_10','app_banner_title_1', 'app_banner_title_2', 'app_review_content', 'app_customer_feature','app_feature_hashtag', 'app_cus_right_content', 'app_cus_right_points', 'app_org_responsibility_content', 'app_org_responsibility_point', 'app_about_us_content_1', 'app_about_us_content_2', 'app_about_us_button_text'];
+        'about_us_content', 'about_us_button_link', 'about_us_button_text', 'bannner_content_2', 'bannner_hashtag', 'reviewers_guidelines_title','reviewers_guidelines_popup', 'review_form_demo_location', 'cus_right_facts_popup', 'org_responsibility_facts_popup','youtube_5', 'youtube_6', 'youtube_7', 'youtube_8', 'youtube_9', 'youtube_10','app_banner_title_1', 'app_banner_title_2', 'app_review_content', 'app_customer_feature','app_feature_hashtag', 'app_cus_right_content', 'app_cus_right_points', 'app_org_responsibility_content', 'app_org_responsibility_point', 'app_about_us_content_1', 'app_about_us_content_2', 'app_about_us_button_text', 'bannner_message'];
 
     await meta_value.forEach((element, index) => {
         //console.log(element, index);
@@ -2309,6 +2381,7 @@ exports.submitReview = async (req, res) => {
             //console.log(currentUserData);
             const userId = currentUserData.user_id;
             const company = await comFunction.createCompany(req.body, userId);
+            console.log('companyInfo',company)
             const review = await comFunction.createReview(req.body, userId, company);
             // Render the 'edit-user' EJS view and pass the data
             if(company && review){
@@ -2450,6 +2523,32 @@ exports.submitReview = async (req, res) => {
         } else {
             //res.redirect('sign-in');
         }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+}
+//--Submit Review----//
+
+exports.editUserReview = async (req, res) => {
+    const encodedUserData = req.cookies.user;
+    console.log(req.body);
+    try {
+        if (encodedUserData) {
+            const currentUserData = JSON.parse(encodedUserData);
+            //console.log(currentUserData);
+            const userId = currentUserData.user_id;
+            const review = await comFunction2.updateReview(req.body);
+
+            return res.send(
+                {
+                    status: 'ok',
+                    data:   '',
+                    message: 'Review successfully updated'
+                }
+            );
+            
+        } 
     } catch (err) {
         console.error(err);
         res.status(500).send('An error occurred');
@@ -3902,7 +4001,7 @@ exports.forgotPassword = (req, res) => {
 //--Submit Review Reply----//
 exports.submitReviewReply = async (req, res) => {
     const encodedUserData = req.cookies.user;
-    console.log(req.body);
+    //console.log(req.body);
     try {
         if (encodedUserData) {
             const currentUserData = JSON.parse(encodedUserData);
@@ -3912,9 +4011,9 @@ exports.submitReviewReply = async (req, res) => {
                 const currentDate = new Date();
                 const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
 
-                const replyData = [req.body.review_id,req.body.company_id,req.body.reply_by,req.body.reply_to,req.body.comment,formattedDate,formattedDate]
+                const replyData = [req.body.review_id, req.body.company_id, req.body.reply_by, req.body.reply_to, req.body.comment,'2',formattedDate, formattedDate]
 
-                db.query('INSERT INTO review_reply (review_id, company_id, reply_by, reply_to, comment, created_at, updated_at) VALUES (?,?,?,?,?,?,?)', replyData, async (err, results) => {
+                db.query('INSERT INTO review_reply (review_id, company_id, reply_by, reply_to, comment, status, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?)', replyData, async (err, results) => {
                     if (err) {
                         return res.status(500).json({
                           status: 'error',
@@ -4136,5 +4235,168 @@ exports.changePassword = async (req, res) => {
     })
 }
 
+// Review voting (like dislike)
+exports.reviewVoting = async (req, res) => {
+    //console.log('reviewVoting', req.body);
+    const {votingValue, userId, reviewId} = req.body;
+    const checkQuery = `SELECT id FROM review_voting WHERE 	review_id = '${reviewId}' AND customer_id = '${userId}' `;
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+    db.query(checkQuery, (checkErr, checkResult) => {
+        if(checkErr){
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong '+checkErr
+            });
+        }else{
+            if(checkResult.length > 0){
+                const updateQuery = `UPDATE review_voting SET voting = ?, updated_at = ? WHERE 	review_id = ? AND customer_id = ? `;
+                const updateData = [votingValue, formattedDate, reviewId, userId];
+                db.query(updateQuery, updateData, async (updateErr, updateRes)=>{
+                    if(updateErr){
+                        return res.send({
+                            status: 'not ok',
+                            message: 'Something went wrong '+updateErr
+                        });
+                    } else {
+                        const totalLike = await comFunction2.countLike(reviewId);
+                        const totalDislike = await comFunction2.countDislike(reviewId);
+                        console.log('update:',totalLike,totalDislike)
+                        return res.send({
+                            status: 'ok',
+                            data:updateRes,
+                            totalLike:totalLike,
+                            totalDislike:totalDislike,
+                            reviewId:reviewId,
+                            votingValue:votingValue,
+                            message: 'Voting successfully updated'
+                        });
+                    }
+                })
+            } else {
+                const insertQuery = `INSERT INTO review_voting( review_id, customer_id, voting, created_at, updated_at) VALUES (?,?,?,?,?)`;
+                const insertData = [reviewId, userId, votingValue, formattedDate, formattedDate ];
+                db.query(insertQuery, insertData, async (insertErr, insertRes)=>{
+                    if(insertErr){
+                        return res.send({
+                            status: 'not ok',
+                            message: 'Something went wrong '+insertErr
+                        });
+                    } else {
+                        const totalLike = await comFunction2.countLike(reviewId);
+                        const totalDislike = await comFunction2.countDislike(reviewId);
+                        console.log('insert:',totalLike,totalDislike)
+                        return res.send({
+                            status: 'ok',
+                            data:insertRes,
+                            totalLike:totalLike,
+                            totalDislike:totalDislike,
+                            reviewId:reviewId,
+                            votingValue:votingValue,
+                            message: 'Voting successfully inserted'
+                        });
+                    }
+                })
+            }
+        }
+    })
+}
+// Create poll
+exports.createPoll = async (req, res) => {
+    console.log('createPoll',req.body );
+    const {company_id, user_id, poll_question, poll_answer, expire_date} = req.body;
+    //const answers = JSON.stringify(poll_answer);
+     const currentDate = new Date();
+    // const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth() + 1; // Months are zero-based (0 = January, 11 = December), so add 1
+    const day = currentDate.getDate();
+    const formattedDate = `${year}-${month < 10 ? '0' : ''}${month}-${day < 10 ? '0' : ''}${day}`;
+    const sql = `INSERT INTO poll_company ( company_id, poll_creator_id, question, created_at, expired_at) VALUES (?,?,?,?,?)`;
+    const data = [company_id, user_id, poll_question, formattedDate, expire_date];
+    db.query(sql, data,async (err, result) => {
+        if(err){
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong '+err
+            });
+        } else {
+            await poll_answer.forEach((answer)=>{
+                const ansQuery = `INSERT INTO poll_answer ( poll_id, answer) VALUES (?,?)`;
+                const ansData = [result.insertId, answer];
+                 db.query(ansQuery, ansData, (ansErr, ansResult)=>{
+                    if(ansErr){
+                        return res.send({
+                            status: 'not ok',
+                            message: 'Something went wrong '+ansErr
+                        });
+                    } 
+                })
+            })
 
+            return res.send({
+                status: 'ok',
+                message: 'Poll Created Successfully'
+            });
+        }
+    })
+}
 
+// Update poll expire date
+exports.updatePollExpireDate = async (req, res) => {
+    console.log('updatePollExpireDate',req.body );
+    const {poll_id,change_expire_date} = req.body;
+    const sql = `UPDATE poll_company SET expired_at = ? WHERE id = ?`;
+    const data= [change_expire_date, poll_id]
+    db.query(sql,data, (err, result)=>{
+        if (err) {
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong '+err
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Expire Date Updated Successfully'
+            });
+        }
+    })
+}
+
+// User polling
+exports.userPolling = async (req, res) => {
+    console.log('userPolling',req.body );
+    const {ansId, pollId, userId} = req.body
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+    const sql = `INSERT INTO poll_voting ( poll_id, answer_id, user_id, voting_date) VALUES (?, ?, ?, ?)`;
+    const data = [pollId, ansId, userId, formattedDate ];
+    db.query(sql, data, (err, result)=>{
+        if (err) {
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong '+err
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Your Poll Submited Successfully'
+            });
+        }
+    } )
+}
+
+// Review Invitation
+exports.reviewInvitation = async (req, res) => {
+    console.log('reviewInvitation',req.body );
+    const {emails, email_body, user_id, company_id, company_name } = req.body;
+    const [InvitationDetails, sendInvitationEmail] = await Promise.all([
+        comFunction2.insertInvitationDetails(req.body),
+        comFunction2.sendInvitationEmail(req.body)
+    ]);
+
+    return res.send({
+        status: 'ok',
+        message: 'Invitation emails send successfully'
+    });
+}
