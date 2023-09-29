@@ -330,7 +330,7 @@
                                 <input type="hidden" name="reply_id" value="<%= reviewData.reply_id %>" />
                                 <input type="hidden" name="reply_previous_reason" value="<%= reviewData.reply_rejecting_reason %>" />
                                 <!--begin::Label-->
-                                <label class="col-lg-4 col-form-label  fw-bold fs-6">Reply Status</label>
+                                <label class="col-lg-4 col-form-label  fw-bold fs-6">Want to reject user reply</label>
                                 <!--end::Label-->
                                 <!--begin::Col-->
                                 <div class="col-lg-8 fv-row">
@@ -339,7 +339,7 @@
                                        
                                         <label class="form-check form-check-inline form-check-solid">
                                             <input class="form-check-input mt-1" id="rejectId" name="reply_status" type="checkbox" value="0" <% if(reviewData.reply_status == '0'){ %>checked <% } %> />
-                                            <span class="fw-bold fs-6 badge badge-light-danger fw-bolder px-4 py-3">Rejected</span>
+                                            <span class="fw-bold fs-6 badge badge-light-danger fw-bolder px-4 py-3">Yes</span>
                                         </label>
                                         <!--end::Option-->
                                     </div>
@@ -349,8 +349,9 @@
                                 
                             </div>
                             <div id="reply_reject_area">
-
+                                
                             </div>
+                            <div style="display: none; color: rgb(237, 16, 16);" class="response-message col-lg-8 fv-row"></div>
                         <% } %>
 
                     </div>
@@ -440,50 +441,58 @@
 
                     validation.validate().then(function (status) {
                         if (status == 'Valid') {
+                            const rejectVal = $('#rejectId').val();
+                            console.log(rejectVal);
                             
-                            const formData = $('#kt_review_tag_update_form').serializeArray();
-                            const jsonData = {};
-                            $(formData).each(function (index, field) {
-                                jsonData[field.name] = field.value;
-                            });
-                            console.log(jsonData);
-                            $.ajax({
-                                url: '/auth/edit-review',
-                                method: 'PUT',
-                                data: jsonData,
-                                ContentType: 'application/json',
-                                success: function (data) {
-                                    if (data.status == 'ok') {
-                                        Swal.fire({
-                                            text: data.message,
-                                            icon: "success",
-                                            buttonsStyling: false,
-                                            confirmButtonText: "Ok, got it!",
-                                            customClass: {
-                                                confirmButton: "btn btn-primary"
-                                            }
-                                        }).then(function (result) {
-                                            if (result.isConfirmed) {
-                                                window.location.href = "/all-review";
-                                            }
-                                        });
-                                    } else {
-                                        Swal.fire({
-                                            text: data.message,
-                                            icon: "error",
-                                            buttonsStyling: false,
-                                            confirmButtonText: "Ok, got it!",
-                                            customClass: {
-                                                confirmButton: "btn btn-primary"
-                                            }
-                                        });
+                            if ($('#rejectId').val() == 0 && $('#reply_rejecting_comment').val() == '' ) {
+                                $('.response-message').text('Reject reason is not empty');
+                                 $('.response-message').show();
+                            }else {
+                                const formData = $('#kt_review_tag_update_form').serializeArray();
+                                const jsonData = {};
+                                $(formData).each(function (index, field) {
+                                    jsonData[field.name] = field.value;
+                                });
+                                console.log(jsonData);
+                                $.ajax({
+                                    url: '/auth/edit-review',
+                                    method: 'PUT',
+                                    data: jsonData,
+                                    ContentType: 'application/json',
+                                    success: function (data) {
+                                        if (data.status == 'ok') {
+                                            Swal.fire({
+                                                text: data.message,
+                                                icon: "success",
+                                                buttonsStyling: false,
+                                                confirmButtonText: "Ok, got it!",
+                                                customClass: {
+                                                    confirmButton: "btn btn-primary"
+                                                }
+                                            }).then(function (result) {
+                                                if (result.isConfirmed) {
+                                                    window.location.href = "/all-review";
+                                                }
+                                            });
+                                        } else {
+                                            Swal.fire({
+                                                text: data.message,
+                                                icon: "error",
+                                                buttonsStyling: false,
+                                                confirmButtonText: "Ok, got it!",
+                                                customClass: {
+                                                    confirmButton: "btn btn-primary"
+                                                }
+                                            });
+                                        }
+                                    },
+                                    error: function (xhr, status, error) {
+                                        // Handle any errors that occur during the request
+                                        console.log(error);
                                     }
-                                },
-                                error: function (xhr, status, error) {
-                                    // Handle any errors that occur during the request
-                                    console.log(error);
-                                }
-                            });
+                                });
+                            }
+                            
                         } else {
                             swal.fire({
                                 text: "Sorry, looks like there are some errors detected, please try again.",
@@ -548,7 +557,7 @@ $(document).ready(function() {
         }
     });
     if ($('input[name="reply_status"]').is(':checked')) {
-        $('#reply_reject_area').html('<div class="row mb-6" id="reply_reject_textarea"><label class="col-lg-4 col-form-label fw-bold fs-6 required "><span class="">Reply Rejecting Reason</span></label><div class="col-lg-8 fv-row"><textarea class="form-control form-control-lg form-control-solid" name="reply_rejecting_comment" required><%= reviewData.reply_rejecting_reason %></textarea></div></div>');
+        $('#reply_reject_area').html('<div class="row mb-6" id="reply_reject_textarea"><label class="col-lg-4 col-form-label fw-bold fs-6 required "><span class="">Reject Reason</span></label><div class="col-lg-8 fv-row"><textarea class="form-control form-control-lg form-control-solid" name="reply_rejecting_comment" id="reply_rejecting_comment" placeholder="Type here reject reason" required><%= reviewData.reply_rejecting_reason %></textarea></div></div>');
     }
 
     // Update the company location input with the selected company's address
