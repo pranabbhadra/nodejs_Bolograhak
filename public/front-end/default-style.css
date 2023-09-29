@@ -3686,3 +3686,12 @@ h2.resp-tab-title:last-child {
     z-index: 9;
     padding: 17px 25px;
 }
+
+.invited-tag {
+    font-size: 13px;
+    display: inline-block;
+    background: #FCCB06;
+    padding: 2px 6px;
+    border-radius: 4px;
+    line-height: normal;
+}

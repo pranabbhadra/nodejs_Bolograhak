@@ -1252,6 +1252,7 @@ span.user-select-tag {
 
 .home-popular-review-box1 {
 	max-width: 458px;
+    width: 100%;
 	position: absolute;
 	left: 0;
 	top: 0;
@@ -1259,6 +1260,7 @@ span.user-select-tag {
 
 .home-popular-review-box2 {
     max-width: 490px;
+    width: 100%;
 	position: absolute;
 	top: 50%;
 	left: 0;
@@ -1268,6 +1270,7 @@ span.user-select-tag {
 
 .home-popular-review-box3 {
     max-width: 465px;
+    width: 100%;
     position: absolute;
     top: 0;
     right: 0;

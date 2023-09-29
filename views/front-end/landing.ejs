@@ -289,6 +289,9 @@
                         <% } %>
                       <% }) %> 
                       <span><%= latestReview.rating %>/5</span>
+                      <% if(latestReview.labels == '2') { %>
+                      <span class="invited-tag ms-2">Invited</span>
+                      <% } %>
                    </div>
                   </div>
                   <div class="home-popular-review-info">
