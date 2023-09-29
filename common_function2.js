@@ -979,7 +979,7 @@ function ReviewReplyToCustomer(mailReplyData){
 
  //Function to fetch User total replied from the  review_reply table
 async function TotalReplied(Id){
-  const sql = `SELECT COUNT(ID) AS totalReplied
+  const sql = `SELECT COUNT(ID) AS totalReplied, status AS replied
               FROM review_reply 
               WHERE reply_by = '${Id}'  `;
 

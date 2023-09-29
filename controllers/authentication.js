@@ -2281,7 +2281,7 @@ exports.submitReviewReply = async (req, res) => {
 };
 
 
-exports.profileManagement = async (req, res) => {
+exports.PremiumCompanyprofileManagement = async (req, res) => {
   const companyID = req.body.company_id;
   const currentDate = new Date();
 
@@ -2638,6 +2638,74 @@ exports.profileManagement = async (req, res) => {
   });
 }
 
+exports.BasicCompanyprofileManagement = (req, res) => {
+  console.log('updateBasicCompany:',req.body);
+  console.log('updateBasicCompany File:',req.file);
+  //return false;
+  const companyID = req.body.company_id;
+  const currentDate = new Date();
+
+  const year = currentDate.getFullYear();
+  const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+  const day = String(currentDate.getDate()).padStart(2, '0');
+  const hours = String(currentDate.getHours()).padStart(2, '0');
+  const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+  const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+
+  const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+  // Update company details in the company table
+  const updateQuery = 'UPDATE company SET  heading = ?, logo = ?, about_company = ?, comp_phone = ?, comp_email = ?, updated_date = ?, tollfree_number = ?, main_address = ?, operating_hours = ?  WHERE ID = ?';
+  const updateValues = [
+                          req.body.heading,
+                          '',
+                          req.body.about_company,
+                          req.body.comp_phone,
+                          req.body.comp_email,
+                          formattedDate,
+                          req.body.tollfree_number,
+                          req.body.main_address,
+                          req.body.operating_hours,
+                          companyID
+                      ];
+
+  if (req.file) {
+      // Unlink (delete) the previous file
+      const unlinkcompanylogo = "uploads/" + req.body.previous_logo;
+      fs.unlink(unlinkcompanylogo, (err) => {
+          if (err) {
+              console.error('Error deleting file:', err);
+          } else {
+              console.log('Previous file deleted');
+          }
+      });
+
+      updateValues[1] = req.file.filename;
+  }else{
+      updateValues[1] = req.body.previous_logo;
+  }
+  db.query(updateQuery, updateValues, (err, results) => {
+      if (err) {
+          // Handle the error
+          return res.send({
+              status: 'err',
+              data: '',
+              message: 'An error occurred while updating the company details: ' + err
+          });
+      }else{
+          return res.send(
+              {
+                  status: 'ok',
+                  data: companyID,
+                  message: 'Successfully Updated'
+              }
+          )
+      }
+
+      
+  })
+}
+
 exports.reviewVoting = async (req, res) => {
   try {
     const authenticatedUserId = parseInt(req.user.user_id);
@@ -2718,11 +2786,11 @@ exports.reviewVoting = async (req, res) => {
     });
   }
 };
-
+//create poll
 exports.createPoll = async (req, res) => {
   try {
-    console.log('req.user:', req.user);
-    console.log('req.body:', req.body);
+    // console.log('req.user:', req.user);
+    // console.log('req.body:', req.body);
 
     const authenticatedUserId = parseInt(req.user.user_id);
     console.log('authenticatedUserId: ', authenticatedUserId);
