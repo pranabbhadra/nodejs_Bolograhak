@@ -895,7 +895,7 @@ async function searchCompany(keyword) {
 
 async function getCompanyReviewNumbers(companyID) {
   const get_company_rewiew_count_query = `
-    SELECT COUNT(*) AS total_review_count, AVG(rating) AS total_review_average
+    SELECT COUNT(*) AS total_review_count, ROUND(AVG(rating), 2) AS total_review_average
     FROM reviews
     WHERE company_id = ? AND review_status = ?`;
   const get_company_rewiew_count_value = [companyID, '1'];
