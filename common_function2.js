@@ -1016,8 +1016,8 @@ async function reviewDataById(reviewId,userId){
   // Format the date in 'YYYY-MM-DD HH:mm:ss' format (adjust the format as needed)
   const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
 
-  const updateQuery = 'UPDATE reviews SET review_title = ?, rating = ?, review_content = ?, user_privacy = ?, updated_at = ? WHERE id = ?';
-  const updateData = [ reviewIfo.review_title, reviewIfo.rating, reviewIfo.review_content, reviewIfo.user_privacy, formattedDate, reviewIfo.review_id]
+  const updateQuery = 'UPDATE reviews SET review_title = ?, rating = ?, review_content = ?, user_privacy = ?, user_contact = ?, updated_at = ? WHERE id = ?';
+  const updateData = [ reviewIfo.review_title, reviewIfo.rating, reviewIfo.review_content, reviewIfo.user_privacy, reviewIfo.user_contact, formattedDate, reviewIfo.review_id]
               
   try {
     const create_review_results = await query(updateQuery, updateData);
@@ -1197,7 +1197,7 @@ async function getCompanyDetails(categorySlug) {
 async function getFilteredCompanyDetails(categorySlug, filterValue) {
   console.log('filterValue',filterValue)
   if (filterValue == 'latest') {
-    const sql = `SELECT c.ID, c.company_name, c.logo, c.status, c.trending, c.main_address, c.verified, c.paid_status, c.slug , AVG(r.  rating) as comp_avg_rating, COUNT(r.id) as comp_total_reviews, pcd.cover_img
+    const sql = `SELECT c.ID, c.company_name, c.logo, c.status, c.trending, c.main_address, c.verified, c.paid_status, c.about_company, c.slug , AVG(r.rating) as comp_avg_rating, COUNT(r.id) as comp_total_reviews, pcd.cover_img
                 FROM category  
                 JOIN company_cactgory_relation ccr ON ccr.category_id = category.ID
                 LEFT JOIN company c ON c.ID = ccr.company_id
