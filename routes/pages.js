@@ -17,6 +17,7 @@ const util = require('util');
 const query = util.promisify(db.query).bind(db);
 const router = express.Router();
 const publicPath = path.join(__dirname, '../public');
+const requestIp = require('request-ip');
 
 
 router.get('/countries', (req, res) => {
@@ -85,7 +86,8 @@ router.get('', checkCookieValue, async (req, res) => {
     if (currentUserData) {
         userId = currentUserData.user_id;
     }
-    const [allRatingTags,globalPageMeta,latestReviews,AllReviewTags,AllReviewVoting, PopularCategories, ReviewCount, UserCount, PositiveReviewsCompany] = await Promise.all([
+    
+    const [allRatingTags,globalPageMeta,latestReviews,AllReviewTags,AllReviewVoting, PopularCategories, ReviewCount, UserCount, PositiveReviewsCompany, NegativeReviewsCompany, HomeMeta, VisitorCheck] = await Promise.all([
         comFunction.getAllRatingTags(),
         comFunction2.getPageMetaValues('global'),
         comFunction2.getlatestReviews(18),
@@ -94,7 +96,10 @@ router.get('', checkCookieValue, async (req, res) => {
         comFunction.getPopularCategories(),
         comFunction.getReviewCount(),
         comFunction.getUserCount(),
-        comFunction.getPositiveReviewsCompany()
+        comFunction.getPositiveReviewsCompany(),
+        comFunction.getNegativeReviewsCompany(),
+        comFunction2.getPageMetaValues('home'),
+        comFunction.getVisitorCheck(requestIp.getClientIp(req))
     ]);
     const rangeTexts = {};
 
@@ -124,23 +129,8 @@ router.get('', checkCookieValue, async (req, res) => {
                 db.query(featured_sql, (featured_err, featured_result) => {
                     var featured_comps = featured_result;
                     // res.json({
-                    //     menu_active_id: 'landing',
-                    //     page_title: home.title,
-                    //     currentUserData: currentUserData,
-                    //     homePosts: blogPosts.status === 'ok' ? blogPosts.data : [],
-                    //     home,
-                    //     meta_values_array,
-                    //     featured_comps,
-                    //     allRatingTags: allRatingTags,
-                    //     AddressapiKey: process.env.ADDRESS_GOOGLE_API_Key,
-                    //     globalPageMeta:globalPageMeta,
-                    //     latestReviews: latestReviews,
-                    //     AllReviewTags: AllReviewTags,
-                    //     AllReviewVoting:AllReviewVoting,
-                    //     PopularCategories,
-                    //     ReviewCount,
-                    //     UserCount,
-                    //     PositiveReviewsCompany
+                    //     HomeMeta,
+                    //     VisitorCheck
                     // });
                     res.render('front-end/landing', {
                         menu_active_id: 'landing',
@@ -159,7 +149,10 @@ router.get('', checkCookieValue, async (req, res) => {
                         PopularCategories,
                         ReviewCount,
                         UserCount,
-                        PositiveReviewsCompany
+                        PositiveReviewsCompany,
+                        NegativeReviewsCompany,
+                        HomeMeta,
+                        VisitorCheck
                     });
                 })
 
@@ -2279,7 +2272,14 @@ router.get('/edit-contacts', checkLoggedIn, (req, res) => {
 });
 
 //Edit Home Page
-router.get('/edit-home', checkLoggedIn, (req, res) => {
+router.get('/edit-home', checkLoggedIn, async(req, res) => {
+
+    const [ReviewCount, UserCount, VisitorCheck] = await Promise.all([
+        comFunction.getReviewCount(),
+        comFunction.getUserCount(),
+        comFunction.getVisitorCheck(requestIp.getClientIp(req))
+    ]);
+
     try {
         const encodedUserData = req.cookies.user;
         const currentUserData = JSON.parse(encodedUserData);
@@ -2302,7 +2302,10 @@ router.get('/edit-home', checkLoggedIn, (req, res) => {
                     page_title: 'Update Home',
                     currentUserData,
                     home,
-                    meta_values_array
+                    meta_values_array,
+                    ReviewCount,
+                    UserCount,
+                    VisitorCheck
                 });
             })
 

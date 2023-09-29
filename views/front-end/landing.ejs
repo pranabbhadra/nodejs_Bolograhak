@@ -21,7 +21,13 @@
                   </div>
                   <div class="banner-counter-tag" style="background-image: url(../front-end/images/b-counter-bg2.svg);">
                     Reviews
-                    <div class="counter-text"><span class="count"><%= ReviewCount[0].total_reviews_count %></span>+</div>
+                    <div class="counter-text">
+                      <% if( meta_values_array.reviews_count_visibility && meta_values_array.reviews_count_visibility == 'original' ){ %>
+                        <span class="count"><%= ReviewCount[0].total_reviews_count %></span>+
+                      <% }else{ %>
+                        <span class="count"><%= meta_values_array.reviews_count %></span>+
+                      <% } %>  
+                    </div>
                   </div>
                 </div>
               </div>
@@ -39,7 +45,13 @@
                   </div>
                   <div class="banner-counter-tag" style="background-image: url(../front-end/images/b-counter-bg1.svg);">
                     Impression
-                    <div class="counter-text"><span class="count">135</span>+</div>
+                    <div class="counter-text">
+                      <% if( meta_values_array.impression_number_visibility && meta_values_array.impression_number_visibility == 'original' ){ %>
+                        <span class="count"><%- VisitorCheck %></span>+
+                      <% }else{ %>
+                        <span class="count"><%= meta_values_array.impression_number %></span>+
+                      <% } %>  
+                    </div>
                   </div>
                 </div>
                 <div class="banner-mas-img banner-mas-img2">
@@ -55,7 +67,13 @@
                   </div>
                   <div class="banner-counter-tag" style="background-image: url(../front-end/images/b-counter-bg1.svg);">
                     Total Users
-                    <div class="counter-text"><span class="count"><%= UserCount[0].total_user_count %></span>+</div>
+                    <div class="counter-text">
+                      <% if( meta_values_array.total_users_count_visibility && meta_values_array.total_users_count_visibility == 'original' ){ %>
+                        <span class="count"><%= UserCount[0].total_user_count %></span>+
+                      <% }else{ %>
+                        <span class="count"><%= meta_values_array.total_users_count %></span>+
+                      <% } %>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -74,6 +92,8 @@
                 <div class="autofield-dropdown">
                 </div>
               </div>
+
+              <% if(PositiveReviewsCompany) { %>
               <div class="banner-trending-scroll">
                 <div class="like-dislike-tren-label">
                     <i class="fa-solid fa-thumbs-up"></i> Up Trending :
@@ -81,13 +101,15 @@
                 <div class="like-dislike-company-scroll">
                     <marquee behavior="scroll" direction="left" onmouseover="this.stop();" onmouseout="this.start();">
                         <ul>
-                            <li><a href="#">Samsung</a></li>
-                            <li><a href="#">Domino's Pizza</a></li>
-                            <li><a href="#">Tata Steel</a></li>
+                          <% PositiveReviewsCompany.forEach( (company, index)=> {%>
+                            <li><a href="/company/<%- company.slug %>"><%- company.company_name %></a></li>
+                          <% })%>  
                         </ul>
                     </marquee>
                 </div>
               </div>
+              <% } %>
+              <% if(NegativeReviewsCompany) { %>
               <div class="banner-trending-scroll">
                 <div class="like-dislike-tren-label">
                     <i class="fa-solid fa-thumbs-down"></i> Down Trending :
@@ -95,13 +117,15 @@
                 <div class="like-dislike-company-scroll">
                     <marquee behavior="scroll" direction="left" onmouseover="this.stop();" onmouseout="this.start();">
                         <ul>
-                            <li><a href="#">Samsung</a></li>
-                            <li><a href="#">Domino's Pizza</a></li>
-                            <li><a href="#">Tata Steel</a></li>
+                          <% NegativeReviewsCompany.forEach( (company, index)=> {%>
+                            <li><a href="/company/<%- company.slug %>"><%- company.company_name %></a></li>
+                          <% })%> 
                         </ul>
                     </marquee>
                 </div>
               </div>
+              <% } %>
+
               <!-- <h3><span>#CustomerRightsMatterBG</span></h3> -->
               <!-- <p class="text-light"><span id="type-writing"><noscript>
                     <%= meta_values_array.bannner_content_2 %>

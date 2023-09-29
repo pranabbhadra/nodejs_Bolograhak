@@ -314,6 +314,108 @@
                                     </div>
                                     <!--end::Col-->
                                 </div>
+                                <div class="row mb-6">
+                                    <!--begin::Label-->
+                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
+                                        <span>Impression Number</span>
+                                        <div class="fw-bold text-gray-600">Original Number: <%- VisitorCheck %></div>
+                                    </label>
+                                    <!--end::Label-->
+                                    <!--begin::Col-->
+                                    <div class="col-lg-8 fv-row">
+                                        <div class="row">
+                                            <div class="col-lg-6 fv-row fv-plugins-icon-container">
+                                                <input type="number" name="impression_number" id="impression_number"
+                                        class="form-control form-control-lg form-control-solid" value="<%= meta_values_array.impression_number %>" placeholder="Impression Number" />
+                                            </div>
+                                            <div class="col-lg-6 fv-row fv-plugins-icon-container">
+                                                <div class="d-flex align-items-center mt-3">
+                                                    <!--begin::Option-->
+                                                    <label class="form-check form-check-inline form-check-solid me-5">
+                                                    <input class="form-check-input" name="impression_number_visibility" type="radio" value="original" <% if( meta_values_array.impression_number_visibility && meta_values_array.impression_number_visibility == 'original' ){ %> checked <% } %>>
+                                                    <span class="fw-bold ps-2 fs-6">Original</span>
+                                                    </label>
+                                                    <!--end::Option-->
+                                                    <!--begin::Option-->
+                                                    <label class="form-check form-check-inline form-check-solid">
+                                                    <input class="form-check-input" name="impression_number_visibility" type="radio" value="static" <% if( meta_values_array.impression_number_visibility && meta_values_array.impression_number_visibility == 'static' ){ %> checked <% } %>>
+                                                    <span class="fw-bold ps-2 fs-6">Static</span>
+                                                    </label>
+                                                    <!--end::Option-->
+                                                 </div>
+                                            </div>
+                                    </div>
+                                    </div>
+                                    <!--end::Col-->
+                                </div>
+                                <div class="row mb-6">
+                                    <!--begin::Label-->
+                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
+                                        <span>Reviews Count</span>
+                                        <div class="fw-bold text-gray-600">Original Number: <%= ReviewCount[0].total_reviews_count %></div>
+                                    </label>
+                                    <!--end::Label-->
+                                    <!--begin::Col-->
+                                    <div class="col-lg-8 fv-row">
+                                        <div class="row">
+                                            <div class="col-lg-6 fv-row fv-plugins-icon-container">
+                                                <input type="number" name="reviews_count" id="reviews_count"
+                                        class="form-control form-control-lg form-control-solid" value="<%= meta_values_array.reviews_count %>" placeholder="Reviews Count" />
+                                            </div>
+                                            <div class="col-lg-6 fv-row fv-plugins-icon-container">
+                                                <div class="d-flex align-items-center mt-3">
+                                                    <!--begin::Option-->
+                                                    <label class="form-check form-check-inline form-check-solid me-5">
+                                                    <input class="form-check-input" name="reviews_count_visibility" type="radio" value="original" <% if( meta_values_array.reviews_count_visibility && meta_values_array.reviews_count_visibility == 'original' ){ %> checked <% } %>>
+                                                    <span class="fw-bold ps-2 fs-6">Original</span>
+                                                    </label>
+                                                    <!--end::Option-->
+                                                    <!--begin::Option-->
+                                                    <label class="form-check form-check-inline form-check-solid">
+                                                    <input class="form-check-input" name="reviews_count_visibility" type="radio" value="static" <% if( meta_values_array.reviews_count_visibility && meta_values_array.reviews_count_visibility == 'static' ){ %> checked <% } %>>
+                                                    <span class="fw-bold ps-2 fs-6">Static</span>
+                                                    </label>
+                                                    <!--end::Option-->
+                                                 </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--end::Col-->
+                                </div>
+                                <div class="row mb-6">
+                                    <!--begin::Label-->
+                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
+                                        <span>Total Users</span>
+                                        <div class="fw-bold text-gray-600">Original Number: <%= UserCount[0].total_user_count %></div>
+                                    </label>
+                                    <!--end::Label-->
+                                    <!--begin::Col-->
+                                    <div class="col-lg-8 fv-row">
+                                        <div class="row">
+                                            <div class="col-lg-6 fv-row fv-plugins-icon-container">
+                                                <input type="number" name="total_users_count" id="total_users_count"
+                                        class="form-control form-control-lg form-control-solid" value="<%= meta_values_array.total_users_count %>" placeholder="Total Users" />
+                                            </div>
+                                            <div class="col-lg-6 fv-row fv-plugins-icon-container">
+                                                <div class="d-flex align-items-center mt-3">
+                                                    <!--begin::Option-->
+                                                    <label class="form-check form-check-inline form-check-solid me-5">
+                                                    <input class="form-check-input" name="total_users_count_visibility" type="radio" value="original" <% if( meta_values_array.total_users_count_visibility && meta_values_array.total_users_count_visibility == 'original' ){ %> checked <% } %>>
+                                                    <span class="fw-bold ps-2 fs-6">Original</span>
+                                                    </label>
+                                                    <!--end::Option-->
+                                                    <!--begin::Option-->
+                                                    <label class="form-check form-check-inline form-check-solid">
+                                                    <input class="form-check-input" name="total_users_count_visibility" type="radio" value="static" <% if( meta_values_array.total_users_count_visibility && meta_values_array.total_users_count_visibility == 'static' ){ %> checked <% } %>>
+                                                    <span class="fw-bold ps-2 fs-6">Static</span>
+                                                    </label>
+                                                    <!--end::Option-->
+                                                 </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--end::Col-->
+                                </div>
                             </div>
                             <div class="card-header border-0 cursor-pointer" role="button"
                                 data-bs-target="#kt_account_profile_details" aria-expanded="true"

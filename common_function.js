@@ -1143,6 +1143,59 @@ async function getPositiveReviewsCompany() {
   }
 }
 
+async function getNegativeReviewsCompany() {
+  const get_negative_reviews_company_query = `
+  SELECT company_id, COUNT(*) AS review_count, com.company_name, com.slug
+  FROM reviews
+  JOIN company com ON reviews.company_id = com.ID
+  WHERE rating <= 2 AND review_status = '1'
+  GROUP BY company_id
+  ORDER BY review_count DESC
+  LIMIT 5;
+  `;
+  try{
+    const get_negative_reviews_result = await query(get_negative_reviews_company_query);
+    return get_negative_reviews_result;
+  }catch(error){
+    return 'Error during user get_negative_reviews_company_query:'+error;
+  }
+}
+
+async function getVisitorCheck(ClientIp) {
+  const chk_visitor_clientIp_query = `
+  SELECT *
+  FROM visitors
+  WHERE IP_address = ?;
+  `;
+  const query_val = ClientIp;
+  try{
+    const chk_visitor_clientIp_query_result = await query(chk_visitor_clientIp_query, query_val);
+    //console.log(chk_visitor_clientIp_query_result);
+    //return chk_visitor_clientIp_query_result;
+    if (chk_visitor_clientIp_query_result.length > 0) {
+      return chk_visitor_clientIp_query_result.length;
+    }else{
+      const currentDate = new Date();
+      const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+      const queryValues = [ClientIp, formattedDate];
+      const insertVisitorQuery = `
+        INSERT INTO visitors (IP_address, visit_time)
+        VALUES (?, ?);
+      `;
+      try {
+        await query(insertVisitorQuery, queryValues);
+        //console.log('Visitor inserted successfully');
+        return chk_visitor_clientIp_query_result.length+1;
+
+      } catch (error) {
+        //return 'Error during insertion: ' + error;
+        chk_visitor_clientIp_query_result.length
+      }      
+    }
+  }catch(error){
+    return 'Error during user chk_visitor_clientIp_query: ' + error;
+  }
+}
 
 module.exports = {
     getUser,
@@ -1183,5 +1236,7 @@ module.exports = {
     getUserCount,
     getCategoryDetails,
     getParentCategories,
-    getPositiveReviewsCompany
+    getPositiveReviewsCompany,
+    getNegativeReviewsCompany,
+    getVisitorCheck
 };
