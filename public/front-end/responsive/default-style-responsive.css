@@ -830,6 +830,10 @@
 		max-width: 100%;
 	}
 
+	.our-popular-content {
+		margin-bottom: 0;
+	}
+
 	.home-popular-review-box-wrapper {
 		display: none;
 	}

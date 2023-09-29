@@ -74,7 +74,7 @@
 .company_listing_emoji .company_listing_span img {
     width: 22px;
     border: 2px solid #000;
-    border-radius: 50px;
+    border-radius: 50% !important;
 }
 
 .company_listing_emoji p {
@@ -142,7 +142,7 @@
     font-weight: 600;
     line-height: 16px;
     text-transform: capitalize;
-    margin: 0;
+    margin: 10px 0 0 0;
     gap: 5px;
 }
 
@@ -180,6 +180,10 @@
 
 .company_listing_box img {
     border-radius: 18px;
+}
+
+#premiumcompanymodal .company_listing_box {
+    box-shadow: none;
 }
 
 #premiumcompanymodal .company_listing_box img {
@@ -277,8 +281,10 @@
 
 .company_listing_box .img-fluid {
     width: 100%;
+    height: 235px !important;
+    object-fit: cover;
+    object-position: center;
 }
-
 
 .progress circle {
     fill: #ccc;
@@ -302,6 +308,8 @@
     position: absolute;
     margin-top: -95px;
     margin-left: 0;
+    border-radius: 50%;
+    overflow: hidden;
 }
 
 .prem-modal-company-info .company_listing_logo img {

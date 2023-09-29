@@ -1,10 +1,10 @@
 .top-text-scroll {
     background: #FCCB06;
-    padding: 20px 0;
+    padding: 10px 0;
     color: #252525;
     font-family: Inter;
-    font-size: 15px;
-    line-height: 110.4%; 
+    font-size: 14px;
+    line-height: 110.4%;
     text-align: center;
 }
 
@@ -37,7 +37,7 @@ header.main_header {
 
 body.new-home header.main_header,
 body.home header.main_header {
-    top: 60px;
+    top: 38px;
 }
 
 .header-wrapper {
@@ -174,11 +174,11 @@ body.home header.main_header {
 }
 
 .user-login-profile-icon img {
-	width: 50px;
-	height: 50px !important;
-	object-fit: cover;
-	object-position: center;
-	border-radius: 50%;
+    width: 47px;
+    height: 47px !important;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 50%;
 }
 
 span.toggle-menu {
@@ -663,30 +663,31 @@ header.main_header.fixed-top {
     border-radius: 10px;
     background: #FFF;
     box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.25);
-    min-width: 210px;
     color: #000;
     font-family: var(--nunito);
     font-size: 20px;
     font-weight: 800;
-    line-height: 120.4%; 
-    padding: 10px 110px 10px 10px;
-    min-height: 80px;
+    line-height: 120.4%;
+    padding: 0 0 5px 10px;
+    min-height: 76px;
     display: flex;
     align-items: center;
+    gap: 10px;
+    justify-content: space-between;
     z-index: 9;
     background-repeat: no-repeat;
     background-position: left center;
 }
 
 .banner-mas-img1 .banner-counter-tag {
-    bottom: -62px;
+    bottom: -55px;
     left: 50%;
     transform: translateX(-50%);
 }
 
 .banner-mas-img2:first-child .banner-counter-tag {
     top: 0;
-    left: -180px;
+    left: -50%;
 }
 
 .banner-mas-img2+.banner-mas-img2 .banner-counter-tag {
@@ -695,16 +696,12 @@ header.main_header.fixed-top {
 }
 
 .banner-counter-tag .counter-text {
-    position: absolute;
-    right: 0;
-    top: 0;
     color: #222;
     font-size: 32px;
     font-weight: 900;
     line-height: 120.4%;
     border-radius: 10px;
     background: #FCCB06;
-    min-width: 93px;
     padding: 23px 9px 9px;
     text-align: center;
 }

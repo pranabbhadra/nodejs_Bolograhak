@@ -331,7 +331,7 @@
 }
 
 .product-info a {
-    color: #ffffff;
+    color: #000000;
 }
 
 .product-info a:hover {
@@ -461,7 +461,9 @@
     background-color: #252525;
 }
 
-
+.category_products_content .product-info a {
+    color: #ffffff;
+}
 
 .premiun_rating_review_box {
     background-color: #161616;

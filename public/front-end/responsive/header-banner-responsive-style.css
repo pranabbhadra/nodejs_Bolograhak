@@ -36,20 +36,13 @@
 	}
 
 	.banner-counter-tag {
-		min-width: 175px;
 		font-size: 17px;
-		min-height: 70px;
-		padding: 10px 92px 10px 10px;
-	}
-
-	.banner-mas-img2:first-child .banner-counter-tag {
-		left: -150px;
+		min-height: 68px;
 	}
 
 	.banner-counter-tag .counter-text {
 		font-size: 26px;
 		line-height: 120.4%;
-		min-width: 80px;
 	}
 	
 	.banner-mas-img1 .banner-counter-tag {
@@ -117,19 +110,12 @@
 
 	.banner-counter-tag .counter-text {
 		font-size: 19px;
-		min-width: 65px;
 		padding: 18px 9px 9px;
 	}
 
 	.banner-counter-tag {
-		min-width: 150px;
 		font-size: 15px;
 		min-height: 56px;
-		padding: 10px 74px 10px 10px;
-	}
-
-	.banner-mas-img2:first-child .banner-counter-tag {
-		left: -125px;
 	}
 }
 
