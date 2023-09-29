@@ -788,7 +788,7 @@ jQuery(function ($) {
   $(window).load(function () {
     setTimeout(function () {
       $("#premiumcompanymodal").modal('show');
-    }, 2000);
+    }, 5000);
   });
   $('.modal').on('shown.bs.modal', function (e) {
     $('.modal-slide-in').slick('setPosition');
