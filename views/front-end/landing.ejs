@@ -313,6 +313,9 @@
                         <% } %>
                       <% }) %> 
                       <span><%= latestReview.rating %>/5</span>
+                      <% if(latestReview.labels == '2') { %>
+                        <span class="invited-tag ms-2">Invited</span>
+                      <% } %>
                    </div>
                   </div>
                   <div class="home-popular-review-info">
@@ -588,6 +591,20 @@
                   <div class="form-check form-check-inline">
                     <input class="form-check-input" type="radio" name="user_privacy" id="inlineRadio2" value="0">
                     <label class="form-check-label" for="inlineRadio2">No</label>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="custom-form">
+                  <span class="fw-bold d-inline-block me-2">Do you want the organisation to contact you?</span>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="user_contact" checked id="inlineRadio3"
+                      value="1">
+                    <label class="form-check-label" for="inlineRadio3">Yes</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="user_contact" id="inlineRadio4" value="0">
+                    <label class="form-check-label" for="inlineRadio4">No</label>
                   </div>
                 </div>
               </div>
