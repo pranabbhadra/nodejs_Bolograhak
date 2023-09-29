@@ -23,7 +23,6 @@
                         <div class="col-md-12">
                     <% } %>
                         <div class="company-listing-right">
-                            <% if(companyDetails.length > 0){ %>
                                 <div class="row">
                                     <div class="col-12">
                                         <div class="select_option">
@@ -40,6 +39,7 @@
                                         </div>
                                     </div>
                                 </div>
+                            <% if(companyDetails.length > 0){ %>
                                 <div class="row g-4">
                                     <% companyDetails.forEach((company)=>{ %>
                                         <div class="col-lg-4 col-sm-6 col-12 my-3">
