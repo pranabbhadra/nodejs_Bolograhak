@@ -535,7 +535,7 @@ router.get('/company/:slug', checkCookieValue, async (req, res) => {
             comFunction2.getPageMetaValues('global'),
             comFunction2.getPremiumCompanyData(companyID),
             comFunction2.getCompanyPollDetails(companyID),
-            comFunction2.countInvitationLabels('2'),
+            comFunction2.countInvitationLabels('2', companyID),
         ]);
         
         //console.log(get_company_id.ID)

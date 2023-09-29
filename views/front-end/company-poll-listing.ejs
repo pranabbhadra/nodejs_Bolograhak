@@ -11,14 +11,16 @@
          <% if(PollDetails.length > 0) { %>
          <% const dateString = PollDetails[0].expired_at; %>
          <% const date = new Date(dateString); %>
-         <% const date2 = new Date(); %>
+         <% const date2 = new Date(); 
+            date2.setHours(0, 0, 0, 0) %>
+         
          <% const daysDiff = Math.round((date - date2)/(1000 * 60 * 60 * 24)) %>
-         <% if(daysDiff < -1 ) {%>
+         <% if(daysDiff < 0 ) {%>
          <div class="all-poll-list-wrapper">
             <div class="create-new-poll-wrap">
                
                   <div class="create-poll-btn text-end">
-                     <a href="#" class="btn-default btn-warning">Create New Poll</a>
+                     <a href="#" class="btn-default btn-warning">Create New Poll </a>
                   </div>
                   <div class="creat-poll-field">
                      <form id="form-create-poll">
@@ -151,15 +153,16 @@
                            const day = String(date.getDate()).padStart(2, '0');
                            const formattedDate = `${year}-${month}-${day}`;
                         %>
-                        <% const date2 = new Date(); %>
+                        <% const date2 = new Date(); 
+                           date2.setHours(0, 0, 0, 0) %>
                         <% const daysDiff = Math.round((date - date2)/(1000 * 60 * 60 * 24)) %>
                         <div class="acc_heading_right">
-                           <% if(daysDiff >= -1){ %>
-                              <span class="badge badge-square badge-success">ongoing </span>
+                           <% if(daysDiff >= 0){ %>
+                              <span class="badge badge-square badge-success">ongoing</span>
                            <% } else { %>
                               <span class="badge badge-square badge-dark">Past </span>
                            <% } %>
-                           <span class="p-date"><%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></span>
+                           <span class="p-date"><%= date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) %></span>
                         </div> 
                      </div>
                      <div class="acc_contents">
@@ -191,20 +194,19 @@
                         </div>
                          -->
                         <div class="text-end">
-                           <% if(daysDiff >= -1){ %>
+                           <% if(daysDiff >= 0){ %>
                            <div>
-                              <div class="change-expire-date-btn">
-                                 <a href="#" class="btn-default badge badge-square badge-warning">Change Expire Date </a>
+                              <div class="change-expire-date-btn mb-3">
+                                 <span><%= date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) %></span> <a href="#" class="btn-default btn-warning">Change Expire Date </a>
                               </div>
-                              <div class="expire-date-field">
-                                 <form id="form_expire_date">
+                              <div class="expire-date-field mb-3">
+                                 <form id="form_expire_date" class="expire-date-field-divide">
                                     <input type="hidden" name="poll_id" value="<%= poll.poll_id %>" >
-                                    <input class="form-control" type="date" name="change_expire_date" value="<%- formattedDate %>" ><input class="form-control" id="expire_submit" type="submit" value="Submit" >
+                                    <input class="form-control" type="date" name="change_expire_date" value="<%- formattedDate %>" ><input class="btn-default btn-warning" id="expire_submit" type="submit" value="Submit" >
                                  </form>
                               </div>
                            </div>
                            <% } %>
-                           <span><%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></span>
                         </div>
                      </div>
                   </div>

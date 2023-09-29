@@ -171,7 +171,7 @@ function getAllCompaniesReviews(userId) {
             FROM  reviews r
             JOIN company c ON r.company_id = c.ID
             LEFT JOIN review_reply ON review_reply.review_id = r.id
-            WHERE r.customer_id = ?
+            WHERE r.customer_id = ? AND r.review_status = '1'
             GROUP BY r.id
             ORDER BY updated_at DESC
         `;
@@ -1016,8 +1016,8 @@ async function reviewDataById(reviewId,userId){
   // Format the date in 'YYYY-MM-DD HH:mm:ss' format (adjust the format as needed)
   const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
 
-  const updateQuery = 'UPDATE reviews SET review_title = ?, rating = ?, review_content = ?, user_privacy = ?, user_contact = ?, updated_at = ? WHERE id = ?';
-  const updateData = [ reviewIfo.review_title, reviewIfo.rating, reviewIfo.review_content, reviewIfo.user_privacy, reviewIfo.user_contact, formattedDate, reviewIfo.review_id]
+  const updateQuery = 'UPDATE reviews SET review_title = ?, rating = ?, review_content = ?, user_privacy = ?, user_contact = ?, updated_at = ?, review_status = ? WHERE id = ?';
+  const updateData = [ reviewIfo.review_title, reviewIfo.rating, reviewIfo.review_content, reviewIfo.user_privacy, reviewIfo.user_contact, formattedDate, '2' , reviewIfo.review_id]
               
   try {
     const create_review_results = await query(updateQuery, updateData);
@@ -1445,13 +1445,14 @@ async function sendInvitationEmail(req) {
 }
 
 //Function to count invitation label on current month 
- async function countInvitationLabels(typeEnum) {
+ async function countInvitationLabels(typeEnum, company_id) {
   const sql = `SELECT labels, COUNT(*) AS label_count
   FROM reviews
   WHERE 
       MONTH(created_at) = MONTH(CURRENT_DATE())
       AND YEAR(created_at) = YEAR(CURRENT_DATE())
       AND labels = '${typeEnum}'
+      AND company_id = '${company_id}'
       GROUP BY labels;
   `;
   const result = await query(sql);

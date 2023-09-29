@@ -1114,6 +1114,19 @@
     font-size: 14px;
 }
 
+.expire-date-field {
+    display: none;
+}
+
+.expire-date-field-divide {
+    display: flex;
+    gap: 10px;
+}
+
+.change-expire-date-btn .btn-default {
+    margin-left: 10px;
+}
+
 
 /* ============== add multiple email tag style start =============== */
 .send-review-invitation {
@@ -1351,6 +1364,15 @@
 
     .creat-poll-field {
         padding: 37px 15px;
+    }
+
+    .change-expire-date-btn .btn-default {
+        font-size: 14px;
+        padding: 10px 10px;
+    }
+
+    .change-expire-date-btn span {
+        font-size: 14px;
     }
 }
 
