@@ -587,7 +587,9 @@
 	.most-popular-categories-content:before,
 	.most-popular-categories-content:after,
 	.discussion-page-content:before,
-	.discussion-page-content:after {
+	.discussion-page-content:after,
+	.survey-content:before,
+	.survey-content:after {
 		background-size: 52%;
 	}
 
@@ -1476,6 +1478,18 @@
 		display: block;
 	}
 
+	.survey-rating-part ul li {
+		margin: 0 7px;
+	}
+
+	.survey-rating-part ul li a img {
+		width: 28px;
+	}
+
+	.survey-rating-part {
+		font-size: 16px;
+	}
+
 }
 
 @media only screen and (max-width:660.98px) {
@@ -1818,7 +1832,9 @@
 	.most-popular-categories-content:before,
 	.most-popular-categories-content:after,
 	.discussion-page-content:before,
-	.discussion-page-content:after {
+	.discussion-page-content:after,
+	.survey-content:before,
+	.survey-content::after {
 		background-size: 35%;
 	}
 
@@ -2168,6 +2184,17 @@
 	.modal-slide-in .slick-dots li {
 		margin: 0 3px;
 	}
+
+	.survey-head {
+		font-size: 16px;
+		padding-left: 15px;
+		padding-right: 15px;
+	}
+
+	.survey-body {
+		padding-left: 15px;
+		padding-right: 15px;
+	}
 	
 
 }
@@ -2231,6 +2258,15 @@
 	.profile-info-table table th {
 		padding: 18px 9px;
 		font-size: 12px;
+	}
+
+	.survey-rating {
+		display: block;
+		text-align: center;
+	}
+
+	.survey-rating-part + .survey-rating-part {
+		margin: 20px 0 0 0;
 	}
 }
 

@@ -1,0 +1,33 @@
+.about-left-slider {
+	max-width: 612px;
+	margin-left: -43px;
+	position: relative;
+	overflow: hidden;
+}
+
+.about-50-left {
+	width: 37%;
+	float: left;
+	padding-right: 8.5px;
+}
+
+.about-50-right {
+	width: 63%;
+	float: right;
+	padding-left: 8.5px;
+}
+
+.gr-slider1 img {
+	margin: 0 auto;
+}
+
+.gr-slider2 {
+	margin-top: 26px;
+}
+
+.gr-slider4 {
+	z-index: 1;
+	margin-top: -130px;
+	width: 68%;
+	float: right;
+}

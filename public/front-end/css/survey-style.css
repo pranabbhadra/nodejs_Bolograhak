@@ -1,0 +1,101 @@
+.survey-content {
+    background: url(../images/survey-background.svg) repeat-y;
+    background-size: 100%;
+}
+
+.survey-wrapper {
+    margin-top: 30px;
+    border-radius: 18px;
+    box-shadow: 0px 14px 34px 0px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+}
+
+.survey-head {
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 160%;
+    background: #FCCB06;
+    padding: 20px 18px;
+}
+
+.survey-body {
+    background: #252525  url(../images/survey-object.svg) no-repeat right top;
+    color: #ffffff;
+    padding: 25px 25px;
+}
+
+.survey-body .custom-form textarea.form-control {
+    background-color: #ffffff;
+}
+
+.survey-body .custom-form:last-child {
+    margin-bottom: 0;
+}
+
+.survey-body .custom-form .form-check label {
+    font-weight: 800;
+    font-size: 16px;
+}
+
+.survey-body .custom-form .form-check-input:checked[type=radio] + label,
+.survey-body .custom-form .form-check-input:checked[type=checkbox] + label {
+    color: #FCCB06;
+}
+
+.survey-rating {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 10px;
+}
+
+.survey-rating-part {
+    font-size: 18px;
+    font-weight: 900;
+}
+
+.survey-rating-part ul li {
+    display: inline-block;
+    margin: 0 20px;
+}
+
+.survey-rating-part ul {
+    padding: 0;
+    margin: 0;
+    line-height: 11px;
+}
+
+.survey-rating-part ul li a img {
+    width: 30px;
+    opacity: 0.3;
+    transition: all ease-in-out 0.5s;
+}
+
+.survey-rating-part ul li a:hover img,
+.survey-rating-part ul li.active a img {
+    opacity: 1;
+    transform: scale(1.1);
+    transition: all ease-in-out 0.5s;
+}
+
+.survey-content:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 20px;
+    background: url(../images/overlay-object5.png) no-repeat left top;
+    width: 118px;
+    height: 315px;
+    z-index: -1;
+}
+
+.survey-content:after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    background: url(../images/new-cat-shape1.png) no-repeat right bottom;
+    width: 100px;
+    height: 393px;
+    z-index: -1;
+}

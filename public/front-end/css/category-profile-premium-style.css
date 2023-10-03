@@ -321,6 +321,10 @@
     object-position: center;
 }
 
+.promotion-slider .product-part img {
+    width: 100%;
+} 
+
 .product-info {
     border-radius: 20px;
     background: #FFF;
@@ -463,6 +467,10 @@
 
 .category_products_content .product-info a {
     color: #ffffff;
+}
+
+.category_products_content .product-info a:hover {
+    color: #F8A401;
 }
 
 .premiun_rating_review_box {
@@ -832,7 +840,7 @@ span#selected-range-emojis {
 
 .ongoing_poll_sec::after {
     content: " ";
-    background-image: url('../images/s-shap-1.png');
+    background-image: url(../images/s-shap-1.png);
     background-repeat: no-repeat;
     background-position: right center;
     background-size: 100%;
@@ -843,6 +851,7 @@ span#selected-range-emojis {
     left: 0;
     bottom: 0;
     margin: auto;
+    z-index: -1;
 }
 
 .ongoing_poll_sec::before {
@@ -858,6 +867,7 @@ span#selected-range-emojis {
     right: 0;
     bottom: -156px;
     margin: auto;
+    z-index: -1;
 }
 
 .category-premium::after {
