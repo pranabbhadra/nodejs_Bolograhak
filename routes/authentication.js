@@ -68,8 +68,9 @@ router.post('/updatePollExpireDate', authenController.updatePollExpireDate);
 //Polling Route
 router.post('/userPolling', verifyToken, authenController.userPolling);
 
+router.put('/editUserReview', verifyToken, authenController.editUserReview);
 
-
+router.post('/reviewInvitation', verifyToken, authenController.reviewInvitation); 
 
 //forget password
 router.post('/forgotPassword', authenController.forgotPassword);

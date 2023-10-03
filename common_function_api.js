@@ -1,6 +1,7 @@
 const util = require('util');
 const db = require('./config');
 const mysql = require('mysql2/promise');
+const mdlconfig = require('./config-module');
 const dotenv = require('dotenv');
 const bcrypt = require('bcryptjs');
 const useragent = require('useragent');
@@ -1335,8 +1336,181 @@ async function getReviewReplies(user_ID, reviewIDs) {
 }
 
 
+async function updateReview(reviewIfo){
+  // console.log('Review Info', reviewIfo);
+  // console.log('Company Info', comInfo);
+  // reviewIfo['tags[]'].forEach((tag) => {
+  //   console.log(tag);
+  // });
+  if (typeof reviewIfo['tags[]'] === 'string') {
+    // Convert it to an array containing a single element
+    reviewIfo['tags[]'] = [reviewIfo['tags[]']];
+  }
+  const currentDate = new Date();
+  // Format the date in 'YYYY-MM-DD HH:mm:ss' format (adjust the format as needed)
+  const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+
+  const updateQuery = 'UPDATE reviews SET review_title = ?, rating = ?, review_content = ?, user_privacy = ?, review_status = ?, updated_at = ? WHERE id = ?';
+  const updateData = [ reviewIfo.review_title, reviewIfo.rating, reviewIfo.review_content, reviewIfo.user_privacy, '2', formattedDate, reviewIfo.review_id]
+              
+  try {
+    const create_review_results = await query(updateQuery, updateData);
+      if (Array.isArray(reviewIfo['tags[]']) && reviewIfo['tags[]'].length > 0) {
+        //insert review_tag_relation
+
+        await query(`DELETE FROM review_tag_relation WHERE review_id = '${reviewIfo.review_id}'`);
+
+        const review_tag_relation_query = 'INSERT INTO review_tag_relation (review_id, tag_name) VALUES (?, ?)';
+        try{
+          for (const tag of reviewIfo['tags[]']) {
+            const review_tag_relation_values = [reviewIfo.review_id, tag];
+            const review_tag_relation_results = await query(review_tag_relation_query, review_tag_relation_values);
+          }
+
+        }catch(error){
+          console.error('Error during user review_tag_relation_results:', error);
+        }
+      }
+  }catch (error) {
+    console.error('Error during user update_review_results:', error);
+  }
+}
 
 
+async function insertInvitationDetails(req) {
+  console.log('insertInvitationDetails',req)
+  const {emails, email_body, user_id, company_id } = req
+  const currentDate = new Date();
+  const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+  const sql = `INSERT INTO review_invite_request( company_id, user_id, share_date, count) VALUES (?, ?, ?, ?)`;
+  const data = [company_id, user_id, formattedDate, emails.length ];
+  const result = await query(sql, data);
+  if (result) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+async function sendInvitationEmail(req) {
+  console.log('sendInvitationEmail',req)
+  const {emails, email_body, user_id, company_id, company_name ,company_slug} = req;
+  if(emails.length > 0){
+    await emails.forEach((email)=>{
+      var mailOptions = {
+        from: process.env.MAIL_USER,
+        //to: 'pranab@scwebtech.com',
+        to: email,
+        subject: 'Invitation Email',
+        html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
+        <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
+         <tbody>
+          <tr>
+           <td align="center" valign="top">
+             <div id="template_header_image"><p style="margin-top: 0;"></p></div>
+             <table id="template_container" style="box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; background-color: #fdfdfd; border: 1px solid #dcdcdc; border-radius: 3px !important;" border="0" cellpadding="0" cellspacing="0" width="600">
+              <tbody>
+                <tr>
+                 <td align="center" valign="top">
+                   <!-- Header -->
+                   <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
+                     <tbody>
+                       <tr>
+                       <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
+                        <td id="header_wrapper" style="padding: 36px 48px; display: block;">
+                           <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Invitation Email</h1>
+                        </td>
+                       </tr>
+                     </tbody>
+                   </table>
+             <!-- End Header -->
+             </td>
+                </tr>
+                <tr>
+                 <td align="center" valign="top">
+                   <!-- Body -->
+                   <table id="template_body" border="0" cellpadding="0" cellspacing="0" width="600">
+                     <tbody>
+                       <tr>
+                        <td id="body_content" style="background-color: #fdfdfd;" valign="top">
+                          <!-- Content -->
+                          <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                           <tbody>
+                            <tr>
+                             <td style="padding: 48px;" valign="top">
+                               <div id="body_content_inner" style="color: #737373; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
+                                
+                                <table border="0" cellpadding="4" cellspacing="0" width="90%">
+                                  <tr>
+                                    <td colspan="2">
+                                    <p style="font-size:15px; line-height:20px">${email_body}</p>
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td colspan="2">
+                                    <p style="font-size:15px; line-height:20px">Please <a href="${process.env.MAIN_URL}company/${company_id}?type=invitation">click here</a> to submit your opinion.</p>
+                                    </td>
+                                  </tr>
+                                </table>
+                                
+                               </div>
+                             </td>
+                            </tr>
+                           </tbody>
+                          </table>
+                        <!-- End Content -->
+                        </td>
+                       </tr>
+                     </tbody>
+                   </table>
+                 <!-- End Body -->
+                 </td>
+                </tr>
+                <tr>
+                 <td align="center" valign="top">
+                   <!-- Footer -->
+                   <table id="template_footer" border="0" cellpadding="10" cellspacing="0" width="600">
+                    <tbody>
+                     <tr>
+                      <td style="padding: 0; -webkit-border-radius: 6px;" valign="top">
+                       <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                         <tbody>
+                           <tr>
+                            <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
+                                 <p>This email was sent from <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a></p>
+                            </td>
+                           </tr>
+                         </tbody>
+                       </table>
+                      </td>
+                     </tr>
+                    </tbody>
+                   </table>
+                 <!-- End Footer -->
+                 </td>
+                </tr>
+              </tbody>
+             </table>
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>`
+      }
+      mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
+          if (err) {
+              console.log(err);
+              return false;
+          } else {
+              console.log('Mail Send: ', info.response);
+              
+          }
+      })
+    })
+    return true;
+  }
+ 
+}
 
 
 
@@ -1384,5 +1558,8 @@ module.exports = {
   ReviewReplyToCompany,
   getCompanyPollDetails,
   getCompanyIdBySlug,
-  getReviewReplies  //new
+  getReviewReplies,
+  updateReview,
+  insertInvitationDetails,
+  sendInvitationEmail //new
 };

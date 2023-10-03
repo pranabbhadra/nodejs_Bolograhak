@@ -2639,8 +2639,8 @@ exports.PremiumCompanyprofileManagement = async (req, res) => {
 }
 
 exports.BasicCompanyprofileManagement = (req, res) => {
-  console.log('updateBasicCompany:',req.body);
-  console.log('updateBasicCompany File:',req.file);
+  console.log('updateBasicCompany:', req.body);
+  console.log('updateBasicCompany File:', req.file);
   //return false;
   const companyID = req.body.company_id;
   const currentDate = new Date();
@@ -2657,52 +2657,52 @@ exports.BasicCompanyprofileManagement = (req, res) => {
   // Update company details in the company table
   const updateQuery = 'UPDATE company SET  heading = ?, logo = ?, about_company = ?, comp_phone = ?, comp_email = ?, updated_date = ?, tollfree_number = ?, main_address = ?, operating_hours = ?  WHERE ID = ?';
   const updateValues = [
-                          req.body.heading,
-                          '',
-                          req.body.about_company,
-                          req.body.comp_phone,
-                          req.body.comp_email,
-                          formattedDate,
-                          req.body.tollfree_number,
-                          req.body.main_address,
-                          req.body.operating_hours,
-                          companyID
-                      ];
+    req.body.heading,
+    '',
+    req.body.about_company,
+    req.body.comp_phone,
+    req.body.comp_email,
+    formattedDate,
+    req.body.tollfree_number,
+    req.body.main_address,
+    req.body.operating_hours,
+    companyID
+  ];
 
   if (req.file) {
-      // Unlink (delete) the previous file
-      const unlinkcompanylogo = "uploads/" + req.body.previous_logo;
-      fs.unlink(unlinkcompanylogo, (err) => {
-          if (err) {
-              console.error('Error deleting file:', err);
-          } else {
-              console.log('Previous file deleted');
-          }
-      });
+    // Unlink (delete) the previous file
+    const unlinkcompanylogo = "uploads/" + req.body.previous_logo;
+    fs.unlink(unlinkcompanylogo, (err) => {
+      if (err) {
+        console.error('Error deleting file:', err);
+      } else {
+        console.log('Previous file deleted');
+      }
+    });
 
-      updateValues[1] = req.file.filename;
-  }else{
-      updateValues[1] = req.body.previous_logo;
+    updateValues[1] = req.file.filename;
+  } else {
+    updateValues[1] = req.body.previous_logo;
   }
   db.query(updateQuery, updateValues, (err, results) => {
-      if (err) {
-          // Handle the error
-          return res.send({
-              status: 'err',
-              data: '',
-              message: 'An error occurred while updating the company details: ' + err
-          });
-      }else{
-          return res.send(
-              {
-                  status: 'ok',
-                  data: companyID,
-                  message: 'Successfully Updated'
-              }
-          )
-      }
+    if (err) {
+      // Handle the error
+      return res.send({
+        status: 'err',
+        data: '',
+        message: 'An error occurred while updating the company details: ' + err
+      });
+    } else {
+      return res.send(
+        {
+          status: 'ok',
+          data: companyID,
+          message: 'Successfully Updated'
+        }
+      )
+    }
 
-      
+
   })
 }
 
@@ -2869,7 +2869,7 @@ exports.updatePollExpireDate = async (req, res) => {
     // }
     // console.log('req.body.user_id: ', parseInt(req.body.user_id));
     console.log('updatePollExpireDate', req.body);
-    const { poll_id, change_expire_date,user_id } = req.body;
+    const { poll_id, change_expire_date, user_id } = req.body;
     // console.log('user_id from request:', req.body.user_id);
     // if (ApiuserId !== authenticatedUserId) {
     //   return res.status(403).json({
@@ -2948,31 +2948,86 @@ exports.userPolling = async (req, res) => {
   }
 }
 
-exports.editCustomerReview = async (req, res) => {
-  //console.log('controller',req.body);
-  // const ratingTagsArray = JSON.parse(req.body.rating_tags);
-  // console.log(ratingTagsArray);
-  //const editResponse1 = await comFunction.editCustomerReview( req.body );
-  const [editResponse, ApproveMailSend,RejectdEmailSend] = await Promise.all([
-      comFunction.editCustomerReview( req.body ),
-      comFunction2.reviewApprovedEmail(req.body),
-      comFunction2.reviewRejectdEmail(req.body),
-  ]);
 
-  if(editResponse == true){
-      // Return success response
-      return res.send({
-          status: 'ok',
-          data: '',
-          message: 'Review updated successfully'
+exports.editUserReview = async (req, res) => {
+  console.log("body", req.body);
+  try {
+    const authenticatedUserId = parseInt(req.user.user_id);
+    console.log('authenticatedUserId: ', authenticatedUserId);
+    const ApiuserId = parseInt(req.body.user_id);
+    if (isNaN(ApiuserId)) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Invalid user_id provided in request body.',
       });
-  }else{
-      return res.send({
-          status: 'err',
-          data: '',
-          message: editResponse
-      });        
+    }
+    console.log('req.body.user_id: ', parseInt(req.body.user_id));
+    console.log('userPolling', req.body);
+    const { review_id, user_id, review_title, rating, review_content, user_privacy, tags } = req.body
+    console.log('user_id from request:', req.body.user_id);
+    if (ApiuserId !== authenticatedUserId) {
+      return res.status(403).json({
+        status: 'error',
+        message: 'Access denied: You are not authorized to update this user.',
+      });
+    }
+    const reviewData = req.body;
+    await comFunction.updateReview(reviewData);
+
+    // Send a success response
+    res.status(200).json({
+      status: 'ok',
+      message: 'Review edited successfully',
+    });
+  } catch (error) {
+    console.error('Error editing review:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'An error occurred while editing the review',
+    });
   }
 }
 
+exports.reviewInvitation = async (req, res) => {
+  console.log("reviewInvitation", req.body);
+  try {
+    const authenticatedUserId = parseInt(req.user.user_id);
+    console.log('authenticatedUserId: ', authenticatedUserId);
+    const ApiuserId = parseInt(req.body.user_id);
+    if (isNaN(ApiuserId)) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Invalid user_id provided in request body.',
+      });
+    }
+    console.log('req.body.user_id: ', parseInt(req.body.user_id));
+    console.log('userPolling', req.body);
+    const { emails, email_body, user_id, company_id, company_name } = req.body;
+    console.log('user_id from request:', req.body.user_id);
+    if (ApiuserId !== authenticatedUserId) {
+      return res.status(403).json({
+        status: 'error',
+        message: 'Access denied: You are not authorized to update this user.',
+      });
+    }
+    const [InvitationDetails, sendInvitationEmail] = await Promise.all([
+      comFunction.insertInvitationDetails(req.body),
+      comFunction.sendInvitationEmail(req.body)
+    ]);
 
+    return res.send({
+      status: 'ok',
+      data: {
+        InvitationDetails,
+        sendInvitationEmail
+      },
+      message: 'Invitation emails send successfully'
+    });
+  } catch (error) {
+    console.error('Error editing review:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'An error occurred while sending the invitation for reviews',
+    });
+  }
+}
