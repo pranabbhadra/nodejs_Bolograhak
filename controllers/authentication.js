@@ -1215,29 +1215,29 @@ exports.searchCompany = async (req, res) => {
   SELECT c.ID, c.company_name, c.logo, c.about_company, c.main_address, c.main_address_pin_code, r.review_status AS review_status
   FROM company c
   LEFT JOIN reviews r ON c.ID = r.company_id
-  WHERE c.company_name LIKE '%${keyword}%' AND review_status="1"
+  WHERE c.company_name LIKE '%${keyword}%' AND status="1"
   GROUP BY c.ID, c.company_name, c.logo, c.about_company, c.main_address, c.main_address_pin_code
   ORDER BY c.created_date DESC  
 `;
 
-  try{
+  try {
     const get_company_results = await query(get_company_query);
-    if(get_company_results.length > 0 ){
+    if (get_company_results.length > 0) {
       res.status(200).json({
-          status: 'success',
-          data: get_company_results,
-          message: get_company_results.length+' company data recived'
+        status: 'success',
+        data: get_company_results,
+        message: get_company_results.length + ' company data recived'
       });
-      return {status: 'success', data: get_company_results, message: get_company_results.length+' company data recived'};
-    }else{
-      res.status(200).json({status: 'success', data: '', message: 'No company data found'});
+      return { status: 'success', data: get_company_results, message: get_company_results.length + ' company data recived' };
+    } else {
+      res.status(200).json({ status: 'success', data: '', message: 'No company data found' });
     }
-  }catch(error){
+  } catch (error) {
     return res.status(500).json({
       status: 'error',
-      message: 'An error occurred while posting the request: '+error
+      message: 'An error occurred while posting the request: ' + error
     });
-  } 
+  }
 }
 
 
