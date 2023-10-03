@@ -1167,6 +1167,65 @@ router.get('/company-poll-listing/:ID', verifyToken, async (req, res) => {
     }
 });
 
+router.get('/send-review-invitation/:ID', verifyToken, async (req, res) => {
+    const user_ID = req.user.user_id;
+    console.log("user_id", user_ID)
+    const companyId = req.params.ID;
+    console.log("companyId from request:", companyId);
+     //const comp_res =await comFunction2.getCompanyIdBySlug(slug);
+    //const companyId = comp_res.ID;
+    const [company, PremiumCompanyData, companyReviewNumbers ] = await Promise.all([
+        comFunction.getCompany(companyId),
+        comFunction2.getPremiumCompanyData(companyId),
+        comFunction.getCompanyReviewNumbers(companyId)
+    ]);
+   
+    try {
+        let cover_img = '';
+        let facebook_url = '';
+        let twitter_url = '';
+        let instagram_url = '';
+        let linkedin_url = '';
+        let youtube_url = '';
+    
+        if(typeof PremiumCompanyData !== 'undefined' ){
+             cover_img = PremiumCompanyData.cover_img;
+             facebook_url = PremiumCompanyData.facebook_url;
+             twitter_url = PremiumCompanyData.twitter_url;
+             instagram_url = PremiumCompanyData.instagram_url;
+             linkedin_url = PremiumCompanyData.linkedin_url;
+             youtube_url = PremiumCompanyData.youtube_url;
+        }
+        res.json( {
+            company,
+            companyReviewNumbers,
+            facebook_url:facebook_url,
+            twitter_url:twitter_url,
+            instagram_url:instagram_url,
+            linkedin_url:linkedin_url,
+            youtube_url:youtube_url
+        });
+        // res.render('front-end/send-review-invitation', {
+        //     menu_active_id: 'send-review-invitation',
+        //     page_title: 'Send Review Invitation',
+        //     currentUserData,
+        //     globalPageMeta:globalPageMeta,
+        //     company,
+        //     companyReviewNumbers,
+        //     facebook_url:facebook_url,
+        //     twitter_url:twitter_url,
+        //     instagram_url:instagram_url,
+        //     linkedin_url:linkedin_url,
+        //     youtube_url:youtube_url
+        //});
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+          status: 'error',
+          message: 'An error occurred ' + error,
+        });
+    }
+})
 
 router.get('/company/:id', verifyToken, async (req, res) => {
     const companyID = req.params.id;

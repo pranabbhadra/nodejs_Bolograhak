@@ -1538,28 +1538,28 @@ module.exports = {
   createReview,
   getlatestReviews,
   getAllReviews,
-  getTrendingReviews, //new
-  getLatestReview,//new
+  getTrendingReviews, 
+  getLatestReview,
   getCustomerReviewData,
   getCustomerReviewTagRelationData,
   editCustomerReview,
   searchCompany,
   getCompanyReviewNumbers,
   getCompanyReviews,
-  getCompanyRatings,//new
-  getTotalreplies, //new
-  getTotalReviewsAndCounts, //new
+  getCompanyRatings,
+  getTotalreplies, 
+  getTotalReviewsAndCounts, 
   getUsersByRole,
   getUserCompany,
   getUserReview,
   getuserReviewCompany,
   ReviewReplyTo,
-  ReviewReplyToCustomer, //new
+  ReviewReplyToCustomer, 
   ReviewReplyToCompany,
   getCompanyPollDetails,
   getCompanyIdBySlug,
   getReviewReplies,
   updateReview,
   insertInvitationDetails,
-  sendInvitationEmail //new
+  sendInvitationEmail 
 };
