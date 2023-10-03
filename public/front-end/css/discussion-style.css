@@ -51,7 +51,7 @@
 
 .dis-details-top-btn {
     font-size: 14px !important;
-    padding: 8px 23px;
+    padding: 8px 23px !important;
 }
 
 .discussions-left {
@@ -353,10 +353,10 @@
     color: #ffffff;
 }
 
-/* .discussionpage-nav {
+.discussionpage-nav {
     overflow: auto;
     position: -webkit-sticky;
     position: sticky;
     top: 5%;
-} */
+}
 /*=============== Discussion Content End ==============*/

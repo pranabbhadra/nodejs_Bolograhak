@@ -2168,8 +2168,10 @@
 	.modal-slide-in .slick-dots li {
 		margin: 0 3px;
 	}
-	
 
+	.discussion-details-user-info h4 small {
+		margin-left: 0;
+	}
 }
 
 @media only screen and (max-width:540.98px) {
