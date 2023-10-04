@@ -1308,6 +1308,97 @@ router.get('/company/:id', verifyToken, async (req, res) => {
     }
 });
 
+// category listing page
+router.get('/categories', verifyToken, async (req, res) => {
+    const user_ID = req.user.user_id;
+    console.log("user_id", user_ID)
+    try {
+        const cat_query = `
+        SELECT category.ID AS category_id, category.category_slug, category.category_name AS category_name, category.category_img AS category_img, c.category_name AS parent_name, GROUP_CONCAT(countries.name) AS country_names
+        FROM category
+        JOIN category_country_relation ON category.id = category_country_relation.cat_id
+        JOIN countries ON category_country_relation.country_id = countries.id
+        LEFT JOIN category AS c ON c.ID = category.parent_id
+        WHERE category.parent_id = 0
+        GROUP BY category.category_name `;
+        db.query(cat_query, (err, results) => {
+            if (err) {
+                return res.send(
+                    {
+                        status: 'err',
+                        data: '',
+                        message: 'An error occurred while processing your request' + err
+                    }
+                )
+            } else {
+            const categories = results.map((row) => ({
+                categoryId: row.category_id,
+                categoryName: row.category_name,
+                category_slug: row.category_slug,
+                parentName: row.parent_name,
+                categoryImage: row.category_img,
+                countryNames: row.country_names.split(','),
+            }));
+           
+            res.json({
+                categories: categories 
+            });    
+        }
+            
+        })
+        
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+
+//category Company Listing page
+router.get('/category/:category_slug', verifyToken, async (req, res) => {
+    const category_slug = req.params.category_slug;
+    const baseURL = process.env.MAIN_URL;
+    try {
+    const [getSubCategories, companyDetails, AllRatingTags, CategoryDetails] = await Promise.all([
+        comFunction.getSubCategories(category_slug),
+        comFunction.getCompanyDetails(category_slug),
+        comFunction.getAllRatingTags(),
+        comFunction.getCategoryDetails(category_slug),
+        //comFunction.getParentCategories(category_slug),
+    ]);
+
+    const categoryParentId = CategoryDetails[0].parent_id;
+    const ParentCategories = await comFunction.getParentCategories(categoryParentId);
+
+     
+        console.log('AllRatingTags:', AllRatingTags);
+
+        // const convertedAllRatingTags = AllRatingTags.map(obj => obj.rating_tags).join('|');
+        // const ratingTagsArray = convertedAllRatingTags.split('|');
+
+        const subcategories = getSubCategories.map((row) => ({
+            categoryName: row.category_name,
+            categorySlug: row.category_slug,
+            subCategoryNames: row.subcategories ? row.subcategories.split(',') : [],
+            subCategorySlug: row.subcategoriesSlug ? row.subcategoriesSlug.split(',') : [],
+        }));
+
+        res.json({
+            subCategories:subcategories[0],
+            companyDetails:companyDetails,
+            AllRatingTags:AllRatingTags,
+            baseURL:baseURL,
+            filter_value:'',
+            CategoryDetails,
+            ParentCategories
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+          status: 'error',
+          message: 'An error occurred ' + error,
+        });
+    }
+});
 
 
 //================================================================================

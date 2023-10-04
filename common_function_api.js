@@ -1512,6 +1512,74 @@ async function sendInvitationEmail(req) {
  
 }
 
+async function getSubCategories(categorySlug) {
+  const sql = `SELECT category.category_name,category.category_slug, GROUP_CONCAT(c.category_name) AS subcategories, GROUP_CONCAT(c.category_slug ) AS subcategoriesSlug
+                FROM category 
+                LEFT JOIN category c ON category.ID = c.parent_id
+                WHERE category.category_slug = '${categorySlug}'
+                GROUP BY category.category_name `;
+
+  const result = await query(sql);
+  if(result.length > 0 ){
+    return result;
+  }else{
+    return [];
+  }
+  
+}
+
+async function getCompanyDetails(categorySlug) {
+  const sql = `SELECT c.ID, c.company_name, c.logo, c.status, c.trending, c.main_address, c.verified, c.paid_status, c.about_company, c.slug , AVG(r.rating) as comp_avg_rating, COUNT(r.id) as comp_total_reviews, pcd.cover_img
+                FROM category  
+                JOIN company_cactgory_relation ccr ON ccr.category_id = category.ID
+                LEFT JOIN company c ON c.ID = ccr.company_id
+                LEFT JOIN reviews r ON r.company_id = c.ID
+                LEFT JOIN premium_company_data pcd ON pcd.company_id = c.ID
+                WHERE category.category_slug = '${categorySlug}' AND c.status = '1'
+                GROUP BY c.ID, c.company_name `;
+
+  const result = await query(sql);
+  if(result.length > 0 ){
+    return result;
+  }else{
+    return [];
+  }
+  
+}
+
+async function getCategoryDetails(category_slug){
+  const get_category_query = `
+  SELECT * FROM category
+  WHERE category_slug = ?;
+  `;
+  const get_category_slug = category_slug;
+  try{
+    const get_category_query_result = await query(get_category_query, get_category_slug);
+    // if(get_category_query_result[0].parent_id){
+    //   console.log(get_category_query_result);
+    // }
+    return get_category_query_result;
+  }catch(error){
+    return 'Error during user get_category_query:'+error;
+  }
+}
+
+async function getParentCategories(ID) {
+  const get_category_query = `
+  SELECT * FROM category
+  WHERE ID = ?;
+  `;
+  const cat_ID = ID;
+  try{
+    const get_category_query_result = await query(get_category_query, cat_ID);
+    // if(get_category_query_result[0].parent_id){
+    //   console.log(get_category_query_result);
+    // }
+    return get_category_query_result;
+  }catch(error){
+    return 'Error during user get_category_query:'+error;
+  }
+}
 
 
 module.exports = {
@@ -1561,5 +1629,9 @@ module.exports = {
   getReviewReplies,
   updateReview,
   insertInvitationDetails,
-  sendInvitationEmail 
+  sendInvitationEmail,
+  getSubCategories,
+  getCompanyDetails,
+  getCategoryDetails,
+  getParentCategories
 };
