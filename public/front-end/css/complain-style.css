@@ -45,6 +45,10 @@
     transform: translateX(-50%);
 }
 
+.complain-content {
+    position: relative;
+}
+
 .complain-content:before {
     content: '';
     position: absolute;
@@ -79,7 +83,7 @@
     background-color: #1D1D1D;
     height: 50px;
     border-radius: 8px;
-    color: #fff;
+    color: #fff; 
 }
 
 .complain-register-form .form-select option {
@@ -105,4 +109,39 @@
 .complain-register-form input[type=number] {
 	appearance: none;
 	-moz-appearance: textfield;
-  }
+}
+
+.tag-label {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 149.4%;
+    margin-bottom: 7px;
+    color: #ffffff;
+}
+
+.range-tag-wrap {
+    margin-bottom: 19px;
+}
+
+.complain-register-form .custom-form ::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+}
+
+.complain-register-form .custom-form .form-control, 
+.complain-register-form .custom-form .form-select {
+    padding-right: 18px;
+}
+
+.c-overlay1 {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    z-index: -1;
+}
+
+.c-overlay2 {
+    position: absolute;
+    bottom: -40px;
+    left: 0;
+    z-index: -1;
+}

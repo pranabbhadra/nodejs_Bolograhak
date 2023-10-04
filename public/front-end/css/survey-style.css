@@ -24,10 +24,6 @@
     padding: 25px 25px;
 }
 
-.survey-body .custom-form textarea.form-control {
-    background-color: #ffffff;
-}
-
 .survey-body .custom-form:last-child {
     margin-bottom: 0;
 }
@@ -37,10 +33,33 @@
     font-size: 16px;
 }
 
+.survey-body .custom-form .form-control, 
+.survey-body .custom-form .form-select {
+    border: 1px solid #3F3F3F;
+    background-color: #1D1D1D;
+    color: #fff;
+}
+
+.survey-body .form-control::placeholder,
+.survey-body .form-select::placeholder {
+    color: rgba(255,255,255,0.8);
+}
+.survey-body .form-control:focus,
+.survey-body .form-select:focus {
+    background-color: transparent;
+    border-color: #fccb06;
+    color: #fff;
+}
+
 .survey-body .custom-form .form-check-input:checked[type=radio] + label,
 .survey-body .custom-form .form-check-input:checked[type=checkbox] + label {
     color: #FCCB06;
 }
+
+.survey-body .custom-form ::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+}
+
 
 .survey-rating {
     display: flex;
@@ -78,6 +97,10 @@
     transition: all ease-in-out 0.5s;
 }
 
+.survey-content {
+    position: relative;
+}
+
 .survey-content:before {
     content: '';
     position: absolute;
@@ -98,4 +121,49 @@
     width: 100px;
     height: 393px;
     z-index: -1;
+}
+
+.create-survey-field {
+    border: 2px solid #FCCB06;
+    overflow: hidden;
+    padding: 37px 28px;
+    margin-bottom: 22px;
+    border-radius: 18px;
+    font-family: var(--inter);
+    background: var(--neutral-100, #FFF);
+    box-shadow: 0px 5px 16px 0px rgba(8, 15, 52, 0.06);
+}
+
+.create-survey-field .custom-form label span {
+    background-color: #ffffff;
+}
+
+.create-survey-field input[type="date"] {
+    padding-right: 18px;
+}
+
+.create-survey-field .custom-form .form-control, 
+.create-survey-field .custom-form .form-select {
+    padding-right: 18px;
+}
+
+/* .create-survey-field-repater {
+    display: none;
+} */
+
+.create-survey-field .survey-body .custom-form label span {
+    background-color: #252525;
+}
+
+.create-survey-field-repater {
+    display: none;
+}
+
+.survey-body .custom-form .form-check + .form-check,
+.create-survey-field-repater .custom-form .form-check + .form-check {
+    margin-top: 30px;
+}
+
+.create-survey-field .custom-form label.form-check-label {
+    font-size: 15px;
 }

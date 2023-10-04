@@ -1129,6 +1129,11 @@ $('#sendreviewtags').on('click', 'span', function() {
 });
 /*=========================== Send Review request tags End =================*/
 
+$(".add-qut").click(function(e){
+  e.preventDefault();
+  $(".create-survey-field-repater").slideToggle();
+});
+
 
 labels = document.querySelectorAll('.ongoing-poll')
 
