@@ -589,7 +589,9 @@
 	.discussion-page-content:before,
 	.discussion-page-content:after,
 	.survey-content:before,
-	.survey-content:after {
+	.survey-content:after,
+	.complain-content:before,
+	.complain-content:after {
 		background-size: 52%;
 	}
 
@@ -1834,7 +1836,9 @@
 	.discussion-page-content:before,
 	.discussion-page-content:after,
 	.survey-content:before,
-	.survey-content::after {
+	.survey-content::after,
+	.complain-content:before,
+	.complain-content:after {
 		background-size: 35%;
 	}
 

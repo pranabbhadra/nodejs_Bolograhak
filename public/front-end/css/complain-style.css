@@ -31,3 +31,78 @@
 	width: 68%;
 	float: right;
 }
+
+.about-overlay-object1 {
+    position: absolute;
+    left: 232px;
+    bottom: 12px;
+}
+
+.complain-overlay-object1 {
+    position: absolute;
+    top: 0;
+    left: 38%;
+    transform: translateX(-50%);
+}
+
+.complain-content:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 20px;
+    background: url(../images/overlay-object5.png) no-repeat left top;
+    width: 118px;
+    height: 315px;
+    z-index: -1;
+}
+
+.complain-content:after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    background: url(../images/new-cat-shape1.png) no-repeat right bottom;
+    width: 100px;
+    height: 393px;
+    z-index: -1;
+}
+
+.complain-register-form {
+	border-radius: 20px;
+    background: #252525;
+	padding: 45px 30px;
+}
+
+.complain-register-form .form-control, 
+.complain-register-form .form-select {
+    border: 1px solid #3F3F3F;
+    background-color: #1D1D1D;
+    height: 50px;
+    border-radius: 8px;
+    color: #fff;
+}
+
+.complain-register-form .form-select option {
+	color: #000000;
+}
+
+.complain-register-form .form-control::placeholder,
+.complain-register-form .form-select::placeholder {
+    color: rgba(255,255,255,0.8);
+}
+.complain-register-form .form-control:focus,
+.complain-register-form .form-select:focus {
+    background-color: transparent;
+    border-color: #fccb06;
+    color: #fff;
+}
+
+.complain-register-form input::-webkit-outer-spin-button,
+.complain-register-form input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+.complain-register-form input[type=number] {
+	appearance: none;
+	-moz-appearance: textfield;
+  }
