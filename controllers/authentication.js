@@ -2948,31 +2948,69 @@ exports.userPolling = async (req, res) => {
   }
 }
 
-
+//edit user review
 exports.editUserReview = async (req, res) => {
-  console.log("body", req.body);
   try {
     const authenticatedUserId = parseInt(req.user.user_id);
-    console.log('authenticatedUserId: ', authenticatedUserId);
     const ApiuserId = parseInt(req.body.user_id);
+
     if (isNaN(ApiuserId)) {
       return res.status(400).json({
         status: 'error',
         message: 'Invalid user_id provided in request body.',
       });
     }
-    console.log('req.body.user_id: ', parseInt(req.body.user_id));
-    console.log('userPolling', req.body);
-    const { review_id, user_id, review_title, rating, review_content, user_privacy, tags } = req.body
-    console.log('user_id from request:', req.body.user_id);
+
     if (ApiuserId !== authenticatedUserId) {
       return res.status(403).json({
         status: 'error',
         message: 'Access denied: You are not authorized to update this user.',
       });
     }
-    const reviewData = req.body;
-    await comFunction.updateReview(reviewData);
+
+    const { review_id, user_id, review_title, rating, review_content, user_privacy, tags } = req.body;
+    console.log('Request Body:', req.body);
+    console.log('Request Body:', req.body);
+
+    // Check if the review exists and retrieve its creation date
+    const reviewQuery = 'SELECT created_at FROM reviews WHERE id = ? AND customer_id=?';
+    const reviewData = await query(reviewQuery, [review_id, user_id]);
+
+    if (reviewData.length === 0) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Review not found.',
+      });
+    }
+
+    const createdAt = new Date(reviewData[0].created_at);
+    const currentDate = new Date();
+
+    // Calculate the time difference in milliseconds
+    const timeDifference = currentDate - createdAt;
+
+    // Calculate the number of days
+    const daysDifference = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+
+    // Check if the review is within the 30-day window
+    if (daysDifference > 30) {
+      return res.status(403).json({
+        status: 'error',
+        message: 'Review cannot be edited after 30 days.',
+      });
+    }
+
+    // If the review is within the 30-day window, proceed with the update
+    const reviewDataToUpdate = {
+      review_id,
+      review_title,
+      rating,
+      review_content,
+      user_privacy,
+      tags,
+    };
+
+    await comFunction.updateReview(reviewDataToUpdate);
 
     // Send a success response
     res.status(200).json({
@@ -2986,7 +3024,9 @@ exports.editUserReview = async (req, res) => {
       message: 'An error occurred while editing the review',
     });
   }
-}
+};
+
+
 
 exports.reviewInvitation = async (req, res) => {
   console.log("reviewInvitation", req.body);
