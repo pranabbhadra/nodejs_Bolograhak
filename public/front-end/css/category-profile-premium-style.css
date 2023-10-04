@@ -1040,6 +1040,20 @@ line-height: 160%;
 margin: 0;
 }
 
+.column.custom-form .form-check-input[type=radio] {
+    background-color: transparent;
+    border-color: #ffffff;
+    background-size: 8px;
+    background-image: none;
+    margin-top: 0;
+    margin-right: 8px;
+}
+
+.column.custom-form .form-check-input:checked[type=radio] {
+    background-image: url(/front-end/images/radio.png);
+    background-repeat: no-repeat;
+}
+
 /* NEW CSS END RABI */
 
 

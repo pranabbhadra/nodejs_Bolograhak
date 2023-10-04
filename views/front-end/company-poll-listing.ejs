@@ -181,7 +181,8 @@
                               <div class="progress-bar" style="width:<%= percentOfVote ? percentOfVote : 0 %>%"></div>
                               <div class="progress-questions"><%= ans %></div>
                               <div class="progress-value-percentage">
-                                 <%= percentOfVote ? percentOfVote : 0 %>%
+                                 <span class="" >No of answer: <%= ansCount ? ansCount : 0 %></span><br>
+                                 <span class=" ">Percentage: <%= ansCount ? percentOfVote : 0 %>% </span>
                               </div>
                            </div>
                         <% })  %>

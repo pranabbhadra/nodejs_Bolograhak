@@ -551,7 +551,7 @@ $(document).ready(function() {
     // });
     $('input[name="reply_status"]').change(function() {
         if (this.checked && this.value === '0') { // Check if the checkbox is checked and has a value of '0'
-            $('#reply_reject_area').html('<div class="row mb-6" id="reply_reject_textarea"><label class="col-lg-4 col-form-label fw-bold fs-6 required"><span class="">Reply Rejecting Reason</span></label><div class="col-lg-8 fv-row"><textarea class="form-control form-control-lg form-control-solid" name="reply_rejecting_comment" required><%= reviewData.reply_rejecting_reason %></textarea></div></div>');
+            $('#reply_reject_area').html('<div class="row mb-6" id="reply_reject_textarea"><label class="col-lg-4 col-form-label fw-bold fs-6 required"><span class="">Reply Rejecting Reason</span></label><div class="col-lg-8 fv-row"><textarea class="form-control form-control-lg form-control-solid" name="reply_rejecting_comment" id="reply_rejecting_comment" required><%= reviewData.reply_rejecting_reason %></textarea></div></div>');
         } else {
             $('#reply_reject_area').html(''); // Clear the container if the checkbox is not checked or has a different value
         }

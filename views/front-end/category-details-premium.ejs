@@ -257,13 +257,14 @@
                         <h2 class="inner-main-head">Ongoing Poll</h2>
                         <div class="row">
                             <div class="col-md-12">
-                                <form action="">
+                                <form action="" id="form_poll">
                                     <div class="ongoing_poll_content">
                                         <h3><%= poll.question %></h3>
+                                        <% var user_ans_id = ''; %>
                                             <% poll.poll_answer.forEach((ans, index )=>{%>
                                                 <% var voteCount = poll.voting_answer_id.length 
                                                     var ansCount = 0;
-                                                    var user_ans_id = '';
+                                                    
                                                 %>
                                                 <% poll.voting_answer_id.forEach((ans_id) =>{ 
                                                     if(ans_id == poll.poll_answer_id[index]){
@@ -277,18 +278,22 @@
                                                     }
                                                 }) %>
                                                 <% var percentOfVote = Math.round((ansCount/voteCount)*100) %>
-                                                <a class="poll-main-wrapper <%= user_ans_id ? '' : 'polling' %> " data-ans-id="<%= poll.poll_answer_id[index] %>" data-poll-id="<%= poll.poll_id %>" data-user-id="<%= currentUserData.user_id %>">
-                                                <label for="" class="ongoing-poll <%= user_ans_id  ? 'active' : '' %> <%= user_ans_id == poll.poll_answer_id[index] ? 'selected' : 'disable' %>">
+                                                
+                                                <label for="" class="ongoing-poll <%= user_ans_id  ? 'active' : '' %> ">
                                                         <div class="poll_flex">
-                                                            <div class="column">
-                                                                <span class="circle"></span>
+                                                            <div class="column custom-form m-0">
+                                                                <!-- <span class="circle"></span> -->
+                                                                <input class="form-check-input" type="radio"  name="ansId" value="<%= poll.poll_answer_id[index] %>" <% if(user_ans_id == poll.poll_answer_id[index] ) { %> checked  <% } %> />
                                                                 <span class="text"> <%= ans %> </span>
                                                             </div>
-                                                                <span class="progress" ><%= user_ans_id ? percentOfVote : 0 %>% </span>
+                                                            <div>
+                                                                <span class="progress" >No of answer: <%= user_ans_id ? ansCount : 0 %></span>
+                                                                <span class="progress d-block">Percentage: <%= user_ans_id ? percentOfVote : 0 %>% </span>
+                                                            </div>
                                                         </div>
                                                         
                                                     <div class="progress-bar" style="--w:<%= user_ans_id ? percentOfVote : 0 %>; width: <%= user_ans_id ? percentOfVote : 0 %>%;" ></div>
-                                                </label></a>
+                                                </label>
                                             <% }) %>
                                             <!-- <label for="" class="ongoing-poll">
                                                 <div class="poll_flex">
@@ -313,6 +318,11 @@
                                             </label> -->
                                         
                                         <div class="poll_btn">
+                                            <input type="hidden" name="pollId" value="<%= poll.poll_id %>"/>
+                                            <input type="hidden" name="userId" value="<%= currentUserData.user_id %>"/>
+                                            <% if(!user_ans_id) {%>
+                                            <button class="submit-btn" type="submit">Submit</button>
+                                            <% } %>
                                             <p><%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></p>
                                         </div>
                                                     
@@ -879,25 +889,51 @@
 <script>
     ///////////////////// Polling /////////
 
-    $(document).on("click", ".polling", function(e) {
+    // $(document).on("click", ".polling", function(e) {
+    //     e.preventDefault();
+    //     //alert('aaaaaa');
+    //     var ansId = $(this).attr("data-ans-id");
+    //     var pollId = $(this).attr("data-poll-id");
+    //     var userId = $(this).attr("data-user-id");
+    //     console.log(ansId, pollId, userId);
+    //      //return false;
+    //      var polingData = {
+    //         ansId:ansId,
+    //         pollId:pollId,
+    //         userId:userId
+    //      };
+    //      var jsonData = JSON.stringify(polingData);
+    //      console.log(polingData)
+    //      $.ajax({
+    //         url:'/auth/user_polling',
+    //         method:'POST',
+    //         data:polingData,
+    //         success: function(data) {
+    //            if (data.status == 'ok') {
+    //              window.location.reload()
+                  
+    //            }else{
+    //               console.log('Error on response')
+    //            }
+    //         }
+    //      })
+    // })
+
+    $('form#form_poll').submit(function (e) {
         e.preventDefault();
-        //alert('aaaaaa');
-        var ansId = $(this).attr("data-ans-id");
-        var pollId = $(this).attr("data-poll-id");
-        var userId = $(this).attr("data-user-id");
-        console.log(ansId, pollId, userId);
-         //return false;
-         var polingData = {
-            ansId:ansId,
-            pollId:pollId,
-            userId:userId
-         };
-         var jsonData = JSON.stringify(polingData);
-         console.log(polingData)
-         $.ajax({
-            url:'/auth/user_polling',
-            method:'POST',
-            data:polingData,
+        const formData = $('#form_poll').serializeArray();
+        const jsonData = {};
+        $(formData).each(function (index, field) {
+            jsonData[field.name] = field.value;
+        });
+        console.log(jsonData);
+        //return false;
+        $.ajax({
+            url: '/auth/user_polling', 
+            method: 'POST',
+            data: jsonData,
+            //processData: false, // Prevent jQuery from processing the data
+            ContentType: 'application / json', // Let the browser set the content type
             success: function(data) {
                if (data.status == 'ok') {
                  window.location.reload()
@@ -905,9 +941,13 @@
                }else{
                   console.log('Error on response')
                }
+            },
+            error: function (xhr, status, error) {
+            // Handle any errors that occur during the request
+            console.log(error);
             }
-         })
-    })
+        })
+    });
    ///////////////////////////////
 
     // Function to handle Google Maps API initialization
