@@ -10,7 +10,8 @@
     overflow: hidden;
 }
 
-.survey-head {
+.survey-head,
+.create-survey-head {
     font-size: 18px;
     font-weight: 600;
     line-height: 160%;
@@ -126,7 +127,6 @@
 .create-survey-field {
     border: 2px solid #FCCB06;
     overflow: hidden;
-    padding: 37px 28px;
     margin-bottom: 22px;
     border-radius: 18px;
     font-family: var(--inter);
@@ -147,23 +147,73 @@
     padding-right: 18px;
 }
 
-/* .create-survey-field-repater {
-    display: none;
-} */
-
 .create-survey-field .survey-body .custom-form label span {
     background-color: #252525;
 }
 
-.create-survey-field-repater {
+/* .create-survey-field-repater {
     display: none;
-}
+} */
 
 .survey-body .custom-form .form-check + .form-check,
 .create-survey-field-repater .custom-form .form-check + .form-check {
     margin-top: 30px;
 }
 
+.survey-body .custom-form .form-check.form-check-inline + .form-check.form-check-inline,
+.create-survey-field-repater .custom-form .form-check.form-check-inline + .form-check.form-check-inline {
+    margin-top: 0;
+}
+
 .create-survey-field .custom-form label.form-check-label {
     font-size: 15px;
+}
+
+.create-survey-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.create-survey-body {
+    padding: 35px 20px;
+}
+
+.survey-ex-date .custom-form {
+    margin-bottom: 0;
+}
+
+.survey-ex-date .custom-form .form-control, 
+.survey-ex-date .custom-form .form-select {
+    background-color: #ffffff;
+}
+
+.survey-ex-date .custom-form small {
+    font-weight: 400;
+    font-size: 13px;
+    position: absolute;
+    top: -12px;
+    left: 19px;
+}
+
+.remove-ans {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+.qst-repeat {
+    display: none;
+}
+
+.qst-repeat + .qst-repeat {
+    margin-top: 30px;
+}
+
+.multiple-ans-repeat,
+.create-survey-field-repater {
+    display: none;
 }

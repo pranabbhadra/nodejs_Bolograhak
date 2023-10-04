@@ -680,6 +680,22 @@ jQuery(function ($) {
     }
   });
 
+  $(".create-survey-field-repater .multiple-ans-repeat").slice(0,1).show();
+  $(".add-option").click(function(e){
+    e.preventDefault();
+    $(".create-survey-field-repater .multiple-ans-repeat:hidden").slice(0,1).fadeIn("slow");
+  
+  });
+
+  $(".qst-repeat").slice(0,1).show();
+  $(".add-qut").click(function(e){
+    e.preventDefault();
+    $(".qst-repeat:hidden").slice(0,1).fadeIn("slow");
+  
+  });
+
+
+
   //$(".multiple-ans-repeat").slice(0,0).show();
   // $(".add-ans-btn").click(function(e){
   //   e.preventDefault();
@@ -1110,6 +1126,7 @@ $(".create-poll-btn .btn-default").click(function(e){
 $(".remove-ans").click(function(){
 $(this).parents(".multiple-ans-repeat").find(".custom-form").hide();
 });
+
 /*=========================== Remove multiple answer function End =================*/
 
 /*=========================== Send Review request tags start =================*/
@@ -1129,10 +1146,20 @@ $('#sendreviewtags').on('click', 'span', function() {
 });
 /*=========================== Send Review request tags End =================*/
 
-$(".add-qut").click(function(e){
-  e.preventDefault();
-  $(".create-survey-field-repater").slideToggle();
+$('.form-check-input').click(function() {
+  if($(this).is(':checked')) {
+      if($(this).val() == 'type_radio'){
+        $('.create-survey-field-repater').show();    
+      }
+      else if($(this).val() == 'type_checkbox'){
+        $('.create-survey-field-repater').hide();
+      }else{
+        $('.create-survey-field-repater').hide();
+      }
+    }
 });
+
+
 
 
 labels = document.querySelectorAll('.ongoing-poll')

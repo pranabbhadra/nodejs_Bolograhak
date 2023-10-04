@@ -2,77 +2,140 @@
 <link href="/front-end/css/survey-style.css" rel="stylesheet" type="text/css">
 <%- include('common/header-banner') -%>
 <section class="main-content bottom-main-content">
-    <div class="survey-content">
-       <div class="container">
+  <div class="survey-content">
+     <div class="container">
         <div class="create-survey-field">
-            <div class="row">
-                <div class="col-md-12">
-                   <div class="custom-form">
-                         <label><span>Enter your question</span><span style="color: red;">*</span></label>
-                         <textarea type="text" class="form-control" name="" required=""></textarea>
-                   </div>
-                </div>
-                <div class="col-md-12">
-                   <div class="custom-form">
-                         <label><span>Expire date</span><span style="color: red;">*</span></label>
-                         <input type="date" class="form-control" name="expire_date" required="">
-                   </div>
-                </div>
-                <div class="col-md-12">
-                  <div class="custom-form">
-                     <label><span>Q1</span></label>
-                     <input type="text" class="form-control" name="expire_date" required="">
+           <div class="create-survey-head">
+              <div class="survey-title">Survey Title</div>
+              <div class="survey-ex-date">
+                 <div class="row">
+                    <div class="col-6">
+                       <div class="custom-form">
+                          <input type="text" class="form-control" name="" placeholder="04.10.2023" style="pointer-events: none;">
+                          <small>from</small>
+                       </div>
                     </div>
-               </div>
-               <div class="col-md-12">
-                  <div class="custom-form">
-                     <span class="fw-bold d-inline-block me-2">Select Type:</span>
-                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
-                        <label class="form-check-label">Textarea</label>
-                      </div>
-                      <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
-                        <label class="form-check-label">Radio</label>
-                      </div>
-                      <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="option2">
-                        <label class="form-check-label">Checkbox</label>
-                      </div>
-                      <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio4" value="option2">
-                        <label class="form-check-label">Rating</label>
-                      </div>
-                  </div>
-               </div>
-             </div>
-             <div class="create-survey-field-repater">
-                  <div class="custom-form">
-                     <label><span>Question?</span></label>
-                     <textarea type="text" class="form-control" name="" required=""></textarea>
-                  </div>
-                  <div class="custom-form">
-                     <p><strong>Question?</strong></p>
-                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-                        <label class="form-check-label">
-                          Default checkbox
-                        </label>
-                      </div>
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="defaultCheck2">
-                        <label class="form-check-label">
-                          Default checkbox
-                        </label>
-                      </div>
-                      
-                  </div>
+                    <div class="col-6">
+                       <div class="custom-form">
+                          <input type="date" class="form-control" name="" required="">
+                          <small>to</small>
+                       </div>
+                    </div>
+                 </div>
               </div>
-           <a href="#" class="btn-default btn-warning add-qut">Add Question</a>
-           
+           </div>
+           <div class="create-survey-body">
+              <div class="custom-form">
+                 <label><span>Enter your question</span><span style="color: red;">*</span></label>
+                 <textarea type="text" class="form-control" name="" required=""></textarea>
+              </div>
+              <!-- repeater1 start -->
+              <div class="qst-repeat">
+                 <div class="custom-form">
+                    <label><span>Q1</span></label>
+                    <input type="text" class="form-control" name="expire_date" required="">
+                 </div>
+                 <div class="custom-form">
+                    <span class="fw-bold d-inline-block me-2">Select Type:</span>
+                    <div class="form-check form-check-inline">
+                       <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="type_textarea" checked>
+                       <label class="form-check-label">Textarea</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                       <input class="form-check-input select-radio" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="type_radio">
+                       <label class="form-check-label">Radio</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                       <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="type_checkbox">
+                       <label class="form-check-label">Checkbox</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                       <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio4" value="type_ratings">
+                       <label class="form-check-label">Rating</label>
+                    </div>
+                 </div>
+                 <!-- repeater1 inner start -->
+                 <div class="create-survey-field-repater">
+                    <div class="multiple-ans-repeat">
+                       <div class="custom-form">
+                          <label><span>Answer</span></label>
+                          <input type="text" class="form-control" placeholder="">
+                          <div class="remove-ans"><i class="fa-solid fa-circle-xmark"></i></div>
+                       </div>
+                    </div>
+                    <div class="multiple-ans-repeat">
+                       <div class="custom-form">
+                          <label><span>Answer</span></label>
+                          <input type="text" class="form-control" placeholder="">
+                          <div class="remove-ans"><i class="fa-solid fa-circle-xmark"></i></div>
+                       </div>
+                    </div>
+                    <div class="multiple-ans-repeat">
+                       <div class="custom-form">
+                          <label><span>Answer</span></label>
+                          <input type="text" class="form-control" placeholder="">
+                          <div class="remove-ans"><i class="fa-solid fa-circle-xmark"></i></div>
+                       </div>
+                    </div>
+                    <a href="#" class="btn-default btn-warning add-option mb-3">Add Option</a>
+                 </div>
+                 <!-- repeater1 inner end -->
+              </div>
+              <div class="qst-repeat">
+                 <div class="custom-form">
+                    <label><span>Q2</span></label>
+                    <input type="text" class="form-control" name="expire_date" required="">
+                 </div>
+                 <div class="custom-form">
+                    <span class="fw-bold d-inline-block me-2">Select Type:</span>
+                    <div class="form-check form-check-inline">
+                       <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1" checked>
+                       <label class="form-check-label">Textarea</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                       <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+                       <label class="form-check-label">Radio</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                       <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="option2">
+                       <label class="form-check-label">Checkbox</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                       <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio4" value="option2">
+                       <label class="form-check-label">Rating</label>
+                    </div>
+                 </div>
+                 <div class="create-survey-field-repater">
+                    <div class="multiple-ans-repeat">
+                       <div class="custom-form">
+                          <label><span>Answer</span></label>
+                          <input type="text" class="form-control" placeholder="">
+                          <div class="remove-ans"><i class="fa-solid fa-circle-xmark"></i></div>
+                       </div>
+                    </div>
+                    <div class="multiple-ans-repeat">
+                       <div class="custom-form">
+                          <label><span>Answer</span></label>
+                          <input type="text" class="form-control" placeholder="">
+                          <div class="remove-ans"><i class="fa-solid fa-circle-xmark"></i></div>
+                       </div>
+                    </div>
+                    <div class="multiple-ans-repeat">
+                       <div class="custom-form">
+                          <label><span>Answer</span></label>
+                          <input type="text" class="form-control" placeholder="">
+                          <div class="remove-ans"><i class="fa-solid fa-circle-xmark"></i></div>
+                       </div>
+                    </div>
+                    <a href="#" class="btn-default btn-warning add-option mb-3">Add Option</a>
+                 </div>
+              </div>
+              <!-- repeater1 end -->
+              <a href="#" class="btn-default btn-warning add-qut">Add Question</a>
+           </div>
         </div>
-       </div>
      </div>
-</section> 
+  </div>
+</section>
 
 <%- include('common/footer') -%>  
