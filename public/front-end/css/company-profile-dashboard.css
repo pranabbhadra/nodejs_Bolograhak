@@ -194,6 +194,7 @@
     margin: 0;
     padding: 0;
     display: none;
+    z-index: 9;
 }
 
 .company_profile_navigation>ul>li:hover>ul {
@@ -1246,6 +1247,18 @@
     color: #FCCB06;
 }
 
+.basic-complain-content .main_box {
+    background-color: transparent;
+    box-shadow: none;
+    padding: 0;
+}
+
+.basic-complain-content {
+    background-image: url(../images/overlay-object7.png);
+    background-repeat: no-repeat;
+    background-position: left top 10px;
+}
+
 /*========================================= responsive ====================================*/
 
 
@@ -1301,6 +1314,10 @@
 
     .bulk-upload label {
         font-size: 16px;
+    }
+
+    .basic-complain-content {
+        background-size: 10%;
     }
 }
 
