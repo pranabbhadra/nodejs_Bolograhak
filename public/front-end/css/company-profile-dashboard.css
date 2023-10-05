@@ -1195,6 +1195,56 @@
 
 /* ============== add multiple email tag style end =============== */
 
+.action-select {
+    background: #FCCB06;
+    width: 100%;
+    max-width: 200px;
+    margin: 0 auto;
+    display: block;
+    padding: 8px 5px;
+    font-size: 14px;
+    position: relative;
+}
+
+.action-arw {
+    display: inline-block;
+    vertical-align: middle;
+    color: #000;
+}
+
+.action-dropdown {
+    position: absolute;
+    background: #fff;
+    width: 100%;
+    max-width: 200px;
+    overflow: hidden;
+    display: none;
+    text-align: left;
+    margin-top: 8px;
+    margin-left: -5px;
+    z-index: 99;
+}
+
+.action-dropdown ul li {
+    line-height: normal;
+    display: block;
+    width: 100%;
+}
+
+.action-dropdown ul li a {
+    color: #000;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 5px;
+    line-height: normal;
+    display: block;
+    width: 100%;
+}
+
+.action-dropdown ul li a:hover {
+    background-color: #252525;
+    color: #FCCB06;
+}
 
 /*========================================= responsive ====================================*/
 

@@ -623,6 +623,21 @@ jQuery(function ($) {
       $(".custom-select-dropdown").slideUp();
   });
 
+  // =================================table action button start
+
+  $(".action-arw").click(function (e) {
+    e.preventDefault();
+    $(this).parent(".action-select").find(".action-dropdown").slideToggle();
+  });
+
+  //SELECT OPTIONS AND HIDE OPTION AFTER SELECTION
+  $(".action-dropdown ul li a").click(function (e) {
+    e.preventDefault();
+    var text = $(this).html();
+    $(this).parents(".action-select").find(".action-change").html(text);
+    $(this).parents(".action-select").find(".action-dropdown").slideUp();
+  });
+
   // /////////////////////////////////////// language / Country and custom Select end
 
   // /////////////////////////////////////// Load More Blog slice Start
@@ -680,11 +695,14 @@ jQuery(function ($) {
     }
   });
 
-  $(".create-survey-field-repater .multiple-ans-repeat").slice(0,1).show();
   $(".add-option").click(function(e){
     e.preventDefault();
-    $(".create-survey-field-repater .multiple-ans-repeat:hidden").slice(0,1).fadeIn("slow");
-  
+    $(this).parent(".create-survey-field-repater").find(".multiple-ans-repeat:hidden").slice(0,1).fadeIn("slow");
+  });
+
+  $(".add-option").click(function(e){
+    e.preventDefault();
+    $(this).parent(".create-survey-field-repater2").find(".multiple-ans-repeat:hidden").slice(0,1).fadeIn("slow");
   });
 
   $(".qst-repeat").slice(0,1).show();
@@ -1146,18 +1164,33 @@ $('#sendreviewtags').on('click', 'span', function() {
 });
 /*=========================== Send Review request tags End =================*/
 
+/*=========================== Create survey add question add option Start =================*/
 $('.form-check-input').click(function() {
   if($(this).is(':checked')) {
       if($(this).val() == 'type_radio'){
-        $('.create-survey-field-repater').show();    
+        $(this).parents(".qst-repeat").find('.create-survey-field-repater').show();    
       }
       else if($(this).val() == 'type_checkbox'){
-        $('.create-survey-field-repater').hide();
+        $(this).parents(".qst-repeat").find('.create-survey-field-repater').hide();
       }else{
-        $('.create-survey-field-repater').hide();
+        $(this).parents(".qst-repeat").find('.create-survey-field-repater').hide();
       }
     }
 });
+
+$('.form-check-input').click(function() {
+  if($(this).is(':checked')) {
+      if($(this).val() == 'type_checkbox'){
+        $(this).parents(".qst-repeat").find('.create-survey-field-repater2').show();    
+      }
+      else if($(this).val() == 'type_radio'){
+        $(this).parents(".qst-repeat").find('.create-survey-field-repater2').hide();
+      }else{
+        $(this).parents(".qst-repeat").find('.create-survey-field-repater2').hide();
+      }
+    }
+});
+/*=========================== Create survey add question add option End =================*/
 
 
 

@@ -151,17 +151,15 @@
     background-color: #252525;
 }
 
-/* .create-survey-field-repater {
-    display: none;
-} */
-
 .survey-body .custom-form .form-check + .form-check,
-.create-survey-field-repater .custom-form .form-check + .form-check {
+.create-survey-field-repater .custom-form .form-check + .form-check,
+.create-survey-field-repater2 .custom-form .form-check + .form-check {
     margin-top: 30px;
 }
 
 .survey-body .custom-form .form-check.form-check-inline + .form-check.form-check-inline,
-.create-survey-field-repater .custom-form .form-check.form-check-inline + .form-check.form-check-inline {
+.create-survey-field-repater .custom-form .form-check.form-check-inline + .form-check.form-check-inline,
+.create-survey-field-repater2 .custom-form .form-check.form-check-inline + .form-check.form-check-inline {
     margin-top: 0;
 }
 
@@ -178,10 +176,6 @@
 
 .create-survey-body {
     padding: 35px 20px;
-}
-
-.survey-ex-date .custom-form {
-    margin-bottom: 0;
 }
 
 .survey-ex-date .custom-form .form-control, 
@@ -214,6 +208,12 @@
 }
 
 .multiple-ans-repeat,
-.create-survey-field-repater {
+.create-survey-field-repater,
+.create-survey-field-repater2 {
     display: none;
+}
+
+.create-survey-field-repater .multiple-ans-repeat:first-child,
+.create-survey-field-repater2 .multiple-ans-repeat:first-child {
+    display: block;
 }

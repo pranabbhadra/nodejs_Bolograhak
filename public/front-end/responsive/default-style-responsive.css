@@ -883,6 +883,15 @@
 	.discussions-left .lang-dropdown ul {
 		text-align: left;
 	}
+
+	.create-survey-head {
+		display: block;
+		gap: 0;
+	}
+
+	.survey-title {
+		margin-bottom: 15px;
+	}
 }
 
 @media only screen and (max-width:767.98px) {
