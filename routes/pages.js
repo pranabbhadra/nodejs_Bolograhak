@@ -2192,6 +2192,14 @@ router.get('/edit-review/:id', checkLoggedIn, async (req, res) => {
         //     allcompany      
         // });
         if(reviewData){
+            // res.json({
+            //     menu_active_id: 'review',
+            //     page_title: 'Edit Review',
+            //     currentUserData,
+            //     reviewData,
+            //     reviewTagData: reviewTagData,
+            //     allcompany            
+            // });
             res.render('edit-review', {
                 menu_active_id: 'review',
                 page_title: 'Edit Review',

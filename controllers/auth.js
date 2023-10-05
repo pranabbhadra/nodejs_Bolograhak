@@ -1941,7 +1941,8 @@ exports.editRatingTags = (req, res) => {
 }
 
 exports.editCustomerReview = async (req, res) => {
-    console.log('controller',req.body);
+    //console.log('controller',req.body);
+    //return false;
     // const ratingTagsArray = JSON.parse(req.body.rating_tags);
     // console.log(ratingTagsArray);
     //const editResponse1 = await comFunction.editCustomerReview( req.body );

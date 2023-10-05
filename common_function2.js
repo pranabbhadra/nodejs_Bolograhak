@@ -320,7 +320,7 @@ async function reviewApprovedEmail(req) {
   //console.log(req);
 
   const sql = `
-    SELECT r.created_at, r.company_id, c.company_name, u.first_name, u.email, claimed_user.email claimed_user_email, claimed_user.first_name claimed_user_name
+    SELECT r.created_at, r.company_id, c.company_name, c.slug, u.first_name, u.email, claimed_user.email claimed_user_email, claimed_user.first_name claimed_user_name
     FROM reviews r
     LEFT JOIN company c ON r.company_id = c.ID 
     LEFT JOIN users u ON r.customer_id = u.user_id 
@@ -386,7 +386,7 @@ async function reviewApprovedEmail(req) {
                                 <tr>
                                   <td colspan="2">
                                   <strong>Hello ${approveReviewData[0].first_name},</strong>
-                                  <p style="font-size:15px; line-height:20px">Your review for <i><b>"${approveReviewData[0].company_name} on ${reviewDate}"</b></i> has been approved. Now you can see your review on the <a href="${process.env.MAIN_URL}company/${approveReviewData[0].company_id}">website</a>.</p>
+                                  <p style="font-size:15px; line-height:20px">Your review for <i><b>"${approveReviewData[0].company_name} on ${reviewDate}"</b></i> has been approved. Now you can see your review on the <a href="${process.env.MAIN_URL}company/${approveReviewData[0].slug}">website</a>.</p>
                                   </td>
                                 </tr>
                               </table>
@@ -574,7 +574,7 @@ async function reviewApprovedEmail(req) {
 //Function to send mail to client after reject
 async function reviewRejectdEmail(req) {
   const sql = `
-    SELECT r.created_at,r.rejecting_reason, c.company_name, u.first_name, u.email 
+    SELECT r.created_at,r.rejecting_reason, c.company_name, c.slug, u.first_name, u.email 
     FROM reviews r
     LEFT JOIN company c ON r.company_id = c.ID 
     LEFT JOIN users u ON r.customer_id = u.user_id 
@@ -734,7 +734,7 @@ async function getUserName(email){
 
  //Function to fetch User email from the  users, review_reply table
 async function ReviewReplyTo(Id){
-  const sql = `SELECT users.email, users.first_name, c.company_name, c.ID as company_id, r.customer_id
+  const sql = `SELECT users.email, users.first_name, c.company_name, c.slug, c.ID as company_id, r.customer_id
               FROM users 
               LEFT JOIN review_reply rr ON rr.reply_to = users.user_id 
               LEFT JOIN reviews r ON r.id = rr.review_id 
@@ -800,7 +800,7 @@ function ReviewReplyToCompany(mailReplyData){
                                 <td colspan="2">
                                 <strong>Hello ${mailReplyData[0].first_name},</strong>
                                 <p style="font-size:15px; line-height:20px">You got a reply from the customer for your message. 
-                                <a  href="${process.env.MAIN_URL}company-review-listing/${mailReplyData[0].company_id}">Click here</a> to view.</p>
+                                <a  href="${process.env.MAIN_URL}company-review-listing/${mailReplyData[0].slug}">Click here</a> to view.</p>
                                 </td>
                               </tr>
                             </table>
@@ -913,7 +913,7 @@ function ReviewReplyToCustomer(mailReplyData){
                               <tr>
                                 <td colspan="2">
                                 <strong>Hello ${mailReplyData[0].first_name},</strong>
-                                <p style="font-size:15px; line-height:20px"><b>${mailReplyData[0].company_name}</b> has responded to your reviews, please visit <a  href="${process.env.MAIN_URL}company/${mailReplyData[0].company_id}">the link</a> to view response.
+                                <p style="font-size:15px; line-height:20px"><b>${mailReplyData[0].company_name}</b> has responded to your reviews, please visit <a  href="${process.env.MAIN_URL}company/${mailReplyData[0].slug}">the link</a> to view response.
                                 </td>
                               </tr>
                             </table>
