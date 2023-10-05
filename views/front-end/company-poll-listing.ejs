@@ -165,9 +165,10 @@
                            <span class="p-date"><%= date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) %></span>
                         </div> 
                      </div>
+                     <% var voteCount = ''; %>
                      <div class="acc_contents">
                         <% poll.poll_answer.forEach((ans, index)=>{%>
-                           <% var voteCount = poll.voting_answer_id.length 
+                           <%  voteCount = poll.voting_answer_id.length 
                               var ansCount = 0;
                            %>
                            <% poll.voting_answer_id.forEach((ans_id) =>{ 
@@ -181,7 +182,7 @@
                               <div class="progress-bar" style="width:<%= percentOfVote ? percentOfVote : 0 %>%"></div>
                               <div class="progress-questions"><%= ans %></div>
                               <div class="progress-value-percentage">
-                                 <span class="" >No of answer: <%= ansCount ? ansCount : 0 %></span><br>
+                                 <span class="" >No of participants: <%= ansCount ? ansCount : 0 %></span><br>
                                  <span class=" ">Percentage: <%= ansCount ? percentOfVote : 0 %>% </span>
                               </div>
                            </div>
@@ -195,19 +196,27 @@
                         </div>
                          -->
                         <div class="text-end">
-                           <% if(daysDiff >= 0){ %>
+                           
                            <div>
-                              <div class="change-expire-date-btn mb-3">
-                                 <span><%= date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) %></span> <a href="#" class="btn-default btn-warning">Change Expire Date </a>
+                              <div class="change-expire-date-btn mb-3 d-flex align-items-center justify-content-between">
+                                <p class="m-0"> Total participants: <%= voteCount %> </p>
+                                <div>
+                                 <span><%= date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) %></span> 
+                                    <% if(daysDiff >= 0){ %>
+                                    <a href="#" class="btn-default btn-warning">Change Expire Date </a>
+                                    <% } %>
+                                 </div>
                               </div>
+                              <% if(daysDiff >= 0){ %>
+                                 
                               <div class="expire-date-field mb-3">
                                  <form id="form_expire_date" class="expire-date-field-divide">
                                     <input type="hidden" name="poll_id" value="<%= poll.poll_id %>" >
                                     <input class="form-control" type="date" name="change_expire_date" value="<%- formattedDate %>" ><input class="btn-default btn-warning" id="expire_submit" type="submit" value="Submit" >
                                  </form>
                               </div>
+                              <% } %>
                            </div>
-                           <% } %>
                         </div>
                      </div>
                   </div>

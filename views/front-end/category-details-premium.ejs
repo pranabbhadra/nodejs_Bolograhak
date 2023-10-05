@@ -260,9 +260,10 @@
                                 <form action="" id="form_poll">
                                     <div class="ongoing_poll_content">
                                         <h3><%= poll.question %></h3>
-                                        <% var user_ans_id = ''; %>
+                                        <% var user_ans_id = ''; 
+                                            var voteCount = ''; %>
                                             <% poll.poll_answer.forEach((ans, index )=>{%>
-                                                <% var voteCount = poll.voting_answer_id.length 
+                                                <%  voteCount = poll.voting_answer_id.length 
                                                     var ansCount = 0;
                                                     
                                                 %>
@@ -288,7 +289,7 @@
                                                             </div>
                                                             <% if(user_ans_id) {%>
                                                             <div>
-                                                                <span class="progress" >No of answer: <%= user_ans_id ? ansCount : 0 %></span>
+                                                                <span class="progress" >No of participants: <%= user_ans_id ? ansCount : 0 %></span>
                                                                 <span class="progress ">Percentage: <%= user_ans_id ? percentOfVote : 0 %>% </span>
                                                             </div>
                                                             <% } %>
@@ -325,7 +326,7 @@
                                             <% if(!user_ans_id) {%>
                                             <button class="submit-btn" type="submit">Submit</button>
                                             <% } %>
-                                            <p><%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></p>
+                                            <p><%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %> </p><% if(user_ans_id) { %><span><p> Total participants: <%= voteCount %> </p></span> <% } %>
                                         </div>
                                                     
                                         <div class="poll_box_icon">
