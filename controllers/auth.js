@@ -3686,7 +3686,7 @@ exports.updatePremiumCompany =async (req, res) => {
             return res.send({
                 status: 'err',
                 data: '',
-                message: 'An error occurred while updating the company details: ' + err
+                message: '3 An error occurred while updating the company details: ' + err
             });
         }else{
             const check_sql = `SELECT * FROM premium_company_data WHERE company_id = ? `;
@@ -3756,7 +3756,7 @@ exports.updatePremiumCompany =async (req, res) => {
                                 return res.send({
                                     status: 'err',
                                     data: '',
-                                    message: 'An error occurred while updating the company details: ' + update_err
+                                    message: '2 An error occurred while updating the company details: ' + update_err
                                 });
                             } else {
                                 return res.send(
@@ -3774,7 +3774,7 @@ exports.updatePremiumCompany =async (req, res) => {
                         const Products = JSON.stringify(ProductData);
                         const Promotion = JSON.stringify(PromotionalData);
 
-                        const premium_query = `INSERT INTO premium_company_data ( company_id, cover_img, gallery_img, youtube_iframe, promotions, products, facebook_url, twitter_url, instagram_url, linkedin_url, youtube_url, support_email, escalation_one, escalation_two, escalation_three) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+                        const premium_query = `INSERT INTO premium_company_data ( company_id, cover_img, gallery_img, youtube_iframe, promotions, products, facebook_url, twitter_url, instagram_url, linkedin_url, youtube_url, support_email, escalation_one, escalation_two, escalation_three) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
                         const premium_data = [companyID, coverImg, galleryimg, youtube_iframe, Promotion, Products, facebook_url, twitter_url, instagram_url, linkedin_url, youtube_url, support_email, escalation_one, escalation_two, escalation_three];
                         db.query(premium_query, premium_data, (premium_err, premium_result)=>{
                             if (premium_err) {
@@ -3782,7 +3782,7 @@ exports.updatePremiumCompany =async (req, res) => {
                                 return res.send({
                                     status: 'err',
                                     data: '',
-                                    message: 'An error occurred while updating the company details: ' + premium_err
+                                    message: '1 An error occurred while updating the company details: ' + premium_err
                                 });
                             } else {
                                 return res.send(
