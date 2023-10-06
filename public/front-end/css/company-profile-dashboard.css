@@ -935,6 +935,267 @@
     color: #fff;
 }
 
+/* ================== company Poll page ===================== */
+
+.c_accordion_wrap,
+.creat-poll-field {
+    border: 2px solid transparent;
+    overflow: hidden;
+    padding: 37px 28px;
+    margin-bottom: 22px;
+    border-radius: 18px;
+    font-family: var(--inter);
+    background: var(--neutral-100, #FFF);
+    box-shadow: 0px 5px 16px 0px rgba(8, 15, 52, 0.06);
+}
+
+.creat-poll-field {
+    display: none;
+    border: 2px solid #FCCB06;
+}
+
+.creat-poll-field .custom-form .form-control, 
+.creat-poll-field .custom-form .form-select {
+    padding-right: 18px;
+}
+
+.creat-poll-field .custom-form label span {
+    background-color: #fff;
+}
+
+.yellow-border {
+    border-color: #FCCB06;
+}
+
+.acc_heading {
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 28px;
+    margin-bottom: 0;
+    padding-right: 70px;
+    position: relative;
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.acc_heading:nth-last-child(2) {
+    border-bottom: 0;
+}
+
+.acc_heading::before {
+    content: '';
+    background: url(../images/arrow-right.png) no-repeat right center;
+    background-size: 100%;
+    vertical-align: middle;
+    display: inline-block;
+    float: right;
+    width: 42px;
+    height: 43px;
+    transition: all 0.5s;
+    position: absolute;
+    right: 0;
+    left: auto;
+    top: 5px;
+    box-shadow: 0px 5px 16px 0px rgba(8, 15, 52, 0.06);
+    border-radius: 50%;
+}
+
+.acc_heading.active::before {
+    background: url(../images/arrow-down.png) no-repeat right center;
+    transform: rotate(0deg);
+    background-size: 100%;
+}
+
+.acc_contents {
+    display: none;
+    padding: 25px 0 0 0;
+
+}
+
+.acc_contents p {
+    line-height: 30px; 
+}
+.create-poll-btn {
+    margin-bottom: 20px;
+}
+
+.remove-ans {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+/* .multiple-ans-repeat {
+    display: none;
+} */
+
+.premium_company_profile .c_accordion_wrap {
+    padding: 0;
+}
+
+.premium_company_profile .acc_heading {
+    padding: 20px 78px 20px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.acc_heading_left {
+    margin-right: 20px;
+}
+
+.acc_heading_right {
+    min-width: 190px;
+    text-align: right;
+}
+
+.premium_company_profile .acc_contents {
+    padding: 25px 28px;
+}
+
+.premium_company_profile .acc_heading.active {
+    background: #fccb06;
+}
+
+.premium_company_profile .acc_heading::before {
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.premium_company_profile .acc_heading span.p-date {
+    font-size: 14px;
+}
+
+/* .multiple-ans-repeat {
+    display: none;
+} */
+
+.premium_company_profile .c_accordion_wrap {
+    padding: 0;
+}
+
+.premium_company_profile .acc_heading {
+    padding: 20px 78px 20px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.acc_heading_left {
+    margin-right: 20px;
+}
+
+.acc_heading_right {
+    min-width: 190px;
+    text-align: right;
+}
+
+.premium_company_profile .acc_contents {
+    padding: 25px 28px;
+}
+
+.premium_company_profile .acc_heading.active {
+    background: #fccb06;
+}
+
+.premium_company_profile .acc_heading::before {
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.premium_company_profile .acc_heading span.p-date {
+    font-size: 14px;
+}
+
+.expire-date-field {
+    display: none;
+}
+
+.expire-date-field-divide {
+    display: flex;
+    gap: 10px;
+}
+
+.change-expire-date-btn .btn-default {
+    margin-left: 10px;
+}
+
+
+/* ============== add multiple email tag style start =============== */
+.send-review-invitation {
+    border-radius: 20px;
+    background: #ffffff;
+    box-shadow: 0px 24px 54px 0px rgba(0, 0, 0, 0.12);
+    padding: 25px 18px;
+}
+
+#sendreviewtags {
+    border: 2px solid #fccb06;
+    padding: 5px 9px;
+    border-radius: 6px;
+    margin-bottom: 32px;
+}
+
+#sendreviewtags > span {
+    cursor: pointer;
+    display: block;
+    float: left;
+    color: #fff;
+    background: #fccb06;
+    padding: 7px;
+    padding-right: 25px;
+    margin: 4px;
+    border-radius: 4px;
+}
+
+#sendreviewtags > span:hover{
+    opacity:0.7;
+}
+
+#sendreviewtags > span:after{
+    position:absolute;
+    content:"×";
+    border:1px solid;
+    padding:2px 5px;
+    margin-left:3px;
+    font-size:11px;
+}
+
+#sendreviewtags > input {
+    background: #f2f2f2;
+    border: 0;
+    margin: 4px;
+    padding: 7px;
+    width: auto;
+    border-radius: 4px;
+    outline: none;
+}
+
+.bulk-upload label {
+    font-weight: 600;
+    margin-bottom: 7px;
+    font-size: 18px;
+}
+
+.bulk-upload .form-control[type=file] {
+    border-color: #fccb06;
+    border-width: 2px;
+}
+
+.send-review-invitation .custom-form label span {
+    background-color: #ffffff;
+}
+
+/* ============== add multiple email tag style end =============== */
+
+
 /*========================================= responsive ====================================*/
 
 
@@ -973,6 +1234,23 @@
     }
     .basic_info_of_company .social_links ul{
         text-align: center;
+    }
+
+    .premium_company_profile .acc_heading {
+		display: block;
+	}
+
+    .acc_heading_left {
+        margin-right: 0;
+    }
+
+    .acc_heading_right {
+        margin-top: 10px;
+        text-align: left;
+    }
+
+    .bulk-upload label {
+        font-size: 16px;
     }
 }
 
@@ -1075,6 +1353,26 @@
     }
     .display_tags .all_tags > .row > .col-3{
         width: 33.33%;
+    }
+
+    .premium_company_profile .acc_heading {
+        padding: 20px 78px 20px 15px;
+    }
+    .premium_company_profile .acc_contents {
+        padding: 25px 15px;
+    }
+
+    .creat-poll-field {
+        padding: 37px 15px;
+    }
+
+    .change-expire-date-btn .btn-default {
+        font-size: 14px;
+        padding: 10px 10px;
+    }
+
+    .change-expire-date-btn span {
+        font-size: 14px;
     }
 }
 

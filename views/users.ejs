@@ -328,7 +328,7 @@
                                                         class="menu-link px-3">Edit</a>
                                                 </div>
                                                 <div class="menu-item px-3">
-                                                    <a href="#" class="menu-link px-3" data-userid="<%= user.user_id %>" data-kt-users-table-filter="delete_row">Delete</a>
+                                                    <a href="#" class="menu-link px-3" data-userid="<%= user.user_id %>" data-userEmail="<%= user.email %>"  data-kt-users-table-filter="delete_row">Delete</a>
                                                 </div>
                                             </div>
                                             <!--end::Menu-->
@@ -564,7 +564,8 @@
                                 e.preventDefault();
 
                                 var userid = $(this).attr("data-userid");
-                                //alert(userid);
+                                var userEmail = $(this).attr("data-userEmail");
+                                //alert(userid);data-userEmail
                                 const parent = e.target.closest('tr');
 
                                 // Get user name
@@ -587,7 +588,7 @@
                                         $.ajax({
                                             url: '/auth/delete-user', // URL for your API endpoint
                                             method: 'POST',
-                                            data: {userid:userid},
+                                            data: {userid:userid, userEmail:userEmail},
                                             ContentType: 'application/json',
                                             success: function (data) {
                                                 if (data.status == 'ok') {

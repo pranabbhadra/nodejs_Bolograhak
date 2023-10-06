@@ -240,6 +240,115 @@
     </section>
     <% } %>
     <!-- ============== Section2 end =============== -->
+
+
+
+    <!-- ONGOING POLL START -->
+    <% if(currentUserData && currentUserData.user_id) { %>
+        <% if(PollDetails.length > 0 ) { %>
+            <% PollDetails.forEach((poll)=>{  %>
+                <% const dateString = poll.expired_at; %>
+                <% const date = new Date(dateString); %>
+                <% const date2 = new Date(); %>
+                <% const daysDiff = Math.round((date - date2)/(1000 * 60 * 60 * 24)) %>
+                <% if(daysDiff >= 0 ) { %>
+                <section class="ongoing_poll_sec">
+                    <div class="container">
+                        <h2 class="inner-main-head">Ongoing Poll</h2>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <form action="" id="form_poll">
+                                    <div class="ongoing_poll_content">
+                                        <h3><%= poll.question %></h3>
+                                        <% var user_ans_id = ''; 
+                                            var voteCount = ''; %>
+                                            <% poll.poll_answer.forEach((ans, index )=>{%>
+                                                <%  voteCount = poll.voting_answer_id.length 
+                                                    var ansCount = 0;
+                                                    
+                                                %>
+                                                <% poll.voting_answer_id.forEach((ans_id) =>{ 
+                                                    if(ans_id == poll.poll_answer_id[index]){
+                                                        ansCount++;
+                                                    }
+                                                }) %>
+                                                
+                                                <% poll.voting_user_id.forEach((user_id, key) =>{ 
+                                                    if(user_id == currentUserData.user_id){
+                                                        user_ans_id = poll.voting_answer_id[key];
+                                                    }
+                                                }) %>
+                                                <% var percentOfVote = Math.round((ansCount/voteCount)*100) %>
+                                                
+                                                <label for="" class="ongoing-poll <%= user_ans_id  ? 'active' : '' %> ">
+                                                        <div class="poll_flex">
+                                                            <div class="column custom-form m-0">
+                                                                <!-- <span class="circle"></span> -->
+                                                                <input class="form-check-input" type="radio"  name="ansId" value="<%= poll.poll_answer_id[index] %>" <% if(user_ans_id == poll.poll_answer_id[index] ) { %> checked  <% } %> />
+                                                                <span class="text"> <%= ans %> </span>
+                                                            </div>
+                                                            <% if(user_ans_id) {%>
+                                                            <div>
+                                                                <span class="progress" >No of participants: <%= user_ans_id ? ansCount : 0 %></span>
+                                                                <span class="progress ">Percentage: <%= user_ans_id ? percentOfVote : 0 %>% </span>
+                                                            </div>
+                                                            <% } %>
+                                                        </div>
+                                                        
+                                                    <div class="progress-bar" style="--w:<%= user_ans_id ? percentOfVote : 0 %>; width: <%= user_ans_id ? percentOfVote : 0 %>%;" ></div>
+                                                </label>
+                                            <% }) %>
+                                            <!-- <label for="" class="ongoing-poll">
+                                                <div class="poll_flex">
+                                                    <div class="column">
+                                                        <span class="circle"></span>
+                                                        <span class="text">Lorem Ipsum is simply dummy text</span>
+                                                    </div>
+                                                        <span class="progress">80%</span>
+                                                </div>
+                                                <div class="progress-bar" style="--w:70">  </div>
+                                            </label>
+
+                                            <label for="" class="ongoing-poll">
+                                                <div class="poll_flex">
+                                                    <div class="column">
+                                                        <span class="circle"></span>
+                                                        <span class="text">Lorem Ipsum is simply dummy text</span>
+                                                    </div>
+                                                        <span class="progress">50%</span>
+                                                </div>
+                                                <div class="progress-bar" style="--w:50">  </div>
+                                            </label> -->
+                                        
+                                        <div class="poll_btn">
+                                            <input type="hidden" name="pollId" value="<%= poll.poll_id %>"/>
+                                            <input type="hidden" name="userId" value="<%= currentUserData.user_id %>"/>
+                                            <% if(!user_ans_id) {%>
+                                            <button class="submit-btn" type="submit">Submit</button>
+                                            <% } %>
+                                            <p><%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %> </p><% if(user_ans_id) { %><span><p> Total participants: <%= voteCount %> </p></span> <% } %>
+                                        </div>
+                                                    
+                                        <div class="poll_box_icon">
+                                            <img src="/front-end/images/poll-box-icons.png" alt="">
+                                        </div>
+                                    </div>
+                                </form>
+                            </div> 
+
+                        </div>
+                    </div>
+                </section>
+                <% } %>
+            <% }) %>
+        <% } %>
+    <% } %>
+     <!-- ONGOING POLL END -->
+
+
+
+
+
     
     <!-- ============== Section3 start =============== -->
     <% if(products.length > 0 && products[0].product_title){%>
@@ -584,51 +693,54 @@
                     <!--Review Replys -->
                     <% if(review.review_reply.length>0){ %>
                         <% review.review_reply.forEach( reply => { %>
-                        <div class="review-reply">
-                            <div class="customer-profile-info">
-                                <% const replydateString = reply.created_at; %>
-                                <% const replydate = new Date(replydateString); %>
-                                <% if(reply.reply_by == review.customer_id) { %>
-                                    <!-- Customer Reply -->
-                                    <% if(review.user_privacy == 1) { %>
-                                    <span>
-                                        <% if(review.profile_pic) { %>
-                                            <img class="user_img" src="/<%= review.profile_pic %>" alt="img" width="23" height="23">
+                            <% if(reply.status != '0') {%>
+                                <div class="review-reply">
+                                    <div class="customer-profile-info">
+                                        <% const replydateString = reply.created_at; %>
+                                        <% const replydate = new Date(replydateString); %>
+                                        <% if(reply.reply_by == review.customer_id  ) { %>
+                                            <% if(reply.status != '0'){ %>
+                                            <!-- Customer Reply -->
+                                                <% if(review.user_privacy == 1 ) { %>
+                                                <span>
+                                                    <% if(review.profile_pic) { %>
+                                                        <img class="user_img" src="/<%= review.profile_pic %>" alt="img" width="23" height="23">
+                                                    <% }else{ %>
+                                                        <img class="user_img" src="/assets/media/avatars/blank.png" alt="img" width="23" height="23">
+                                                    <% } %>
+                                                </span>
+                                                <span><%= review.first_name+' '+review.last_name %> <span class="c-comment-date"><%= replydate.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></span></span>
+                                                <% }else{ %>
+                                                <span>
+                                                <img class="user_img" src="/front-end/images/blur-img.png" alt="img" width="23" height="23">
+                                                </span>
+                                                <span><img src="/front-end/images/blur-name.png" alt="img"> <span class="c-comment-date"><%= replydate.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></span></span>
+                                                <% }%>  
+                                            <% } %>
+                                            <!-- Customer Reply End-->
                                         <% }else{ %>
-                                            <img class="user_img" src="/assets/media/avatars/blank.png" alt="img" width="23" height="23">
+                                            <!-- Company Owner Reply -->
+                                            <% /* %>
+                                            <span>
+                                                <% if(CompanyInfo.logo) { %>
+                                                <img class="user_img" src="/<%= CompanyInfo.logo %>" alt="img" width="23" height="23">
+                                                <% }else{ %>
+                                                <img class="user_img" src="/front-end/images/company-placeholder-image.png" alt="img" width="23" height="23">
+                                                <% } %>
+                                            </span>
+                                            <% */ %>
+                                            <span class="d-flex align-items-center justify-content-between">
+                                                <div class="reply-company">
+                                                    <strong>Reply From:</strong> <%= CompanyInfo.company_name %>
+                                                </div>
+                                                <span class="c-comment-date"><%= replydate.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></span>
+                                            </span>
+                                            <!-- Company Owner Reply End-->
                                         <% } %>
-                                    </span>
-                                    <span><%= review.first_name+' '+review.last_name %> <span class="c-comment-date"><%= replydate.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></span></span>
-                                    <% }else{ %>
-                                    <span>
-                                    <img class="user_img" src="/front-end/images/blur-img.png" alt="img" width="23" height="23">
-                                    </span>
-                                    <span><img src="/front-end/images/blur-name.png" alt="img"> <span class="c-comment-date"><%= replydate.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></span></span>
-                                    <% }%>  
-                                    <!-- Customer Reply End-->
-                                <% }else{ %>
-                                    <!-- Company Owner Reply -->
-                                    <% /* %>
-                                    <span>
-                                        <% if(CompanyInfo.logo) { %>
-                                        <img class="user_img" src="/<%= CompanyInfo.logo %>" alt="img" width="23" height="23">
-                                        <% }else{ %>
-                                        <img class="user_img" src="/front-end/images/company-placeholder-image.png" alt="img" width="23" height="23">
-                                        <% } %>
-                                    </span>
-                                    <% */ %>
-                                    <span class="d-flex align-items-center justify-content-between">
-                                        <div class="reply-company">
-                                            <strong>Reply From:</strong> <%= CompanyInfo.company_name %>
-                                        </div>
-                                        <span class="c-comment-date"><%= replydate.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></span>
-                                    </span>
-                                    <!-- Company Owner Reply End-->
-                                <% } %>
-                            </div>
-                            <p><%= reply.comment %></p>
-                        </div>
-                        
+                                    </div>
+                                        <p><%= reply.comment %></p>
+                                </div>
+                            <% } %>
                         <% if(review.review_reply.length==1 && currentUserData!= null && review.customer_id == currentUserData.user_id){ %>
                         <!--Review Replys Submit Form-->
                             <form action="" class="review_reply_form">
@@ -647,7 +759,7 @@
                     <% } %>
                     <!--Review Replys End-->
                     </div>
-                    <% }) %>
+                <% }) %>
                     <!-- <% if(company_total_review>3){%> 
                     <div class="btn-border-top"><a href="#" class="view-more mt-0 show-comment-slice"><span class="position-relative"><i class="fa-solid fa-angle-right"></i>Show More</span></a></div>
                     <% } %> -->
@@ -734,8 +846,32 @@
                                 <label class="form-check-label" for="inlineRadio2">No</label>
                                 </div>
                             </div>
+                            <div class="custom-form">
+                              <span class="fw-bold d-inline-block me-2" style="font-size: 14px;">Do you want the organisation to contact you?</span>
+                              <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="user_contact" checked id="inlineRadio3" value="1">
+                                <label class="form-check-label" for="inlineRadio3">Yes</label>
+                              </div>
+                              <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="user_contact" id="inlineRadio4" value="0">
+                                <label class="form-check-label" for="inlineRadio4">No</label>
+                              </div>
+                            </div>
                             <div class="review-submit d-sm-flex align-items-center">
+                                <% if(labeltype == 'invitation'){ %>
                                 
+                                    <% if(countInvitationLabels.length == 0 || countInvitationLabels[0].label_count < 100){ %>
+                                        <input type="hidden" name="review_lable" value="2" >
+                                    <% }else{ %>
+                                        <input type="hidden" name="review_lable" value="1" >
+                                    <% } %>
+                                
+
+                                <% }else{ %>
+                                    <input type="hidden" name="review_lable" value="1" >
+                                <% } %>
+
+
                                 <% if(currentUserData){ %>
                                 <input type="submit" class="btn-default btn-warning me-3 mb-sm-0 mb-1" value="Submit">
                                 <% } else { %>
@@ -754,6 +890,69 @@
 </section>
 <%- include('common/footer') -%>  
 <script>
+    ///////////////////// Polling /////////
+
+    // $(document).on("click", ".polling", function(e) {
+    //     e.preventDefault();
+    //     //alert('aaaaaa');
+    //     var ansId = $(this).attr("data-ans-id");
+    //     var pollId = $(this).attr("data-poll-id");
+    //     var userId = $(this).attr("data-user-id");
+    //     console.log(ansId, pollId, userId);
+    //      //return false;
+    //      var polingData = {
+    //         ansId:ansId,
+    //         pollId:pollId,
+    //         userId:userId
+    //      };
+    //      var jsonData = JSON.stringify(polingData);
+    //      console.log(polingData)
+    //      $.ajax({
+    //         url:'/auth/user_polling',
+    //         method:'POST',
+    //         data:polingData,
+    //         success: function(data) {
+    //            if (data.status == 'ok') {
+    //              window.location.reload()
+                  
+    //            }else{
+    //               console.log('Error on response')
+    //            }
+    //         }
+    //      })
+    // })
+
+    $('form#form_poll').submit(function (e) {
+        e.preventDefault();
+        const formData = $('#form_poll').serializeArray();
+        const jsonData = {};
+        $(formData).each(function (index, field) {
+            jsonData[field.name] = field.value;
+        });
+        console.log(jsonData);
+        //return false;
+        $.ajax({
+            url: '/auth/user_polling', 
+            method: 'POST',
+            data: jsonData,
+            //processData: false, // Prevent jQuery from processing the data
+            ContentType: 'application / json', // Let the browser set the content type
+            success: function(data) {
+               if (data.status == 'ok') {
+                 window.location.reload()
+                  
+               }else{
+                  console.log('Error on response')
+               }
+            },
+            error: function (xhr, status, error) {
+            // Handle any errors that occur during the request
+            console.log(error);
+            }
+        })
+    });
+   ///////////////////////////////
+
     // Function to handle Google Maps API initialization
     function initMap() {
       // Your JavaScript code that interacts with the Maps API should be placed here,
@@ -901,4 +1100,10 @@
     });
   })
   
+
+
+
+
+
   </script>
+
