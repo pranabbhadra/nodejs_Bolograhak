@@ -3545,6 +3545,7 @@ exports.updatePremiumCompany =async (req, res) => {
     //console.log('PremiumCompany File:',req.files);
 
     const companyID = req.body.company_id;
+    const companySlug = req.body.company_slug;
     const currentDate = new Date();
 
     const year = currentDate.getFullYear();
@@ -3761,7 +3762,7 @@ exports.updatePremiumCompany =async (req, res) => {
                                 return res.send(
                                     {
                                         status: 'ok',
-                                        data: companyID,
+                                        data: companySlug,
                                         message: 'Successfully Updated'
                                     }
                                 )
@@ -3787,7 +3788,7 @@ exports.updatePremiumCompany =async (req, res) => {
                                 return res.send(
                                     {
                                         status: 'ok',
-                                        data: companyID,
+                                        data: companySlug,
                                         message: 'Successfully Updated'
                                     }
                                 )
