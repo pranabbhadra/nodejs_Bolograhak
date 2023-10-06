@@ -18,6 +18,11 @@ const query = util.promisify(db.query).bind(db);
 const router = express.Router();
 const publicPath = path.join(__dirname, '../public');
 const requestIp = require('request-ip');
+const he = require('he');
+
+function decodeHTMLEntities(text) {
+    return he.decode(text);
+}
 
 
 router.get('/countries', (req, res) => {
@@ -108,6 +113,16 @@ router.get('', checkCookieValue, async (req, res) => {
         const apiUrl = process.env.BLOG_API_ENDPOINT + '/home-blog';
         const response = await axios.get(apiUrl);
         const blogPosts = response.data;
+        const restructuredResponse = {
+            "status": blogPosts.status,
+            "data": blogPosts.data.map(item => ({
+                ...item,
+                "title": decodeHTMLEntities(item.title)
+            })),
+            "success_message": blogPosts.success_message,
+            "error_message": blogPosts.error_message
+        };
+
         const sql = `SELECT * FROM page_info where secret_Key = 'home' `;
         db.query(sql, (err, results, fields) => {
             if (err) throw err;
@@ -136,7 +151,7 @@ router.get('', checkCookieValue, async (req, res) => {
                         menu_active_id: 'landing',
                         page_title: home.title,
                         currentUserData: currentUserData,
-                        homePosts: blogPosts.status === 'ok' ? blogPosts.data : [],
+                        homePosts: restructuredResponse.status === 'ok' ? restructuredResponse.data : [],
                         home,
                         meta_values_array,
                         featured_comps,
