@@ -262,7 +262,6 @@ function home_latest_blog_api_handler($request) {
                         'publish_date'  =>  get_the_time(__('M d, Y', 'kubrick')),
                         'thumbnail'  =>  $thumbnail['0'],
                         'thumbnail_alt'  =>  $alt_text,
-                        'thumbnail_alt'  =>  $alt_text,
                         'permalink' => get_the_permalink()
                       );
     endwhile; endif; wp_reset_query();
