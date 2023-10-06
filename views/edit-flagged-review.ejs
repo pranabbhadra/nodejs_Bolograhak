@@ -29,7 +29,7 @@
             <div class="card-header border-0 cursor-pointer" role="button" data-bs-toggle="collapse" data-bs-target="#kt_account_profile_details" aria-expanded="true" aria-controls="kt_account_profile_details">
                 <!--begin::Card title-->
                 <div class="card-title m-0">
-                    <h3 class="fw-bolder m-0">Edit Review</h3>
+                    <h3 class="fw-bolder m-0">Edit Flagged Review</h3>
                 </div>
                 <!--end::Card title-->
             </div>
@@ -354,16 +354,16 @@
                             </div>
                             <div style="display: none; color: rgb(237, 16, 16);" class="response-message col-lg-8 fv-row"></div>
                         <% } %>
-
+                        
                     </div>
                     <!--end::Card body-->
                     <!--begin::Actions-->
-                    <div class="card-footer d-flex justify-content-end py-6 px-9">
+                    <!-- <div class="card-footer d-flex justify-content-end py-6 px-9">
                         <button type="reset" class="btn btn-light btn-active-light-primary me-2">Discard</button>
                         <input type="hidden" name="review_id" value="<%= reviewData.id %>">
                         <input type="hidden" name="company_id" value="<%= reviewData.company_id %>">
                         <button type="submit" class="btn btn-primary" id="kt_review_tag_update_form_submit">Submit</button>
-                    </div>
+                    </div> -->
                     <!--end::Actions-->
                 </form>
                 <!--end::Form-->
@@ -371,6 +371,107 @@
             <!--end::Content-->
         </div>
         <!--end::Basic info-->
+        <div class="card mb-5 mb-xl-10">
+            <div class="card-header border-0 cursor-pointer" role="button"
+                data-bs-target="#kt_account_profile_details" aria-expanded="true"
+                aria-controls="kt_account_profile_details">
+                <!--begin::Card title-->
+                <div class="card-title m-0">
+                    <h3 class="fw-bolder m-0">Flagged review section</h3>
+                </div>
+                <!--end::Card title-->
+            </div>
+            <div id="kt_account_profile_details" class="collapse show">
+                <form action="/auth/update-review-flag" method="POST">
+                    <div class="card-body border-top p-9">
+                        <div class="row mb-6">
+                            <!--begin::Label-->
+                            <label class="col-lg-4 col-form-label  fw-bold fs-6">Company user flag response</label>
+                            <!--end::Label-->
+                            <!--begin::Col-->
+                            <div class="col-lg-8 fv-row">
+                                <!--begin::Options-->
+                                <div class="d-flex align-items-center mt-3">
+                                    <!--begin::Option-->
+                                    <label class="form-check form-check-inline form-check-solid me-5">
+                                        <input class="form-check-input mt-1" name="flag_company_res" type="radio" value="Irrelevant" <% if(reviewData.flag_company_reason_radio == 'Irrelevant'){ %> checked <% } else{ %> disabled <% } %>/>
+                                        <span class="fw-bold fs-6 badge badge-light-warning fw-bolder px-4 py-3">Irrelevant</span>
+                                    </label>
+                                    <!--end::Option-->
+                                    <!--begin::Option-->
+                                    <label class="form-check form-check-inline form-check-solid me-5">
+                                        <input class="form-check-input mt-1" name="flag_company_res" type="radio" value="Not Usefull" <% if(reviewData.flag_company_reason_radio == 'Not Usefull'){ %> checked <% } else{ %> disabled <% } %> />
+                                        <span class="fw-bold fs-6 badge badge-light-success fw-bolder px-4 py-3">Not Usefull</span>
+                                    </label>
+                                    <!--end::Option-->
+                                    <!--begin::Option-->
+                                    <label class="form-check form-check-inline form-check-solid">
+                                        <input class="form-check-input mt-1" id="flag_company_res_others"  name="flag_company_res" type="radio" value="Others" <% if(reviewData.flag_company_reason_radio == 'Others'){ %> checked <% } else{ %> disabled <% } %> />
+                                        <span class="fw-bold fs-6 badge badge-light-danger fw-bolder px-4 py-3">Others</span>
+                                    </label>
+                                    <!--end::Option-->
+                                </div>
+                                <!--end::Options-->
+                            </div>
+                        </div>
+                        <div id="company_flag_text_area" class="d-none">
+                            <div class="row mb-6" id="flag_textarea">
+                                <label class="col-lg-4 col-form-label fw-bold fs-6 "><span class="">Company Description</span></label>
+                                <div class="col-lg-8 fv-row">
+                                    <textarea class="form-control form-control-lg form-control-solid" name="flag_company_description" id="reply_rejecting_comment" readonly ><%= reviewData.flag_company_reason_details %></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-6">
+                            <!--begin::Label-->
+                            <label class="col-lg-4 col-form-label required fw-bold fs-6">Review Flag Status</label>
+                            <!--end::Label-->
+                            <!--begin::Col-->
+                            <div class="col-lg-8 fv-row">
+                                <!--begin::Options-->
+                                <div class="d-flex align-items-center mt-3">
+                                    <!--begin::Option-->
+                                    <label class="form-check form-check-inline form-check-solid me-5">
+                                        <input class="form-check-input mt-1" name="flag_status" type="radio" value="2" <% if(reviewData.flag_status == '2'){ %>checked <% } %>/>
+                                        <span class="fw-bold fs-6 badge badge-light-warning fw-bolder px-4 py-3">Pending</span>
+                                    </label>
+                                    <!--end::Option-->
+                                    <!--begin::Option-->
+                                    <label class="form-check form-check-inline form-check-solid me-5">
+                                        <input class="form-check-input mt-1 flagStatus" name="flag_status"  type="radio" value="1" <% if(reviewData.flag_status == '1'){ %>checked <% } %>/>
+                                        <span class="fw-bold fs-6 badge badge-light-success fw-bolder px-4 py-3">Approved</span>
+                                    </label>
+                                    <!--end::Option-->
+                                    <!--begin::Option-->
+                                    <label class="form-check form-check-inline form-check-solid">
+                                        <input class="form-check-input mt-1 flagStatus " id="flagId" name="flag_status" type="radio" value="0" <% if(reviewData.flag_status == '0'){ %>checked <% } %> />
+                                        <span class="fw-bold fs-6 badge badge-light-danger fw-bolder px-4 py-3">Rejected</span>
+                                    </label>
+                                    <!--end::Option-->
+                                </div>
+                                <!--end::Options-->
+                            </div>
+                        </div>
+                        
+                        <div id="flag_text_area" class="d-none">
+                            <div class="row mb-6" id="flag_textarea">
+                                <label class="col-lg-4 col-form-label fw-bold fs-6 "><span class="">Describe Here</span></label>
+                                <div class="col-lg-8 fv-row">
+                                    <textarea class="form-control form-control-lg form-control-solid" name="flag_admin_reason" id="flag_admin_reason"  ><%= reviewData.flag_admin_reason %></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer d-flex justify-content-end py-6 px-9">
+                        <input type="hidden" name="review_id" value="<%= reviewData.id %>">
+                        <input type="hidden" name="company_id" value="<%= reviewData.company_id %>">
+                        <button type="reset" class="btn btn-light btn-active-light-primary me-2">Discard</button>
+                        <button type="submit" class="btn btn-primary" id="">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
     <!--end::Container-->
     </div>
@@ -569,6 +670,28 @@ $(document).ready(function() {
         $('#company_location').val(selectedCompanyAddress);
     });
 
+    //Flag start/////
+    if ($('input[type=radio][name=flag_company_res]').is(':checked') && $('input[type=radio][name=flag_company_res]:checked').val().trim() === 'Others') {
+    $('#company_flag_text_area').removeClass('d-none');
+    } else {
+        $('#company_flag_text_area').addClass('d-none');
+    }
+
+    $('input[type=radio][name=flag_status]').change(function() {
+        if (this.value == '0' || this.value == '1' ) {
+            //alert('aaaaaaaa')
+        $('#flag_text_area').removeClass('d-none');
+        } else {
+            $('#flag_text_area').addClass('d-none');
+        }
+    });
+    
+    if ($('input[type=radio][name=flag_status]').is(':checked') && $('input[type=radio][name=flag_status]:checked').val().trim() != '2') {
+        $('#flag_text_area').removeClass('d-none');
+    }else{
+        $('#flag_text_area').addClass('d-none');
+    }
+    ////////////
   });
 </script>
 

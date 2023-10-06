@@ -4256,7 +4256,7 @@ exports.resetPassword = async (req, res) => {
 }
 // Change Password
 exports.changePassword = async (req, res) => {
-    console.log('changePassword', req.body);
+    //console.log('changePassword', req.body);
     const {userid, current_password, new_password } = req.body;
     let CurrentHasPassword = await bcrypt.hash(current_password, 8);
     let hasPassword = await bcrypt.hash(new_password, 8);
@@ -4420,7 +4420,7 @@ exports.reviewVoting = async (req, res) => {
 }
 // Create poll
 exports.createPoll = async (req, res) => {
-    console.log('createPoll',req.body );
+    //console.log('createPoll',req.body );
     const {company_id, user_id, poll_question, poll_answer, expire_date} = req.body;
     //const answers = JSON.stringify(poll_answer);
      const currentDate = new Date();
@@ -4461,7 +4461,7 @@ exports.createPoll = async (req, res) => {
 
 // Update poll expire date
 exports.updatePollExpireDate = async (req, res) => {
-    console.log('updatePollExpireDate',req.body );
+    //console.log('updatePollExpireDate',req.body );
     const {poll_id,change_expire_date} = req.body;
     const sql = `UPDATE poll_company SET expired_at = ? WHERE id = ?`;
     const data= [change_expire_date, poll_id]
@@ -4482,7 +4482,7 @@ exports.updatePollExpireDate = async (req, res) => {
 
 // User polling
 exports.userPolling = async (req, res) => {
-    console.log('userPolling',req.body );
+    //console.log('userPolling',req.body );
     const {ansId, pollId, userId} = req.body
     const currentDate = new Date();
     const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
@@ -4505,7 +4505,7 @@ exports.userPolling = async (req, res) => {
 
 // Review Invitation
 exports.reviewInvitation = async (req, res) => {
-    console.log('reviewInvitation',req.body );
+    //console.log('reviewInvitation',req.body );
     const {emails, email_body, user_id, company_id, company_name } = req.body;
     const [InvitationDetails, sendInvitationEmail] = await Promise.all([
         comFunction2.insertInvitationDetails(req.body),
@@ -4520,7 +4520,7 @@ exports.reviewInvitation = async (req, res) => {
 
 //Add  Review Flag
 exports.addReviewFlag = async (req, res) => {
-    console.log('addReviewFlag',req.body );
+    //console.log('addReviewFlag',req.body );
     const [addFlagDetails, sendFlagEmail] = await Promise.all([
         comFunction2.addFlagDetails(req.body),
         comFunction2.sendFlagEmail(req.body)
@@ -4531,4 +4531,16 @@ exports.addReviewFlag = async (req, res) => {
         message: 'Flag added successfully',
         slug: req.body.company_slug
     });
+}
+
+//Add  Review Flag site admin response
+exports.updateReviewFlag = async (req, res) => {
+    console.log('updateReviewFlag',req.body ); 
+    const [updateFlagDetails] = await Promise.all([
+        comFunction2.updateFlagDetails(req.body),
+        comFunction2.flagApprovedEmail(req.body),
+        comFunction2.flagRejectdEmail(req.body),
+    ]);
+
+    return res.redirect('/flag-review');
 }

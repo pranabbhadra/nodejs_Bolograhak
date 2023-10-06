@@ -1169,7 +1169,7 @@ router.get('/company-review-listing/:slug', checkClientClaimedCompany, async (re
     const [globalPageMeta, company, allReviews, allReviewTags, companyReviewNumbers, getCompanyReviews, allRatingTags, PremiumCompanyData] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
         comFunction.getCompany(companyId),
-        comFunction.getAllReviewsByCompanyID(companyId),
+        comFunction2.getAllReviewsByCompanyID(companyId),
         comFunction2.getAllReviewTags(),
         comFunction.getCompanyReviewNumbers(companyId),
         comFunction.getCompanyReviews(companyId),
@@ -2410,7 +2410,56 @@ router.get('/edit-review/:id', checkLoggedIn, async (req, res) => {
         res.status(500).send('An error occurred');
     }
 });
+//edit flagged reviews
+router.get('/edit-flagged-review/:id', checkLoggedIn, async (req, res) => {
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+        const review_Id = req.params.id;
 
+        // Fetch all the required data asynchronously
+        const [reviewData, reviewTagData, allcompany] = await Promise.all([
+            comFunction.getCustomerReviewData(review_Id),
+            comFunction.getCustomerReviewTagRelationData(review_Id),
+            comFunction.getAllCompany()
+        ]);
+        //console.log(reviewData);
+       // Render the 'edit-user' EJS view and pass the data
+        // res.json({
+        //     reviewData: reviewData,
+        //     reviewTagData: reviewTagData,
+        //     allcompany      
+        // });
+        if(reviewData){
+            // res.json({
+            //     menu_active_id: 'review',
+            //     page_title: 'Edit Review',
+            //     currentUserData,
+            //     reviewData,
+            //     reviewTagData: reviewTagData,
+            //     allcompany            
+            // });
+            res.render('edit-flagged-review', {
+                menu_active_id: 'review',
+                page_title: 'Edit Flagged Review',
+                currentUserData,
+                reviewData,
+                reviewTagData: reviewTagData,
+                allcompany            
+            });
+        }else{
+            res.render('front-end/404', {
+                menu_active_id: '404',
+                page_title: '404',
+                currentUserData,
+                globalPageMeta:[]
+            });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
 //Add FAQ Page
 router.get('/add-faq', checkLoggedIn, async (req, res) => {
     try {

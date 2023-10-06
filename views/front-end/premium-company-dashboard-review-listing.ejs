@@ -58,9 +58,14 @@
                                         <% } %>
                                     </td>
                                     <td>
-                                        <% if(review.flag_status == '2' || review.flag_status == '1' ){ %>
-                                            <span class="badge badge-square badge-danger"><i class="fas fa-flag"></i></span>
-                                        <% } %>
+                                        <% if(review.flag_status == '2'  ){ %>
+                                            <span class="badge badge-square badge-warning"><i class="fas fa-flag"></i></span>
+                                        <% } else if ( review.flag_status == '1'){ %>
+                                            <span class="badge badge-square badge-success"><i class="fas fa-flag"></i></span>
+                                            <% } else if(review.flag_status == '0'){ %>
+                                                <span class="badge badge-square badge-danger"><i class="fas fa-flag"></i></span>
+                                                <% } else { %>
+                                                    <% } %>
                                     </td>
                                     <td>
                                         <div class="side_btn">

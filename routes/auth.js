@@ -283,4 +283,8 @@ router.post('/review_invitation', authController.reviewInvitation);
 
 //Add Review Flag
 router.post('/add-review-flag', authController.addReviewFlag);
+
+//Add Review Flag admin response
+router.post('/update-review-flag', authController.updateReviewFlag);
+
 module.exports = router;

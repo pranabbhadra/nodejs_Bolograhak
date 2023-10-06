@@ -494,7 +494,7 @@ async function getAllReviewsByCompanyID(companyId) {
   JOIN users u ON r.customer_id = u.user_id
   LEFT JOIN user_customer_meta ucm ON u.user_id = ucm.user_id
   LEFT JOIN review_reply rr ON r.id = rr.review_id
-  WHERE r.company_id = ? AND r.review_status = '1'
+  WHERE r.company_id = ? AND r.review_status = '1' AND (r.flag_status != '0' OR r.flag_status IS NULL)
   GROUP BY r.id
   ORDER BY r.created_at DESC;
   `;
@@ -949,7 +949,7 @@ async function getCompanyReviews(companyID){
     JOIN users ur ON r.customer_id = ur.user_id
     LEFT JOIN user_customer_meta ucm ON ur.user_id = ucm.user_id
     LEFT JOIN review_reply rr ON r.id = rr.review_id 
-    WHERE r.company_id = ? AND r.review_status = "1"
+    WHERE r.company_id = ? AND r.review_status = "1" AND (r.flag_status != '0' OR r.flag_status IS NULL)
     ORDER BY r.created_at DESC, rr.created_at ASC
     LIMIT 20`;
   const get_company_reviews_values = [companyID];
