@@ -122,7 +122,8 @@ router.get('', checkCookieValue, async (req, res) => {
             "success_message": blogPosts.success_message,
             "error_message": blogPosts.error_message
         };
-
+        console.log(restructuredResponse);
+        
         const sql = `SELECT * FROM page_info where secret_Key = 'home' `;
         db.query(sql, (err, results, fields) => {
             if (err) throw err;
