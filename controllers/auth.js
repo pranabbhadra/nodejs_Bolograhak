@@ -4517,3 +4517,18 @@ exports.reviewInvitation = async (req, res) => {
         message: 'Invitation emails send successfully'
     });
 }
+
+//Add  Review Flag
+exports.addReviewFlag = async (req, res) => {
+    console.log('addReviewFlag',req.body );
+    const [addFlagDetails, sendFlagEmail] = await Promise.all([
+        comFunction2.addFlagDetails(req.body),
+        comFunction2.sendFlagEmail(req.body)
+    ]);
+
+    return res.send({
+        status: 'ok',
+        message: 'Flag added successfully',
+        slug: req.body.company_slug
+    });
+}

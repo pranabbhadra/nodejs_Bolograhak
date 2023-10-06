@@ -473,6 +473,7 @@ async function getAllReviews() {
       JOIN users u ON r.customer_id = u.user_id
       LEFT JOIN user_customer_meta ucm ON u.user_id = ucm.user_id
       LEFT JOIN review_reply rr ON rr.review_id = r.id AND rr.reply_by = r.customer_id
+      WHERE r.flag_status = '0' OR r.flag_status IS NULL
       ORDER BY r.created_at DESC;
   `;
   try{

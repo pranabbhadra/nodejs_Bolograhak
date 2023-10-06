@@ -281,4 +281,6 @@ router.post('/user_polling', authController.userPolling);
 //Review Invitation Email
 router.post('/review_invitation', authController.reviewInvitation);
 
+//Add Review Flag
+router.post('/add-review-flag', authController.addReviewFlag);
 module.exports = router;
