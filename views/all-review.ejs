@@ -183,6 +183,7 @@
                                 <th class="min-w-125px">Rating Tag(s)</th>
                                 <th class="min-w-125px">Comment</th>
                                 <th class="min-w-125px">Review Status</th>
+                                <th class="min-w-125px">Reply Status</th>
                                 <!-- <th class="min-w-125px">Post Date</th> -->
                             </tr>
                             <!--end::Table row-->
@@ -284,6 +285,16 @@
                                         <span class="badge badge-light-success fw-bolder px-4 py-3">Approved</span>
                                     <% }else{%>
                                         <span class="badge badge-light-danger fw-bolder px-4 py-3">Rejected</span>
+                                    <% }%>
+                                </td>
+                                <td>
+                                    <% if(review.reply_status == '2' ){ %>
+                                        <span class="badge badge-light-success fw-bolder px-4 py-3">Replied</span>
+                                    
+                                    <% }else if(review.reply_status == '0' ){ %>
+                                        <span class="badge badge-light-danger fw-bolder px-4 py-3">Rejected</span>
+                                    <% }else{%>
+                                        <span class="badge badge-light-secondary fw-bolder px-4 py-3">No Reply</span>
                                     <% }%>
                                 </td>
                                 <!-- <% const dateString=review.created_at; %>

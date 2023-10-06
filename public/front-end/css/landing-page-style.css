@@ -1228,3 +1228,401 @@ span.user-select-tag {
     margin-left: 10px;
 }
 /*====================== Review card style end ================*/
+
+/*=============== Our Popular Review Content Start ==============*/
+.our-popular-content {
+    margin-bottom: 55px;
+}
+
+.home-popular-review-area {
+	position: relative;
+}
+.home-popular-review-box {
+	border-radius: 20px;
+	background: #FFF;
+	box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.11);
+	padding: 20px 25px;
+	-webkit-transform:scale(0);
+	transform:scale(0);
+	-webkit-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+.home-popular-review-box-wrapper {
+	position: relative;
+	margin-top: 30px;
+	min-height: 500px;
+}
+
+.home-popular-review-box1 {
+	max-width: 458px;
+    width: 100%;
+	position: absolute;
+	left: 0;
+	top: 0;
+}
+
+.home-popular-review-box2 {
+    max-width: 490px;
+    width: 100%;
+	position: absolute;
+	top: 50%;
+	left: 0;
+	right: 0;
+	margin: 0 auto;
+}
+
+.home-popular-review-box3 {
+    max-width: 465px;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.home-popular-review-box_active,
+.home-popular-review-box_old {
+	-webkit-transform:scale(1);
+	transform:scale(1);
+	-webkit-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+.home-popular-client {
+    position: relative;
+    padding-left: 100px;
+    margin-bottom: 18px;
+    min-height: 90px;
+    padding-top: 5px;
+}
+
+.home-popular-client h4 {
+    color: #545454;
+    font-size: 22px;
+    font-weight: 400;
+    line-height: normal;
+    margin-bottom: 3px;
+	font-family: var(--inter);
+}
+
+.home-popular-client p {
+    color: #959595;
+    line-height: normal;
+    margin-bottom: 8px;
+	font-family: var(--inter);
+}
+
+.home-popular-client p i {
+	font-size: 18px;
+	color: #F8A401;
+}
+
+.home-client-img {
+	position: absolute;
+	left: 0;
+	top: 0;
+}
+
+.home-client-img img {
+	width: 89px;
+	height: 89px !important;
+	object-fit: cover;
+	object-position: center;
+	border-radius: 50%;
+}
+
+.home-popular-review-info {
+	position: relative;
+}
+
+.home-popular-review-info h3 {
+	color: #545454;
+	font-family: var(--inter);
+	font-size: 22px;
+	font-weight: 500;
+	line-height: normal;
+	position: relative;
+	z-index: 9;
+}
+
+.home-popular-review-info p {
+	position: relative;
+	z-index: 9;
+	display: inline;
+}
+
+.home-popular-review-info p:before {
+	content: '';
+	position: absolute;
+	left: -15px;
+	top: 0;
+	width: 23px;
+	height: 16px;
+	background: url(../images/new-quote.svg) no-repeat left center;
+	z-index: -9;
+}
+
+.home-popular-review-info p:after {
+	content: '';
+	position: absolute;
+	right: -30px;
+	bottom: 0;
+	width: 23px;
+	height: 16px;
+	background: url(../images/new-quote.svg) no-repeat left center;
+	z-index: -9;
+}
+
+.home-popular-review-slider {
+	display: none;
+}
+
+.home-popular-client .user-rating {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 29px;
+}
+
+.home-popular-client .user-rating span {
+    display: inline-block;
+    vertical-align: middle;
+}
+/*=============== Our Popular Review Content End ==============*/
+
+/*=============== Most Popular Review Content start ==============*/
+.most-popular-categories-content {
+	text-align: center;
+	background: #161616;
+	color: #ffffff;
+	padding: 86px 0;
+}
+
+.most-popular-categories-content:before {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 0;
+	background: url(../images/overlay-object5.png) no-repeat left top;
+	width: 118px;
+	height: 315px;
+}
+
+.most-popular-categories-content:after {
+	content: '';
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	background: url(../images/new-cat-shape1.png) no-repeat right bottom;
+	width: 100px;
+	height: 393px;
+}
+
+.most-popular-categories-content h2 {
+	color: #FCCB06;
+	margin-bottom: 24px;
+}
+
+.most-popular-categories-content h4 {
+	font-family: var(--nunito);
+	font-size: 22px;
+	font-weight: 400;
+}
+.popular-category-part {
+	border-radius: 25px;
+    background: #252525;
+    box-shadow: 0px 0px 64px 0px rgba(0, 0, 0, 0.09);
+	padding: 60px 20px;
+	position: relative;
+	z-index: 9;
+    margin: 15px 0;
+}
+
+.popular-category-part img {
+	height: 100px !important;
+	width: auto;
+	margin: 0 auto 20px;
+}
+
+.popular-category-part a {
+    display: block;
+	color: #ffffff;
+}
+
+.popular-category-part a:hover {
+    color: #fccb06;
+}
+
+.most-popular-categories-content .view-more {
+	color: #ffffff;
+}
+
+.most-popular-categories-content .view-more:hover {
+	color: #000000;
+}
+/*=============== Most Popular Categories Content End ==============*/
+
+/*=============== Discussion Content Start ==============*/
+.discussion-content:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 60px;
+    background: url(../images/discussion-shape.svg) no-repeat left top;
+    width: 63px;
+    height: 120px;
+    z-index: -9;
+}
+
+.discussion-content:after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: 60px;
+    background: url(../images/discussion-shape2.svg) no-repeat right bottom;
+    width: 70px;
+    height: 120px;
+    z-index: -9;
+}
+
+.discussions-left {
+	position: relative;
+}
+
+.discussion-content h2 small {
+	font-size: 22px;
+	color: #161616;
+}
+
+.discussion-content h2 {
+	color: #FCCB06;
+	margin-bottom: 44px;
+}
+
+.discussion-view {
+    position: absolute;
+    right: 0;
+    top: 11px;
+}
+.discussion-review-panel {
+	border-radius: 20px;
+	background-color: #252525;
+	background-image: url(../images/discussion-object-bg1.svg);
+	background-repeat: no-repeat;
+	background-position: right top;
+	box-shadow: 0px 24px 54px 0px rgba(0, 0, 0, 0.12);
+	padding: 25px 65px 25px 18px;
+	position: relative;
+	color: #fff;
+	margin-top: 30px;
+}
+
+.discussion-review-panel:nth-child(even) {
+	background-image: url(../images/discussion-object-bg2.svg);
+}
+
+.discussion-user-img {
+	position: absolute;
+	left: 18px;
+	top: 25px;
+}
+
+.discussion-user-img img {
+	width: 60px;
+	height: 60px !important;
+	border-radius: 50%;
+	object-fit: cover;
+	object-position: center;
+}
+
+.discussion-user-info {
+    padding-left: 72px;
+    padding-right: 195px;
+    color: #F2F2F2;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: normal;
+    min-height: 60px;
+}
+
+.discussion-user-info h4 {
+	color: #FCCB06;
+	font-size: 20px;
+	font-style: normal;
+	font-weight: 600;
+	line-height: normal;
+}
+
+.discussion-user-info p:last-child {
+	margin: 0;
+}
+
+.dis-comment-views {
+	position: absolute;
+	bottom: 28px;
+	right: 65px;
+	font-size: 15px;
+	font-weight: 600;
+	line-height: normal;
+}
+
+.dis-comment-views a {
+	color: #FFF;
+}
+
+.dis-comment-views a:hover {
+	color: #F1AE00;
+}
+
+.dis-comment-views a + a {
+	margin-left: 10px;
+}
+
+.discussions-right-panel {
+	border-radius: 20px;
+    background: #252525;
+	padding: 45px 25px;
+	color: #FFF;
+	font-size: 18px;
+	font-weight: 400;
+	line-height: normal;
+}
+
+.discussions-right-panel + .discussions-right-panel {
+	margin-top: 30px;
+}
+
+.discussions-right-panel h4 {
+	font-family: var(--inter);
+	font-size: 22px;
+	font-weight: 500;
+	line-height: 110.4%;
+	border-bottom: 1px #484848 solid;
+	padding-bottom: 16px;
+	margin-bottom: 0;
+}
+
+.discussions-right-panel a {
+	color: #BDBDBD;
+}
+
+.discussions-right-panel a:hover {
+	color: #FCCB06;
+}
+
+.dis-right-panel-item {
+	display: flex;
+	justify-content: space-between;
+	margin-top: 35px;
+}
+
+.dis-r-panel-item-left a i {
+	display: inline-block;
+	vertical-align: middle;
+	margin-right: 10px;
+}
+
+.dis-r-panel-item-right {
+	margin-left: 12px;
+	font-weight: 700;
+}
+/*=============== Discussion Content End ==============*/

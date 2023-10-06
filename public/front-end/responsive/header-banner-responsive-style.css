@@ -6,8 +6,13 @@
 		width: 1440px;
 		height: 234px;
 		bottom: 0;
-		background: url(../images/banner-bottom-shape2.png) no-repeat center bottom;
+		/* background: url(../images/banner-bottom-shape2.png) no-repeat center bottom; */
+		background: url(../images/banner-bottom-shape2-white.png) no-repeat center bottom;
 		background-size: cover;
+	}
+
+	.main-banner.home-banner:after {
+		background: url(../images/banner-bottom-shape2-white.png) no-repeat center bottom;
 	}
 }
 
@@ -23,6 +28,25 @@
 
 	.main-banner h2 {
 		font-size: 33px;
+	}
+
+	.banner-mas-img2+.banner-mas-img2 .banner-counter-tag {
+		bottom: 8px;
+		right: 3px;
+	}
+
+	.banner-counter-tag {
+		font-size: 17px;
+		min-height: 68px;
+	}
+
+	.banner-counter-tag .counter-text {
+		font-size: 26px;
+		line-height: 120.4%;
+	}
+	
+	.banner-mas-img1 .banner-counter-tag {
+		bottom: -35px;
 	}
 
 }
@@ -54,6 +78,19 @@
 		line-height: 28px;
 	}
 
+	.home-banner h1 {
+		line-height: 40px;
+	}
+
+	.like-dislike-tren-label {
+		font-size: 18px;
+		margin-bottom: 8px;
+	}
+
+	.like-dislike-company-scroll ul li a {
+		font-size: 17px;
+	}
+
 	.main-banner h2 {
 		font-size: 30px;
 		line-height: 34px;
@@ -61,6 +98,24 @@
 
 	span.user-log-profile {
 		margin-right: 12px;
+	}
+
+	.header-middle-menu-link.mbl-hide-link {
+		display: none;
+	}
+
+	.desk-991-show-link {
+		display: block !important;
+	} 
+
+	.banner-counter-tag .counter-text {
+		font-size: 19px;
+		padding: 18px 9px 9px;
+	}
+
+	.banner-counter-tag {
+		font-size: 15px;
+		min-height: 56px;
 	}
 }
 
@@ -80,13 +135,30 @@
 	    padding: 15px 15px;
 	}
 
-	.header-right-content span.language-select {
+	.header-right-content span.language-select,
+	.header-right-content span.country-select {
 		font-size: 16px;
 	}
 
-	.header-right-content span.language-select i {
+	.header-right-content span.language-select i,
+	.header-right-content span.country-select i {
 		font-size: 14px;
 		margin-left: 4px;
+	}
+
+	.header-right-content .tab-hide-link {
+		display: none !important;
+	}
+
+	.tab-show-link {
+		display: block !important;
+		margin: 0 10px;
+	}
+
+	.nav_sec ul>li.tab-show-link a.btn-default {
+		padding: 12px 18px;
+		margin-top: 15px;
+		border-radius: 8px;
 	}
 
 	.main-banner {
@@ -123,6 +195,10 @@
 
 	.main-banner h3 span {
 		padding: 9px 8px;
+	}
+
+	.like-dislike-tren-label {
+		text-align: center;
 	}
 
 	.banner-left {
@@ -172,6 +248,10 @@
 	.main-banner h1 {
 		font-size: 26px;
 		line-height: 18px;
+	}
+
+	.home-banner h1 {
+		line-height: 30px;
 	}
 
 	.main-banner h2 {
@@ -255,13 +335,15 @@
 	.banner-left {
 		margin-bottom: 0;
 	}
-	.landing-banner .banner-right {
+	.landing-banner .banner-right,
+	.home-banner .banner-right {
 		display: none;
 	}
 
 	.header-right-content span.mbl-hide-link.always{
 		display: inline-block !important;
 	}
+	
 	.header-right-content span.mbl-hide-link.always a {
 		padding: 8px 10px;
 		min-width: auto;

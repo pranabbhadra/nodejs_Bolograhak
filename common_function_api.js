@@ -6,6 +6,7 @@ const bcrypt = require('bcryptjs');
 const useragent = require('useragent');
 const requestIp = require('request-ip');
 const axios = require('axios');
+const nodemailer = require('nodemailer');
 const { cache } = require('ejs');
 
 dotenv.config({ path: './.env' });
@@ -494,18 +495,20 @@ function getReviewRatingData(review_rating_Id) {
 
 async function getAllReviews() {
   const all_review_query = `
-    SELECT r.*, c.company_name, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic
-      FROM reviews r
-      JOIN company c ON r.company_id = c.ID
-      JOIN company_location cl ON r.company_location_id = cl.ID
-      JOIN users u ON r.customer_id = u.user_id
-      LEFT JOIN user_customer_meta ucm ON u.user_id = ucm.user_id
-      WHERE r.review_status = "1"
-      ORDER BY r.created_at DESC;
+  SELECT r.*, c.company_name, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic, rr.comment AS reply_comment, rr.reply_by, rr.reply_to, rr.status, rr.reason, rr.created_at, rr.updated_at
+  FROM reviews r
+  JOIN company c ON r.company_id = c.ID
+  JOIN company_location cl ON r.company_location_id = cl.ID
+  JOIN users u ON r.customer_id = u.user_id
+  LEFT JOIN user_customer_meta ucm ON u.user_id = ucm.user_id
+  LEFT JOIN review_reply rr ON r.ID = rr.review_id
+  WHERE r.review_status = "1"
+  ORDER BY r.created_at DESC;
   `;
   try{
     const all_review_results = await query(all_review_query);
     return all_review_results;
+  
   }
   catch(error){
     console.error('Error during all_review_query:', error);
@@ -514,12 +517,13 @@ async function getAllReviews() {
 
 async function getTrendingReviews() {
   const all_review_query = `
-  SELECT r.*, c.company_name, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic
+  SELECT r.*, c.company_name, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic,rr.comment AS reply_comment, rr.reply_by, rr.reply_to, rr.status, rr.reason, rr.created_at, rr.updated_at
     FROM reviews r
     JOIN company c ON r.company_id = c.ID
     JOIN company_location cl ON r.company_location_id = cl.ID
     JOIN users u ON r.customer_id = u.user_id
     LEFT JOIN user_customer_meta ucm ON u.user_id = ucm.user_id
+    LEFT JOIN review_reply rr ON r.ID = rr.review_id
     WHERE c.trending = 1 AND r.review_status = "1"
     ORDER BY r.created_at DESC;
 `;
@@ -536,12 +540,13 @@ async function getTrendingReviews() {
 
 async function getLatestReview(limit = null) {
   const all_review_query = `
-    SELECT r.*, c.company_name, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic
+    SELECT r.*, c.company_name, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic, rr.comment AS reply_comment, rr.reply_by, rr.reply_to, rr.status, rr.reason, rr.created_at, rr.updated_at
       FROM reviews r
       JOIN company c ON r.company_id = c.ID
       JOIN company_location cl ON r.company_location_id = cl.ID
       JOIN users u ON r.customer_id = u.user_id
       LEFT JOIN user_customer_meta ucm ON u.user_id = ucm.user_id
+      LEFT JOIN review_reply rr ON r.ID = rr.review_id
       WHERE r.review_status = "1"
       ORDER BY r.created_at DESC
       ${limit !== null ? `LIMIT ${limit}` : ''};
@@ -945,21 +950,44 @@ async function getCompanyReviews(companyID){
 
 //new
 async function getCompanyRatings(companyID) {
-  const getCompanyRatingsQuery = `
-  SELECT 
-    company_id,
-    SUM(CASE WHEN rating = 0.5 THEN 1 ELSE 0 END) AS rating_05_count,
-    SUM(CASE WHEN rating = 1 THEN 1 ELSE 0 END) AS rating_1_count,
-    SUM(CASE WHEN rating = 1.5 THEN 1 ELSE 0 END) AS rating_15_count,
-    SUM(CASE WHEN rating = 2 THEN 1 ELSE 0 END) AS rating_2_count,
-    SUM(CASE WHEN rating = 2.5 THEN 1 ELSE 0 END) AS rating_25_count,
-    SUM(CASE WHEN rating = 3 THEN 1 ELSE 0 END) AS rating_3_count,
-    SUM(CASE WHEN rating = 3.5 THEN 1 ELSE 0 END) AS rating_35_count,
-    SUM(CASE WHEN rating = 4 THEN 1 ELSE 0 END) AS rating_4_count,
-    SUM(CASE WHEN rating = 4.5 THEN 1 ELSE 0 END) AS rating_45_count,
-    SUM(CASE WHEN rating = 5 THEN 1 ELSE 0 END) AS rating_5_count,
-    COUNT(*) AS total_rating_count,
-    ROUND(AVG(rating), 1) AS rating_average FROM reviews WHERE company_id = ? AND review_status = "1" GROUP BY company_id`;
+  // SELECT 
+  //   company_id,
+  //   SUM(CASE WHEN rating = 0.5 THEN 1 ELSE 0 END) AS rating_05_count,
+  //   SUM(CASE WHEN rating = 1 THEN 1 ELSE 0 END) AS rating_1_count,
+  //   SUM(CASE WHEN rating = 1.5 THEN 1 ELSE 0 END) AS rating_15_count,
+  //   SUM(CASE WHEN rating = 2 THEN 1 ELSE 0 END) AS rating_2_count,
+  //   SUM(CASE WHEN rating = 2.5 THEN 1 ELSE 0 END) AS rating_25_count,
+  //   SUM(CASE WHEN rating = 3 THEN 1 ELSE 0 END) AS rating_3_count,
+  //   SUM(CASE WHEN rating = 3.5 THEN 1 ELSE 0 END) AS rating_35_count,
+  //   SUM(CASE WHEN rating = 4 THEN 1 ELSE 0 END) AS rating_4_count,
+  //   SUM(CASE WHEN rating = 4.5 THEN 1 ELSE 0 END) AS rating_45_count,
+  //   SUM(CASE WHEN rating = 5 THEN 1 ELSE 0 END) AS rating_5_count,
+  //   COUNT(*) AS total_rating_count,
+  //   ROUND(AVG(rating), 1) AS rating_average FROM reviews WHERE company_id = ? AND review_status = "1" GROUP BY company_id`;
+  const getCompanyRatingsQuery = 
+  `SELECT 
+  company_id,
+  SUM(CASE WHEN rating = 0.5 THEN 1 ELSE 0 END) AS rating_05_count,
+  SUM(CASE WHEN rating = 1 THEN 1 ELSE 0 END) AS rating_1_count,
+  SUM(CASE WHEN rating = 1.5 THEN 1 ELSE 0 END) AS rating_15_count,
+  SUM(CASE WHEN rating = 2 THEN 1 ELSE 0 END) AS rating_2_count,
+  SUM(CASE WHEN rating = 2.5 THEN 1 ELSE 0 END) AS rating_25_count,
+  SUM(CASE WHEN rating = 3 THEN 1 ELSE 0 END) AS rating_3_count,
+  SUM(CASE WHEN rating = 3.5 THEN 1 ELSE 0 END) AS rating_35_count,
+  SUM(CASE WHEN rating = 4 THEN 1 ELSE 0 END) AS rating_4_count,
+  SUM(CASE WHEN rating = 4.5 THEN 1 ELSE 0 END) AS rating_45_count,
+  SUM(CASE WHEN rating = 5 THEN 1 ELSE 0 END) AS rating_5_count,
+  COUNT(*) AS total_rating_count,
+  ROUND(AVG(rating), 1) AS rating_average,
+  (
+    SELECT COUNT(*) FROM review_tag_relation AS t2
+    WHERE t2.review_id = t1.id
+  ) AS tag_name_count
+FROM reviews AS t1
+LEFT JOIN review_tag_relation AS t3 ON t1.id = t3.review_id
+WHERE company_id = ? AND review_status = "1"
+GROUP BY company_id;
+`;
     const ratingsResultvalue = [companyID]
     try{
       const ratingsResult = await query(getCompanyRatingsQuery, ratingsResultvalue);
@@ -968,11 +996,73 @@ async function getCompanyRatings(companyID) {
       return 'Error during user get_company_rating_query:'+error;
     }
   }
-
-
-
-
-
+  
+//getTotalreplies
+  async function getTotalreplies(companyID){
+    const getTotalrepliesquery = `
+    SELECT COUNT(*) AS total_replies
+    FROM review_reply AS rr
+    JOIN reviews AS r ON rr.review_id = r.id
+    WHERE r.company_id = ? AND r.review_status = "1";
+  `;
+    const getTotalrepliesvalue = [companyID];
+  
+    try {
+      const get_company_replies_result = await query(getTotalrepliesquery, getTotalrepliesvalue);
+      return get_company_replies_result[0].total_replies;
+    } catch(error) {
+      return 'Error during user gettotalreplies: ' + error;
+    }
+  }
+  //getTotalReviewsAndCounts
+  async function getTotalReviewsAndCounts(companyID) {
+    const getTotalReviewsQuery = `
+      SELECT COUNT(*) AS total_reviews
+      FROM reviews
+      WHERE company_id = ? AND review_status = "1";
+    `;
+    
+    const getTotalPositiveReviewsQuery = `
+      SELECT COUNT(*) AS total_positive_reviews
+      FROM reviews
+      WHERE company_id = ? AND review_status = "1" AND rating >= 4;
+    `;
+    
+    const getTotalNegativeReviewsQuery = `
+      SELECT COUNT(*) AS total_negative_reviews
+      FROM reviews
+      WHERE company_id = ? AND review_status = "1" AND rating <= 2.5;
+    `;
+  
+    const getTotalReviewsValues = [companyID];
+    
+    try {
+      // Get the total number of reviews
+      const totalReviewsResult = await query(getTotalReviewsQuery, getTotalReviewsValues);
+      const totalReviews = totalReviewsResult[0].total_reviews;
+  
+      // Get the total number of positive reviews (e.g., rating >= 4)
+      const totalPositiveReviewsResult = await query(getTotalPositiveReviewsQuery, getTotalReviewsValues);
+      const totalPositiveReviews = totalPositiveReviewsResult[0].total_positive_reviews;
+  
+      // Get the total number of negative reviews (e.g., rating <= 2.5)
+      const totalNegativeReviewsResult = await query(getTotalNegativeReviewsQuery, getTotalReviewsValues);
+      const totalNegativeReviews = totalNegativeReviewsResult[0].total_negative_reviews;
+  
+      // Calculate the review percentage
+      const reviewPercentage = (totalPositiveReviews / totalReviews) * 100;
+      const roundedReviewPercentage = Math.round(reviewPercentage);
+      return {
+        totalReviews,
+        totalPositiveReviews,
+        totalNegativeReviews,
+        roundedReviewPercentage,
+      };
+    } catch (error) {
+      return 'Error calculating review statistics: ' + error;
+    }
+  }
+  
 async function getUserCompany(user_ID){
     const get_user_company_query = `
       SELECT c.*
@@ -1025,6 +1115,296 @@ async function getuserReviewCompany(user_ID){
     }
 }
 
+async function ReviewReplyTo(Id) {
+  try {
+    const sql = `SELECT users.email, users.first_name, c.company_name, c.ID as company_id, r.customer_id
+                 FROM users 
+                 LEFT JOIN review_reply rr ON rr.reply_by = users.user_id 
+                 LEFT JOIN reviews r ON r.id = rr.review_id 
+                 LEFT JOIN company c ON r.company_id = c.ID 
+                 WHERE rr.ID = ?`;
+
+    // Use parameterized query with placeholders
+    const get_user_email = await query(sql, [Id]);
+
+    if (get_user_email.length > 0) {
+      return get_user_email;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.error('Error in ReviewReplyTo:', error);
+    throw error; // Rethrow the error to handle it at the higher level
+  }
+}
+
+
+async function ReviewReplyToCustomer(mailReplyData, req) {
+  if (mailReplyData && mailReplyData[0] && mailReplyData[0].customer_id == req.body.reply_to) {
+    const customerEmail = mailReplyData[0].email;
+
+    // Create a Nodemailer transporter using your email service provider's SMTP settings
+    const transporter = nodemailer.createTransport({
+      host: process.env.MAIL_HOST,
+      port: process.env.MAIL_PORT,
+      secure: false,
+      requireTLS: true,
+      auth: {
+        user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASSWORD,
+      },
+    });
+
+    // Define email data
+    const mailOptions = {
+      from: process.env.MAIL_USER, 
+      to: customerEmail, 
+      subject: 'Your Subject Here',
+      text: 'Hello, reply from the company.' 
+    };
+
+    try {
+      // Send the email
+      const info = await transporter.sendMail(mailOptions);
+      console.log('Email sent to customer:', customerEmail);
+    } catch (error) {
+      console.error('Error sending email:', error);
+    }
+  } else {
+    console.error('Invalid or missing mailReplyData for customer');
+  }
+}
+
+
+
+// async function ReviewReplyToCompany(mailReplyData) {
+//   if (Array.isArray(mailReplyData) && mailReplyData.length > 0 && mailReplyData[0].comp_email) {
+//     const companyEmail = mailReplyData[0].comp_email;
+
+//     // Create a Nodemailer transporter using your email service provider's SMTP settings
+//     const transporter = nodemailer.createTransport({
+//       host: process.env.MAIL_HOST,
+//       port: process.env.MAIL_PORT,
+//       secure: false,
+//       requireTLS: true,
+//       auth: {
+//         user: process.env.MAIL_USER,
+//         pass: process.env.MAIL_PASSWORD,
+//       },
+//     });
+
+//     // Define email data
+//     const mailOptions = {
+//       from: process.env.MAIL_USER, 
+//       to: companyEmail, 
+//       subject: 'submit review reply', 
+//       text: 'Hello, reply from the user.' 
+//     };
+
+//     try {
+//       // Send the email
+//       const info = await transporter.sendMail(mailOptions);
+//       console.log('Email sent to company:', companyEmail);
+//     } catch (error) {
+//       console.error('Error sending email:', error);
+//     }
+//   } else {
+//     console.error('Invalid or missing mailReplyData for company');
+//   }
+// }
+
+async function ReviewReplyToCompany(mailReplyData) {
+  if (Array.isArray(mailReplyData) && mailReplyData.length > 0 && mailReplyData[0].comp_email) {
+    const companyEmail = mailReplyData[0].comp_email;
+
+    // Create a Nodemailer transporter using your email service provider's SMTP settings
+    const transporter = nodemailer.createTransport({
+      host: process.env.MAIL_HOST,
+      port: process.env.MAIL_PORT,
+      secure: false,
+      requireTLS: true,
+      auth: {
+        user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASSWORD,
+      },
+    });
+
+    // Define email data
+    const mailOptions = {
+      from: process.env.MAIL_USER, 
+      to: companyEmail,  // Use the company email directly
+      subject: 'submit review reply', 
+      text: 'Hello, reply from the user.' 
+    };
+
+    try {
+      // Send the email
+      const info = await transporter.sendMail(mailOptions);
+      console.log('Email sent to company:', companyEmail);
+    } catch (error) {
+      console.error('Error sending email:', error);
+    }
+  } else {
+    console.error('Invalid or missing mailReplyData for company');
+  }
+}
+
+// Example usage outside the function
+// const exampleMailReplyData = [
+//   {
+//     comp_email: 'dev2.scwt@gmail.com', 
+//   }
+// ];
+
+// ReviewReplyToCompany(exampleMailReplyData);
+
+
+// Example usage outside the function
+// const exampleMailReplyData = [
+//   {
+//     comp_email: 'company@example.com',
+//   }
+// ];
+
+// ReviewReplyToCompany(exampleMailReplyData);
+
+
+
+
+
+// const exampleMailReplyData = [
+//   {
+//     comp_email: companyEmail
+//   }
+// ];
+// ReviewReplyToCompany(exampleMailReplyData);
+
+
+
+
+// async function ReviewReplyToCompany(mailReplyData){
+//   if (mailReplyData && mailReplyData[0] && mailReplyData[0].comp_email) {
+//     //     const companyEmail = mailReplyData[0].comp_email;
+//   var mailOptions = {
+//     from: process.env.MAIL_USER,
+//     //to: 'dev2.scwt@gmail.com',
+//     to: mailReplyData[0].email,
+//     subject: 'Message Reply',
+//     html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
+//     <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
+//      <tbody>
+//       <tr>
+//        <td align="center" valign="top">
+//          <div id="template_header_image"><p style="margin-top: 0;"></p></div>
+//          <table id="template_container" style="box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; background-color: #fdfdfd; border: 1px solid #dcdcdc; border-radius: 3px !important;" border="0" cellpadding="0" cellspacing="0" width="600">
+//           <tbody>
+//             <tr>
+//              <td align="center" valign="top">
+//                <!-- Header -->
+//                <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
+//                  <tbody>
+//                    <tr>
+//                    <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
+//                     <td id="header_wrapper" style="padding: 36px 48px; display: block;">
+//                        <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Message Reply</h1>
+//                     </td>
+
+//                    </tr>
+//                  </tbody>
+//                </table>
+//          <!-- End Header -->
+//          </td>
+//             </tr>
+//             <tr>
+//              <td align="center" valign="top">
+//                <!-- Body -->
+//                <table id="template_body" border="0" cellpadding="0" cellspacing="0" width="600">
+//                  <tbody>
+//                    <tr>
+//                     <td id="body_content" style="background-color: #fdfdfd;" valign="top">
+//                       <!-- Content -->
+//                       <table border="0" cellpadding="20" cellspacing="0" width="100%">
+//                        <tbody>
+//                         <tr>
+//                          <td style="padding: 48px;" valign="top">
+//                            <div id="body_content_inner" style="color: #737373; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
+                            
+//                             <table border="0" cellpadding="4" cellspacing="0" width="90%">
+//                               <tr>
+//                                 <td colspan="2">
+//                                 <strong>Hello ${mailReplyData[0].first_name},</strong>
+//                                 <p style="font-size:15px; line-height:20px">You got a reply from the customer for your message. 
+//                                 <a  href="${process.env.MAIN_URL}company-review-listing/${mailReplyData[0].company_id}">Click here</a> to view.</p>
+//                                 </td>
+//                               </tr>
+//                             </table>
+                            
+//                            </div>
+//                          </td>
+//                         </tr>
+//                        </tbody>
+//                       </table>
+//                     <!-- End Content -->
+//                     </td>
+//                    </tr>
+//                  </tbody>
+//                </table>
+//              <!-- End Body -->
+//              </td>
+//             </tr>
+//             <tr>
+//              <td align="center" valign="top">
+//                <!-- Footer -->
+//                <table id="template_footer" border="0" cellpadding="10" cellspacing="0" width="600">
+//                 <tbody>
+//                  <tr>
+//                   <td style="padding: 0; -webkit-border-radius: 6px;" valign="top">
+//                    <table border="0" cellpadding="10" cellspacing="0" width="100%">
+//                      <tbody>
+//                        <tr>
+//                         <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
+//                              <p>This email was sent from <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a></p>
+//                         </td>
+//                        </tr>
+//                      </tbody>
+//                    </table>
+//                   </td>
+//                  </tr>
+//                 </tbody>
+//                </table>
+//              <!-- End Footer -->
+//              </td>
+//             </tr>
+//           </tbody>
+//          </table>
+//        </td>
+//       </tr>
+//      </tbody>
+//     </table>
+//    </div>`
+//   }
+//   mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
+//     if (err) {
+//       console.log(err);
+//       res.status(500).json({
+//         status: 'error',
+//         message: 'Something went wrong',
+//       });
+//     }   else {
+//       console.log('Mail Sent: ', info.response);
+//       res.status(200).json({
+//         status: 'ok',
+//         message: 'Email sent successfully',
+//       });
+//     }
+//   });
+// } else {
+//   console.error('Invalid or missing mailReplyData for company');
+  
+// }
+// }
+
+
 module.exports = {
     getUser,
     getUserMeta,
@@ -1058,8 +1438,13 @@ module.exports = {
     getCompanyReviewNumbers,
     getCompanyReviews,
     getCompanyRatings,//new
+    getTotalreplies, //new
+    getTotalReviewsAndCounts, //new
     getUsersByRole,
     getUserCompany,
     getUserReview,
-    getuserReviewCompany
+    getuserReviewCompany,
+    ReviewReplyTo,
+    ReviewReplyToCustomer, //new
+    ReviewReplyToCompany
 };

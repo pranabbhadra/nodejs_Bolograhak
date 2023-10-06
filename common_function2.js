@@ -7,6 +7,7 @@ const useragent = require('useragent');
 const requestIp = require('request-ip');
 const axios = require('axios');
 const mdlconfig = require('./config-module');
+const slugify = require('slugify');
 
 dotenv.config({ path: './.env' });
 const query = util.promisify(db.query).bind(db);
@@ -146,7 +147,7 @@ async function getUpcomingBusinessFeature() {
 function getReviewedCompanies(userId) {
   return new Promise((resolve, reject) => {
     const reviewed_companies_query = `
-            SELECT reviews.company_id, reviews.customer_id, c.company_name as company_name, c.logo as logo
+            SELECT reviews.company_id, reviews.customer_id, c.company_name as company_name, c.logo as logo, c.slug
             FROM  reviews 
             JOIN company c ON reviews.company_id = c.ID
             WHERE reviews.customer_id = ?
@@ -166,11 +167,11 @@ function getReviewedCompanies(userId) {
 function getAllCompaniesReviews(userId) {
   return new Promise((resolve, reject) => {
     const reviewed_companies_query = `
-            SELECT r.*, c.company_name as company_name, c.logo as logo, COUNT(review_reply.id) as review_reply_count
+            SELECT r.*, c.company_name as company_name, c.logo as logo, c.slug, COUNT(review_reply.id) as review_reply_count
             FROM  reviews r
             JOIN company c ON r.company_id = c.ID
             LEFT JOIN review_reply ON review_reply.review_id = r.id
-            WHERE r.customer_id = ?
+            WHERE r.customer_id = ? AND r.review_status = '1'
             GROUP BY r.id
             ORDER BY updated_at DESC
         `;
@@ -200,11 +201,10 @@ function getAllReviewTags() {
     });
   });
 }
-
 //Function to fetch latest Reviews from the  reviews,company,company_location,users,user_customer_meta table
 async function getlatestReviews(reviewCount){
   const get_latest_review_query = `
-    SELECT r.*, c.company_name, c.logo, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, 
+    SELECT r.*, c.company_name, c.logo, c.slug, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, 
     u.last_name, u.user_id, u.user_status, ucm.profile_pic, COUNT(review_reply.id) as review_reply_count
       FROM reviews r
       LEFT JOIN company c ON r.company_id = c.ID 
@@ -234,7 +234,7 @@ async function getlatestReviews(reviewCount){
 //Function to fetch All Trending Reviews from the  reviews,company,company_location,users,user_customer_meta table
 async function getAllTrendingReviews(){
   const get_latest_review_query = `
-    SELECT r.*, c.company_name, c.logo, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, 
+    SELECT r.*, c.company_name, c.logo, c.slug, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, 
     u.last_name, u.user_id, u.user_status, ucm.profile_pic, COUNT(review_reply.id) as review_reply_count
       FROM reviews r
       LEFT JOIN company c ON r.company_id = c.ID 
@@ -263,7 +263,7 @@ async function getAllTrendingReviews(){
 //Function to fetch All  Reviews from the  reviews,company,company_location,users,user_customer_meta table
 async function getAllReviews(){
   const get_latest_review_query = `
-    SELECT r.*, c.company_name, c.logo, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, 
+    SELECT r.*, c.company_name, c.logo, c.slug, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, 
     u.last_name, u.user_id, u.user_status, ucm.profile_pic, COUNT(review_reply.id) as review_reply_count
       FROM reviews r
       LEFT JOIN company c ON r.company_id = c.ID 
@@ -320,7 +320,7 @@ async function reviewApprovedEmail(req) {
   //console.log(req);
 
   const sql = `
-    SELECT r.created_at, r.company_id, c.company_name, u.first_name, u.email, claimed_user.email claimed_user_email, claimed_user.first_name claimed_user_name
+    SELECT r.created_at, r.company_id, c.company_name, c.slug, u.first_name, u.email, claimed_user.email claimed_user_email, claimed_user.first_name claimed_user_name
     FROM reviews r
     LEFT JOIN company c ON r.company_id = c.ID 
     LEFT JOIN users u ON r.customer_id = u.user_id 
@@ -386,7 +386,7 @@ async function reviewApprovedEmail(req) {
                                 <tr>
                                   <td colspan="2">
                                   <strong>Hello ${approveReviewData[0].first_name},</strong>
-                                  <p style="font-size:15px; line-height:20px">Your review for <i><b>"${approveReviewData[0].company_name} on ${reviewDate}"</b></i> has been approved. Now you can see your review on the <a href="${process.env.MAIN_URL}company/${approveReviewData[0].company_id}">website</a>.</p>
+                                  <p style="font-size:15px; line-height:20px">Your review for <i><b>"${approveReviewData[0].company_name} on ${reviewDate}"</b></i> has been approved. Now you can see your review on the <a href="${process.env.MAIN_URL}company/${approveReviewData[0].slug}">website</a>.</p>
                                   </td>
                                 </tr>
                               </table>
@@ -574,7 +574,7 @@ async function reviewApprovedEmail(req) {
 //Function to send mail to client after reject
 async function reviewRejectdEmail(req) {
   const sql = `
-    SELECT r.created_at,r.rejecting_reason, c.company_name, u.first_name, u.email 
+    SELECT r.created_at,r.rejecting_reason, c.company_name, c.slug, u.first_name, u.email 
     FROM reviews r
     LEFT JOIN company c ON r.company_id = c.ID 
     LEFT JOIN users u ON r.customer_id = u.user_id 
@@ -734,7 +734,7 @@ async function getUserName(email){
 
  //Function to fetch User email from the  users, review_reply table
 async function ReviewReplyTo(Id){
-  const sql = `SELECT users.email, users.first_name, c.company_name, c.ID as company_id, r.customer_id
+  const sql = `SELECT users.email, users.first_name, c.company_name, c.slug, c.ID as company_id, r.customer_id
               FROM users 
               LEFT JOIN review_reply rr ON rr.reply_to = users.user_id 
               LEFT JOIN reviews r ON r.id = rr.review_id 
@@ -800,7 +800,7 @@ function ReviewReplyToCompany(mailReplyData){
                                 <td colspan="2">
                                 <strong>Hello ${mailReplyData[0].first_name},</strong>
                                 <p style="font-size:15px; line-height:20px">You got a reply from the customer for your message. 
-                                <a  href="${process.env.MAIN_URL}company-review-listing/${mailReplyData[0].company_id}">Click here</a> to view.</p>
+                                <a  href="${process.env.MAIN_URL}company-review-listing/${mailReplyData[0].slug}">Click here</a> to view.</p>
                                 </td>
                               </tr>
                             </table>
@@ -864,6 +864,7 @@ function ReviewReplyToCompany(mailReplyData){
  }
  //Function to Send Reply To Customer 
 function ReviewReplyToCustomer(mailReplyData){
+  if (mailReplyData && mailReplyData.length > 0 && mailReplyData[0].email) {
   var mailOptions = {
     from: process.env.MAIL_USER,
     //to: 'pranab@scwebtech.com',
@@ -912,7 +913,7 @@ function ReviewReplyToCustomer(mailReplyData){
                               <tr>
                                 <td colspan="2">
                                 <strong>Hello ${mailReplyData[0].first_name},</strong>
-                                <p style="font-size:15px; line-height:20px"><b>${mailReplyData[0].company_name}</b> has responded to your reviews, please visit <a  href="${process.env.MAIN_URL}company/${mailReplyData[0].company_id}">the link</a> to view response.
+                                <p style="font-size:15px; line-height:20px"><b>${mailReplyData[0].company_name}</b> has responded to your reviews, please visit <a  href="${process.env.MAIN_URL}company/${mailReplyData[0].slug}">the link</a> to view response.
                                 </td>
                               </tr>
                             </table>
@@ -961,6 +962,7 @@ function ReviewReplyToCustomer(mailReplyData){
     </table>
    </div>`
   }
+
   mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
       if (err) {
           console.log(err);
@@ -974,6 +976,7 @@ function ReviewReplyToCustomer(mailReplyData){
       }
   })
  }
+}
 
  //Function to fetch User total replied from the  review_reply table
 async function TotalReplied(Id){
@@ -986,6 +989,480 @@ async function TotalReplied(Id){
   return noOfReplied[0];
  }
 
+  //Function to fetch User review data by Id from the  review table
+async function reviewDataById(reviewId,userId){
+  const sql = `SELECT r.* , c.company_name
+              FROM reviews r
+              JOIN company c ON r.company_id = c.ID 
+              WHERE r.id = '${reviewId}' AND r.customer_id = '${userId}' `;
+
+  const reviewData = await query(sql);
+  //console.log(noOfReplied[0])
+  return reviewData;
+ }
+
+//Function to Update User review data by Id from the  review table
+ async function updateReview(reviewIfo){
+  // console.log('Review Info', reviewIfo);
+  // console.log('Company Info', comInfo);
+  // reviewIfo['tags[]'].forEach((tag) => {
+  //   console.log(tag);
+  // });
+  if (typeof reviewIfo['tags[]'] === 'string') {
+    // Convert it to an array containing a single element
+    reviewIfo['tags[]'] = [reviewIfo['tags[]']];
+  }
+  const currentDate = new Date();
+  // Format the date in 'YYYY-MM-DD HH:mm:ss' format (adjust the format as needed)
+  const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+
+  const updateQuery = 'UPDATE reviews SET review_title = ?, rating = ?, review_content = ?, user_privacy = ?, user_contact = ?, updated_at = ?, review_status = ? WHERE id = ?';
+  const updateData = [ reviewIfo.review_title, reviewIfo.rating, reviewIfo.review_content, reviewIfo.user_privacy, reviewIfo.user_contact, formattedDate, '2' , reviewIfo.review_id]
+              
+  try {
+    const create_review_results = await query(updateQuery, updateData);
+      if (Array.isArray(reviewIfo['tags[]']) && reviewIfo['tags[]'].length > 0) {
+        //insert review_tag_relation
+
+        await query(`DELETE FROM review_tag_relation WHERE review_id = '${reviewIfo.review_id}'`);
+
+        const review_tag_relation_query = 'INSERT INTO review_tag_relation (review_id, tag_name) VALUES (?, ?)';
+        try{
+          for (const tag of reviewIfo['tags[]']) {
+            const review_tag_relation_values = [reviewIfo.review_id, tag];
+            const review_tag_relation_results = await query(review_tag_relation_query, review_tag_relation_values);
+          }
+
+        }catch(error){
+          console.error('Error during user review_tag_relation_results:', error);
+        }
+      }
+  }catch (error) {
+    console.error('Error during user update_review_results:', error);
+  }
+}
+
+// Function to count review like
+async function countLike (reviewId){
+  const sql = `SELECT COUNT(id) AS totalLike
+    FROM review_voting WHERE review_id = '${reviewId}' AND voting = '1' `;
+
+  const noOfLike =await query(sql);
+  console.log('noOfLike',noOfLike)
+  return noOfLike[0];
+}
+
+// Function to count review Dislike
+async function countDislike (reviewId){
+  const sql = `SELECT COUNT(id) AS totalDislike
+    FROM review_voting WHERE review_id = '${reviewId}' AND voting = '0' `;
+
+  const noOfDislike =await query(sql);
+  console.log('noOfDislike',noOfDislike)
+  return noOfDislike[0];
+}
+
+// Function to fetch all review voting
+async function getAllReviewVoting (){
+  const sql = `SELECT *
+    FROM review_voting WHERE 1 `;
+
+  const ReviewVoting =await query(sql);
+  //console.log('ReviewVoting',ReviewVoting)
+  return ReviewVoting;
+}
+
+//Function to Update User reply data by Id from the  review table
+async function updateCustomerReply(req){
+  //console.log(req)
+  
+
+  try {
+    if(req.reply_id){
+      const currentDate = new Date();
+      // Format the date in 'YYYY-MM-DD HH:mm:ss' format (adjust the format as needed)
+      const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+      
+      const update_reply_query ='UPDATE review_reply SET  comment = ?, status = ? , reason = ?, updated_at = ? WHERE ID = ? ';
+  
+      const update_reply_values = [
+        req.reply_content || null,
+        req.reply_status || '2',
+        req.reply_rejecting_comment || null,
+        formattedDate,
+        req.reply_id
+      ];
+      const update_reply_result = await query(update_reply_query, update_reply_values);
+
+      return true;
+    }else {
+      return false;
+    }
+  }catch (error) {
+    return 'Error during user update_reply_query:'+error;
+  }  
+}
+
+//Function to Update User reply data by Id from the  review table
+async function getCompanyIdBySlug(slug){
+  //console.log(req)
+  try {
+    const get_company_query = `SELECT ID FROM company WHERE slug = '${slug}' `;
+    const get_company_Id = await query(get_company_query);
+    
+    console.log(get_company_Id[0]);
+    return get_company_Id[0];
+  }catch (error) {
+    return 'Error during fetch companyId:'+error;
+  }  
+}
+
+
+// Function to generate a unique slug from a string
+function generateUniqueSlug(companyName, callback) {
+  // Check if the generated slug already exists in the database
+  db.query('SELECT company_name, slug FROM company', (err, existingSlugs) => {
+    if (err) {
+      callback(err);
+      return;
+    }
+
+    const baseSlug = slugify(companyName, {
+      replacement: '-',  // replace spaces with hyphens
+      lower: true,      // convert to lowercase
+      strict: true,     // strip special characters
+      remove: /[*+~.()'"!:@]/g,
+    });
+
+    let slug = baseSlug;
+    let slugExists = false;
+    let count = 1;
+    // Check if the generated slug already exists in the existing slugs
+    existingSlugs.forEach((value) => {
+      if (value.slug === baseSlug) {
+        slugExists = true;
+      }
+      if (value.company_name == companyName) {
+        count ++
+      }
+    });
+
+    if (slugExists) {
+      slug = `${baseSlug}-${count}`;
+      //slug = `${baseSlug}-${Math.floor(Math.random() * 10000)}`;
+    }
+
+    callback(null, slug);
+  });
+}
+
+// Function to fetch Sub Category
+async function getSubCategories(categorySlug) {
+  const sql = `SELECT category.category_name,category.category_slug, GROUP_CONCAT(c.category_name) AS subcategories, GROUP_CONCAT(c.category_slug ) AS subcategoriesSlug
+                FROM category 
+                LEFT JOIN category c ON category.ID = c.parent_id
+                WHERE category.category_slug = '${categorySlug}'
+                GROUP BY category.category_name `;
+
+  const result = await query(sql);
+  if(result.length > 0 ){
+    return result;
+  }else{
+    return [];
+  }
+  
+}
+
+// Function to fetch  Category Company details
+async function getCompanyDetails(categorySlug) {
+  const sql = `SELECT c.ID, c.company_name, c.logo, c.status, c.trending, c.main_address, c.verified, c.paid_status, c.about_company, c.slug , AVG(r.rating) as comp_avg_rating, COUNT(r.id) as comp_total_reviews, pcd.cover_img
+                FROM category  
+                JOIN company_cactgory_relation ccr ON ccr.category_id = category.ID
+                LEFT JOIN company c ON c.ID = ccr.company_id
+                LEFT JOIN reviews r ON r.company_id = c.ID
+                LEFT JOIN premium_company_data pcd ON pcd.company_id = c.ID
+                WHERE category.category_slug = '${categorySlug}' AND c.status = '1'
+                GROUP BY c.ID, c.company_name `;
+
+  const result = await query(sql);
+  if(result.length > 0 ){
+    return result;
+  }else{
+    return [];
+  }
+  
+}
+
+// Function to fetch Category Filtered Company details
+async function getFilteredCompanyDetails(categorySlug, filterValue) {
+  console.log('filterValue',filterValue)
+  if (filterValue == 'latest') {
+    const sql = `SELECT c.ID, c.company_name, c.logo, c.status, c.trending, c.main_address, c.verified, c.paid_status, c.about_company, c.slug , AVG(r.rating) as comp_avg_rating, COUNT(r.id) as comp_total_reviews, pcd.cover_img
+                FROM category  
+                JOIN company_cactgory_relation ccr ON ccr.category_id = category.ID
+                LEFT JOIN company c ON c.ID = ccr.company_id
+                LEFT JOIN reviews r ON r.company_id = c.ID
+                LEFT JOIN premium_company_data pcd ON pcd.company_id = c.ID
+                WHERE category.category_slug = '${categorySlug}' AND c.status = '1'
+                GROUP BY c.ID, c.company_name 
+                ORDER BY c.created_date DESC 
+                LIMIT 20`;
+
+                const result = await query(sql);
+              if(result.length > 0 ){
+                return result;
+              }else{
+                return [];
+              }
+                
+  } else if(filterValue == 'trending') {
+    const sql = `SELECT c.ID, c.company_name, c.logo, c.status, c.trending, c.main_address, c.verified, c.paid_status, c.about_company, c.slug , AVG(r.  rating) as comp_avg_rating, COUNT(r.id) as comp_total_reviews, pcd.cover_img
+                FROM category  
+                JOIN company_cactgory_relation ccr ON ccr.category_id = category.ID
+                LEFT JOIN company c ON c.ID = ccr.company_id
+                LEFT JOIN reviews r ON r.company_id = c.ID
+                LEFT JOIN premium_company_data pcd ON pcd.company_id = c.ID
+                WHERE category.category_slug = '${categorySlug}' AND c.status = '1' AND c.trending = '1'
+                GROUP BY c.ID, c.company_name `;
+
+                const result = await query(sql);
+                if(result.length > 0 ){
+                  return result;
+                }else{
+                  return [];
+                }
+  } else {
+    const sql = `SELECT c.ID, c.company_name, c.logo, c.status, c.trending, c.main_address, c.verified, c.paid_status, c.about_company, c.slug , AVG(r.  rating) as comp_avg_rating, COUNT(r.id) as comp_total_reviews, pcd.cover_img
+                FROM category  
+                JOIN company_cactgory_relation ccr ON ccr.category_id = category.ID
+                LEFT JOIN company c ON c.ID = ccr.company_id
+                LEFT JOIN reviews r ON r.company_id = c.ID
+                LEFT JOIN premium_company_data pcd ON pcd.company_id = c.ID
+                WHERE category.category_slug = '${categorySlug}' AND c.status = '1' AND c.verified = '1'
+                GROUP BY c.ID, c.company_name `;
+
+                const result = await query(sql);
+                if(result.length > 0 ){
+                  return result;
+                }else{
+                  return [];
+                }
+  }
+  
+
+  
+  
+}
+
+// Function to fetch Company poll details
+async function getCompanyPollDetails(company_id) {
+  const sql = `SELECT
+                  pc.*,
+                  pa.poll_answer,
+                  pa.poll_answer_id,
+                  pv.voting_answer_id,
+                  voting_user_id
+                FROM
+                  poll_company pc
+                JOIN (
+                  SELECT
+                      p.poll_id,
+                      GROUP_CONCAT(DISTINCT p.answer) AS poll_answer,
+                      GROUP_CONCAT(DISTINCT p.id) AS poll_answer_id
+                  FROM
+                      poll_answer p
+                  GROUP BY
+                      p.poll_id
+                ) pa ON pc.id = pa.poll_id
+                LEFT JOIN (
+                  SELECT
+                      pv.poll_id,
+                      GROUP_CONCAT(pv.answer_id) AS voting_answer_id,
+                      GROUP_CONCAT(pv.user_id) AS voting_user_id
+                  FROM
+                      poll_voting pv
+                  GROUP BY
+                      pv.poll_id
+                ) pv ON pc.id = pv.poll_id
+                WHERE
+                  pc.company_id = '${company_id}' 
+                ORDER BY
+                  pc.id DESC;`;
+  
+  // const sql = `SELECT poll_company.*, GROUP_CONCAT(pa.answer) AS poll_answer, GROUP_CONCAT(pa.id) AS poll_answer_id, GROUP_CONCAT(pv.answer_id) AS voting_answer_id
+  // FROM poll_company  
+  // JOIN poll_answer pa ON pa.poll_id = poll_company.id
+  // LEFT JOIN poll_voting pv ON pv.poll_id = poll_company.id
+  // WHERE poll_company.company_id = '${company_id}' 
+  // GROUP BY poll_company.id
+  // ORDER BY poll_company.id DESC `;
+
+  const result = await query(sql);
+  if(result.length > 0 ){
+    return result;
+  }else{
+    return [];
+  }
+  
+}
+
+//Function to insert Invitation data into review_invite_request
+async function insertInvitationDetails(req) {
+  console.log('insertInvitationDetails',req)
+  const {emails, email_body, user_id, company_id } = req
+  const currentDate = new Date();
+  const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+  const sql = `INSERT INTO review_invite_request( company_id, user_id, share_date, count) VALUES (?, ?, ?, ?)`;
+  const data = [company_id, user_id, formattedDate, emails.length ];
+  const result = await query(sql, data);
+  if (result) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+//Function to send Invitation email 
+async function sendInvitationEmail(req) {
+  console.log('sendInvitationEmail',req)
+  const {emails, email_body, user_id, company_id, company_name ,company_slug} = req;
+  if(emails.length > 0){
+    await emails.forEach((email)=>{
+      var mailOptions = {
+        from: process.env.MAIL_USER,
+        //to: 'pranab@scwebtech.com',
+        to: email,
+        subject: 'Invitation Email',
+        html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
+        <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
+         <tbody>
+          <tr>
+           <td align="center" valign="top">
+             <div id="template_header_image"><p style="margin-top: 0;"></p></div>
+             <table id="template_container" style="box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; background-color: #fdfdfd; border: 1px solid #dcdcdc; border-radius: 3px !important;" border="0" cellpadding="0" cellspacing="0" width="600">
+              <tbody>
+                <tr>
+                 <td align="center" valign="top">
+                   <!-- Header -->
+                   <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
+                     <tbody>
+                       <tr>
+                       <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
+                        <td id="header_wrapper" style="padding: 36px 48px; display: block;">
+                           <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Invitation Email</h1>
+                        </td>
+    
+                       </tr>
+                     </tbody>
+                   </table>
+             <!-- End Header -->
+             </td>
+                </tr>
+                <tr>
+                 <td align="center" valign="top">
+                   <!-- Body -->
+                   <table id="template_body" border="0" cellpadding="0" cellspacing="0" width="600">
+                     <tbody>
+                       <tr>
+                        <td id="body_content" style="background-color: #fdfdfd;" valign="top">
+                          <!-- Content -->
+                          <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                           <tbody>
+                            <tr>
+                             <td style="padding: 48px;" valign="top">
+                               <div id="body_content_inner" style="color: #737373; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
+                                
+                                <table border="0" cellpadding="4" cellspacing="0" width="90%">
+                                  <tr>
+                                    <td colspan="2">
+                                    <p style="font-size:15px; line-height:20px">${email_body}</p>
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td colspan="2">
+                                    <p style="font-size:15px; line-height:20px">Please <a href="${process.env.MAIN_URL}company/${company_slug}?type=invitation">click here</a> to submit your opinion.</p>
+                                    </td>
+                                  </tr>
+                                </table>
+                                
+                               </div>
+                             </td>
+                            </tr>
+                           </tbody>
+                          </table>
+                        <!-- End Content -->
+                        </td>
+                       </tr>
+                     </tbody>
+                   </table>
+                 <!-- End Body -->
+                 </td>
+                </tr>
+                <tr>
+                 <td align="center" valign="top">
+                   <!-- Footer -->
+                   <table id="template_footer" border="0" cellpadding="10" cellspacing="0" width="600">
+                    <tbody>
+                     <tr>
+                      <td style="padding: 0; -webkit-border-radius: 6px;" valign="top">
+                       <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                         <tbody>
+                           <tr>
+                            <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
+                                 <p>This email was sent from <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a></p>
+                            </td>
+                           </tr>
+                         </tbody>
+                       </table>
+                      </td>
+                     </tr>
+                    </tbody>
+                   </table>
+                 <!-- End Footer -->
+                 </td>
+                </tr>
+              </tbody>
+             </table>
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>`
+      }
+      mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
+          if (err) {
+              console.log(err);
+              return false;
+          } else {
+              console.log('Mail Send: ', info.response);
+              
+          }
+      })
+    })
+    return true;
+  }
+ 
+}
+
+//Function to count invitation label on current month 
+ async function countInvitationLabels(typeEnum, company_id) {
+  const sql = `SELECT labels, COUNT(*) AS label_count
+  FROM reviews
+  WHERE 
+      MONTH(created_at) = MONTH(CURRENT_DATE())
+      AND YEAR(created_at) = YEAR(CURRENT_DATE())
+      AND labels = '${typeEnum}'
+      AND company_id = '${company_id}'
+      GROUP BY labels;
+  `;
+  const result = await query(sql);
+  if(result.length > 0 ){
+    return result;
+  }else{
+    return [];
+  }
+ 
+}
 
 module.exports = {
   getFaqPage,
@@ -1012,5 +1489,20 @@ module.exports = {
   ReviewReplyTo,
   TotalReplied,
   ReviewReplyToCompany,
-  ReviewReplyToCustomer
+  ReviewReplyToCustomer,
+  reviewDataById,
+  updateReview,
+  countLike,
+  countDislike,
+  getAllReviewVoting,
+  updateCustomerReply,
+  getCompanyIdBySlug,
+  generateUniqueSlug,
+  getSubCategories,
+  getCompanyDetails,
+  getFilteredCompanyDetails,
+  getCompanyPollDetails,
+  insertInvitationDetails,
+  sendInvitationEmail,
+  countInvitationLabels
 };

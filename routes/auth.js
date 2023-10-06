@@ -169,6 +169,7 @@ router.post('/update-about', upload.fields([
 ]), authController.updateAbout);
 
 router.post('/add-review', authController.submitReview);
+router.post('/edit-user-review', authController.editUserReview);
 router.post('/delete-review', authController.deleteReview);
 router.post('/add-review-reply', authController.submitReviewReply);
 //---Rating Tags--------//
@@ -264,5 +265,20 @@ router.post('/reset_password', authController.resetPassword);
 
 //Change Password
 router.post('/change_password', authController.changePassword);
+
+//Review Voting (like dislike)
+router.post('/reviewVoting', authController.reviewVoting);
+
+//Create Poll
+router.post('/create-poll', authController.createPoll);
+
+//Update Poll Expire Date
+router.post('/update-poll-expire-date', authController.updatePollExpireDate);
+
+//Polling Route
+router.post('/user_polling', authController.userPolling);
+
+//Review Invitation Email
+router.post('/review_invitation', authController.reviewInvitation);
 
 module.exports = router;

@@ -19,6 +19,16 @@
                         height="354">
                     </div>
                   </div>
+                  <!--<div class="banner-counter-tag" style="background-image: url(../front-end/images/b-counter-bg2.svg);">
+                    Reviews
+                    <div class="counter-text">
+                      <% if( meta_values_array.reviews_count_visibility && meta_values_array.reviews_count_visibility == 'original' ){ %>
+                        <span class="count"><%= ReviewCount[0].total_reviews_count %></span>+
+                      <% }else{ %>
+                        <span class="count"><%= meta_values_array.reviews_count %></span>+
+                      <% } %>  
+                    </div>
+                  </div>-->
                 </div>
               </div>
               <div class="col-6">
@@ -33,6 +43,16 @@
                         height="255">
                     </div>
                   </div>
+                  <!--<div class="banner-counter-tag" style="background-image: url(../front-end/images/b-counter-bg1.svg);">
+                    Impression
+                    <div class="counter-text">
+                      <% if( meta_values_array.impression_number_visibility && meta_values_array.impression_number_visibility == 'original' ){ %>
+                        <span class="count"><%- VisitorCheck %></span>+
+                      <% }else{ %>
+                        <span class="count"><%= meta_values_array.impression_number %></span>+
+                      <% } %>  
+                    </div>
+                  </div>-->
                 </div>
                 <div class="banner-mas-img banner-mas-img2">
                   <div class="banner-slider3">
@@ -45,6 +65,16 @@
                         height="255">
                     </div>
                   </div>
+                  <!--<div class="banner-counter-tag" style="background-image: url(../front-end/images/b-counter-bg1.svg);">
+                    Total Users
+                    <div class="counter-text">
+                      <% if( meta_values_array.total_users_count_visibility && meta_values_array.total_users_count_visibility == 'original' ){ %>
+                        <span class="count"><%= UserCount[0].total_user_count %></span>+
+                      <% }else{ %>
+                        <span class="count"><%= meta_values_array.total_users_count %></span>+
+                      <% } %>
+                    </div>
+                  </div>-->
                 </div>
               </div>
             </div>
@@ -62,13 +92,47 @@
                 <div class="autofield-dropdown">
                 </div>
               </div>
+
+              <% if(PositiveReviewsCompany) { %>
+              <div class="banner-trending-scroll">
+                <div class="like-dislike-tren-label">
+                    <i class="fa-solid fa-thumbs-up"></i> Up Trending :
+                </div>
+                <div class="like-dislike-company-scroll">
+                    <marquee behavior="scroll" direction="left" onmouseover="this.stop();" onmouseout="this.start();">
+                        <ul>
+                          <% PositiveReviewsCompany.forEach( (company, index)=> {%>
+                            <li><a href="/company/<%- company.slug %>"><%- company.company_name %></a></li>
+                          <% })%>  
+                        </ul>
+                    </marquee>
+                </div>
+              </div>
+              <% } %>
+              <% if(NegativeReviewsCompany) { %>
+              <div class="banner-trending-scroll">
+                <div class="like-dislike-tren-label">
+                    <i class="fa-solid fa-thumbs-down"></i> Down Trending :
+                </div>
+                <div class="like-dislike-company-scroll">
+                    <marquee behavior="scroll" direction="left" onmouseover="this.stop();" onmouseout="this.start();">
+                        <ul>
+                          <% NegativeReviewsCompany.forEach( (company, index)=> {%>
+                            <li><a href="/company/<%- company.slug %>"><%- company.company_name %></a></li>
+                          <% })%> 
+                        </ul>
+                    </marquee>
+                </div>
+              </div>
+              <% } %>
+
               <!-- <h3><span>#CustomerRightsMatterBG</span></h3> -->
-              <p class="text-light"><span id="type-writing"><noscript>
+              <!-- <p class="text-light"><span id="type-writing"><noscript>
                     <%= meta_values_array.bannner_content_2 %>
                   </noscript></span></p>
               <h3><span id="type-writing2"><noscript>
                     <%= meta_values_array.bannner_hashtag %>
-                  </noscript></span></h3>
+                  </noscript></span></h3> -->
           </div>
         </div>
       </div>
@@ -87,7 +151,7 @@
   <!-- ============== Banner End =============== -->
 
   <!-- ============== Latest Reviews Start =============== -->
-  <section class="home-latest-reviews">
+  <!-- <section class="home-latest-reviews">
     <div class="container">
       <div class="review-slider-wrap">
         <h2 class="inner-main-head">Latest Customer Reviews</h2>
@@ -98,7 +162,7 @@
                 <div class="item">
                     <div class="review-box">
                       <div class="head_box d-flex align-items-center justify-content-between mb-2">
-                        <h3 style="margin:0"><a href="/company/<%= latestReview.company_id %>"><%= latestReview.company_name %></a></h3>
+                        <h3 style="margin:0"><a href="/company/<%= latestReview.slug %>"><%= latestReview.company_name %></a></h3>
                         <% var avg = latestReview.rating %>
                         <div class="user-rating">
                           <% allRatingTags.forEach( tag => { %>
@@ -173,13 +237,32 @@
                           </div>
                           
                           <% if(latestReview.review_reply_count==1 && currentUserData!= null && currentUserData.user_id == latestReview.customer_id ){ %>
-                          <span class="user-select-tag review-reply-btn"><a href="/company/<%- latestReview.company_id -%>#review-reply-<%- latestReview.id -%>">Reply</a></span> 
+                          <span class="user-select-tag review-reply-btn"><a href="/company/<%- latestReview.slug -%>#review-reply-<%- latestReview.id -%>">Reply</a></span> 
                           <% } %>
                       </div>
-                      <!-- <div class="review-like-dislike">
-                          <span><a href=""><i class="fa-solid fa-thumbs-up"></i> 10</a></span>
-                          <span><a href=""><i class="fa-solid fa-thumbs-down"></i> 8</a></span>
-                      </div> -->
+                      <% if(currentUserData  && currentUserData.user_id  ){ %>
+                        <% 
+                           var totalLikes = 0;
+                           var totalDislikes = 0;
+                           var user_voting_value = '';
+                           AllReviewVoting.forEach( (reviewVoting, index) => {
+                              if(reviewVoting.review_id == latestReview.id && reviewVoting.voting == '1'){
+                                 totalLikes ++ ;
+                              }
+                              if(reviewVoting.review_id == latestReview.id && reviewVoting.voting == '0'){
+                                 totalDislikes ++ ;
+                              }
+                              if(reviewVoting.review_id == latestReview.id && reviewVoting.customer_id == currentUserData.user_id){
+                                 user_voting_value = reviewVoting.voting;
+                              }
+                           }) 
+                        %>
+                        <div class="review-like-dislike" id="rev_<%= latestReview.id %>">
+                           <span><a href="#" class="review-voting like_class <% if(user_voting_value == '1'){ %> active <% } %>" data-voting="1" data-userId="<%= currentUserData.user_id %>" data-reviewId="<%= latestReview.id %>"><i class="fa-solid fa-thumbs-up"></i> <span class="like_count"><%= totalLikes %></span></a></span>
+
+                           <span><a href="#" class="review-voting dislike_class <% if(user_voting_value == '0'){ %> active <% } %>"  data-voting="0" data-userId="<%= currentUserData.user_id %>" data-reviewId="<%= latestReview.id %>"><i class="fa-solid fa-thumbs-down"></i> <span class="dislike_count"><%= totalDislikes %></span></a></span>
+                        </div>
+                     <% } %>
                     </div>
                 </div>
               <% }) %>
@@ -188,8 +271,187 @@
         </div>
       </div>
     </div>
-  </section>
+  </section> -->
   <!-- ============== Latest Reviews End =============== -->
+
+  <% if(latestReviews) { %>
+  <!-- ============= Our popular review start =============== -->
+  <section class="main-content pt-md-0 our-popular-content">
+    <div class="container">
+        <div class="default-content-area">
+            <h2 class="main-head text-center">Our Popular <span>Reviews</span></h2>
+            <div class="home-popular-review-area">
+             <!-- ================= box 1 start ======================= -->
+             <!-- for desktop show -->
+              <div class="home-popular-review-box-wrapper">
+                <% let rev_count = 0; %>
+                <% latestReviews.forEach( (latestReview, index)=> {%>
+                <% rev_count++; %>
+                <div class="home-popular-review-box home-popular-review-box<%= rev_count %>">
+                  <div class="home-popular-client">
+                    <% if(latestReview.user_privacy == 1) { %>
+                      <div class="home-client-img">
+                        <% if(latestReview && latestReview.profile_pic ) { %>
+                          <img src="/<%= latestReview.profile_pic %>" alt="img">
+                        <% } else { %>
+                          <img src="/assets/media/avatars/blank.png" alt="img">
+                        <% } %>
+                      </div>
+                      <h4><%= latestReview.first_name %> <%= latestReview.last_name %></h4>
+                    <% } else { %>
+                      <div class="home-client-img">
+                        <img src="front-end/images/blur-img.png" alt="img">
+                      </div>
+                      <h4><img src="front-end/images/blur-name.png" alt="img"></h4>
+                    <% } %>
+                    <!--<p>Level</p>-->
+                    <% var avg = latestReview.rating %>
+                    <div class="user-rating">
+                      <% allRatingTags.forEach( tag => { %>
+                        <% if(tag.review_rating_value == avg){ %>
+                        <span><img src="/<%= tag.rating_image %>" alt="" style="display: inline-block;" width="35"></span>
+                        <% } %>
+                      <% }) %> 
+                      <span><%= latestReview.rating %>/5</span>
+                      <% if(latestReview.labels == '2') { %>
+                        <span class="invited-tag ms-2">Invited</span>
+                      <% } %>
+                   </div>
+                  </div>
+                  <div class="home-popular-review-info">
+                    <a href="/company/<%= latestReview.slug %>"><h3><%= latestReview.company_name %></h3></a>
+                    <p><%- latestReview.review_content -%></p>
+                  </div>
+                </div>
+                <% if(rev_count == 3) { %>
+                  <% rev_count = 0; %>
+                <% } %>
+                <% }) %>
+              </div>
+
+              <!-- for mbl show -->
+              <div class="home-popular-review-slider">
+                <% latestReviews.forEach( (latestReview, index)=> {%>
+                <div class="item">
+                  <div class="home-popular-review-box">
+                    <div class="home-popular-client">
+                      <% if(latestReview.user_privacy == 1) { %>
+                      <div class="home-client-img">
+                        <% if(latestReview && latestReview.profile_pic ) { %>
+                          <img src="/<%= latestReview.profile_pic %>" alt="img">
+                        <% } else { %>
+                          <img src="/assets/media/avatars/blank.png" alt="img">
+                        <% } %>
+                      </div>
+                      <h4><%= latestReview.first_name %> <%= latestReview.last_name %></h4>
+                      <% } else { %>
+                      <div class="home-client-img">
+                        <img src="front-end/images/blur-img.png" alt="img">
+                      </div>
+                      <h4><img src="front-end/images/blur-name.png" alt="img"></h4>
+                      <% } %>
+                      <!--<p>Level</p>-->
+                      <% var avg = latestReview.rating %>
+                      <div class="user-rating">
+                        <% allRatingTags.forEach( tag => { %>
+                          <% if(tag.review_rating_value == avg){ %>
+                          <span><img src="/<%= tag.rating_image %>" alt="" style="display: inline-block;" width="35"></span>
+                          <% } %>
+                        <% }) %>
+                        <span><%= latestReview.rating %>/5</span>
+                     </div>
+                    </div>
+                    <div class="home-popular-review-info">
+                      <a href="/company/<%= latestReview.slug %>"><h3><%= latestReview.company_name %></h3></a>
+                      <p><%- latestReview.review_content -%></p>
+                    </div>
+                  </div>
+                </div>
+                <% }) %>
+              </div>
+
+            </div>
+        </div>
+    </div>
+  </section>
+  <!-- ============= Our popular review end =============== -->
+  <% } %>
+
+  <% if(PopularCategories.length>0) { %>
+  <!-- ============== Most Popular category Start =============== -->
+  <section class="main-content most-popular-categories-content">
+    <div class="container">
+      <div class="default-content-area">
+        <h4>Most Popular</h4>
+        <h2 class="main-head">Categories</h2>
+        <div class="row">
+          <% PopularCategories.forEach( category=> { %>
+          <div class="col-lg-3 col-sm-6">
+            <div class="popular-category-part">
+              <a href="category/<%= category.category_slug %>">
+                <% if(category.category_img){ %>
+                <img src="<%= category.category_img %>" alt="<%= category.category_name %>" loading="lazy" width="100" height="100">
+                <% }else{ %>
+                <img src="/front-end/images/company-placeholder-image.png" alt="<%= category.category_name %>" loading="lazy" width="100" height="100">
+                <% } %>
+              </a>
+              <a href="category/<%= category.category_slug %>"><%= category.category_name %></a>
+            </div>
+          </div>
+          <% }) %>
+        </div>
+        <div class="text-center">
+          <a href="/categories" class="view-more"><span class="position-relative"><i class="fa-solid fa-angle-right"></i>View More</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- ============== Most Popular category End =============== -->
+  <% } %>
+
+ <!-- ============== Featured Section Start =============== -->
+ <section class="main-content featured-content text-center">
+  <div class="container">
+    <div class="featured-object-wrap position-relative">
+      <h2 class="main-head">Featured <span>Companies</span></h2>
+      <div class="featured-slider">
+        <% if(featured_comps.length>0) { %>
+          <% featured_comps.forEach( company=> { %>
+            <div class="item">
+              <div class="feature-box">
+                <a href="company/<%= company.slug %>"><img src="/<%= company.logo %>" alt="img" width="118"
+                    height="45" class="mx-auto"></a>
+                <h5>
+                  <%= company.company_name %>
+                </h5>
+                <p class="m-0">
+                  <% var txt = company.short_desc; %>
+                  <% if(txt.length > 100) { 
+                    txt = txt.substr(0,100) + "...";
+                  } %>
+                  
+                    <%= txt %>
+                  
+                </p>
+              </div>
+            </div>
+            <% }) %>
+              <% } else { %>
+                <h1>There is no such Company</h1>
+                <% } %>
+      </div>
+      <div class="feature-man1" data-aos="fade-down"><img src="/front-end/images/feature-man1.png" alt="img"
+          width="198" height="169"></div>
+      <div class="feature-man2" data-aos="fade-down" data-aos-delay="500"><img
+          src="/front-end/images/feature-man2.png" alt="img" width="202" height="145"></div>
+      <div class="feature-man3" data-aos="fade-right"><img src="/front-end/images/feature-man3.png" alt="img"
+          width="131" height="226"></div>
+      <div class="feature-man4" data-aos="fade-left" data-aos-delay="300"><img
+          src="/front-end/images/feature-man4.png" alt="img" width="253" height="235"></div>
+    </div>
+  </div>
+</section>
+<!-- ============== Featured Section End =============== -->
 
   <!-- ============== Review section Start =============== -->
   <section class="main-content review-content">
@@ -231,6 +493,7 @@
         <div class="col-md-6">
           <div class="review-right mt-md-0 mt-5" data-aos="fade-left">
             <form id="review_submit_frm" name="review_submit_frm" action="" method="post">
+              <input type="hidden" name="review_lable" value="1" >
               <div class="row">
                 <!--<div class="col-md-12">
                        <div class="custom-form">
@@ -332,6 +595,20 @@
                 </div>
               </div>
               <div class="col-md-12">
+                <div class="custom-form">
+                  <span class="fw-bold d-inline-block me-2">Do you want the organisation to contact you?</span>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="user_contact" checked id="inlineRadio3"
+                      value="1">
+                    <label class="form-check-label" for="inlineRadio3">Yes</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="user_contact" id="inlineRadio4" value="0">
+                    <label class="form-check-label" for="inlineRadio4">No</label>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-12">
                 <div class="review-submit d-flex justify-content-between align-items-center">
                   <% if(currentUserData){ %>
                     <input type="submit" class="btn-default btn-warning" value="Submit">
@@ -378,49 +655,423 @@
   </div>
   <!-- ============== Review section End =============== -->
 
-  <!-- ============== Featured Section Start =============== -->
-  <section class="main-content featured-content text-center">
-    <div class="container">
-      <div class="featured-object-wrap position-relative">
-        <h2 class="main-head">Featured <span>Companies</span></h2>
-        <div class="featured-slider">
-          <% if(featured_comps.length>0) { %>
-            <% featured_comps.forEach( company=> { %>
-              <div class="item">
-                <div class="feature-box">
-                  <a href="company/<%= company.company_id %>"><img src="/<%= company.logo %>" alt="img" width="118"
-                      height="45" class="mx-auto"></a>
-                  <h5>
-                    <%= company.company_name %>
-                  </h5>
-                  <p class="m-0">
-                    <% var txt = company.short_desc; %>
-                    <% if(txt.length > 100) { 
-                      txt = txt.substr(0,100) + "...";
-                    } %>
-                    
-                      <%= txt %>
-                    
-                  </p>
+<!-- ============== Discussions section Start =============== -->
+<%#
+<section class="main-content discussion-content">
+  <div class="container">
+    <h2 class="text-center main-head"><small>View Our</small> <br> Discussions</h2>
+    <div class="row">
+      <div class="col-md-8">
+        <div class="discussions-left">
+          <div class="discussion-view">
+            <a href="http://localhost:5000/discussion" class="view-more mt-0"><span class="position-relative"><i class="fa-solid fa-angle-right"></i>View All</span></a>
+          </div>  
+          <div id="horizontalTab">
+            <ul class="resp-tabs-list">
+              <li>Recent</li>
+              <li>Top</li>
+              <li>Newest</li>
+              <li>Eldest</li>
+              <li>Popular</li>
+            </ul>
+            <div class="resp-tabs-container">
+              <div class="tab-content-wrap">
+                <div class="discussion-review-panel">
+                  <div class="discussion-user-img">
+                    <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
+                  </div>
+                  <div class="discussion-user-info">
+                    <h4>Lorem Ipsum</h4>
+                    <p>Created 5 days ago by Lorem Ipsum</p>
+                  </div>
+                  <div class="dis-comment-views">
+                    <a href="#">29 Comments</a>
+                    <a href="#">100views</a>
+                  </div>
+                </div>
+                <div class="discussion-review-panel">
+                  <div class="discussion-user-img">
+                    <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
+                  </div>
+                  <div class="discussion-user-info">
+                    <h4>Lorem Ipsum</h4>
+                    <p>Created 5 days ago by Lorem Ipsum</p>
+                  </div>
+                  <div class="dis-comment-views">
+                    <a href="#">29 Comments</a>
+                    <a href="#">100views</a>
+                  </div>
+                </div>
+                <div class="discussion-review-panel">
+                  <div class="discussion-user-img">
+                    <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
+                  </div>
+                  <div class="discussion-user-info">
+                    <h4>Lorem Ipsum</h4>
+                    <p>Created 5 days ago by Lorem Ipsum</p>
+                  </div>
+                  <div class="dis-comment-views">
+                    <a href="#">29 Comments</a>
+                    <a href="#">100views</a>
+                  </div>
+                </div>
+                <div class="discussion-review-panel">
+                  <div class="discussion-user-img">
+                    <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
+                  </div>
+                  <div class="discussion-user-info">
+                    <h4>Lorem Ipsum</h4>
+                    <p>Created 5 days ago by Lorem Ipsum</p>
+                  </div>
+                  <div class="dis-comment-views">
+                    <a href="#">29 Comments</a>
+                    <a href="#">100views</a>
+                  </div>
+                </div>
+                <div class="discussion-review-panel">
+                  <div class="discussion-user-img">
+                    <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
+                  </div>
+                  <div class="discussion-user-info">
+                    <h4>Lorem Ipsum</h4>
+                    <p>Created 5 days ago by Lorem Ipsum</p>
+                  </div>
+                  <div class="dis-comment-views">
+                    <a href="#">29 Comments</a>
+                    <a href="#">100views</a>
+                  </div>
+                </div>
+                <div class="discussion-review-panel">
+                  <div class="discussion-user-img">
+                    <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
+                  </div>
+                  <div class="discussion-user-info">
+                    <h4>Lorem Ipsum</h4>
+                    <p>Created 5 days ago by Lorem Ipsum</p>
+                  </div>
+                  <div class="dis-comment-views">
+                    <a href="#">29 Comments</a>
+                    <a href="#">100views</a>
+                  </div>
                 </div>
               </div>
-              <% }) %>
-                <% } else { %>
-                  <h1>There is no such Company</h1>
-                  <% } %>
+              <div class="tab-content-wrap">
+                <div class="discussion-review-panel">
+                  <div class="discussion-user-img">
+                    <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
+                  </div>
+                  <div class="discussion-user-info">
+                    <h4>Lorem Ipsum</h4>
+                    <p>Created 5 days ago by Lorem Ipsum</p>
+                  </div>
+                  <div class="dis-comment-views">
+                    <a href="#">29 Comments</a>
+                    <a href="#">100views</a>
+                  </div>
+                </div>
+                <div class="discussion-review-panel">
+                  <div class="discussion-user-img">
+                    <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
+                  </div>
+                  <div class="discussion-user-info">
+                    <h4>Lorem Ipsum</h4>
+                    <p>Created 5 days ago by Lorem Ipsum</p>
+                  </div>
+                  <div class="dis-comment-views">
+                    <a href="#">29 Comments</a>
+                    <a href="#">100views</a>
+                  </div>
+                </div>
+              </div>
+              <div class="tab-content-wrap">
+                <div class="discussion-review-panel">
+                  <div class="discussion-user-img">
+                    <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
+                  </div>
+                  <div class="discussion-user-info">
+                    <h4>Lorem Ipsum</h4>
+                    <p>Created 5 days ago by Lorem Ipsum</p>
+                  </div>
+                  <div class="dis-comment-views">
+                    <a href="#">29 Comments</a>
+                    <a href="#">100views</a>
+                  </div>
+                </div>
+                <div class="discussion-review-panel">
+                  <div class="discussion-user-img">
+                    <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
+                  </div>
+                  <div class="discussion-user-info">
+                    <h4>Lorem Ipsum</h4>
+                    <p>Created 5 days ago by Lorem Ipsum</p>
+                  </div>
+                  <div class="dis-comment-views">
+                    <a href="#">29 Comments</a>
+                    <a href="#">100views</a>
+                  </div>
+                </div>
+                <div class="discussion-review-panel">
+                  <div class="discussion-user-img">
+                    <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
+                  </div>
+                  <div class="discussion-user-info">
+                    <h4>Lorem Ipsum</h4>
+                    <p>Created 5 days ago by Lorem Ipsum</p>
+                  </div>
+                  <div class="dis-comment-views">
+                    <a href="#">29 Comments</a>
+                    <a href="#">100views</a>
+                  </div>
+                </div>
+              </div>
+              <div class="tab-content-wrap">
+                <div class="discussion-review-panel">
+                  <div class="discussion-user-img">
+                    <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
+                  </div>
+                  <div class="discussion-user-info">
+                    <h4>Lorem Ipsum</h4>
+                    <p>Created 5 days ago by Lorem Ipsum</p>
+                  </div>
+                  <div class="dis-comment-views">
+                    <a href="#">29 Comments</a>
+                    <a href="#">100views</a>
+                  </div>
+                </div>
+                <div class="discussion-review-panel">
+                  <div class="discussion-user-img">
+                    <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
+                  </div>
+                  <div class="discussion-user-info">
+                    <h4>Lorem Ipsum</h4>
+                    <p>Created 5 days ago by Lorem Ipsum</p>
+                  </div>
+                  <div class="dis-comment-views">
+                    <a href="#">29 Comments</a>
+                    <a href="#">100views</a>
+                  </div>
+                </div>
+                <div class="discussion-review-panel">
+                  <div class="discussion-user-img">
+                    <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
+                  </div>
+                  <div class="discussion-user-info">
+                    <h4>Lorem Ipsum</h4>
+                    <p>Created 5 days ago by Lorem Ipsum</p>
+                  </div>
+                  <div class="dis-comment-views">
+                    <a href="#">29 Comments</a>
+                    <a href="#">100views</a>
+                  </div>
+                </div>
+                <div class="discussion-review-panel">
+                  <div class="discussion-user-img">
+                    <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
+                  </div>
+                  <div class="discussion-user-info">
+                    <h4>Lorem Ipsum</h4>
+                    <p>Created 5 days ago by Lorem Ipsum</p>
+                  </div>
+                  <div class="dis-comment-views">
+                    <a href="#">29 Comments</a>
+                    <a href="#">100views</a>
+                  </div>
+                </div>
+                <div class="discussion-review-panel">
+                  <div class="discussion-user-img">
+                    <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
+                  </div>
+                  <div class="discussion-user-info">
+                    <h4>Lorem Ipsum</h4>
+                    <p>Created 5 days ago by Lorem Ipsum</p>
+                  </div>
+                  <div class="dis-comment-views">
+                    <a href="#">29 Comments</a>
+                    <a href="#">100views</a>
+                  </div>
+                </div>
+              </div>
+              <div class="tab-content-wrap">
+                <div class="discussion-review-panel">
+                  <div class="discussion-user-img">
+                    <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
+                  </div>
+                  <div class="discussion-user-info">
+                    <h4>Lorem Ipsum</h4>
+                    <p>Created 5 days ago by Lorem Ipsum</p>
+                  </div>
+                  <div class="dis-comment-views">
+                    <a href="#">29 Comments</a>
+                    <a href="#">100views</a>
+                  </div>
+                </div>
+                <div class="discussion-review-panel">
+                  <div class="discussion-user-img">
+                    <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
+                  </div>
+                  <div class="discussion-user-info">
+                    <h4>Lorem Ipsum</h4>
+                    <p>Created 5 days ago by Lorem Ipsum</p>
+                  </div>
+                  <div class="dis-comment-views">
+                    <a href="#">29 Comments</a>
+                    <a href="#">100views</a>
+                  </div>
+                </div>
+                <div class="discussion-review-panel">
+                  <div class="discussion-user-img">
+                    <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
+                  </div>
+                  <div class="discussion-user-info">
+                    <h4>Lorem Ipsum</h4>
+                    <p>Created 5 days ago by Lorem Ipsum</p>
+                  </div>
+                  <div class="dis-comment-views">
+                    <a href="#">29 Comments</a>
+                    <a href="#">100views</a>
+                  </div>
+                </div>
+                <div class="discussion-review-panel">
+                  <div class="discussion-user-img">
+                    <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
+                  </div>
+                  <div class="discussion-user-info">
+                    <h4>Lorem Ipsum</h4>
+                    <p>Created 5 days ago by Lorem Ipsum</p>
+                  </div>
+                  <div class="dis-comment-views">
+                    <a href="#">29 Comments</a>
+                    <a href="#">100views</a>
+                  </div>
+                </div>
+                <div class="discussion-review-panel">
+                  <div class="discussion-user-img">
+                    <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
+                  </div>
+                  <div class="discussion-user-info">
+                    <h4>Lorem Ipsum</h4>
+                    <p>Created 5 days ago by Lorem Ipsum</p>
+                  </div>
+                  <div class="dis-comment-views">
+                    <a href="#">29 Comments</a>
+                    <a href="#">100views</a>
+                  </div>
+                </div>
+                <div class="discussion-review-panel">
+                  <div class="discussion-user-img">
+                    <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
+                  </div>
+                  <div class="discussion-user-info">
+                    <h4>Lorem Ipsum</h4>
+                    <p>Created 5 days ago by Lorem Ipsum</p>
+                  </div>
+                  <div class="dis-comment-views">
+                    <a href="#">29 Comments</a>
+                    <a href="#">100views</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="feature-man1" data-aos="fade-down"><img src="/front-end/images/feature-man1.png" alt="img"
-            width="198" height="169"></div>
-        <div class="feature-man2" data-aos="fade-down" data-aos-delay="500"><img
-            src="/front-end/images/feature-man2.png" alt="img" width="202" height="145"></div>
-        <div class="feature-man3" data-aos="fade-right"><img src="/front-end/images/feature-man3.png" alt="img"
-            width="131" height="226"></div>
-        <div class="feature-man4" data-aos="fade-left" data-aos-delay="300"><img
-            src="/front-end/images/feature-man4.png" alt="img" width="253" height="235"></div>
+      </div>
+      <div class="col-md-4">
+        <div class="discussions-right mt-md-0 mt-4">
+          <div class="discussions-right-panel">
+            <h4>Popular Discussions</h4>
+            <div class="dis-right-panel-item">
+              <div class="dis-r-panel-item-left">
+                <a href="#"><i class="fa-regular fa-arrow-right-long"></i>Lorem Ipsum</a> 
+              </div>
+              <div class="dis-r-panel-item-right">
+                78
+              </div>
+            </div>
+            <div class="dis-right-panel-item">
+              <div class="dis-r-panel-item-left">
+                <a href="#"><i class="fa-regular fa-arrow-right-long"></i>Lorem Ipsum</a> 
+              </div>
+              <div class="dis-r-panel-item-right">
+                50
+              </div>
+            </div>
+            <div class="dis-right-panel-item">
+              <div class="dis-r-panel-item-left">
+                <a href="#"><i class="fa-regular fa-arrow-right-long"></i>Lorem Ipsum</a> 
+              </div>
+              <div class="dis-r-panel-item-right">
+                33
+              </div>
+            </div>
+            <div class="dis-right-panel-item">
+              <div class="dis-r-panel-item-left">
+                <a href="#"><i class="fa-regular fa-arrow-right-long"></i>Lorem Ipsum</a> 
+              </div>
+              <div class="dis-r-panel-item-right">
+                42
+              </div>
+            </div>
+            <div class="dis-right-panel-item">
+              <div class="dis-r-panel-item-left">
+                <a href="#"><i class="fa-regular fa-arrow-right-long"></i>Lorem Ipsum</a> 
+              </div>
+              <div class="dis-r-panel-item-right">
+                12
+              </div>
+            </div>
+          </div>
+          <div class="discussions-right-panel">
+            <h4>Popular Showcase</h4>
+            <div class="dis-right-panel-item">
+              <div class="dis-r-panel-item-left">
+                <a href="#"><i class="fa-regular fa-arrow-right-long"></i>Lorem Ipsum</a> 
+              </div>
+              <div class="dis-r-panel-item-right">
+                78
+              </div>
+            </div>
+            <div class="dis-right-panel-item">
+              <div class="dis-r-panel-item-left">
+                <a href="#"><i class="fa-regular fa-arrow-right-long"></i>Lorem Ipsum</a> 
+              </div>
+              <div class="dis-r-panel-item-right">
+                50
+              </div>
+            </div>
+            <div class="dis-right-panel-item">
+              <div class="dis-r-panel-item-left">
+                <a href="#"><i class="fa-regular fa-arrow-right-long"></i>Lorem Ipsum</a> 
+              </div>
+              <div class="dis-r-panel-item-right">
+                33
+              </div>
+            </div>
+            <div class="dis-right-panel-item">
+              <div class="dis-r-panel-item-left">
+                <a href="#"><i class="fa-regular fa-arrow-right-long"></i>Lorem Ipsum</a> 
+              </div>
+              <div class="dis-r-panel-item-right">
+                42
+              </div>
+            </div>
+            <div class="dis-right-panel-item">
+              <div class="dis-r-panel-item-left">
+                <a href="#"><i class="fa-regular fa-arrow-right-long"></i>Lorem Ipsum</a> 
+              </div>
+              <div class="dis-r-panel-item-right">
+                12
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </section>
-  <!-- ============== Featured Section End =============== -->
+  </div>
+</section>
+#%>
+<!-- ============== Discussions section End =============== -->
+
+ 
 
   <!-- ============== Social Widgets Start =============== -->
   <section class="main-content social-widgets-content py-0">
@@ -963,7 +1614,7 @@
                   let respData = data.data;
                   let html = '<ul class="p-0 m-0">';
                   respData.forEach(company => {
-                    html += '<li><a href="#" data-resulttitle="' + company.company_name + '" data-resultexcerpt="' + company.about_company + '" data-resultpermalink="/company/' + company.ID + '" >' + company.company_name + '</a></li>';
+                    html += '<li><a href="#" data-resulttitle="' + company.company_name + '" data-resultexcerpt="' + company.about_company + '" data-resultpermalink="/company/' + company.slug + '" >' + company.company_name + '</a></li>';
                   });
                   html += '</ul>';
                   $('.autofield-dropdown').html(html);
@@ -1183,6 +1834,48 @@
           }
         });
       });
+
+      $(".review-voting").click(function(e){
+         e.preventDefault();
+         var votingValue = $(this).attr("data-voting");
+         var userId = $(this).attr("data-userId");
+         var reviewId = $(this).attr("data-reviewId");
+         console.log(votingValue,userId,reviewId);
+         var votingData = {
+            votingValue:votingValue,
+            userId:userId,
+            reviewId:reviewId
+         };
+         var jsonData = JSON.stringify(votingData);
+         console.log(votingData)
+         $.ajax({
+            url:'/auth/reviewVoting',
+            method:'POST',
+            data:votingData,
+            success: function(data) {
+               if (data.status == 'ok') {
+                  var updatedLike = data.totalLike.totalLike;
+                  var updatedDislike = data.totalDislike.totalDislike;
+                  var responseReviewId = data.reviewId;
+                  var votingValue = data.votingValue;
+                  if (votingValue == '1') {
+                     $('#rev_'+responseReviewId).find('.like_class').addClass('active')
+                     $('#rev_'+responseReviewId).find('.dislike_class').removeClass('active')
+                  } else {
+                     
+                     $('#rev_'+responseReviewId).find('.like_class').removeClass('active')
+                     $('#rev_'+responseReviewId).find('.dislike_class').addClass('active')
+                  }
+                  // Update the value displayed on the page thumbs-down-link
+                  $('#rev_'+responseReviewId).find('.like_count').text(updatedLike);
+                  $('#rev_'+responseReviewId).find('.dislike_count').text(updatedDislike);
+                  
+               }else{
+                  console.log('Error on response')
+               }
+            }
+         })
+      })
     </script>
 
     <script src="https://maps.googleapis.com/maps/api/js?key=<%= AddressapiKey %>&libraries=places&callback=initMap"
