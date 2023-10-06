@@ -3545,6 +3545,7 @@ exports.updatePremiumCompany =async (req, res) => {
     //console.log('PremiumCompany File:',req.files);
 
     const companyID = req.body.company_id;
+    const companySlug = req.body.company_slug;
     const currentDate = new Date();
 
     const year = currentDate.getFullYear();
@@ -3761,7 +3762,7 @@ exports.updatePremiumCompany =async (req, res) => {
                                 return res.send(
                                     {
                                         status: 'ok',
-                                        data: companyID,
+                                        data: companySlug,
                                         message: 'Successfully Updated'
                                     }
                                 )
@@ -3773,7 +3774,7 @@ exports.updatePremiumCompany =async (req, res) => {
                         const Products = JSON.stringify(ProductData);
                         const Promotion = JSON.stringify(PromotionalData);
 
-                        const premium_query = `INSERT INTO premium_company_data ( company_id, cover_img, gallery_img, youtube_iframe, promotions, products, facebook_url, twitter_url, instagram_url, linkedin_url, youtube_url, support_email, escalation_one, escalation_two, escalation_three) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+                        const premium_query = `INSERT INTO premium_company_data ( company_id, cover_img, gallery_img, youtube_iframe, promotions, products, facebook_url, twitter_url, instagram_url, linkedin_url, youtube_url, support_email, escalation_one, escalation_two, escalation_three) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
                         const premium_data = [companyID, coverImg, galleryimg, youtube_iframe, Promotion, Products, facebook_url, twitter_url, instagram_url, linkedin_url, youtube_url, support_email, escalation_one, escalation_two, escalation_three];
                         db.query(premium_query, premium_data, (premium_err, premium_result)=>{
                             if (premium_err) {
@@ -3787,7 +3788,7 @@ exports.updatePremiumCompany =async (req, res) => {
                                 return res.send(
                                     {
                                         status: 'ok',
-                                        data: companyID,
+                                        data: companySlug,
                                         message: 'Successfully Updated'
                                     }
                                 )

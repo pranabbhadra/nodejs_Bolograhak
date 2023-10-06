@@ -11,6 +11,7 @@
             <div class="company_profile_management">
                 <form id="premium_company_profile_form" enctype="multipart/form-data">
                     <input type="hidden" name="company_id" value="<%= company.ID  %>"/>
+                    <input type="hidden" name="company_slug" value="<%= company.slug  %>"/>
                     <input type="hidden" name="previous_logo" value="<%= company.logo %>"/>
                     <div class="each_box update_basic_information">
                         <h2>Basic informations</h2>
