@@ -504,11 +504,13 @@
     box-shadow: none;
     padding: 0;
 }
-.premium_company_profile .basic_info_of_company{
+.premium_company_profile .basic_info_of_company {
     padding: 15px 15px;
     border-radius: 10px;
     background: #FFF;
     box-shadow: 0px 24px 34px 0px rgba(0, 0, 0, 0.70);
+    position: relative;
+    z-index: 9;
 }
 .basic_info_of_company .social_links{
     width: 100%;
@@ -1259,6 +1261,185 @@
     background-position: left top 10px;
 }
 
+.complain-profile-content .custom-table thead,
+.complain-profile-content .custom-table tbody td,
+.complain-profile-content .action-select {
+    font-size: 12px;
+}
+
+.complain-profile-content table.dataTable thead .sorting:before, 
+.complain-profile-content table.dataTable thead .sorting:after, 
+.complain-profile-content table.dataTable thead .sorting_asc:before, 
+.complain-profile-content table.dataTable thead .sorting_asc:after, 
+.complain-profile-content table.dataTable thead .sorting_desc:before, 
+.complain-profile-content table.dataTable thead .sorting_desc:after, 
+.complain-profile-content table.dataTable thead .sorting_asc_disabled:before, 
+.complain-profile-content table.dataTable thead .sorting_asc_disabled:after, 
+.complain-profile-content table.dataTable thead .sorting_desc_disabled:before, 
+.complain-profile-content table.dataTable thead .sorting_desc_disabled:after {
+    bottom: 14px;
+}
+
+.premium-complain-m-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.premium-complain-m-head h2.inner-main-head,
+.premium-complain-m-head a,
+.premium-alert-part h2.inner-main-head {
+    color: #FCCB06;
+}
+
+.premium-complain-m-head a:hover {
+    color: #ffffff;
+}
+
+.premium-complain-m-wrap {
+    width: 100%;
+    max-width: 750px;
+    margin: 0 auto;
+    border-radius: 8px;
+    background: #FFF;
+    padding: 25px 40px;
+    margin-top: 30px;
+    position: relative;
+    z-index: 9;
+}
+
+.premium-complain-m-content-head,
+.premium-complain-m-content-repeat {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    gap: 10px;
+}
+
+
+.premium-complain-m-content-head .premium-complain-m-content-part {
+    font-size: 28px;
+    font-weight: 700;
+    width: 50%;
+    text-align: center;
+}
+
+.premium-complain-m-content-body {
+    position: relative;
+}
+
+.premium-complain-m-content-body + .premium-complain-m-content-body {
+    border-top: 1px #9A9A9A dashed;
+}
+
+.premium-complain-m-content-body .premium-complain-m-content-part {
+    padding: 14px 0;
+    font-size: 22px;
+    font-weight: 700;
+    width: 50%;
+    text-align: center;
+}
+
+.premium-complain-m-content-body .btn-default {
+    padding: 7px 10px;
+}
+
+.edit-email {
+    max-width: 400px;
+    margin: 0 auto;
+    display: none;
+}
+
+.edit-email .form-control {
+    border: 1px solid #FCCB06;
+    background: #F5F5F5;
+}
+
+.edit-email .row>* {
+    position: relative;
+}
+
+.add-email-btn {
+    position: absolute;
+    right: -15px;
+    bottom: 15px;
+    color: #FCCB06;
+}
+
+.add-email-btn:hover {
+    color: #000;
+}
+
+.add-email-field {
+    display: none;
+}
+
+.edit-email .row>* .add-email-field:first-child {
+    display: block;
+}
+
+.premium-complain-m-content-body.active {
+    box-shadow: 0px 25px 37px rgba(0, 0, 0, 0.10);
+    padding: 0 10px 15px 10px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    background: url(/front-end/images/edit-email-bg.svg) no-repeat bottom;
+    background-size: 100%;
+}
+
+.premium-alert-box {
+    max-width: 555px;
+    margin: auto;
+    border-radius: 8px;
+    background: #FCCB06 url(/front-end/images/alert-bg.svg) no-repeat center;
+    background-size: 100%;
+    padding: 30px;
+    margin-top: 30px;
+}
+
+.premium-alert-box .btn-group.btn-toggle {
+    background: #fff;
+    padding: 3px;
+    width: 102px;
+}
+
+.premium-alert-box .btn-sm {
+    font-size: 12px;
+}
+
+.premium-alert-box .btn.active {
+    background-color: #000;
+    border-color: #000;
+    color: #F4DD35;
+}
+
+.premium-alert-box .form-control {
+    width: 102px;
+}
+
+.premium-alert-box .col-form-label {
+    width: 220px;
+}
+
+.premium-alert-part {
+    position: relative;
+    z-index: 9;
+}
+
+.c-overlay1 {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.c-overlay2 {
+    position: absolute;
+    bottom: 60px;
+    left: 0;
+}
+
+
 /*========================================= responsive ====================================*/
 
 
@@ -1354,6 +1535,18 @@
     .premium_company_profile .data_by_locations .total_reviews .count{
         font-size: 30px;
     }
+
+    .premium-complain-m-content-head .premium-complain-m-content-part {
+        font-size: 18px;
+    }
+
+    .premium-complain-m-content-body .premium-complain-m-content-part {
+        font-size: 16px;
+    }
+
+    .premium-complain-m-wrap {
+        padding: 25px 20px;
+    }
 }
 
 @media only screen and (max-width: 575px) {
@@ -1441,6 +1634,10 @@
     .change-expire-date-btn span {
         font-size: 14px;
     }
+
+    .premium-complain-m-head {
+        display: block;
+    }
 }
 
 @media only screen and (max-width: 480px) {
@@ -1458,5 +1655,11 @@
     }
     .display_tags .all_tags > .row > .col-3{
         width: 50%;
+    }
+}
+
+@media only screen and (max-width: 420px) {
+    .premium-alert-box .col-form-label {
+        text-align: center;
     }
 }

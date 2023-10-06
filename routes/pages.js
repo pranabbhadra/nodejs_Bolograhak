@@ -1029,6 +1029,69 @@ router.get('/basic-complain-free', checkCookieValue, async (req, res) => {
     //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
 });
 
+//basic register complain page
+router.get('/complain-profile', checkCookieValue, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
+    const [globalPageMeta] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+    ]);
+    try {
+
+        res.render('front-end/complain-profile', {
+            menu_active_id: 'complain-profile',
+            page_title: 'Dashboard',
+            currentUserData,
+            globalPageMeta:globalPageMeta
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+    //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
+});
+
+//permium complain management page
+router.get('/premium-complain-management', checkCookieValue, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
+    const [globalPageMeta] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+    ]);
+    try {
+
+        res.render('front-end/premium-complain-management', {
+            menu_active_id: 'premium-complain-management',
+            page_title: 'Dashboard',
+            currentUserData,
+            globalPageMeta:globalPageMeta
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+    //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
+});
+
+//permium complain management page
+router.get('/premium-alert', checkCookieValue, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
+    const [globalPageMeta] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+    ]);
+    try {
+
+        res.render('front-end/premium-alert', {
+            menu_active_id: 'premium-alert',
+            page_title: 'Dashboard',
+            currentUserData,
+            globalPageMeta:globalPageMeta
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+    //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
+});
+
 
 //-----------------------------------------------------------------//
 

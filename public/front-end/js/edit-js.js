@@ -709,7 +709,11 @@ jQuery(function ($) {
   $(".add-qut").click(function(e){
     e.preventDefault();
     $(".qst-repeat:hidden").slice(0,1).fadeIn("slow");
-  
+  });
+
+  $(".add-email-btn").click(function(e){
+    e.preventDefault();
+    $(this).parents(".edit-email").find(".add-email-field:hidden").slice(0,1).fadeIn("slow");
   });
 
 
@@ -1191,6 +1195,28 @@ $('.form-check-input').click(function() {
     }
 });
 /*=========================== Create survey add question add option End =================*/
+
+/*=========================== Edit email start =================*/
+$(".edit-save-btn").click(function(e){
+e.preventDefault();
+  $(this).parents(".premium-complain-m-content-body").find(".edit-email").slideToggle();
+  $(this).parents(".premium-complain-m-content-body").toggleClass("active");
+  if ($(this).text() == "Edit") {
+    $(this).text("Save");
+  } else {
+    $(this).text("Edit");
+  }
+});
+/*=========================== Edit email End =================*/
+
+/*=========================== btn switch toggle start =================*/
+$('.premium-alert-box .btn-toggle').click(function() {
+  $(this).find('.btn').toggleClass('active'); 
+  if ($(this).find('.btn-primary').length>0) {
+    $(this).find('.btn').toggleClass('btn-primary');
+  }
+});
+/*=========================== btn switch toggle End =================*/
 
 
 
