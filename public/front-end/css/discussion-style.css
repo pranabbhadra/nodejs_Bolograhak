@@ -280,6 +280,10 @@
 
 .discussion-details-panel {
     position: relative;
+}
+
+.user-comment-repeat {
+    position: relative;
     padding-left: 75px;
     margin-top: 28px;
 }
@@ -353,10 +357,51 @@
     color: #ffffff;
 }
 
-/* .discussionpage-nav {
-    overflow: auto;
-    position: -webkit-sticky;
-    position: sticky;
-    top: 5%;
-} */
+#sendreviewtags {
+    border: 2px solid #fccb06;
+    padding: 5px 9px;
+    border-radius: 6px;
+    margin-bottom: 32px;
+}
+
+#sendreviewtags > span {
+    cursor: pointer;
+    display: block;
+    float: left;
+    color: #fff;
+    background: #fccb06;
+    padding: 7px;
+    padding-right: 25px;
+    margin: 4px;
+    border-radius: 4px;
+}
+
+#sendreviewtags > span:hover{
+    opacity:0.7;
+}
+
+#sendreviewtags > span:after{
+    position:absolute;
+    content:"×";
+    border:1px solid;
+    padding:2px 5px;
+    margin-left:3px;
+    font-size:11px;
+}
+
+#sendreviewtags > input {
+    background: #f2f2f2;
+    border: 0;
+    margin: 4px;
+    padding: 7px;
+    width: auto;
+    border-radius: 4px;
+    outline: none;
+}
+
+.bulk-upload label {
+    font-weight: 600;
+    margin-bottom: 7px;
+    font-size: 18px;
+}
 /*=============== Discussion Content End ==============*/

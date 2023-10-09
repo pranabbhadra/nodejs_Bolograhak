@@ -500,7 +500,7 @@
                         <a href="#" class="btn-default btn-warning pop-tag-btn">Lorem Ipsum</a> <a href="#" class="btn-default btn-warning pop-tag-btn">Lorem Ipsum</a> <a href="#" class="btn-default btn-warning pop-tag-btn">Lorem Ipsum</a> <a href="#" class="btn-default btn-warning pop-tag-btn">Lorem Ipsum</a> <a href="#" class="btn-default btn-warning pop-tag-btn">Lorem Ipsum</a> <a href="#" class="btn-default btn-warning pop-tag-btn">Lorem Ipsum</a>
                 </div>
                 <div class="start-a-discussion-btn text-center">
-                    <a href="http://localhost:5000/discussion-details" class="btn-default btn-dark"><i class="fa-solid fa-pen-to-square"></i> Start A Discussion</a>
+                    <a href="#" class="btn-default btn-dark" data-bs-toggle="modal" data-bs-target="#creatediscussion"><i class="fa-solid fa-pen-to-square"></i> Start A Discussion</a>
                 </div>
             </div>
             </div>
@@ -508,6 +508,32 @@
         </div>
     </div>
   </section>
+
+  <!-- The Modal -->
+<div class="modal fade" id="creatediscussion">
+    <div class="modal-dialog">
+      <div class="modal-content">
+  
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <!-- Modal body -->
+        <div class="modal-body">
+          <form>
+            <div id="sendreviewtags">
+                <input type="text" name="emails" placeholder="Add an email" data-gtm-form-interact-field-id="0">
+             </div>
+             <div class="custom-form">
+                <label><span style="background-color: #ffffff;">Message</span></label>
+                <textarea name="email_body" id="" class="form-control mb-4"></textarea>
+             </div>
+             <input type="submit" class="btn-default btn-warning" value="Submit">
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 
 <!-- ============== Section1 End =============== -->
 
