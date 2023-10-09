@@ -4559,7 +4559,7 @@ exports.addReviewFlag = async (req, res) => {
 
 //Add  Review Flag site admin response
 exports.updateReviewFlag = async (req, res) => {
-    console.log('updateReviewFlag',req.body ); 
+    //console.log('updateReviewFlag',req.body ); 
     const [updateFlagDetails] = await Promise.all([
         comFunction2.updateFlagDetails(req.body),
         comFunction2.flagApprovedEmail(req.body),
