@@ -587,7 +587,11 @@
 	.most-popular-categories-content:before,
 	.most-popular-categories-content:after,
 	.discussion-page-content:before,
-	.discussion-page-content:after {
+	.discussion-page-content:after,
+	.survey-content:before,
+	.survey-content:after,
+	.complain-content:before,
+	.complain-content:after {
 		background-size: 52%;
 	}
 
@@ -811,6 +815,15 @@
 		padding: 22px 30px;
 	}
 
+	.c-overlay2,
+	.c-overlay1 {
+		width: 100px;
+	}
+
+	.complain-register-form {
+		padding: 30px 20px;
+	}
+
 }
 
 @media only screen and (max-width:840.98px) {
@@ -869,6 +882,15 @@
 
 	.discussions-left .lang-dropdown ul {
 		text-align: left;
+	}
+
+	.create-survey-head {
+		display: block;
+		gap: 0;
+	}
+
+	.survey-title {
+		margin-bottom: 15px;
 	}
 }
 
@@ -1476,6 +1498,18 @@
 		display: block;
 	}
 
+	.survey-rating-part ul li {
+		margin: 0 7px;
+	}
+
+	.survey-rating-part ul li a img {
+		width: 28px;
+	}
+
+	.survey-rating-part {
+		font-size: 16px;
+	}
+
 }
 
 @media only screen and (max-width:660.98px) {
@@ -1818,7 +1852,11 @@
 	.most-popular-categories-content:before,
 	.most-popular-categories-content:after,
 	.discussion-page-content:before,
-	.discussion-page-content:after {
+	.discussion-page-content:after,
+	.survey-content:before,
+	.survey-content::after,
+	.complain-content:before,
+	.complain-content:after {
 		background-size: 35%;
 	}
 
@@ -2168,6 +2206,26 @@
 	.modal-slide-in .slick-dots li {
 		margin: 0 3px;
 	}
+
+	.survey-head {
+		font-size: 16px;
+		padding-left: 15px;
+		padding-right: 15px;
+	}
+
+	.survey-body {
+		padding-left: 15px;
+		padding-right: 15px;
+	}
+
+	.complain-overlay-object1 {
+		width: 20px;
+		left: 42%;
+	}
+
+	.custom-form {
+		margin-bottom: 20px;
+	}
 	
 
 }
@@ -2231,6 +2289,15 @@
 	.profile-info-table table th {
 		padding: 18px 9px;
 		font-size: 12px;
+	}
+
+	.survey-rating {
+		display: block;
+		text-align: center;
+	}
+
+	.survey-rating-part + .survey-rating-part {
+		margin: 20px 0 0 0;
 	}
 }
 
@@ -2311,6 +2378,10 @@
 
 	.popular-category-part p {
 		text-align: center !important;
+	}
+
+	body {
+		padding-top: 81px;
 	}
 
 }

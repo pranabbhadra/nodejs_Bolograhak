@@ -2760,7 +2760,7 @@ h4 {
 }
 
 .btn-dark:hover {
-    background: #FCCB06;
+    background-color: transparent;
     color: #000000;
 }
 
@@ -3061,6 +3061,10 @@ h2.inner-main-head small {
     height: 95px;
     padding-top: 20px;
     padding-bottom: 20px;
+}
+
+.text-yellow {
+    color: #f8a401;
 }
 
 /*============== Custom Form ==============*/

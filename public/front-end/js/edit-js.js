@@ -623,6 +623,21 @@ jQuery(function ($) {
       $(".custom-select-dropdown").slideUp();
   });
 
+  // =================================table action button start
+
+  $(".action-arw").click(function (e) {
+    e.preventDefault();
+    $(this).parent(".action-select").find(".action-dropdown").slideToggle();
+  });
+
+  //SELECT OPTIONS AND HIDE OPTION AFTER SELECTION
+  $(".action-dropdown ul li a").click(function (e) {
+    e.preventDefault();
+    var text = $(this).html();
+    $(this).parents(".action-select").find(".action-change").html(text);
+    $(this).parents(".action-select").find(".action-dropdown").slideUp();
+  });
+
   // /////////////////////////////////////// language / Country and custom Select end
 
   // /////////////////////////////////////// Load More Blog slice Start
@@ -679,6 +694,29 @@ jQuery(function ($) {
          $(".load-all-categories").hide();
     }
   });
+
+  $(".add-option").click(function(e){
+    e.preventDefault();
+    $(this).parent(".create-survey-field-repater").find(".multiple-ans-repeat:hidden").slice(0,1).fadeIn("slow");
+  });
+
+  $(".add-option").click(function(e){
+    e.preventDefault();
+    $(this).parent(".create-survey-field-repater2").find(".multiple-ans-repeat:hidden").slice(0,1).fadeIn("slow");
+  });
+
+  $(".qst-repeat").slice(0,1).show();
+  $(".add-qut").click(function(e){
+    e.preventDefault();
+    $(".qst-repeat:hidden").slice(0,1).fadeIn("slow");
+  });
+
+  $(".add-email-btn").click(function(e){
+    e.preventDefault();
+    $(this).parents(".edit-email").find(".add-email-field:hidden").slice(0,1).fadeIn("slow");
+  });
+
+
 
   //$(".multiple-ans-repeat").slice(0,0).show();
   // $(".add-ans-btn").click(function(e){
@@ -1110,6 +1148,7 @@ $(".create-poll-btn .btn-default").click(function(e){
 $(".remove-ans").click(function(){
 $(this).parents(".multiple-ans-repeat").find(".custom-form").hide();
 });
+
 /*=========================== Remove multiple answer function End =================*/
 
 /*=========================== Send Review request tags start =================*/
@@ -1128,6 +1167,58 @@ $('#sendreviewtags').on('click', 'span', function() {
   if(confirm("Remove "+ $(this).text() +"?")) $(this).remove(); 
 });
 /*=========================== Send Review request tags End =================*/
+
+/*=========================== Create survey add question add option Start =================*/
+$('.form-check-input').click(function() {
+  if($(this).is(':checked')) {
+      if($(this).val() == 'type_radio'){
+        $(this).parents(".qst-repeat").find('.create-survey-field-repater').show();    
+      }
+      else if($(this).val() == 'type_checkbox'){
+        $(this).parents(".qst-repeat").find('.create-survey-field-repater').hide();
+      }else{
+        $(this).parents(".qst-repeat").find('.create-survey-field-repater').hide();
+      }
+    }
+});
+
+$('.form-check-input').click(function() {
+  if($(this).is(':checked')) {
+      if($(this).val() == 'type_checkbox'){
+        $(this).parents(".qst-repeat").find('.create-survey-field-repater2').show();    
+      }
+      else if($(this).val() == 'type_radio'){
+        $(this).parents(".qst-repeat").find('.create-survey-field-repater2').hide();
+      }else{
+        $(this).parents(".qst-repeat").find('.create-survey-field-repater2').hide();
+      }
+    }
+});
+/*=========================== Create survey add question add option End =================*/
+
+/*=========================== Edit email start =================*/
+$(".edit-save-btn").click(function(e){
+e.preventDefault();
+  $(this).parents(".premium-complain-m-content-body").find(".edit-email").slideToggle();
+  $(this).parents(".premium-complain-m-content-body").toggleClass("active");
+  if ($(this).text() == "Edit") {
+    $(this).text("Save");
+  } else {
+    $(this).text("Edit");
+  }
+});
+/*=========================== Edit email End =================*/
+
+/*=========================== btn switch toggle start =================*/
+$('.premium-alert-box .btn-toggle').click(function() {
+  $(this).find('.btn').toggleClass('active'); 
+  if ($(this).find('.btn-primary').length>0) {
+    $(this).find('.btn').toggleClass('btn-primary');
+  }
+});
+/*=========================== btn switch toggle End =================*/
+
+
 
 
 labels = document.querySelectorAll('.ongoing-poll')
