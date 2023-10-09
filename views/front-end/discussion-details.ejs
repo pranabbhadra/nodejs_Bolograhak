@@ -10,20 +10,41 @@
           <a href="#" class="btn-default btn-warning dis-details-top-btn">Lorem Ipsum</a>
           <a href="#" class="btn-default btn-warning dis-details-top-btn">Lorem Ipsum</a>
           <div class="discussion-details-left">
+            <div class="contribute-discussion">
+               <a href="#" class="discussionscrollbtn"><i class="fa-solid fa-messages"></i> Contribute to this discussion?</a>
+            </div>
             <div class="discussion-details-panel">
-               <div class="discussion-details-user-img">
-                  <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
+               <div class="user-comment-repeat">
+                  <div class="discussion-details-user-img">
+                     <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
+                  </div>
+                  <div class="discussion-details-user-info">
+                     <h4>Lorem Ipsum <small>23 August, 2023</small></h4>
+                     <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+                     <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s</p>
+                  </div>
                </div>
-               <div class="discussion-details-user-info">
-                  <h4>Lorem Ipsum <small>23 August, 2023</small></h4>
-                  <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
-                  <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s</p>
+               <div class="user-comment-repeat">
+                  <div class="discussion-details-user-img">
+                     <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
+                  </div>
+                  <div class="discussion-details-user-info">
+                     <h4>Lorem Ipsum <small>23 August, 2023</small></h4>
+                     <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+                  </div>
                </div>
-               <div class="contribute-discussion">
-               <a href="#" data-bs-toggle="modal" data-bs-target="#disscussionmodal"><i class="fa-solid fa-messages"></i> Contribute to this discussion?</a>
+               <div class="user-comment-repeat">
+                  <div class="discussion-details-user-img">
+                     <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
+                  </div>
+                  <div class="discussion-details-user-info">
+                     <h4>Lorem Ipsum <small>23 August, 2023</small></h4>
+                     <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
+                  </div>
                </div>
                <div class="write-discussion-field">
                <textarea rows="5" class="form-control" placeholder="Write a comment" id="discussiontext"></textarea>
+               <div class="text-center"><input type="submit" class="btn-default btn-warning mt-3" value="Submit"></div>
                </div>
             </div>
             <div class="discussion-similar-thread">
@@ -72,40 +93,6 @@
        </div>
     </div>
  </section>
- <!-- Discussion Login Modal -->
-<div class="modal fade" id="disscussionmodal">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <!-- Modal body -->
-        <div class="modal-body py-5">
-         <form>
-            <div class="custom-form">
-              <label><span style="background-color: #ffffff;">Email</span></label>
-              <input type="email" id="" class="form-control" name="email" required="">
-              <div class="input-icon"><i class="fa-solid fa-user"></i></div>
-            </div>
-            <div class="custom-form">
-              <label><span style="background-color: #ffffff;">Password</span></label>
-              <input type="password" class="form-control password" id="" name="password" required="">
-              <div class="input-icon"><i class="fa-solid fa-eye-slash eye-change"></i></div>
-            </div>
-            <div class="d-flex align-items-center justify-content-between">
-              <div class="remember">
-                <div class="custom-form form-check m-0">
-                  <input type="checkbox" class="form-check-input" id="exampleCheck1" name="login-remember" value="1">
-                  <label class="form-check-label" for="exampleCheck1">Remember me <a href="" data-bs-toggle="tooltip" data-bs-placement="top" aria-label="Check only if you are using from your own personal system" data-bs-original-title="Check only if you are using from your own personal system"><i class="fa-solid fa-circle-info"></i></a></label>
-                </div>
-              </div>
-              <div class="forget-psw">
-                <a href="#">Forgot password?</a>
-            </div>
-            </div>
-            <input type="submit" value="Log In" id="" class="btn-default btn-warning w-100 mt-4">
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
 <!-- ============== Section1 End =============== -->
 
 <%- include('common/footer') -%>   

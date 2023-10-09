@@ -1130,12 +1130,15 @@ $('#horizontalTab').easyResponsiveTabs({
   });
 /*=========================== Math random review box function End =================*/
 
-/*=========================== Discussion modal function Start =================*/
-$('#discussiontext').focus(function(){
-  //open bootsrap modal
-  $("#disscussionmodal").modal('show');
+/*=========================== Discussion scroll function Start =================*/
+$('.discussionscrollbtn').click(function(e) {
+  e.preventDefault();
+  var headerHeight = $(".inner_header").innerHeight();
+  $('html, body').animate({
+    scrollTop: $("#discussiontext").offset().top - headerHeight
+  }, 1000);
 });
-/*=========================== Discussion modal function End =================*/
+/*=========================== Discussion scroll function End =================*/
 
 /*=========================== Creat a Poll slidedown function start =================*/
 $(".create-poll-btn .btn-default").click(function(e){
