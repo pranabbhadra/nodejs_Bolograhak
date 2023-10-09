@@ -2281,7 +2281,7 @@ exports.submitReviewReply = async (req, res) => {
 };
 
 
-exports.profileManagement = async (req, res) => {
+exports.PremiumCompanyprofileManagement = async (req, res) => {
   const companyID = req.body.company_id;
   const currentDate = new Date();
 
@@ -2638,6 +2638,74 @@ exports.profileManagement = async (req, res) => {
   });
 }
 
+exports.BasicCompanyprofileManagement = (req, res) => {
+  console.log('updateBasicCompany:', req.body);
+  console.log('updateBasicCompany File:', req.file);
+  //return false;
+  const companyID = req.body.company_id;
+  const currentDate = new Date();
+
+  const year = currentDate.getFullYear();
+  const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+  const day = String(currentDate.getDate()).padStart(2, '0');
+  const hours = String(currentDate.getHours()).padStart(2, '0');
+  const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+  const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+
+  const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+  // Update company details in the company table
+  const updateQuery = 'UPDATE company SET  heading = ?, logo = ?, about_company = ?, comp_phone = ?, comp_email = ?, updated_date = ?, tollfree_number = ?, main_address = ?, operating_hours = ?  WHERE ID = ?';
+  const updateValues = [
+    req.body.heading,
+    '',
+    req.body.about_company,
+    req.body.comp_phone,
+    req.body.comp_email,
+    formattedDate,
+    req.body.tollfree_number,
+    req.body.main_address,
+    req.body.operating_hours,
+    companyID
+  ];
+
+  if (req.file) {
+    // Unlink (delete) the previous file
+    const unlinkcompanylogo = "uploads/" + req.body.previous_logo;
+    fs.unlink(unlinkcompanylogo, (err) => {
+      if (err) {
+        console.error('Error deleting file:', err);
+      } else {
+        console.log('Previous file deleted');
+      }
+    });
+
+    updateValues[1] = req.file.filename;
+  } else {
+    updateValues[1] = req.body.previous_logo;
+  }
+  db.query(updateQuery, updateValues, (err, results) => {
+    if (err) {
+      // Handle the error
+      return res.send({
+        status: 'err',
+        data: '',
+        message: 'An error occurred while updating the company details: ' + err
+      });
+    } else {
+      return res.send(
+        {
+          status: 'ok',
+          data: companyID,
+          message: 'Successfully Updated'
+        }
+      )
+    }
+
+
+  })
+}
+
 exports.reviewVoting = async (req, res) => {
   try {
     const authenticatedUserId = parseInt(req.user.user_id);
@@ -2718,3 +2786,289 @@ exports.reviewVoting = async (req, res) => {
     });
   }
 };
+//create poll
+exports.createPoll = async (req, res) => {
+  try {
+    // console.log('req.user:', req.user);
+    // console.log('req.body:', req.body);
+
+    const authenticatedUserId = parseInt(req.user.user_id);
+    console.log('authenticatedUserId: ', authenticatedUserId);
+    const ApiuserId = parseInt(req.body.user_id);
+    if (isNaN(ApiuserId)) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Invalid user_id provided in request body.',
+      });
+    }
+    console.log('req.body.user_id: ', parseInt(req.body.user_id));
+    console.log('createPoll', req.body);
+    const { company_id, user_id, poll_question, poll_answer, expire_date } = req.body;
+    console.log('user_id from request:', req.body.user_id);
+    if (ApiuserId !== authenticatedUserId) {
+      return res.status(403).json({
+        status: 'error',
+        message: 'Access denied: You are not authorized to update this user.',
+      });
+    }
+    //const answers = JSON.stringify(poll_answer);
+    const currentDate = new Date();
+    // const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth() + 1; // Months are zero-based (0 = January, 11 = December), so add 1
+    const day = currentDate.getDate();
+    const formattedDate = `${year}-${month < 10 ? '0' : ''}${month}-${day < 10 ? '0' : ''}${day}`;
+    const sql = `INSERT INTO poll_company ( company_id, poll_creator_id, question, created_at, expired_at) VALUES (?,?,?,?,?)`;
+    const data = [company_id, user_id, poll_question, formattedDate, expire_date];
+    db.query(sql, data, async (err, result) => {
+      if (err) {
+        return res.send({
+          status: 'not ok',
+          message: 'Something went wrong ' + err
+        });
+      } else {
+        await poll_answer.forEach((answer) => {
+          const ansQuery = `INSERT INTO poll_answer ( poll_id, answer) VALUES (?,?)`;
+          const ansData = [result.insertId, answer];
+          db.query(ansQuery, ansData, (ansErr, ansResult) => {
+            if (ansErr) {
+              return res.send({
+                status: 'not ok',
+                message: 'Something went wrong ' + ansErr
+              });
+            }
+          })
+        })
+
+        return res.send({
+          status: 'ok',
+          message: 'Poll Created Successfully'
+        });
+      }
+    })
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: 'error',
+      message: 'An error occurred ' + error,
+    });
+  }
+};
+
+// Update poll expire date
+exports.updatePollExpireDate = async (req, res) => {
+  try {
+    // const authenticatedUserId = parseInt(req.user.user_id);
+    // console.log('authenticatedUserId: ', authenticatedUserId);
+    // const ApiuserId = parseInt(req.body.user_id);
+    // if (isNaN(ApiuserId)) {
+    //   return res.status(400).json({
+    //     status: 'error',
+    //     message: 'Invalid user_id provided in request body.',
+    //   });
+    // }
+    // console.log('req.body.user_id: ', parseInt(req.body.user_id));
+    console.log('updatePollExpireDate', req.body);
+    const { poll_id, change_expire_date, user_id } = req.body;
+    // console.log('user_id from request:', req.body.user_id);
+    // if (ApiuserId !== authenticatedUserId) {
+    //   return res.status(403).json({
+    //     status: 'error',
+    //     message: 'Access denied: You are not authorized to update this user.',
+    //   });
+    // }
+    const sql = `UPDATE poll_company SET expired_at = ? WHERE id = ?`;
+    const data = [change_expire_date, poll_id]
+    db.query(sql, data, (err, result) => {
+      if (err) {
+        return res.send({
+          status: 'not ok',
+          message: 'Something went wrong ' + err
+        });
+      } else {
+        return res.send({
+          status: 'ok',
+          message: 'Expire Date Updated Successfully'
+        });
+      }
+    })
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: 'error',
+      message: 'An error occurred ' + error,
+    });
+  }
+}
+// User polling
+exports.userPolling = async (req, res) => {
+  try {
+    const authenticatedUserId = parseInt(req.user.user_id);
+    console.log('authenticatedUserId: ', authenticatedUserId);
+    const ApiuserId = parseInt(req.body.user_id);
+    if (isNaN(ApiuserId)) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Invalid user_id provided in request body.',
+      });
+    }
+    console.log('req.body.user_id: ', parseInt(req.body.user_id));
+    console.log('userPolling', req.body);
+    const { ans_id, poll_id, user_id } = req.body
+    console.log('user_id from request:', req.body.user_id);
+    if (ApiuserId !== authenticatedUserId) {
+      return res.status(403).json({
+        status: 'error',
+        message: 'Access denied: You are not authorized to update this user.',
+      });
+    }
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+    const sql = `INSERT INTO poll_voting ( poll_id, answer_id, user_id, voting_date) VALUES (?, ?, ?, ?)`;
+    const data = [poll_id, ans_id, user_id, formattedDate];
+    db.query(sql, data, (err, result) => {
+      if (err) {
+        return res.send({
+          status: 'not ok',
+          message: 'Something went wrong ' + err
+        });
+      } else {
+        return res.send({
+          status: 'ok',
+          message: 'Your Poll Submited Successfully'
+        });
+      }
+    })
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: 'error',
+      message: 'An error occurred ' + error,
+    });
+  }
+}
+
+//edit user review
+exports.editUserReview = async (req, res) => {
+  try {
+    const authenticatedUserId = parseInt(req.user.user_id);
+    const ApiuserId = parseInt(req.body.user_id);
+
+    if (isNaN(ApiuserId)) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Invalid user_id provided in request body.',
+      });
+    }
+
+    if (ApiuserId !== authenticatedUserId) {
+      return res.status(403).json({
+        status: 'error',
+        message: 'Access denied: You are not authorized to update this user.',
+      });
+    }
+
+    const { review_id, user_id, review_title, rating, review_content, user_privacy, tags } = req.body;
+    console.log('Request Body:', req.body);
+    console.log('Request Body:', req.body);
+
+    // Check if the review exists and retrieve its creation date
+    const reviewQuery = 'SELECT created_at FROM reviews WHERE id = ? AND customer_id=?';
+    const reviewData = await query(reviewQuery, [review_id, user_id]);
+
+    if (reviewData.length === 0) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Review not found.',
+      });
+    }
+
+    const createdAt = new Date(reviewData[0].created_at);
+    const currentDate = new Date();
+
+    // Calculate the time difference in milliseconds
+    const timeDifference = currentDate - createdAt;
+
+    // Calculate the number of days
+    const daysDifference = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+
+    // Check if the review is within the 30-day window
+    if (daysDifference > 30) {
+      return res.status(403).json({
+        status: 'error',
+        message: 'Review cannot be edited after 30 days.',
+      });
+    }
+
+    // If the review is within the 30-day window, proceed with the update
+    const reviewDataToUpdate = {
+      review_id,
+      review_title,
+      rating,
+      review_content,
+      user_privacy,
+      tags,
+    };
+
+    await comFunction.updateReview(reviewDataToUpdate);
+
+    // Send a success response
+    res.status(200).json({
+      status: 'ok',
+      message: 'Review edited successfully',
+    });
+  } catch (error) {
+    console.error('Error editing review:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'An error occurred while editing the review',
+    });
+  }
+};
+
+
+
+exports.reviewInvitation = async (req, res) => {
+  console.log("reviewInvitation", req.body);
+  try {
+    const authenticatedUserId = parseInt(req.user.user_id);
+    console.log('authenticatedUserId: ', authenticatedUserId);
+    const ApiuserId = parseInt(req.body.user_id);
+    if (isNaN(ApiuserId)) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Invalid user_id provided in request body.',
+      });
+    }
+    console.log('req.body.user_id: ', parseInt(req.body.user_id));
+    console.log('userPolling', req.body);
+    const { emails, email_body, user_id, company_id, company_name } = req.body;
+    console.log('user_id from request:', req.body.user_id);
+    if (ApiuserId !== authenticatedUserId) {
+      return res.status(403).json({
+        status: 'error',
+        message: 'Access denied: You are not authorized to update this user.',
+      });
+    }
+    const [InvitationDetails, sendInvitationEmail] = await Promise.all([
+      comFunction.insertInvitationDetails(req.body),
+      comFunction.sendInvitationEmail(req.body)
+    ]);
+
+    return res.send({
+      status: 'ok',
+      data: {
+        InvitationDetails,
+        sendInvitationEmail
+      },
+      message: 'Invitation emails send successfully'
+    });
+  } catch (error) {
+    console.error('Error editing review:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'An error occurred while sending the invitation for reviews',
+    });
+  }
+}
+

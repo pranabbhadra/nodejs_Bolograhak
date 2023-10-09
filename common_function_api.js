@@ -1,6 +1,7 @@
 const util = require('util');
 const db = require('./config');
 const mysql = require('mysql2/promise');
+const mdlconfig = require('./config-module');
 const dotenv = require('dotenv');
 const bcrypt = require('bcryptjs');
 const useragent = require('useragent');
@@ -44,17 +45,17 @@ function getUserMeta(userId) {
   });
 }
 
-async function getUsersByRole(roleID){
+async function getUsersByRole(roleID) {
   const get_users_query = `
     SELECT *
     FROM users
     WHERE user_type_id = ? AND user_status = "1"`;
   const get_users_value = [roleID];
-  try{
+  try {
     const get_users_result = await query(get_users_query, get_users_value);
     return get_users_result;
-  }catch(error){
-    return 'Error during user get_company_rewiew_query:'+error;
+  } catch (error) {
+    return 'Error during user get_company_rewiew_query:' + error;
   }
 }
 
@@ -71,18 +72,18 @@ function getCountries() {
   });
 }
 //fetch all states by its country_id
-function getStates(countryID){
-  return new Promise((resolve,reject)=>{
-    db.query('SELECT * FROM  states WHERE country_id=?',[countryID],(err,result)=>{
-      if(err){
+function getStates(countryID) {
+  return new Promise((resolve, reject) => {
+    db.query('SELECT * FROM  states WHERE country_id=?', [countryID], (err, result) => {
+      if (err) {
         reject(err);
-      }else{
+      } else {
         resolve(result);
       }
     })
   })
 }
-      
+
 
 
 // Fetch user role from user_account_type table data
@@ -109,9 +110,9 @@ function getStatesByUserID(userId) {
         if (result && result.length > 0) {
           console.log(result[0].country);
           let countryID = '';
-          if(result[0].country==null){
+          if (result[0].country == null) {
             countryID = 101;
-          }else{
+          } else {
             countryID = result[0].country;
           }
           const userCountryId = countryID.toString();
@@ -139,13 +140,13 @@ function getAllCompany() {
       LEFT JOIN company_cactgory_relation cr ON c.ID = cr.company_id
       LEFT JOIN category cat ON cr.category_id = cat.ID
       GROUP BY c.ID`,
-      async(err, result) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(result);
-      }
-    });
+      async (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
   });
 }
 
@@ -257,96 +258,96 @@ function renderCategoryTreeHTMLforCompany(categories, com_category_array) {
 const saveUserGoogleLoginDataToDB = async (userData) => {
   //console.log(userData);
   //console.log(userData.name.familyName + ' ' + userData.name.givenName + ' ' + userData.emails[0].value + ' ' + userData.photos[0].value+ ' ' + userData.id);
-  
+
   try {
     // Check if the email already exists in the "users" table
     const emailExists = await new Promise((resolve, reject) => {
-    db.query('SELECT email FROM users WHERE email = ?', [userData.emails[0].value], (err, results) => {
+      db.query('SELECT email FROM users WHERE email = ?', [userData.emails[0].value], (err, results) => {
         if (err) reject(err);
-            resolve(results.length > 0);
-        });
+        resolve(results.length > 0);
+      });
     });
     if (emailExists) {
-        try {
-          const gEmail = userData.emails[0].value;
-          const userSearchQuery = 'SELECT * FROM users WHERE email = ?';
-          const userResults = await query(userSearchQuery, [gEmail]);
-          if (userResults.length > 0) {
-            //console.log('Glogin user data', userResults);
-            const userMatch = userResults[0];
-            try{
-              const matchUserID = userMatch.user_id;
-              const userMetaSearchQuery = `SELECT user_meta.*, c.name as country_name, s.name as state_name
+      try {
+        const gEmail = userData.emails[0].value;
+        const userSearchQuery = 'SELECT * FROM users WHERE email = ?';
+        const userResults = await query(userSearchQuery, [gEmail]);
+        if (userResults.length > 0) {
+          //console.log('Glogin user data', userResults);
+          const userMatch = userResults[0];
+          try {
+            const matchUserID = userMatch.user_id;
+            const userMetaSearchQuery = `SELECT user_meta.*, c.name as country_name, s.name as state_name
                                             FROM user_customer_meta user_meta
                                             JOIN countries c ON user_meta.country = c.id
                                             JOIN states s ON user_meta.state = s.id
                                             WHERE user_id = ?`;
-              const userMetaResults = await query(userMetaSearchQuery, [matchUserID]);
-              let usercookieData = {};
-              if (userMetaResults.length > 0) {
-                const matchUserMetaData = userMetaResults[0];
-                const dateString = matchUserMetaData.date_of_birth;
-                const date_of_birth_date = new Date(dateString);
-                const formattedDate = date_of_birth_date.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
-                usercookieData = {
-                  user_id: matchUserID,
-                  first_name: userMatch.first_name,
-                  last_name: userMatch.last_name,
-                  email: userMatch.email,
-                  phone: userMatch.phone,
-                  user_type_id: userMatch.user_type_id,
-                  address: matchUserMetaData.address,
-                  country: matchUserMetaData.country,
-                  country_name: matchUserMetaData.country_name,
-                  state: matchUserMetaData.state,
-                  state_name: matchUserMetaData.state_name,
-                  city: matchUserMetaData.city,
-                  zip: matchUserMetaData.zip,
-                  review_count: matchUserMetaData.review_count,
-                  date_of_birth: formattedDate,
-                  occupation: matchUserMetaData.occupation,
-                  gender: matchUserMetaData.gender,
-                  profile_pic: matchUserMetaData.profile_pic,
-                  source: 'gmail'
-                };
-                console.log(usercookieData, 'Logedin User All Data 111');
-              }else{
-                usercookieData = {
-                  user_id: matchUserID,
-                  first_name: userMatch.first_name,
-                  last_name: userMatch.last_name,
-                  email: userMatch.email,
-                  phone: userMatch.phone,
-                  user_type_id: userMatch.user_type_id,
-                  profile_pic: userData.photos[0].value,
-                  source: 'gmail'
-                };
-                console.log(usercookieData, 'Logedin User All Data 222');
-              }
-
-              try{
-                const wpUserSearchQuery = 'SELECT ID FROM bg_users WHERE user_login = ?';
-                const wpUserResults = await query(wpUserSearchQuery, [gEmail]);
-                if (wpUserResults.length > 0) {
-                  //console.log(wpUserResults, 'Wp User Query Result');
-                  usercookieData.wp_user_id = wpUserResults[0].ID;
-                }
-                console.log(usercookieData, 'Final Return data');
-                return usercookieData;
-              }catch(error){
-                console.error('Error executing SELECT wpUserSearchQuery:', error);
-              }
-              
-
-            } catch(error){
-              console.error('Error executing SELECT userMetaSearchQuery:', error);
+            const userMetaResults = await query(userMetaSearchQuery, [matchUserID]);
+            let usercookieData = {};
+            if (userMetaResults.length > 0) {
+              const matchUserMetaData = userMetaResults[0];
+              const dateString = matchUserMetaData.date_of_birth;
+              const date_of_birth_date = new Date(dateString);
+              const formattedDate = date_of_birth_date.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+              usercookieData = {
+                user_id: matchUserID,
+                first_name: userMatch.first_name,
+                last_name: userMatch.last_name,
+                email: userMatch.email,
+                phone: userMatch.phone,
+                user_type_id: userMatch.user_type_id,
+                address: matchUserMetaData.address,
+                country: matchUserMetaData.country,
+                country_name: matchUserMetaData.country_name,
+                state: matchUserMetaData.state,
+                state_name: matchUserMetaData.state_name,
+                city: matchUserMetaData.city,
+                zip: matchUserMetaData.zip,
+                review_count: matchUserMetaData.review_count,
+                date_of_birth: formattedDate,
+                occupation: matchUserMetaData.occupation,
+                gender: matchUserMetaData.gender,
+                profile_pic: matchUserMetaData.profile_pic,
+                source: 'gmail'
+              };
+              console.log(usercookieData, 'Logedin User All Data 111');
+            } else {
+              usercookieData = {
+                user_id: matchUserID,
+                first_name: userMatch.first_name,
+                last_name: userMatch.last_name,
+                email: userMatch.email,
+                phone: userMatch.phone,
+                user_type_id: userMatch.user_type_id,
+                profile_pic: userData.photos[0].value,
+                source: 'gmail'
+              };
+              console.log(usercookieData, 'Logedin User All Data 222');
             }
-          }
-        } catch (error) {
-          console.error('Error executing SELECT userSearchQuery:', error);
-        }
 
-    }else{
+            try {
+              const wpUserSearchQuery = 'SELECT ID FROM bg_users WHERE user_login = ?';
+              const wpUserResults = await query(wpUserSearchQuery, [gEmail]);
+              if (wpUserResults.length > 0) {
+                //console.log(wpUserResults, 'Wp User Query Result');
+                usercookieData.wp_user_id = wpUserResults[0].ID;
+              }
+              console.log(usercookieData, 'Final Return data');
+              return usercookieData;
+            } catch (error) {
+              console.error('Error executing SELECT wpUserSearchQuery:', error);
+            }
+
+
+          } catch (error) {
+            console.error('Error executing SELECT userMetaSearchQuery:', error);
+          }
+        }
+      } catch (error) {
+        console.error('Error executing SELECT userSearchQuery:', error);
+      }
+
+    } else {
       try {
         // Hash the password asynchronously
         const hashedPassword = await bcrypt.hash(userData.emails[0].value, 8);
@@ -417,20 +418,20 @@ async function saveUserFacebookLoginDataToDB(userData) {
   const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
 
   //Checking external_registration_id exist or not and register_from facebook or not
-  try{
+  try {
     const user_exist_query = 'SELECT * FROM users WHERE register_from = ? AND external_registration_id = ? AND email = ?';
     const user_exist_values = ["facebook", userData.id, userData.emails[0].value];
     const user_exist_results = await query(user_exist_query, user_exist_values);
     if (user_exist_results.length > 0) {
-        //console.log(user_exist_results);
-        // checking user status
-        if(user_exist_results[0].user_exist_results == 1){
-          return {first_name:user_exist_results[0].first_name, last_name:user_exist_results[0].last_name, user_id: user_exist_results[0].user_id, status: 1};
-        }else{
-          // return to frontend for registering with email ID
-          return {first_name:user_exist_results[0].first_name, last_name:user_exist_results[0].last_name, user_id: user_exist_results[0].user_id, status: 0};
-        }
-    }else{
+      //console.log(user_exist_results);
+      // checking user status
+      if (user_exist_results[0].user_exist_results == 1) {
+        return { first_name: user_exist_results[0].first_name, last_name: user_exist_results[0].last_name, user_id: user_exist_results[0].user_id, status: 1 };
+      } else {
+        // return to frontend for registering with email ID
+        return { first_name: user_exist_results[0].first_name, last_name: user_exist_results[0].last_name, user_id: user_exist_results[0].user_id, status: 0 };
+      }
+    } else {
       //user doesnot exist Insert initial data getting from facebook but user status 0
       const userFullName = userData.displayName;
       const userFullNameArray = userFullName.split(" ");
@@ -439,57 +440,57 @@ async function saveUserFacebookLoginDataToDB(userData) {
       const userEmail = userData.emails[0].value;
       const user_insert_query = 'INSERT INTO users (first_name, last_name, email, register_from, external_registration_id, user_registered, user_status, user_type_id) VALUES (?, ?, ?, ?, ?, ?, ?)';
       const user_insert_values = [userFirstName, userLastName, userEmail, 'facebook', userData.id, formattedDate, 0, 2];
-      if(userEmail){
+      if (userEmail) {
         user_insert_values[6] = 1;
-      }else{
+      } else {
         user_insert_values[6] = 0;
       }
-      try{
+      try {
         const user_insert_results = await query(user_insert_query, user_insert_values);
         if (user_insert_results.insertId) {
           const newuserID = user_insert_results.insertId;
           const user_meta_insert_query = 'INSERT INTO user_customer_meta (user_id, profile_pic) VALUES (?, ?)';
           const user_meta_insert_values = [newuserID, userData.photos[0].value];
-          try{
+          try {
             const user_meta_insert_results = await query(user_meta_insert_query, user_meta_insert_values);
             // return to frontend for registering with email ID
-            return {first_name:userFullNameArray[0], last_name:userFullNameArray[1], user_id: newuserID, status: 0};
-          }catch(error){
+            return { first_name: userFullNameArray[0], last_name: userFullNameArray[1], user_id: newuserID, status: 0 };
+          } catch (error) {
             console.error('Error during user_meta_insert_query:', error);
           }
         }
-      }catch(error){
+      } catch (error) {
         console.error('Error during user_insert_query:', error);
       }
     }
-  }catch(error){
-      console.error('Error during user_exist_query:', error);
-  }      
+  } catch (error) {
+    console.error('Error during user_exist_query:', error);
+  }
 
 };
 
 // Fetch all Review Rating Tags
 function getAllRatingTags() {
   return new Promise((resolve, reject) => {
-      db.query('SELECT * FROM review_rating_tags', (err, result) => {
-          if (err) {
-              reject(err);
-          } else {
-              resolve(result);
-          }
-      });
+    db.query('SELECT * FROM review_rating_tags', (err, result) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result);
+      }
+    });
   });
 }
 
 function getReviewRatingData(review_rating_Id) {
   return new Promise((resolve, reject) => {
-      db.query('SELECT * FROM review_rating_tags WHERE id = ?', [review_rating_Id], (err, result) => {
-          if (err) {
-              reject(err);
-          } else {
-              resolve(result[0]);
-          }
-      });
+    db.query('SELECT * FROM review_rating_tags WHERE id = ?', [review_rating_Id], (err, result) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result[0]);
+      }
+    });
   });
 }
 
@@ -505,12 +506,12 @@ async function getAllReviews() {
   WHERE r.review_status = "1"
   ORDER BY r.created_at DESC;
   `;
-  try{
+  try {
     const all_review_results = await query(all_review_query);
     return all_review_results;
-  
+
   }
-  catch(error){
+  catch (error) {
     console.error('Error during all_review_query:', error);
   }
 }
@@ -528,11 +529,11 @@ async function getTrendingReviews() {
     ORDER BY r.created_at DESC;
 `;
 
-  try{
+  try {
     const all_review_results = await query(all_review_query);
     return all_review_results;
   }
-  catch(error){
+  catch (error) {
     console.error('Error during all_review_query:', error);
   }
 }
@@ -556,11 +557,11 @@ async function getLatestReview(limit = null) {
     return all_review_results;
   } catch (error) {
     console.error('Error during all_review_query:', error);
-    throw error; 
+    throw error;
   }
 }
 
-async function getCustomerReviewData(review_Id){
+async function getCustomerReviewData(review_Id) {
   const select_review_query = `
     SELECT r.*, c.company_name, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic
       FROM reviews r
@@ -571,16 +572,16 @@ async function getCustomerReviewData(review_Id){
       WHERE r.id = ?;
   `;
   const select_review_value = [review_Id];
-  try{
+  try {
     const select_review_results = await query(select_review_query, select_review_value);
     return select_review_results[0];
   }
-  catch(error){
+  catch (error) {
     console.error('Error during select_review_query:', error);
   }
 }
 
-async function getCustomerReviewTagRelationData(review_Id){
+async function getCustomerReviewTagRelationData(review_Id) {
   const select_review_tag_query = `
     SELECT r.id as review_id, rtr.id, rtr.tag_name
       FROM reviews r
@@ -588,11 +589,11 @@ async function getCustomerReviewTagRelationData(review_Id){
       WHERE r.id = ?;
   `;
   const select_review_tag_value = [review_Id];
-  try{
+  try {
     const select_review_tag_results = await query(select_review_tag_query, select_review_tag_value);
     return select_review_tag_results;
   }
-  catch(error){
+  catch (error) {
     console.error('Error during select_review_tag_query:', error);
   }
 }
@@ -689,39 +690,39 @@ async function createCompany(comInfo, userId) {
     const company_name_checking_query = "SELECT ID FROM company WHERE company_name = ?";
     const company_name_checking_results = await query(company_name_checking_query, [comInfo.company_name]);
     if (company_name_checking_results.length > 0) {
-        //company exist
-        try{
-          const company_address_exist_query = 'SELECT * FROM company_location WHERE company_id = ? AND address = ?';
-          const company_address_exist_values = [company_name_checking_results[0].ID, comInfo.address];
-          const company_address_exist_results = await query(company_address_exist_query, company_address_exist_values);
-          if (company_address_exist_results.length > 0) {
-            //address exist return location ID
-            return_data.companyID = company_name_checking_results[0].ID;
-            return_data.companyLocationID = company_address_exist_results[0].ID;
-            return return_data;
-          }else{
-            //create new address for company
-            try{
-              const create_company_address_query = 'INSERT INTO company_location (company_id, address, country, state, city, zip, status) VALUES (?, ?, ?, ?, ?, ?, ?)';
-              const create_company_address_values = [company_name_checking_results[0].ID, comInfo.address, '', '', '', '', '2'];
-              const create_company_address_results = await query(create_company_address_query, create_company_address_values);
-              if (create_company_address_results.insertId) {
-                return_data.companyID = company_name_checking_results[0].ID;
-                return_data.companyLocationID = create_company_address_results.insertId;
-                return return_data;
-              }
-            }catch(error){
-              console.error('Error during create_company_address_query:', error);
-              return error;
+      //company exist
+      try {
+        const company_address_exist_query = 'SELECT * FROM company_location WHERE company_id = ? AND address = ?';
+        const company_address_exist_values = [company_name_checking_results[0].ID, comInfo.address];
+        const company_address_exist_results = await query(company_address_exist_query, company_address_exist_values);
+        if (company_address_exist_results.length > 0) {
+          //address exist return location ID
+          return_data.companyID = company_name_checking_results[0].ID;
+          return_data.companyLocationID = company_address_exist_results[0].ID;
+          return return_data;
+        } else {
+          //create new address for company
+          try {
+            const create_company_address_query = 'INSERT INTO company_location (company_id, address, country, state, city, zip, status) VALUES (?, ?, ?, ?, ?, ?, ?)';
+            const create_company_address_values = [company_name_checking_results[0].ID, comInfo.address, '', '', '', '', '2'];
+            const create_company_address_results = await query(create_company_address_query, create_company_address_values);
+            if (create_company_address_results.insertId) {
+              return_data.companyID = company_name_checking_results[0].ID;
+              return_data.companyLocationID = create_company_address_results.insertId;
+              return return_data;
             }
-                        
-          }
-        }catch(error){
-            console.error('Error during company_address_exist_query:', error);
+          } catch (error) {
+            console.error('Error during create_company_address_query:', error);
             return error;
-        }        
-        //return company_name_checking_results[0].ID;
-    }else{
+          }
+
+        }
+      } catch (error) {
+        console.error('Error during company_address_exist_query:', error);
+        return error;
+      }
+      //return company_name_checking_results[0].ID;
+    } else {
       // Create New Company
       // Get the current date
       const currentDate = new Date();
@@ -736,7 +737,7 @@ async function createCompany(comInfo, userId) {
         // console.log('New Company ID:', create_company_results.insertId);
         if (create_company_results.insertId) {
           //create new address for company
-          try{
+          try {
             const create_company_address_query = 'INSERT INTO company_location (company_id, address, country, state, city, zip, status) VALUES (?, ?, ?, ?, ?, ?, ?)';
             const create_company_address_values = [create_company_results.insertId, comInfo.address, '', '', '', '', '2'];
             const create_company_address_results = await query(create_company_address_query, create_company_address_values);
@@ -745,14 +746,14 @@ async function createCompany(comInfo, userId) {
               return_data.companyLocationID = create_company_address_results.insertId;
               return return_data;
             }
-          }catch(error){
+          } catch (error) {
             console.error('Error during create_company_address_query:', error);
             return error;
           }
         }
-      }catch(error){
+      } catch (error) {
         console.error('Error during user create_company_query:', error);
-       return error;
+        return error;
       }
     }
   }
@@ -761,7 +762,7 @@ async function createCompany(comInfo, userId) {
   }
 };
 
-async function createReview(reviewIfo, userId, comInfo){
+async function createReview(reviewIfo, userId, comInfo) {
   // console.log('Review Info', reviewIfo);
   // console.log('Company Info', comInfo);
   // reviewIfo['tags[]'].forEach((tag) => {
@@ -777,13 +778,13 @@ async function createReview(reviewIfo, userId, comInfo){
 
   const create_review_query = 'INSERT INTO reviews (company_id, customer_id, company_location, company_location_id, review_title, rating, review_content, user_privacy, review_status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
   const create_review_values = [comInfo.companyID, userId, reviewIfo.address, comInfo.companyLocationID, reviewIfo.review_title, reviewIfo.rating, reviewIfo.review_content, reviewIfo.user_privacy, '2', formattedDate, formattedDate];
-              
+
   try {
     const create_review_results = await query(create_review_query, create_review_values);
-    if(create_review_results.insertId){
+    if (create_review_results.insertId) {
       //insert review_tag_relation
       const review_tag_relation_query = 'INSERT INTO review_tag_relation (review_id, tag_name) VALUES (?, ?)';
-      try{
+      try {
         for (const tag of reviewIfo['tags[]']) {
           const review_tag_relation_values = [create_review_results.insertId, tag];
           const review_tag_relation_results = await query(review_tag_relation_query, review_tag_relation_values);
@@ -794,20 +795,20 @@ async function createReview(reviewIfo, userId, comInfo){
         try {
           const [update_review_count_result] = await db.promise().query(update_review_count_query, [userId]);
           return create_review_results.insertId;
-        }catch (error) {
+        } catch (error) {
           console.error('Error during user update_review_count_query:', error);
         }
-        
-      }catch(error){
+
+      } catch (error) {
         console.error('Error during user review_tag_relation_results:', error);
       }
     }
-  }catch (error) {
+  } catch (error) {
     console.error('Error during user create_review_results:', error);
   }
 }
 
-async function getlatestReviews(reviewCount){
+async function getlatestReviews(reviewCount) {
   const get_latest_review_query = `
     SELECT r.*, c.company_name, c.logo, cl.address, cl.country, cl.state, cl.city, cl.zip
       FROM reviews r
@@ -817,21 +818,21 @@ async function getlatestReviews(reviewCount){
       ORDER BY r.created_at DESC
       LIMIT ${reviewCount};
   `;
-  try{
+  try {
     const get_latest_review_results = await query(get_latest_review_query);
-    if(get_latest_review_results.length > 0 ){
+    if (get_latest_review_results.length > 0) {
       console.log(get_latest_review_results);
       return get_latest_review_results;
-    }else{
+    } else {
       return [];
     }
-  }catch(error){
+  } catch (error) {
     console.error('Error during user get_latest_review_query:', error);
   }
-  
+
 }
 
-async function editCustomerReview(req){
+async function editCustomerReview(req) {
   //console.log(req)
   const ratingTagsArray = JSON.parse(req.rating_tags);
   const currentDate = new Date();
@@ -843,36 +844,36 @@ async function editCustomerReview(req){
   try {
     const update_review_result = await query(update_review_query, update_review_values);
 
-      // Remove all tags for the review
-      const delete_tag_relation_query = 'DELETE FROM review_tag_relation WHERE review_id = ?';
-      const delete_tag_relation_values = [req.review_id];
-      try {
-        const delete_tag_relation_result = await query(delete_tag_relation_query, delete_tag_relation_values);
-        console.log('Review deleted:', delete_tag_relation_result);
-      } catch (error) {
-        return 'Error during review delete_tag_relation_query:'+error;
-      }
+    // Remove all tags for the review
+    const delete_tag_relation_query = 'DELETE FROM review_tag_relation WHERE review_id = ?';
+    const delete_tag_relation_values = [req.review_id];
+    try {
+      const delete_tag_relation_result = await query(delete_tag_relation_query, delete_tag_relation_values);
+      console.log('Review deleted:', delete_tag_relation_result);
+    } catch (error) {
+      return 'Error during review delete_tag_relation_query:' + error;
+    }
 
-      //insert review_tag_relation
-      if (ratingTagsArray && ratingTagsArray.length > 0) {
-        const insert_tag_relation_query = 'INSERT INTO review_tag_relation (review_id, tag_name) VALUES (?, ?)';
-        for (const tag of ratingTagsArray) {
-          const insert_tag_relation_values = [req.review_id, tag.value];
-          try {
-            const insert_tag_relation_result = await query(insert_tag_relation_query, insert_tag_relation_values);
-            //console.log('New tag relation inserted:', insert_tag_relation_result);
-          } catch (error) {
-            return 'Error during insert_tag_relation_query:'+error;
-          }
+    //insert review_tag_relation
+    if (ratingTagsArray && ratingTagsArray.length > 0) {
+      const insert_tag_relation_query = 'INSERT INTO review_tag_relation (review_id, tag_name) VALUES (?, ?)';
+      for (const tag of ratingTagsArray) {
+        const insert_tag_relation_values = [req.review_id, tag.value];
+        try {
+          const insert_tag_relation_result = await query(insert_tag_relation_query, insert_tag_relation_values);
+          //console.log('New tag relation inserted:', insert_tag_relation_result);
+        } catch (error) {
+          return 'Error during insert_tag_relation_query:' + error;
         }
       }
-      return true;
-  }catch (error) {
-    return 'Error during user update_review_query:'+error;
-  }  
+    }
+    return true;
+  } catch (error) {
+    return 'Error during user update_review_query:' + error;
+  }
 }
 
-async function searchCompany(keyword){
+async function searchCompany(keyword) {
   const get_company_query = `
     SELECT ID, company_name, logo, about_company, main_address, main_address_pin_code FROM company
     WHERE company_name LIKE '%${keyword}%'
@@ -880,41 +881,41 @@ async function searchCompany(keyword){
     OR heading LIKE '%${keyword}%'
     ORDER BY created_date DESC
   `;
-  try{
+  try {
     const get_company_results = await query(get_company_query);
-    if(get_company_results.length > 0 ){
+    if (get_company_results.length > 0) {
       console.log(get_company_results);
-      return {status: 'ok', data: get_company_results, message: get_company_results.length+' company data recived'};
-    }else{
-      return {status: 'ok', data: '', message: 'No company data found'};
+      return { status: 'ok', data: get_company_results, message: get_company_results.length + ' company data recived' };
+    } else {
+      return { status: 'ok', data: '', message: 'No company data found' };
     }
-  }catch(error){
-    return {status: 'err', data: '', message: 'No company data found'};
-  }  
+  } catch (error) {
+    return { status: 'err', data: '', message: 'No company data found' };
+  }
 }
 
-async function getCompanyReviewNumbers(companyID){
+async function getCompanyReviewNumbers(companyID) {
   const get_company_rewiew_count_query = `
-    SELECT COUNT(*) AS total_review_count, AVG(rating) AS total_review_average
+    SELECT COUNT(*) AS total_review_count, ROUND(AVG(rating), 2) AS total_review_average
     FROM reviews
     WHERE company_id = ? AND review_status = ?`;
   const get_company_rewiew_count_value = [companyID, '1'];
-  try{
+  try {
     const get_company_rewiew_count_result = await query(get_company_rewiew_count_query, get_company_rewiew_count_value);
     const get_company_rewiew_rating_count_query = `
     SELECT rating,count(rating) AS cnt_rat
     FROM reviews
     WHERE company_id = ?
     group by rating ORDER by rating DESC`;
-    try{
+    try {
       const get_company_rewiew_rating_count_result = await query(get_company_rewiew_rating_count_query, get_company_rewiew_count_value);
-      return {rewiew_count:get_company_rewiew_count_result[0], rewiew_rating_count: get_company_rewiew_rating_count_result};
-    }catch(error){
-      return 'Error during user get_company_rewiew_rating_count_query:'+error;
+      return { rewiew_count: get_company_rewiew_count_result[0], rewiew_rating_count: get_company_rewiew_rating_count_result };
+    } catch (error) {
+      return 'Error during user get_company_rewiew_rating_count_query:' + error;
     }
-    
-  }catch(error){
-    return 'Error during user get_company_rewiew_count_query:'+error;
+
+  } catch (error) {
+    return 'Error during user get_company_rewiew_count_query:' + error;
   }
 }
 
@@ -929,7 +930,7 @@ async function getCompanyReviewNumbers(companyID){
 //     });
 //   });
 // }
-async function getCompanyReviews(companyID){
+async function getCompanyReviews(companyID) {
   const get_company_rewiew_query = `
     SELECT r.*, ur.first_name, ur.last_name, ur.last_name, ucm.profile_pic
     FROM reviews r
@@ -939,11 +940,11 @@ async function getCompanyReviews(companyID){
     ORDER BY r.created_at DESC
     LIMIT 20`;
   const get_company_rewiew_value = [companyID];
-  try{
+  try {
     const get_company_rewiew_result = await query(get_company_rewiew_query, get_company_rewiew_value);
     return get_company_rewiew_result;
-  }catch(error){
-    return 'Error during user get_company_rewiew_query:'+error;
+  } catch (error) {
+    return 'Error during user get_company_rewiew_query:' + error;
   }
 }
 
@@ -964,8 +965,8 @@ async function getCompanyRatings(companyID) {
   //   SUM(CASE WHEN rating = 5 THEN 1 ELSE 0 END) AS rating_5_count,
   //   COUNT(*) AS total_rating_count,
   //   ROUND(AVG(rating), 1) AS rating_average FROM reviews WHERE company_id = ? AND review_status = "1" GROUP BY company_id`;
-  const getCompanyRatingsQuery = 
-  `SELECT 
+  const getCompanyRatingsQuery =
+    `SELECT 
   company_id,
   SUM(CASE WHEN rating = 0.5 THEN 1 ELSE 0 END) AS rating_05_count,
   SUM(CASE WHEN rating = 1 THEN 1 ELSE 0 END) AS rating_1_count,
@@ -988,99 +989,104 @@ LEFT JOIN review_tag_relation AS t3 ON t1.id = t3.review_id
 WHERE company_id = ? AND review_status = "1"
 GROUP BY company_id;
 `;
-    const ratingsResultvalue = [companyID]
-    try{
-      const ratingsResult = await query(getCompanyRatingsQuery, ratingsResultvalue);
-      return ratingsResult;
-    }catch(error){
-      return 'Error during user get_company_rating_query:'+error;
-    }
+  const ratingsResultvalue = [companyID]
+  try {
+    const ratingsResult = await query(getCompanyRatingsQuery, ratingsResultvalue);
+    return ratingsResult;
+  } catch (error) {
+    return 'Error during user get_company_rating_query:' + error;
   }
-  
+}
+
 //getTotalreplies
-  async function getTotalreplies(companyID){
-    const getTotalrepliesquery = `
-    SELECT COUNT(*) AS total_replies
+// SELECT COUNT(*) AS total_replies, status AS replied
+// FROM review_reply AS rr
+// JOIN reviews AS r ON rr.review_id = r.id
+// WHERE r.company_id = ? AND r.review_status = "1";
+async function getTotalreplies(companyID) {
+  const getTotalrepliesquery = `
+    SELECT COUNT(*) AS total_replies, rr.status AS replied
     FROM review_reply AS rr
     JOIN reviews AS r ON rr.review_id = r.id
     WHERE r.company_id = ? AND r.review_status = "1";
   `;
-    const getTotalrepliesvalue = [companyID];
-  
-    try {
-      const get_company_replies_result = await query(getTotalrepliesquery, getTotalrepliesvalue);
-      return get_company_replies_result[0].total_replies;
-    } catch(error) {
-      return 'Error during user gettotalreplies: ' + error;
-    }
+  const getTotalrepliesvalue = [companyID];
+
+  try {
+    const get_company_replies_result = await query(getTotalrepliesquery, getTotalrepliesvalue);
+    return get_company_replies_result[0];
+  } catch (error) {
+    return 'Error during user gettotalreplies: ' + error;
   }
-  //getTotalReviewsAndCounts
-  async function getTotalReviewsAndCounts(companyID) {
-    const getTotalReviewsQuery = `
+}
+
+//getTotalReviewsAndCounts
+async function getTotalReviewsAndCounts(companyID) {
+  const getTotalReviewsQuery = `
       SELECT COUNT(*) AS total_reviews
       FROM reviews
       WHERE company_id = ? AND review_status = "1";
     `;
-    
-    const getTotalPositiveReviewsQuery = `
+
+  const getTotalPositiveReviewsQuery = `
       SELECT COUNT(*) AS total_positive_reviews
       FROM reviews
       WHERE company_id = ? AND review_status = "1" AND rating >= 4;
     `;
-    
-    const getTotalNegativeReviewsQuery = `
+
+  const getTotalNegativeReviewsQuery = `
       SELECT COUNT(*) AS total_negative_reviews
       FROM reviews
       WHERE company_id = ? AND review_status = "1" AND rating <= 2.5;
     `;
-  
-    const getTotalReviewsValues = [companyID];
-    
-    try {
-      // Get the total number of reviews
-      const totalReviewsResult = await query(getTotalReviewsQuery, getTotalReviewsValues);
-      const totalReviews = totalReviewsResult[0].total_reviews;
-  
-      // Get the total number of positive reviews (e.g., rating >= 4)
-      const totalPositiveReviewsResult = await query(getTotalPositiveReviewsQuery, getTotalReviewsValues);
-      const totalPositiveReviews = totalPositiveReviewsResult[0].total_positive_reviews;
-  
-      // Get the total number of negative reviews (e.g., rating <= 2.5)
-      const totalNegativeReviewsResult = await query(getTotalNegativeReviewsQuery, getTotalReviewsValues);
-      const totalNegativeReviews = totalNegativeReviewsResult[0].total_negative_reviews;
-  
-      // Calculate the review percentage
-      const reviewPercentage = (totalPositiveReviews / totalReviews) * 100;
-      const roundedReviewPercentage = Math.round(reviewPercentage);
-      return {
-        totalReviews,
-        totalPositiveReviews,
-        totalNegativeReviews,
-        roundedReviewPercentage,
-      };
-    } catch (error) {
-      return 'Error calculating review statistics: ' + error;
-    }
+
+  const getTotalReviewsValues = [companyID];
+
+  try {
+    // Get the total number of reviews
+    const totalReviewsResult = await query(getTotalReviewsQuery, getTotalReviewsValues);
+    const totalReviews = totalReviewsResult[0].total_reviews;
+
+    // Get the total number of positive reviews (e.g., rating >= 4)
+    const totalPositiveReviewsResult = await query(getTotalPositiveReviewsQuery, getTotalReviewsValues);
+    const totalPositiveReviews = totalPositiveReviewsResult[0].total_positive_reviews;
+
+    // Get the total number of negative reviews (e.g., rating <= 2.5)
+    const totalNegativeReviewsResult = await query(getTotalNegativeReviewsQuery, getTotalReviewsValues);
+    const totalNegativeReviews = totalNegativeReviewsResult[0].total_negative_reviews;
+
+    // Calculate the review percentage
+    const reviewPercentage = (totalPositiveReviews / totalReviews) * 100;
+    const roundedReviewPercentage = Math.round(reviewPercentage);
+    return {
+      totalReviews,
+      totalPositiveReviews,
+      totalNegativeReviews,
+      roundedReviewPercentage,
+    };
+  } catch (error) {
+    return 'Error calculating review statistics: ' + error;
   }
-  
-async function getUserCompany(user_ID){
-    const get_user_company_query = `
+}
+
+async function getUserCompany(user_ID) {
+  const get_user_company_query = `
       SELECT c.*
       FROM company_claim_request ccr
       LEFT JOIN users ur ON ccr.claimed_by = ur.user_id
       LEFT JOIN company c ON ccr.company_id = c.ID
       WHERE ccr.claimed_by = ?`;
-    const get_user_company_value = [user_ID];
-    try{
-      const get_user_company_result = await query(get_user_company_query, get_user_company_value);
-      return get_user_company_result;
-    }catch(error){
-      return 'Error during user get_user_company_query:'+error;
-    }
+  const get_user_company_value = [user_ID];
+  try {
+    const get_user_company_result = await query(get_user_company_query, get_user_company_value);
+    return get_user_company_result;
+  } catch (error) {
+    return 'Error during user get_user_company_query:' + error;
+  }
 }
 
-async function getUserReview(user_ID){
-    const reviewsQuery = `
+async function getUserReview(user_ID) {
+  const reviewsQuery = `
       SELECT
         r.*, c.first_name, c.last_name, c.email, ucm.profile_pic, co.company_name, co.logo AS company_logo
       FROM reviews r
@@ -1090,29 +1096,29 @@ async function getUserReview(user_ID){
       WHERE c.user_id = ? AND r.review_status = "1"
       ORDER BY r.created_at ASC;
     `;
-    const get_review_query_value = [user_ID];
-    try{
-      const get_review_query_result = await query(reviewsQuery, get_review_query_value);
-      return get_review_query_result;
-    }catch(error){
-      return 'Error during user reviewsQuery:'+error;
-    }
+  const get_review_query_value = [user_ID];
+  try {
+    const get_review_query_result = await query(reviewsQuery, get_review_query_value);
+    return get_review_query_result;
+  } catch (error) {
+    return 'Error during user reviewsQuery:' + error;
+  }
 }
 
-async function getuserReviewCompany(user_ID){
-    const user_review_company_query = `
+async function getuserReviewCompany(user_ID) {
+  const user_review_company_query = `
     SELECT c.id AS company_id, MAX(r.created_at) AS latest_review_date, c.company_name, c.logo, COUNT(r.id) AS review_count
     FROM reviews r JOIN company c ON r.company_id = c.id
     WHERE r.customer_id = ? AND r.review_status = "1"
     GROUP BY c.id, c.company_name
     ORDER BY latest_review_date DESC`;
-    const user_review_company_value = [user_ID];
-    try{
-      const user_review_company_result = await query(user_review_company_query, user_review_company_value);
-      return user_review_company_result;
-    }catch(error){
-      return 'Error during user user_review_company_query:'+error;
-    }
+  const user_review_company_value = [user_ID];
+  try {
+    const user_review_company_result = await query(user_review_company_query, user_review_company_value);
+    return user_review_company_result;
+  } catch (error) {
+    return 'Error during user user_review_company_query:' + error;
+  }
 }
 
 async function ReviewReplyTo(Id) {
@@ -1157,10 +1163,10 @@ async function ReviewReplyToCustomer(mailReplyData, req) {
 
     // Define email data
     const mailOptions = {
-      from: process.env.MAIL_USER, 
-      to: customerEmail, 
+      from: process.env.MAIL_USER,
+      to: customerEmail,
       subject: 'Your Subject Here',
-      text: 'Hello, reply from the company.' 
+      text: 'Hello, reply from the company.'
     };
 
     try {
@@ -1231,10 +1237,10 @@ async function ReviewReplyToCompany(mailReplyData) {
 
     // Define email data
     const mailOptions = {
-      from: process.env.MAIL_USER, 
+      from: process.env.MAIL_USER,
       to: companyEmail,  // Use the company email directly
-      subject: 'submit review reply', 
-      text: 'Hello, reply from the user.' 
+      subject: 'submit review reply',
+      text: 'Hello, reply from the user.'
     };
 
     try {
@@ -1249,202 +1255,383 @@ async function ReviewReplyToCompany(mailReplyData) {
   }
 }
 
-// Example usage outside the function
-// const exampleMailReplyData = [
-//   {
-//     comp_email: 'dev2.scwt@gmail.com', 
-//   }
-// ];
 
-// ReviewReplyToCompany(exampleMailReplyData);
+async function getCompanyPollDetails(company_id) {
+  const sql = `SELECT
+                  pc.*,
+                  pa.poll_answer,
+                  pa.poll_answer_id,
+                  pv.voting_answer_id,
+                  voting_user_id
+                FROM
+                  poll_company pc
+                JOIN (
+                  SELECT
+                      p.poll_id,
+                      GROUP_CONCAT(DISTINCT p.answer) AS poll_answer,
+                      GROUP_CONCAT(DISTINCT p.id) AS poll_answer_id
+                  FROM
+                      poll_answer p
+                  GROUP BY
+                      p.poll_id
+                ) pa ON pc.id = pa.poll_id
+                LEFT JOIN (
+                  SELECT
+                      pv.poll_id,
+                      GROUP_CONCAT(pv.answer_id) AS voting_answer_id,
+                      GROUP_CONCAT(pv.user_id) AS voting_user_id
+                  FROM
+                      poll_voting pv
+                  GROUP BY
+                      pv.poll_id
+                ) pv ON pc.id = pv.poll_id
+                WHERE
+                  pc.company_id = '${company_id}' 
+                ORDER BY
+                  pc.id DESC;`;
+
+  // const sql = `SELECT poll_company.*, GROUP_CONCAT(pa.answer) AS poll_answer, GROUP_CONCAT(pa.id) AS poll_answer_id, GROUP_CONCAT(pv.answer_id) AS voting_answer_id
+  // FROM poll_company  
+  // JOIN poll_answer pa ON pa.poll_id = poll_company.id
+  // LEFT JOIN poll_voting pv ON pv.poll_id = poll_company.id
+  // WHERE poll_company.company_id = '${company_id}' 
+  // GROUP BY poll_company.id
+  // ORDER BY poll_company.id DESC `;
+
+  const result = await query(sql);
+  if (result.length > 0) {
+    return result;
+  } else {
+    return [];
+  }
+
+}
+
+async function getCompanyIdBySlug(slug) {
+  //console.log(req)
+  try {
+    const get_company_query = `SELECT ID FROM company WHERE slug = '${slug}' `;
+    const get_company_Id = await query(get_company_query);
+
+    console.log(get_company_Id[0]);
+    return get_company_Id[0];
+  } catch (error) {
+    return 'Error during fetch companyId:' + error;
+  }
+}
+
+async function getReviewReplies(user_ID, reviewIDs) {
+  try {
+    const rows = `
+      SELECT *
+      FROM review_reply
+      WHERE reply_to = '${user_ID}' `; 
+    const getvalue = await query(rows);
+    console.log(getvalue);
+    return getvalue; 
+  } catch (error) {
+    console.error('Error during fetch review replies:', error);
+    throw error;
+  }
+}
 
 
-// Example usage outside the function
-// const exampleMailReplyData = [
-//   {
-//     comp_email: 'company@example.com',
-//   }
-// ];
+async function updateReview(reviewIfo){
+  // console.log('Review Info', reviewIfo);
+  // console.log('Company Info', comInfo);
+  // reviewIfo['tags[]'].forEach((tag) => {
+  //   console.log(tag);
+  // });
+  if (typeof reviewIfo['tags[]'] === 'string') {
+    // Convert it to an array containing a single element
+    reviewIfo['tags[]'] = [reviewIfo['tags[]']];
+  }
+  const currentDate = new Date();
+  // Format the date in 'YYYY-MM-DD HH:mm:ss' format (adjust the format as needed)
+  const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
 
-// ReviewReplyToCompany(exampleMailReplyData);
+  const updateQuery = 'UPDATE reviews SET review_title = ?, rating = ?, review_content = ?, user_privacy = ?, review_status = ?, updated_at = ? WHERE id = ?';
+  const updateData = [ reviewIfo.review_title, reviewIfo.rating, reviewIfo.review_content, reviewIfo.user_privacy, '2', formattedDate, reviewIfo.review_id]
+              
+  try {
+    const create_review_results = await query(updateQuery, updateData);
+      if (Array.isArray(reviewIfo['tags[]']) && reviewIfo['tags[]'].length > 0) {
+        //insert review_tag_relation
+
+        await query(`DELETE FROM review_tag_relation WHERE review_id = '${reviewIfo.review_id}'`);
+
+        const review_tag_relation_query = 'INSERT INTO review_tag_relation (review_id, tag_name) VALUES (?, ?)';
+        try{
+          for (const tag of reviewIfo['tags[]']) {
+            const review_tag_relation_values = [reviewIfo.review_id, tag];
+            const review_tag_relation_results = await query(review_tag_relation_query, review_tag_relation_values);
+          }
+
+        }catch(error){
+          console.error('Error during user review_tag_relation_results:', error);
+        }
+      }
+  }catch (error) {
+    console.error('Error during user update_review_results:', error);
+  }
+}
 
 
+async function insertInvitationDetails(req) {
+  console.log('insertInvitationDetails',req)
+  const {emails, email_body, user_id, company_id } = req
+  const currentDate = new Date();
+  const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+  const sql = `INSERT INTO review_invite_request( company_id, user_id, share_date, count) VALUES (?, ?, ?, ?)`;
+  const data = [company_id, user_id, formattedDate, emails.length ];
+  const result = await query(sql, data);
+  if (result) {
+    return true;
+  } else {
+    return false;
+  }
+}
 
+async function sendInvitationEmail(req) {
+  console.log('sendInvitationEmail',req)
+  const {emails, email_body, user_id, company_id, company_name ,company_slug} = req;
+  if(emails.length > 0){
+    await emails.forEach((email)=>{
+      var mailOptions = {
+        from: process.env.MAIL_USER,
+        //to: 'pranab@scwebtech.com',
+        to: email,
+        subject: 'Invitation Email',
+        html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
+        <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
+         <tbody>
+          <tr>
+           <td align="center" valign="top">
+             <div id="template_header_image"><p style="margin-top: 0;"></p></div>
+             <table id="template_container" style="box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; background-color: #fdfdfd; border: 1px solid #dcdcdc; border-radius: 3px !important;" border="0" cellpadding="0" cellspacing="0" width="600">
+              <tbody>
+                <tr>
+                 <td align="center" valign="top">
+                   <!-- Header -->
+                   <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
+                     <tbody>
+                       <tr>
+                       <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
+                        <td id="header_wrapper" style="padding: 36px 48px; display: block;">
+                           <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Invitation Email</h1>
+                        </td>
+                       </tr>
+                     </tbody>
+                   </table>
+             <!-- End Header -->
+             </td>
+                </tr>
+                <tr>
+                 <td align="center" valign="top">
+                   <!-- Body -->
+                   <table id="template_body" border="0" cellpadding="0" cellspacing="0" width="600">
+                     <tbody>
+                       <tr>
+                        <td id="body_content" style="background-color: #fdfdfd;" valign="top">
+                          <!-- Content -->
+                          <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                           <tbody>
+                            <tr>
+                             <td style="padding: 48px;" valign="top">
+                               <div id="body_content_inner" style="color: #737373; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
+                                
+                                <table border="0" cellpadding="4" cellspacing="0" width="90%">
+                                  <tr>
+                                    <td colspan="2">
+                                    <p style="font-size:15px; line-height:20px">${email_body}</p>
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td colspan="2">
+                                    <p style="font-size:15px; line-height:20px">Please <a href="${process.env.MAIN_URL}company/${company_id}?type=invitation">click here</a> to submit your opinion.</p>
+                                    </td>
+                                  </tr>
+                                </table>
+                                
+                               </div>
+                             </td>
+                            </tr>
+                           </tbody>
+                          </table>
+                        <!-- End Content -->
+                        </td>
+                       </tr>
+                     </tbody>
+                   </table>
+                 <!-- End Body -->
+                 </td>
+                </tr>
+                <tr>
+                 <td align="center" valign="top">
+                   <!-- Footer -->
+                   <table id="template_footer" border="0" cellpadding="10" cellspacing="0" width="600">
+                    <tbody>
+                     <tr>
+                      <td style="padding: 0; -webkit-border-radius: 6px;" valign="top">
+                       <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                         <tbody>
+                           <tr>
+                            <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
+                                 <p>This email was sent from <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a></p>
+                            </td>
+                           </tr>
+                         </tbody>
+                       </table>
+                      </td>
+                     </tr>
+                    </tbody>
+                   </table>
+                 <!-- End Footer -->
+                 </td>
+                </tr>
+              </tbody>
+             </table>
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>`
+      }
+      mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
+          if (err) {
+              console.log(err);
+              return false;
+          } else {
+              console.log('Mail Send: ', info.response);
+              
+          }
+      })
+    })
+    return true;
+  }
+ 
+}
 
+async function getSubCategories(categorySlug) {
+  const sql = `SELECT category.category_name,category.category_slug, GROUP_CONCAT(c.category_name) AS subcategories, GROUP_CONCAT(c.category_slug ) AS subcategoriesSlug
+                FROM category 
+                LEFT JOIN category c ON category.ID = c.parent_id
+                WHERE category.category_slug = '${categorySlug}'
+                GROUP BY category.category_name `;
 
-// const exampleMailReplyData = [
-//   {
-//     comp_email: companyEmail
-//   }
-// ];
-// ReviewReplyToCompany(exampleMailReplyData);
-
-
-
-
-// async function ReviewReplyToCompany(mailReplyData){
-//   if (mailReplyData && mailReplyData[0] && mailReplyData[0].comp_email) {
-//     //     const companyEmail = mailReplyData[0].comp_email;
-//   var mailOptions = {
-//     from: process.env.MAIL_USER,
-//     //to: 'dev2.scwt@gmail.com',
-//     to: mailReplyData[0].email,
-//     subject: 'Message Reply',
-//     html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
-//     <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
-//      <tbody>
-//       <tr>
-//        <td align="center" valign="top">
-//          <div id="template_header_image"><p style="margin-top: 0;"></p></div>
-//          <table id="template_container" style="box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; background-color: #fdfdfd; border: 1px solid #dcdcdc; border-radius: 3px !important;" border="0" cellpadding="0" cellspacing="0" width="600">
-//           <tbody>
-//             <tr>
-//              <td align="center" valign="top">
-//                <!-- Header -->
-//                <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
-//                  <tbody>
-//                    <tr>
-//                    <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
-//                     <td id="header_wrapper" style="padding: 36px 48px; display: block;">
-//                        <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Message Reply</h1>
-//                     </td>
-
-//                    </tr>
-//                  </tbody>
-//                </table>
-//          <!-- End Header -->
-//          </td>
-//             </tr>
-//             <tr>
-//              <td align="center" valign="top">
-//                <!-- Body -->
-//                <table id="template_body" border="0" cellpadding="0" cellspacing="0" width="600">
-//                  <tbody>
-//                    <tr>
-//                     <td id="body_content" style="background-color: #fdfdfd;" valign="top">
-//                       <!-- Content -->
-//                       <table border="0" cellpadding="20" cellspacing="0" width="100%">
-//                        <tbody>
-//                         <tr>
-//                          <td style="padding: 48px;" valign="top">
-//                            <div id="body_content_inner" style="color: #737373; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
-                            
-//                             <table border="0" cellpadding="4" cellspacing="0" width="90%">
-//                               <tr>
-//                                 <td colspan="2">
-//                                 <strong>Hello ${mailReplyData[0].first_name},</strong>
-//                                 <p style="font-size:15px; line-height:20px">You got a reply from the customer for your message. 
-//                                 <a  href="${process.env.MAIN_URL}company-review-listing/${mailReplyData[0].company_id}">Click here</a> to view.</p>
-//                                 </td>
-//                               </tr>
-//                             </table>
-                            
-//                            </div>
-//                          </td>
-//                         </tr>
-//                        </tbody>
-//                       </table>
-//                     <!-- End Content -->
-//                     </td>
-//                    </tr>
-//                  </tbody>
-//                </table>
-//              <!-- End Body -->
-//              </td>
-//             </tr>
-//             <tr>
-//              <td align="center" valign="top">
-//                <!-- Footer -->
-//                <table id="template_footer" border="0" cellpadding="10" cellspacing="0" width="600">
-//                 <tbody>
-//                  <tr>
-//                   <td style="padding: 0; -webkit-border-radius: 6px;" valign="top">
-//                    <table border="0" cellpadding="10" cellspacing="0" width="100%">
-//                      <tbody>
-//                        <tr>
-//                         <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
-//                              <p>This email was sent from <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a></p>
-//                         </td>
-//                        </tr>
-//                      </tbody>
-//                    </table>
-//                   </td>
-//                  </tr>
-//                 </tbody>
-//                </table>
-//              <!-- End Footer -->
-//              </td>
-//             </tr>
-//           </tbody>
-//          </table>
-//        </td>
-//       </tr>
-//      </tbody>
-//     </table>
-//    </div>`
-//   }
-//   mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
-//     if (err) {
-//       console.log(err);
-//       res.status(500).json({
-//         status: 'error',
-//         message: 'Something went wrong',
-//       });
-//     }   else {
-//       console.log('Mail Sent: ', info.response);
-//       res.status(200).json({
-//         status: 'ok',
-//         message: 'Email sent successfully',
-//       });
-//     }
-//   });
-// } else {
-//   console.error('Invalid or missing mailReplyData for company');
+  const result = await query(sql);
+  if(result.length > 0 ){
+    return result;
+  }else{
+    return [];
+  }
   
-// }
-// }
+}
+
+async function getCompanyDetails(categorySlug) {
+  const sql = `SELECT c.ID, c.company_name, c.logo, c.status, c.trending, c.main_address, c.verified, c.paid_status, c.about_company, c.slug , AVG(r.rating) as comp_avg_rating, COUNT(r.id) as comp_total_reviews, pcd.cover_img
+                FROM category  
+                JOIN company_cactgory_relation ccr ON ccr.category_id = category.ID
+                LEFT JOIN company c ON c.ID = ccr.company_id
+                LEFT JOIN reviews r ON r.company_id = c.ID
+                LEFT JOIN premium_company_data pcd ON pcd.company_id = c.ID
+                WHERE category.category_slug = '${categorySlug}' AND c.status = '1'
+                GROUP BY c.ID, c.company_name `;
+
+  const result = await query(sql);
+  if(result.length > 0 ){
+    return result;
+  }else{
+    return [];
+  }
+  
+}
+
+async function getCategoryDetails(category_slug){
+  const get_category_query = `
+  SELECT * FROM category
+  WHERE category_slug = ?;
+  `;
+  const get_category_slug = category_slug;
+  try{
+    const get_category_query_result = await query(get_category_query, get_category_slug);
+    // if(get_category_query_result[0].parent_id){
+    //   console.log(get_category_query_result);
+    // }
+    return get_category_query_result;
+  }catch(error){
+    return 'Error during user get_category_query:'+error;
+  }
+}
+
+async function getParentCategories(ID) {
+  const get_category_query = `
+  SELECT * FROM category
+  WHERE ID = ?;
+  `;
+  const cat_ID = ID;
+  try{
+    const get_category_query_result = await query(get_category_query, cat_ID);
+    // if(get_category_query_result[0].parent_id){
+    //   console.log(get_category_query_result);
+    // }
+    return get_category_query_result;
+  }catch(error){
+    return 'Error during user get_category_query:'+error;
+  }
+}
 
 
 module.exports = {
-    getUser,
-    getUserMeta,
-    getCountries,
-    getStates,//new
-    getUserRoles,
-    getStatesByUserID,
-    getAllCompany,
-    getCompany,
-    getCompanyCategory,
-    renderCategoryTreeHTML,
-    getCompanyCategoryBuID,
-    saveUserGoogleLoginDataToDB,
-    saveUserFacebookLoginDataToDB,
-    getAllRatingTags,
-    getReviewRatingData,
-    getMetaValue,
-    insertIntoFaqPages,
-    insertIntoFaqCategories,
-    insertIntoFaqItems,
-    createCompany,
-    createReview,
-    getlatestReviews,
-    getAllReviews,
-    getTrendingReviews, //new
-    getLatestReview,//new
-    getCustomerReviewData,
-    getCustomerReviewTagRelationData,
-    editCustomerReview,
-    searchCompany,
-    getCompanyReviewNumbers,
-    getCompanyReviews,
-    getCompanyRatings,//new
-    getTotalreplies, //new
-    getTotalReviewsAndCounts, //new
-    getUsersByRole,
-    getUserCompany,
-    getUserReview,
-    getuserReviewCompany,
-    ReviewReplyTo,
-    ReviewReplyToCustomer, //new
-    ReviewReplyToCompany
+  getUser,
+  getUserMeta,
+  getCountries,
+  getStates,//new
+  getUserRoles,
+  getStatesByUserID,
+  getAllCompany,
+  getCompany,
+  getCompanyCategory,
+  renderCategoryTreeHTML,
+  getCompanyCategoryBuID,
+  saveUserGoogleLoginDataToDB,
+  saveUserFacebookLoginDataToDB,
+  getAllRatingTags,
+  getReviewRatingData,
+  getMetaValue,
+  insertIntoFaqPages,
+  insertIntoFaqCategories,
+  insertIntoFaqItems,
+  createCompany,
+  createReview,
+  getlatestReviews,
+  getAllReviews,
+  getTrendingReviews, 
+  getLatestReview,
+  getCustomerReviewData,
+  getCustomerReviewTagRelationData,
+  editCustomerReview,
+  searchCompany,
+  getCompanyReviewNumbers,
+  getCompanyReviews,
+  getCompanyRatings,
+  getTotalreplies, 
+  getTotalReviewsAndCounts, 
+  getUsersByRole,
+  getUserCompany,
+  getUserReview,
+  getuserReviewCompany,
+  ReviewReplyTo,
+  ReviewReplyToCustomer, 
+  ReviewReplyToCompany,
+  getCompanyPollDetails,
+  getCompanyIdBySlug,
+  getReviewReplies,
+  updateReview,
+  insertInvitationDetails,
+  sendInvitationEmail,
+  getSubCategories,
+  getCompanyDetails,
+  getCategoryDetails,
+  getParentCategories
 };
