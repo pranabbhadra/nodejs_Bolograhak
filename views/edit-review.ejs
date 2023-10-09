@@ -300,6 +300,38 @@
 
                             </div>
                         </div>
+                        
+
+                    </div>
+                    <!--end::Card body-->
+                    <!--begin::Actions-->
+                    <div class="card-footer d-flex justify-content-end py-6 px-9">
+                        <button type="reset" class="btn btn-light btn-active-light-primary me-2">Discard</button>
+                        <input type="hidden" name="review_id" value="<%= reviewData.id %>">
+                        <input type="hidden" name="company_id" value="<%= reviewData.company_id %>">
+                        <button type="submit" class="btn btn-primary" id="kt_review_tag_update_form_submit">Submit</button>
+                    </div>
+                    <!--end::Actions-->
+                </form>
+                <!--end::Form-->
+            </div>
+            <!--end::Content-->
+        </div>
+        
+        <% if(reviewData.company_reply_content) { %>
+        <div class="card mb-5 mb-xl-10">
+            <div class="card-header border-0 cursor-pointer" role="button"
+                data-bs-target="#kt_account_profile_details" aria-expanded="true"
+                aria-controls="kt_account_profile_details">
+                <!--begin::Card title-->
+                <div class="card-title m-0">
+                    <h3 class="fw-bolder m-0">Customer review reply section</h3>
+                </div>
+                <!--end::Card title-->
+            </div>
+            <div id="kt_account_reply_details" class="collapse show">
+                <form id="kt_review_reply_update_form" action="" method="POST">
+                    <div class="card-body border-top p-9">
                         <% if(reviewData.company_reply_content) { %>
                             <div class="row mb-6">
                                 <!--begin::Label-->
@@ -354,22 +386,20 @@
                             </div>
                             <div style="display: none; color: rgb(237, 16, 16);" class="response-message col-lg-8 fv-row"></div>
                         <% } %>
-
                     </div>
-                    <!--end::Card body-->
-                    <!--begin::Actions-->
-                    <div class="card-footer d-flex justify-content-end py-6 px-9">
-                        <button type="reset" class="btn btn-light btn-active-light-primary me-2">Discard</button>
-                        <input type="hidden" name="review_id" value="<%= reviewData.id %>">
-                        <input type="hidden" name="company_id" value="<%= reviewData.company_id %>">
-                        <button type="submit" class="btn btn-primary" id="kt_review_tag_update_form_submit">Submit</button>
-                    </div>
-                    <!--end::Actions-->
+                    
+                    <% if(reviewData.reply_id) { %>
+                        <div class="card-footer d-flex justify-content-end py-6 px-9">
+                            <input type="hidden" name="review_id" value="<%= reviewData.id %>">
+                            <input type="hidden" name="company_id" value="<%= reviewData.company_id %>">
+                            <button type="reset" class="btn btn-light btn-active-light-primary me-2">Discard</button>
+                            <button type="submit" class="btn btn-primary" id="kt_review_reply_update_form_submit">Submit</button>
+                        </div>
+                    <% } %>
                 </form>
-                <!--end::Form-->
             </div>
-            <!--end::Content-->
         </div>
+        <% } %>
         <!--end::Basic info-->
     </div>
     <!--end::Container-->
@@ -400,6 +430,9 @@
             var form;
             var submitButton;
             var validation;
+
+            var replyform;
+            var replysubmitButton;
 
             var handleForm = function () {
 
@@ -445,18 +478,86 @@
                             const rejectVal = $('#rejectId').val();
                             console.log(rejectVal);
                             
+                            const formData = $('#kt_review_tag_update_form').serializeArray();
+                            const jsonData = {};
+                            $(formData).each(function (index, field) {
+                                jsonData[field.name] = field.value;
+                            });
+                            console.log(jsonData);
+                            $.ajax({
+                                url: '/auth/edit-review',
+                                method: 'PUT',
+                                data: jsonData,
+                                ContentType: 'application/json',
+                                success: function (data) {
+                                    if (data.status == 'ok') {
+                                        Swal.fire({
+                                            text: data.message,
+                                            icon: "success",
+                                            buttonsStyling: false,
+                                            confirmButtonText: "Ok, got it!",
+                                            customClass: {
+                                                confirmButton: "btn btn-primary"
+                                            }
+                                        }).then(function (result) {
+                                            if (result.isConfirmed) {
+                                                window.location.href = "/all-review";
+                                            }
+                                        });
+                                    } else {
+                                        Swal.fire({
+                                            text: data.message,
+                                            icon: "error",
+                                            buttonsStyling: false,
+                                            confirmButtonText: "Ok, got it!",
+                                            customClass: {
+                                                confirmButton: "btn btn-primary"
+                                            }
+                                        });
+                                    }
+                                },
+                                error: function (xhr, status, error) {
+                                    // Handle any errors that occur during the request
+                                    console.log(error);
+                                }
+                            });
+                            
+                        } else {
+                            swal.fire({
+                                text: "Sorry, looks like there are some errors detected, please try again.",
+                                icon: "error",
+                                buttonsStyling: false,
+                                confirmButtonText: "Ok, got it!",
+                                customClass: {
+                                    confirmButton: "btn fw-bold btn-light-primary"
+                                }
+                            });
+                        }
+                    });
+                });
+
+                // Handle form submit
+                replysubmitButton.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    //alert('aaaaaaaaaaa');
+                    //return false;
+                    validation.validate().then(function (status) {
+                        if (status == 'Valid') {
+                            const rejectVal = $('#rejectId').val();
+                            console.log(rejectVal);
+                            
                             if ($('#rejectId').val() == 0 && $('#reply_rejecting_comment').val() == '' ) {
                                 $('.response-message').text('Reject reason is not empty');
                                  $('.response-message').show();
                             }else {
-                                const formData = $('#kt_review_tag_update_form').serializeArray();
+                                const formData = $('#kt_review_reply_update_form').serializeArray();
                                 const jsonData = {};
                                 $(formData).each(function (index, field) {
                                     jsonData[field.name] = field.value;
                                 });
                                 console.log(jsonData);
                                 $.ajax({
-                                    url: '/auth/edit-review',
+                                    url: '/auth/edit-review-reply',
                                     method: 'PUT',
                                     data: jsonData,
                                     ContentType: 'application/json',
@@ -516,6 +617,9 @@
                 init: function () {
                     form = document.getElementById('kt_review_tag_update_form');
                     submitButton = form.querySelector('#kt_review_tag_update_form_submit');
+
+                    replyform = document.getElementById('kt_review_reply_update_form');
+                    replysubmitButton = replyform.querySelector('#kt_review_reply_update_form_submit');
 
                     handleForm();
                 }

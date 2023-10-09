@@ -1946,11 +1946,10 @@ exports.editCustomerReview = async (req, res) => {
     // const ratingTagsArray = JSON.parse(req.body.rating_tags);
     // console.log(ratingTagsArray);
     //const editResponse1 = await comFunction.editCustomerReview( req.body );
-    const [editResponse, ApproveMailSend,RejectdEmailSend, CustomerReply] = await Promise.all([
+    const [editResponse, ApproveMailSend,RejectdEmailSend ] = await Promise.all([
         comFunction.editCustomerReview( req.body ),
         comFunction2.reviewApprovedEmail(req.body),
         comFunction2.reviewRejectdEmail(req.body),
-        comFunction2.updateCustomerReply(req.body),
     ]);
 
     if(editResponse == true){
@@ -1969,6 +1968,31 @@ exports.editCustomerReview = async (req, res) => {
     }
 }
 
+exports.editCustomerReviewReply = async (req, res) => {
+    console.log('editCustomerReviewReply',req.body);
+    //return false;
+    // const ratingTagsArray = JSON.parse(req.body.rating_tags);
+    // console.log(ratingTagsArray);
+    //const editResponse1 = await comFunction.editCustomerReview( req.body );
+    const [ CustomerReply] = await Promise.all([
+        comFunction2.updateCustomerReply(req.body),
+    ]);
+
+    if(CustomerReply == true){
+        // Return success response
+        return res.send({
+            status: 'ok',
+            data: '',
+            message: 'Review reply updated successfully'
+        });
+    }else{
+        return res.send({
+            status: 'err',
+            data: '',
+            message: editResponse
+        });        
+    }
+}
 // Update Contacts
 exports.updateContacts = async (req, res) => {
     //const formdata = JSON.parse(req.body.formData);
@@ -4541,6 +4565,9 @@ exports.updateReviewFlag = async (req, res) => {
         comFunction2.flagApprovedEmail(req.body),
         comFunction2.flagRejectdEmail(req.body),
     ]);
-
-    return res.redirect('/flag-review');
+    return res.send({
+        status: 'ok',
+        message: 'Flag update successfully',
+    });
+    //return res.redirect('/flag-review');
 }
