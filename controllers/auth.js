@@ -4571,3 +4571,26 @@ exports.updateReviewFlag = async (req, res) => {
     });
     //return res.redirect('/flag-review');
 }
+
+//create new discussion
+exports.createDiscussion = async (req, res) => {
+    console.log('createDiscussion',req.body ); 
+    //return false;
+    const {user_id, tags, topic, from_data, expire_date} = req.body;
+    const strTags = JSON.stringify(tags);
+    const sql = `INSERT INTO discussions ( user_id, topic, tags, created_at, expired_at) VALUES (?, ?, ?, ?, ?)` ;
+    const data = [user_id, topic, strTags, from_data, expire_date];
+    db.query(sql, data, (err, result) => {
+        if (err) {
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong '+err
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Your Discussion Topic Added Successfully'
+            });
+        }
+    })
+}

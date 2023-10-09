@@ -289,4 +289,7 @@ router.post('/add-review-flag', authController.addReviewFlag);
 //Add Review Flag admin response
 router.post('/update-review-flag', authController.updateReviewFlag);
 
+//Create discussion
+router.post('/create-discussion', authController.createDiscussion);
+
 module.exports = router;
