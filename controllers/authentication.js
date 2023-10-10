@@ -3072,456 +3072,6 @@ exports.reviewInvitation = async (req, res) => {
   }
 }
 
-// exports.userPoll = async (req, res) => {
-//   const authenticatedUserId = parseInt(req.user.user_id);
-//   console.log('authenticatedUserId: ', authenticatedUserId);
-//   const ApiuserId = parseInt(req.body.user_id);
-//   if (isNaN(ApiuserId)) {
-//     return res.status(400).json({
-//       status: 'error',
-//       message: 'Invalid user_id provided in request body.',
-//     });
-//   }
-//   console.log('req.body.user_id', parseInt(req.body.user_id));
-//   const { user_id, poll_id } = req.body;
-//   console.log(req.body);
-
-//   if (ApiuserId !== authenticatedUserId) {
-//     return res.status(403).json({
-//       status: 'error',
-//       message: 'Access denied: You are not authorized to update this user.',
-//     });
-//   }
-
-//   // Define the SQL query to fetch poll data based on user's response
-// //   const query = `
-// //   SELECT
-// //     pc.id,
-// //     pc.question,
-// //     pc.company_id,
-// //     pc.poll_creator_id,
-// //     pc.created_at,
-// //     pc.expired_at,
-// //     CASE
-// //       WHEN pv.user_id IS NOT NULL THEN pa.answer
-// //       ELSE NULL
-// //     END AS user_response
-// //   FROM
-// //     poll_company AS pc
-// //   LEFT JOIN
-// //     poll_voting AS pv ON pc.id = pv.poll_id AND pv.user_id = ?
-// //   LEFT JOIN
-// //     poll_answer AS pa ON pv.answer_id = pa.id AND pc.id = pa.poll_id
-// //   WHERE
-// //     pc.id = ?;
-// // `;
-// // const query = `
-// // SELECT
-// //   pc.id,
-// //   pc.question,
-// //   pc.company_id,
-// //   pc.poll_creator_id,
-// //   pc.created_at,
-// //   pc.expired_at,
-// //   CASE
-// //     WHEN pv.user_id IS NOT NULL THEN pa.answer
-// //   END AS user_response
-// // FROM
-// //   poll_company AS pc
-// // LEFT JOIN
-// //   poll_voting AS pv ON pc.id = pv.poll_id AND pv.user_id = ?
-// // LEFT JOIN
-// // poll_answer AS pa ON pv.answer_id = pa.id AND pc.id = pa.poll_id
-// // WHERE
-// //   pc.id = ?;`;
-
-// const query = `
-// SELECT
-//   pc.id,
-//   pc.question,
-//   pc.company_id,
-//   pc.poll_creator_id,
-//   pc.created_at,
-//   pc.expired_at,
-//   IFNULL(pa.answer, 'No response') AS user_response
-// FROM
-//   poll_company AS pc
-// LEFT JOIN
-//   poll_voting AS pv ON pc.id = pv.poll_id AND pv.user_id = ?
-// LEFT JOIN
-//   poll_answer AS pa ON pv.answer_id = pa.id AND pc.id = pa.poll_id
-// WHERE
-//   pc.id = ?;
-// `;
-
-// db.query(query, [ApiuserId, poll_id], (err, results) => {
-//   if (err) {
-//     console.error(err);
-//     return res.status(500).json({
-//       status: 'error',
-//       message: 'An error occurred while fetching poll data.',
-//     });
-//   }
-
-//   if (results.length > 0) {
-//     const pollData = results[0];
-
-//     // Check if user_response is null (user hasn't voted)
-//     if (pollData.user_response === null) {
-//       return res.status(200).json({
-//         status: 'success',
-//         data: pollData,
-//         message: 'Poll data retrieved successfully.',
-//       });
-//     } else {
-//       return res.status(200).json({
-//         status: 'success',
-//         data: {
-//           poll_id: pollData.id,
-//           answer_id: pollData.answer_id,
-//           user_id: pollData.user_id,
-//           voting_date: pollData.voting_date,
-//         },
-//         message: 'Voting record retrieved successfully.',
-//       });
-//     }
-//   } else {
-//     return res.status(404).json({
-//       status: 'error',
-//       data: null,
-//       message: 'Poll data not found for the given user and poll ID.',
-//     });
-//   }
-// })
-// }
-
-
-// exports.userPoll = async (req, res) => {
-//   const authenticatedUserId = parseInt(req.user.user_id);
-//   const ApiuserId = parseInt(req.body.user_id);
-
-//   if (isNaN(ApiuserId)) {
-//     return res.status(400).json({
-//       status: 'error',
-//       message: 'Invalid user_id provided in the request body.',
-//     });
-//   }
-
-//   if (ApiuserId !== authenticatedUserId) {
-//     return res.status(403).json({
-//       status: 'error',
-//       message: 'Access denied: You are not authorized to update this user.',
-//     });
-//   }
-
-//   const { poll_id, user_id} = req.body;
-
-//   // Define the SQL query to fetch poll data based on user's response
-// //   const query = `
-// //   SELECT
-// //   pc.id AS poll_id,
-// //   pc.question AS poll_question,
-// //   IFNULL(pa.id, pa.id) AS user_response_id,
-// //   IFNULL(pa.answer, pa.answer) AS user_response
-// // FROM
-// //   poll_company AS pc
-// // LEFT JOIN
-// //   poll_voting AS pv ON pc.id = pv.poll_id AND pv.user_id = ?
-// // LEFT JOIN
-// //   poll_answer AS pa ON pv.answer_id = pa.id AND pc.id = pa.poll_id
-// // WHERE
-// //   pc.id = ?;
-// //   `;
-// // const query = `
-// // SELECT
-// //   pc.id AS poll_id,
-// //   pc.question AS poll_question,
-// //   pa.id AS user_response_id,
-// //   pa.answer AS user_response
-// // FROM
-// //   poll_company AS pc
-// // LEFT JOIN
-// //   poll_answer AS pa ON pc.id = pa.poll_id
-// // WHERE
-// //   pc.id = ?
-// // UNION
-// // SELECT
-// //   pc.id AS poll_id,
-// //   pc.question AS poll_question,
-// //   NULL AS user_response_id,
-// //   NULL AS user_response
-// // FROM
-// //   poll_company AS pc
-// // WHERE
-// //   pc.id = ?;
-// // `;
-// const row = `
-// SELECT
-// pc.id AS poll_id,
-// pc.question AS poll_question,
-// CASE
-//   WHEN pv.user_id IS NOT NULL THEN pa.id
-//   ELSE NULL
-// END AS answer_id,
-// CASE
-//   WHEN pv.user_id IS NOT NULL THEN pa.answer
-//   ELSE NULL
-// END AS answer_text
-// FROM
-// poll_company AS pc
-// LEFT JOIN
-// poll_voting AS pv ON pc.id = pv.poll_id AND pv.user_id = ?
-// LEFT JOIN
-// poll_answer AS pa ON pv.answer_id = pa.id AND pc.id = pa.poll_id
-// WHERE
-// pc.id = ?;
-// `;
-
-// const rows= `SELECT
-// pc.id AS poll_id,
-// pc.question AS poll_question,
-// pa.id AS answer_id,
-// pa.answer AS answer_text
-// FROM
-// poll_company AS pc
-// LEFT JOIN
-// poll_answer AS pa ON pc.id = pa.poll_id
-// WHERE
-// pc.id = ?;
-// `
-// db.query(row, [poll_id,ApiuserId, poll_id], (err, results) => {
-//   if (err) {
-//     console.error(err);
-//     return res.status(500).json({
-//       status: 'error',
-//       message: 'An error occurred while fetching poll data.',
-//     });
-//   }
-
-//   if (results.length > 0) {
-//     const pollData = results[0];
-
-//     return res.status(200).json({
-//       status: 'success',
-//       data: pollData,
-//       message: 'Poll data retrieved successfully.',
-//     });
-//   } else {
-//     return res.status(404).json({
-//       status: 'error',
-//       data: null,
-//       message: 'Poll data not found for the given user and poll ID.',
-//     });
-//   }
-// });
-// }
-
-
-// exports.userPoll = async (req, res) => {
-//   const authenticatedUserId = parseInt(req.user.user_id);
-//   const ApiuserId = parseInt(req.body.user_id);
-
-//   // Check if the user ID provided in the request body is valid
-//   if (isNaN(ApiuserId)) {
-//     return res.status(400).json({
-//       status: 'error',
-//       message: 'Invalid user_id provided in the request body.',
-//     });
-//   }
-
-//   // Check if the authenticated user is authorized
-//   if (ApiuserId !== authenticatedUserId) {
-//     return res.status(403).json({
-//       status: 'error',
-//       message: 'Access denied: You are not authorized to update this user.',
-//     });
-//   }
-
-//   const { poll_id } = req.body;
-
-//   // Define the SQL queries for both scenarios
-//   const queryWhenUserHasVoted = `
-//     SELECT
-//       pc.id AS poll_id,
-//       pc.question AS poll_question,
-//       CASE
-//         WHEN pv.user_id IS NOT NULL THEN pa.id
-//         ELSE NULL
-//       END AS answer_id,
-//       CASE
-//         WHEN pv.user_id IS NOT NULL THEN pa.answer
-//         ELSE NULL
-//       END AS answer_text
-//     FROM
-//       poll_company AS pc
-//     LEFT JOIN
-//       poll_voting AS pv ON pc.id = pv.poll_id AND pv.user_id = ?
-//     LEFT JOIN
-//       poll_answer AS pa ON pv.answer_id = pa.id AND pc.id = pa.poll_id
-//     WHERE
-//       pc.id = ?;
-//   `;
-//   db.query(queryWhenUserHasVoted,[ApiuserId, poll_id],(err, results) => {
-//     if (err) {
-//       console.error(err);
-//       return res.status(500).json({
-//         status: 'error',
-//         message: 'An error occurred while fetching poll data.',
-//       });
-//     }
-//     console.log('aqaaa', results)
-//     if (results.length > 0) {
-//       const pollData = results;
-
-//       return res.status(200).json({
-//         status: 'success',
-//         data: pollData,
-//         message: 'Poll data retrieved successfully.',
-//       });
-//     } else {
-//       return res.status(404).json({
-//         status: 'error',
-//         data: null,
-//         message: 'Poll data not found for the given user and poll ID.',
-//       });
-//     }
-//   });
-//   const queryWhenUserHasNotVoted = `
-//   SELECT
-//   pa.*
-//   FROM
-//     poll_company AS pc
-//   LEFT JOIN poll_answer AS pa ON pc.id = pa.poll_id
-//   WHERE
-//     pc.id = '${poll_id}';
-// `;
-//    //const queryToExecute = ApiuserId !== authenticatedUserId ? queryWhenUserHasNotVoted : queryWhenUserHasVoted;
-
-//   // Execute the chosen query
-//   db.query(queryWhenUserHasNotVoted,[ApiuserId, poll_id],(err, results) => {
-//     if (err) {
-//       console.error(err);
-//       return res.status(500).json({
-//         status: 'error',
-//         message: 'An error occurred while fetching poll data.',
-//       });
-//     }
-//     console.log('aqaaa', results)
-//     if (results.length > 0) {
-//       const pollData = results;
-
-//       return res.status(200).json({
-//         status: 'success',
-//         data: pollData,
-//         message: 'Poll data retrieved successfully.',
-//       });
-//     } else {
-//       return res.status(404).json({
-//         status: 'error',
-//         data: null,
-//         message: 'Poll data not found for the given user and poll ID.',
-//       });
-//     }
-//   });
-// };
-
-// exports.userPoll = async (req, res) => {
-//   const authenticatedUserId = parseInt(req.user.user_id);
-//   const ApiuserId = parseInt(req.body.user_id);
-
-//   if (isNaN(ApiuserId)) {
-//     return res.status(400).json({
-//       status: 'error',
-//       message: 'Invalid user_id provided in the request body.',
-//     });
-//   }
-//   if (ApiuserId !== authenticatedUserId) {
-//     return res.status(403).json({
-//       status: 'error',
-//       message: 'Access denied: You are not authorized to update this user.',
-//     });
-//   }
-
-//   const { poll_id,user_id } = req.body;
-
-//   const queryWhenUserHasVoted = `
-//   SELECT
-//   pc.id AS poll_id,
-//   pc.question AS poll_question,
-//   CASE
-//     WHEN pv.user_id IS NOT NULL THEN pa.id
-//     ELSE NULL
-//   END AS answer_id,
-//   CASE
-//     WHEN pv.user_id IS NOT NULL THEN pa.answer
-//     ELSE NULL
-//   END AS answer_text
-// FROM
-//   poll_company AS pc
-// LEFT JOIN
-//   poll_voting AS pv ON pc.id = pv.poll_id AND pv.user_id = ?
-// LEFT JOIN
-//   poll_answer AS pa ON pv.answer_id = pa.id AND pc.id = pa.poll_id
-// WHERE
-//   pc.id = ? AND pv.user_id =?;
-//   `;
-//   // when the user has voted
-//   db.query(queryWhenUserHasVoted, [poll_id,ApiuserId], (err, results) => {
-//     if (err) {
-//       console.error(err);
-//       return res.status(500).json({
-//         status: 'error',
-//         message: 'An error occurred while fetching poll data.',
-//       });
-//     }
-//     console.log('aqaaa', results)
-//     if (results.length > 0) {
-//       const pollData = results[0]
-
-//       return res.status(200).json({
-//         status: 'success',
-//         data: pollData,
-//         message: 'Poll data retrieved successfully.',
-//       });
-//     }
-//   })
-//     // If the user hasn't voted
-//     const queryWhenUserHasNotVoted = `
-//     SELECT
-//     pa.*
-//     FROM
-//       poll_company AS pc
-//     LEFT JOIN poll_answer AS pa ON pc.id = pa.poll_id
-//     WHERE
-//       pc.id = '${poll_id}';
-//   `;
-//     db.query(queryWhenUserHasNotVoted,(err, results) => {
-//       if (err) {
-//         console.error(err);
-//         return res.status(500).json({
-//           status: 'error',
-//           message: 'An error occurred while fetching poll data.',
-//         });
-//       }
-//       console.log('aqaaa', results)
-//       if (results.length > 0) {
-//         const pollData = results;
-
-//         return res.status(200).json({
-//           status: 'success',
-//           data: pollData,
-//           message: 'Poll data retrieved successfully.',
-//         });
-//       } else {
-//         return res.status(404).json({
-//           status: 'error',
-//           data: null,
-//           message: 'Poll data not found for the given user and poll ID.',
-//         });
-//       }
-//     });
-// }
-
 
 exports.userPoll = async (req, res) => {
   const authenticatedUserId = parseInt(req.user.user_id);
@@ -3546,6 +3096,7 @@ exports.userPoll = async (req, res) => {
     SELECT
       pc.id AS poll_id,
       pc.question AS poll_question,
+      pc.poll_creator_id,
       CASE
         WHEN pv.user_id IS NOT NULL THEN pa.id
         ELSE NULL
@@ -3575,7 +3126,15 @@ exports.userPoll = async (req, res) => {
     }
     console.log('aqaaa', results);
     if (results.length > 0) {
-      const pollData = results[0];
+      const pollData = {
+        poll_id: results[0].poll_id,
+        poll_question: results[0].poll_question,
+        poll_creator_id: results[0].poll_creator_id,
+        data: results.map((result) => ({
+          id: result.answer_id,
+          answer: result.answer_text,
+        })),
+      };
 
       return res.status(200).json({
         status: 'success',
@@ -3587,9 +3146,11 @@ exports.userPoll = async (req, res) => {
     // If the user hasn't voted, query for poll data without vote details
     const queryWhenUserHasNotVoted = `
       SELECT
-      pc.id AS poll_id,
-      pc.question AS poll_question,
-        pa.*
+        pc.id AS poll_id,
+        pc.question AS poll_question,
+        pc.poll_creator_id,
+        pa.id AS answer_id,
+        pa.answer AS answer_text
       FROM
         poll_company AS pc
       LEFT JOIN
@@ -3608,7 +3169,15 @@ exports.userPoll = async (req, res) => {
       }
       console.log('aqaaa', results);
       if (results.length > 0) {
-        const pollData = results;
+        const pollData = {
+          poll_id: results[0].poll_id,
+          poll_question: results[0].poll_question,
+          poll_creator_id: results[0].poll_creator_id,
+          data: results.map((result) => ({
+            id: result.answer_id,
+            answer: result.answer_text,
+          })),
+        };
 
         return res.status(200).json({
           status: 'success',
