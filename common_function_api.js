@@ -1350,6 +1350,17 @@ async function getReviewRepliescompany(companyId, reviewIDs) {
   }
 }
 
+async function getpolldetails(companyId, reviewIDs){
+  try{
+    const rows=`SELECT * FROM poll_company WHERE company_id  = '${companyId}' `; 
+    const getvalue = await query(rows);
+    console.log(getvalue);
+    return getvalue; 
+  } catch(error){
+    console.log('Error during fetch review replies:', error);
+    throw error;
+  }
+}
 
 async function updateReview(reviewIfo){
   // console.log('Review Info', reviewIfo);
@@ -1662,6 +1673,7 @@ module.exports = {
   getCompanyIdBySlug,
   getReviewReplies,
   getReviewRepliescompany,
+  getpolldetails,//new
   updateReview,
   insertInvitationDetails,
   sendInvitationEmail,

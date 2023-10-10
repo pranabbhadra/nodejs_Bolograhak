@@ -72,6 +72,8 @@ router.put('/editUserReview', verifyToken, authenController.editUserReview);
 
 router.post('/reviewInvitation', verifyToken, authenController.reviewInvitation);
 
+router.post('/userPoll', verifyToken, authenController.userPoll);
+
 //forget password
 router.post('/forgotPassword', authenController.forgotPassword);
 router.post('/resetPassword', authenController.resetPassword);
@@ -211,7 +213,7 @@ router.get('/getComapniesDetails/:ID', verifyToken, async (req, res) => {
     const companyId = req.params.ID;
     console.log("companyId from request:", companyId);
     try {
-        const [company, companyreviews, allCompanyReviewTags, userReview, copmanyratings, PremiumCompanyData, Totalreplies, TotalReviewsAndCounts, reviewReplies, getReviewRepliescompany] = await Promise.all([
+        const [company, companyreviews, allCompanyReviewTags, userReview, copmanyratings, PremiumCompanyData, Totalreplies, TotalReviewsAndCounts, reviewReplies, getReviewRepliescompany, getpolldetails] = await Promise.all([
             comFunction.getCompany(companyId),
             comFunction.getCompanyReviews(companyId),
             comFunction2.getAllReviewTags(),
@@ -222,7 +224,8 @@ router.get('/getComapniesDetails/:ID', verifyToken, async (req, res) => {
             comFunction.getTotalreplies(companyId),
             comFunction.getTotalReviewsAndCounts(companyId),
             comFunction.getReviewReplies(user_ID),
-            comFunction.getReviewRepliescompany(companyId)
+            comFunction.getReviewRepliescompany(companyId),
+            comFunction.getpolldetails(companyId)
         ]);
 
         if (company) {
@@ -257,7 +260,8 @@ router.get('/getComapniesDetails/:ID', verifyToken, async (req, res) => {
                     copmanyratings,
                     PremiumCompanyData,
                     Totalreplies,
-                    TotalReviewsAndCounts
+                    TotalReviewsAndCounts,
+                    getpolldetails
                     //allCompanyReviewTags
                 },
                 message: 'company data successfully received'
