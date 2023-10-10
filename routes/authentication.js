@@ -1663,28 +1663,110 @@ router.get('/categorieslisting/all', verifyToken, async (req, res) => {
 router.get('/allreplies/:reviewId', verifyToken, async (req, res) => {
     try {
         const reviewId = req.params.reviewId;
-        const query = `
-        SELECT
+// const query = `
+// SELECT
+//     r.review_id,
+//     r.reply_by,
+//     r.reply_to,
+//     r.comment,
+//     r.status,
+//     r.created_at,
+//     CASE
+//         WHEN cu.user_id IS NOT NULL THEN cu.first_name
+//         ELSE cc.company_name
+//     END AS reply_by_name,
+//     CASE
+//         WHEN cu.user_id IS NOT NULL THEN cu.last_name
+//         ELSE NULL
+//     END AS reply_by_last_name,
+//     CASE
+//         WHEN cu.user_id IS NOT NULL THEN ucm_reply_by.profile_pic
+//         ELSE cc.logo
+//     END AS reply_by_logo,  
+//     CASE
+//         WHEN tu.user_id IS NOT NULL THEN tu.first_name
+//         ELSE tc.company_name
+//     END AS reply_to_name,
+//     CASE
+//         WHEN tu.user_id IS NOT NULL THEN tu.last_name
+//         ELSE NULL
+//     END AS reply_to_last_name,
+//     CASE
+//         WHEN tu.user_id IS NOT NULL THEN ucm_reply_to.profile_pic
+//         ELSE tc.logo
+//     END AS reply_to_logo  
+// FROM
+//     review_reply AS r
+// LEFT JOIN
+//     users AS cu ON r.reply_by = cu.user_id
+// LEFT JOIN
+//     company AS cc ON r.reply_by = cc.ID
+// LEFT JOIN
+//     users AS tu ON r.reply_to = tu.user_id
+// LEFT JOIN
+//     company AS tc ON r.reply_to = tc.ID
+// LEFT JOIN
+//     reviews AS rr ON r.review_id = rr.id
+// LEFT JOIN
+//     user_customer_meta AS ucm_reply_by ON cu.user_id = ucm_reply_by.user_id
+// LEFT JOIN
+//     user_customer_meta AS ucm_reply_to ON tu.user_id = ucm_reply_to.user_id
+// WHERE
+//     r.review_id = ?;
+// `;
+const query = `
+SELECT
     r.review_id,
     r.reply_by,
     r.reply_to,
     r.comment,
     r.status,
     r.created_at,
-    c1.company_name AS reply_by_company_name,
-    c2.company_name AS reply_to_company_name,
-    c1.logo AS reply_by_logo,
-    c2.logo AS reply_to_logo
+    CASE
+        WHEN cu.user_id IS NOT NULL THEN 
+            CASE
+                WHEN ucm_reply_by.profile_pic IS NOT NULL THEN CONCAT(cu.first_name, ' ', cu.last_name)
+                ELSE cu.first_name
+            END
+        ELSE cc.company_name
+    END AS reply_by_name,
+    CASE
+        WHEN cu.user_id IS NOT NULL THEN ucm_reply_by.profile_pic
+        ELSE cc.logo
+    END AS reply_by_logo,  
+    CASE
+        WHEN tu.user_id IS NOT NULL THEN 
+            CASE
+                WHEN ucm_reply_to.profile_pic IS NOT NULL THEN CONCAT(tu.first_name, ' ', tu.last_name)
+                ELSE tu.first_name
+            END
+        ELSE tc.company_name
+    END AS reply_to_name,
+    CASE
+        WHEN tu.user_id IS NOT NULL THEN ucm_reply_to.profile_pic
+        ELSE tc.logo
+    END AS reply_to_logo  
 FROM
     review_reply AS r
 LEFT JOIN
-    company AS c1 ON r.reply_by = c1.ID
+    users AS cu ON r.reply_by = cu.user_id
 LEFT JOIN
-    company AS c2 ON r.reply_to = c2.ID
+    company AS cc ON r.reply_by = cc.ID
+LEFT JOIN
+    users AS tu ON r.reply_to = tu.user_id
+LEFT JOIN
+    company AS tc ON r.reply_to = tc.ID
+LEFT JOIN
+    reviews AS rr ON r.review_id = rr.id
+LEFT JOIN
+    user_customer_meta AS ucm_reply_by ON cu.user_id = ucm_reply_by.user_id
+LEFT JOIN
+    user_customer_meta AS ucm_reply_to ON tu.user_id = ucm_reply_to.user_id
 WHERE
     r.review_id = ?;
-        `;
+`;
 
+ 
         db.query(query, [reviewId], (err, results) => { 
             if (err) {
                 console.error(err); 
@@ -1696,27 +1778,24 @@ WHERE
             } else {
                 if (results.length > 0) {
                     const responseData = results.map((row) => ({
-                        // review_id: row.review_id,
-                        // reply_by: row.reply_by,
-                        // reply_to: row.reply_to,
-                        // comment: row.comment,
-                        // status: row.status,
-                        // created_at: row.created_at,
                         review_id: row.review_id,
                         reply_by: {
                             user_id: row.reply_by,
-                            company_name: row.reply_by_company_name,
+                            name: row.reply_by_name,
+                            last_name: row.reply_by_last_name,
+                            profile_pic: row.reply_by_profile_pic,
                             logo: row.reply_by_logo,
                         },
                         reply_to: {
                             user_id: row.reply_to,
-                            company_name: row.reply_to_company_name,
+                            name: row.reply_to_name,
+                            last_name: row.reply_to_last_name,
+                            profile_pic: row.reply_to_profile_pic,
                             logo: row.reply_to_logo,
                         },
                         comment: row.comment,
                         status: row.status,
                         created_at: row.created_at,
-
                     }));
 
                     return res.status(200).json({
@@ -1742,6 +1821,7 @@ WHERE
         });
     }
 });
+
 
 
 
