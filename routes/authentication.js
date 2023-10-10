@@ -1765,8 +1765,6 @@ LEFT JOIN
 WHERE
     r.review_id = ?;
 `;
-
- 
         db.query(query, [reviewId], (err, results) => { 
             if (err) {
                 console.error(err); 
