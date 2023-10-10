@@ -946,25 +946,48 @@ router.get('/survey', checkCookieValue, async (req, res) => {
 });
 
 //Create Survey page
-router.get('/create-survey', checkCookieValue, async (req, res) => {
-    let currentUserData = JSON.parse(req.userData);
-    const [globalPageMeta] = await Promise.all([
+router.get('/create-survey/:slug', checkClientClaimedCompany, async (req, res) => {
+    const encodedUserData = req.cookies.user;
+    const currentUserData = JSON.parse(encodedUserData);
+    const slug = req.params.slug;
+    const comp_res =await comFunction2.getCompanyIdBySlug(slug);
+    const companyId = comp_res.ID;
+
+    const [globalPageMeta, company, allRatingTags ] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
+        comFunction.getCompany(companyId),
+        comFunction.getAllRatingTags(),
     ]);
     try {
-
+        res.json( {
+            menu_active_id: 'create-survey',
+            page_title: 'Company Name',
+            currentUserData,
+            globalPageMeta:globalPageMeta,
+            company,
+            allRatingTags
+        });
         res.render('front-end/create-survey', {
             menu_active_id: 'create-survey',
-            page_title: 'Create Survey',
+            page_title: 'Company Name',
             currentUserData,
-            globalPageMeta:globalPageMeta
+            globalPageMeta:globalPageMeta,
+            company,
+            allRatingTags
         });
     } catch (err) {
         console.error(err);
-        res.status(500).send('An error occurred');
+        res.render('front-end/404', {
+            menu_active_id: '404',
+            page_title: '404',
+            currentUserData,
+            globalPageMeta:globalPageMeta
+        });
     }
     //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
 });
+
+
 
 //register complain page
 router.get('/register-complain', checkCookieValue, async (req, res) => {
