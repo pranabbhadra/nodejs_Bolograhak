@@ -167,15 +167,11 @@
 	line-height: normal;
 }
 
-.dis-comment-views a {
+.dis-comment-views span {
 	color: #FFF;
 }
 
-.dis-comment-views a:hover {
-	color: #F1AE00;
-}
-
-.dis-comment-views a + a {
+.dis-comment-views span + span {
 	margin-left: 10px;
 }
 

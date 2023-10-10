@@ -31,24 +31,29 @@
                 </ul>
                 <div class="resp-tabs-container">
                     <div class="tab-content-wrap">
-                        <a href="/discussion-details">
-                            <div class="discussion-review-panel">
+                        <% if(AllLatestDiscussion.length > 0) { %>
+                        <% AllLatestDiscussion.forEach((LatestDiscussion)=>{  %>
+                        <div class="discussion-review-panel">
+                            <a href="/discussion-details/<%= LatestDiscussion.id %>">
                                 <div class="discussion-user-img">
-                                <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
+                                <!-- <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60"> -->
+                                <h4><%= LatestDiscussion.topic.charAt(0).toUpperCase()  %></h4>
                                 </div>
                                 <div class="discussion-user-info">
-                                <h4>Lorem Ipsum</h4>
-                                <p>Created 5 days ago by Lorem Ipsum</p>
+                                <h4><%= LatestDiscussion.topic %> / <%= LatestDiscussion.topic.charAt(0).toUpperCase()  %>
+                                </h4>
+                                <% const date = new Date(LatestDiscussion.created_at); %>
+                                <p>Created <%= date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) %> by <%= LatestDiscussion.first_name %> <%= LatestDiscussion.last_name %></p>
+                            
                                 </div>
                                 <div class="dis-comment-views">
-                                <!-- <p>29 Comments</p>
-                                <p>100views</p> -->
-                                
-                                <a href="#">29 Comments</a>
-                                <a href="#">100views</a>
+                                <span>29 Comments</span>
+                                <span>100views</span>
                                 </div>
-                            </div>
-                        </a>
+                            </a>
+                        </div>
+                        <% }) %>
+                        <% } %>
                         <div class="discussion-review-panel">
                             <div class="discussion-user-img">
                             <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">

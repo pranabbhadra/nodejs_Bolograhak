@@ -4574,7 +4574,7 @@ exports.updateReviewFlag = async (req, res) => {
 
 //create new discussion
 exports.createDiscussion = async (req, res) => {
-    console.log('createDiscussion',req.body ); 
+    //console.log('createDiscussion',req.body ); 
     //return false;
     const {user_id, tags, topic, from_data, expire_date} = req.body;
     const strTags = JSON.stringify(tags);
@@ -4593,4 +4593,35 @@ exports.createDiscussion = async (req, res) => {
             });
         }
     })
+}
+
+//Add comment on discussion
+exports.addComment = async (req, res) => {
+    console.log('addComment',req.body ); 
+    const {discussion_id, user_id, comment } = req.body;
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+    //return false;
+    const Insertdata = {
+        discussion_id : discussion_id,
+        user_id: user_id,
+        comment:comment,
+        ip_address: requestIp.getClientIp(req),
+        created_at: formattedDate,
+      };
+    const insertQuery = 'INSERT INTO discussions_user_response SET ?';
+    db.query(insertQuery, Insertdata, (insertErr, insertResult)=>{
+        if (insertErr) {
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong 3'+insertErr
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Your Comment Added Successfully'
+            });
+        }
+    })
+    
 }

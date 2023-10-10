@@ -6,25 +6,43 @@
 <section class="main-content bottom-main-content">
     <div class="discussion-page-content">
        <div class="container">
-          <h2 class="inner-main-head">Lorem Ipsum</h2>
-          <a href="#" class="btn-default btn-warning dis-details-top-btn">Lorem Ipsum</a>
-          <a href="#" class="btn-default btn-warning dis-details-top-btn">Lorem Ipsum</a>
+          <h2 class="inner-main-head"><%= AllCommentByDiscusId[0].topic.charAt(0).toUpperCase() + AllCommentByDiscusId[0].topic.slice(1)%></h2>
+          <%
+          let tags = []
+          if(AllCommentByDiscusId[0].tags != ''){
+             tags = JSON.parse(AllCommentByDiscusId[0].tags)
+          }
+           %>
+          <% tags.forEach((tag) =>{ %> 
+          <a href="#" class="btn-default btn-warning dis-details-top-btn"><%= tag %></a>
+          <% }) %>
           <div class="discussion-details-left">
             <div class="contribute-discussion">
                <a href="#" class="discussionscrollbtn"><i class="fa-solid fa-messages"></i> Contribute to this discussion?</a>
             </div>
             <div class="discussion-details-panel">
-               <div class="user-comment-repeat">
-                  <div class="discussion-details-user-img">
-                     <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
+               <%
+                  let comments = []
+                  if(AllCommentByDiscusId[0].commentData != ''){
+                     comments = JSON.parse(AllCommentByDiscusId[0].commentData)
+                  }
+                  %>
+               <% comments.forEach((comment) =>{ %> 
+               <% if(comment.comment) { %>
+                  <div class="user-comment-repeat">
+                     <div class="discussion-details-user-img">
+                        <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
+                     </div>
+                     <% const date = new Date(comment.created_at); %>
+                     <div class="discussion-details-user-info">
+                        <h4><%= AllCommentByDiscusId[0].topic.charAt(0).toUpperCase() + AllCommentByDiscusId[0].topic.slice(1)%> <small><%= date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) %> </small></h4>
+                        
+                        <p><%= comment.comment %></p>
+                     </div>
                   </div>
-                  <div class="discussion-details-user-info">
-                     <h4>Lorem Ipsum <small>23 August, 2023</small></h4>
-                     <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
-                     <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s</p>
-                  </div>
-               </div>
-               <div class="user-comment-repeat">
+               <% } %>
+               <% }) %>
+               <!-- <div class="user-comment-repeat">
                   <div class="discussion-details-user-img">
                      <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
                   </div>
@@ -41,10 +59,17 @@
                      <h4>Lorem Ipsum <small>23 August, 2023</small></h4>
                      <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
                   </div>
-               </div>
+               </div> -->
                <div class="write-discussion-field">
-               <textarea rows="5" class="form-control" placeholder="Write a comment" id="discussiontext"></textarea>
-               <div class="text-center"><input type="submit" class="btn-default btn-warning mt-3" value="Submit"></div>
+                  <form id="comment_form">
+                     <textarea rows="5" class="form-control" placeholder="Write a comment" id="discussiontext" name="comment"></textarea>
+                     <input type="hidden" name="user_id" value="<%= currentUserData.user_id %>" />
+                     <input type="hidden" name="discussion_id" value="<%= AllCommentByDiscusId[0].id %>" />
+                     <div class="text-center"><input type="submit" class="btn-default btn-warning mt-3" id="comment_btn" value="Submit"></div>
+                  </form>
+                  <div class="submit-loading" style="display: none;">Please wait..</div>
+                  <div class="submit-success" style="display: none;"></div>
+                  <div class="submit-error" style="display: none;"></div>
                </div>
             </div>
             <div class="discussion-similar-thread">
@@ -96,3 +121,52 @@
 <!-- ============== Section1 End =============== -->
 
 <%- include('common/footer') -%>   
+<script>
+   jQuery(function ($) {
+
+       //---Review reply submit-------//
+       $('#comment_form').submit(function(e){
+           event.preventDefault();
+           $('#comment_btn').prop( "disabled", true );
+           $('.submit-success, .submit-error').hide();
+           $('.submit-loading').show();
+
+           const formData = $('#comment_form').serializeArray();
+           const jsonData = {};
+           $(formData).each(function (index, field) {
+               jsonData[field.name] = field.value;
+           });
+
+           $.ajax({
+             url: '/auth/add-comment',
+             method: 'POST',
+             data: jsonData,
+             ContentType: 'application/json',
+             success: function (data) {
+               if (data.status == 'ok') {
+                 $('.submit-loading').hide();
+                 $('#comment_btn').prop( "disabled", false );
+                 $('.submit-success').text(data.message);
+                 $('.submit-success').show();
+                 setTimeout( function(){
+                        window.location.reload();
+                 }, 3000 );
+               } else {
+                   $('.submit-loading').hide();
+                   $('.submit-error').text(data.message);
+                   $('.submit-error').show();
+                   $('#comment_btn').prop( "disabled", false );
+               }
+               //console.log(data);
+             },
+             error: function (error) {
+               $('.submit-loading').hide();
+               $('.submit-error').text(error);
+               $('.submit-error').show();
+             }
+           });
+       });
+
+
+   });
+</script>

@@ -292,4 +292,7 @@ router.post('/update-review-flag', authController.updateReviewFlag);
 //Create discussion
 router.post('/create-discussion', authController.createDiscussion);
 
+//Create discussion
+router.post('/add-comment', authController.addComment);
+
 module.exports = router;

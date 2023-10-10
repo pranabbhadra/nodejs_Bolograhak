@@ -1982,6 +1982,75 @@ async function getAllReviewsByCompanyID(companyId) {
   }
 }
 
+//Function to get latest discussion from discussions table
+async function getAllLatestDiscussion() {
+  const sql = `
+  SELECT discussions.*, u.first_name, u.last_name FROM discussions 
+  LEFT JOIN users u ON discussions.user_id = u.user_id 
+  GROUP BY discussions.id
+  ORDER BY discussions.id DESC;
+  `;
+  try{
+    const results = await query(sql);
+    return results;
+  }
+  catch(error){
+    console.error('Error during all_review_query:', error);
+  }
+}
+
+//Function to insert discussion response in discussions_user_response table
+async function insertDiscussionResponse(discussion_id, userId, IP_address) {
+  const currentDate = new Date();
+  const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+  const data = {
+    discussion_id : discussion_id,
+    user_id: userId,
+    ip_address: IP_address,
+  };
+  const checkQuery = `SELECT * FROM discussions_user_view WHERE discussion_id = '${discussion_id}' AND user_id = '${userId}' AND ip_address = '${IP_address}'`;
+  const check_result = await query(checkQuery);
+  if(check_result.length > 0){
+    console.log(check_result[0].id);
+    return check_result[0].id
+  }else{
+    const sql = 'INSERT INTO discussions_user_view SET ?'
+    const results = await query(sql, data);
+    try{
+      console.log(results.insertId);
+      return results.insertId;
+    }
+    catch(error){
+      console.error('Error during insert discussions_user_view:', error);
+    }
+  }
+}
+
+//Function to get all comment by discussion from discussions and discussions_user_response table
+async function getAllCommentByDiscusId(discussions_id) {
+  const sql = `
+  SELECT discussions.*, u.first_name, u.last_name 
+  FROM discussions 
+  LEFT JOIN users u ON discussions.user_id = u.user_id 
+  WHERE discussions.id = ${discussions_id}
+  `;
+  const commentQuery = `SELECT discussions_user_response.*
+  FROM discussions_user_response 
+  WHERE discussions_user_response.discussion_id = ${discussions_id}
+  ORDER BY created_at DESC;`
+  try{
+    const results = await query(sql);
+    const commentResult = await query(commentQuery);
+     const cmntData = JSON.stringify(commentResult);
+    results[0].commentData = cmntData;
+    //console.log('alldata',results)
+    return results;
+  }
+  catch(error){
+    console.error('Error during fetching getAllCommentByDiscusId:', error);
+  }
+}
+
 module.exports = {
   getFaqPage,
   getFaqCategories,
@@ -2029,5 +2098,8 @@ module.exports = {
   updateFlagDetails,
   flagApprovedEmail,
   flagRejectdEmail,
-  getAllReviewsByCompanyID
+  getAllReviewsByCompanyID,
+  getAllLatestDiscussion,
+  insertDiscussionResponse,
+  getAllCommentByDiscusId
 };

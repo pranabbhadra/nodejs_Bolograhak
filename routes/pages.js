@@ -882,47 +882,7 @@ router.get('/home', checkCookieValue, async (req, res) => {
     //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
 });
 
-//Discussion page
-router.get('/discussion', checkCookieValue, async (req, res) => {
-    let currentUserData = JSON.parse(req.userData);
-    const [globalPageMeta] = await Promise.all([
-        comFunction2.getPageMetaValues('global'),
-    ]);
-    try {
 
-        res.render('front-end/discussion', {
-            menu_active_id: 'discussion',
-            page_title: 'Recent Discussions',
-            currentUserData,
-            globalPageMeta:globalPageMeta
-        });
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('An error occurred');
-    }
-    //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
-});
-
-//Discussion Details page
-router.get('/discussion-details', checkCookieValue, async (req, res) => {
-    let currentUserData = JSON.parse(req.userData);
-    const [globalPageMeta] = await Promise.all([
-        comFunction2.getPageMetaValues('global'),
-    ]);
-    try {
-
-        res.render('front-end/discussion-details', {
-            menu_active_id: 'discussion-details',
-            page_title: 'Recent Discussions',
-            currentUserData,
-            globalPageMeta:globalPageMeta
-        });
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('An error occurred');
-    }
-    //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
-});
 
 //Survey page
 router.get('/survey', checkCookieValue, async (req, res) => {
@@ -3358,6 +3318,62 @@ router.get('/edit-user-review/:reviewId', checkFrontEndLoggedIn, async (req, res
         res.status(500).send('An error occurred');
     }
 });
+
+//Discussion page
+router.get('/discussion', checkFrontEndLoggedIn, async (req, res) => {
+    const encodedUserData = req.cookies.user;
+    const currentUserData = JSON.parse(encodedUserData);
+    const [globalPageMeta, getAllLatestDiscussion] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+        comFunction2.getAllLatestDiscussion(),
+    ]);
+    //console.log(getAllLatestDiscussion);
+    try {
+
+        res.render('front-end/discussion', {
+            menu_active_id: 'discussion',
+            page_title: 'Recent Discussions',
+            currentUserData,
+            globalPageMeta:globalPageMeta,
+            AllLatestDiscussion: getAllLatestDiscussion
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+    //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
+});
+
+//Discussion Details page
+router.get('/discussion-details/:discussion_id', checkFrontEndLoggedIn, async (req, res) => {
+    const encodedUserData = req.cookies.user;
+    const currentUserData = JSON.parse(encodedUserData);
+    const userId = currentUserData.user_id;
+    const discussion_id = req.params.discussion_id;
+    const [globalPageMeta, insertDiscussionResponse, getAllCommentByDiscusId] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+        comFunction2.insertDiscussionResponse(discussion_id, userId, requestIp.getClientIp(req)),
+        comFunction2.getAllCommentByDiscusId(discussion_id),
+    ]);
+    //console.log('getAllCommentByDiscusId',getAllCommentByDiscusId)
+    //console.log('insertDiscussionResponseID',insertDiscussionResponse)
+    try {
+
+        res.render('front-end/discussion-details', {
+            menu_active_id: 'discussion-details',
+            page_title: 'Recent Discussions',
+            currentUserData,
+            globalPageMeta:globalPageMeta,
+            commentID:insertDiscussionResponse,
+            AllCommentByDiscusId:getAllCommentByDiscusId
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+    //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
+});
+
 //-----------------------------------------------------------------//
 
 
