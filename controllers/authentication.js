@@ -3072,3 +3072,125 @@ exports.reviewInvitation = async (req, res) => {
   }
 }
 
+
+exports.userPoll = async (req, res) => {
+  const authenticatedUserId = parseInt(req.user.user_id);
+  const ApiuserId = parseInt(req.body.user_id);
+
+  if (isNaN(ApiuserId)) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Invalid user_id provided in the request body.',
+    });
+  }
+  if (ApiuserId !== authenticatedUserId) {
+    return res.status(403).json({
+      status: 'error',
+      message: 'Access denied: You are not authorized to update this user.',
+    });
+  }
+
+  const { poll_id, user_id } = req.body;
+
+  const queryWhenUserHasVoted = `
+    SELECT
+      pc.id AS poll_id,
+      pc.question AS poll_question,
+      pc.poll_creator_id,
+      CASE
+        WHEN pv.user_id IS NOT NULL THEN pa.id
+        ELSE NULL
+      END AS answer_id,
+      CASE
+        WHEN pv.user_id IS NOT NULL THEN pa.answer
+        ELSE NULL
+      END AS answer_text
+    FROM
+      poll_company AS pc
+    LEFT JOIN
+      poll_voting AS pv ON pc.id = pv.poll_id AND pv.user_id = ?
+    LEFT JOIN
+      poll_answer AS pa ON pv.answer_id = pa.id AND pc.id = pa.poll_id
+    WHERE
+      pc.id = ? AND pv.user_id = ?;
+  `;
+
+  // Check if the user has voted
+  db.query(queryWhenUserHasVoted, [ApiuserId, poll_id, ApiuserId], (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({
+        status: 'error',
+        message: 'An error occurred while fetching poll data.',
+      });
+    }
+    console.log('aqaaa', results);
+    if (results.length > 0) {
+      const pollData = {
+        poll_id: results[0].poll_id,
+        poll_question: results[0].poll_question,
+        poll_creator_id: results[0].poll_creator_id,
+        data: results.map((result) => ({
+          id: result.answer_id,
+          answer: result.answer_text,
+        })),
+      };
+
+      return res.status(200).json({
+        status: 'success',
+        data: pollData,
+        message: 'Poll data retrieved successfully.',
+      });
+    }
+
+    // If the user hasn't voted, query for poll data without vote details
+    const queryWhenUserHasNotVoted = `
+      SELECT
+        pc.id AS poll_id,
+        pc.question AS poll_question,
+        pc.poll_creator_id,
+        pa.id AS answer_id,
+        pa.answer AS answer_text
+      FROM
+        poll_company AS pc
+      LEFT JOIN
+        poll_answer AS pa ON pc.id = pa.poll_id
+      WHERE
+        pc.id = ?;
+    `;
+
+    db.query(queryWhenUserHasNotVoted, [poll_id], (err, results) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({
+          status: 'error',
+          message: 'An error occurred while fetching poll data.',
+        });
+      }
+      console.log('aqaaa', results);
+      if (results.length > 0) {
+        const pollData = {
+          poll_id: results[0].poll_id,
+          poll_question: results[0].poll_question,
+          poll_creator_id: results[0].poll_creator_id,
+          data: results.map((result) => ({
+            id: result.answer_id,
+            answer: result.answer_text,
+          })),
+        };
+
+        return res.status(200).json({
+          status: 'success',
+          data: pollData,
+          message: 'Poll data retrieved successfully.',
+        });
+      } else {
+        return res.status(404).json({
+          status: 'error',
+          data: null,
+          message: 'Poll data not found for the given user and poll ID.',
+        });
+      }
+    });
+  });
+};

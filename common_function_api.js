@@ -1325,7 +1325,7 @@ async function getReviewReplies(user_ID, reviewIDs) {
     const rows = `
       SELECT *
       FROM review_reply
-      WHERE reply_to = '${user_ID}' `; 
+      WHERE reply_by = '${user_ID}' `; 
     const getvalue = await query(rows);
     console.log(getvalue);
     return getvalue; 
@@ -1335,6 +1335,32 @@ async function getReviewReplies(user_ID, reviewIDs) {
   }
 }
 
+async function getReviewRepliescompany(companyId, reviewIDs) {
+  try {
+    const rows = `
+      SELECT *
+      FROM review_reply
+      WHERE reply_by = '${companyId}' `; 
+    const getvalue = await query(rows);
+    console.log(getvalue);
+    return getvalue; 
+  } catch (error) {
+    console.error('Error during fetch review replies:', error);
+    throw error;
+  }
+}
+
+async function getpolldetails(companyId, reviewIDs){
+  try{
+    const rows=`SELECT * FROM poll_company WHERE company_id  = '${companyId}' `; 
+    const getvalue = await query(rows);
+    console.log(getvalue);
+    return getvalue; 
+  } catch(error){
+    console.log('Error during fetch review replies:', error);
+    throw error;
+  }
+}
 
 async function updateReview(reviewIfo){
   // console.log('Review Info', reviewIfo);
@@ -1580,7 +1606,26 @@ async function getParentCategories(ID) {
     return 'Error during user get_category_query:'+error;
   }
 }
+async function getCompanyIdByUserId(userId) {
+  try {
+      // Replace this with your actual database query to fetch the company ID
+      const user = `
+      SELECT * FROM reviews
+      WHERE customer_id = ?;
+      `; 
 
+      if (!user) {
+          throw new Error('User not found'); // Handle this according to your application logic
+      }
+
+      // Assuming your User model has a companyId field
+      const companyId = user.companyId;
+
+      return companyId;
+  } catch (error) {
+      throw error;
+  }
+}
 
 module.exports = {
   getUser,
@@ -1627,11 +1672,14 @@ module.exports = {
   getCompanyPollDetails,
   getCompanyIdBySlug,
   getReviewReplies,
+  getReviewRepliescompany,
+  getpolldetails,//new
   updateReview,
   insertInvitationDetails,
   sendInvitationEmail,
   getSubCategories,
   getCompanyDetails,
   getCategoryDetails,
-  getParentCategories
+  getParentCategories,
+  getCompanyIdByUserId
 };

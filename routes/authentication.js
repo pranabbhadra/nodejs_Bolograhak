@@ -70,7 +70,9 @@ router.post('/userPolling', verifyToken, authenController.userPolling);
 
 router.put('/editUserReview', verifyToken, authenController.editUserReview);
 
-router.post('/reviewInvitation', verifyToken, authenController.reviewInvitation); 
+router.post('/reviewInvitation', verifyToken, authenController.reviewInvitation);
+
+router.post('/userPoll', verifyToken, authenController.userPoll);
 
 //forget password
 router.post('/forgotPassword', authenController.forgotPassword);
@@ -94,6 +96,9 @@ router.get('/getUserDetails/:user_id', verifyToken, async (req, res) => {
     const user_ID = req.params.user_id;
     console.log("user_id from request:", user_ID);
 
+    const companyId = await comFunction.getCompanyIdByUserId(user_ID);
+    console.log("companyId", companyId);
+
     if (ApiuserId !== authenticatedUserId) {
         return res.status(403).json({
             status: 'error',
@@ -101,14 +106,15 @@ router.get('/getUserDetails/:user_id', verifyToken, async (req, res) => {
         });
     }
     const ClaimCompany = [];
-    const [userBasicInfo, userMetaInfo, userCompany, userReview, userReviewCompany, allCompanyReviewTags, reviewReplies] = await Promise.all([
+    const [userBasicInfo, userMetaInfo, userCompany, userReview, userReviewCompany, allCompanyReviewTags, reviewReplies, getReviewRepliescompany] = await Promise.all([
         comFunction.getUser(user_ID),
         comFunction.getUserMeta(user_ID),
         comFunction.getUserCompany(user_ID),
         comFunction.getUserReview(user_ID),
         comFunction.getuserReviewCompany(user_ID),
         comFunction2.getAllReviewTags(),
-        comFunction.getReviewReplies(user_ID)
+        comFunction.getReviewReplies(user_ID),
+        comFunction.getReviewRepliescompany(companyId)
     ]);
     if (Object.keys(userBasicInfo).length > 0) {
         delete userBasicInfo.password;
@@ -162,12 +168,16 @@ router.get('/getUserDetails/:user_id', verifyToken, async (req, res) => {
         // });
 
         const finalCompanyallReviews = userReview.map(review => {
-            const hasReplyToUser = reviewReplies.some((reply) => reply.review_id === review.id && reply.reply_to === user_ID);
+            //const hasReplyToUser = reviewReplies.some((reply) => reply.review_id === review.id && reply.reply_by === user_ID);
+            const userReplyStatus = reviewReplies.some((reply) => reply.review_id === review.id && reply.reply_by === user_ID);
+            const companyReplyStatus = getReviewRepliescompany.some((reply) => reply.review_id === review.id && reply.reply_by === companyId);
             console.log(`Review ID: ${review.id}`);
-            console.log(`hasReplyToUser: ${hasReplyToUser}`);
+            console.log(`userReplyStatus: ${userReplyStatus}`);
+            console.log(`companyReplyStatus: ${companyReplyStatus}`);
             return {
                 ...review,
-                reply_status: hasReplyToUser ? 1 : 0,
+                user_reply_status: userReplyStatus ? 1 : 0,
+                company_reply_status: companyReplyStatus ? 1 : 0,
                 Tags: reviewTagsMap[review.id] || []
             };
         });
@@ -203,7 +213,7 @@ router.get('/getComapniesDetails/:ID', verifyToken, async (req, res) => {
     const companyId = req.params.ID;
     console.log("companyId from request:", companyId);
     try {
-        const [company, companyreviews, allCompanyReviewTags, userReview, copmanyratings, PremiumCompanyData, Totalreplies, TotalReviewsAndCounts, reviewReplies] = await Promise.all([
+        const [company, companyreviews, allCompanyReviewTags, userReview, copmanyratings, PremiumCompanyData, Totalreplies, TotalReviewsAndCounts, reviewReplies, getReviewRepliescompany, getpolldetails] = await Promise.all([
             comFunction.getCompany(companyId),
             comFunction.getCompanyReviews(companyId),
             comFunction2.getAllReviewTags(),
@@ -213,7 +223,9 @@ router.get('/getComapniesDetails/:ID', verifyToken, async (req, res) => {
             //comFunction2.TotalReplied(companyId),
             comFunction.getTotalreplies(companyId),
             comFunction.getTotalReviewsAndCounts(companyId),
-            comFunction.getReviewReplies(user_ID)
+            comFunction.getReviewReplies(user_ID),
+            comFunction.getReviewRepliescompany(companyId),
+            comFunction.getpolldetails(companyId)
         ]);
 
         if (company) {
@@ -226,12 +238,16 @@ router.get('/getComapniesDetails/:ID', verifyToken, async (req, res) => {
             });
             //const reviewReplies = await getReviewReplies(user_ID);
             const finalCompanyallReviews = companyreviews.map(review => {
-                const hasReplyToUser = reviewReplies.some((reply) => reply.review_id === review.id && reply.reply_to === user_ID);
+                // const hasReplyToUser = reviewReplies.some((reply) => reply.review_id === review.id && reply.reply_by === user_ID);
+                const userReplyStatus = reviewReplies.some((reply) => reply.review_id === review.id && reply.reply_by === user_ID);
+                const companyReplyStatus = getReviewRepliescompany.some((reply) => reply.review_id === review.id && reply.reply_by === companyId);
                 console.log(`Review ID: ${review.id}`);
-                console.log(`hasReplyToUser: ${hasReplyToUser}`);
+                console.log(`userReplyStatus: ${userReplyStatus}`);
+                console.log(`companyReplyStatus: ${companyReplyStatus}`);
                 return {
                     ...review,
-                    reply_status: hasReplyToUser ? 1 : 0,
+                    user_reply_status: userReplyStatus ? 1 : 0,
+                    company_reply_status: companyReplyStatus ? 1 : 0,
                     Tags: reviewTagsMap[review.id] || []
                 };
             });
@@ -244,7 +260,8 @@ router.get('/getComapniesDetails/:ID', verifyToken, async (req, res) => {
                     copmanyratings,
                     PremiumCompanyData,
                     Totalreplies,
-                    TotalReviewsAndCounts
+                    TotalReviewsAndCounts,
+                    getpolldetails
                     //allCompanyReviewTags
                 },
                 message: 'company data successfully received'
@@ -655,7 +672,9 @@ router.get('/reviewslistofallcompaniesbyuser/:user_id', verifyToken, (req, res) 
 router.get('/getreviewlisting', verifyToken, async (req, res) => {
     try {
         const user_ID = req.user.user_id;
-        console.log("user_id", user_ID)
+        const companyId = await comFunction.getCompanyIdByUserId(user_ID);
+        console.log("user_id", user_ID);
+        console.log("companyId", companyId);
         const [
             allreviews,
             allCompanyReviewTags,
@@ -665,7 +684,8 @@ router.get('/getreviewlisting', verifyToken, async (req, res) => {
             getUserReview,
             latestReviews,
             TrendingReviews,
-            reviewReplies
+            reviewReplies,
+            getReviewRepliescompany
         ] = await Promise.all([
             comFunction.getAllReviews(),
             comFunction2.getAllReviewTags(),
@@ -675,8 +695,11 @@ router.get('/getreviewlisting', verifyToken, async (req, res) => {
             comFunction.getUserReview(),
             comFunction.getLatestReview(),
             comFunction.getTrendingReviews(),
-            comFunction.getReviewReplies(user_ID)
+            comFunction.getReviewReplies(user_ID),
+            comFunction.getReviewRepliescompany(companyId),
+            //comFunction.getCompanyIdByUserId()
         ]);
+
 
 
         let mergedData = {};
@@ -692,13 +715,16 @@ router.get('/getreviewlisting', verifyToken, async (req, res) => {
             });
 
             const all = allreviews.map(review => {
-                const hasReplyToUser = reviewReplies.some((reply) => reply.review_id === review.id && reply.reply_to === user_ID);
+                const userReplyStatus = reviewReplies.some((reply) => reply.review_id === review.id && reply.reply_by === user_ID);
+                const companyReplyStatus = getReviewRepliescompany.some((reply) => reply.review_id === review.id && reply.reply_by === companyId);
                 console.log(`Review ID: ${review.id}`);
-                console.log(`hasReplyToUser: ${hasReplyToUser}`);
+                console.log(`userReplyStatus: ${userReplyStatus}`);
+                console.log(`companyReplyStatus: ${companyReplyStatus}`);
                 //const reviewReplies = comFunction.getReviewRepliesByReviewId(review.id);
                 return {
                     ...review,
-                    reply_status: hasReplyToUser ? 1 : 0,
+                    user_reply_status: userReplyStatus ? 1 : 0,
+                    company_reply_status: companyReplyStatus ? 1 : 0,
                     Tags: reviewTagsMap[review.id] || [],
                     //ReviewReplies: reviewReplies[review.id] || []
                 };
@@ -714,12 +740,16 @@ router.get('/getreviewlisting', verifyToken, async (req, res) => {
                 });
 
                 const latest_reviews = latestReviews.map(review => {
-                    const hasReplyToUser = reviewReplies.some((reply) => reply.review_id === review.id && reply.reply_to === user_ID);
+                    const userReplyStatus = reviewReplies.some((reply) => reply.review_id === review.id && reply.reply_by === user_ID);
+                    const companyReplyStatus = getReviewRepliescompany.some((reply) => reply.review_id === review.id && reply.reply_by === companyId);
                     console.log(`Review ID: ${review.id}`);
-                    console.log(`hasReplyToUser: ${hasReplyToUser}`);
+                    console.log(`userReplyStatus: ${userReplyStatus}`);
+                    console.log(`companyReplyStatus: ${companyReplyStatus}`);
                     return {
                         ...review,
-                        reply_status: hasReplyToUser ? 1 : 0,
+                        //reply_status: hasReplyToUser ? 1 : 0,
+                        user_reply_status: userReplyStatus ? 1 : 0,
+                        company_reply_status: companyReplyStatus ? 1 : 0,
                         Tags: reviewTagsMap[review.id] || []
                     };
                 });
@@ -734,12 +764,15 @@ router.get('/getreviewlisting', verifyToken, async (req, res) => {
                     });
 
                     const trending_reviews = TrendingReviews.map(review => {
-                        const hasReplyToUser = reviewReplies.some((reply) => reply.review_id === review.id && reply.reply_to === user_ID);
+                        const userReplyStatus = reviewReplies.some((reply) => reply.review_id === review.id && reply.reply_by === user_ID);
+                        const companyReplyStatus = getReviewRepliescompany.some((reply) => reply.review_id === review.id && reply.reply_by === companyId);
                         console.log(`Review ID: ${review.id}`);
-                        console.log(`hasReplyToUser: ${hasReplyToUser}`);
+                        console.log(`userReplyStatus: ${userReplyStatus}`);
+                        console.log(`companyReplyStatus: ${companyReplyStatus}`);
                         return {
                             ...review,
-                            reply_status: hasReplyToUser ? 1 : 0,
+                            user_reply_status: userReplyStatus ? 1 : 0,
+                            company_reply_status: companyReplyStatus ? 1 : 0,
                             Tags: reviewTagsMap[review.id] || []
                         };
                     });
@@ -1172,14 +1205,14 @@ router.get('/send-review-invitation/:ID', verifyToken, async (req, res) => {
     console.log("user_id", user_ID)
     const companyId = req.params.ID;
     console.log("companyId from request:", companyId);
-     //const comp_res =await comFunction2.getCompanyIdBySlug(slug);
+    //const comp_res =await comFunction2.getCompanyIdBySlug(slug);
     //const companyId = comp_res.ID;
-    const [company, PremiumCompanyData, companyReviewNumbers ] = await Promise.all([
+    const [company, PremiumCompanyData, companyReviewNumbers] = await Promise.all([
         comFunction.getCompany(companyId),
         comFunction2.getPremiumCompanyData(companyId),
         comFunction.getCompanyReviewNumbers(companyId)
     ]);
-   
+
     try {
         let cover_img = '';
         let facebook_url = '';
@@ -1187,23 +1220,23 @@ router.get('/send-review-invitation/:ID', verifyToken, async (req, res) => {
         let instagram_url = '';
         let linkedin_url = '';
         let youtube_url = '';
-    
-        if(typeof PremiumCompanyData !== 'undefined' ){
-             cover_img = PremiumCompanyData.cover_img;
-             facebook_url = PremiumCompanyData.facebook_url;
-             twitter_url = PremiumCompanyData.twitter_url;
-             instagram_url = PremiumCompanyData.instagram_url;
-             linkedin_url = PremiumCompanyData.linkedin_url;
-             youtube_url = PremiumCompanyData.youtube_url;
+
+        if (typeof PremiumCompanyData !== 'undefined') {
+            cover_img = PremiumCompanyData.cover_img;
+            facebook_url = PremiumCompanyData.facebook_url;
+            twitter_url = PremiumCompanyData.twitter_url;
+            instagram_url = PremiumCompanyData.instagram_url;
+            linkedin_url = PremiumCompanyData.linkedin_url;
+            youtube_url = PremiumCompanyData.youtube_url;
         }
-        res.json( {
+        res.json({
             company,
             companyReviewNumbers,
-            facebook_url:facebook_url,
-            twitter_url:twitter_url,
-            instagram_url:instagram_url,
-            linkedin_url:linkedin_url,
-            youtube_url:youtube_url
+            facebook_url: facebook_url,
+            twitter_url: twitter_url,
+            instagram_url: instagram_url,
+            linkedin_url: linkedin_url,
+            youtube_url: youtube_url
         });
         // res.render('front-end/send-review-invitation', {
         //     menu_active_id: 'send-review-invitation',
@@ -1221,8 +1254,8 @@ router.get('/send-review-invitation/:ID', verifyToken, async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({
-          status: 'error',
-          message: 'An error occurred ' + error,
+            status: 'error',
+            message: 'An error occurred ' + error,
         });
     }
 })
@@ -1331,22 +1364,22 @@ router.get('/categories', verifyToken, async (req, res) => {
                     }
                 )
             } else {
-            const categories = results.map((row) => ({
-                categoryId: row.category_id,
-                categoryName: row.category_name,
-                category_slug: row.category_slug,
-                parentName: row.parent_name,
-                categoryImage: row.category_img,
-                countryNames: row.country_names.split(','),
-            }));
-           
-            res.json({
-                categories: categories 
-            });    
-        }
-            
+                const categories = results.map((row) => ({
+                    categoryId: row.category_id,
+                    categoryName: row.category_name,
+                    category_slug: row.category_slug,
+                    parentName: row.parent_name,
+                    categoryImage: row.category_img,
+                    countryNames: row.country_names.split(','),
+                }));
+
+                res.json({
+                    categories: categories
+                });
+            }
+
         })
-        
+
     } catch (err) {
         console.error(err);
         res.status(500).send('An error occurred');
@@ -1358,18 +1391,18 @@ router.get('/category/:category_slug', verifyToken, async (req, res) => {
     const category_slug = req.params.category_slug;
     const baseURL = process.env.MAIN_URL;
     try {
-    const [getSubCategories, companyDetails, AllRatingTags, CategoryDetails] = await Promise.all([
-        comFunction.getSubCategories(category_slug),
-        comFunction.getCompanyDetails(category_slug),
-        comFunction.getAllRatingTags(),
-        comFunction.getCategoryDetails(category_slug),
-        //comFunction.getParentCategories(category_slug),
-    ]);
+        const [getSubCategories, companyDetails, AllRatingTags, CategoryDetails] = await Promise.all([
+            comFunction.getSubCategories(category_slug),
+            comFunction.getCompanyDetails(category_slug),
+            comFunction.getAllRatingTags(),
+            comFunction.getCategoryDetails(category_slug),
+            //comFunction.getParentCategories(category_slug),
+        ]);
 
-    const categoryParentId = CategoryDetails[0].parent_id;
-    const ParentCategories = await comFunction.getParentCategories(categoryParentId);
+        const categoryParentId = CategoryDetails[0].parent_id;
+        const ParentCategories = await comFunction.getParentCategories(categoryParentId);
 
-     
+
         console.log('AllRatingTags:', AllRatingTags);
 
         // const convertedAllRatingTags = AllRatingTags.map(obj => obj.rating_tags).join('|');
@@ -1383,28 +1416,28 @@ router.get('/category/:category_slug', verifyToken, async (req, res) => {
         }));
 
         res.json({
-            subCategories:subcategories[0],
-            companyDetails:companyDetails,
-            AllRatingTags:AllRatingTags,
-            baseURL:baseURL,
-            filter_value:'',
+            subCategories: subcategories[0],
+            companyDetails: companyDetails,
+            AllRatingTags: AllRatingTags,
+            baseURL: baseURL,
+            filter_value: '',
             CategoryDetails,
             ParentCategories
         });
     } catch (error) {
         console.error(error);
         res.status(500).json({
-          status: 'error',
-          message: 'An error occurred ' + error,
+            status: 'error',
+            message: 'An error occurred ' + error,
         });
     }
 });
 
-router.get('/categorieslisting', verifyToken, async (req,res) => {
-    const category_slug  = req.params.category_slug ;
+router.get('/categorieslisting', verifyToken, async (req, res) => {
+    const category_slug = req.params.category_slug;
     console.log("category_slug", category_slug);
-        try {
-            const cat_query = `
+    try {
+        const cat_query = `
         SELECT category.ID AS category_id, category.category_slug, category.category_name AS category_name, 
         category.category_img AS category_img, c.category_name AS parent_name, 
         GROUP_CONCAT(countries.name) AS country_names
@@ -1418,16 +1451,16 @@ router.get('/categorieslisting', verifyToken, async (req,res) => {
         AND company.trending = 1 
         AND company.verified = 1 
         GROUP BY category.category_name`;
-            db.query(cat_query, (err, results) => {
-                if (err) {
-                    return res.send(
-                        {
-                            status: 'err',
-                            data: '',
-                            message: 'An error occurred while processing your request' + err
-                        }
-                    )
-                } else {
+        db.query(cat_query, (err, results) => {
+            if (err) {
+                return res.send(
+                    {
+                        status: 'err',
+                        data: '',
+                        message: 'An error occurred while processing your request' + err
+                    }
+                )
+            } else {
                 const categories = results.map((row) => ({
                     categoryId: row.category_id,
                     categoryName: row.category_name,
@@ -1436,15 +1469,15 @@ router.get('/categorieslisting', verifyToken, async (req,res) => {
                     categoryImage: row.category_img,
                     countryNames: row.country_names.split(','),
                 }));
-               
-                res.json({
-                    categories: categories 
-                });    
-            }
-                
-            })
 
-    }catch (err) {
+                res.json({
+                    categories: categories
+                });
+            }
+
+        })
+
+    } catch (err) {
         console.error(err);
         res.status(500).send('An error occurred');
     }
@@ -1465,7 +1498,7 @@ router.get('/categorieslisting/trending', verifyToken, async (req, res) => {
             WHERE category.parent_id = 0
             AND company.trending = 1 
             GROUP BY category.category_name`;
-            
+
         db.query(cat_query, (err, results) => {
             if (err) {
                 return res.status(500).json({
@@ -1482,9 +1515,9 @@ router.get('/categorieslisting/trending', verifyToken, async (req, res) => {
                     categoryImage: row.category_img,
                     countryNames: row.country_names.split(','),
                 }));
-               
+
                 res.json({
-                    categories: categories 
+                    categories: categories
                 });
             }
         });
@@ -1509,7 +1542,7 @@ router.get('/categorieslisting/verified', verifyToken, async (req, res) => {
             WHERE category.parent_id = 0
             AND company.verified = 1 
             GROUP BY category.category_name`;
-            
+
         db.query(cat_query, (err, results) => {
             if (err) {
                 return res.status(500).json({
@@ -1526,9 +1559,9 @@ router.get('/categorieslisting/verified', verifyToken, async (req, res) => {
                     categoryImage: row.category_img,
                     countryNames: row.country_names.split(','),
                 }));
-               
+
                 res.json({
-                    categories: categories 
+                    categories: categories
                 });
             }
         });
@@ -1552,7 +1585,7 @@ router.get('/categorieslisting/all', verifyToken, async (req, res) => {
             JOIN company ON company_cactgory_relation.company_id = company.ID
             WHERE category.parent_id = 0
             GROUP BY category.category_name`;
-            
+
         db.query(cat_query, (err, results) => {
             if (err) {
                 return res.status(500).json({
@@ -1569,9 +1602,9 @@ router.get('/categorieslisting/all', verifyToken, async (req, res) => {
                     categoryImage: row.category_img,
                     countryNames: row.country_names.split(','),
                 }));
-               
+
                 res.json({
-                    categories: categories 
+                    categories: categories
                 });
             }
         });
@@ -1580,6 +1613,219 @@ router.get('/categorieslisting/all', verifyToken, async (req, res) => {
         res.status(500).send('An error occurred');
     }
 });
+
+// router.get('/allreplies/:reviewId', verifyToken, async (req, res) => {
+//     try {
+//         const reviewId = req.params.reviewId;
+//         const query = `
+//         SELECT
+//     r.review_id,
+//     r.reply_by,
+//     r.reply_to,
+//     r.comment,
+//     r.status,
+//     r.created_at,
+//     c.company_name,
+//     c.logo
+// FROM
+//     review_reply AS r
+// JOIN
+//     company AS c ON r.company_id = c.ID
+// WHERE
+//     r.review_id = ?;
+//         `;
+//         db.query(query, [reviewId], (err, results) => { 
+//             if (err) {
+//                 return res.status(500).json({
+//                     status: 'err',
+//                     data: '',
+//                     message: 'An error occurred while processing your request' + err
+//                 });
+//             } else {
+//                 const responseData = results.map((row) => ({
+//                     review_id: row.review_id,
+//                     reply_by: row.reply_by,
+//                     reply_to: row.reply_to,
+//                     comment: row.comment,
+//                     status: row.status,
+//                     created_at: row.created_at,
+//                 }));
+
+//                 res.status(200).json({
+//                     status: 'success',
+//                     data: responseData,
+//                     message: 'Replies retrieved successfully',
+//                 });
+//             }
+//         });
+//     } catch (err) {
+//         console.error(err);
+//         res.status(500).send('An error occurred');
+//     }
+// });
+
+router.get('/allreplies/:reviewId', verifyToken, async (req, res) => {
+    try {
+        const reviewId = req.params.reviewId;
+// const query = `
+// SELECT
+//     r.review_id,
+//     r.reply_by,
+//     r.reply_to,
+//     r.comment,
+//     r.status,
+//     r.created_at,
+//     CASE
+//         WHEN cu.user_id IS NOT NULL THEN cu.first_name
+//         ELSE cc.company_name
+//     END AS reply_by_name,
+//     CASE
+//         WHEN cu.user_id IS NOT NULL THEN cu.last_name
+//         ELSE NULL
+//     END AS reply_by_last_name,
+//     CASE
+//         WHEN cu.user_id IS NOT NULL THEN ucm_reply_by.profile_pic
+//         ELSE cc.logo
+//     END AS reply_by_logo,  
+//     CASE
+//         WHEN tu.user_id IS NOT NULL THEN tu.first_name
+//         ELSE tc.company_name
+//     END AS reply_to_name,
+//     CASE
+//         WHEN tu.user_id IS NOT NULL THEN tu.last_name
+//         ELSE NULL
+//     END AS reply_to_last_name,
+//     CASE
+//         WHEN tu.user_id IS NOT NULL THEN ucm_reply_to.profile_pic
+//         ELSE tc.logo
+//     END AS reply_to_logo  
+// FROM
+//     review_reply AS r
+// LEFT JOIN
+//     users AS cu ON r.reply_by = cu.user_id
+// LEFT JOIN
+//     company AS cc ON r.reply_by = cc.ID
+// LEFT JOIN
+//     users AS tu ON r.reply_to = tu.user_id
+// LEFT JOIN
+//     company AS tc ON r.reply_to = tc.ID
+// LEFT JOIN
+//     reviews AS rr ON r.review_id = rr.id
+// LEFT JOIN
+//     user_customer_meta AS ucm_reply_by ON cu.user_id = ucm_reply_by.user_id
+// LEFT JOIN
+//     user_customer_meta AS ucm_reply_to ON tu.user_id = ucm_reply_to.user_id
+// WHERE
+//     r.review_id = ?;
+// `;
+const query = `
+SELECT
+    r.review_id,
+    r.reply_by,
+    r.reply_to,
+    r.comment,
+    r.status,
+    r.created_at,
+    CASE
+        WHEN cu.user_id IS NOT NULL THEN 
+            CASE
+                WHEN ucm_reply_by.profile_pic IS NOT NULL THEN CONCAT(cu.first_name, ' ', cu.last_name)
+                ELSE cu.first_name
+            END
+        ELSE cc.company_name
+    END AS reply_by_name,
+    CASE
+        WHEN cu.user_id IS NOT NULL THEN ucm_reply_by.profile_pic
+        ELSE cc.logo
+    END AS reply_by_logo,  
+    CASE
+        WHEN tu.user_id IS NOT NULL THEN 
+            CASE
+                WHEN ucm_reply_to.profile_pic IS NOT NULL THEN CONCAT(tu.first_name, ' ', tu.last_name)
+                ELSE tu.first_name
+            END
+        ELSE tc.company_name
+    END AS reply_to_name,
+    CASE
+        WHEN tu.user_id IS NOT NULL THEN ucm_reply_to.profile_pic
+        ELSE tc.logo
+    END AS reply_to_logo  
+FROM
+    review_reply AS r
+LEFT JOIN
+    users AS cu ON r.reply_by = cu.user_id
+LEFT JOIN
+    company AS cc ON r.reply_by = cc.ID
+LEFT JOIN
+    users AS tu ON r.reply_to = tu.user_id
+LEFT JOIN
+    company AS tc ON r.reply_to = tc.ID
+LEFT JOIN
+    reviews AS rr ON r.review_id = rr.id
+LEFT JOIN
+    user_customer_meta AS ucm_reply_by ON cu.user_id = ucm_reply_by.user_id
+LEFT JOIN
+    user_customer_meta AS ucm_reply_to ON tu.user_id = ucm_reply_to.user_id
+WHERE
+    r.review_id = ?;
+`;
+        db.query(query, [reviewId], (err, results) => { 
+            if (err) {
+                console.error(err); 
+                return res.status(500).json({
+                    status: 'error',
+                    data: [],
+                    message: 'An error occurred while processing your request',
+                });
+            } else {
+                if (results.length > 0) {
+                    const responseData = results.map((row) => ({
+                        review_id: row.review_id,
+                        reply_by: {
+                            user_id: row.reply_by,
+                            name: row.reply_by_name,
+                            last_name: row.reply_by_last_name,
+                            profile_pic: row.reply_by_profile_pic,
+                            logo: row.reply_by_logo,
+                        },
+                        reply_to: {
+                            user_id: row.reply_to,
+                            name: row.reply_to_name,
+                            last_name: row.reply_to_last_name,
+                            profile_pic: row.reply_to_profile_pic,
+                            logo: row.reply_to_logo,
+                        },
+                        comment: row.comment,
+                        status: row.status,
+                        created_at: row.created_at,
+                    }));
+
+                    return res.status(200).json({
+                        status: 'success',
+                        data: responseData,
+                        message: 'Replies retrieved successfully',
+                    });
+                } else {
+                    return res.status(404).json({
+                        status: 'error',
+                        data: [],
+                        message: 'No replies found for the given review ID',
+                    });
+                }
+            }
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            status: 'error',
+            data: [],
+            message: 'An error occurred',
+        });
+    }
+});
+
+
+
 
 
 
