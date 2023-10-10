@@ -1351,16 +1351,26 @@ async function getReviewRepliescompany(companyId, reviewIDs) {
 }
 
 async function getpolldetails(companyId, reviewIDs){
-  try{
-    const rows=`SELECT * FROM poll_company WHERE company_id  = '${companyId}' `; 
-    const getvalue = await query(rows);
-    console.log(getvalue);
-    return getvalue; 
-  } catch(error){
-    console.log('Error during fetch review replies:', error);
-    throw error;
+    try {
+      const currentDate = new Date(); // Get the current date
+      const formattedDate = currentDate.toISOString().slice(0, 19).replace("T", " "); // Format the current date as needed
+  
+      const rows = `
+        SELECT * FROM poll_company 
+        WHERE company_id = '${companyId}' 
+        AND '${formattedDate}' >= created_at 
+        AND '${formattedDate}' <= expired_at
+      `;
+  
+      const results = await query(rows);
+      console.log(results);
+      return results;
+    } catch (error) {
+      console.log('Error during fetch ongoing polls:', error);
+      throw error;
+    }
   }
-}
+  
 
 async function updateReview(reviewIfo){
   // console.log('Review Info', reviewIfo);
