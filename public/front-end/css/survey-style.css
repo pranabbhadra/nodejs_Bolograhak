@@ -199,19 +199,19 @@
     cursor: pointer;
 }
 
-.qst-repeat {
+/* .qst-repeat {
     display: none;
-}
+} */
 
 .qst-repeat + .qst-repeat {
     margin-top: 30px;
 }
 
-.multiple-ans-repeat,
+/* .multiple-ans-repeat,
 .create-survey-field-repater,
 .create-survey-field-repater2 {
     display: none;
-}
+} */
 
 .create-survey-field-repater .multiple-ans-repeat:first-child,
 .create-survey-field-repater2 .multiple-ans-repeat:first-child {

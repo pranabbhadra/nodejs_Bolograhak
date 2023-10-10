@@ -695,21 +695,16 @@ jQuery(function ($) {
     }
   });
 
-  $(".add-option").click(function(e){
-    e.preventDefault();
-    $(this).parent(".create-survey-field-repater").find(".multiple-ans-repeat:hidden").slice(0,1).fadeIn("slow");
-  });
+  // $(".add-option").click(function(e){
+  //   e.preventDefault();
+  //   $(this).parent(".create-survey-field-repater").find(".multiple-ans-repeat:hidden").slice(0,1).fadeIn("slow");
+  // });
 
-  $(".add-option").click(function(e){
-    e.preventDefault();
-    $(this).parent(".create-survey-field-repater2").find(".multiple-ans-repeat:hidden").slice(0,1).fadeIn("slow");
-  });
-
-  $(".qst-repeat").slice(0,1).show();
-  $(".add-qut").click(function(e){
-    e.preventDefault();
-    $(".qst-repeat:hidden").slice(0,1).fadeIn("slow");
-  });
+  // $(".qst-repeat").slice(0,1).show();
+  // $(".add-qut").click(function(e){
+  //   e.preventDefault();
+  //   $(".qst-repeat:hidden").slice(0,1).fadeIn("slow");
+  // });
 
   $(".add-email-btn").click(function(e){
     e.preventDefault();
@@ -1148,9 +1143,9 @@ $(".create-poll-btn .btn-default").click(function(e){
 /*=========================== Creat a Poll slidedown function End =================*/
 
 /*=========================== Remove multiple answer function End =================*/
-$(".remove-ans").click(function(){
-$(this).parents(".multiple-ans-repeat").find(".custom-form").hide();
-});
+// $(".remove-ans").click(function(){
+//   $(this).parents(".multiple-ans-repeat").find(".custom-form").hide();
+// });
 
 /*=========================== Remove multiple answer function End =================*/
 
@@ -1172,31 +1167,31 @@ $('#sendreviewtags').on('click', 'span', function() {
 /*=========================== Send Review request tags End =================*/
 
 /*=========================== Create survey add question add option Start =================*/
-$('.form-check-input').click(function() {
-  if($(this).is(':checked')) {
-      if($(this).val() == 'type_radio'){
-        $(this).parents(".qst-repeat").find('.create-survey-field-repater').show();    
-      }
-      else if($(this).val() == 'type_checkbox'){
-        $(this).parents(".qst-repeat").find('.create-survey-field-repater').hide();
-      }else{
-        $(this).parents(".qst-repeat").find('.create-survey-field-repater').hide();
-      }
-    }
-});
+// $('.form-check-input').click(function() {
+//   if($(this).is(':checked')) {
+//       if($(this).val() == 'type_radio'){
+//         $(this).parents(".qst-repeat").find('.create-survey-field-repater').show();    
+//       }
+//       else if($(this).val() == 'type_checkbox'){
+//         $(this).parents(".qst-repeat").find('.create-survey-field-repater').hide();
+//       }else{
+//         $(this).parents(".qst-repeat").find('.create-survey-field-repater').hide();
+//       }
+//     }
+// });
 
-$('.form-check-input').click(function() {
-  if($(this).is(':checked')) {
-      if($(this).val() == 'type_checkbox'){
-        $(this).parents(".qst-repeat").find('.create-survey-field-repater2').show();    
-      }
-      else if($(this).val() == 'type_radio'){
-        $(this).parents(".qst-repeat").find('.create-survey-field-repater2').hide();
-      }else{
-        $(this).parents(".qst-repeat").find('.create-survey-field-repater2').hide();
-      }
-    }
-});
+// $('.form-check-input').click(function() {
+//   if($(this).is(':checked')) {
+//       if($(this).val() == 'type_checkbox'){
+//         $(this).parents(".qst-repeat").find('.create-survey-field-repater2').show();    
+//       }
+//       else if($(this).val() == 'type_radio'){
+//         $(this).parents(".qst-repeat").find('.create-survey-field-repater2').hide();
+//       }else{
+//         $(this).parents(".qst-repeat").find('.create-survey-field-repater2').hide();
+//       }
+//     }
+// });
 /*=========================== Create survey add question add option End =================*/
 
 /*=========================== Edit email start =================*/
