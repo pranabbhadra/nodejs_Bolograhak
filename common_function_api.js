@@ -524,7 +524,7 @@ async function getTrendingReviews() {
     JOIN users u ON r.customer_id = u.user_id
     LEFT JOIN user_customer_meta ucm ON u.user_id = ucm.user_id
     LEFT JOIN review_reply rr ON r.ID = rr.review_id
-    WHERE c.trending = 1 AND r.review_status = "1"
+    WHERE c.trending = "1" AND r.review_status = "1"
     ORDER BY r.created_at DESC;
 `;
 
