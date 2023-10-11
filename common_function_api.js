@@ -528,11 +528,11 @@ async function getTrendingReviews() {
     ORDER BY r.created_at DESC;
 `;
 
-  try{
+  try {
     const all_review_results = await query(all_review_query);
     return all_review_results;
   }
-  catch(error){
+  catch (error) {
     console.error('Error during all_review_query:', error);
   }
 }
@@ -967,24 +967,19 @@ async function getCompanyRatings(companyID) {
   const getCompanyRatingsQuery = 
   `SELECT 
   company_id,
-  SUM(CASE WHEN rating = 0.5 THEN 1 ELSE 0 END) AS rating_05_count,
-  SUM(CASE WHEN rating = 1 THEN 1 ELSE 0 END) AS rating_1_count,
-  SUM(CASE WHEN rating = 1.5 THEN 1 ELSE 0 END) AS rating_15_count,
-  SUM(CASE WHEN rating = 2 THEN 1 ELSE 0 END) AS rating_2_count,
-  SUM(CASE WHEN rating = 2.5 THEN 1 ELSE 0 END) AS rating_25_count,
-  SUM(CASE WHEN rating = 3 THEN 1 ELSE 0 END) AS rating_3_count,
-  SUM(CASE WHEN rating = 3.5 THEN 1 ELSE 0 END) AS rating_35_count,
-  SUM(CASE WHEN rating = 4 THEN 1 ELSE 0 END) AS rating_4_count,
-  SUM(CASE WHEN rating = 4.5 THEN 1 ELSE 0 END) AS rating_45_count,
-  SUM(CASE WHEN rating = 5 THEN 1 ELSE 0 END) AS rating_5_count,
+  SUM(CASE WHEN t1.rating = 0.5 THEN 1 ELSE 0 END) AS rating_05_count,
+  SUM(CASE WHEN t1.rating = 1 THEN 1 ELSE 0 END) AS rating_1_count,
+  SUM(CASE WHEN t1.rating = 1.5 THEN 1 ELSE 0 END) AS rating_15_count,
+  SUM(CASE WHEN t1.rating = 2 THEN 1 ELSE 0 END) AS rating_2_count,
+  SUM(CASE WHEN t1.rating = 2.5 THEN 1 ELSE 0 END) AS rating_25_count,
+  SUM(CASE WHEN t1.rating = 3 THEN 1 ELSE 0 END) AS rating_3_count,
+  SUM(CASE WHEN t1.rating = 3.5 THEN 1 ELSE 0 END) AS rating_35_count,
+  SUM(CASE WHEN t1.rating = 4 THEN 1 ELSE 0 END) AS rating_4_count,
+  SUM(CASE WHEN t1.rating = 4.5 THEN 1 ELSE 0 END) AS rating_45_count,
+  SUM(CASE WHEN t1.rating = 5 THEN 1 ELSE 0 END) AS rating_5_count,
   COUNT(*) AS total_rating_count,
-  ROUND(AVG(rating), 1) AS rating_average,
-  (
-    SELECT COUNT(*) FROM review_tag_relation AS t2
-    WHERE t2.review_id = t1.id
-  ) AS tag_name_count
+  ROUND(AVG(t1.rating), 1) AS rating_average
 FROM reviews AS t1
-LEFT JOIN review_tag_relation AS t3 ON t1.id = t3.review_id
 WHERE company_id = ? AND review_status = "1"
 GROUP BY company_id;
 `;
