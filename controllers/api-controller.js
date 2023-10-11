@@ -7,6 +7,7 @@ const fs = require('fs');
 const dotenv = require('dotenv');
 dotenv.config({ path: './.env' });
 
+const comFunction2 = require('../common_function2');
 const comFunction = require('../common_function');
 const axios = require('axios');
 
@@ -82,6 +83,19 @@ exports.searchCompany = async (req, res) => {
     //console.log(req.body);
     const keyword = req.body.keyword; //Approved Company
     const CompanyResponse = await comFunction.searchCompany(keyword);
+    if(CompanyResponse.status == 'ok'){
+        res.status(200).json(CompanyResponse);
+    }else{
+        res.status(404).json(CompanyResponse);
+    }
+
+}
+
+// --search Discussion --//
+exports.searchDiscussion = async (req, res) => {
+    console.log('req.body');
+    const keyword = req.body.keyword; //Approved Company
+    const CompanyResponse = await comFunction2.searchDiscussion(keyword);
     if(CompanyResponse.status == 'ok'){
         res.status(200).json(CompanyResponse);
     }else{

@@ -63,7 +63,6 @@
                <div class="write-discussion-field">
                   <form id="comment_form">
                      <textarea rows="5" class="form-control" placeholder="Write a comment" id="discussiontext" name="comment"></textarea>
-                     <input type="hidden" name="user_id" value="<%= currentUserData.user_id %>" />
                      <input type="hidden" name="discussion_id" value="<%= AllCommentByDiscusId[0].id %>" />
                      <div class="text-center"><input type="submit" class="btn-default btn-warning mt-3" id="comment_btn" value="Submit"></div>
                   </form>
@@ -74,45 +73,46 @@
             </div>
             <div class="discussion-similar-thread">
                <h3>Similar threads</h3>
-               <div class="discussion-review-panel">
-                  <div class="discussion-user-img">
-                     <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
-                  </div>
-                  <div class="discussion-user-info">
-                     <h4>Lorem Ipsum</h4>
-                     <p>Created 5 days ago by Lorem Ipsum</p>
-                  </div>
-                  <div class="dis-comment-views">
-                     <a href="#">29 Comments</a>
-                     <a href="#">100views</a>
-                  </div>
-               </div>
-               <div class="discussion-review-panel">
-                  <div class="discussion-user-img">
-                     <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
-                  </div>
-                  <div class="discussion-user-info">
-                     <h4>Lorem Ipsum</h4>
-                     <p>Created 5 days ago by Lorem Ipsum</p>
-                  </div>
-                  <div class="dis-comment-views">
-                     <a href="#">29 Comments</a>
-                     <a href="#">100views</a>
-                  </div>
-               </div>
-               <div class="discussion-review-panel">
-                  <div class="discussion-user-img">
-                     <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
-                  </div>
-                  <div class="discussion-user-info">
-                     <h4>Lorem Ipsum</h4>
-                     <p>Created 5 days ago by Lorem Ipsum</p>
-                  </div>
-                  <div class="dis-comment-views">
-                     <a href="#">29 Comments</a>
-                     <a href="#">100views</a>
-                  </div>
-               </div>
+             
+               <% if (AllDiscussions.length > 0) { %>
+                 <% let AllDiscussionTags = [] %>
+                 <% AllDiscussions.forEach((AllDiscussion) => { %>
+                   <%
+                   if (AllDiscussion.tags !== '') {
+                     AllDiscussionTags = JSON.parse(AllDiscussion.tags);
+                   }
+                   %>
+                   <% const matchingTags = tags.filter((tag) => AllDiscussionTags.includes(tag)); %>
+                   <% if (matchingTags.length > 0 && AllCommentByDiscusId[0].id != AllDiscussion.id ) { %>
+                     <div class="discussion-review-panel">
+                       <a href="/discussion-details/<%= AllDiscussion.id %>">
+                         <div class="discussion-user-img">
+                           <!-- <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60"> -->
+                           <h4><%= AllDiscussion.first_name.charAt(0).toUpperCase() %></h4>
+                         </div>
+                         <div class="discussion-user-info">
+                           <h4>
+                             <% if (AllDiscussion.topic.length > 75) { %>
+                               <%= AllDiscussion.topic.substring(0, 75) + ' . . . ' %>
+                             <% } else { %>
+                               <%= AllDiscussion.topic %>
+                             <% } %> 
+                           </h4>
+                           <% const date = new Date(AllDiscussion.created_at); %>
+                           <p>Created <%= date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) %> by <%= AllDiscussion.first_name %> <%= AllDiscussion.last_name %></p>
+                         </div>
+                         <div class="dis-comment-views">
+                           <span><%= AllDiscussion.total_comments %> Comments</span>
+                           <span><%= AllDiscussion.total_views %> Views</span>
+                         </div>
+                       </a>
+                     </div>
+                     <% } %>
+                 <% }) %>
+               <% } %>
+             </div>
+             
+               
             </div>
          </div>
        </div>

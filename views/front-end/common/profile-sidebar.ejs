@@ -53,7 +53,11 @@
                       <li><a href="">item 1</a></li>
                    </ul>-->
                 </li>
-                <li><a href="/myprofile"><i class="fa-solid fa-comments"></i>Profile</a></li>
+                <li>
+                  <a href="/my-discussions"><i class="fa-solid fa-comments"></i>My Discussions <span class=""></a>
+                  
+               </li>
+                <li><a href="/myprofile"><i class="fa-solid fa-user"></i>Profile</a></li>
                 <% if(userMeta && userMeta.claimed_comp_id) { %>
                      <li><a href="/company-dashboard/<%= userMeta.slug %>"><i class="fa-solid fa-briefcase"></i>Company Dashboard </a></li>
                   <% } %>

@@ -9,7 +9,7 @@
         <div class="row">
             <div class="col-md-8">
             <div class="discussions-left">
-                <div class="text-end">
+                <!-- <div class="text-end">
                 <span class="language-select">
                     <span class="lang-change">Everything</span> <a href="" class="lang-arw"><i class="fa-solid fa-sort"></i></a>
                     <div class="lang-dropdown">
@@ -20,14 +20,13 @@
                         </ul>
                     </div>
                 </span>  
-                </div>
+                </div> -->
                 <div id="horizontalTab">
                 <ul class="resp-tabs-list">
-                    <li>Recent</li>
-                    <li>Top</li>
-                    <li>Newest</li>
-                    <li>Eldest</li>
+                    <li>Latest</li>
                     <li>Popular</li>
+                    <li>All</li>
+                    <!-- <li>Eldest</li> -->
                 </ul>
                 <div class="resp-tabs-container">
                     <div class="tab-content-wrap">
@@ -37,168 +36,99 @@
                             <a href="/discussion-details/<%= LatestDiscussion.id %>">
                                 <div class="discussion-user-img">
                                 <!-- <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60"> -->
-                                <h4><%= LatestDiscussion.topic.charAt(0).toUpperCase()  %></h4>
+                                <h4><%= LatestDiscussion.first_name.charAt(0).toUpperCase()  %></h4>
                                 </div>
                                 <div class="discussion-user-info">
-                                <h4><%= LatestDiscussion.topic %> / <%= LatestDiscussion.topic.charAt(0).toUpperCase()  %>
+                                <h4>
+                                    <% if (LatestDiscussion.topic.length > 75) { %>
+                                    <%= LatestDiscussion.topic.substring(0, 75) + ' . . . ' %>
+                                    <% } else { %>
+                                        <%= LatestDiscussion.topic %>
+                                    <% } %> 
                                 </h4>
                                 <% const date = new Date(LatestDiscussion.created_at); %>
                                 <p>Created <%= date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) %> by <%= LatestDiscussion.first_name %> <%= LatestDiscussion.last_name %></p>
                             
                                 </div>
                                 <div class="dis-comment-views">
-                                <span>29 Comments</span>
-                                <span>100views</span>
+                                <span><%= LatestDiscussion.total_comments %> Comments</span>
+                                <span><%= LatestDiscussion.total_views %> Views</span>
                                 </div>
                             </a>
                         </div>
                         <% }) %>
                         <% } %>
-                        <div class="discussion-review-panel">
-                            <div class="discussion-user-img">
-                            <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
-                            </div>
-                            <div class="discussion-user-info">
-                            <h4>Lorem Ipsum</h4>
-                            <p>Created 5 days ago by Lorem Ipsum</p>
-                            </div>
-                            <div class="dis-comment-views">
-                            <a href="#">29 Comments</a>
-                            <a href="#">100views</a>
-                            </div>
-                        </div>
-                        <div class="discussion-review-panel">
-                            <div class="discussion-user-img">
-                            <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
-                            </div>
-                            <div class="discussion-user-info">
-                            <h4>Lorem Ipsum</h4>
-                            <p>Created 5 days ago by Lorem Ipsum</p>
-                            </div>
-                            <div class="dis-comment-views">
-                            <a href="#">29 Comments</a>
-                            <a href="#">100views</a>
-                            </div>
-                        </div>
-                        <div class="discussion-review-panel">
-                            <div class="discussion-user-img">
-                            <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
-                            </div>
-                            <div class="discussion-user-info">
-                            <h4>Lorem Ipsum</h4>
-                            <p>Created 5 days ago by Lorem Ipsum</p>
-                            </div>
-                            <div class="dis-comment-views">
-                            <a href="#">29 Comments</a>
-                            <a href="#">100views</a>
-                            </div>
-                        </div>
-                        <div class="discussion-review-panel">
-                            <div class="discussion-user-img">
-                            <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
-                            </div>
-                            <div class="discussion-user-info">
-                            <h4>Lorem Ipsum</h4>
-                            <p>Created 5 days ago by Lorem Ipsum</p>
-                            </div>
-                            <div class="dis-comment-views">
-                            <a href="#">29 Comments</a>
-                            <a href="#">100views</a>
-                            </div>
-                        </div>
-                        <div class="discussion-review-panel">
-                            <div class="discussion-user-img">
-                            <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
-                            </div>
-                            <div class="discussion-user-info">
-                            <h4>Lorem Ipsum</h4>
-                            <p>Created 5 days ago by Lorem Ipsum</p>
-                            </div>
-                            <div class="dis-comment-views">
-                            <a href="#">29 Comments</a>
-                            <a href="#">100views</a>
-                            </div>
-                        </div>
                         <!-- <div class="text-center mt-md-5 mt-4">
                             <a href="#" class="btn-default btn-warning discussion-load-btn">Load More</a>
                         </div> -->
                     </div>
                     <div class="tab-content-wrap">
-                        <div class="discussion-review-panel">
-                            <div class="discussion-user-img">
-                            <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
+                        <% if(AllPopularDiscussion.length > 0) { %>
+                            <% AllPopularDiscussion.forEach((PopularDiscussion)=>{  %>
+                            <div class="discussion-review-panel">
+                                <a href="/discussion-details/<%= PopularDiscussion.id %>">
+                                    <div class="discussion-user-img">
+                                    <!-- <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60"> -->
+                                    <h4><%= PopularDiscussion.first_name.charAt(0).toUpperCase()  %></h4>
+                                    </div>
+                                    <div class="discussion-user-info">
+                                    <h4>
+                                        <% if (PopularDiscussion.topic.length > 75) { %>
+                                        <%= PopularDiscussion.topic.substring(0, 75) + ' . . . ' %>
+                                        <% } else { %>
+                                            <%= PopularDiscussion.topic %>
+                                        <% } %>
+                                    </h4>
+                                    <% const date = new Date(PopularDiscussion.created_at); %>
+                                    <p>Created <%= date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) %> by <%= PopularDiscussion.first_name %> <%= PopularDiscussion.last_name %></p>
+                                
+                                    </div>
+                                    <div class="dis-comment-views">
+                                    <span><%= PopularDiscussion.total_comments %> Comments</span>
+                                    <span><%= PopularDiscussion.total_views %> Views</span>
+                                    </div>
+                                </a>
                             </div>
-                            <div class="discussion-user-info">
-                            <h4>Lorem Ipsum</h4>
-                            <p>Created 5 days ago by Lorem Ipsum</p>
-                            </div>
-                            <div class="dis-comment-views">
-                            <a href="#">29 Comments</a>
-                            <a href="#">100views</a>
-                            </div>
-                        </div>
-                        <div class="discussion-review-panel">
-                            <div class="discussion-user-img">
-                            <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
-                            </div>
-                            <div class="discussion-user-info">
-                            <h4>Lorem Ipsum</h4>
-                            <p>Created 5 days ago by Lorem Ipsum</p>
-                            </div>
-                            <div class="dis-comment-views">
-                            <a href="#">29 Comments</a>
-                            <a href="#">100views</a>
-                            </div>
-                        </div>
+                            <% }) %>
+                        <% } %>
                         <!-- <div class="text-center mt-md-5 mt-4">
                             <a href="#" class="btn-default btn-warning discussion-load-btn">Load More</a>
                         </div> -->
                     </div>
                     <div class="tab-content-wrap">
-                        <div class="discussion-review-panel">
-                            <div class="discussion-user-img">
-                            <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
+                        <% if(AllDiscussions.length > 0) { %>
+                            <% AllDiscussions.forEach((AllDiscussion)=>{  %>
+                            <div class="discussion-review-panel">
+                                <a href="/discussion-details/<%= AllDiscussion.id %>">
+                                    <div class="discussion-user-img">
+                                    <!-- <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60"> -->
+                                    <h4><%= AllDiscussion.first_name.charAt(0).toUpperCase()  %></h4>
+                                    </div>
+                                    <div class="discussion-user-info">
+                                    <h4>
+                                        <% if (AllDiscussion.topic.length > 75) { %>
+                                        <%= AllDiscussion.topic.substring(0, 75) + ' . . . ' %>
+                                        <% } else { %>
+                                            <%= AllDiscussion.topic %>
+                                        <% } %>
+                                    </h4>
+                                    <% const date = new Date(AllDiscussion.created_at); %>
+                                    <p>Created <%= date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) %> by <%= AllDiscussion.first_name %> <%= AllDiscussion.last_name %></p>
+                                
+                                    </div>
+                                    <div class="dis-comment-views">
+                                    <span><%= AllDiscussion.total_comments %> Comments</span>
+                                    <span><%= AllDiscussion.total_views %> Views</span>
+                                    </div>
+                                </a>
                             </div>
-                            <div class="discussion-user-info">
-                            <h4>Lorem Ipsum</h4>
-                            <p>Created 5 days ago by Lorem Ipsum</p>
-                            </div>
-                            <div class="dis-comment-views">
-                            <a href="#">29 Comments</a>
-                            <a href="#">100views</a>
-                            </div>
-                        </div>
-                        <div class="discussion-review-panel">
-                            <div class="discussion-user-img">
-                            <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
-                            </div>
-                            <div class="discussion-user-info">
-                            <h4>Lorem Ipsum</h4>
-                            <p>Created 5 days ago by Lorem Ipsum</p>
-                            </div>
-                            <div class="dis-comment-views">
-                            <a href="#">29 Comments</a>
-                            <a href="#">100views</a>
-                            </div>
-                        </div>
-                        <div class="discussion-review-panel">
-                            <div class="discussion-user-img">
-                            <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
-                            </div>
-                            <div class="discussion-user-info">
-                            <h4>Lorem Ipsum</h4>
-                            <p>Created 5 days ago by Lorem Ipsum</p>
-                            </div>
-                            <div class="dis-comment-views">
-                            <a href="#">29 Comments</a>
-                            <a href="#">100views</a>
-                            </div>
-                        </div>
+                            <% }) %>
+                        <% } %>
                         <!-- <div class="text-center mt-md-5 mt-4">
                             <a href="#" class="btn-default btn-warning discussion-load-btn">Load More</a>
                         </div> -->
                     </div>
-                    <div class="tab-content-wrap">
+                    <!-- <div class="tab-content-wrap">
                         <div class="discussion-review-panel">
                             <div class="discussion-user-img">
                             <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
@@ -212,145 +142,11 @@
                             <a href="#">100views</a>
                             </div>
                         </div>
-                        <div class="discussion-review-panel">
-                            <div class="discussion-user-img">
-                            <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
-                            </div>
-                            <div class="discussion-user-info">
-                            <h4>Lorem Ipsum</h4>
-                            <p>Created 5 days ago by Lorem Ipsum</p>
-                            </div>
-                            <div class="dis-comment-views">
-                            <a href="#">29 Comments</a>
-                            <a href="#">100views</a>
-                            </div>
-                        </div>
-                        <div class="discussion-review-panel">
-                            <div class="discussion-user-img">
-                            <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
-                            </div>
-                            <div class="discussion-user-info">
-                            <h4>Lorem Ipsum</h4>
-                            <p>Created 5 days ago by Lorem Ipsum</p>
-                            </div>
-                            <div class="dis-comment-views">
-                            <a href="#">29 Comments</a>
-                            <a href="#">100views</a>
-                            </div>
-                        </div>
-                        <div class="discussion-review-panel">
-                            <div class="discussion-user-img">
-                            <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
-                            </div>
-                            <div class="discussion-user-info">
-                            <h4>Lorem Ipsum</h4>
-                            <p>Created 5 days ago by Lorem Ipsum</p>
-                            </div>
-                            <div class="dis-comment-views">
-                            <a href="#">29 Comments</a>
-                            <a href="#">100views</a>
-                            </div>
-                        </div>
-                        <div class="discussion-review-panel">
-                            <div class="discussion-user-img">
-                            <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
-                            </div>
-                            <div class="discussion-user-info">
-                            <h4>Lorem Ipsum</h4>
-                            <p>Created 5 days ago by Lorem Ipsum</p>
-                            </div>
-                            <div class="dis-comment-views">
-                            <a href="#">29 Comments</a>
-                            <a href="#">100views</a>
-                            </div>
-                        </div>
-                        <!-- <div class="text-center mt-md-5 mt-4">
+                        <div class="text-center mt-md-5 mt-4">
                             <a href="#" class="btn-default btn-warning discussion-load-btn">Load More</a>
-                        </div> -->
-                    </div>
-                    <div class="tab-content-wrap">
-                        <div class="discussion-review-panel">
-                            <div class="discussion-user-img">
-                            <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
-                            </div>
-                            <div class="discussion-user-info">
-                            <h4>Lorem Ipsum</h4>
-                            <p>Created 5 days ago by Lorem Ipsum</p>
-                            </div>
-                            <div class="dis-comment-views">
-                            <a href="#">29 Comments</a>
-                            <a href="#">100views</a>
-                            </div>
                         </div>
-                        <div class="discussion-review-panel">
-                            <div class="discussion-user-img">
-                            <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
-                            </div>
-                            <div class="discussion-user-info">
-                            <h4>Lorem Ipsum</h4>
-                            <p>Created 5 days ago by Lorem Ipsum</p>
-                            </div>
-                            <div class="dis-comment-views">
-                            <a href="#">29 Comments</a>
-                            <a href="#">100views</a>
-                            </div>
-                        </div>
-                        <div class="discussion-review-panel">
-                            <div class="discussion-user-img">
-                            <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
-                            </div>
-                            <div class="discussion-user-info">
-                            <h4>Lorem Ipsum</h4>
-                            <p>Created 5 days ago by Lorem Ipsum</p>
-                            </div>
-                            <div class="dis-comment-views">
-                            <a href="#">29 Comments</a>
-                            <a href="#">100views</a>
-                            </div>
-                        </div>
-                        <div class="discussion-review-panel">
-                            <div class="discussion-user-img">
-                            <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
-                            </div>
-                            <div class="discussion-user-info">
-                            <h4>Lorem Ipsum</h4>
-                            <p>Created 5 days ago by Lorem Ipsum</p>
-                            </div>
-                            <div class="dis-comment-views">
-                            <a href="#">29 Comments</a>
-                            <a href="#">100views</a>
-                            </div>
-                        </div>
-                        <div class="discussion-review-panel">
-                            <div class="discussion-user-img">
-                            <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
-                            </div>
-                            <div class="discussion-user-info">
-                            <h4>Lorem Ipsum</h4>
-                            <p>Created 5 days ago by Lorem Ipsum</p>
-                            </div>
-                            <div class="dis-comment-views">
-                            <a href="#">29 Comments</a>
-                            <a href="#">100views</a>
-                            </div>
-                        </div>
-                        <div class="discussion-review-panel">
-                            <div class="discussion-user-img">
-                            <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60">
-                            </div>
-                            <div class="discussion-user-info">
-                            <h4>Lorem Ipsum</h4>
-                            <p>Created 5 days ago by Lorem Ipsum</p>
-                            </div>
-                            <div class="dis-comment-views">
-                            <a href="#">29 Comments</a>
-                            <a href="#">100views</a>
-                            </div>
-                        </div>
-                        <!-- <div class="text-center mt-md-5 mt-4">
-                            <a href="#" class="btn-default btn-warning discussion-load-btn">Load More</a>
-                        </div> -->
-                    </div>
+                    </div> -->
+                    
                 </div>
                 </div>
             </div>
@@ -359,11 +155,12 @@
             <div class="discussions-right mt-md-0 mt-4">
                 <div class="search-area position-relative">
                     <form>
-                        <input type="text" class="form-control" placeholder="Search" required="">
+                        <input type="text" class="form-control" id="search-input"
+                                    placeholder="Search" required>
                     </form>
                     <input type="submit" value="Search">
                     <div class="autofield-dropdown">
-                        <ul class="p-0 m-0">
+                        <!-- <ul class="p-0 m-0">
                         <li><a href="#">Nunc non posuere justo erat semper enim</a></li>
                         <li><a href="#">Nunc non posuere justo erat semper enim</a></li>
                         <li><a href="#">Nunc non posuere justo erat semper enim</a></li>
@@ -373,141 +170,106 @@
                         <li><a href="#">Nunc non posuere justo erat semper enim</a></li>
                         <li><a href="#">Nunc non posuere justo erat semper enim</a></li>
                         <li><a href="#">Nunc non posuere justo erat semper enim</a></li>
-                        </ul>
+                        </ul> -->
                     </div>
                 </div>
                 <div class="discussions-right-panel">
-                <h4>Popular Discussions</h4>
-                <div class="dis-right-panel-item">
-                    <div class="dis-r-panel-item-left">
-                    <a href="#"><i class="fa-regular fa-arrow-right-long"></i>Lorem Ipsum</a> 
-                    </div>
-                    <div class="dis-r-panel-item-right">
-                    78
-                    </div>
-                </div>
-                <div class="dis-right-panel-item">
-                    <div class="dis-r-panel-item-left">
-                    <a href="#"><i class="fa-regular fa-arrow-right-long"></i>Lorem Ipsum</a> 
-                    </div>
-                    <div class="dis-r-panel-item-right">
-                    50
-                    </div>
-                </div>
-                <div class="dis-right-panel-item">
-                    <div class="dis-r-panel-item-left">
-                    <a href="#"><i class="fa-regular fa-arrow-right-long"></i>Lorem Ipsum</a> 
-                    </div>
-                    <div class="dis-r-panel-item-right">
-                    33
-                    </div>
-                </div>
-                <div class="dis-right-panel-item">
-                    <div class="dis-r-panel-item-left">
-                    <a href="#"><i class="fa-regular fa-arrow-right-long"></i>Lorem Ipsum</a> 
-                    </div>
-                    <div class="dis-r-panel-item-right">
-                    42
-                    </div>
-                </div>
-                <div class="dis-right-panel-item">
-                    <div class="dis-r-panel-item-left">
-                    <a href="#"><i class="fa-regular fa-arrow-right-long"></i>Lorem Ipsum</a> 
-                    </div>
-                    <div class="dis-r-panel-item-right">
-                    12
-                    </div>
-                </div>
-                </div>
-                <div class="discussions-right-panel">
-                <h4>Popular Showcase</h4>
-                <div class="dis-right-panel-item">
-                    <div class="dis-r-panel-item-left">
-                    <a href="#"><i class="fa-regular fa-arrow-right-long"></i>Lorem Ipsum</a> 
-                    </div>
-                    <div class="dis-r-panel-item-right">
-                    78
-                    </div>
-                </div>
-                <div class="dis-right-panel-item">
-                    <div class="dis-r-panel-item-left">
-                    <a href="#"><i class="fa-regular fa-arrow-right-long"></i>Lorem Ipsum</a> 
-                    </div>
-                    <div class="dis-r-panel-item-right">
-                    50
-                    </div>
-                </div>
-                <div class="dis-right-panel-item">
-                    <div class="dis-r-panel-item-left">
-                    <a href="#"><i class="fa-regular fa-arrow-right-long"></i>Lorem Ipsum</a> 
-                    </div>
-                    <div class="dis-r-panel-item-right">
-                    33
-                    </div>
-                </div>
-                <div class="dis-right-panel-item">
-                    <div class="dis-r-panel-item-left">
-                    <a href="#"><i class="fa-regular fa-arrow-right-long"></i>Lorem Ipsum</a> 
-                    </div>
-                    <div class="dis-r-panel-item-right">
-                    42
-                    </div>
-                </div>
-                <div class="dis-right-panel-item">
-                    <div class="dis-r-panel-item-left">
-                    <a href="#"><i class="fa-regular fa-arrow-right-long"></i>Lorem Ipsum</a> 
-                    </div>
-                    <div class="dis-r-panel-item-right">
-                    12
-                    </div>
-                </div>
-                </div>
-                <div class="discussions-right-panel">
-                    <h4>New Showcase</h4>
+                    <h4>Popular Discussions</h4>
+                    <% if(AllPopularDiscussion.length > 0) { %>
+                    <% AllPopularDiscussion.forEach((PopularDiscussion)=>{  %>
+                        <div class="dis-right-panel-item">
+                            <div class="dis-r-panel-item-left">
+                            <a href="/discussion-details/<%= PopularDiscussion.id %>"><i class="fa-regular fa-arrow-right-long"></i>
+                                <% if (PopularDiscussion.topic.length > 25) { %>
+                                <%= PopularDiscussion.topic.substring(0, 25) + ' . . . ' %>
+                                <% } else { %>
+                                    <%= PopularDiscussion.topic %>
+                                <% } %>
+                            </a> 
+                            </div>
+                            <div class="dis-r-panel-item-right">
+                                <%= PopularDiscussion.total_comments %>
+                            </div>
+                        </div>
+                    <% }) %>
+                    <% } %>
+                    
+                    <!-- 
                     <div class="dis-right-panel-item">
-                    <div class="dis-r-panel-item-left">
+                        <div class="dis-r-panel-item-left">
                         <a href="#"><i class="fa-regular fa-arrow-right-long"></i>Lorem Ipsum</a> 
-                    </div>
-                    <div class="dis-r-panel-item-right">
-                        78
-                    </div>
-                    </div>
-                    <div class="dis-right-panel-item">
-                    <div class="dis-r-panel-item-left">
-                        <a href="#"><i class="fa-regular fa-arrow-right-long"></i>Lorem Ipsum</a> 
-                    </div>
-                    <div class="dis-r-panel-item-right">
-                        50
-                    </div>
-                    </div>
-                    <div class="dis-right-panel-item">
-                    <div class="dis-r-panel-item-left">
-                        <a href="#"><i class="fa-regular fa-arrow-right-long"></i>Lorem Ipsum</a> 
-                    </div>
-                    <div class="dis-r-panel-item-right">
-                        33
-                    </div>
-                    </div>
-                    <div class="dis-right-panel-item">
-                    <div class="dis-r-panel-item-left">
-                        <a href="#"><i class="fa-regular fa-arrow-right-long"></i>Lorem Ipsum</a> 
-                    </div>
-                    <div class="dis-r-panel-item-right">
-                        42
-                    </div>
-                    </div>
-                    <div class="dis-right-panel-item">
-                    <div class="dis-r-panel-item-left">
-                        <a href="#"><i class="fa-regular fa-arrow-right-long"></i>Lorem Ipsum</a> 
-                    </div>
-                    <div class="dis-r-panel-item-right">
+                        </div>
+                        <div class="dis-r-panel-item-right">
                         12
+                        </div>
+                    </div> -->
+                </div>
+                <div class="discussions-right-panel">
+                    <h4>Newest Showcase</h4>
+                    <% if(AllLatestDiscussion.length > 0) { %>
+                    <% AllLatestDiscussion.forEach((LatestDiscussion)=>{  %>
+                    <div class="dis-right-panel-item">
+                        <div class="dis-r-panel-item-left">
+                        <a href="/discussion-details/<%= LatestDiscussion.id %>"><i class="fa-regular fa-arrow-right-long"></i>
+                            <% if (LatestDiscussion.topic.length > 25) { %>
+                            <%= LatestDiscussion.topic.substring(0, 25) + ' . . . ' %>
+                            <% } else { %>
+                                <%= LatestDiscussion.topic %>
+                            <% } %>
+                        </a> 
+                        </div>
+                        <div class="dis-r-panel-item-right">
+                            <%= LatestDiscussion.total_comments %>
+                        </div>
                     </div>
+                    <% }) %>
+                    <% } %>
+                </div>
+                <div class="discussions-right-panel">
+                    <h4>Viewed Showcase</h4>
+                    <% if(AllViewedDiscussion.length > 0) { %>
+                    <% AllViewedDiscussion.forEach((ViewedDiscussion)=>{  %>
+                    <div class="dis-right-panel-item">
+                        <div class="dis-r-panel-item-left">
+                            <a href="/discussion-details/<%= ViewedDiscussion.id %>"><i class="fa-regular fa-arrow-right-long"></i>
+                                <% if (ViewedDiscussion.topic.length > 25) { %>
+                                    <%= ViewedDiscussion.topic.substring(0, 25) + ' . . . ' %>
+                                    <% } else { %>
+                                        <%= ViewedDiscussion.topic %>
+                                    <% } %>
+                            </a> 
+                        </div>
+                        <div class="dis-r-panel-item-right">
+                            <%= ViewedDiscussion.total_views %>
+                        </div>
                     </div>
+                    <% }) %>
+                    <% } %>
+                    <!-- <div class="dis-right-panel-item">
+                        <div class="dis-r-panel-item-left">
+                            <a href="#"><i class="fa-regular fa-arrow-right-long"></i>Lorem Ipsum</a> 
+                        </div>
+                        <div class="dis-r-panel-item-right">
+                            50
+                        </div>
+                    </div> -->
                 </div>
                 <div class="discussions-right-panel">
                     <h4>Popular Tags</h4>
-                        <a href="#" class="btn-default btn-warning pop-tag-btn">Lorem Ipsum</a> <a href="#" class="btn-default btn-warning pop-tag-btn">Lorem Ipsum</a> <a href="#" class="btn-default btn-warning pop-tag-btn">Lorem Ipsum</a> <a href="#" class="btn-default btn-warning pop-tag-btn">Lorem Ipsum</a> <a href="#" class="btn-default btn-warning pop-tag-btn">Lorem Ipsum</a> <a href="#" class="btn-default btn-warning pop-tag-btn">Lorem Ipsum</a>
+                    <% if(AllPopularDiscussion.length > 0) { %>
+                        <% var tags = [] %>
+                        <% AllPopularDiscussion.forEach((PopularDiscussion,index)=>{  %>
+                            <% 
+                                if(PopularDiscussion.tags != ''){
+                                tags = JSON.parse(PopularDiscussion.tags)
+                                }
+                             %>
+                            <% tags.forEach((tag) =>{ %> 
+                            <a href="/discussion-details/<%= PopularDiscussion.id %>" class="btn-default btn-warning dis-details-top-btn"><%= tag %></a>
+                            <% }) %>
+                        <!-- <a href="#" class="btn-default btn-warning pop-tag-btn"><%= PopularDiscussion.tags %></a>  -->
+                        <% }) %>
+                    <% } %>
                 </div>
                 <% if(currentUserData){ %>
                 <div class="start-a-discussion-btn text-center">
@@ -538,9 +300,11 @@
                 <input type="text" name="tags" placeholder="Add tag" data-gtm-form-interact-field-id="0">
              </div>
              <div class="custom-form">
-                <label><span style="background-color: #ffffff;">Message</span></label>
-                <textarea name="topic" id="" class="form-control mb-4"></textarea>
+                <label><span style="background-color: #ffffff;">Message<span style="color: red;">*</span></span></label>
+                <textarea name="topic" id="search-topic" class="form-control mb-4" required></textarea>
              </div>
+             <div class="autofield-dropdown">
+            </div>
              <% const date = new Date(); %>
             <%
                 const year = date.getFullYear();
@@ -592,6 +356,89 @@
 
 <script>
     $(document).ready(function () {
+
+        var timer;
+        $("#search-input").keyup(function () {
+          clearTimeout(timer);
+          var keyword = $(this).val();
+          if (keyword.length >= 3) {
+            timer = setTimeout(function () {
+              performSearch(keyword);
+            }, 500);
+          } else {
+            $('.autofield-dropdown').hide();
+            $('.autofield-dropdown').html(''); // Clear search results if less than three letters
+          }
+        })
+
+        $("#search-topic").keyup(function () {
+          clearTimeout(timer);
+          var keyword = $(this).val();
+          if (keyword.length >= 3) {
+            timer = setTimeout(function () {
+              performSearch(keyword);
+            }, 500);
+          } else {
+            $('.autofield-dropdown').hide();
+            $('.autofield-dropdown').html(''); // Clear search results if less than three letters
+          }
+        })
+
+        // Function to perform the AJAX search
+        function performSearch(keyword) {
+          $('.autofield-dropdown').css('height', "200px");
+          const data = {
+            keyword: keyword,
+          };
+          $.ajax({
+            url: 'api/search-discussion',
+            method: 'POST',
+            data: { keyword: keyword },
+            ContentType: 'application/json',
+            success: function (data) {
+              if (data.status == 'ok') {
+                if (data.data.length > 0) {
+                  let respData = data.data;
+                  let html = '<ul class="p-0 m-0">';
+                  respData.forEach(discussion => {
+                    html += '<li><a href="/discussion-details/' + discussion.id + '" >' + discussion.topic + '</a></li>';
+                  });
+                  html += '</ul>';
+                  $('.autofield-dropdown').html(html);
+                  $('.autofield-dropdown').show();
+                  if(data.data.length < 4){
+                    var divlength = data.data.length*48;
+                    $('.autofield-dropdown').css('height', divlength + "px");
+                  }
+                } else {
+                  $('.autofield-dropdown').hide();
+                  $('.autofield-dropdown').html('');
+                }
+              } else {
+                $('.autofield-dropdown').hide();
+                $('.autofield-dropdown').html('');
+              }
+            },
+            error: function (error) {
+
+            }
+          });
+
+        }
+
+        
+      $("body").on('click', ".autofield-dropdown ul > li", function (e) {
+        e.preventDefault();
+        var resulttitle = $(this).find('a').attr('data-resulttitle');
+        var resultpermalink = $(this).find('a').attr('data-resultpermalink');
+        $('#dynamic-search-title').text(resulttitle);
+        $('#dynamic-search-content').text(resultexcerpt);
+        $('#dynamic-search-link').attr("href", resultpermalink);
+
+        $(".custom-modal").fadeIn();
+
+      });
+
         var allTags = [];
         var transformedResponse = {};
         $('form#create_discussion_form').submit(function (e) {

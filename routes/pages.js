@@ -87,7 +87,7 @@ router.get('', checkCookieValue, async (req, res) => {
         userId = currentUserData.user_id;
     }
     
-    const [allRatingTags,globalPageMeta,latestReviews,AllReviewTags,AllReviewVoting, PopularCategories, ReviewCount, UserCount, PositiveReviewsCompany, NegativeReviewsCompany, HomeMeta, VisitorCheck] = await Promise.all([
+    const [allRatingTags,globalPageMeta,latestReviews,AllReviewTags,AllReviewVoting, PopularCategories, ReviewCount, UserCount, PositiveReviewsCompany, NegativeReviewsCompany, HomeMeta, VisitorCheck, getAllLatestDiscussion, getAllPopularDiscussion, getAllDiscussions ] = await Promise.all([
         comFunction.getAllRatingTags(),
         comFunction2.getPageMetaValues('global'),
         comFunction2.getlatestReviews(18),
@@ -99,7 +99,10 @@ router.get('', checkCookieValue, async (req, res) => {
         comFunction.getPositiveReviewsCompany(),
         comFunction.getNegativeReviewsCompany(),
         comFunction2.getPageMetaValues('home'),
-        comFunction.getVisitorCheck(requestIp.getClientIp(req))
+        comFunction.getVisitorCheck(requestIp.getClientIp(req)),
+        comFunction2.getAllLatestDiscussion(20),
+        comFunction2.getAllPopularDiscussion(),
+        comFunction2.getAllDiscussions(),
     ]);
     const rangeTexts = {};
 
@@ -152,7 +155,10 @@ router.get('', checkCookieValue, async (req, res) => {
                         PositiveReviewsCompany,
                         NegativeReviewsCompany,
                         HomeMeta,
-                        VisitorCheck
+                        VisitorCheck,
+                        AllLatestDiscussion: getAllLatestDiscussion,
+                        AllPopularDiscussion: getAllPopularDiscussion,
+                        AllDiscussions: getAllDiscussions,
                     });
                 })
 
@@ -198,6 +204,9 @@ router.get('', checkCookieValue, async (req, res) => {
                         PositiveReviewsCompany,
                         NegativeReviewsCompany,
                         PopularCategories,
+                        AllLatestDiscussion: getAllLatestDiscussion,
+                        AllPopularDiscussion: getAllPopularDiscussion,
+                        AllDiscussions: getAllDiscussions,
                     });
                 })
 
@@ -882,7 +891,71 @@ router.get('/home', checkCookieValue, async (req, res) => {
     //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
 });
 
+//Discussion page
+router.get('/discussion', checkCookieValue, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
+    const [globalPageMeta, getAllLatestDiscussion, getAllPopularDiscussion, getAllDiscussions, getAllViewedDiscussion] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+        comFunction2.getAllLatestDiscussion(20),
+        comFunction2.getAllPopularDiscussion(),
+        comFunction2.getAllDiscussions(),
+        comFunction2.getAllViewedDiscussion(),
+    ]);
+    //console.log(getAllLatestDiscussion);
+    try {
+        // res.json({
+        //     menu_active_id: 'discussion',
+        //     page_title: 'Recent Discussions',
+        //     currentUserData,
+        //     globalPageMeta:globalPageMeta,
+        //     AllLatestDiscussion: getAllLatestDiscussion,
+        //     AllPopularDiscussion: getAllPopularDiscussion,
+        //     AllDiscussions: getAllDiscussions,
+        //     AllViewedDiscussion: getAllViewedDiscussion
+        // });
+        res.render('front-end/discussion', {
+            menu_active_id: 'discussion',
+            page_title: 'Recent Discussions',
+            currentUserData,
+            globalPageMeta:globalPageMeta,
+            AllLatestDiscussion: getAllLatestDiscussion,
+            AllPopularDiscussion: getAllPopularDiscussion,
+            AllDiscussions: getAllDiscussions,
+            AllViewedDiscussion: getAllViewedDiscussion
 
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+
+//Discussion Details page
+router.get('/discussion-details/:discussion_id', checkCookieValue, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
+    const discussion_id = req.params.discussion_id;
+    const [globalPageMeta, insertDiscussionResponse, getAllCommentByDiscusId, getAllDiscussions] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+        comFunction2.insertDiscussionResponse(discussion_id,  requestIp.getClientIp(req)),
+        comFunction2.getAllCommentByDiscusId(discussion_id),
+        comFunction2.getAllDiscussions(),
+    ]);
+    try {
+
+        res.render('front-end/discussion-details', {
+            menu_active_id: 'discussion-details',
+            page_title: 'Recent Discussions',
+            currentUserData,
+            globalPageMeta:globalPageMeta,
+            commentID:insertDiscussionResponse,
+            AllCommentByDiscusId:getAllCommentByDiscusId,
+            AllDiscussions:getAllDiscussions
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
 
 //Survey page
 router.get('/survey', checkCookieValue, async (req, res) => {
@@ -3319,60 +3392,41 @@ router.get('/edit-user-review/:reviewId', checkFrontEndLoggedIn, async (req, res
     }
 });
 
-//Discussion page
-router.get('/discussion', checkFrontEndLoggedIn, async (req, res) => {
-    const encodedUserData = req.cookies.user;
-    const currentUserData = JSON.parse(encodedUserData);
-    const [globalPageMeta, getAllLatestDiscussion] = await Promise.all([
-        comFunction2.getPageMetaValues('global'),
-        comFunction2.getAllLatestDiscussion(),
-    ]);
-    //console.log(getAllLatestDiscussion);
+//FrontEnd user discussion listing  page
+router.get('/my-discussions', checkFrontEndLoggedIn, async (req, res) => {
     try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+        const userId = currentUserData.user_id;
+        console.log('editUserID: ', userId);
 
-        res.render('front-end/discussion', {
-            menu_active_id: 'discussion',
-            page_title: 'Recent Discussions',
+        // Fetch all the required data asynchronously
+        const [ globalPageMeta, getDiscussionsByUserId ] = await Promise.all([
+            comFunction2.getPageMetaValues('global'),
+            comFunction2.getDiscussionsByUserId(userId),
+        ]);
+        //console.log(AllReviewTags);
+        // res.json( {
+        //     menu_active_id: 'profile-dashboard',
+        //     page_title: 'My Reviews',
+        //     currentUserData,
+        //     globalPageMeta:globalPageMeta,
+        //     DiscussionsByUserId: getDiscussionsByUserId
+        // });
+        res.render('front-end/user-all-discussion', {
+            menu_active_id: 'user-all-review',
+            page_title: 'My Reviews',
             currentUserData,
             globalPageMeta:globalPageMeta,
-            AllLatestDiscussion: getAllLatestDiscussion
+            DiscussionsByUserId: getDiscussionsByUserId
         });
     } catch (err) {
         console.error(err);
         res.status(500).send('An error occurred');
     }
-    //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
+    //res.render('front-end/profile-dashboard', { menu_active_id: 'profile-dashboard', page_title: 'My Dashboard', currentUserData });
 });
 
-//Discussion Details page
-router.get('/discussion-details/:discussion_id', checkFrontEndLoggedIn, async (req, res) => {
-    const encodedUserData = req.cookies.user;
-    const currentUserData = JSON.parse(encodedUserData);
-    const userId = currentUserData.user_id;
-    const discussion_id = req.params.discussion_id;
-    const [globalPageMeta, insertDiscussionResponse, getAllCommentByDiscusId] = await Promise.all([
-        comFunction2.getPageMetaValues('global'),
-        comFunction2.insertDiscussionResponse(discussion_id, userId, requestIp.getClientIp(req)),
-        comFunction2.getAllCommentByDiscusId(discussion_id),
-    ]);
-    //console.log('getAllCommentByDiscusId',getAllCommentByDiscusId)
-    //console.log('insertDiscussionResponseID',insertDiscussionResponse)
-    try {
-
-        res.render('front-end/discussion-details', {
-            menu_active_id: 'discussion-details',
-            page_title: 'Recent Discussions',
-            currentUserData,
-            globalPageMeta:globalPageMeta,
-            commentID:insertDiscussionResponse,
-            AllCommentByDiscusId:getAllCommentByDiscusId
-        });
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('An error occurred');
-    }
-    //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
-});
 
 //-----------------------------------------------------------------//
 

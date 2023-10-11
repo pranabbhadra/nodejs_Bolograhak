@@ -1983,32 +1983,117 @@ async function getAllReviewsByCompanyID(companyId) {
 }
 
 //Function to get latest discussion from discussions table
-async function getAllLatestDiscussion() {
+async function getAllLatestDiscussion(limit) {
   const sql = `
-  SELECT discussions.*, u.first_name, u.last_name FROM discussions 
+  SELECT discussions.*, u.first_name, u.last_name, COUNT(dur.id) as total_comments , COUNT(duv.id) as total_views 
+  FROM discussions 
   LEFT JOIN users u ON discussions.user_id = u.user_id 
+  LEFT JOIN discussions_user_response dur ON discussions.id = dur.discussion_id 
+  LEFT JOIN discussions_user_view duv ON discussions.id = duv.discussion_id 
   GROUP BY discussions.id
-  ORDER BY discussions.id DESC;
+  ORDER BY discussions.id DESC
+  LIMIT ${limit} ;
   `;
   try{
     const results = await query(sql);
+    if (results.length>0) {
+      
     return results;
+    } else {
+      return [];
+    }
   }
   catch(error){
-    console.error('Error during all_review_query:', error);
+    console.error('Error during fetch All Latest Discussion:', error);
+  }
+}
+
+//Function to get popular discussion from discussions table
+async function getAllPopularDiscussion() {
+  const sql = `
+  SELECT discussions.*, u.first_name, u.last_name, COUNT(dur.id) as total_comments, COUNT(duv.id) as total_views 
+  FROM discussions 
+  LEFT JOIN users u ON discussions.user_id = u.user_id 
+  LEFT JOIN discussions_user_response dur ON discussions.id = dur.discussion_id 
+  LEFT JOIN discussions_user_view duv ON discussions.id = duv.discussion_id 
+  GROUP BY discussions.id
+  ORDER BY total_comments DESC;
+  ;
+  `;
+  try{
+    const results = await query(sql);
+    if (results.length>0) {
+      
+    return results;
+    } else {
+      return [];
+    }
+  }
+  catch(error){
+    console.error('Error during fetch  Latest Discussion:', error);
+  }
+}
+
+//Function to get viewed discussion from discussions table
+async function getAllViewedDiscussion() {
+  const sql = `
+  SELECT discussions.*, u.first_name, u.last_name, COUNT(dur.id) as total_comments, COUNT(duv.id) as total_views 
+  FROM discussions 
+  LEFT JOIN users u ON discussions.user_id = u.user_id 
+  LEFT JOIN discussions_user_response dur ON discussions.id = dur.discussion_id 
+  LEFT JOIN discussions_user_view duv ON discussions.id = duv.discussion_id 
+  GROUP BY discussions.id
+  ORDER BY total_views DESC;
+  ;
+  `;
+  try{
+    const results = await query(sql);
+    if (results.length>0) {
+      
+    return results;
+    } else {
+      return [];
+    }
+  }
+  catch(error){
+    console.error('Error during fetch All viewed discussion Discussion:', error);
+  }
+}
+
+//Function to get latest discussion from discussions table
+async function getAllDiscussions() {
+  const sql = `
+  SELECT discussions.*, u.first_name, u.last_name, COUNT(dur.id) as total_comments , COUNT(duv.id) as total_views 
+  FROM discussions 
+  LEFT JOIN users u ON discussions.user_id = u.user_id 
+  LEFT JOIN discussions_user_response dur ON discussions.id = dur.discussion_id 
+  LEFT JOIN discussions_user_view duv ON discussions.id = duv.discussion_id 
+  GROUP BY discussions.id
+  ORDER BY discussions.id DESC
+  `;
+  try{
+    const results = await query(sql);
+    if (results.length>0) {
+      
+    return results;
+    } else {
+      return [];
+    }
+  }
+  catch(error){
+    console.error('Error during fetch All Latest Discussion:', error);
   }
 }
 
 //Function to insert discussion response in discussions_user_response table
-async function insertDiscussionResponse(discussion_id, userId, IP_address) {
+async function insertDiscussionResponse(discussion_id, IP_address) {
   const currentDate = new Date();
   const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
   const data = {
     discussion_id : discussion_id,
-    user_id: userId,
     ip_address: IP_address,
   };
-  const checkQuery = `SELECT * FROM discussions_user_view WHERE discussion_id = '${discussion_id}' AND user_id = '${userId}' AND ip_address = '${IP_address}'`;
+  const checkQuery = `SELECT * FROM discussions_user_view WHERE discussion_id = '${discussion_id}'  AND ip_address = '${IP_address}'`;
   const check_result = await query(checkQuery);
   if(check_result.length > 0){
     console.log(check_result[0].id);
@@ -2048,6 +2133,51 @@ async function getAllCommentByDiscusId(discussions_id) {
   }
   catch(error){
     console.error('Error during fetching getAllCommentByDiscusId:', error);
+  }
+}
+
+
+async function searchDiscussion(keyword){
+  const get_company_query = `
+    SELECT id , topic FROM discussions
+    WHERE topic LIKE '%${keyword}%' 
+    ORDER BY id DESC
+  `;
+  try{
+    const get_company_results = await query(get_company_query);
+    if(get_company_results.length > 0 ){
+      //console.log(get_company_results);
+      return {status: 'ok', data: get_company_results, message: ' Discussion data recived'};
+    }else{
+      return {status: 'ok', data: '', message: 'No Discussion data found'};
+    }
+  }catch(error){
+    return {status: 'err', data: '', message: 'No Discussion data found'};
+  }  
+}
+
+//Function to get user discussions from discussions table
+async function getDiscussionsByUserId(userId) {
+  const sql = `
+  SELECT discussions.*,  COUNT(dur.id) as total_comments , COUNT(duv.id) as total_views 
+  FROM discussions 
+  LEFT JOIN discussions_user_response dur ON discussions.id = dur.discussion_id 
+  LEFT JOIN discussions_user_view duv ON discussions.id = duv.discussion_id 
+  WHERE discussions.user_id = ${userId}
+  GROUP BY discussions.id
+  ORDER BY discussions.id DESC
+  `;
+  try{
+    const results = await query(sql);
+    if (results.length>0) {
+      
+    return results;
+    } else {
+      return [];
+    }
+  }
+  catch(error){
+    console.error('Error during fetch All Latest Discussion:', error);
   }
 }
 
@@ -2101,5 +2231,10 @@ module.exports = {
   getAllReviewsByCompanyID,
   getAllLatestDiscussion,
   insertDiscussionResponse,
-  getAllCommentByDiscusId
+  getAllCommentByDiscusId,
+  getAllPopularDiscussion,
+  getAllDiscussions,
+  getAllViewedDiscussion,
+  searchDiscussion,
+  getDiscussionsByUserId
 };
