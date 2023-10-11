@@ -200,6 +200,9 @@ function getAllReviewTags() {
     });
   });
 }
+
+
+
 //Function to fetch latest Reviews from the  reviews,company,company_location,users,user_customer_meta table
 async function getlatestReviews(reviewCount){
   const get_latest_review_query = `
