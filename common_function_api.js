@@ -495,7 +495,7 @@ function getReviewRatingData(review_rating_Id) {
 
 async function getAllReviews() {
   const all_review_query = `
-  SELECT r.*, c.company_name, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic, rr.comment AS reply_comment, rr.reply_by, rr.reply_to, rr.status, rr.reason, rr.created_at, rr.updated_at
+  SELECT r.*, c.company_name, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic, rr.comment AS reply_comment, rr.reply_by, rr.reply_to, rr.status, rr.reason, rr.created_at as rr_created_at, rr.updated_at as rr_updated_at
   FROM reviews r
   JOIN company c ON r.company_id = c.ID
   JOIN company_location cl ON r.company_location_id = cl.ID
@@ -517,7 +517,7 @@ async function getAllReviews() {
 
 async function getTrendingReviews() {
   const all_review_query = `
-  SELECT r.*, c.company_name, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic,rr.comment AS reply_comment, rr.reply_by, rr.reply_to, rr.status, rr.reason, rr.created_at, rr.updated_at
+  SELECT r.*, c.company_name, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic,rr.comment AS reply_comment, rr.reply_by, rr.reply_to, rr.status, rr.reason, rr.created_at as rr_created_at, rr.updated_at as rr_updated_at
     FROM reviews r
     JOIN company c ON r.company_id = c.ID
     JOIN company_location cl ON r.company_location_id = cl.ID
@@ -530,6 +530,7 @@ async function getTrendingReviews() {
 
   try {
     const all_review_results = await query(all_review_query);
+    console.log(all_review_results);
     return all_review_results;
   }
   catch (error) {
@@ -540,7 +541,7 @@ async function getTrendingReviews() {
 
 async function getLatestReview(limit = null) {
   const all_review_query = `
-    SELECT r.*, c.company_name, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic, rr.comment AS reply_comment, rr.reply_by, rr.reply_to, rr.status, rr.reason, rr.created_at, rr.updated_at
+    SELECT r.*, c.company_name, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic, rr.comment AS reply_comment, rr.reply_by, rr.reply_to, rr.status, rr.reason, rr.created_at as rr_created_at, rr.updated_at as rr_updated_at
       FROM reviews r
       JOIN company c ON r.company_id = c.ID
       JOIN company_location cl ON r.company_location_id = cl.ID
