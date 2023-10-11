@@ -3549,7 +3549,7 @@ GROUP BY pa.id, pa.answer;
               data: results.map((result) => ({
                 id: result.answer_id,
                 answer: result.answer_text,
-                submittedVotes: 0, // Initialize submittedVotes as 0 for answers when user hasn't voted
+                //submittedVotes: 0, // Initialize submittedVotes as 0 for answers when user hasn't voted
                 userSelected: false,
               })),
             };
