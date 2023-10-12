@@ -85,7 +85,7 @@
                    <% const matchingTags = tags.filter((tag) => AllDiscussionTags.includes(tag)); %>
                    <% if (matchingTags.length > 0 && AllCommentByDiscusId[0].id != AllDiscussion.id ) { %>
                      <div class="discussion-review-panel">
-                       <a href="/discussion-details/<%= AllDiscussion.id %>">
+                       <a href="/discussion-details/<%= AllDiscussion.id %>" title="<%= AllDiscussion.topic %>" >
                          <div class="discussion-user-img">
                            <!-- <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60"> -->
                            <h4><%= AllDiscussion.first_name.charAt(0).toUpperCase() %></h4>

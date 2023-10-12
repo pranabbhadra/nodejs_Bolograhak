@@ -658,6 +658,7 @@
 
 <!-- ============== Discussions section Start =============== -->
 
+<% if(AllLatestDiscussion.length > 0) { %>
 <section class="main-content discussion-content">
   <div class="container">
     <h2 class="text-center main-head"><small>View Our</small> <br> Discussions</h2>
@@ -689,31 +690,38 @@
           <div class="resp-tabs-container">
               <div class="tab-content-wrap">
                   <% if(AllLatestDiscussion.length > 0) { %>
-                  <% AllLatestDiscussion.forEach((LatestDiscussion)=>{  %>
-                  <div class="discussion-review-panel">
-                      <a href="/discussion-details/<%= LatestDiscussion.id %>">
-                          <div class="discussion-user-img">
-                          <!-- <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60"> -->
-                          <h4><%= LatestDiscussion.first_name.charAt(0).toUpperCase()  %></h4>
-                          </div>
-                          <div class="discussion-user-info">
-                          <h4>
-                              <% if (LatestDiscussion.topic.length > 75) { %>
-                              <%= LatestDiscussion.topic.substring(0, 75) + ' . . . ' %>
-                              <% } else { %>
-                                  <%= LatestDiscussion.topic %>
-                              <% } %> 
-                          </h4>
-                          <% const date = new Date(LatestDiscussion.created_at); %>
-                          <p>Created <%= date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) %> by <%= LatestDiscussion.first_name %> <%= LatestDiscussion.last_name %></p>
-                      
-                          </div>
-                          <div class="dis-comment-views">
-                          <span><%= LatestDiscussion.total_comments %> Comments</span>
-                          <span><%= LatestDiscussion.total_views %> Views</span>
-                          </div>
-                      </a>
-                  </div>
+                  <% AllLatestDiscussion.forEach((LatestDiscussion,index)=>{  %>
+                    <% const ExpireDate = new Date(LatestDiscussion.expired_at); %>
+                        <% const date2 = new Date(); %>
+                        <% const daysDiff = Math.round((ExpireDate - date2)/(1000 * 60 * 60 * 24)) %>
+                        <% if(daysDiff > -1){ %>
+                  <% if(index < 7 ) { %>
+                    <div class="discussion-review-panel">
+                        <a href="/discussion-details/<%= LatestDiscussion.id %>" title="<%= LatestDiscussion.topic %>" >
+                            <div class="discussion-user-img">
+                            <!-- <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60"> -->
+                            <h4><%= LatestDiscussion.first_name.charAt(0).toUpperCase()  %></h4>
+                            </div>
+                            <div class="discussion-user-info">
+                            <h4>
+                                <% if (LatestDiscussion.topic.length > 75) { %>
+                                <%= LatestDiscussion.topic.substring(0, 75) + ' . . . ' %>
+                                <% } else { %>
+                                    <%= LatestDiscussion.topic %>
+                                <% } %> 
+                            </h4>
+                            <% const date = new Date(LatestDiscussion.created_at); %>
+                            <p>Created <%= date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) %> by <%= LatestDiscussion.first_name %> <%= LatestDiscussion.last_name %></p>
+                        
+                            </div>
+                            <div class="dis-comment-views">
+                            <span><%= LatestDiscussion.total_comments %> Comments</span>
+                            <span><%= LatestDiscussion.total_views %> Views</span>
+                            </div>
+                        </a>
+                    </div>
+                  <% } %>
+                  <% } %>
                   <% }) %>
                   <% } %>
                   <!-- <div class="text-center mt-md-5 mt-4">
@@ -722,9 +730,14 @@
               </div>
               <div class="tab-content-wrap">
                   <% if(AllPopularDiscussion.length > 0) { %>
-                      <% AllPopularDiscussion.forEach((PopularDiscussion)=>{  %>
+                      <% AllPopularDiscussion.forEach((PopularDiscussion, index)=>{  %>
+                        <% const ExpireDate = new Date(PopularDiscussion.expired_at); %>
+                        <% const date2 = new Date(); %>
+                        <% const daysDiff = Math.round((ExpireDate - date2)/(1000 * 60 * 60 * 24)) %>
+                        <% if(daysDiff > -1){ %>
+                        <% if(index < 7 ) { %>
                       <div class="discussion-review-panel">
-                          <a href="/discussion-details/<%= PopularDiscussion.id %>">
+                          <a href="/discussion-details/<%= PopularDiscussion.id %>" title="<%= PopularDiscussion.topic %>" >
                               <div class="discussion-user-img">
                               <!-- <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60"> -->
                               <h4><%= PopularDiscussion.first_name.charAt(0).toUpperCase()  %></h4>
@@ -747,6 +760,8 @@
                               </div>
                           </a>
                       </div>
+                      <% } %>
+                      <% } %>
                       <% }) %>
                   <% } %>
                   <!-- <div class="text-center mt-md-5 mt-4">
@@ -755,9 +770,14 @@
               </div>
               <div class="tab-content-wrap">
                   <% if(AllDiscussions.length > 0) { %>
-                      <% AllDiscussions.forEach((AllDiscussion)=>{  %>
+                      <% AllDiscussions.forEach((AllDiscussion, index)=>{  %>
+                        <% const ExpireDate = new Date(AllDiscussion.expired_at); %>
+                                <% const date2 = new Date(); %>
+                                <% const daysDiff = Math.round((ExpireDate - date2)/(1000 * 60 * 60 * 24)) %>
+                                <% if(daysDiff > -1){ %>
+                        <% if(index < 7 ) { %>
                       <div class="discussion-review-panel">
-                          <a href="/discussion-details/<%= AllDiscussion.id %>">
+                          <a href="/discussion-details/<%= AllDiscussion.id %>" title="<%= AllDiscussion.topic %>" >
                               <div class="discussion-user-img">
                               <!-- <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60"> -->
                               <h4><%= AllDiscussion.first_name.charAt(0).toUpperCase()  %></h4>
@@ -780,6 +800,8 @@
                               </div>
                           </a>
                       </div>
+                      <% } %>
+                      <% } %>
                       <% }) %>
                   <% } %>
                   <!-- <div class="text-center mt-md-5 mt-4">
@@ -814,21 +836,28 @@
           <div class="discussions-right-panel">
             <h4>Popular Discussions</h4>
             <% if(AllPopularDiscussion.length > 0) { %>
-            <% AllPopularDiscussion.forEach((PopularDiscussion)=>{  %>
-                <div class="dis-right-panel-item">
-                    <div class="dis-r-panel-item-left">
-                    <a href="/discussion-details/<%= PopularDiscussion.id %>"><i class="fa-regular fa-arrow-right-long"></i>
-                        <% if (PopularDiscussion.topic.length > 25) { %>
-                        <%= PopularDiscussion.topic.substring(0, 25) + ' . . . ' %>
-                        <% } else { %>
-                            <%= PopularDiscussion.topic %>
-                        <% } %>
-                    </a> 
-                    </div>
-                    <div class="dis-r-panel-item-right">
-                        <%= PopularDiscussion.total_comments %>
-                    </div>
-                </div>
+            <% AllPopularDiscussion.forEach((PopularDiscussion, index)=>{  %>
+              <% const ExpireDate = new Date(PopularDiscussion.expired_at); %>
+                  <% const date2 = new Date(); %>
+                  <% const daysDiff = Math.round((ExpireDate - date2)/(1000 * 60 * 60 * 24)) %>
+                  <% if(daysDiff > -1){ %>
+                    <% if(index < 5){ %>
+                      <div class="dis-right-panel-item">
+                          <div class="dis-r-panel-item-left">
+                          <a href="/discussion-details/<%= PopularDiscussion.id %>" title="<%= PopularDiscussion.topic %>" ><i class="fa-regular fa-arrow-right-long"></i>
+                              <% if (PopularDiscussion.topic.length > 25) { %>
+                              <%= PopularDiscussion.topic.substring(0, 25) + ' . . . ' %>
+                              <% } else { %>
+                                  <%= PopularDiscussion.topic %>
+                              <% } %>
+                          </a> 
+                          </div>
+                          <div class="dis-r-panel-item-right">
+                              <%= PopularDiscussion.total_comments %>
+                          </div>
+                      </div>
+                <% } %>
+                <% } %>
             <% }) %>
             <% } %>
             
@@ -845,21 +874,28 @@
         <div class="discussions-right-panel">
           <h4>Newest Showcase</h4>
           <% if(AllLatestDiscussion.length > 0) { %>
-          <% AllLatestDiscussion.forEach((LatestDiscussion)=>{  %>
-          <div class="dis-right-panel-item">
-              <div class="dis-r-panel-item-left">
-              <a href="/discussion-details/<%= LatestDiscussion.id %>"><i class="fa-regular fa-arrow-right-long"></i>
-                  <% if (LatestDiscussion.topic.length > 25) { %>
-                  <%= LatestDiscussion.topic.substring(0, 25) + ' . . . ' %>
-                  <% } else { %>
-                      <%= LatestDiscussion.topic %>
-                  <% } %>
-              </a> 
-              </div>
-              <div class="dis-r-panel-item-right">
-                  <%= LatestDiscussion.total_comments %>
-              </div>
-          </div>
+          <% AllLatestDiscussion.forEach((LatestDiscussion, index)=>{  %>
+            <% const ExpireDate = new Date(LatestDiscussion.expired_at); %>
+              <% const date2 = new Date(); %>
+              <% const daysDiff = Math.round((ExpireDate - date2)/(1000 * 60 * 60 * 24)) %>
+              <% if(daysDiff > -1){ %>
+                <% if(index < 5 ){ %>
+                <div class="dis-right-panel-item">
+                    <div class="dis-r-panel-item-left">
+                    <a href="/discussion-details/<%= LatestDiscussion.id %>" title="<%= LatestDiscussion.topic %>"  ><i class="fa-regular fa-arrow-right-long"></i>
+                        <% if (LatestDiscussion.topic.length > 25) { %>
+                        <%= LatestDiscussion.topic.substring(0, 25) + ' . . . ' %>
+                        <% } else { %>
+                            <%= LatestDiscussion.topic %>
+                        <% } %>
+                    </a> 
+                    </div>
+                    <div class="dis-r-panel-item-right">
+                        <%= LatestDiscussion.total_comments %>
+                    </div>
+                </div>
+              <% } %>
+            <% } %>
           <% }) %>
           <% } %>
         </div>
@@ -868,6 +904,7 @@
     </div>
   </div>
 </section>
+<% } %>
 <!-- ============== Discussions section End =============== -->
 
  
