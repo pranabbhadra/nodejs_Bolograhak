@@ -191,7 +191,7 @@
     left: 19px;
 }
 
-.remove-ans {
+.remove-ans, .remove-question {
     position: absolute;
     right: 10px;
     top: 50%;

@@ -1139,7 +1139,7 @@ $('.discussionscrollbtn').click(function(e) {
 $(".create-poll-btn .btn-default").click(function(e){
   e.preventDefault();
   $(".creat-poll-field").slideToggle();
-  });
+});
 /*=========================== Creat a Poll slidedown function End =================*/
 
 /*=========================== Remove multiple answer function End =================*/

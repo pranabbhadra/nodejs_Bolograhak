@@ -1200,6 +1200,23 @@ async function getVisitorCheck(ClientIp) {
   }
 }
 
+
+async function getCompanySurveyDetails(companyID) {
+  const get_company_survey_details_query = `
+  SELECT *
+  FROM survey
+  WHERE company_id = ${companyID}
+  ORDER BY id DESC;
+  `;
+  try{
+    const get_company_survey_details_result = await query(get_company_survey_details_query);
+    return get_company_survey_details_result;
+  }catch(error){
+    return 'Error during user get_company_survey_details_query:'+error;
+  }
+}
+
+
 module.exports = {
     getUser,
     getUserMeta,
@@ -1241,5 +1258,6 @@ module.exports = {
     getParentCategories,
     getPositiveReviewsCompany,
     getNegativeReviewsCompany,
-    getVisitorCheck
+    getVisitorCheck,
+    getCompanySurveyDetails
 };

@@ -12,20 +12,20 @@
          <div class="survey-content">
             <div class="container">
                <div class="create-survey-field">
-                <form>
+                <form id="survey-form-submit" name="survey-form" method="post">
                   <div class="create-survey-head">
                      <div class="survey-title">Survey</div>
                      <div class="survey-ex-date">
                         <div class="row">
                            <div class="col-sm-6">
                               <div class="custom-form mb-sm-0 mb-2">
-                                 <input type="text" class="form-control" name="created_at" value="<%= formattedDate %>" placeholder="<%= formattedDate %>" style="pointer-events: none;">
+                                 <input type="text" class="form-control" name="created_at" value="<%= formattedDate %>" readonly>
                                  <small>from</small>
                               </div>
                            </div>
                            <div class="col-sm-6">
                               <div class="custom-form mb-sm-0 mb-2">
-                                 <input type="date" class="form-control" name="expire_at" required="">
+                                 <input type="date" class="form-control" name="expire_at" required="" id="todatePicker" >
                                  <small>to</small>
                               </div>
                            </div>
@@ -39,7 +39,7 @@
                          <textarea type="text" class="form-control" name="title" required=""></textarea>
                       </div>
                       <!-- repeater1 start -->
-                      <div class="qst-repeat dynamic-question-1">
+                      <div class="qst-repeat dynamic-question-1" data-questionid="1">
                          <div class="custom-form">
                             <label><span>Q1</span></label>
                             <input type="text" class="form-control" name="question" required="">
@@ -68,18 +68,53 @@
                       <!-- repeater1 end -->
                       
                       <a href="#" class="btn-default btn-warning add-question my-1">Add Question</a>
-                      <input type="submit" class="btn-default btn-dark  my-1" value="Submit">
+                      <input type="hidden" name="company_id" value="<%- company.ID %>">
+                      <input type="submit" class="btn-survey-default btn-dark my-1" value="Submit">
                   </div>
                 </form>
+                <div class="register-now frm-loading" style="display: none;">
+                  <span class="indicator-progress">Please wait...
+                     <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                  </span>
+                </div>
+                <div style="width: 85%; text-align: center; display: block; border: 2px solid #fccb06; padding: 6px; margin: 0 auto; border-radius: 5px; display: none;" class="poll-create-message"></div>
                </div>
             </div>
          </div>
       </div>
    </div>
 </section>
+<style>
+   .btn-survey-default {
+      font-size: 18px;
+      font-weight: 600;
+      padding: 12px 23px;
+      min-width: 140px;
+      display: inline-block;
+      text-align: center;
+   }
+   .register-now {
+      color: #1F1F1F;
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 36px;
+      text-align: center;
+      margin-top: 0;
+      margin-bottom: 20px;
+   }
+   .create-survey-field {
+      padding: 0 0 25px 0px;
+   }
+</style>
 <!-- ============== Section6 End =============== -->
 <%- include('common/footer') -%>
 <script>
+// JavaScript code to disable previous dates
+const datePicker = document.getElementById("todatePicker");
+const today = new Date();
+today.setDate(today.getDate() + 1); 
+const minDate = today.toISOString().split('T')[0];
+datePicker.setAttribute("min", minDate);
 
 $('body').on('click', '.add-question', function(e){
    e.preventDefault();
@@ -87,10 +122,11 @@ $('body').on('click', '.add-question', function(e){
    console.log(question_count);
    var next_question_count = question_count+1;
    var question_html = `
-   <div class="qst-repeat dynamic-question-${next_question_count}">
+   <div class="qst-repeat dynamic-question-${next_question_count}" data-questionid="${next_question_count}">
       <div class="custom-form">
             <label><span>Q${next_question_count}</span></label>
             <input type="text" class="form-control" name="question" required="">
+            <div class="remove-question"><i class="fa-solid fa-circle-xmark"></i></div>
       </div>
       <div class="custom-form">
          <span class="fw-bold d-inline-block me-2">Select Type:</span>
@@ -118,12 +154,13 @@ $('body').on('click', '.add-question', function(e){
 $('body').on('click', '.form-check-input', function(e){
    if( $(this).is(':checked') ) {
       $(this).parents(".qst-repeat").find('.create-survey-field-repater').remove();
+      var questionid = $(this).parents(".qst-repeat").attr('data-questionid');
       var option_wrapper_html = `
       <div class="create-survey-field-repater">
          <div class="multiple-ans-repeat">
             <div class="custom-form">
-               <label><span>Answer</span></label>
-               <input type="text" class="form-control" placeholder="">
+               <label><span>Option</span></label>
+               <input type="text" name="question_type_${questionid}_options" class="form-control" placeholder="" required="">
                <div class="remove-ans"><i class="fa-solid fa-circle-xmark"></i></div>
             </div>
          </div>
@@ -137,6 +174,10 @@ $('body').on('click', '.form-check-input', function(e){
       }
    }
 });
+$("body").on('click', '.remove-question', function(e){
+   e.preventDefault();
+   $(this).parents(".qst-repeat").remove();
+});
 $("body").on('click', '.remove-ans', function(e){
    e.preventDefault();
    $(this).parents(".custom-form").remove();
@@ -144,13 +185,85 @@ $("body").on('click', '.remove-ans', function(e){
 
 $("body").on('click', '.add-option', function(e){
    e.preventDefault();
+   var questionid = $(this).parents(".qst-repeat").attr('data-questionid');
    var option_html = `
    <div class="custom-form">
-      <label><span>Answer</span></label>
-      <input type="text" class="form-control" placeholder="">
+      <label><span>Option</span></label>
+      <input type="text" name="question_type_${questionid}_options" class="form-control" placeholder="">
       <div class="remove-ans"><i class="fa-solid fa-circle-xmark"></i></div>
    </div>
    `;   
    $(this).parent(".create-survey-field-repater").find(".multiple-ans-repeat").append(option_html);
+});
+
+//-- Form submit --//
+$('#survey-form-submit').submit( function( event ) {
+   $('.btn-survey-default').prop("disabled", true);
+   $('.frm-loading').show();
+   event.preventDefault();
+   const serializedArray = $('#survey-form-submit').serializeArray();
+   console.log(serializedArray);
+
+   function transformSerializedArray(serializedArray) {
+      const transformedData = {};
+      const questions = [];
+  
+      for (const item of serializedArray) {
+          if (item.name === 'created_at' || item.name === 'expire_at' || item.name === 'title' || item.name === 'company_id') {
+              transformedData[item.name] = item.value;
+          } else if (item.name === 'question') {
+              const questionObj = { question: item.value };
+              questions.push(questionObj);
+          } else if (item.name.startsWith('question_type')) {
+              const questionIndex = item.name.split('_')[2];
+              const question = questions[questionIndex - 1];
+              if (item.value === 'type_textarea' || item.value === 'type_checkbox' || item.value === 'type_radio' || item.value === 'type_ratings') {
+                  question.type = item.value;
+              } else {
+                  question.name = item.name;
+                  if (!question.options) {
+                      question.options = [];
+                  }
+                  question.options.push(item.value);
+              }
+          }
+      }
+  
+      transformedData.questions = questions;
+  
+      return [transformedData];
+   }
+   const transformedData = transformSerializedArray(serializedArray);
+   console.log(JSON.stringify(transformedData, null, 3));
+   //----Submit Survey Ajax-------------//
+   $.ajax({
+      url: '/auth/create-survey',
+      method: 'POST',
+      data: JSON.stringify(transformedData),
+      processData: false,
+      ContentType: 'application/json',
+      success: function (data) {
+         if (data.status == 'ok') {
+            $('.frm-loading').hide();
+            $('.poll-create-message').text(data.message);
+            $('.poll-create-message').show();
+            $('.btn-survey-default').prop("disabled", false);
+            setTimeout( function() {
+               location.reload(true);
+            }, 3000);
+         } else {
+            $('.frm-loading').hide();
+            $('.poll-create-message').text(data.message);
+            $('.poll-create-message').show();
+            $('.btn-survey-default').prop("disabled", false);
+         }
+      },
+      error: function (error) {
+         $('.frm-loading').hide();
+         $('.poll-create-message').text(error);
+         $('.poll-create-message').show();
+         $('.btn-survey-default').prop("disabled", false);
+      }
+   });
 });
 </script>

@@ -4594,3 +4594,44 @@ exports.createDiscussion = async (req, res) => {
         }
     })
 }
+
+// Create Survey
+exports.createSurvey = async (req, res) => {
+    console.log( 'Survey Response', req.body );
+    const jsonString = Object.keys(req.body)[0];
+    const surveyResponse = JSON.parse(jsonString);
+    //console.log(surveyResponse[0].questions);
+
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth() + 1; // Months are zero-based (0 = January, 11 = December), so add 1
+    const day = currentDate.getDate();
+    const formattedDate = `${year}-${month < 10 ? '0' : ''}${month}-${day < 10 ? '0' : ''}${day}`;
+    const uniqueNumber = Date.now().toString().replace(/\D/g, "");
+
+    const surveyInsertData = [
+        uniqueNumber,
+        surveyResponse[0].company_id,
+        formattedDate,
+        surveyResponse[0].expire_at,
+        surveyResponse[0].title,
+        JSON.stringify(surveyResponse[0].questions)
+    ];
+    const sql = "INSERT INTO survey (unique_id, company_id, created_at, expire_at, title, questions) VALUES (?, ?, ?, ?, ?, ?)";
+
+    db.query(sql, surveyInsertData, async (err, result) => {
+        if(err){
+            return res.send({
+                status: 'error',
+                message: err
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Survey successfully created'
+            });
+        }
+    })
+
+
+}

@@ -527,7 +527,7 @@ router.get('/company/:slug', checkCookieValue, async (req, res) => {
         // console.log(comp_res);
         // console.log(companyID);
         // countInvitationLabels 1=No Labels,2=Invitation
-        const [allRatingTags, CompanyInfo, companyReviewNumbers, getCompanyReviews, globalPageMeta, PremiumCompanyData, CompanyPollDetails, countInvitationLabels] = await Promise.all([
+        const [allRatingTags, CompanyInfo, companyReviewNumbers, getCompanyReviews, globalPageMeta, PremiumCompanyData, CompanyPollDetails, countInvitationLabels, CompanySurveyDetails] = await Promise.all([
             comFunction.getAllRatingTags(),
             comFunction.getCompany(companyID),
             comFunction.getCompanyReviewNumbers(companyID),
@@ -536,6 +536,7 @@ router.get('/company/:slug', checkCookieValue, async (req, res) => {
             comFunction2.getPremiumCompanyData(companyID),
             comFunction2.getCompanyPollDetails(companyID),
             comFunction2.countInvitationLabels('2', companyID),
+            comFunction.getCompanySurveyDetails(companyID),
         ]);
         
         //console.log(get_company_id.ID)
@@ -608,7 +609,8 @@ router.get('/company/:slug', checkCookieValue, async (req, res) => {
                 //     support_data:support_data,
                 //     PollDetails,
                 //     labeltype,
-                //     countInvitationLabels
+                //     countInvitationLabels,
+                //     CompanySurveyDetails
                 // });
                 res.render('front-end/category-details-premium',
                 {
@@ -634,7 +636,8 @@ router.get('/company/:slug', checkCookieValue, async (req, res) => {
                     support_data:support_data,
                     PollDetails,
                     labeltype,
-                    countInvitationLabels
+                    countInvitationLabels,
+                    CompanySurveyDetails
                 });
             }else{
                 res.render('front-end/company-details',
@@ -649,7 +652,8 @@ router.get('/company/:slug', checkCookieValue, async (req, res) => {
                     getCompanyReviews,
                     globalPageMeta:globalPageMeta,
                     labeltype,
-                    countInvitationLabels
+                    countInvitationLabels,
+                    CompanySurveyDetails
                 });
                 // res.json(
                 // {
@@ -960,6 +964,7 @@ router.get('/create-survey/:slug', checkClientClaimedCompany, async (req, res) =
     const year = currentDate.getFullYear();
     const formattedDate = `${day < 10 ? '0' : ''}${day}/${month < 10 ? '0' : ''}${month}/${year}`;
 
+
     const [globalPageMeta, company, allRatingTags, companyReviewNumbers, allCompanyReviews, allCompanyReviewTags, PremiumCompanyData, reviewTagsCount ] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
         comFunction.getCompany(companyId),
@@ -1024,6 +1029,26 @@ router.get('/create-survey/:slug', checkClientClaimedCompany, async (req, res) =
             reviewTagsCount
         });
     }else{
+        // res.json( 
+        // { 
+        //     menu_active_id: 'create-survey',
+        //     page_title: 'Create Survey',
+        //     currentUserData,
+        //     globalPageMeta:globalPageMeta,
+        //     company,
+        //     allRatingTags,
+        //     formattedDate,
+        //     companyReviewNumbers,
+        //     finalCompanyallReviews,
+        //     reviewReatingChartArray,
+        //     reviewTagsCount,
+        //     reviewReatingChartArray,
+        //     facebook_url:facebook_url,
+        //     twitter_url:twitter_url,
+        //     instagram_url:instagram_url,
+        //     linkedin_url:linkedin_url,
+        //     youtube_url:youtube_url
+        // });
         res.render('front-end/premium-company-create-survey', 
         { 
             menu_active_id: 'create-survey',

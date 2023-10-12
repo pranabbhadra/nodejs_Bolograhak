@@ -292,4 +292,8 @@ router.post('/update-review-flag', authController.updateReviewFlag);
 //Create discussion
 router.post('/create-discussion', authController.createDiscussion);
 
+
+//Create Poll
+router.post('/create-survey', authController.createSurvey);
+
 module.exports = router;

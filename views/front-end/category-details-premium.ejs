@@ -345,9 +345,18 @@
     <% } %>
      <!-- ONGOING POLL END -->
 
-
-
-
+    
+    <!--Survey Section-->
+    <% if(CompanySurveyDetails.length > 0 ) { %>
+        <section class="company_survey_sec">
+            <ul>
+                <% CompanySurveyDetails.forEach( (servey,index)=> {%>
+                    <li><a href="/<%= company.slug  %>/survey/<%= servey.unique_id  %>"><%- servey.title -%></a></li>
+                <% }) %>
+            </ul>
+        </section>
+    <% } %>
+    <!--Survey Section End-->
 
     
     <!-- ============== Section3 start =============== -->
