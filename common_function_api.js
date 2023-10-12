@@ -516,6 +516,7 @@ async function getAllReviews() {
   }
 }
 
+
 async function getTrendingReviews() {
   const all_review_query = `
   SELECT r.*, c.company_name, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic,rr.comment AS reply_comment, rr.reply_by, rr.reply_to, rr.status, rr.reason, rr.created_at, rr.updated_at
@@ -538,6 +539,33 @@ async function getTrendingReviews() {
   }
 }
 
+async function getTrendingReviews(){
+  const get_latest_review_query = `
+    SELECT r.*, c.company_name, c.logo, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, 
+    u.last_name, u.user_id, u.user_status, ucm.profile_pic, COUNT(review_reply.id) as review_reply_count
+      FROM reviews r
+      LEFT JOIN company c ON r.company_id = c.ID 
+      LEFT JOIN company_location cl ON r.company_location_id = cl.ID 
+      LEFT JOIN users u ON r.customer_id = u.user_id 
+      LEFT JOIN user_customer_meta ucm ON ucm.user_id = u.user_id 
+      LEFT JOIN review_reply ON review_reply.review_id = r.id
+      WHERE r.review_status = "1" AND c.status = "1" AND c.trending = "1"
+      GROUP BY r.id
+      ORDER BY r.created_at DESC
+  `;
+  try{
+    const get_latest_review_results = await query(get_latest_review_query);
+    if(get_latest_review_results.length > 0 ){
+      //console.log(get_latest_review_results);
+      return get_latest_review_results;
+    }else{
+      return [];
+    }
+  }catch(error){
+    console.error('Error during user get_latest_review_query:', error);
+  }
+  
+}
 
 async function getLatestReview(limit = null) {
   const all_review_query = `
@@ -930,24 +958,70 @@ async function getCompanyReviewNumbers(companyID) {
 //     });
 //   });
 // }
+// async function getCompanyReviews(companyID) {
+//   const get_company_rewiew_query = `
+//     SELECT r.*, ur.first_name, ur.last_name, ur.last_name, ucm.profile_pic
+//     FROM reviews r
+//     JOIN users ur ON r.customer_id = ur.user_id
+//     JOIN user_customer_meta ucm ON ur.user_id = ucm.user_id
+//     WHERE r.company_id = ? AND r.review_status = "1"
+//     ORDER BY r.created_at DESC
+//     LIMIT 20`;
+//   const get_company_rewiew_value = [companyID];
+//   try {
+//     const get_company_rewiew_result = await query(get_company_rewiew_query, get_company_rewiew_value);
+//     return get_company_rewiew_result;
+//   } catch (error) {
+//     return 'Error during user get_company_rewiew_query:' + error;
+//   }
+// }
+
 async function getCompanyReviews(companyID) {
   const get_company_rewiew_query = `
-    SELECT r.*, ur.first_name, ur.last_name, ur.last_name, ucm.profile_pic
-    FROM reviews r
-    JOIN users ur ON r.customer_id = ur.user_id
-    JOIN user_customer_meta ucm ON ur.user_id = ucm.user_id
-    WHERE r.company_id = ? AND r.review_status = "1"
-    ORDER BY r.created_at DESC
-    LIMIT 20`;
+  SELECT r.*, ur.first_name, ur.last_name, ur.email, ucm.profile_pic,
+  c.company_name, c.logo,  
+  rr.ID AS reply_id, rr.reply_by AS reply_by, rr.comment AS reply_comment, rr.created_at AS reply_created_at
+FROM reviews r
+JOIN users ur ON r.customer_id = ur.user_id
+LEFT JOIN user_customer_meta ucm ON ur.user_id = ucm.user_id
+LEFT JOIN review_reply rr ON r.id = rr.review_id
+LEFT JOIN company c ON r.company_id = c.ID
+WHERE r.company_id = ? AND r.review_status = "1"
+ORDER BY r.created_at DESC, rr.created_at ASC
+LIMIT 20
+`;
   const get_company_rewiew_value = [companyID];
   try {
     const get_company_rewiew_result = await query(get_company_rewiew_query, get_company_rewiew_value);
-    return get_company_rewiew_result;
+    //return get_company_rewiew_result;
+    const reviewsMap = new Map(); // Map to group reviews and their replies
+
+    for (const row of get_company_reviews_result) {
+      if (!reviewsMap.has(row.id)) {
+        reviewsMap.set(row.id, {
+          ...row,
+          review_reply: [] // Initialize an empty array for review replies
+        });
+      }
+
+      if (row.reply_id) {
+        reviewsMap.get(row.id).review_reply.push({
+          ID: row.reply_id,
+          review_id: row.id,
+          reply_by: row.reply_by,
+          comment: row.reply_comment,
+          created_at: row.reply_created_at
+        });
+      }
+    }
+
+    const finalResult = Array.from(reviewsMap.values());
+
+    return finalResult;
   } catch (error) {
     return 'Error during user get_company_rewiew_query:' + error;
   }
 }
-
 
 //new
 async function getCompanyRatings(companyID) {
@@ -1104,6 +1178,52 @@ async function getUserReview(user_ID) {
     return 'Error during user reviewsQuery:' + error;
   }
 }
+// async function getUserReview(user_ID) {
+//   const reviewsQuery = `
+//   SELECT r.*, ur.first_name, ur.last_name, ur.email, ucm.profile_pic,
+//   c.company_name, c.logo,  
+//   rr.ID AS reply_id, rr.reply_by AS reply_by, rr.comment AS reply_comment, rr.created_at AS reply_created_at
+// FROM reviews r
+// JOIN users ur ON r.customer_id = ur.user_id
+// LEFT JOIN user_customer_meta ucm ON ur.user_id = ucm.user_id
+// LEFT JOIN review_reply rr ON r.id = rr.review_id
+// LEFT JOIN company c ON r.company_id = c.ID
+// WHERE r.customer_id = ? AND r.review_status = "1"
+// ORDER BY r.created_at DESC, rr.created_at ASC
+// LIMIT 20
+//     `;
+//   const get_review_query_value = [user_ID];
+//   try {
+//     const get_review_query_result = await query(reviewsQuery, get_review_query_value);
+//     const reviewsMap = new Map(); // Map to group reviews and their replies
+
+//     for (const row of get_company_reviews_result) {
+//       if (!reviewsMap.has(row.id)) {
+//         reviewsMap.set(row.id, {
+//           ...row,
+//           review_reply: [] // Initialize an empty array for review replies
+//         });
+//       }
+
+//       if (row.reply_id) {
+//         reviewsMap.get(row.id).review_reply.push({
+//           ID: row.reply_id,
+//           review_id: row.id,
+//           reply_by: row.reply_by,
+//           comment: row.reply_comment,
+//           created_at: row.reply_created_at
+//         });
+//       }
+//     }
+
+//     const finalResult = Array.from(reviewsMap.values());
+
+//     return finalResult;
+//   } catch (error) {
+//     return 'Error during user reviewsQuery:' + error;
+//   }
+// }
+
 
 async function getuserReviewCompany(user_ID) {
   const user_review_company_query = `
@@ -1325,10 +1445,10 @@ async function getReviewReplies(user_ID, reviewIDs) {
     const rows = `
       SELECT *
       FROM review_reply
-      WHERE reply_by = '${user_ID}' `; 
+      WHERE reply_by = '${user_ID}' `;
     const getvalue = await query(rows);
     console.log(getvalue);
-    return getvalue; 
+    return getvalue;
   } catch (error) {
     console.error('Error during fetch review replies:', error);
     throw error;
@@ -1340,39 +1460,65 @@ async function getReviewRepliescompany(companyId, reviewIDs) {
     const rows = `
       SELECT *
       FROM review_reply
-      WHERE reply_by = '${companyId}' `; 
+      WHERE company_id = '${companyId}' `;
     const getvalue = await query(rows);
     console.log(getvalue);
-    return getvalue; 
+    return getvalue;
   } catch (error) {
     console.error('Error during fetch review replies:', error);
     throw error;
   }
 }
 
-async function getpolldetails(companyId, reviewIDs){
-    try {
-      const currentDate = new Date(); // Get the current date
-      const formattedDate = currentDate.toISOString().slice(0, 19).replace("T", " "); // Format the current date as needed
-  
-      const rows = `
+// async function getReviewReplies(options) {
+//   try {
+//     let rows;
+//     if (options.user_ID) {
+//       rows = `
+//         SELECT *
+//         FROM review_reply
+//         WHERE reply_by = '${options.user_ID}' `;
+//     } else if (options.companyId) {
+//       rows = `
+//         SELECT *
+//         FROM review_reply
+//         WHERE company_id = '${options.companyId}' `;
+//     } else {
+//       throw new Error('Invalid options provided.');
+//     }
+
+//     const getvalue = await query(rows);
+//     console.log(getvalue);
+//     return getvalue;
+//   } catch (error) {
+//     console.error('Error during fetch review replies:', error);
+//     throw error;
+//   }
+// }
+
+
+async function getpolldetails(companyId, reviewIDs) {
+  try {
+    const currentDate = new Date(); // Get the current date
+    const formattedDate = currentDate.toISOString().slice(0, 19).replace("T", " "); 
+
+    const rows = `
         SELECT * FROM poll_company 
         WHERE company_id = '${companyId}' 
         AND '${formattedDate}' >= created_at 
         AND '${formattedDate}' <= expired_at
       `;
-  
-      const results = await query(rows);
-      console.log(results);
-      return results;
-    } catch (error) {
-      console.log('Error during fetch ongoing polls:', error);
-      throw error;
-    }
+    const results = await query(rows);
+    console.log(results);
+    return results;
+  } catch (error) {
+    console.log('Error during fetch ongoing polls:', error);
+    throw error;
   }
-  
+}
 
-async function updateReview(reviewIfo){
+
+async function updateReview(reviewIfo) {
   // console.log('Review Info', reviewIfo);
   // console.log('Company Info', comInfo);
   // reviewIfo['tags[]'].forEach((tag) => {
@@ -1387,39 +1533,39 @@ async function updateReview(reviewIfo){
   const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
 
   const updateQuery = 'UPDATE reviews SET review_title = ?, rating = ?, review_content = ?, user_privacy = ?, review_status = ?, updated_at = ? WHERE id = ?';
-  const updateData = [ reviewIfo.review_title, reviewIfo.rating, reviewIfo.review_content, reviewIfo.user_privacy, '2', formattedDate, reviewIfo.review_id]
-              
+  const updateData = [reviewIfo.review_title, reviewIfo.rating, reviewIfo.review_content, reviewIfo.user_privacy, '2', formattedDate, reviewIfo.review_id]
+
   try {
     const create_review_results = await query(updateQuery, updateData);
-      if (Array.isArray(reviewIfo['tags[]']) && reviewIfo['tags[]'].length > 0) {
-        //insert review_tag_relation
+    if (Array.isArray(reviewIfo['tags[]']) && reviewIfo['tags[]'].length > 0) {
+      //insert review_tag_relation
 
-        await query(`DELETE FROM review_tag_relation WHERE review_id = '${reviewIfo.review_id}'`);
+      await query(`DELETE FROM review_tag_relation WHERE review_id = '${reviewIfo.review_id}'`);
 
-        const review_tag_relation_query = 'INSERT INTO review_tag_relation (review_id, tag_name) VALUES (?, ?)';
-        try{
-          for (const tag of reviewIfo['tags[]']) {
-            const review_tag_relation_values = [reviewIfo.review_id, tag];
-            const review_tag_relation_results = await query(review_tag_relation_query, review_tag_relation_values);
-          }
-
-        }catch(error){
-          console.error('Error during user review_tag_relation_results:', error);
+      const review_tag_relation_query = 'INSERT INTO review_tag_relation (review_id, tag_name) VALUES (?, ?)';
+      try {
+        for (const tag of reviewIfo['tags[]']) {
+          const review_tag_relation_values = [reviewIfo.review_id, tag];
+          const review_tag_relation_results = await query(review_tag_relation_query, review_tag_relation_values);
         }
+
+      } catch (error) {
+        console.error('Error during user review_tag_relation_results:', error);
       }
-  }catch (error) {
+    }
+  } catch (error) {
     console.error('Error during user update_review_results:', error);
   }
 }
 
 
 async function insertInvitationDetails(req) {
-  console.log('insertInvitationDetails',req)
-  const {emails, email_body, user_id, company_id } = req
+  console.log('insertInvitationDetails', req)
+  const { emails, email_body, user_id, company_id } = req
   const currentDate = new Date();
   const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
   const sql = `INSERT INTO review_invite_request( company_id, user_id, share_date, count) VALUES (?, ?, ?, ?)`;
-  const data = [company_id, user_id, formattedDate, emails.length ];
+  const data = [company_id, user_id, formattedDate, emails.length];
   const result = await query(sql, data);
   if (result) {
     return true;
@@ -1429,10 +1575,10 @@ async function insertInvitationDetails(req) {
 }
 
 async function sendInvitationEmail(req) {
-  console.log('sendInvitationEmail',req)
-  const {emails, email_body, user_id, company_id, company_name ,company_slug} = req;
-  if(emails.length > 0){
-    await emails.forEach((email)=>{
+  console.log('sendInvitationEmail', req)
+  const { emails, email_body, user_id, company_id, company_name, company_slug } = req;
+  if (emails.length > 0) {
+    await emails.forEach((email) => {
       var mailOptions = {
         from: process.env.MAIL_USER,
         //to: 'pranab@scwebtech.com',
@@ -1534,18 +1680,18 @@ async function sendInvitationEmail(req) {
        </div>`
       }
       mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
-          if (err) {
-              console.log(err);
-              return false;
-          } else {
-              console.log('Mail Send: ', info.response);
-              
-          }
+        if (err) {
+          console.log(err);
+          return false;
+        } else {
+          console.log('Mail Send: ', info.response);
+
+        }
       })
     })
     return true;
   }
- 
+
 }
 
 async function getSubCategories(categorySlug) {
@@ -1556,12 +1702,12 @@ async function getSubCategories(categorySlug) {
                 GROUP BY category.category_name `;
 
   const result = await query(sql);
-  if(result.length > 0 ){
+  if (result.length > 0) {
     return result;
-  }else{
+  } else {
     return [];
   }
-  
+
 }
 
 async function getCompanyDetails(categorySlug) {
@@ -1575,28 +1721,28 @@ async function getCompanyDetails(categorySlug) {
                 GROUP BY c.ID, c.company_name `;
 
   const result = await query(sql);
-  if(result.length > 0 ){
+  if (result.length > 0) {
     return result;
-  }else{
+  } else {
     return [];
   }
-  
+
 }
 
-async function getCategoryDetails(category_slug){
+async function getCategoryDetails(category_slug) {
   const get_category_query = `
   SELECT * FROM category
   WHERE category_slug = ?;
   `;
   const get_category_slug = category_slug;
-  try{
+  try {
     const get_category_query_result = await query(get_category_query, get_category_slug);
     // if(get_category_query_result[0].parent_id){
     //   console.log(get_category_query_result);
     // }
     return get_category_query_result;
-  }catch(error){
-    return 'Error during user get_category_query:'+error;
+  } catch (error) {
+    return 'Error during user get_category_query:' + error;
   }
 }
 
@@ -1606,36 +1752,165 @@ async function getParentCategories(ID) {
   WHERE ID = ?;
   `;
   const cat_ID = ID;
-  try{
+  try {
     const get_category_query_result = await query(get_category_query, cat_ID);
     // if(get_category_query_result[0].parent_id){
     //   console.log(get_category_query_result);
     // }
     return get_category_query_result;
-  }catch(error){
-    return 'Error during user get_category_query:'+error;
+  } catch (error) {
+    return 'Error during user get_category_query:' + error;
   }
 }
 async function getCompanyIdByUserId(userId) {
   try {
-      // Replace this with your actual database query to fetch the company ID
-      const user = `
+    // Replace this with your actual database query to fetch the company ID
+    const user = `
       SELECT * FROM reviews
       WHERE customer_id = ?;
-      `; 
+      `;
 
-      if (!user) {
-          throw new Error('User not found'); // Handle this according to your application logic
-      }
+    if (!user) {
+      throw new Error('User not found'); // Handle this according to your application logic
+    }
 
-      // Assuming your User model has a companyId field
-      const companyId = user.companyId;
+    // Assuming your User model has a companyId field
+    const companyId = user.companyId;
 
-      return companyId;
+    return companyId;
   } catch (error) {
-      throw error;
+    throw error;
   }
 }
+
+
+// async function usercompanyreply(customer_id, claimed_by) {
+//   try {
+//     const rows = `
+//       SELECT rr.*, ccr.*
+//       FROM review_reply AS rr
+//       LEFT JOIN company_claim_request AS ccr ON (rr.reply_by = ccr.customer_id OR rr.reply_by = ccr.claimed_by)
+//       WHERE rr.reply_by IS NOT NULL
+//       AND (rr.reply_by = '${customer_id}' OR ccr.claimed_by ='${customer_id}');
+//     `;
+
+//     const getvalue = await query(rows);
+//     console.log(getvalue);
+//     return getvalue;
+//   } catch (error) {
+//     console.error('An error occurred:', error);
+//     console.error('Error during fetch review replies:', error);
+//     throw error;
+//   }
+// }
+
+
+async function usercompanyreply(customer_id, claimed_by) {
+  try {
+    const sql = `
+    SELECT rr.*, ccr.*
+FROM review_reply AS rr
+LEFT JOIN company_claim_request AS ccr ON (rr.company_id = ccr.company_id)
+LEFT JOIN reviews AS r ON (rr.review_id = r.id)
+WHERE rr.reply_by IS NOT NULL
+AND (rr.reply_by = '${customer_id}' OR ccr.claimed_by ='${claimed_by}');
+    `;
+    const value = { customer_id, claimed_by }
+
+    const result = await query(sql, value);
+    if (result > 0) {
+      return result;
+    } else {
+      return [];
+    }
+
+  } catch (error) {
+    console.error('An error occurred:', error);
+    console.error('Error during fetch review replies:', error);
+    throw error;
+  }
+}
+
+
+async function getClaimedByForCompany(companyId) {
+  try {
+    const sql = 'SELECT claimed_by FROM company_claim_request WHERE company_id = ?';
+    const result = await query(sql, [companyId]);
+
+
+    return result.claimed_by;
+  } catch (error) {
+
+    console.error('Error fetching claimed_by for company:', error);
+    throw error;
+  }
+}
+
+
+async function CompanyReviews(companyID){
+  const get_company_reviews_query = `
+  SELECT r.*, ur.first_name, ur.last_name, ur.email, ucm.profile_pic,
+  c.company_name, c.logo,  
+  rr.ID AS reply_id, rr.reply_by AS reply_by, rr.comment AS reply_comment, rr.created_at AS reply_created_at
+FROM reviews r
+JOIN users ur ON r.customer_id = ur.user_id
+LEFT JOIN user_customer_meta ucm ON ur.user_id = ucm.user_id
+LEFT JOIN review_reply rr ON r.id = rr.review_id
+LEFT JOIN company c ON r.company_id = c.ID
+WHERE r.company_id = ? AND r.review_status = "1"
+ORDER BY r.created_at DESC, rr.created_at ASC
+LIMIT 20
+`;
+  const get_company_reviews_values = [companyID];
+  try {
+    const get_company_reviews_result = await query(get_company_reviews_query, get_company_reviews_values);
+
+    const reviewsMap = new Map(); // Map to group reviews and their replies
+
+    for (const row of get_company_reviews_result) {
+      if (!reviewsMap.has(row.id)) {
+        reviewsMap.set(row.id, {
+          ...row,
+          review_reply: [] // Initialize an empty array for review replies
+        });
+      }
+
+      if (row.reply_id) {
+        reviewsMap.get(row.id).review_reply.push({
+          ID: row.reply_id,
+          review_id: row.id,
+          reply_by: row.reply_by,
+          comment: row.reply_comment,
+          created_at: row.reply_created_at
+        });
+      }
+    }
+
+    const finalResult = Array.from(reviewsMap.values());
+
+    return finalResult;
+  } catch (error) {
+    console.error('An error occurred in CompanyReviews:', error);
+    return []; 
+  }
+}
+function getAllReviewReply() {
+  return new Promise((resolve, reject) => {
+    const reviewed_companies_query = `
+      SELECT *
+      FROM review_reply
+      WHERE review_id IS NOT NULL`; 
+    db.query(reviewed_companies_query, (err, result) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
+
+
 
 module.exports = {
   getUser,
@@ -1661,7 +1936,7 @@ module.exports = {
   createReview,
   getlatestReviews,
   getAllReviews,
-  getTrendingReviews, 
+  getTrendingReviews,
   getLatestReview,
   getCustomerReviewData,
   getCustomerReviewTagRelationData,
@@ -1670,14 +1945,14 @@ module.exports = {
   getCompanyReviewNumbers,
   getCompanyReviews,
   getCompanyRatings,
-  getTotalreplies, 
-  getTotalReviewsAndCounts, 
+  getTotalreplies,
+  getTotalReviewsAndCounts,
   getUsersByRole,
   getUserCompany,
   getUserReview,
   getuserReviewCompany,
   ReviewReplyTo,
-  ReviewReplyToCustomer, 
+  ReviewReplyToCustomer,
   ReviewReplyToCompany,
   getCompanyPollDetails,
   getCompanyIdBySlug,
@@ -1691,5 +1966,9 @@ module.exports = {
   getCompanyDetails,
   getCategoryDetails,
   getParentCategories,
-  getCompanyIdByUserId
+  getCompanyIdByUserId,
+  usercompanyreply,
+  getClaimedByForCompany,
+  CompanyReviews,
+  getAllReviewReply
 };
