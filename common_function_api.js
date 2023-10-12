@@ -495,7 +495,7 @@ function getReviewRatingData(review_rating_Id) {
 
 async function getAllReviews() {
   const all_review_query = `
-  SELECT r.*, c.company_name, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic, rr.comment AS reply_comment, rr.reply_by, rr.reply_to, rr.status, rr.reason, rr.created_at, rr.updated_at
+  SELECT r.*, c.company_name, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic, rr.comment AS reply_comment, rr.reply_by, rr.reply_to, rr.status, rr.reason, rr.created_at as rr_created_at, rr.updated_at as rr_updated_at
   FROM reviews r
   JOIN company c ON r.company_id = c.ID
   JOIN company_location cl ON r.company_location_id = cl.ID
@@ -517,22 +517,23 @@ async function getAllReviews() {
 
 async function getTrendingReviews() {
   const all_review_query = `
-  SELECT r.*, c.company_name, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic,rr.comment AS reply_comment, rr.reply_by, rr.reply_to, rr.status, rr.reason, rr.created_at, rr.updated_at
+  SELECT r.*, c.company_name, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic,rr.comment AS reply_comment, rr.reply_by, rr.reply_to, rr.status, rr.reason, rr.created_at as rr_created_at, rr.updated_at as rr_updated_at
     FROM reviews r
     JOIN company c ON r.company_id = c.ID
     JOIN company_location cl ON r.company_location_id = cl.ID
     JOIN users u ON r.customer_id = u.user_id
     LEFT JOIN user_customer_meta ucm ON u.user_id = ucm.user_id
     LEFT JOIN review_reply rr ON r.ID = rr.review_id
-    WHERE c.trending = 1 AND r.review_status = "1"
+    WHERE c.trending = "1" AND r.review_status = "1"
     ORDER BY r.created_at DESC;
 `;
 
-  try{
+  try {
     const all_review_results = await query(all_review_query);
+    console.log(all_review_results);
     return all_review_results;
   }
-  catch(error){
+  catch (error) {
     console.error('Error during all_review_query:', error);
   }
 }
@@ -540,7 +541,7 @@ async function getTrendingReviews() {
 
 async function getLatestReview(limit = null) {
   const all_review_query = `
-    SELECT r.*, c.company_name, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic, rr.comment AS reply_comment, rr.reply_by, rr.reply_to, rr.status, rr.reason, rr.created_at, rr.updated_at
+    SELECT r.*, c.company_name, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic, rr.comment AS reply_comment, rr.reply_by, rr.reply_to, rr.status, rr.reason, rr.created_at as rr_created_at, rr.updated_at as rr_updated_at
       FROM reviews r
       JOIN company c ON r.company_id = c.ID
       JOIN company_location cl ON r.company_location_id = cl.ID
@@ -967,24 +968,19 @@ async function getCompanyRatings(companyID) {
   const getCompanyRatingsQuery = 
   `SELECT 
   company_id,
-  SUM(CASE WHEN rating = 0.5 THEN 1 ELSE 0 END) AS rating_05_count,
-  SUM(CASE WHEN rating = 1 THEN 1 ELSE 0 END) AS rating_1_count,
-  SUM(CASE WHEN rating = 1.5 THEN 1 ELSE 0 END) AS rating_15_count,
-  SUM(CASE WHEN rating = 2 THEN 1 ELSE 0 END) AS rating_2_count,
-  SUM(CASE WHEN rating = 2.5 THEN 1 ELSE 0 END) AS rating_25_count,
-  SUM(CASE WHEN rating = 3 THEN 1 ELSE 0 END) AS rating_3_count,
-  SUM(CASE WHEN rating = 3.5 THEN 1 ELSE 0 END) AS rating_35_count,
-  SUM(CASE WHEN rating = 4 THEN 1 ELSE 0 END) AS rating_4_count,
-  SUM(CASE WHEN rating = 4.5 THEN 1 ELSE 0 END) AS rating_45_count,
-  SUM(CASE WHEN rating = 5 THEN 1 ELSE 0 END) AS rating_5_count,
+  SUM(CASE WHEN t1.rating = 0.5 THEN 1 ELSE 0 END) AS rating_05_count,
+  SUM(CASE WHEN t1.rating = 1 THEN 1 ELSE 0 END) AS rating_1_count,
+  SUM(CASE WHEN t1.rating = 1.5 THEN 1 ELSE 0 END) AS rating_15_count,
+  SUM(CASE WHEN t1.rating = 2 THEN 1 ELSE 0 END) AS rating_2_count,
+  SUM(CASE WHEN t1.rating = 2.5 THEN 1 ELSE 0 END) AS rating_25_count,
+  SUM(CASE WHEN t1.rating = 3 THEN 1 ELSE 0 END) AS rating_3_count,
+  SUM(CASE WHEN t1.rating = 3.5 THEN 1 ELSE 0 END) AS rating_35_count,
+  SUM(CASE WHEN t1.rating = 4 THEN 1 ELSE 0 END) AS rating_4_count,
+  SUM(CASE WHEN t1.rating = 4.5 THEN 1 ELSE 0 END) AS rating_45_count,
+  SUM(CASE WHEN t1.rating = 5 THEN 1 ELSE 0 END) AS rating_5_count,
   COUNT(*) AS total_rating_count,
-  ROUND(AVG(rating), 1) AS rating_average,
-  (
-    SELECT COUNT(*) FROM review_tag_relation AS t2
-    WHERE t2.review_id = t1.id
-  ) AS tag_name_count
+  ROUND(AVG(t1.rating), 1) AS rating_average
 FROM reviews AS t1
-LEFT JOIN review_tag_relation AS t3 ON t1.id = t3.review_id
 WHERE company_id = ? AND review_status = "1"
 GROUP BY company_id;
 `;
