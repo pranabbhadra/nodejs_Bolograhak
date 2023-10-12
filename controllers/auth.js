@@ -1827,6 +1827,46 @@ exports.deleteCompany = (req, res) => {
 
 }
 
+//--- Trash Company ----//
+exports.trashCompany = (req, res) => {
+    //console.log(req.body.companyid);
+    sql = `UPDATE company SET status = '3' WHERE ID = ?`;
+    const data = [req.body.companyid];
+    db.query(sql, data, (err, result) => {
+        if (err) {
+            return res.send({
+                status: 'error',
+                message: 'Something went wrong'
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Company successfully move to trash'
+            });
+        }
+    })
+}
+
+//--- Restore Company ----//
+exports.restoreCompany = (req, res) => {
+    //console.log(req.body.companyid);
+    sql = `UPDATE company SET status = '2' WHERE ID = ?`;
+    const data = [req.body.companyid];
+    db.query(sql, data, (err, result) => {
+        if (err) {
+            return res.send({
+                status: 'error',
+                message: 'Something went wrong'
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Company successfully restored with pending status'
+            });
+        }
+    })
+}
+
 exports.createRatingTags = (req, res) => {
     console.log(req.body);
     const ratingTagsArray = JSON.parse(req.body.rating_tags);

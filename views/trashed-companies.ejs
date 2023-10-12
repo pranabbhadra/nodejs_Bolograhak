@@ -118,8 +118,7 @@
                             <!--end::Svg Icon-->Export</button>
                             <!--end::Export-->
                             #%>
-                            <button type="button" class="btn btn-light-info me-3" data-bs-toggle="modal" data-bs-target="#kt_modal_import_company">
-                                <!--begin::Svg Icon | path: icons/duotune/arrows/arr078.svg-->
+                            <!-- <button type="button" class="btn btn-light-info me-3" data-bs-toggle="modal" data-bs-target="#kt_modal_import_company">
                                 <span class="svg-icon svg-icon-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                                         <rect opacity="0.3" width="12" height="2" rx="1" transform="matrix(0 -1 -1 0 12.75 19.75)" fill="black"/>
@@ -128,7 +127,7 @@
                                     </svg>
                                 </span>
                                 <span class="button-label">Company Bulk Upload</span>
-                            </button>
+                            </button> -->
                             <!--begin::Add user-->
                             <a href="/add-company" class="btn btn-primary">
                             <!--begin::Svg Icon | path: icons/duotune/arrows/arr075.svg-->
@@ -255,7 +254,10 @@
                                                 <a href="/edit-company/<%= company.ID %>" class="menu-link px-3">Edit</a>
                                             </div>
                                             <div class="menu-item px-3">
-                                                <a href="#" class="menu-link px-3" data-companyid="<%= company.ID %>" data-kt-users-table-filter="delete_row">Trash</a>
+                                                <a href="#" class="menu-link px-3" data-companyid="<%= company.ID %>" data-kt-users-table-filter="restore_row">Restore</a>
+                                            </div>
+                                            <div class="menu-item px-3">
+                                                <a href="#" class="menu-link px-3" data-companyid="<%= company.ID %>" data-kt-users-table-filter="delete_row">Delete</a>
                                             </div>
                                         </div>
                                         <!--end::Menu-->
@@ -317,13 +319,15 @@
                                 <!--end::Last login=-->
                                 <!--begin::Two step=-->
                                 <td>
-                                    <% if(company.status>=2){ %>
+                                    <% if(company.status==2){ %>
                                         <span class="badge badge-light-warning fw-bolder px-4 py-3">Pending</span>
-                                    <% }else if(company.status>=1){ %>
+                                    <% }else if(company.status==1){ %>
                                         <span class="badge badge-light-success fw-bolder px-4 py-3">Approved</span>
-                                    <% }else{%>
+                                    <% }else if(company.status==0){%>
                                         <span class="badge badge-light-danger fw-bolder px-4 py-3">Rejected</span>
-                                    <% }%>
+                                    <% } else { %>
+                                        <span class="badge badge-dark fw-bolder px-4 py-3">Trashed</span>
+                                        <% } %>
                                 </td>
                                 <!--end::Two step=-->
                                 <!--begin::Joined-->
@@ -443,9 +447,10 @@ var KTUsersList = function () {
     var handleFilterDatatable = () => {
         // Select filter options
         const filterForm = document.querySelector('[data-kt-user-table-filter="form"]');
-        if (filterForm) {
+        if (filterForm ) {
             const filterButton = filterForm.querySelector('[data-kt-user-table-filter="filter"]');
             const selectOptions = filterForm.querySelectorAll('select');
+
             // Filter datatable on submit
             filterButton.addEventListener('click', function () {
                 var filterString = '';
@@ -466,9 +471,7 @@ var KTUsersList = function () {
                 datatable.search(filterString).draw();
             });
         }
-       
 
-        
     }
 
     // Reset Filter
@@ -492,6 +495,7 @@ var KTUsersList = function () {
                 datatable.search('').draw();
             });
         }
+        
     }
 
 
@@ -515,11 +519,11 @@ var KTUsersList = function () {
 
                 // SweetAlert2 pop up --- official docs reference: https://sweetalert2.github.io/
                 Swal.fire({
-                    text: "Are you sure you want to move the company to the trash ?",
+                    text: "Are you sure you want to permanently delete ?",
                     icon: "warning",
                     showCancelButton: true,
                     buttonsStyling: false,
-                    confirmButtonText: "Yes, trash!",
+                    confirmButtonText: "Yes, delete!",
                     cancelButtonText: "No, cancel",
                     customClass: {
                         confirmButton: "btn fw-bold btn-danger",
@@ -528,8 +532,7 @@ var KTUsersList = function () {
                 }).then(function (result) {
                     if (result.value) {
                         $.ajax({
-                            //url: '/auth/delete-company', 
-                            url: '/auth/trash-company', 
+                            url: '/auth/delete-company', 
                             method: 'POST',
                             data: {companyid:companyid},
                             ContentType: 'application/json',
@@ -567,7 +570,89 @@ var KTUsersList = function () {
                         });
                     } else if (result.dismiss === 'cancel') {
                         Swal.fire({
-                            text: customerName + " was not deleted.",
+                            text:  "Company is not deleted.",
+                            icon: "error",
+                            buttonsStyling: false,
+                            confirmButtonText: "Ok, got it!",
+                            customClass: {
+                                confirmButton: "btn fw-bold btn-primary",
+                            }
+                        });
+                    }
+                });
+            })
+        });
+
+        // Select all delete buttons
+        const restoreButtons = table.querySelectorAll('[data-kt-users-table-filter="restore_row"]');
+
+        restoreButtons.forEach(d => {
+            // Delete button on click
+            d.addEventListener('click', function (e) {
+                e.preventDefault();
+                //alert('aaaaaaaaa');
+                var companyid = $(this).attr("data-companyid");
+                console.log(companyid);
+                // Select parent row
+                const parent = e.target.closest('tr');
+
+                // Get user name
+                //const userName = parent.querySelectorAll('td')[2].querySelectorAll('a')[2].innerText;
+
+                // SweetAlert2 pop up --- official docs reference: https://sweetalert2.github.io/
+                Swal.fire({
+                    text: "Are you sure you want to restore ?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    buttonsStyling: false,
+                    confirmButtonText: "Yes, restore!",
+                    cancelButtonText: "No, cancel",
+                    customClass: {
+                        confirmButton: "btn fw-bold btn-danger",
+                        cancelButton: "btn fw-bold btn-active-light-primary"
+                    }
+                }).then(function (result) {
+                    if (result.value) {
+                        $.ajax({
+                            url: '/auth/restore-company', 
+                            method: 'POST',
+                            data: {companyid:companyid},
+                            ContentType: 'application/json',
+                            success: function (data) {
+                                if (data.status == 'ok') {
+                                    Swal.fire({
+                                        text: data.message,
+                                        icon: "success",
+                                        buttonsStyling: false,
+                                        confirmButtonText: "Ok, got it!",
+                                        customClass: {
+                                            confirmButton: "btn btn-primary"
+                                        }
+                                    }).then(function (result) {
+                                        if (result.isConfirmed) {
+                                            location.reload();
+                                        }
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        text: data.message,
+                                        icon: "error",
+                                        buttonsStyling: false,
+                                        confirmButtonText: "Ok, got it!",
+                                        customClass: {
+                                            confirmButton: "btn btn-primary"
+                                        }
+                                    });
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                // Handle any errors that occur during the request
+                                console.log(error);
+                            }
+                        });
+                    } else if (result.dismiss === 'cancel') {
+                        Swal.fire({
+                            text:  "Company is not restored.",
                             icon: "error",
                             buttonsStyling: false,
                             confirmButtonText: "Ok, got it!",

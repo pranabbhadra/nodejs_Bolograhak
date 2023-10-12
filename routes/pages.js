@@ -915,7 +915,7 @@ router.get('/discussion', checkCookieValue, async (req, res) => {
         // });
         res.render('front-end/discussion', {
             menu_active_id: 'discussion',
-            page_title: 'Recent Discussions',
+            page_title: 'Discussions',
             currentUserData,
             globalPageMeta:globalPageMeta,
             AllLatestDiscussion: getAllLatestDiscussion,
@@ -944,7 +944,7 @@ router.get('/discussion-details/:discussion_id', checkCookieValue, async (req, r
 
         res.render('front-end/discussion-details', {
             menu_active_id: 'discussion-details',
-            page_title: 'Recent Discussions',
+            page_title: 'Comments',
             currentUserData,
             globalPageMeta:globalPageMeta,
             commentID:insertDiscussionResponse,
@@ -2377,6 +2377,32 @@ router.get('/companies', checkLoggedIn, async (req, res) => {
         res.render('companies', {
             menu_active_id: 'company',
             page_title: 'Companies',
+            currentUserData,
+            allcompany: allcompany
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+
+router.get('/trashed-companies', checkLoggedIn, async (req, res) => {
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+
+        // Fetch all the required data asynchronously
+        const [allcompany] = await Promise.all([
+            comFunction.getAllTrashedCompany(),
+        ]);
+
+        // Render the 'edit-user' EJS view and pass the data
+        // res.json({
+        //     allcompany: allcompany
+        // });
+        res.render('trashed-companies', {
+            menu_active_id: 'company',
+            page_title: 'Trashed Companies',
             currentUserData,
             allcompany: allcompany
         });

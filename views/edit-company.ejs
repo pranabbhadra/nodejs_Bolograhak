@@ -306,6 +306,10 @@
                                         <input class="form-check-input mt-1" name="status" type="radio" value="0" <% if(company.status == '0'){ %>checked <% } %> />
                                         <span class="fw-bold fs-6 badge badge-light-danger fw-bolder px-4 py-3">Rejected</span>
                                     </label>
+                                    <label class="form-check form-check-inline form-check-solid">
+                                        <input class="form-check-input mt-1" name="status" type="radio" value="3" <% if(company.status == '3'){ %>checked <% } %> />
+                                        <span class="fw-bold fs-6 badge badge-light-dark fw-bolder px-4 py-3">Trashed</span>
+                                    </label>
                                     <!--end::Option-->
                                 </div>
                                 <!--end::Options-->
@@ -363,7 +367,7 @@
                                 <div class="d-flex align-items-center mt-3">
                                     <!--begin::Option-->
                                     <label class="form-check form-check-inline form-check-solid me-5">
-                                        <input class="form-check-input mt-1" name="verified" type="radio" value="0" <% if(company.verified == '0'){ %>checked <% } %>/>
+                                        <input class="form-check-input mt-1" name="verified" type="radio" value="0" <% if(company.verified != '1'){ %>checked <% } %>/>
                                         <span class="fw-bold fs-6 badge badge-light-danger fw-bolder px-4 py-3">No</span>
                                     </label>
                                     <!--end::Option-->
