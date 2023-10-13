@@ -1505,8 +1505,8 @@ async function getpolldetails(companyId, reviewIDs) {
     const rows = `
         SELECT * FROM poll_company 
         WHERE company_id = '${companyId}' 
-        AND '${formattedDate}' >= created_at 
-        AND '${formattedDate}' <= expired_at
+        AND '${formattedDate}' > created_at 
+        AND '${formattedDate}' < expired_at
       `;
     const results = await query(rows);
     console.log(results);

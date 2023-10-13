@@ -285,7 +285,7 @@ router.get('/getUserDetails/:user_id', verifyToken, async (req, res) => {
             return {
                 ...review,
                 Tags: reviewTagsMap[review.id] || [],
-                ReviewReplies: reviewrepliesmap[review.id] || []
+                review_reply: reviewrepliesmap[review.id] || []
             };
         });
         userCompany
@@ -1141,7 +1141,7 @@ router.get('/getreviewlisting', verifyToken, async (req, res) => {
                 return {
                     ...review,
                     Tags: reviewTagsMap[review.id] || [],
-                    ReviewReplies: reviewrepliesmap[review.id] || []
+                    review_reply: reviewrepliesmap[review.id] || []
                 };
             });
 
@@ -1334,7 +1334,7 @@ router.get('/app-home', verifyToken, async (req, res) => {
                         return {
                             ...review,
                             Tags: reviewTagsMap[review.id] || [],
-                            ReviewReplies: reviewrepliesmap[review.id] || []
+                            review_reply: reviewrepliesmap[review.id] || []
                         };
                     });
                 }
