@@ -2235,9 +2235,22 @@ exports.submitReviewReply = async (req, res) => {
         message: 'Access denied: You are not authorized to update this user.',
       });
     }
-
+    const currentTimestamp = Date.now();
     const currentDate = new Date();
-    const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+  
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+    const day = String(currentDate.getDate()).padStart(2, '0');
+    const hours = String(currentDate.getHours()).padStart(2, '0');
+    const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+    const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+  
+    const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  
+    // console.log(formattedDateTime);
+    // const currentDate = new Date();
+    //const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+    console.log("aaa",formattedDate);
     const replyData = {
       review_id: review_id,
       company_id: company_id,
@@ -3424,6 +3437,8 @@ exports.userPoll = async (req, res) => {
         pc.id AS poll_id,
         pc.question AS poll_question,
         pc.poll_creator_id,
+        pc.created_at AS poll_creation,
+        pc.expired_at AS poll_expiration,
         CASE
           WHEN pv.user_id IS NOT NULL THEN pa.id
           ELSE NULL
@@ -3499,6 +3514,8 @@ GROUP BY pa.id, pa.answer;
               answer: voteCount.answer_text,
               submittedVotes: voteCount.submittedVotes,
             })),
+            poll_created_at: results[0].poll_creation,
+            poll_expired_at: results[0].poll_expiration,
           };
           if (userSelectedAnswerId !== null) {
             pollData.data.push({
@@ -3521,6 +3538,8 @@ GROUP BY pa.id, pa.answer;
             pc.id AS poll_id,
             pc.question AS poll_question,
             pc.poll_creator_id,
+            pc.created_at AS poll_creation,
+            pc.expired_at AS poll_expiration,
             pa.id AS answer_id,
             pa.answer AS answer_text
           FROM
@@ -3552,6 +3571,8 @@ GROUP BY pa.id, pa.answer;
                 //submittedVotes: 0, // Initialize submittedVotes as 0 for answers when user hasn't voted
                 userSelected: false,
               })),
+              poll_created_at: results[0].poll_creation,
+              poll_expired_at: results[0].poll_expiration,
             };
 
             return res.status(200).json({
