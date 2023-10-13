@@ -1497,26 +1497,112 @@ async function getReviewRepliescompany(companyId, reviewIDs) {
 // }
 
 
-async function getpolldetails(companyId, reviewIDs) {
-  try {
-    const currentDate = new Date(); // Get the current date
-    const formattedDate = currentDate.toISOString().slice(0, 19).replace("T", " "); 
+// async function getpolldetails(companyId, reviewIDs) {
+//   try {
+//     const currentDate = new Date(); // Get the current date
+//     const formattedDate = currentDate.toISOString().slice(0, 19).replace("T", " "); 
 
-    const rows = `
-        SELECT * FROM poll_company 
-        WHERE company_id = '${companyId}' 
-        AND '${formattedDate}' > created_at 
-        AND '${formattedDate}' < expired_at
-      `;
-    const results = await query(rows);
-    console.log(results);
-    return results;
-  } catch (error) {
-    console.log('Error during fetch ongoing polls:', error);
-    throw error;
+//     const rows = `
+//         SELECT * FROM poll_company 
+//         WHERE company_id = '${companyId}' 
+//         AND '${formattedDate}' > created_at 
+//         AND '${formattedDate}' < expired_at
+//       `;
+//     const results = await query(rows);
+//     console.log(results);
+//     return results;
+//   } catch (error) {
+//     console.log('Error during fetch ongoing polls:', error);
+//     throw error;
+//   }
+// }
+
+async function getpolldetails(company_id) {
+  // const sql = `SELECT
+  //                 pc.*,
+  //                 pa.poll_answer,
+  //                 pa.poll_answer_id,
+  //                 pv.voting_answer_id,
+  //                 voting_user_id
+  //               FROM
+  //                 poll_company pc
+  //               JOIN (
+  //                 SELECT
+  //                     p.poll_id,
+  //                     GROUP_CONCAT(DISTINCT p.answer) AS poll_answer,
+  //                     GROUP_CONCAT(DISTINCT p.id) AS poll_answer_id
+  //                 FROM
+  //                     poll_answer p
+  //                 GROUP BY
+  //                     p.poll_id
+  //               ) pa ON pc.id = pa.poll_id
+  //               LEFT JOIN (
+  //                 SELECT
+  //                     pv.poll_id,
+  //                     GROUP_CONCAT(pv.answer_id) AS voting_answer_id,
+  //                     GROUP_CONCAT(pv.user_id) AS voting_user_id
+  //                 FROM
+  //                     poll_voting pv
+  //                 GROUP BY
+  //                     pv.poll_id
+  //               ) pv ON pc.id = pv.poll_id
+  //               WHERE
+  //                 pc.company_id = '${company_id}'
+  //                 AND pc.expired_at > NOW() 
+  //               ORDER BY
+  //                 pc.id DESC;`;
+  
+                  const sql = ` SELECT
+                  pc.*,
+                  pa.poll_answer,
+                  pa.poll_answer_id,
+                  pv.voting_answer_id,
+                  voting_user_id
+                FROM
+                  poll_company pc
+                JOIN (
+                  SELECT
+                      p.poll_id,
+                      GROUP_CONCAT(DISTINCT p.answer) AS poll_answer,
+                      GROUP_CONCAT(DISTINCT p.id) AS poll_answer_id
+                  FROM
+                      poll_answer p
+                  GROUP BY
+                      p.poll_id
+                ) pa ON pc.id = pa.poll_id
+                LEFT JOIN (
+                  SELECT
+                      pv.poll_id,
+                      GROUP_CONCAT(pv.answer_id) AS voting_answer_id,
+                      GROUP_CONCAT(pv.user_id) AS voting_user_id
+                  FROM
+                      poll_voting pv
+                  GROUP BY
+                      pv.poll_id
+                ) pv ON pc.id = pv.poll_id
+                WHERE
+                  pc.company_id = '${company_id}' 
+                  AND pc.expired_at >= CURDATE()  
+                ORDER BY
+                  pc.id DESC;`;
+                
+
+  // const sql = `SELECT poll_company.*, GROUP_CONCAT(pa.answer) AS poll_answer, GROUP_CONCAT(pa.id) AS poll_answer_id, GROUP_CONCAT(pv.answer_id) AS voting_answer_id
+  // FROM poll_company  
+  // JOIN poll_answer pa ON pa.poll_id = poll_company.id
+  // LEFT JOIN poll_voting pv ON pv.poll_id = poll_company.id
+  // WHERE poll_company.company_id = '${company_id}' 
+  // GROUP BY poll_company.id
+  // ORDER BY poll_company.id DESC `;
+//there is a poll in the database whose expiration date is today but that is not showing.want to get if the expiry date is today then even today it will show in company poll details and from tommorow it will not show in company poll details
+  const result = await query(sql);
+  if(result.length > 0 ){
+    return result;
+  }else{
+    return [];
   }
+  
 }
-
 
 async function updateReview(reviewIfo) {
   // console.log('Review Info', reviewIfo);
