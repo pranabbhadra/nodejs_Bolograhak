@@ -2278,8 +2278,23 @@ WHERE
     }
 });
 
-
-
+router.get('/reviewReplies/:review_id', verifyToken, async (req,res)=>{
+    const review_id = req.params.review_id;
+    try{
+        const [getreviewreplis] = await Promise.all([
+            comFunction.getreviewreplis(review_id)
+        ]);
+        res.json({
+            getreviewreplis
+        });
+    } catch(error){
+        console.error(error);
+        res.status(500).json({
+            status: 'error',
+            message: 'An error occurred ' + error,
+        }); 
+    }
+})
 
 
 

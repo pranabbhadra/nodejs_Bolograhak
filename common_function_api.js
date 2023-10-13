@@ -1962,6 +1962,17 @@ function getAllReviewReply() {
   });
 }
 
+async function getreviewreplis(review_id){
+  try{
+    const sql = 'SELECT * FROM review_reply WHERE review_id=?';
+    const result = await query(sql, [review_id]);
+
+    return result;
+  } catch (error) {
+    console.error('Error fetching reviewreplies:', error);
+    throw error;
+  }
+}
 
 
 module.exports = {
@@ -2022,5 +2033,6 @@ module.exports = {
   usercompanyreply,
   getClaimedByForCompany,
   CompanyReviews,
-  getAllReviewReply
+  getAllReviewReply,
+  getreviewreplis
 };
