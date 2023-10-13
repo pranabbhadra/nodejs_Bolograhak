@@ -89,7 +89,7 @@
     display: inline-block;
     vertical-align: middle;
     margin: 0;
-    padding: 10px 15px;
+    padding: 10px 8px;
     border-radius: 8px;
     border: 1px solid #F4DD35;
     color: #000;
@@ -1195,6 +1195,27 @@
 
 /* ============== add multiple email tag style end =============== */
 
+.membership_info{
+    background-color: #FCCB06;
+    background-image: url(../images/s-bg-image.png);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    border: 0;
+    padding: 20px 25px;
+    border-radius: 15px;
+    margin: 15px 0 0;
+}
+.membership_info > p{
+    color: #000;
+    font-family: var(--inter);
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 110.4%;
+    text-transform: capitalize;
+    margin: 0;
+}
 
 /*========================================= responsive ====================================*/
 

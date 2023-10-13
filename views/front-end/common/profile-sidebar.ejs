@@ -39,6 +39,17 @@
           </span>
           <span>Gold Level</span>
        </div>
+       <% if(userMeta && userMeta.claimed_comp_id) { %>
+         <% if(userMeta.payment_status == "paid") { %>
+         <div class="text-center mt-4">
+            <p>Company Plan: <b>Premium</b></p>
+         </div>
+         <% } else { %>
+            <div class="text-center mt-4">
+               <p>Company Plan: <b>Basic</b></p>
+            </div>
+            <% } %>
+      <% } %>
        <div class="profile-menu">
           <h3>MAIN MENU</h3>
           <div class="profile-menu-list">

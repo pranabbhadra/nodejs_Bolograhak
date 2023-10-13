@@ -96,7 +96,7 @@
               <% if(PositiveReviewsCompany) { %>
               <div class="banner-trending-scroll">
                 <div class="like-dislike-tren-label">
-                    <i class="fa-solid fa-thumbs-up"></i> Up Trending :
+                    <i class="fa-solid fa-thumbs-up"></i> 
                 </div>
                 <div class="like-dislike-company-scroll">
                     <marquee behavior="scroll" direction="left" onmouseover="this.stop();" onmouseout="this.start();">
@@ -112,7 +112,7 @@
               <% if(NegativeReviewsCompany) { %>
               <div class="banner-trending-scroll">
                 <div class="like-dislike-tren-label">
-                    <i class="fa-solid fa-thumbs-down"></i> Down Trending :
+                    <i class="fa-solid fa-thumbs-down"></i> 
                 </div>
                 <div class="like-dislike-company-scroll">
                     <marquee behavior="scroll" direction="left" onmouseover="this.stop();" onmouseout="this.start();">
@@ -560,7 +560,7 @@
                 <div class="range-tag-wrap">
                   <% allRatingTags.forEach( (rev_tag, index)=> { %>
                     <div
-                      class="tag-items-wrapper range-tag<%= rev_tag.review_rating_value.replace(/\./g, "") %> <% if(index!=0){ %>d-none<% } %>">
+                      class="tag-items-wrapper range-tag<%= rev_tag.review_rating_value.replace(/\./g, "") %> <% if(index!=9){ %>d-none<% } %>">
                       <% const tag_items=rev_tag.rating_tags.split('|'); %>
                         <% tag_items.forEach(function(tag) { %>
                           <div class="form-check custom-check position-relative">
@@ -1769,12 +1769,12 @@
         range: "min",
         min: 0.5,
         max: 5,
-        value: 0.5,
+        value: 5,
         create: function (event, ui) {
-          $("#ratingRange").val('0.5/5');
-          $("#ratingvalue").val(0.5);
-          $("#selected-range-text").text(rangeTexts[0.5]);
-          $("#selected-range-emojis").attr('src', rangeEmojis[0.5]);
+          $("#ratingRange").val('5/5');
+          $("#ratingvalue").val(5);
+          $("#selected-range-text").text(rangeTexts[5]);
+          $("#selected-range-emojis").attr('src', rangeEmojis[5]);
         },
         slide: function (event, ui) {
           console.log(ui.value);

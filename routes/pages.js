@@ -1035,6 +1035,20 @@ router.get('/company-dashboard/:slug', checkClientClaimedCompany, async (req, re
     const companyPaidStatus = company.paid_status;
     //console.log(companyPaidStatus);
     if(companyPaidStatus=='free'){
+        // res.json(
+        // { 
+        //     menu_active_id: 'company-dashboard', 
+        //     page_title: 'Company Dashboard', 
+        //     currentUserData, 
+        //     globalPageMeta:globalPageMeta,
+        //     company,
+        //     companyReviewNumbers,
+        //     allRatingTags,
+        //     finalCompanyallReviews,
+        //     reviewReatingChartArray,
+        //     reviewTagsCount,
+        //     TotalReplied:TotalReplied
+        // });
         res.render('front-end/basic-company-profile-dashboard', 
         { 
             menu_active_id: 'company-dashboard', 
@@ -2779,7 +2793,8 @@ router.get('/profile-dashboard', checkFrontEndLoggedIn, async (req, res) => {
         //     AllCompaniesReviews: AllCompaniesReviews,
         //     allRatingTags:allRatingTags,
         //     AllReviewTags:AllReviewTags,
-        //     globalPageMeta:globalPageMeta
+        //     globalPageMeta:globalPageMeta,
+        //     AllReviewVoting:AllReviewVoting
         // });
         res.render('front-end/profile-dashboard', {
             menu_active_id: 'profile-dashboard',
