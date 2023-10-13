@@ -1272,7 +1272,7 @@ exports.deleteUser = (req, res) => {
                         } else {
                             return res.send({
                                 status: 'ok',
-                                message: 'User successfully deleted'
+                                message: 'User permanently deleted .'
                             });
                         }
                     })
@@ -1280,10 +1280,46 @@ exports.deleteUser = (req, res) => {
             })
         }
     })
+}
 
-    
+//--- Trash User ----//
+exports.trashUser = (req, res) => {
+    console.log(req.body.userid);
+    sql = `UPDATE users SET user_status = '0' WHERE user_id = ?`;
+    const data = [req.body.userid];
+    db.query(sql, data, (err, result) => {
+        if (err) {
+            return res.send({
+                status: 'error',
+                message: 'Something went wrong' +err
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'User successfully move to trash'
+            });
+        }
+    })
+}
 
-   
+//--- Restore User ----//
+exports.restoreUser = (req, res) => {
+    console.log(req.body.userid);
+    sql = `UPDATE users SET user_status = '1' WHERE user_id = ?`;
+    const data = [req.body.userid];
+    db.query(sql, data, (err, result) => {
+        if (err) {
+            return res.send({
+                status: 'error',
+                message: 'Something went wrong' +err
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'User successfully restore .'
+            });
+        }
+    })
 }
 
 //--- Create New Company ----//
@@ -1392,7 +1428,7 @@ exports.editCompany = (req, res) => {
     const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
     // Update company details in the company table
-    const updateQuery = 'UPDATE company SET company_name = ?, heading = ?, logo = ?, about_company = ?, comp_phone = ?, comp_email = ?, comp_registration_id = ?, status = ?, trending = ?, updated_date = ?, tollfree_number = ?, main_address = ?, main_address_pin_code = ?, address_map_url = ?, main_address_country = ?, main_address_state = ?, main_address_city = ?, verified = ?, paid_status = ? WHERE ID = ?';
+    const updateQuery = 'UPDATE company SET company_name = ?, heading = ?, logo = ?, about_company = ?, comp_phone = ?, comp_email = ?, comp_registration_id = ?, status = ?, trending = ?, updated_date = ?, tollfree_number = ?, main_address = ?, main_address_pin_code = ?, address_map_url = ?, main_address_country = ?, main_address_state = ?, main_address_city = ?, verified = ?, paid_status = ?, slug  = ? WHERE ID = ?';
     const updateValues = [
                             req.body.company_name,
                             req.body.heading,
@@ -1413,6 +1449,7 @@ exports.editCompany = (req, res) => {
                             req.body.main_address_city,
                             req.body.verified,
                             req.body.payment_status,
+                            req.body.company_slug,
                             companyID
                         ];
 
@@ -2325,7 +2362,7 @@ exports.updateHome = async (req, res) => {
     if(typeof app_cus_right_point == 'string'){
         cus_right_point.push(app_cus_right_point) ;
     } else {
-        cus_right_point = [...app_features_hashtag];
+        cus_right_point = [...app_cus_right_point];
     }
     const app_cus_right_points = JSON.stringify(cus_right_point); 
 
@@ -4664,3 +4701,4 @@ exports.addComment = async (req, res) => {
     })
     
 }
+

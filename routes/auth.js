@@ -66,6 +66,8 @@ router.post('/update-category', upload.single('cat_image'), authController.updat
 router.post('/create-user', upload.single('profile_pic'), authController.createUser);
 router.put('/edit-user-data', upload.single('profile_pic'), authController.editUserData);
 router.post('/delete-user', authController.deleteUser);
+router.post('/trash-user', authController.trashUser);
+router.post('/restore-user', authController.restoreUser);
 
 //---Company--------//
 router.post('/create-company', upload.single('logo'), authController.createCompany);

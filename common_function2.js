@@ -1985,12 +1985,24 @@ async function getAllReviewsByCompanyID(companyId) {
 //Function to get latest discussion from discussions table
 async function getAllLatestDiscussion(limit) {
   const sql = `
-  SELECT discussions.*, u.first_name, u.last_name, COUNT(dur.id) as total_comments , COUNT(duv.id) as total_views 
-  FROM discussions 
-  LEFT JOIN users u ON discussions.user_id = u.user_id 
-  LEFT JOIN discussions_user_response dur ON discussions.id = dur.discussion_id 
-  LEFT JOIN discussions_user_view duv ON discussions.id = duv.discussion_id 
-  GROUP BY discussions.id
+    SELECT
+    discussions.*,
+    u.first_name,
+    u.last_name,
+    COALESCE(comments.total_comments, 0) as total_comments,
+    COALESCE(views.total_views, 0) as total_views
+  FROM discussions
+  LEFT JOIN users u ON discussions.user_id = u.user_id
+  LEFT JOIN (
+    SELECT discussion_id, COUNT(*) as total_comments
+    FROM discussions_user_response
+    GROUP BY discussion_id
+  ) comments ON discussions.id = comments.discussion_id
+  LEFT JOIN (
+    SELECT discussion_id, COUNT(*) as total_views
+    FROM discussions_user_view
+    GROUP BY discussion_id
+  ) views ON discussions.id = views.discussion_id
   ORDER BY discussions.id DESC
   LIMIT ${limit} ;
   `;
@@ -2011,12 +2023,24 @@ async function getAllLatestDiscussion(limit) {
 //Function to get popular discussion from discussions table
 async function getAllPopularDiscussion() {
   const sql = `
-  SELECT discussions.*, u.first_name, u.last_name, COUNT(dur.id) as total_comments, COUNT(duv.id) as total_views 
-  FROM discussions 
-  LEFT JOIN users u ON discussions.user_id = u.user_id 
-  LEFT JOIN discussions_user_response dur ON discussions.id = dur.discussion_id 
-  LEFT JOIN discussions_user_view duv ON discussions.id = duv.discussion_id 
-  GROUP BY discussions.id
+  SELECT
+    discussions.*,
+    u.first_name,
+    u.last_name,
+    COALESCE(comments.total_comments, 0) as total_comments,
+    COALESCE(views.total_views, 0) as total_views
+  FROM discussions
+  LEFT JOIN users u ON discussions.user_id = u.user_id
+  LEFT JOIN (
+    SELECT discussion_id, COUNT(*) as total_comments
+    FROM discussions_user_response
+    GROUP BY discussion_id
+  ) comments ON discussions.id = comments.discussion_id
+  LEFT JOIN (
+    SELECT discussion_id, COUNT(*) as total_views
+    FROM discussions_user_view
+    GROUP BY discussion_id
+  ) views ON discussions.id = views.discussion_id
   ORDER BY total_comments DESC;
   ;
   `;
@@ -2037,12 +2061,24 @@ async function getAllPopularDiscussion() {
 //Function to get viewed discussion from discussions table
 async function getAllViewedDiscussion() {
   const sql = `
-  SELECT discussions.*, u.first_name, u.last_name, COUNT(dur.id) as total_comments, COUNT(duv.id) as total_views 
-  FROM discussions 
-  LEFT JOIN users u ON discussions.user_id = u.user_id 
-  LEFT JOIN discussions_user_response dur ON discussions.id = dur.discussion_id 
-  LEFT JOIN discussions_user_view duv ON discussions.id = duv.discussion_id 
-  GROUP BY discussions.id
+  SELECT
+    discussions.*,
+    u.first_name,
+    u.last_name,
+    COALESCE(comments.total_comments, 0) as total_comments,
+    COALESCE(views.total_views, 0) as total_views
+  FROM discussions
+  LEFT JOIN users u ON discussions.user_id = u.user_id
+  LEFT JOIN (
+    SELECT discussion_id, COUNT(*) as total_comments
+    FROM discussions_user_response
+    GROUP BY discussion_id
+  ) comments ON discussions.id = comments.discussion_id
+  LEFT JOIN (
+    SELECT discussion_id, COUNT(*) as total_views
+    FROM discussions_user_view
+    GROUP BY discussion_id
+  ) views ON discussions.id = views.discussion_id
   ORDER BY total_views DESC;
   ;
   `;
@@ -2063,12 +2099,24 @@ async function getAllViewedDiscussion() {
 //Function to get latest discussion from discussions table
 async function getAllDiscussions() {
   const sql = `
-  SELECT discussions.*, u.first_name, u.last_name, COUNT(dur.id) as total_comments , COUNT(duv.id) as total_views 
-  FROM discussions 
-  LEFT JOIN users u ON discussions.user_id = u.user_id 
-  LEFT JOIN discussions_user_response dur ON discussions.id = dur.discussion_id 
-  LEFT JOIN discussions_user_view duv ON discussions.id = duv.discussion_id 
-  GROUP BY discussions.id
+  SELECT
+    discussions.*,
+    u.first_name,
+    u.last_name,
+    COALESCE(comments.total_comments, 0) as total_comments,
+    COALESCE(views.total_views, 0) as total_views
+  FROM discussions
+  LEFT JOIN users u ON discussions.user_id = u.user_id
+  LEFT JOIN (
+    SELECT discussion_id, COUNT(*) as total_comments
+    FROM discussions_user_response
+    GROUP BY discussion_id
+  ) comments ON discussions.id = comments.discussion_id
+  LEFT JOIN (
+    SELECT discussion_id, COUNT(*) as total_views
+    FROM discussions_user_view
+    GROUP BY discussion_id
+  ) views ON discussions.id = views.discussion_id
   ORDER BY discussions.id DESC
   `;
   try{

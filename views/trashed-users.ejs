@@ -328,7 +328,10 @@
                                                         class="menu-link px-3">Edit</a>
                                                 </div>
                                                 <div class="menu-item px-3">
-                                                    <a href="#" class="menu-link px-3" data-userid="<%= user.user_id %>" data-userEmail="<%= user.email %>"  data-kt-users-table-filter="delete_row">Trash</a>
+                                                    <a href="#" class="menu-link px-3" data-userid="<%= user.user_id %>" data-userEmail="<%= user.email %>"  data-kt-users-table-filter="restore_row">Restore</a>
+                                                </div>
+                                                <div class="menu-item px-3">
+                                                    <a href="#" class="menu-link px-3" data-userid="<%= user.user_id %>" data-userEmail="<%= user.email %>"  data-kt-users-table-filter="delete_row">Delete</a>
                                                 </div>
                                             </div>
                                             <!--end::Menu-->
@@ -573,11 +576,11 @@
 
                                 // SweetAlert2 pop up --- official docs reference: https://sweetalert2.github.io/
                                 Swal.fire({
-                                    text: "Are you sure you want to trash ?",
+                                    text: "Are you sure you want to permanently delete ?",
                                     icon: "warning",
                                     showCancelButton: true,
                                     buttonsStyling: false,
-                                    confirmButtonText: "Yes, trash!",
+                                    confirmButtonText: "Yes, delete!",
                                     cancelButtonText: "No, cancel",
                                     customClass: {
                                         confirmButton: "btn fw-bold btn-danger",
@@ -586,8 +589,8 @@
                                 }).then(function (result) {
                                     if (result.value) {
                                         $.ajax({
-                                            //url: '/auth/delete-user', // URL for your API endpoint
-                                            url: '/auth/trash-user',
+                                            url: '/auth/delete-user', // URL for your API endpoint
+                                            //url: '/auth/trash-user',
                                             method: 'POST',
                                             data: {userid:userid, userEmail:userEmail},
                                             ContentType: 'application/json',
@@ -625,7 +628,90 @@
                                         });
                                     } else if (result.dismiss === 'cancel') {
                                         Swal.fire({
-                                            text:  "User is not move to trash .",
+                                            text:  "User is not deleted.",
+                                            icon: "error",
+                                            buttonsStyling: false,
+                                            confirmButtonText: "Ok, got it!",
+                                            customClass: {
+                                                confirmButton: "btn fw-bold btn-primary",
+                                            }
+                                        });
+                                    }
+                                });
+                            })
+                        });
+
+                         // Select all delete buttons
+                         const restoreButtons = table.querySelectorAll('[data-kt-users-table-filter="restore_row"]');
+
+                         restoreButtons.forEach(d => {
+                            // Delete button on click
+                            d.addEventListener('click', function (e) {
+                                e.preventDefault();
+
+                                var userid = $(this).attr("data-userid");
+                                var userEmail = $(this).attr("data-userEmail");
+                                //alert(userid);data-userEmail
+                                const parent = e.target.closest('tr');
+
+                                // Get user name
+                                // const userName = parent.querySelectorAll('td')[2].querySelectorAll('a')[2].innerText;
+
+                                // SweetAlert2 pop up --- official docs reference: https://sweetalert2.github.io/
+                                Swal.fire({
+                                    text: "Are you sure you want to restore ?",
+                                    icon: "warning",
+                                    showCancelButton: true,
+                                    buttonsStyling: false,
+                                    confirmButtonText: "Yes, restore!",
+                                    cancelButtonText: "No, cancel",
+                                    customClass: {
+                                        confirmButton: "btn fw-bold btn-danger",
+                                        cancelButton: "btn fw-bold btn-active-light-primary"
+                                    }
+                                }).then(function (result) {
+                                    if (result.value) {
+                                        $.ajax({
+                                            //url: '/auth/delete-user', // URL for your API endpoint
+                                            url: '/auth/restore-user',
+                                            method: 'POST',
+                                            data: {userid:userid, userEmail:userEmail},
+                                            ContentType: 'application/json',
+                                            success: function (data) {
+                                                if (data.status == 'ok') {
+                                                    Swal.fire({
+                                                        text: data.message,
+                                                        icon: "success",
+                                                        buttonsStyling: false,
+                                                        confirmButtonText: "Ok, got it!",
+                                                        customClass: {
+                                                            confirmButton: "btn btn-primary"
+                                                        }
+                                                    }).then(function (result) {
+                                                        if (result.isConfirmed) {
+                                                            location.reload();
+                                                        }
+                                                    });
+                                                } else {
+                                                    Swal.fire({
+                                                        text: data.message,
+                                                        icon: "error",
+                                                        buttonsStyling: false,
+                                                        confirmButtonText: "Ok, got it!",
+                                                        customClass: {
+                                                            confirmButton: "btn btn-primary"
+                                                        }
+                                                    });
+                                                }
+                                            },
+                                            error: function (xhr, status, error) {
+                                                // Handle any errors that occur during the request
+                                                console.log(error);
+                                            }
+                                        });
+                                    } else if (result.dismiss === 'cancel') {
+                                        Swal.fire({
+                                            text:  "User is not restore.",
                                             icon: "error",
                                             buttonsStyling: false,
                                             confirmButtonText: "Ok, got it!",
