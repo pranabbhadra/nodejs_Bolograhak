@@ -526,7 +526,7 @@ async function getTrendingReviews() {
     JOIN users u ON r.customer_id = u.user_id
     LEFT JOIN user_customer_meta ucm ON u.user_id = ucm.user_id
     LEFT JOIN review_reply rr ON r.ID = rr.review_id
-    WHERE c.trending = 1 AND r.review_status = "1"
+    WHERE c.trending = "1" AND r.review_status = "1"
     ORDER BY r.created_at DESC;
 `;
 
@@ -1964,7 +1964,15 @@ function getAllReviewReply() {
 
 async function getreviewreplis(review_id){
   try{
-    const sql = 'SELECT * FROM review_reply WHERE review_id=?';
+    const sql = `SELECT review_reply.*, company.logo, user_customer_meta.profile_pic
+    FROM review_reply
+    INNER JOIN reviews ON review_reply.review_id = reviews.id
+    INNER JOIN company ON reviews.company_id = company.ID
+    LEFT JOIN user_customer_meta ON reviews.customer_id = user_customer_meta.user_id
+    WHERE review_reply.review_id = ?;
+    `;
+    
+
     const result = await query(sql, [review_id]);
 
     return result;

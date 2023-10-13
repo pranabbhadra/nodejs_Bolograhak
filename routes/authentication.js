@@ -1806,7 +1806,7 @@ router.get('/categories', verifyToken, async (req, res) => {
         JOIN category_country_relation ON category.id = category_country_relation.cat_id
         JOIN countries ON category_country_relation.country_id = countries.id
         LEFT JOIN category AS c ON c.ID = category.parent_id
-        WHERE category.parent_id = 0
+        WHERE category.parent_id = "0"
         GROUP BY category.category_name `;
         db.query(cat_query, (err, results) => {
             if (err) {
@@ -1901,9 +1901,9 @@ router.get('/categorieslisting', verifyToken, async (req, res) => {
         LEFT JOIN category AS c ON c.ID = category.parent_id
         JOIN company_cactgory_relation ON category.ID = company_cactgory_relation.category_id
         JOIN company ON company_cactgory_relation.company_id = company.ID
-        WHERE category.parent_id = 0
-        AND company.trending = 1 
-        AND company.verified = 1 
+        WHERE category.parent_id = "0"
+        AND company.trending = "1"
+        AND company.verified = "1" 
         GROUP BY category.category_name`;
         db.query(cat_query, (err, results) => {
             if (err) {
@@ -1949,8 +1949,8 @@ router.get('/categorieslisting/trending', verifyToken, async (req, res) => {
             LEFT JOIN category AS c ON c.ID = category.parent_id
             JOIN company_cactgory_relation ON category.ID = company_cactgory_relation.category_id
             JOIN company ON company_cactgory_relation.company_id = company.ID
-            WHERE category.parent_id = 0
-            AND company.trending = 1 
+            WHERE category.parent_id = "0"
+            AND company.trending = "1" 
             GROUP BY category.category_name`;
 
         db.query(cat_query, (err, results) => {
@@ -1993,8 +1993,8 @@ router.get('/categorieslisting/verified', verifyToken, async (req, res) => {
             LEFT JOIN category AS c ON c.ID = category.parent_id
             JOIN company_cactgory_relation ON category.ID = company_cactgory_relation.category_id
             JOIN company ON company_cactgory_relation.company_id = company.ID
-            WHERE category.parent_id = 0
-            AND company.verified = 1 
+            WHERE category.parent_id = "0"
+            AND company.verified = "1"
             GROUP BY category.category_name`;
 
         db.query(cat_query, (err, results) => {
@@ -2295,6 +2295,37 @@ router.get('/reviewReplies/:review_id', verifyToken, async (req,res)=>{
         }); 
     }
 })
+
+// router.get('/reviewReplies/:review_id', verifyToken, async (req, res) => {
+//     const review_id = req.params.review_id;
+//     try {
+//         const [reviewReplies] = await Promise.all([
+//             comFunction.getreviewreplis(review_id)
+//         ]);
+
+//         if (reviewReplies.length > 0) {
+//             const profilePic = reviewReplies[0].profile_pic;
+//             const logo = reviewReplies[0].logo;
+//             const review_id = reviewReplies[0]
+
+//             res.json({
+//                 profilePic,
+//                 logo
+//             });
+//         } else {
+//             res.status(404).json({
+//                 status: 'error',
+//                 message: 'Review replies not found.'
+//             });
+//         }
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({
+//             status: 'error',
+//             message: 'An error occurred: ' + error
+//         });
+//     }
+// });
 
 
 
