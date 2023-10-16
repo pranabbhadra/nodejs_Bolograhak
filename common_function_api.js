@@ -1964,7 +1964,7 @@ function getAllReviewReply() {
 
 async function getreviewreplis(review_id){
   try{
-    const sql = `SELECT review_reply.*, company.logo, company.company_name, user_customer_meta.profile_pic, user_customer_meta.user_id , users.first_name , users.last_name
+    const sql = `SELECT review_reply.*, company.logo, company.company_name, user_customer_meta.profile_pic, user_customer_meta.user_id, users.first_name, users.last_name
     FROM review_reply
     INNER JOIN reviews ON review_reply.review_id = reviews.id
     INNER JOIN company ON reviews.company_id = company.ID
