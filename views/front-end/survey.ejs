@@ -10,7 +10,7 @@
              var jsonString = JSON.stringify(questionJsonObject, null, 2);
           %>
           <%- //jsonString %>
-          <form>
+          <form method="post" name="survey_form" id="survey_form">
             <% questionJsonObject.forEach(function(item, index) { %>
              <div class="survey-wrapper">
                 <div class="survey-head"><strong><%- index+1 %>.</strong> <%- item.question %></div>
@@ -70,6 +70,9 @@
                 <% } %>
              </div>
             <% }); %>
+            <input type="hidden" name="company_id" value="<%- company.ID %>">
+            <input type="hidden" name="survey_unique_id" value="<%- companySurveyQuestions[0].unique_id %>">
+            <input type="hidden" name="customer_id" value="<%- currentUserData.user_id %>">
              <div class="text-center mt-5"><input type="submit" class="btn-default btn-warning" value="Submit"></div>
           </form>
        </div>
