@@ -1175,7 +1175,7 @@ router.get('/getreviewlisting', verifyToken, async (req, res) => {
                         ...review,
                         //reply_status: hasReplyToUser ? 1 : 0,
                         Tags: reviewTagsMap[review.id] || [],
-                        ReviewReplies: reviewrepliesmap[review.id] || []
+                        review_reply: reviewrepliesmap[review.id] || []
                     };
                 });
 
@@ -1208,7 +1208,7 @@ router.get('/getreviewlisting', verifyToken, async (req, res) => {
                         return {
                             ...review,
                             Tags: reviewTagsMap[review.id] || [],
-                            ReviewReplies: reviewrepliesmap[review.id] || []
+                            review_reply: reviewrepliesmap[review.id] || []
                         };
                     });
 
