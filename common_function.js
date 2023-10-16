@@ -1145,15 +1145,52 @@ async function getPositiveReviewsCompany() {
   }
 }
 
+// async function getNegativeReviewsCompany() {
+//   const get_negative_reviews_company_query = `
+//   SELECT company_id, COUNT(*) AS review_count, com.company_name, com.slug
+//   FROM reviews
+//   JOIN company com ON reviews.company_id = com.ID
+//   WHERE rating <= 2 AND review_status = '1'
+//   GROUP BY company_id
+//   ORDER BY review_count DESC
+//   LIMIT 5;
+//   `;
+//   try{
+//     const get_negative_reviews_result = await query(get_negative_reviews_company_query);
+//     return get_negative_reviews_result;
+//   }catch(error){
+//     return 'Error during user get_negative_reviews_company_query:'+error;
+//   }
+// }
+
 async function getNegativeReviewsCompany() {
   const get_negative_reviews_company_query = `
-  SELECT company_id, COUNT(*) AS review_count, com.company_name, com.slug
-  FROM reviews
-  JOIN company com ON reviews.company_id = com.ID
-  WHERE rating <= 2 AND review_status = '1'
-  GROUP BY company_id
-  ORDER BY review_count DESC
-  LIMIT 5;
+  SELECT
+  neg.ID, COUNT(*) AS review_count, neg.company_name, neg.slug
+FROM
+  (
+      SELECT com.ID, com.company_name, com.slug
+      FROM reviews
+          JOIN company com ON reviews.company_id = com.ID
+      WHERE rating <= 2 AND review_status = '1'
+      GROUP BY com.ID, com.company_name, com.slug
+  ) AS neg
+WHERE
+  neg.ID NOT IN (
+      SELECT
+          com.ID
+      FROM reviews
+          JOIN company com ON reviews.company_id = com.ID
+      WHERE rating >= 4 AND review_status = '1'
+      GROUP BY
+          com.ID
+  )
+GROUP BY
+  neg.ID
+ORDER BY
+  review_count DESC
+LIMIT 5;
+
   `;
   try{
     const get_negative_reviews_result = await query(get_negative_reviews_company_query);
