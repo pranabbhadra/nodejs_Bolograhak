@@ -1216,6 +1216,19 @@ async function getCompanySurveyDetails(companyID) {
   }
 }
 
+async function getCompanySurveyQuestions(survey_uniqueid, companyId){
+  const get_company_survey_question_query = `
+  SELECT *
+  FROM survey
+  WHERE company_id = ${companyId} AND unique_id = ${survey_uniqueid};
+  `;
+  try{
+    const get_company_survey_question_result = await query(get_company_survey_question_query);
+    return get_company_survey_question_result;
+  }catch(error){
+    return 'Error during user get_company_survey_question_query:'+error;
+  }
+}
 
 module.exports = {
     getUser,
@@ -1259,5 +1272,6 @@ module.exports = {
     getPositiveReviewsCompany,
     getNegativeReviewsCompany,
     getVisitorCheck,
-    getCompanySurveyDetails
+    getCompanySurveyDetails,
+    getCompanySurveyQuestions
 };

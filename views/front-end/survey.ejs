@@ -5,207 +5,71 @@
 <section class="main-content bottom-main-content">
     <div class="survey-content">
        <div class="container">
-          <h2 class="inner-main-head">Lorem Ipsum is simply dummy text</h2>
+          <h2 class="inner-main-head"><%- companySurveyQuestions[0].title %></h2>
+          <% var questionJsonObject = JSON.parse(companySurveyQuestions[0].questions)
+             var jsonString = JSON.stringify(questionJsonObject, null, 2);
+          %>
+          <%- //jsonString %>
           <form>
+            <% questionJsonObject.forEach(function(item, index) { %>
              <div class="survey-wrapper">
-                <div class="survey-head"><strong>1.</strong> Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>
+                <div class="survey-head"><strong><%- index+1 %>.</strong> <%- item.question %></div>
+                <% if(item.type=='type_textarea'){ %>
                 <div class="survey-body">
                    <div class="custom-form">
-                      <textarea type="text" rows="5" class="form-control" name="message" required=""></textarea>
+                      <textarea type="text" rows="5" class="form-control" name="question_<%- index+1 %>" required=""></textarea>
                    </div>
                 </div>
-             </div>
-             <div class="survey-wrapper">
-                <div class="survey-head"><strong>2.</strong> Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>
-                <div class="survey-body">
-                   <div class="custom-form">
-                      <div class="form-check">
-                         <input type="radio" class="form-check-input" id="radio1" name="optradio" value="option1">
-                         <label class="form-check-label">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum</label>
-                      </div>
-                      <div class="form-check">
-                        <input type="radio" class="form-check-input" id="radio2" name="optradio" value="option2">
-                        <label class="form-check-label">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum</label>
-                     </div>
-                     <div class="form-check">
-                        <input type="radio" class="form-check-input" id="radio2" name="optradio" value="option2">
-                        <label class="form-check-label">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum</label>
-                     </div>
-                     <div class="form-check">
-                        <input type="radio" class="form-check-input" id="radio2" name="optradio" value="option2">
-                        <label class="form-check-label">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum</label>
-                     </div>
-                   </div>
-                </div>
-             </div>
-             <div class="survey-wrapper">
-                <div class="survey-head"><strong>3.</strong> Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>
-                <div class="survey-body">
-                    <div class="custom-form">
+                <% }else if(item.type=='type_radio'){ %>
+                  <div class="survey-body">
+                     <div class="custom-form">
+                        <% item.options.forEach(function(option, index_inner) { %>
                         <div class="form-check">
-                           <input type="radio" class="form-check-input" id="radio1" name="optradio" value="option1">
-                           <label class="form-check-label">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum</label>
+                           <input type="radio" class="form-check-input" id="<%- item.name %><%- index_inner+1 %>" name="question_<%- index+1 %>" value="<%- option %>">
+                           <label class="form-check-label" for="<%- item.name %><%- index_inner+1 %>"><%- option %></label>
                         </div>
-                        <div class="form-check">
-                          <input type="radio" class="form-check-input" id="radio2" name="optradio" value="option2">
-                          <label class="form-check-label">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum</label>
-                       </div>
-                       <div class="form-check">
-                          <input type="radio" class="form-check-input" id="radio2" name="optradio" value="option2">
-                          <label class="form-check-label">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum</label>
-                       </div>
-                       <div class="form-check">
-                          <input type="radio" class="form-check-input" id="radio2" name="optradio" value="option2">
-                          <label class="form-check-label">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum</label>
-                       </div>
+                        <% }); %>
                      </div>
-                </div>
-             </div>
-             <div class="survey-wrapper">
-                <div class="survey-head"><strong>4.</strong> Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>
-                <div class="survey-body">
-                    <div class="custom-form">
+                  </div>
+                <% }else if(item.type=='type_checkbox'){ %>
+                  <div class="survey-body">
+                     <div class="custom-form">
+                        <% item.options.forEach(function(option, index_inner) { %>
                         <div class="form-check">
-                           <input type="radio" class="form-check-input" id="radio1" name="optradio" value="option1">
-                           <label class="form-check-label">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum</label>
+                           <input type="checkbox" class="form-check-input" id="<%- item.name %><%- index_inner+1 %>" name="question_<%- index+1 %>_<%- index_inner+1 %>" value="<%- option %>">
+                           <label class="form-check-label" for="<%- item.name %><%- index_inner+1 %>"><%- option %></label>
                         </div>
-                        <div class="form-check">
-                          <input type="radio" class="form-check-input" id="radio2" name="optradio" value="option2">
-                          <label class="form-check-label">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum</label>
-                       </div>
-                       <div class="form-check">
-                          <input type="radio" class="form-check-input" id="radio2" name="optradio" value="option2">
-                          <label class="form-check-label">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum</label>
-                       </div>
-                       <div class="form-check">
-                          <input type="radio" class="form-check-input" id="radio2" name="optradio" value="option2">
-                          <label class="form-check-label">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum</label>
-                       </div>
-                     </div>
-                </div>
-             </div>
-             <div class="survey-wrapper">
-                <div class="survey-head"><strong>5.</strong> Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>
-                <div class="survey-body">
-                    <div class="custom-form">
-                        <div class="form-check">
-                           <input type="radio" class="form-check-input" id="radio1" name="optradio" value="option1">
-                           <label class="form-check-label">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum</label>
+                        <% }); %>
+                      </div>
+                  </div>
+                <% }else if(item.type=='type_ratings'){ %>
+                  <div class="survey-body">
+                     <div class="survey-rating">
+                        <div class="survey-rating-part">
+                           Disappointing
                         </div>
-                        <div class="form-check">
-                          <input type="radio" class="form-check-input" id="radio2" name="optradio" value="option2">
-                          <label class="form-check-label">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum</label>
-                       </div>
-                       <div class="form-check">
-                          <input type="radio" class="form-check-input" id="radio2" name="optradio" value="option2">
-                          <label class="form-check-label">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum</label>
-                       </div>
-                       <div class="form-check">
-                          <input type="radio" class="form-check-input" id="radio2" name="optradio" value="option2">
-                          <label class="form-check-label">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum</label>
-                       </div>
-                     </div>
-                </div>
-             </div>
-             <div class="survey-wrapper">
-                <div class="survey-head"><strong>6.</strong> Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>
-                <div class="survey-body">
-                    <div class="custom-form">
-                        <div class="form-check">
-                           <input type="radio" class="form-check-input" id="radio1" name="optradio" value="option1">
-                           <label class="form-check-label">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum</label>
+                        <div class="survey-rating-part">
+                           <ul>
+                              <% AllRatingTags.forEach(function(rating, index_inner) { %>
+                                 <li>
+                                    <div class="rating_each_option">
+                                       <input type="radio" id="<%- item.type %>_<%- index+1 %>_<%- index_inner+1 %>" name="question_<%- index+1 %>" value="<%- rating.review_rating_value %>">
+                                       <label class="form-check-label" for="<%- item.type %>_<%- index+1 %>_<%- index_inner+1 %>"><img src="/<%- rating.rating_image %>" alt="<%- rating.review_rating_name %>"></label>
+                                    </div>
+                                 </li>
+                              <% }); %>
+                           </ul>
                         </div>
-                        <div class="form-check">
-                          <input type="radio" class="form-check-input" id="radio2" name="optradio" value="option2">
-                          <label class="form-check-label">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum</label>
-                       </div>
-                       <div class="form-check">
-                          <input type="radio" class="form-check-input" id="radio2" name="optradio" value="option2">
-                          <label class="form-check-label">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum</label>
-                       </div>
-                       <div class="form-check">
-                          <input type="radio" class="form-check-input" id="radio2" name="optradio" value="option2">
-                          <label class="form-check-label">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum</label>
-                       </div>
+                        <div class="survey-rating-part">
+                           Excellent
+                        </div>
                      </div>
-                </div>
+                  </div>
+                <% }else{ %>
+                  <p>Answer type not define</p>
+                <% } %>
              </div>
-             <div class="survey-wrapper">
-                <div class="survey-head"><strong>7.</strong> Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>
-                <div class="survey-body">
-                   <div class="custom-form">
-                      <div class="form-check">
-                         <input type="checkbox" class="form-check-input" id="check1" name="option1" value="option1">
-                         <label class="form-check-label">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum</label>
-                      </div>
-                      <div class="form-check">
-                         <input type="checkbox" class="form-check-input" id="check2" name="option1" value="option2">
-                         <label class="form-check-label">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum</label>
-                      </div>
-                      <div class="form-check">
-                         <input type="checkbox" class="form-check-input" id="check3" name="option1" value="option3">
-                         <label class="form-check-label">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum</label>
-                      </div>
-                      <div class="form-check">
-                         <input type="checkbox" class="form-check-input" id="check4" name="option1" value="option4">
-                         <label class="form-check-label">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum</label>
-                      </div>
-                    </div>
-                </div>
-             </div>
-             <div class="survey-wrapper">
-                <div class="survey-head"><strong>8.</strong> Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>
-                <div class="survey-body">
-                   <div class="custom-form">
-                      <div class="form-check">
-                         <input type="radio" class="form-check-input" id="radio1" name="optradio" value="option1">
-                         <label class="form-check-label" for="radio1">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum</label>
-                      </div>
-                      <div class="form-check">
-                         <input type="radio" class="form-check-input" id="radio2" name="optradio" value="option2">
-                         <label class="form-check-label" for="radio2">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum</label>
-                      </div>
-                      <div class="form-check">
-                         <input type="radio" class="form-check-input" id="radio2" name="optradio" value="option2">
-                         <label class="form-check-label" for="radio3">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum</label>
-                      </div>
-                      <div class="form-check">
-                         <input type="radio" class="form-check-input" id="radio2" name="optradio" value="option2">
-                         <label class="form-check-label" for="radio4">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum</label>
-                      </div>
-                   </div>
-                </div>
-             </div>
-             <div class="survey-wrapper">
-                <div class="survey-head"><strong>1.</strong> Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>
-                <div class="survey-body">
-                   <div class="survey-rating">
-                      <div class="survey-rating-part">
-                         Disappointing
-                      </div>
-                      <div class="survey-rating-part">
-                         <ul>
-                            <li><a href="#"><img src="/1691875890277-10.High.gif" alt="gif"></a></li>
-                            <li class="active"><a href="#"><img src="/1691875890277-10.High.gif" alt="gif"></a></li>
-                            <li><a href="#"><img src="/1691875890277-10.High.gif" alt="gif"></a></li>
-                            <li><a href="#"><img src="/1691875890277-10.High.gif" alt="gif"></a></li>
-                            <li><a href="#"><img src="/1691875890277-10.High.gif" alt="gif"></a></li>
-                         </ul>
-                      </div>
-                      <div class="survey-rating-part">
-                         Excellent
-                      </div>
-                   </div>
-                </div>
-             </div>
-             <div class="survey-wrapper">
-                <div class="survey-head"><strong>1.</strong> Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>
-                <div class="survey-body">
-                   <div class="custom-form">
-                      <textarea type="text" rows="5" class="form-control" name="message" required=""></textarea>
-                   </div>
-                </div>
-             </div>
+            <% }); %>
              <div class="text-center mt-5"><input type="submit" class="btn-default btn-warning" value="Submit"></div>
           </form>
        </div>

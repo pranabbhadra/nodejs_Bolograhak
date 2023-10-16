@@ -266,7 +266,7 @@ router.get('/review', checkCookieValue, async (req, res) => {
         let currentUserData = JSON.parse(req.userData);
         //console.log(userId);
         // Fetch all the required data asynchronously
-        const [latestReviews, AllReviews, AllTrendingReviews, AllReviewTags, allRatingTags, globalPageMeta, homePageMeta,AllReviewVoting] = await Promise.all([
+        const [latestReviews, AllReviews, AllTrendingReviews, AllReviewTags, allRatingTags, globalPageMeta, homePageMeta, AllReviewVoting] = await Promise.all([
             comFunction2.getlatestReviews(20),
             comFunction2.getAllReviews(),
             comFunction2.getAllTrendingReviews(),
@@ -929,24 +929,54 @@ router.get('/discussion-details', checkCookieValue, async (req, res) => {
 });
 
 //Survey page
-router.get('/survey', checkCookieValue, async (req, res) => {
-    let currentUserData = JSON.parse(req.userData);
-    const [globalPageMeta] = await Promise.all([
-        comFunction2.getPageMetaValues('global'),
-    ]);
-    try {
+router.get('/:slug/survey/:id', checkClientClaimedCompany, async (req, res) => {
+    const encodedUserData = req.cookies.user;
+    const currentUserData = JSON.parse(encodedUserData);
+    const slug = req.params.slug;
+    const comp_res =await comFunction2.getCompanyIdBySlug(slug);
+    const companyId = comp_res.ID;
+    const survey_uniqueid = req.params.id;
 
-        res.render('front-end/survey', {
-            menu_active_id: 'survey',
-            page_title: 'Survey',
-            currentUserData,
-            globalPageMeta:globalPageMeta
-        });
+
+    const [globalPageMeta, company, companySurveyQuestions, AllRatingTags ] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+        comFunction.getCompany(companyId),
+        comFunction.getCompanySurveyQuestions(survey_uniqueid, companyId),
+        comFunction.getAllRatingTags(),
+    ]);
+
+    try {
+        if(companySurveyQuestions.length>0){
+            // res.json({
+            //     menu_active_id: 'survey',
+            //     page_title: 'Survey',
+            //     currentUserData,
+            //     globalPageMeta:globalPageMeta,
+            //     company:company,
+            //     companySurveyQuestions,
+            //     AllRatingTags
+            // });
+            res.render('front-end/survey', {
+                menu_active_id: 'survey',
+                page_title: 'Survey',
+                currentUserData,
+                globalPageMeta:globalPageMeta,
+                company:company,
+                companySurveyQuestions,
+                AllRatingTags
+            });
+        }else{
+            res.render('front-end/404', {
+                menu_active_id: '404',
+                page_title: '404',
+                currentUserData,
+                globalPageMeta:globalPageMeta
+            });
+        }
     } catch (err) {
         console.error(err);
         res.status(500).send('An error occurred');
     }
-    //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
 });
 
 //Create Survey page
