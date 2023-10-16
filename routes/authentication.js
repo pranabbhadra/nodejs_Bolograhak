@@ -1163,7 +1163,7 @@ router.get('/getreviewlisting', verifyToken, async (req, res) => {
                     
                     reviewrepliesmap[reviewId].push({
                         review_id:reply.review_id,
-                        reply_id: reply.ID,
+                        ID: reply.ID,
                         reply_by: reply.reply_by,
                         comment: reply.comment,
                         created_at: reply.created_at,
@@ -1175,7 +1175,7 @@ router.get('/getreviewlisting', verifyToken, async (req, res) => {
                         ...review,
                         //reply_status: hasReplyToUser ? 1 : 0,
                         Tags: reviewTagsMap[review.id] || [],
-                        ReviewReplies: reviewrepliesmap[review.id] || []
+                        review_reply: reviewrepliesmap[review.id] || []
                     };
                 });
 
@@ -1196,7 +1196,7 @@ router.get('/getreviewlisting', verifyToken, async (req, res) => {
                         
                         reviewrepliesmap[reviewId].push({
                             review_id:reply.review_id,
-                            reply_id: reply.ID,
+                            ID: reply.ID,
                             reply_by: reply.reply_by,
                             comment: reply.comment,
                             created_at: reply.created_at,
@@ -1208,7 +1208,7 @@ router.get('/getreviewlisting', verifyToken, async (req, res) => {
                         return {
                             ...review,
                             Tags: reviewTagsMap[review.id] || [],
-                            ReviewReplies: reviewrepliesmap[review.id] || []
+                            review_reply: reviewrepliesmap[review.id] || []
                         };
                     });
 
