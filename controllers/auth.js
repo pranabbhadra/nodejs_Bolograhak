@@ -908,9 +908,26 @@ exports.createUser = (req, res) => {
 }
 
 //Create New Category
-exports.createCategory = (req, res) => {
+exports.createCategory = async (req, res) => {
     //console.log('category', req.body);
     const { cat_name, cat_parent_id, country } = req.body;
+
+    //  comFunction2.generateUniqueSlugCategory(cat_name, (err, cat_slug)=>{
+
+    //     console.log(cat_slug);
+    // });
+
+    const catSlug = await new Promise((resolve, reject) => {
+        comFunction2.generateUniqueSlugCategory(cat_name, (error, generatedSlug) => {
+            if (error) {
+                console.log('Error:', error.message);
+                reject(error);
+            } else {
+                // console.log('Generated Company Slug:', generatedSlug);
+                resolve(generatedSlug);
+            }
+        });
+    });
     const cat_sql = "SELECT category_name FROM category WHERE category_name = ?";
     db.query(cat_sql, cat_name, (cat_err, cat_result) => {
         if (cat_err) throw cat_err;
@@ -924,8 +941,8 @@ exports.createCategory = (req, res) => {
         } else {
             if (req.file) {
                 if (cat_parent_id == '') {
-                    const val = [cat_name, 0, req.file.filename];
-                    const sql = 'INSERT INTO category (category_name, parent_id, category_img) VALUES (?, ?, ?)';
+                    const val = [cat_name, 0, req.file.filename, catSlug];
+                    const sql = 'INSERT INTO category (category_name, parent_id, category_img, category_slug ) VALUES (?, ?, ?, ?)';
                     db.query(sql, val, async (err, result) => {
                         if (err) {
                             console.log(err)
@@ -946,8 +963,8 @@ exports.createCategory = (req, res) => {
                         }
                     })
                 } else {
-                    const val = [cat_name, cat_parent_id, req.file.filename];
-                    const sql = 'INSERT INTO category (category_name, parent_id, category_img) VALUES (?, ?, ?)';
+                    const val = [cat_name, cat_parent_id, req.file.filename, catSlug];
+                    const sql = 'INSERT INTO category (category_name, parent_id, category_img, category_slug ) VALUES (?, ?, ?, ?)';
                     db.query(sql, val, async (err, result) => {
                         if (err) {
                             console.log(err)
@@ -970,8 +987,8 @@ exports.createCategory = (req, res) => {
                 }
             } else {
                 if (cat_parent_id == '') {
-                    const val = [cat_name, 0, 'NULL'];
-                    const sql = 'INSERT INTO category (category_name, parent_id, category_img) VALUES (?, ?, ?)';
+                    const val = [cat_name, 0, 'NULL', catSlug];
+                    const sql = 'INSERT INTO category (category_name, parent_id, category_img, category_slug ) VALUES (?, ?, ?, ?)';
                     db.query(sql, val, async (err, result) => {
                         if (err) {
                             console.log(err)
@@ -992,8 +1009,8 @@ exports.createCategory = (req, res) => {
                         }
                     })
                 } else {
-                    const val = [cat_name, cat_parent_id, 'NULL'];
-                    const sql = 'INSERT INTO category (category_name, parent_id, category_img) VALUES (?, ?, ?)';
+                    const val = [cat_name, cat_parent_id, 'NULL', catSlug];
+                    const sql = 'INSERT INTO category (category_name, parent_id, category_img, category_slug ) VALUES (?, ?, ?, ?)';
                     db.query(sql, val, async (err, result) => {
                         if (err) {
                             console.log(err)

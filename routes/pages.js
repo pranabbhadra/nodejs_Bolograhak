@@ -3636,7 +3636,7 @@ router.get('/fill_database_with_category_slug', (req,res)=>{
             console.log(results)
             let count = 0;
             results.forEach((value, index)=>{
-                comFunction2.generateUniqueSlug(value.category_name, (error, categorySlug) => {
+                comFunction2.generateUniqueSlugCategory(value.category_name, (error, categorySlug) => {
                     if (error) {
                       console.log('Err: ', error.message);
                     } else {
@@ -3652,8 +3652,6 @@ router.get('/fill_database_with_category_slug', (req,res)=>{
                         })
                     }
                 })
-               
-                  
             })
             
         }
