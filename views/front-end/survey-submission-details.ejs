@@ -10,9 +10,9 @@
              var jsonString = JSON.stringify(questionJsonObject, null, 2);
           %>
           <%- //jsonString %>
-          <% if(companySurveyAnswersByUser.length > 0 ){ %>
+          <% if(companySurveyAnswersByID.length > 0 ){ %>
             
-            <% var answerJsonObject = JSON.parse(companySurveyAnswersByUser[0].answer)
+            <% var answerJsonObject = JSON.parse(companySurveyAnswersByID[0].answer)
                var jsonAnswerString = JSON.stringify(answerJsonObject, null, 2);
             %>
             <%- //jsonAnswerString %>

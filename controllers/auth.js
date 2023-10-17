@@ -4632,6 +4632,42 @@ exports.createSurvey = async (req, res) => {
             });
         }
     })
+}
 
+// Create Survey Answer
+exports.createSurveyAnswer = async (req, res) => {
+    console.log( 'Survey Response', req.body );
+    const jsonString = Object.keys(req.body)[0];
+    const surveyAnswerResponse = JSON.parse(jsonString);
+    console.log(surveyAnswerResponse);
 
+    
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth() + 1; // Months are zero-based (0 = January, 11 = December), so add 1
+    const day = currentDate.getDate();
+    const formattedDate = `${year}-${month < 10 ? '0' : ''}${month}-${day < 10 ? '0' : ''}${day}`;
+
+    const surveyAnswerInsertData = [
+        surveyAnswerResponse[0].company_id,
+        surveyAnswerResponse[0].survey_unique_id,
+        surveyAnswerResponse[0].customer_id,
+        JSON.stringify(surveyAnswerResponse[0].answers),
+        formattedDate
+    ];
+    const sql = "INSERT INTO survey_customer_answers (company_id, survey_unique_id, customer_id, answer, created_at) VALUES (?, ?, ?, ?, ?)";
+
+    db.query(sql, surveyAnswerInsertData, async (err, result) => {
+        if(err){
+            return res.send({
+                status: 'error',
+                message: err
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Your survey answer successfully submited'
+            });
+        }
+    })
 }

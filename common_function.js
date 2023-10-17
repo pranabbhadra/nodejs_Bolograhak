@@ -1203,16 +1203,33 @@ async function getVisitorCheck(ClientIp) {
 
 async function getCompanySurveyDetails(companyID) {
   const get_company_survey_details_query = `
-  SELECT *
+  SELECT survey.*, COUNT(*) AS total_submission
   FROM survey
-  WHERE company_id = ${companyID}
-  ORDER BY id DESC;
+  LEFT JOIN survey_customer_answers sca ON survey.unique_id = sca.survey_unique_id
+  WHERE survey.company_id = ${companyID}
+  ORDER BY survey.id DESC;
   `;
   try{
     const get_company_survey_details_result = await query(get_company_survey_details_query);
     return get_company_survey_details_result;
   }catch(error){
     return 'Error during user get_company_survey_details_query:'+error;
+  }
+}
+
+async function getCompanySurveySubmissions(companyID, survey_unique_id) {
+  const get_company_survey_submissions_query = `
+  SELECT survey_customer_answers.*, users.first_name, users.last_name
+  FROM survey_customer_answers
+  JOIN users ON survey_customer_answers.customer_id = users.user_id
+  WHERE company_id = ${companyID} AND survey_unique_id = ${survey_unique_id}
+  ORDER BY ID DESC;
+  `;
+  try{
+    const get_company_survey_submissions_result = await query(get_company_survey_submissions_query);
+    return get_company_survey_submissions_result;
+  }catch(error){
+    return 'Error during user get_company_survey_submissions_query:'+error;
   }
 }
 
@@ -1227,6 +1244,34 @@ async function getCompanySurveyQuestions(survey_uniqueid, companyId){
     return get_company_survey_question_result;
   }catch(error){
     return 'Error during user get_company_survey_question_query:'+error;
+  }
+}
+
+async function getCompanySurveyAnswersByUser(survey_uniqueid, userID){
+  const get_company_survey_answer_query = `
+  SELECT *
+  FROM survey_customer_answers
+  WHERE survey_unique_id = ${survey_uniqueid} AND customer_id = ${userID};
+  `;
+  try{
+    const get_company_survey_question_result = await query(get_company_survey_answer_query);
+    return get_company_survey_question_result;
+  }catch(error){
+    return 'Error during user get_company_survey_answer_query:'+error;
+  }
+}
+
+async function getCompanySurveyAnswersByID(survey_submission_id){
+  const get_company_survey_answer_query = `
+  SELECT *
+  FROM survey_customer_answers
+  WHERE ID = ${survey_submission_id};
+  `;
+  try{
+    const get_company_survey_question_result = await query(get_company_survey_answer_query);
+    return get_company_survey_question_result;
+  }catch(error){
+    return 'Error during user get_company_survey_answer_query:'+error;
   }
 }
 
@@ -1273,5 +1318,8 @@ module.exports = {
     getNegativeReviewsCompany,
     getVisitorCheck,
     getCompanySurveyDetails,
-    getCompanySurveyQuestions
+    getCompanySurveyQuestions,
+    getCompanySurveyAnswersByUser,
+    getCompanySurveySubmissions,
+    getCompanySurveyAnswersByID
 };

@@ -293,7 +293,8 @@ router.post('/update-review-flag', authController.updateReviewFlag);
 router.post('/create-discussion', authController.createDiscussion);
 
 
-//Create Poll
+//Create Survey
 router.post('/create-survey', authController.createSurvey);
+router.post('/create-survey-answer', authController.createSurveyAnswer);
 
 module.exports = router;

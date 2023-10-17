@@ -11,74 +11,149 @@
 
          <div class="survey-content">
             <div class="container">
+               <% const dateString = CompanySurveyDetails[0].expire_at; %>
+               <% const date = new Date(dateString); %>
+               <%
+                  const year = date.getFullYear();
+                  const month = String(date.getMonth() + 1).padStart(2, '0');
+                  const day = String(date.getDate()).padStart(2, '0');
+                  const formattedDate = `${year}-${month}-${day}`;
+               %>
+               <% const date2 = new Date(); 
+                  date2.setHours(0, 0, 0, 0) %>
+               <% const daysDiff = Math.round((date - date2)/(1000 * 60 * 60 * 24)) %>
+               <% if(daysDiff >= 0){
+                  //Already running 1 Survey
+               } else { %>
                <div class="create-survey-field">
-                <form id="survey-form-submit" name="survey-form" method="post">
-                  <div class="create-survey-head">
-                     <div class="survey-title">Survey</div>
-                     <div class="survey-ex-date">
-                        <div class="row">
-                           <div class="col-sm-6">
-                              <div class="custom-form mb-sm-0 mb-2">
-                                 <input type="text" class="form-control" name="created_at" value="<%= formattedDate %>" readonly>
-                                 <small>from</small>
+                  <form id="survey-form-submit" name="survey-form" method="post">
+                     <div class="create-survey-head">
+                        <div class="survey-title">Survey</div>
+                        <div class="survey-ex-date">
+                           <div class="row">
+                              <div class="col-sm-6">
+                                 <div class="custom-form mb-sm-0 mb-2">
+                                    <input type="text" class="form-control" name="created_at" value="<%= formattedDate %>" readonly>
+                                    <small>from</small>
+                                 </div>
                               </div>
-                           </div>
-                           <div class="col-sm-6">
-                              <div class="custom-form mb-sm-0 mb-2">
-                                 <input type="date" class="form-control" name="expire_at" required="" id="todatePicker" >
-                                 <small>to</small>
+                              <div class="col-sm-6">
+                                 <div class="custom-form mb-sm-0 mb-2">
+                                    <input type="date" class="form-control" name="expire_at" required="" id="todatePicker" >
+                                    <small>to</small>
+                                 </div>
                               </div>
                            </div>
                         </div>
                      </div>
-                  </div>
-                  <div class="create-survey-body">
-                   
-                      <div class="custom-form">
-                         <label><span>Survey Title</span><span style="color: red;">*</span></label>
-                         <textarea type="text" class="form-control" name="title" required=""></textarea>
-                      </div>
-                      <!-- repeater1 start -->
-                      <div class="qst-repeat dynamic-question-1" data-questionid="1">
-                         <div class="custom-form">
-                            <label><span>Q1</span></label>
-                            <input type="text" class="form-control" name="question" required="">
-                         </div>
+                     <div class="create-survey-body">
+                     
+                        <div class="custom-form">
+                           <label><span>Survey Title</span><span style="color: red;">*</span></label>
+                           <textarea type="text" class="form-control" name="title" required=""></textarea>
+                        </div>
+                        <!-- repeater1 start -->
+                        <div class="qst-repeat dynamic-question-1" data-questionid="1">
+                           <div class="custom-form">
+                              <label><span>Q1</span></label>
+                              <input type="text" class="form-control" name="question" required="">
+                           </div>
 
-                         <div class="custom-form">
-                            <span class="fw-bold d-inline-block me-2">Select Type:</span>
-                            <div class="form-check form-check-inline">
-                               <input class="form-check-input" type="radio" name="question_type_1" id="inlineRadio1" value="type_textarea" checked>
-                               <label class="form-check-label" for="inlineRadio1">Textarea</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                               <input class="form-check-input select-radio" type="radio" name="question_type_1" id="inlineRadio2" value="type_radio">
-                               <label class="form-check-label" for="inlineRadio2">Radio</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                               <input class="form-check-input" type="radio" name="question_type_1" id="inlineRadio3" value="type_checkbox">
-                               <label class="form-check-label" for="inlineRadio3">Checkbox</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                               <input class="form-check-input" type="radio" name="question_type_1" id="inlineRadio4" value="type_ratings">
-                               <label class="form-check-label" for="inlineRadio4">Rating</label>
-                            </div>
-                         </div>
-                      </div>
-                      <!-- repeater1 end -->
-                      
-                      <a href="#" class="btn-default btn-warning add-question my-1">Add Question</a>
-                      <input type="hidden" name="company_id" value="<%- company.ID %>">
-                      <input type="submit" class="btn-survey-default btn-dark my-1" value="Submit">
+                           <div class="custom-form">
+                              <span class="fw-bold d-inline-block me-2">Select Type:</span>
+                              <div class="form-check form-check-inline">
+                                 <input class="form-check-input" type="radio" name="question_type_1" id="inlineRadio1" value="type_textarea" checked>
+                                 <label class="form-check-label" for="inlineRadio1">Textarea</label>
+                              </div>
+                              <div class="form-check form-check-inline">
+                                 <input class="form-check-input select-radio" type="radio" name="question_type_1" id="inlineRadio2" value="type_radio">
+                                 <label class="form-check-label" for="inlineRadio2">Radio</label>
+                              </div>
+                              <div class="form-check form-check-inline">
+                                 <input class="form-check-input" type="radio" name="question_type_1" id="inlineRadio3" value="type_checkbox">
+                                 <label class="form-check-label" for="inlineRadio3">Checkbox</label>
+                              </div>
+                              <div class="form-check form-check-inline">
+                                 <input class="form-check-input" type="radio" name="question_type_1" id="inlineRadio4" value="type_ratings">
+                                 <label class="form-check-label" for="inlineRadio4">Rating</label>
+                              </div>
+                           </div>
+                        </div>
+                        <!-- repeater1 end -->
+                        
+                        <a href="#" class="btn-default btn-warning add-question my-1">Add Question</a>
+                        <input type="hidden" name="company_id" value="<%- company.ID %>">
+                        <input type="submit" class="btn-survey-default btn-dark my-1" value="Submit">
+                     </div>
+                  </form>
+                  <div class="register-now frm-loading" style="display: none;">
+                     <span class="indicator-progress">Please wait...
+                        <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                     </span>
                   </div>
-                </form>
-                <div class="register-now frm-loading" style="display: none;">
-                  <span class="indicator-progress">Please wait...
-                     <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
-                  </span>
-                </div>
-                <div style="width: 85%; text-align: center; display: block; border: 2px solid #fccb06; padding: 6px; margin: 0 auto; border-radius: 5px; display: none;" class="poll-create-message"></div>
+                  <div style="width: 85%; text-align: center; display: block; border: 2px solid #fccb06; padding: 6px; margin: 0 auto; border-radius: 5px; display: none;" class="poll-create-message"></div>
                </div>
+               <% } %>
+
+               <% if(CompanySurveyDetails.length > 0) {%>
+               <div class="custom-accordion">
+                
+               </div>
+
+               <div class="each_box update_basic_information all_review_listing_for_company">
+                  <div class="table-responsive">
+                      <table class="table table-hover custom-table">
+                          <thead>
+                              <tr>
+                                  <th scope="col" style="width: 450px;">Survey</th>
+                                  <th scope="col">Submission</th>
+                                  <th scope="col">Expire</th>
+                                  <th scope="col">Status</th>
+                                  <th scope="col" style="text-align: center;">Acticon</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                        <% CompanySurveyDetails.forEach((survey)=>{  %>
+                           <% const dateString = survey.expire_at; %>
+                           <% const date = new Date(dateString); %>
+                           <%
+                              const year = date.getFullYear();
+                              const month = String(date.getMonth() + 1).padStart(2, '0');
+                              const day = String(date.getDate()).padStart(2, '0');
+                              const formattedDate = `${year}-${month}-${day}`;
+                           %>
+                           <% const date2 = new Date(); 
+                              date2.setHours(0, 0, 0, 0) %>
+                           <% const daysDiff = Math.round((date - date2)/(1000 * 60 * 60 * 24)) %>                           
+                              <tr>
+                                  <td>
+                                    <%= survey.title %>
+                                  </td>
+                                  <td><%= survey.total_submission %></td>
+                                  <td>
+                                    <%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %>
+                                    <!-- ,<br>
+                                    <small><%= date.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true }) %></small> -->
+                                  </td>
+                                  <td>
+                                    <% if(daysDiff >= 0){ %>
+                                       <span class="badge badge-square badge-success">ongoing</span>
+                                    <% } else { %>
+                                       <span class="badge badge-square badge-dark">Past </span>
+                                    <% } %>
+                                  </td>
+                                  <td>
+                                      <div class="side_btn">
+                                          <a class="rply_btn" href="/survey-submissions/<%- company.slug -%>/<%- survey.unique_id -%>">View</a>
+                                      </div>
+                                  </td>
+                              </tr>
+                          <% }) %>
+                          </tbody>
+                      </table>
+                      <% } %>
+                  </div>
+              </div>
             </div>
          </div>
       </div>
@@ -108,6 +183,12 @@
 </style>
 <!-- ============== Section6 End =============== -->
 <%- include('common/footer') -%>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap4.min.css" />
+<link rel="stylesheet" href="https://cdn.datatables.net/responsive/1.0.4/css/dataTables.responsive.css" />
+
+<script src="https://cdn.datatables.net/1.10.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/plug-ins/f2c75b7247b/integration/bootstrap/3/dataTables.bootstrap.js"></script>
+<script src="https://cdn.datatables.net/responsive/1.0.4/js/dataTables.responsive.js"></script>
 <script>
 // JavaScript code to disable previous dates
 const datePicker = document.getElementById("todatePicker");

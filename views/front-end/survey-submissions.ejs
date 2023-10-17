@@ -1,0 +1,113 @@
+<%- include('common/header') -%>
+<link href="/front-end/css/discussion-style.css" rel="stylesheet" type="text/css">
+<%- include('common/header-banner') -%>
+
+<!-- ============== Section1 Start =============== -->
+<section class="main-content bottom-main-content">
+  <div class="discussion-page-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+            <div class="discussions-left">
+                <div id="horizontalTab">
+                    <h2><%- CompanySurveyDetails[0].title %></h2>
+                    <div class="resp-tabs-container">
+                        <% if(companySurveySubmissions.length > 0){ %>
+                            <% companySurveySubmissions.forEach((submission)=>{  %>
+                                <% const dateString = submission.created_at; %>
+                                <% const date = new Date(dateString); %>
+                                <div class="tab-content-wrap" style="display: block;">
+                                    <div class="discussion-review-panel">
+                                        <%
+                                            const letters = '0123456789ABCDEF';
+                                            let color = '#';
+                                            for (let i = 0; i < 6; i++) {
+                                                color += letters[Math.floor(Math.random() * 16)];
+                                            }
+
+                                        %>
+                                        <div class="discussion-user-img" style="padding: 5px 15px; border-radius: 100%; font-size: 28px; background-color: <%- color %>;">
+                                           <%- submission.first_name[0] %>
+                                        </div>
+                                        <div class="discussion-user-info">
+                                            <a href="/survey-submission-details/<%- company.slug %>/<%- submission.survey_unique_id %>/<%- submission.ID %>"><h4><%- submission.first_name +' '+ submission.last_name %></h4></a>
+                                            <p>Submited at <%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }) %>
+                        <% }else{ %>
+                            <p style="margin-top: 15px;
+                            font-size: 18px;
+                            font-weight: 600;
+                            color: #fca634;">No one has submitted this survey form yet.</p>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+        </div>
+    </div>
+  </section>
+
+<!-- ============== Section1 End =============== -->
+
+<%- include('common/footer') -%>   
+
+<script>
+    $(document).ready(function () {
+        var allTags = [];
+        var transformedResponse = {};
+        $('form#create_discussion_form').submit(function (e) {
+          e.preventDefault();
+          $('.response-message').hide();
+          $('.response-message').text('');
+          $('#invitation_email').prop('disabled', true);
+          $('.frm-loading').show(); 
+          //alert('aaaaaa')
+          $(this).find('#sendreviewtags').find('span').each(function(){
+             var enteredTag= $(this).text();
+             allTags.push(enteredTag);
+          });
+            const formData = $('#create_discussion_form').serializeArray();
+            $(formData).each(function (index, field) {
+                transformedResponse[field.name] = field.value;
+            });
+          transformedResponse['tags'] = allTags;
+          console.log(transformedResponse);
+            //return false;
+          
+            $.ajax({
+            url: '/auth/create-discussion', // URL for your API endpoint
+            method: 'POST',
+            data: JSON.stringify(transformedResponse),
+            processData: false,
+            contentType: 'application/json',
+            success: function (data) {
+                if (data.status == 'ok') {
+                    $('.response-message').text(data.message);
+                    $('.response-message').show();
+                    $('#invitation_email').prop('disabled', false);
+                    $('.frm-loading').hide();
+                    setTimeout(function() {
+                        window.location.reload();
+                    }, 2000);
+                } else {
+                    $('.response-message').text(data.message);
+                    $('.response-message').show();
+                    $('#invitation_email').prop('disabled', false);
+                    $('.frm-loading').hide();
+                    console.log('Something went wrong');
+                }
+            },
+            error: function (xhr, status, error) {
+                // Handle any errors that occur during the request
+                console.log(error);
+            }
+        });
+    
+          
+       });
+    });
+    </script>
