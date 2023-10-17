@@ -1552,6 +1552,10 @@
     .basic-complain-content {
         background-size: 10%;
     }
+
+    .add-category-content {
+        margin-top: 20px;
+    }
 }
 
 @media only screen and (max-width: 767px) {
@@ -1689,6 +1693,10 @@
 
     .premium-complain-m-head {
         display: block;
+    }
+
+    .create-category-wrapper {
+        padding: 35px 20px;
     }
 }
 
