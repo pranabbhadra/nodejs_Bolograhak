@@ -57,9 +57,27 @@
                                     <!--end::Label-->
                                     <!--begin::Col-->
                                     <div class="col-lg-8 fv-row">
-                                        <input type="text" name="cat_name"
+                                        <input type="text" name="cat_name" id="cat_name"
                                             class="form-control form-control-lg form-control-solid"
                                             value="<%= edit_data.category_name %>" />
+                                    </div>
+                                    <!--end::Col-->
+                                </div>
+                                <div class="row mb-6">
+                                    <!--begin::Label-->
+                                    <label class="col-lg-4 col-form-label required fw-bold fs-6">Category Slug</label>
+                                    <!--end::Label-->
+                                    <!--begin::Col-->
+                                    <div class="col-lg-8">
+                                        <!--begin::Row-->
+                                        <div class="row">
+                                            <!--begin::Col-->
+                                            <div class="col-lg-12 fv-row">
+                                                <input type="text" name="category_slug" id="category_slug" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0" placeholder="Categoty slug" value="<%= edit_data.category_slug  %>" />
+                                            </div>
+                                            <!--end::Col-->
+                                        </div>
+                                        <!--end::Row-->
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -204,6 +222,13 @@
                                             }
                                         }
                                     },
+                                    'category_slug': {
+                                        validators: {
+                                            notEmpty: {
+                                                message: 'Category slug is required'
+                                            }
+                                        }
+                                    },
                                     'country[]': {
                                         validators: {
                                             notEmpty: {
@@ -310,4 +335,18 @@
             })()
                 ;
             //# sourceMappingURL=profile-details.js.map
+
+            $(document).ready(function() {
+                // Function to generate a slug from a given string
+                function generateSlug(text) {
+                    return text.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9-]/g, '');
+                }
+
+                // Event handler for the "keyup" event on the "Company Name" input field
+                $("#cat_name").on("keyup", function() {
+                    var companyName = $(this).val();
+                    var companySlug = generateSlug(companyName);
+                    $("#category_slug").val(companySlug);
+                });
+            });
         </script>

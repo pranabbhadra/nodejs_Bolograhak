@@ -2244,7 +2244,7 @@ router.get('/edit-category', checkLoggedIn, (req, res, next) => {
                         console.log(cat_err);
                     } else {
                         cat_data = cat_res;
-                        const cat_query = `SELECT category.ID AS category_id,category.category_name AS category_name, category.category_img AS category_img, category.parent_id AS parent_id, c.category_name AS parent_name,GROUP_CONCAT(countries.id) AS country_id, GROUP_CONCAT(countries.name) AS country_names
+                        const cat_query = `SELECT category.ID AS category_id,category.category_name AS category_name,category.category_slug  AS category_slug , category.category_img AS category_img, category.parent_id AS parent_id, c.category_name AS parent_name,GROUP_CONCAT(countries.id) AS country_id, GROUP_CONCAT(countries.name) AS country_names
                         FROM category
                         JOIN category_country_relation ON category.id = category_country_relation.cat_id
                         JOIN countries ON category_country_relation.country_id = countries.id
@@ -2261,6 +2261,8 @@ router.get('/edit-category', checkLoggedIn, (req, res, next) => {
                                     const country_arr = country;
                                     //console.log(edit_data);
                                     //console.log(country, country_id);
+                                    // res.json( { menu_active_id: 'company', page_title: 'Add New Category', currentUserData, country_response, cat_data, edit_data, country_arr, country_id });
+
                                     res.render('edit-category', { menu_active_id: 'company', page_title: 'Add New Category', currentUserData, country_response, cat_data, edit_data, country_arr, country_id });
                                     //res.render('edit-category', { menu_active_id: 'category', page_title: 'Add New Category', currentUserData, 'ids': req.params.id });
                                 }
