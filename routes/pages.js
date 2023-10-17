@@ -1690,40 +1690,6 @@ router.get('/company-dashboard-review-flag/:slug/:reviewID', checkClientClaimedC
 
     const companyPaidStatus = company.paid_status;
     //console.log(companyPaidStatus);
-    if(companyPaidStatus=='free'){
-        if(Array.isArray(singleReviewData) && singleReviewData.length>0){
-            if(Array.isArray(singleReviewData) && singleReviewData[0].company_owner == currentUserData.user_id && singleReviewData[0].company_id == company.ID){
-                res.render('front-end/basic-company-review-replay', 
-                { 
-                    menu_active_id: 'company-review-listing', 
-                    page_title: 'Company Review Replay', 
-                    currentUserData, 
-                    globalPageMeta:globalPageMeta,
-                    company,
-                    companyReviewNumbers,
-                    allRatingTags,
-                    finalsingleReviewData,
-                    singleReviewReplyData
-                });
-                // res.json(
-                // { 
-                //     menu_active_id: 'company-review-listing', 
-                //     page_title: 'Company Review Replay', 
-                //     currentUserData, 
-                //     globalPageMeta:globalPageMeta,
-                //     company,
-                //     companyReviewNumbers,
-                //     allRatingTags,
-                //     finalsingleReviewData,
-                //     singleReviewReplyData
-                // });
-            }else{
-                res.redirect('/company-review-listing/'+company.slug);
-            }
-        }else{
-            res.redirect('/company-review-listing/'+company.slug);
-        }
-    }else{
         let cover_img = '';
         let youtube_iframe = '';
         let gallery_img = [];
@@ -1789,7 +1755,6 @@ router.get('/company-dashboard-review-flag/:slug/:reviewID', checkClientClaimedC
         }else{
             res.redirect('/company-review-listing/'+company.slug);
         }
-    }
 
 });
 
@@ -1947,6 +1912,114 @@ router.get('/send-review-invitation/:slug', checkClientClaimedCompany, async (re
     }
     /////////////////////////////////////////////////
   
+});
+
+//company dcreate category Page 
+router.get('/create-category/:slug', checkClientClaimedCompany, async (req, res) => {
+    const encodedUserData = req.cookies.user;
+    const currentUserData = JSON.parse(encodedUserData);
+    const slug = req.params.slug;
+    const comp_res =await comFunction2.getCompanyIdBySlug(slug);
+    const companyId = comp_res.ID;
+    //const companyId = req.params.compID;
+    const [globalPageMeta, company, allReviews, allReviewTags, companyReviewNumbers, getCompanyReviews, allRatingTags, PremiumCompanyData] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+        comFunction.getCompany(companyId),
+        comFunction2.getAllReviewsByCompanyID(companyId),
+        comFunction2.getAllReviewTags(),
+        comFunction.getCompanyReviewNumbers(companyId),
+        comFunction.getCompanyReviews(companyId),
+        comFunction.getAllRatingTags(),
+        comFunction2.getPremiumCompanyData(companyId)
+    ]);
+    
+    const reviewTagsMap = {};
+    allReviewTags.forEach(tag => {
+        if (!reviewTagsMap[tag.review_id]) {
+        reviewTagsMap[tag.review_id] = [];
+        }
+        reviewTagsMap[tag.review_id].push({ review_id: tag.review_id, tag_name: tag.tag_name });
+    });
+    // Merge allReviews with their associated tags
+    const finalallReviews = allReviews.map(review => {
+        return {
+            ...review,
+            Tags: reviewTagsMap[review.id] || []
+        };
+    });
+    const companyPaidStatus = company.paid_status;
+    if(companyPaidStatus=='free'){
+        res.render('front-end/basic-create-category',
+        {
+            menu_active_id: 'create-category',
+            page_title: 'Create Category',
+            currentUserData,
+            globalPageMeta:globalPageMeta,
+            company:company,
+            finalallReviews,
+            companyReviewNumbers,
+            getCompanyReviews,
+            allRatingTags
+        });
+    }else{
+        let cover_img = '';
+        let youtube_iframe = '';
+        let gallery_img = [];
+        let product = [];
+        let promotions = [];
+        let facebook_url = '';
+        let twitter_url = '';
+        let instagram_url = '';
+        let linkedin_url = '';
+        let youtube_url = '';
+    
+        if(typeof PremiumCompanyData !== 'undefined' ){
+             cover_img = PremiumCompanyData.cover_img;
+             youtube_iframe = PremiumCompanyData.youtube_iframe;
+             gallery_img = JSON.parse(PremiumCompanyData.gallery_img);
+             product = JSON.parse(PremiumCompanyData.products);
+             promotions = JSON.parse(PremiumCompanyData.promotions);
+             facebook_url = PremiumCompanyData.facebook_url;
+             twitter_url = PremiumCompanyData.twitter_url;
+             instagram_url = PremiumCompanyData.instagram_url;
+             linkedin_url = PremiumCompanyData.linkedin_url;
+             youtube_url = PremiumCompanyData.youtube_url;
+        }
+        res.render('front-end/premium-create-category',
+        {
+            menu_active_id: 'create-category',
+            page_title: 'Create Category',
+            currentUserData,
+            globalPageMeta:globalPageMeta,
+            company:company,
+            finalallReviews,
+            companyReviewNumbers,
+            getCompanyReviews,
+            allRatingTags,
+            facebook_url:facebook_url,
+            twitter_url:twitter_url,
+            instagram_url:instagram_url,
+            linkedin_url:linkedin_url,
+            youtube_url:youtube_url
+        });
+        // res.json(
+        // {
+        //     menu_active_id: 'company-review-listing',
+        //     page_title: 'Review Listing',
+        //     currentUserData,
+        //     globalPageMeta:globalPageMeta,
+        //     company:company,
+        //     finalallReviews,
+        //     companyReviewNumbers,
+        //     getCompanyReviews,
+        //     allRatingTags,
+        //     facebook_url:facebook_url,
+        //     twitter_url:twitter_url,
+        //     instagram_url:instagram_url,
+        //     linkedin_url:linkedin_url,
+        //     youtube_url:youtube_url
+        // });
+    }
 });
 
 // Middleware function to check if user is logged in
