@@ -625,18 +625,17 @@ jQuery(function ($) {
 
   // =================================table action button start
 
-  $(".action-arw").click(function (e) {
+  $(".action-select").click(function (e) {
     e.preventDefault();
-    $(this).parent(".action-select").find(".action-dropdown").slideToggle();
+    $(this).find(".action-dropdown").slideToggle();
   });
 
-  //SELECT OPTIONS AND HIDE OPTION AFTER SELECTION
-  $(".action-dropdown ul li a").click(function (e) {
-    e.preventDefault();
-    var text = $(this).html();
-    $(this).parents(".action-select").find(".action-change").html(text);
-    $(this).parents(".action-select").find(".action-dropdown").slideUp();
-  });
+  // $(".action-dropdown ul li a").click(function (e) {
+  //   e.preventDefault();
+  //   var text = $(this).html();
+  //   $(this).parents(".action-select").find(".action-change").html(text);
+  //   $(this).parents(".action-select").find(".action-dropdown").slideUp();
+  // });
 
   // /////////////////////////////////////// language / Country and custom Select end
 

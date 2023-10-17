@@ -1201,12 +1201,13 @@
 .action-select {
     background: #FCCB06;
     width: 100%;
-    max-width: 200px;
+    max-width: 150px;
     margin: 0 auto;
     display: block;
     padding: 8px 5px;
     font-size: 14px;
     position: relative;
+    cursor: pointer;
 }
 
 .action-arw {
@@ -1496,6 +1497,58 @@
     padding: 35px 35px;
     border-radius: 0;
     box-shadow: none;
+}
+
+.modal .custom-form label span {
+    background-color: #ffffff;
+}
+
+.survey-wrapper {
+    margin-top: 30px;
+    border-radius: 18px;
+    box-shadow: 0px 14px 34px 0px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+}
+
+.survey-body {
+    background: #252525 url(../images/survey-object.svg) no-repeat right top;
+    color: #ffffff;
+    padding: 25px 25px;
+}
+
+#giveratingmodal .survey-rating {
+    display: block;
+    text-align: center;
+}
+
+#giveratingmodal .survey-rating-part {
+    font-size: 18px;
+    font-weight: 900;
+    margin: 20px 0;
+}
+
+.survey-rating-part ul li {
+    display: inline-block;
+    margin: 0 20px;
+}
+
+.survey-rating-part ul {
+    padding: 0;
+    margin: 0;
+    line-height: 11px;
+}
+
+.survey-rating-part ul li a img {
+    width: 30px;
+    opacity: 0.3;
+    transition: all ease-in-out 0.5s;
+}
+
+.survey-rating-part ul li a:hover img,
+.survey-rating-part ul li.active a img {
+    opacity: 1;
+    transform: scale(1.1);
+    transition: all ease-in-out 0.5s;
 }
 
 /*========================================= responsive ====================================*/

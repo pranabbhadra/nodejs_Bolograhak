@@ -109,8 +109,8 @@
                            <span class="action-change">Action</span> <a href="" class="action-arw"><i class="fa-solid fa-angle-down"></i></a>
                            <div class="action-dropdown">
                               <ul class="p-0 m-0">
-                                 <li><a href="">Respond to customer with query</a></li>
-                                 <li><a href="">Respond to customer & Close</a></li>
+                                 <li><a href="#" data-bs-toggle="modal" data-bs-target="#customerquerymodal">Respond to customer with query</a></li>
+                                 <li><a href="#" data-bs-toggle="modal" data-bs-target="#respondcustomermodal">Respond to customer & Close</a></li>
                                  <li><a href="">Escalate to next level</a></li>
                               </ul>
                            </div>
@@ -256,6 +256,53 @@
       </div>
    </div>
 </section>
+
+<!-- The Modal -->
+<div class="modal fade" id="customerquerymodal">
+   <div class="modal-dialog">
+     <div class="modal-content">
+ 
+       <!-- Modal Header -->
+       <div class="modal-header border-0">
+         <button type="button" class="btn-close" data-bs-dismiss="modal"><i class="fa-solid fa-circle-xmark"></i></button>
+       </div>
+ 
+       <!-- Modal body -->
+       <div class="modal-body">
+         <form>
+            <div class="custom-form">
+               <label for=""><span>Enter Your Query</span></label>
+               <textarea name="" id="" class="form-control"></textarea>
+            </div>
+           <input type="submit" class="btn-default btn-warning" value="Submit"> 
+         </form>
+       </div>
+     </div>
+   </div>
+ </div>
+
+ <div class="modal fade" id="respondcustomermodal">
+   <div class="modal-dialog">
+     <div class="modal-content">
+ 
+       <!-- Modal Header -->
+       <div class="modal-header border-0">
+         <button type="button" class="btn-close" data-bs-dismiss="modal"><i class="fa-solid fa-circle-xmark"></i></button>
+       </div>
+ 
+       <!-- Modal body -->
+       <div class="modal-body">
+         <form>
+            <div class="custom-form">
+               <label for=""><span>Resolved Message</span></label>
+               <textarea name="" id="" class="form-control"></textarea>
+            </div>
+           <input type="submit" class="btn-default btn-warning" value="Resolved"> 
+         </form>
+       </div>
+     </div>
+   </div>
+ </div>
 <!-- ============== Section1 end =============== -->
 
 <%- include('common/footer') -%>
