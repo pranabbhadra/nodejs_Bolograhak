@@ -1492,12 +1492,22 @@
     background-color: #ffffff;
 }
 
+.basic-complain-content .create-category-wrapper {
+    padding: 35px 35px;
+    border-radius: 0;
+    box-shadow: none;
+}
+
 /*========================================= responsive ====================================*/
 
 
 @media only screen and (max-width: 1199px) {
     .company_profile_navigation>ul>li>a {
         padding: 13px 12px;
+    }
+
+    .basic-complain-content .create-category-wrapper {
+        padding: 35px 0;
     }
 }
 
@@ -1556,6 +1566,8 @@
     .add-category-content {
         margin-top: 20px;
     }
+
+    
 }
 
 @media only screen and (max-width: 767px) {
@@ -1603,6 +1615,8 @@
     .premium-complain-m-wrap {
         padding: 25px 20px;
     }
+
+    
 }
 
 @media only screen and (max-width: 575px) {
