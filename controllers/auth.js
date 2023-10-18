@@ -4708,7 +4708,7 @@ exports.createDiscussion = async (req, res) => {
 
 //Add comment on discussion
 exports.addComment = async (req, res) => {
-    console.log('addComment',req.body ); 
+    //console.log('addComment',req.body ); 
     const {discussion_id,  comment } = req.body;
     const currentDate = new Date();
     const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
@@ -4736,3 +4736,98 @@ exports.addComment = async (req, res) => {
     
 }
 
+//Create company category
+exports.createCompanyCategory = async (req, res) => {
+    //console.log('createCompanyCategory',req.body ); 
+    const {category_name, parent_category, company_id} = req.body;
+    const checkQuery = `SELECT id FROM complaint_category WHERE category_name = '${category_name}'`;
+    db.query(checkQuery, (checkErr, checkResult)=>{
+        if (checkErr) {
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong '+checkErr
+            });
+        }
+        if (checkResult.length > 0) {
+            return res.send({
+                status: 'not ok',
+                message: 'Ctegory name already exist.'
+            });
+        } else {
+                const sql = `INSERT INTO complaint_category ( company_id, category_name, parent_id) VALUES (?, ?, ?)`;
+                const data = [company_id, category_name, parent_category ];
+                db.query(sql, data, (err, result) => {
+                    if (err) {
+                        return res.send({
+                            status: 'not ok',
+                            message: 'Something went wrong '+err
+                        });
+                    } else {
+                        return res.send({
+                            status: 'ok',
+                            message: 'Ctegory added successfully !'
+                        });
+                    }
+                })
+        }
+    })
+    
+}
+
+//Delete company category
+exports.deleteCompanyCategory = async (req, res) => {
+    //console.log('deleteCompanyCategory',req.body ); 
+    const delQuery = `DELETE FROM complaint_category WHERE id = '${req.body.cat_id}'`;
+    db.query(delQuery,(err, result)=>{
+        if (err) {
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong '+err
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Ctegory Deleted successfully !'
+            });
+        }
+    })
+}
+
+//Update company category
+exports.updateCompanyCategory = async (req, res) => {
+    console.log('updateCompanyCategory',req.body ); 
+    const {category_name,parent_category, company_id, cat_id } = req.body ;
+    //return false;
+    const checkQuery = `SELECT id FROM complaint_category WHERE category_name = '${category_name}' AND id != ${cat_id}`;
+    db.query(checkQuery, (checkErr, checkResult)=>{
+        if (checkErr) {
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong '+checkErr
+            });
+        }
+        if (checkResult.length > 0) {
+            return res.send({
+                status: 'not ok',
+                message: 'Ctegory name already exist.'
+            });
+        } else {
+            const data = [category_name, parent_category, cat_id];
+            const delQuery = `UPDATE complaint_category SET category_name = ?, parent_id = ? WHERE id = ? `;
+            db.query(delQuery, data, (err, result)=>{
+                if (err) {
+                    return res.send({
+                        status: 'not ok',
+                        message: 'Something went wrong '+err
+                    });
+                } else {
+                    return res.send({
+                        status: 'ok',
+                        message: 'Ctegory Updated successfully !'
+                    });
+                }
+            })
+        }
+    })
+
+}

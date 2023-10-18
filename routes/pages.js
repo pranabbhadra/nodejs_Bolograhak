@@ -1125,48 +1125,6 @@ router.get('/premium-alert', checkCookieValue, async (req, res) => {
     //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
 });
 
-//permium create category page
-router.get('/premium-create-category', checkCookieValue, async (req, res) => {
-    let currentUserData = JSON.parse(req.userData);
-    const [globalPageMeta] = await Promise.all([
-        comFunction2.getPageMetaValues('global'),
-    ]);
-    try {
-
-        res.render('front-end/premium-create-category', {
-            menu_active_id: 'premium-create-category',
-            page_title: 'Create Category',
-            currentUserData,
-            globalPageMeta:globalPageMeta
-        });
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('An error occurred');
-    }
-    //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
-});
-
-//basic create category page
-router.get('/basic-create-category', checkCookieValue, async (req, res) => {
-    let currentUserData = JSON.parse(req.userData);
-    const [globalPageMeta] = await Promise.all([
-        comFunction2.getPageMetaValues('global'),
-    ]);
-    try {
-
-        res.render('front-end/basic-create-category', {
-            menu_active_id: 'basic-create-category',
-            page_title: 'Create Category',
-            currentUserData,
-            globalPageMeta:globalPageMeta
-        });
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('An error occurred');
-    }
-    //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
-});
-
 
 //-----------------------------------------------------------------//
 
@@ -1922,31 +1880,14 @@ router.get('/create-category/:slug', checkClientClaimedCompany, async (req, res)
     const comp_res =await comFunction2.getCompanyIdBySlug(slug);
     const companyId = comp_res.ID;
     //const companyId = req.params.compID;
-    const [globalPageMeta, company, allReviews, allReviewTags, companyReviewNumbers, getCompanyReviews, allRatingTags, PremiumCompanyData] = await Promise.all([
+    const [globalPageMeta, company, companyReviewNumbers, PremiumCompanyData, getCompanyCategories] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
         comFunction.getCompany(companyId),
-        comFunction2.getAllReviewsByCompanyID(companyId),
-        comFunction2.getAllReviewTags(),
         comFunction.getCompanyReviewNumbers(companyId),
-        comFunction.getCompanyReviews(companyId),
-        comFunction.getAllRatingTags(),
-        comFunction2.getPremiumCompanyData(companyId)
+        comFunction2.getPremiumCompanyData(companyId),
+        comFunction2.getCompanyCategories(companyId)
     ]);
     
-    const reviewTagsMap = {};
-    allReviewTags.forEach(tag => {
-        if (!reviewTagsMap[tag.review_id]) {
-        reviewTagsMap[tag.review_id] = [];
-        }
-        reviewTagsMap[tag.review_id].push({ review_id: tag.review_id, tag_name: tag.tag_name });
-    });
-    // Merge allReviews with their associated tags
-    const finalallReviews = allReviews.map(review => {
-        return {
-            ...review,
-            Tags: reviewTagsMap[review.id] || []
-        };
-    });
     const companyPaidStatus = company.paid_status;
     if(companyPaidStatus=='free'){
         res.render('front-end/basic-create-category',
@@ -1956,17 +1897,10 @@ router.get('/create-category/:slug', checkClientClaimedCompany, async (req, res)
             currentUserData,
             globalPageMeta:globalPageMeta,
             company:company,
-            finalallReviews,
             companyReviewNumbers,
-            getCompanyReviews,
-            allRatingTags
+            CompanyCategories:getCompanyCategories
         });
     }else{
-        let cover_img = '';
-        let youtube_iframe = '';
-        let gallery_img = [];
-        let product = [];
-        let promotions = [];
         let facebook_url = '';
         let twitter_url = '';
         let instagram_url = '';
@@ -1974,17 +1908,27 @@ router.get('/create-category/:slug', checkClientClaimedCompany, async (req, res)
         let youtube_url = '';
     
         if(typeof PremiumCompanyData !== 'undefined' ){
-             cover_img = PremiumCompanyData.cover_img;
-             youtube_iframe = PremiumCompanyData.youtube_iframe;
-             gallery_img = JSON.parse(PremiumCompanyData.gallery_img);
-             product = JSON.parse(PremiumCompanyData.products);
-             promotions = JSON.parse(PremiumCompanyData.promotions);
              facebook_url = PremiumCompanyData.facebook_url;
              twitter_url = PremiumCompanyData.twitter_url;
              instagram_url = PremiumCompanyData.instagram_url;
              linkedin_url = PremiumCompanyData.linkedin_url;
              youtube_url = PremiumCompanyData.youtube_url;
         }
+        // res.json(
+        // {
+        //     menu_active_id: 'create-category',
+        //     page_title: 'Create Category',
+        //     currentUserData,
+        //     globalPageMeta:globalPageMeta,
+        //     company:company,
+        //     companyReviewNumbers,
+        //     facebook_url:facebook_url,
+        //     twitter_url:twitter_url,
+        //     instagram_url:instagram_url,
+        //     linkedin_url:linkedin_url,
+        //     youtube_url:youtube_url,
+        //     CompanyCategories:getCompanyCategories
+        // });
         res.render('front-end/premium-create-category',
         {
             menu_active_id: 'create-category',
@@ -1992,33 +1936,15 @@ router.get('/create-category/:slug', checkClientClaimedCompany, async (req, res)
             currentUserData,
             globalPageMeta:globalPageMeta,
             company:company,
-            finalallReviews,
             companyReviewNumbers,
-            getCompanyReviews,
-            allRatingTags,
             facebook_url:facebook_url,
             twitter_url:twitter_url,
             instagram_url:instagram_url,
             linkedin_url:linkedin_url,
-            youtube_url:youtube_url
+            youtube_url:youtube_url,
+            CompanyCategories:getCompanyCategories
         });
-        // res.json(
-        // {
-        //     menu_active_id: 'company-review-listing',
-        //     page_title: 'Review Listing',
-        //     currentUserData,
-        //     globalPageMeta:globalPageMeta,
-        //     company:company,
-        //     finalallReviews,
-        //     companyReviewNumbers,
-        //     getCompanyReviews,
-        //     allRatingTags,
-        //     facebook_url:facebook_url,
-        //     twitter_url:twitter_url,
-        //     instagram_url:instagram_url,
-        //     linkedin_url:linkedin_url,
-        //     youtube_url:youtube_url
-        // });
+        
     }
 });
 

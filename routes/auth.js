@@ -299,4 +299,13 @@ router.post('/create-discussion', authController.createDiscussion);
 //Create discussion
 router.post('/add-comment', authController.addComment);
 
+//Create create-company-category
+router.post('/create-company-category', authController.createCompanyCategory);
+
+//Delete company-category
+router.post('/delete-company-category', authController.deleteCompanyCategory);
+
+//Update company-category
+router.post('/update-company-category', authController.updateCompanyCategory);
+
 module.exports = router;
