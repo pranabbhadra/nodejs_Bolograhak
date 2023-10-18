@@ -1002,8 +1002,9 @@ router.get('/create-survey', checkCookieValue, async (req, res) => {
 //register complain page
 router.get('/register-complain', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
-    const [globalPageMeta] = await Promise.all([
+    const [globalPageMeta, getAllCompany] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
+        comFunction.getAllCompany()
     ]);
     try {
 
@@ -1011,7 +1012,8 @@ router.get('/register-complain', checkCookieValue, async (req, res) => {
             menu_active_id: 'register-complain',
             page_title: 'Register Complainant',
             currentUserData,
-            globalPageMeta:globalPageMeta
+            globalPageMeta:globalPageMeta,
+            AllCompany:getAllCompany
         });
     } catch (err) {
         console.error(err);

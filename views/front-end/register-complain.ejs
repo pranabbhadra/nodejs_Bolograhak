@@ -55,11 +55,11 @@
                       <div class="row">
                          <div class="col-sm-12">
                             <div class="custom-form">
-                               <select class="form-select">
-                                  <option>Select the Company</option>
-                                  <option>Company Name</option>
-                                  <option>Company Name</option>
-                                  <option>Company Name</option>
+                               <select class="form-select" id="select_company" required >
+                                  <option value="">Select the Company</option>
+                                  <% AllCompany.forEach( company => { %>
+                                    <option value="<%- company.ID %>" data-address="<%- company.main_address %>" ><%- company.company_name %></option>
+                                    <% }) %>
                                </select>
                             </div>
                          </div>
@@ -122,3 +122,51 @@
  </section>
 
 <%- include('common/footer') -%>  
+
+<script>
+$(document).ready(function () {
+   $('#select_company').change(function() {
+         $('#select_state').empty();
+         //$("#select_state").prop('required',false);
+         $('#dynamic_state_field_wrapper').hide();
+         var country_id = $(this).val();
+         alert(country_id);
+         return false;
+         $('#country_name').val(this.options[this.selectedIndex].text);
+         $.ajax({
+               url: '/api/states',
+               method: 'POST',
+               data: {country_id:country_id},
+               ContentType: 'application/json',
+               success: function (data) {
+                  if (data.status == 'ok') {
+                     $('#dynamic_state_field_wrapper').show();
+                     //$("#select_state").prop('required',true);
+                     $.each(data.data, function (i, item) {
+                           $('#select_state').append($('<option>', { 
+                              value: item.id,
+                              text : item.name 
+                           }));
+                     });                
+                  } else {
+                     $('#dynamic_state_field_wrapper').hide();
+                     $("#select_state").prop('required',false);
+                  }
+               },
+               error: function (error) {
+                  // Handle any errors
+                  Swal.fire({
+                     text: error,
+                     icon: "error",
+                     buttonsStyling: false,
+                     confirmButtonText: "Ok, got it!",
+                     customClass: {
+                           confirmButton: "btn btn-primary"
+                     }
+                  });
+                  submitButton.disabled = false;
+               }
+         });    
+      });
+   })
+</script>
