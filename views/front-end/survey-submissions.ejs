@@ -11,6 +11,35 @@
             <div class="discussions-left">
                 <div id="horizontalTab">
                     <h2><%- CompanySurveyDetails[0].title %></h2>
+                    <div class="submissions-result-wrapper">
+                        <p>Total submissions: <%- companySurveySubmissions.length %></p>
+                        <% if(companySurveySubmissions.length > 0){ %>
+                        <div class="radio-questions">
+                        <% CompanySurveyDetails[0].questions.forEach((qun, index)=>{  %>
+                            <% if( qun.type == 'type_radio' ){ %>
+                                <h5><%- qun.question %></h5>
+                                <% var question_name = 'question_'+(index+1); %>
+                                <ol>
+                                    <% qun.options.forEach((opt)=>{  %>
+                                        <%
+                                            let opt_count = 0;
+                                            companySurveySubmissions.forEach(submission => {
+                                                if (submission.answer && submission.answer[question_name]) {
+                                                  if ( submission.answer[question_name] === opt) {
+                                                    opt_count++;
+                                                  }
+                                                }
+                                            });
+                                            var opt_percentage = (opt_count/companySurveySubmissions.length)*100;
+                                        %>
+                                        <li><%- opt %> : <%- opt_percentage.toFixed(2) %>%</li>
+                                    <% }) %>
+                                </ol>
+                            <% } %>
+                        <% }) %>
+                        </div>
+                        <% } %>
+                    </div>
                     <div class="resp-tabs-container">
                         <% if(companySurveySubmissions.length > 0){ %>
                             <% companySurveySubmissions.forEach((submission)=>{  %>

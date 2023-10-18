@@ -1091,6 +1091,14 @@ router.get('/survey-submissions/:slug/:survey_id', checkClientClaimedCompany, as
         comFunction.getCompanySurveySubmissions(companyId, survey_unique_id),
     ]);
 
+    CompanySurveyDetails.forEach(item => {
+        item.questions = JSON.parse(item.questions);
+    });
+
+    companySurveySubmissions.forEach(item => {
+        item.answer = JSON.parse(item.answer);
+    });
+
     const companyPaidStatus = company.paid_status;
     if(companyPaidStatus=='free'){
         res.redirect('/');

@@ -1203,7 +1203,7 @@ async function getVisitorCheck(ClientIp) {
 
 async function getCompanySurveyDetails(companyID) {
   const get_company_survey_details_query = `
-  SELECT survey.*, COUNT(*) AS total_submission
+  SELECT survey.*, COUNT(sca.ID) AS total_submission
   FROM survey
   LEFT JOIN survey_customer_answers sca ON survey.unique_id = sca.survey_unique_id
   WHERE survey.company_id = ${companyID}

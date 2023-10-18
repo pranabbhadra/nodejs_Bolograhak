@@ -95,11 +95,7 @@
                </div>
                <% } %>
 
-               <% if(CompanySurveyDetails.length > 0) {%>
-               <div class="custom-accordion">
-                
-               </div>
-
+               <% if(CompanySurveyDetails[0].id != null) {%>
                <div class="each_box update_basic_information all_review_listing_for_company">
                   <div class="table-responsive">
                       <table class="table table-hover custom-table">
@@ -151,9 +147,9 @@
                           <% }) %>
                           </tbody>
                       </table>
-                      <% } %>
                   </div>
-              </div>
+               </div>
+               <% } %>
             </div>
          </div>
       </div>
