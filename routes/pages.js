@@ -1167,6 +1167,48 @@ router.get('/basic-create-category', checkCookieValue, async (req, res) => {
     //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
 });
 
+//premium company-compalin-details
+router.get('/premium-company-complain-details', checkCookieValue, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
+    const [globalPageMeta] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+    ]);
+    try {
+
+        res.render('front-end/premium-company-complain-details', {
+            menu_active_id: 'premium-company-complain-details',
+            page_title: 'Company Complain',
+            currentUserData,
+            globalPageMeta:globalPageMeta
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+    //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
+});
+
+//premium company-compalin-details
+router.get('/basic-company-complain-details', checkCookieValue, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
+    const [globalPageMeta] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+    ]);
+    try {
+
+        res.render('front-end/basic-company-complain-details', {
+            menu_active_id: 'basic-company-complain-details',
+            page_title: 'Company Complain',
+            currentUserData,
+            globalPageMeta:globalPageMeta
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+    //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
+});
+
 
 //-----------------------------------------------------------------//
 

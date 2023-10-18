@@ -710,11 +710,6 @@ jQuery(function ($) {
     $(".qst-repeat:hidden").slice(0,1).fadeIn("slow");
   });
 
-  $(".add-email-btn").click(function(e){
-    e.preventDefault();
-    $(this).parents(".edit-email").find(".add-email-field:hidden").slice(0,1).fadeIn("slow");
-  });
-
 
 
   //$(".multiple-ans-repeat").slice(0,0).show();
@@ -1198,9 +1193,36 @@ $('.form-check-input').click(function() {
 });
 /*=========================== Create survey add question add option End =================*/
 
+/*=========================== btn switch toggle start =================*/
+$('.premium-alert-box .btn-toggle').click(function() {
+  $(this).find('.btn').toggleClass('active'); 
+  if ($(this).find('.btn-primary').length>0) {
+    $(this).find('.btn').toggleClass('btn-primary');
+  }
+});
+/*=========================== btn switch toggle End =================*/
+
+/*=========================== Repeater function start =================*/
+$(".add-new-hops").click(function(e){
+  e.preventDefault();
+var totalLevel = $(this).parents(".premium-complain-m-wrap").find(".premium-complain-m-content-body").length;
+if (totalLevel >= 5) {
+  console.log('কিছু হবে না');
+}else {
+  //console.log(totalLevel+1,'cloned');
+  var count = totalLevel+1;
+  $(this).parents(".premium-complain-m-wrap").find(".premium-complain-clone").append('<div class="premium-complain-m-content-body"> <div class="premium-complain-m-content-repeat"> <div class="premium-complain-m-content-part"> '+count+' </div><div class="premium-complain-m-content-part"> <a href="#" class="btn-default btn-warning edit-save-btn">Edit</a> </div></div><div class="edit-email"> <div class="row g-2 align-items-center justify-content-around mb-2"> <div class="col-sm-6"> <label for="" class="col-form-label"><strong>ETA Days</strong></label> </div><div class="col-sm-6"> <input type="number" id="" class="form-control"> </div></div><div class="row g-2 justify-content-around mb-2"> <div class="col-sm-6 email_field_label"> <label for="" class="col-form-label"><strong>Enter Your E-Mail Address</strong></label> </div><div class="col-sm-6 email_clone_div"> <div class="add-email-field mb-2"> <input type="email" id="" class="form-control"> </div><a href="#" class="add-email-btn"><i class="fa-solid fa-circle-plus"></i></a> </div></div></div><a href="#" class="close-level"><i class="fa-solid fa-circle-xmark"></i></a></div>');
+  if(totalLevel >= 4){
+    $('body').find(".add-new-hops").hide();
+  }
+}
+});
+
+/*=========================== Repeater function End =================*/
+
 /*=========================== Edit email start =================*/
-$(".edit-save-btn").click(function(e){
-e.preventDefault();
+$("body").on('click' , '.edit-save-btn' , function (e){
+  e.preventDefault();
   $(this).parents(".premium-complain-m-content-body").find(".edit-email").slideToggle();
   $(this).parents(".premium-complain-m-content-body").toggleClass("active");
   if ($(this).text() == "Edit") {
@@ -1211,14 +1233,32 @@ e.preventDefault();
 });
 /*=========================== Edit email End =================*/
 
-/*=========================== btn switch toggle start =================*/
-$('.premium-alert-box .btn-toggle').click(function() {
-  $(this).find('.btn').toggleClass('active'); 
-  if ($(this).find('.btn-primary').length>0) {
-    $(this).find('.btn').toggleClass('btn-primary');
-  }
-});
-/*=========================== btn switch toggle End =================*/
+/*=========================== email repeater Start =================*/
+$("body").on('click' , '.add-email-btn' , function (e) {
+  e.preventDefault();
+  $(this).parents(".email_clone_div").append('<div class="add-email-field mb-2"> <input type="email" id="" class="form-control"><a href="#" class="close-email-field"><i class="fa-solid fa-circle-xmark"></i></a> </div>');
+  });
+
+/*=========================== email repeater End =================*/
+
+
+/*=========================== Level Email repeater close Start =================*/
+  $("body").on('click' , '.close-level' , function (e){
+    e.preventDefault();
+    $(this).parent().hide();
+    var levelcloseLength = $(this).parent().length;
+    if(levelcloseLength >=5){}
+    else{
+      $(".add-new-hops").show();
+    }
+  });
+  
+  $("body").on('click' , '.close-email-field' , function (e){
+    e.preventDefault();
+  $(this).parent().hide();
+  });
+  
+/*=========================== Level Email repeater close End =================*/
 
 
 

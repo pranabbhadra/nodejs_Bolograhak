@@ -3,8 +3,7 @@
 <link href="/front-end/css/business-profile-manage-style.css" rel="stylesheet" type="text/css">
 <%- include('common/header-banner') -%>
 
-
-<section class="main-content basic-complain-content">
+<section class="main-content basic-complain-content bottom-main-content">
     <div class="container">
         <div class="company_profile_management">
             <div class="main_box">
@@ -79,62 +78,49 @@
                          </ul>
                       </li>
                       <!-- <li><a href="/company-poll-listing/scwebtech"><i class="fas fa-poll"></i> Polls</a></li> -->
-                      <!-- <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li> -->
+                      <li class="active"><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
                       <li><a href="/change-password"><i class="fas fa-lock"></i> Change Password</a></li>
                       <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-                      <li class="active"><a href="#"><i class="fa-solid fa-comment-exclamation"></i> Complaint</a>
-                        <ul>
-                            <li><a href="/basic-create-category">Create Category</a></li>
-                         </ul>
-                    </li>
+                      <li><a href="#"><i class="fa-solid fa-comment-exclamation"></i> Complaint</a>
+                          <ul>
+                              <li><a href="premium-create-category">Creat Category</a></li>
+                           </ul>
+                      </li>
                    </ul>
                 </div>
              </div>
-             <div class="create-category-wrapper">
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="sub-category-list">
-                            <h4>YOUR CATEGORY</h4>
-                            <ul class="ps-0">
-                                <li><i class="fa-solid fa-hand-point-right"></i> Electronics
-                                    <span><a href="#"><i class="fa-solid fa-pen"></i></a> <a href="#"><i class="fa-solid fa-trash"></i></a></span>
-                                    <ul>
-                                        <li>Air Conditioner <span><a href="#"><i class="fa-solid fa-pen"></i></a> <a href="#"><i class="fa-solid fa-trash"></i></a></span></li>
-                                        <li>Refrigerator <span><a href="#"><i class="fa-solid fa-pen"></i></a> <a href="#"><i class="fa-solid fa-trash"></i></a></span></li>
-                                        <li>Microwave <span><a href="#"><i class="fa-solid fa-pen"></i></a> <a href="#"><i class="fa-solid fa-trash"></i></a></span></li>
-                                        <li>Laptop <span><a href="#"><i class="fa-solid fa-pen"></i></a> <a href="#"><i class="fa-solid fa-trash"></i></a></span></li>
-                                        <li>Washing Machine <span><a href="#"><i class="fa-solid fa-pen"></i></a> <a href="#"><i class="fa-solid fa-trash"></i></a></span></li>
-                                        <li>Water Filter <span><a href="#"><i class="fa-solid fa-pen"></i></a> <a href="#"><i class="fa-solid fa-trash"></i></a></span></li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col-md-8">
-                        <div class="add-category-content ps-lg-5">
-                            <h4>ADD CATEGORY</h4>
-                            <form>
-                                <div class="custom-form">
-                                    <label><span>Category Name</span></label>
-                                    <input type="text" class="form-control" name="" required>
-                                </div>
-                                <div class="custom-form">
-                                    <label><span>Select Parent Category</span></label>
-                                    <Select class="form-select">
-                                        <option value="">Category 1</option>
-                                        <option value="">Category 2</option>
-                                        <option value="">Category 3</option>
-                                        <option value="">Category 4</option>
-                                        <option value="">Category 5</option>
-                                    </Select>
-                                </div>
-                                <input type="submit" value="SEND" class="btn-default btn-warning" id="">
-                            </form>
-                        </div>
-                    </div>
-                </div>
+             <div class="company-user-complain-wrapper">
+              <h6><strong>Company Name:</strong> Samsung</h6>
+              <h6><strong>Category:</strong> Electronics</h6>
+              <h6><strong>Sub Category:</strong> Air Conditioner</h6>
+              <div class="custom-text-label">
+                  Your Query to Customer
+                 </div>
+                 <div class="custom-text-box" style="background-color: #FFF5CA;">
+                  Lorem ipsum dolor sit, amet consectetur adipisicing elit. Libero, porro amet corrupti deserunt dolore, dignissimos officiis tenetur saepe ea nihil ipsum eaque nisi, sed ipsa eum sit beatae dicta itaque. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Non accusantium ullam veniam expedita nulla fuga omnis ipsum placeat facilis iste, exercitationem impedit dolor repellat incidunt? Explicabo quas eos amet saepe?
+                 </div>
+                 <div class="custom-text-label">
+                  Customer Response
+                 </div>
+                 <div class="custom-text-box" style="background-color:#FFEB99;">
+                  Lorem ipsum dolor sit, amet consectetur adipisicing elit. Libero, porro amet corrupti deserunt dolore, dignissimos officiis tenetur saepe ea nihil ipsum eaque nisi, sed ipsa eum sit beatae dicta itaque. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Non accusantium ullam veniam expedita nulla fuga omnis ipsum placeat facilis iste, exercitationem impedit dolor repellat incidunt? Explicabo quas eos amet saepe?
+                 </div>
+                 <div class="custom-text-label">
+                  Hops Level
+                 </div>
+                 <div class="custom-text-box">
+                  <strong>Complain Manegement Level 3</strong> <small class="badge bg-danger">2days Left</small>
+                 </div>
+                 <div class="custom-text-label">
+                  Rating
+                 </div>
+                 <div class="user-rating">
+                  <span><img src="/1691875890277-10.High.gif" alt="" style="display: inline-block;" width="35"></span>
+                  <span>4.5/5</span>
+                 </div>
              </div>
         </div>
+       
     </div>
 </section>
 

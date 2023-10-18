@@ -1282,10 +1282,17 @@
 }
 
 .premium-complain-m-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
+    text-align: center;
+}
+
+a.add-new-hops {
+    color: #fccb06;
+    font-weight: 700;
+    font-size: 18px;
+}
+
+a.add-new-hops:hover {
+    color: #000000;
 }
 
 .premium-complain-m-head h2.inner-main-head,
@@ -1330,8 +1337,8 @@
     position: relative;
 }
 
-.premium-complain-m-content-body + .premium-complain-m-content-body {
-    border-top: 1px #9A9A9A dashed;
+.premium-complain-m-content-body {
+    border-bottom: 1px #9A9A9A dashed;
 }
 
 .premium-complain-m-content-body .premium-complain-m-content-part {
@@ -1364,20 +1371,12 @@
 .add-email-btn {
     position: absolute;
     right: -15px;
-    bottom: 15px;
+    top: 8px;
     color: #FCCB06;
 }
 
 .add-email-btn:hover {
     color: #000;
-}
-
-.add-email-field {
-    display: none;
-}
-
-.edit-email .row>* .add-email-field:first-child {
-    display: block;
 }
 
 .premium-complain-m-content-body.active {
@@ -1387,6 +1386,30 @@
     border-radius: 8px;
     background: url(/front-end/images/edit-email-bg.svg) no-repeat bottom;
     background-size: 100%;
+}
+
+.add-email-field {
+    position: relative;
+}
+
+a.close-email-field {
+    position: absolute;
+    right: -19px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #000;
+}
+
+a.close-level {
+    position: absolute;
+    right: 8px;
+    top: 25px;
+    color: #000;
+}
+
+a.close-email-field:hover,
+a.close-level:hover {
+    color: #FCCB06;
 }
 
 .premium-alert-box {
@@ -1549,6 +1572,76 @@
     opacity: 1;
     transform: scale(1.1);
     transition: all ease-in-out 0.5s;
+}
+
+.survey-rating-part .form-check.custom-check .form-check-label img {
+    max-width: 30px;
+    transition: all ease-in-out 0.5s;
+}
+
+.survey-rating-part .form-check.custom-check .form-check-label {
+    min-width: auto;
+    padding: 0;
+    border: none;
+    opacity: 0.3;
+    background: none;
+    min-height: auto;
+    margin: 5px;
+}
+
+.survey-rating-part .form-check.custom-check .form-check-input:checked[type=radio] + .form-check-label {
+    opacity: 1;
+}
+
+.survey-rating-part .form-check.custom-check .form-check-input:checked[type=radio] + .form-check-label img {
+    transform: scale(1.1);
+    transition: all ease-in-out 0.5s;
+}
+
+.company-user-complain-wrapper {
+    width: 100%;
+    display: block;
+    margin: 0;
+    padding:35px 20px;
+    border-radius: 20px;
+    background: #FFF;
+    box-shadow: 0px 14px 84px 0px rgba(0, 0, 0, 0.22);
+}
+
+.company-user-complain-wrapper h6 {
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+.custom-text-label {
+    font-weight: 700;
+    margin: 30px 0 12px;
+}
+
+.custom-text-box {
+    padding: 20px 15px;
+    background: #f2f2f2;
+    border-radius: 8px;
+}
+
+.company-user-complain-wrapper .user-rating {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 29px;
+}
+
+.level-management {
+    font-weight: 700;
+}
+
+.company-user-complain-wrapper .level-management small {
+    color: #f00;
+    margin-left: 10px;
+}
+
+.basic-complain-content .company-user-complain-wrapper {
+    border: 1px #ccc solid;
+    box-shadow: none;
 }
 
 /*========================================= responsive ====================================*/
