@@ -18,11 +18,11 @@
                                     <% if(category.parent_id == '0'){ %>
                                         <ul class="ps-0">
                                             <li><i class="fa-solid fa-hand-point-right"></i><%= category.category_name %>
-                                                <span><a class="edit_cat" data-cat-id="<%= category.id %>" data-cat-name="<%= category.category_name %>" data-parent-id="<%= category.parent_id %>" href="#"><i class="fa-solid fa-pen"></i></a> <a class="delete_cat" href="#" data-cat-id="<%= category.id %>"><i class="fa-solid fa-trash"></i></a></span>
+                                                <span><a class="edit_cat" data-cat-id="<%= category.id %>" data-cat-name="<%= category.category_name %>" data-parent-id="<%= category.parent_id %>" href="#"><i class="fa-solid fa-pen"></i></a> <a class="delete_cat" href="#" data-bs-toggle="modal" data-bs-target="#surealertmodal" data-cat-id="<%= category.id %>"><i class="fa-solid fa-trash"></i></a></span>
                                                 <ul>
                                                     <% CompanyCategories.forEach((subCategory)=>{ %>
                                                         <% if(subCategory.parent_id == category.id ) { %>
-                                                        <li><%= subCategory.category_name %> <span><a class="edit_cat" data-cat-id="<%= subCategory.id %>" data-cat-name="<%= subCategory.category_name %>" data-parent-id="<%= subCategory.parent_id %>" href="#"><i class="fa-solid fa-pen"></i></a> <a class="delete_cat" href="#" data-cat-id="<%= subCategory.id %>" ><i class="fa-solid fa-trash"></i></a></span></li>
+                                                        <li><%= subCategory.category_name %> <span><a class="edit_cat" data-cat-id="<%= subCategory.id %>" data-cat-name="<%= subCategory.category_name %>" data-parent-id="<%= subCategory.parent_id %>" href="#"><i class="fa-solid fa-pen"></i></a> <a class="delete_cat" data-bs-toggle="modal" data-bs-target="#surealertmodal" href="#" data-cat-id="<%= subCategory.id %>" ><i class="fa-solid fa-trash"></i></a></span></li>
                                                         <% } %>
                                                     <% }) %>
                                                 </ul>
@@ -97,6 +97,24 @@
         </div>
     </div>
 </section>
+<!-- The Modal -->
+<div class="modal" id="surealertmodal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+  
+        <!-- Modal Header -->
+        <div class="modal-header border-0">
+          <button type="button" class="btn-close" data-bs-dismiss="modal"><i class="fa-solid fa-circle-xmark"></i></button>
+        </div>
+        <div class="modal-body text-center">
+            <h5 class="mb-4">Want to delete this category ?</h5>
+            <button class="btn-default btn-warning my-1" id="okButton">Yes Delete !</button>
+            <button class="btn-default btn-dark my-1" id="cancelButton">No Cancle !</button>
+        </div>
+  
+      </div>
+    </div>
+  </div>
 
 <%- include('common/footer') -%>
 
@@ -126,6 +144,7 @@
                   $('#create_category_form')[0].reset();
                   $('.submit-success').text(data.message);
                   $('.submit-success').show();
+                  $('#submit_btn').prop( "disabled", false );
                   setTimeout( function(){
                     location.reload(true);
                   }, 3000 );
@@ -133,6 +152,7 @@
                     $('.submit-loading').hide();
                   $('.submit-error').text(data.message);
                   $('.submit-error').show();
+                    $('#submit_btn').prop( "disabled", false );
                 }
                 //console.log(data);
               },
@@ -140,6 +160,7 @@
                 $('.submit-loading').hide();
                 $('.submit-error').text(error);
                 $('.submit-error').show();
+                $('#submit_btn').prop( "disabled", false );
               }
             });
         })
@@ -147,9 +168,13 @@
         $('.delete_cat').click(function(e){
             event.preventDefault();
             //alert('aaaaaaaaa');
-            
-            if(confirm('Are you sure?')) {
-                var cat_id = $(this).attr('data-cat-id');
+            var cat_id = $(this).attr('data-cat-id');
+            $("#okButton").on("click", function(e) {
+                event.preventDefault();
+                // Replace this with your desired action
+                // For example, you can place your code here
+                console.log("User clicked 'Ok'");
+
                 $.ajax({
                     url: '/auth/delete-company-category',
                     method: 'POST',
@@ -158,7 +183,6 @@
                     success: function (data) {
                         if (data.status == 'ok') {
                         $('.submit-loading').hide();
-                        $('#create_category_form')[0].reset();
                         $('.submit-success').text(data.message);
                         $('.submit-success').show();
                         setTimeout( function(){
@@ -177,12 +201,22 @@
                         $('.submit-error').show();
                     }
                 });
-            } else {
+                $("#surealertmodal").find('.btn-close').trigger('click');
+            });
+            $("#cancelButton").on("click", function() {
+                event.preventDefault();
                 $('.submit-loading').hide();
                 $('.submit-error').text('Category is not deleted.');
                 $('.submit-error').show();
                 setTimeout(function() { $(".submit-error").hide(); }, 3000);
-            }
+                // Close the modal
+                $("#surealertmodal").find('.btn-close').trigger('click');
+            });
+            // if(confirm('Are you sure?')) {
+                
+            // } else {
+            
+            // }
             
         })
         $('.edit_cat').click(function(e){
@@ -209,7 +243,7 @@
 
         $('#edit_category_form').submit(function(e){
             event.preventDefault();
-            $('#submit_btn').prop( "disabled", true );
+            $('#edit_submit_btn').prop( "disabled", true );
             $('.submit-success, .submit-error').hide();
             $('.submit-loading').show();
 
@@ -227,9 +261,10 @@
               success: function (data) {
                 if (data.status == 'ok') {
                   $('.submit-loading').hide();
-                  $('#create_category_form')[0].reset();
+                  $('#edit_category_form')[0].reset();
                   $('.submit-success').text(data.message);
                   $('.submit-success').show();
+                    $('#edit_submit_btn').prop( "disabled", false );
                   setTimeout( function(){
                     location.reload(true);
                   }, 3000 );
@@ -237,6 +272,7 @@
                     $('.submit-loading').hide();
                   $('.submit-error').text(data.message);
                   $('.submit-error').show();
+                     $('#edit_submit_btn').prop( "disabled", false );
                 }
                 //console.log(data);
               },

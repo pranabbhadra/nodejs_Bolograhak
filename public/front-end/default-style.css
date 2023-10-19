@@ -2757,6 +2757,7 @@ h4 {
     background: #000000;
     color: #FCCB06;
     border-radius: 10px;
+    border: 1px #000 solid;
 }
 
 .btn-dark:hover {

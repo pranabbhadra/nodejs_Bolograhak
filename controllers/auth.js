@@ -4776,19 +4776,40 @@ exports.createCompanyCategory = async (req, res) => {
 
 //Delete company category
 exports.deleteCompanyCategory = async (req, res) => {
-    //console.log('deleteCompanyCategory',req.body ); 
-    const delQuery = `DELETE FROM complaint_category WHERE id = '${req.body.cat_id}'`;
-    db.query(delQuery,(err, result)=>{
-        if (err) {
+    console.log('deleteCompanyCategory',req.body ); 
+    const checkQuery = `SELECT id, parent_id FROM complaint_category WHERE parent_id = '0' AND id = ${req.body.cat_id}`;
+    db.query(checkQuery,(checkErr,checkResult)=>{
+    
+        if (checkErr) {
             return res.send({
                 status: 'not ok',
-                message: 'Something went wrong '+err
+                message: 'Something went wrong 1'+checkErr
             });
         } else {
-            return res.send({
-                status: 'ok',
-                message: 'Ctegory Deleted successfully !'
-            });
+            const delQuery = `DELETE FROM complaint_category WHERE id = '${req.body.cat_id}'`;
+            db.query(delQuery,(err, result)=>{
+                if (checkResult.length > 0 ) {
+                    const updateQuery = `UPDATE complaint_category SET  parent_id = '0' WHERE parent_id = '${req.body.cat_id}' `;
+                    db.query(updateQuery, (updateErr, updateResult)=>{
+                        if (updateErr) {
+                            return res.send({
+                                status: 'not ok',
+                                message: 'Something went wrong 2'+updateErr
+                            });
+                        } else {
+                            return res.send({
+                                status: 'ok',
+                                message: 'Ctegory Deleted successfully !'
+                            });
+                        }
+                    })
+                } else {
+                    return res.send({
+                        status: 'ok',
+                        message: 'Ctegory Deleted successfully !'
+                    });
+                }
+            })
         }
     })
 }
