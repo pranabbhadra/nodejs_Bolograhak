@@ -2267,6 +2267,25 @@ async function getDiscussionsByUserId(userId) {
   }
 }
 
+//Function to get user discussions from discussions table
+async function getCompanyCategories(companyId) {
+  const sql = `
+  SELECT * FROM complaint_category WHERE company_id = '${companyId}'
+  `;
+  try{
+    const results = await query(sql);
+    if (results.length>0) {
+      
+    return results;
+    } else {
+      return [];
+    }
+  }
+  catch(error){
+    console.error('Error during fetch All Latest Discussion:', error);
+  }
+}
+
 module.exports = {
   getFaqPage,
   getFaqCategories,
@@ -2323,5 +2342,6 @@ module.exports = {
   getAllViewedDiscussion,
   searchDiscussion,
   getDiscussionsByUserId,
-  generateUniqueSlugCategory
+  generateUniqueSlugCategory,
+  getCompanyCategories
 };
