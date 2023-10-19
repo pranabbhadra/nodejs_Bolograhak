@@ -1230,6 +1230,27 @@ router.get('/premium-customer-complain-details', checkCookieValue, async (req, r
     //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
 });
 
+//basic customer-complain-details
+router.get('/basic-customer-complain-details', checkCookieValue, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
+    const [globalPageMeta] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+    ]);
+    try {
+
+        res.render('front-end/basic-customer-complain-details', {
+            menu_active_id: 'basic-customer-complain-details',
+            page_title: 'Customer Complain',
+            currentUserData,
+            globalPageMeta:globalPageMeta
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+    //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
+});
+
 
 //-----------------------------------------------------------------//
 

@@ -1646,14 +1646,9 @@ a.close-level:hover {
     justify-content: space-between;
     gap: 10px;
     background: #f2f2f2;
-    padding: 12px 10px;
+    padding: 12px 15px;
     margin-bottom: 20px;
     border-radius: 8px;
-}
-
-.c-u-top-head-part {
-    width: 33.33%;
-    text-align: center;
 }
 
 .c-u-top-head h6 {
@@ -1662,7 +1657,7 @@ a.close-level:hover {
 
 .all-complain-reg-info {
     background: #fbca06;
-    padding: 12px 10px;
+    padding: 12px 15px;
     border-radius: 8px;
 }
 
@@ -1892,6 +1887,10 @@ a.close-level:hover {
     .c-u-top-head-part {
         width: 100%;
         margin: 4px 0;
+    }
+
+    .company-user-complain-wrapper {
+        padding: 20px 12px;
     }
 }
 
