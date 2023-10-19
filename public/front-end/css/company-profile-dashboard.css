@@ -1606,11 +1606,7 @@ a.close-level:hover {
     border-radius: 20px;
     background: #FFF;
     box-shadow: 0px 14px 84px 0px rgba(0, 0, 0, 0.22);
-}
-
-.company-user-complain-wrapper h6 {
-    font-size: 20px;
-    margin-bottom: 20px;
+    position: relative;
 }
 
 .custom-text-label {
@@ -1642,6 +1638,36 @@ a.close-level:hover {
 .basic-complain-content .company-user-complain-wrapper {
     border: 1px #ccc solid;
     box-shadow: none;
+}
+
+.c-u-top-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    background: #f2f2f2;
+    padding: 12px 10px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+}
+
+.c-u-top-head-part {
+    width: 33.33%;
+    text-align: center;
+}
+
+.c-u-top-head h6 {
+    margin: 0;
+}
+
+.all-complain-reg-info {
+    background: #fbca06;
+    padding: 12px 10px;
+    border-radius: 8px;
+}
+
+.c-u-layer-part {
+    margin: 10px 0;
 }
 
 /*========================================= responsive ====================================*/
@@ -1857,6 +1883,15 @@ a.close-level:hover {
 
     .create-category-wrapper {
         padding: 35px 20px;
+    }
+
+    .c-u-top-head {
+        display: block;
+    }
+
+    .c-u-top-head-part {
+        width: 100%;
+        margin: 4px 0;
     }
 }
 
