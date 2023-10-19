@@ -2868,6 +2868,88 @@ exports.createPoll = async (req, res) => {
   }
 };
 
+//submit Survey
+exports.submitSurvey = async (req, res) => {
+  try {
+    // console.log('req.user:', req.user);
+    // console.log('req.body:', req.body);
+    db.query(
+      'SELECT * FROM survey_customer_answers WHERE survey_unique_id = ? AND customer_id = ?',
+      [req.body.survey_unique_id, req.body.user_id],
+      async (err, results) => {
+        if (err) {
+          return res.status(500).json({
+            status: 'error',
+            message: 'An error occurred while processing your request' + err,
+          });
+        } else {
+          if(results.length>0){
+            return res.status(500).json({
+              status: 'error',
+              message: 'You have already submitted this survey form',
+            });
+          }else{
+            const authenticatedUserId = parseInt(req.user.user_id);
+            console.log('authenticatedUserId: ', authenticatedUserId);
+            const ApiuserId = parseInt(req.body.user_id);
+            if (isNaN(ApiuserId)) {
+              return res.status(400).json({
+                status: 'error',
+                message: 'Invalid user_id provided in request body.',
+              });
+            }
+            console.log('req.body.user_id: ', parseInt(req.body.user_id));
+            console.log('Survey', req.body);
+        
+            if (ApiuserId !== authenticatedUserId) {
+              return res.status(403).json({
+                status: 'error',
+                message: 'Access denied: You are not authorized to update this user.',
+              });
+            }
+        
+            const currentDate = new Date();
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth() + 1; // Months are zero-based (0 = January, 11 = December), so add 1
+            const day = currentDate.getDate();
+            const formattedDate = `${year}-${month < 10 ? '0' : ''}${month}-${day < 10 ? '0' : ''}${day}`;
+            
+            const surveyAnswerInsertData = [
+              req.body.company_id,
+              req.body.survey_unique_id,
+              req.body.user_id,
+              JSON.stringify(req.body.answers),
+              formattedDate
+            ];
+            const sql = "INSERT INTO survey_customer_answers (company_id, survey_unique_id, customer_id, answer, created_at) VALUES (?, ?, ?, ?, ?)";
+        
+            db.query(sql, surveyAnswerInsertData, async (err, result) => {
+              if (err) {
+                return res.send({
+                  status: 'error',
+                  message: 'Something went wrong ' + err
+                });
+              } else {
+                return res.send({
+                  status: 'ok',
+                  message: 'Your survey answer successfully submited'
+                });
+              }
+            })
+          }
+        }
+      }
+    );
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: 'error',
+      message: 'An error occurred ' + error,
+    });
+  }
+};
+
 // Update poll expire date
 exports.updatePollExpireDate = async (req, res) => {
   try {
