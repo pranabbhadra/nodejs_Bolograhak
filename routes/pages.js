@@ -1085,26 +1085,7 @@ router.get('/complain-profile', checkCookieValue, async (req, res) => {
     //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
 });
 
-//permium complain management page
-router.get('/premium-complain-management', checkCookieValue, async (req, res) => {
-    let currentUserData = JSON.parse(req.userData);
-    const [globalPageMeta] = await Promise.all([
-        comFunction2.getPageMetaValues('global'),
-    ]);
-    try {
 
-        res.render('front-end/premium-complain-management', {
-            menu_active_id: 'premium-complain-management',
-            page_title: 'Dashboard',
-            currentUserData,
-            globalPageMeta:globalPageMeta
-        });
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('An error occurred');
-    }
-    //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
-});
 
 //permium complain alert page
 router.get('/premium-alert', checkCookieValue, async (req, res) => {
@@ -2076,6 +2057,68 @@ router.get('/create-category/:slug', checkClientClaimedCompany, async (req, res)
     }
 });
 
+//permium complain management page
+router.get('/premium-complaint-management/:slug', checkClientClaimedCompany, async (req, res) => {
+    const encodedUserData = req.cookies.user;
+    const currentUserData = JSON.parse(encodedUserData);
+    const slug = req.params.slug;
+    const comp_res =await comFunction2.getCompanyIdBySlug(slug);
+    const companyId = comp_res.ID;
+    //const companyId = req.params.compID;
+    const [globalPageMeta, company, companyReviewNumbers, PremiumCompanyData ] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+        comFunction.getCompany(companyId),
+        comFunction.getCompanyReviewNumbers(companyId),
+        comFunction2.getPremiumCompanyData(companyId)
+    ]);
+    
+    const companyPaidStatus = company.paid_status;
+    
+        let facebook_url = '';
+        let twitter_url = '';
+        let instagram_url = '';
+        let linkedin_url = '';
+        let youtube_url = '';
+    
+        if(typeof PremiumCompanyData !== 'undefined' ){
+             facebook_url = PremiumCompanyData.facebook_url;
+             twitter_url = PremiumCompanyData.twitter_url;
+             instagram_url = PremiumCompanyData.instagram_url;
+             linkedin_url = PremiumCompanyData.linkedin_url;
+             youtube_url = PremiumCompanyData.youtube_url;
+        }
+        // res.json(
+        // {
+        //     menu_active_id: 'create-category',
+        //     page_title: 'Create Category',
+        //     currentUserData,
+        //     globalPageMeta:globalPageMeta,
+        //     company:company,
+        //     companyReviewNumbers,
+        //     facebook_url:facebook_url,
+        //     twitter_url:twitter_url,
+        //     instagram_url:instagram_url,
+        //     linkedin_url:linkedin_url,
+        //     youtube_url:youtube_url,
+        //     CompanyCategories:getCompanyCategories
+        // });
+        res.render('front-end/premium-complain-management',
+        {
+            menu_active_id: 'premium-complaint-management',
+            page_title: 'Complaint Management',
+            currentUserData,
+            globalPageMeta:globalPageMeta,
+            company:company,
+            companyReviewNumbers,
+            facebook_url:facebook_url,
+            twitter_url:twitter_url,
+            instagram_url:instagram_url,
+            linkedin_url:linkedin_url,
+            youtube_url:youtube_url,
+        });
+});
+
+///////////////////////////////////////////////////////////////////////
 // Middleware function to check if user is logged in
 async function checkLoggedIn(req, res, next) {
     res.locals.globalData = {

@@ -308,4 +308,7 @@ router.post('/delete-company-category', authController.deleteCompanyCategory);
 //Update company-category
 router.post('/update-company-category', authController.updateCompanyCategory);
 
+//create-company-level
+router.post('/create-company-level', authController.createCompanyLevel);
+
 module.exports = router;

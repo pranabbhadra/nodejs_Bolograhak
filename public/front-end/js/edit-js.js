@@ -1205,17 +1205,18 @@ $('.premium-alert-box .btn-toggle').click(function() {
 /*=========================== Repeater function start =================*/
 $(".add-new-hops").click(function(e){
   e.preventDefault();
-var totalLevel = $(this).parents(".premium-complain-m-wrap").find(".premium-complain-m-content-body").length;
-if (totalLevel >= 5) {
-  console.log('কিছু হবে না');
-}else {
-  //console.log(totalLevel+1,'cloned');
-  var count = totalLevel+1;
-  $(this).parents(".premium-complain-m-wrap").find(".premium-complain-clone").append('<div class="premium-complain-m-content-body"> <div class="premium-complain-m-content-repeat"> <div class="premium-complain-m-content-part"> '+count+' </div><div class="premium-complain-m-content-part"> <a href="#" class="btn-default btn-warning edit-save-btn">Edit</a> </div></div><div class="edit-email"> <div class="row g-2 align-items-center justify-content-around mb-2"> <div class="col-sm-6"> <label for="" class="col-form-label"><strong>ETA Days</strong></label> </div><div class="col-sm-6"> <input type="number" id="" class="form-control"> </div></div><div class="row g-2 justify-content-around mb-2"> <div class="col-sm-6 email_field_label"> <label for="" class="col-form-label"><strong>Enter Your E-Mail Address</strong></label> </div><div class="col-sm-6 email_clone_div"> <div class="add-email-field mb-2"> <input type="email" id="" class="form-control"> </div><a href="#" class="add-email-btn"><i class="fa-solid fa-circle-plus"></i></a> </div></div></div><a href="#" class="close-level"><i class="fa-solid fa-circle-xmark"></i></a></div>');
-  if(totalLevel >= 4){
-    $('body').find(".add-new-hops").hide();
+  var totalLevel = $(this).parents(".premium-complain-m-wrap").find(".premium-complain-m-content-body").length;
+  //console.log(totalLevel, 'hi');
+  if (totalLevel >= 5) {
+    console.log('কিছু হবে না');
+  }else {
+    //console.log(totalLevel+1,'cloned');
+    var count = totalLevel+1;
+    $(this).parents(".premium-complain-m-wrap").find(".premium-complain-clone").append('<div class=premium-complain-m-content-body><form class=level_form><input class=label_count name=label_count type=hidden value="'+count+'"><div class=premium-complain-m-content-repeat><div class="premium-complain-m-content-part count_number">'+count+'</div><div class=premium-complain-m-content-part><a class="btn-default btn-warning edit-save-btn"href=#>Edit</a></div></div><div class=edit-email><div class="mb-2 g-2 justify-content-around row align-items-center"><div class=col-sm-6><label class=col-form-label for=""><strong>ETA Days</strong></label></div><div class=col-sm-6><input class=form-control name=eta_days type=number></div></div><div class="mb-2 g-2 justify-content-around row"><div class="col-sm-6 email_field_label"><label class=col-form-label for=""><strong>Enter Your E-Mail Address</strong></label></div><div class="col-sm-6 email_clone_div"><div class="mb-2 add-email-field"><input class=form-control name=emails type=email></div><a class=add-email-btn href=#><i class="fa-solid fa-circle-plus"></i></a></div></div><div class="align-items-center d-flex justify-content-end"><button class="btn-default btn-warning each_form_submut"type=submit>Save</button></div></div><a class=close-level href=#><i class="fa-solid fa-circle-xmark"></i></a></form></div>');
+    if(totalLevel >= 4){
+      $('body').find(".add-new-hops").hide();
+    }
   }
-}
 });
 
 /*=========================== Repeater function End =================*/
@@ -1226,7 +1227,7 @@ $("body").on('click' , '.edit-save-btn' , function (e){
   $(this).parents(".premium-complain-m-content-body").find(".edit-email").slideToggle();
   $(this).parents(".premium-complain-m-content-body").toggleClass("active");
   if ($(this).text() == "Edit") {
-    $(this).text("Save");
+    $(this).text("Edited");
   } else {
     $(this).text("Edit");
   }
@@ -1236,7 +1237,7 @@ $("body").on('click' , '.edit-save-btn' , function (e){
 /*=========================== email repeater Start =================*/
 $("body").on('click' , '.add-email-btn' , function (e) {
   e.preventDefault();
-  $(this).parents(".email_clone_div").append('<div class="add-email-field mb-2"> <input type="email" id="" class="form-control"><a href="#" class="close-email-field"><i class="fa-solid fa-circle-xmark"></i></a> </div>');
+  $(this).parents(".email_clone_div").append('<div class="add-email-field mb-2"> <input type="email" name="emails" id="" class="form-control"><a href="#" class="close-email-field"><i class="fa-solid fa-circle-xmark"></i></a> </div>');
   });
 
 /*=========================== email repeater End =================*/
@@ -1245,17 +1246,25 @@ $("body").on('click' , '.add-email-btn' , function (e) {
 /*=========================== Level Email repeater close Start =================*/
   $("body").on('click' , '.close-level' , function (e){
     e.preventDefault();
-    $(this).parent().hide();
-    var levelcloseLength = $(this).parent().length;
-    if(levelcloseLength >=5){}
-    else{
+    var levelcloseLength = $(this).parents('.premium-complain-clone').find('.premium-complain-m-content-body').length-1;
+    $(this).parents('.premium-complain-m-content-body').remove();
+    setTimeout(function () {
+      console.log('hi');
+      $('body').find('.premium-complain-clone').find('.premium-complain-m-content-body').each(function(index){
+        console.log(index+1);
+        $(this).find('.count_number').text(index+1);
+      });
+    }, 100);
+    if(levelcloseLength < 5 ){
       $(".add-new-hops").show();
+    }else{
+      $(".add-new-hops").hide();
     }
   });
   
   $("body").on('click' , '.close-email-field' , function (e){
     e.preventDefault();
-  $(this).parent().hide();
+    $(this).parent().remove();
   });
   
 /*=========================== Level Email repeater close End =================*/

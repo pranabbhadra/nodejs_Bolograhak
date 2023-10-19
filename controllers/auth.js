@@ -4852,3 +4852,10 @@ exports.updateCompanyCategory = async (req, res) => {
     })
 
 }
+
+//createCompanyLevel
+exports.createCompanyLevel = async (req, res) => {
+    console.log('createCompanyLevel',req.body ); 
+   
+
+}
