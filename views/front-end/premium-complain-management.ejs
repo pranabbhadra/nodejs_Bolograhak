@@ -29,6 +29,7 @@
                   <div class="premium-complain-m-content-body">
                      <form class="level_form">
                         <input type="hidden" value="1" name="label_count" class="label_count">
+                        <input type="hidden" name="company_id" value="<%= company.ID %>" class="">
                         <div class="premium-complain-m-content-repeat">
                            <div class="premium-complain-m-content-part count_number">
                               1
@@ -68,6 +69,7 @@
                   <div class="premium-complain-m-content-body">
                      <form class="level_form">
                         <input type="hidden" value="2" name="label_count" class="label_count">
+                        <input type="hidden" name="company_id" value="<%= company.ID %>" class="">
                         <div class="premium-complain-m-content-repeat">
                            <div class="premium-complain-m-content-part count_number">
                               2
@@ -106,6 +108,9 @@
             
             <div class="text-center mt-4"><a href="#" class="add-new-hops">Add New Hops</a></div>
           </div>
+          <div class="submit-loading" style="display: none;">Please wait..</div>
+         <div class="submit-success" style="width: 100%; text-align: center; display: block; border: 2px solid #fccb06; padding: 6px; margin-top: 20px; border-radius: 5px; display: none;"></div>
+         <div class="submit-error" style="width: 100%; text-align: center; display: block; border: 2px solid #fccb06; padding: 6px; margin-top: 20px; border-radius: 5px; display: none;"></div>
        </div>
     </div>
     <img src="/front-end/images/complain-overlay-object1.svg" alt="img" class="c-overlay1">
@@ -120,61 +125,45 @@ jQuery(function ($) {
    $('body').on('submit', '.level_form', function(e){
       e.preventDefault();
       
+      $('.submit-loading').show();
+      const formData = $(this).serializeArray();
 
-       const formData = $(this).serializeArray();
-      // //const formData = new FormData(Data);
-      //const formData = new FormData($(this)[0]);
-      const jsonData = {};
-      // $(formData).each(function (index, field) {
-      //       jsonData[field.name] = field.value;
+      // const jsonData = {};
+      // $(formData).each(function(index, field) {
+      //    if (jsonData[field.name] === undefined) {
+      //       // If the property doesn't exist in jsonData, create an array and add the value
+      //       if (field.value != '') {
+      //          jsonData[field.name] = [field.value];
+      //       }
+      //    } else {
+      //       // If the property already exists, push the value to the existing array
+      //       if (field.value !== '') {
+      //          jsonData[field.name].push(field.value);
+      //       }
+      //    }
       // });
-      $(formData).each(function(index, field) {
-         if (jsonData[field.name] === undefined) {
-            // If the property doesn't exist in jsonData, create an array and add the value
-            jsonData[field.name] = [field.value];
-         } else {
-            // If the property already exists, push the value to the existing array
-            jsonData[field.name].push(field.value);
-         }
-      });
-      // const repeaterData = {};
-      // $(this).find('input').each(function () {
-      //    repeaterData[this.name] = $(this).val();
-      // });
-      // const formData = [];
-
-      // $(this).each(function() {
-      // const repeaterData = {};
-      // $(this).find('input').each(function() {
-      //    repeaterData[this.name] = $(this).val();
-      // });
-      // formData.push(repeaterData);
-      // })
-      console.log(jsonData);
+      // console.log(jsonData);
       //return false;
 
       $.ajax({
          url: '/auth/create-company-level',
          method: 'POST',
          data: formData,
-         processData: false,
-         contentType: false,
-         //ContentType: 'application/json',
+         //processData: false,
+         //contentType: false,
+         ContentType: 'application/json',
          success: function (data) {
             if (data.status == 'ok') {
-            $('.submit-loading').hide();
-            $('#create_category_form')[0].reset();
-            $('.submit-success').text(data.message);
-            $('.submit-success').show();
-            $('#submit_btn').prop( "disabled", false );
-            setTimeout( function(){
-               location.reload(true);
-            }, 3000 );
+               $('.submit-loading').hide();
+               $('.submit-success').text(data.message);
+               $('.submit-success').show();
+               setTimeout( function(){
+                  location.reload(true);
+               }, 3000 );
             } else {
                $('.submit-loading').hide();
-            $('.submit-error').text(data.message);
-            $('.submit-error').show();
-               $('#submit_btn').prop( "disabled", false );
+               $('.submit-error').text(data.message);
+               $('.submit-error').show();
             }
             //console.log(data);
          },
@@ -182,9 +171,25 @@ jQuery(function ($) {
             $('.submit-loading').hide();
             $('.submit-error').text(error);
             $('.submit-error').show();
-            $('#submit_btn').prop( "disabled", false );
          }
       });
    })
+
+   $(".add-new-hops").click(function(e){
+  e.preventDefault();
+  var totalLevel = $(this).parents(".premium-complain-m-wrap").find(".premium-complain-m-content-body").length;
+  //console.log(totalLevel, 'hi');
+  if (totalLevel >= 5) {
+    console.log('কিছু হবে না');
+  }else {
+    //console.log(totalLevel+1,'cloned');
+    var count = totalLevel+1;
+    $(this).parents(".premium-complain-m-wrap").find(".premium-complain-clone").append('<div class=premium-complain-m-content-body><form class=level_form><input class=label_count name=label_count type=hidden value="'+count+'"><input type="hidden" name="company_id" value="<%= company.ID %>" ><div class=premium-complain-m-content-repeat><div class="premium-complain-m-content-part count_number">'+count+'</div><div class=premium-complain-m-content-part><a class="btn-default btn-warning edit-save-btn"href=#>Edit</a></div></div><div class=edit-email><div class="mb-2 g-2 justify-content-around row align-items-center"><div class=col-sm-6><label class=col-form-label for=""><strong>ETA Days</strong></label></div><div class=col-sm-6><input class=form-control name=eta_days type=number></div></div><div class="mb-2 g-2 justify-content-around row"><div class="col-sm-6 email_field_label"><label class=col-form-label for=""><strong>Enter Your E-Mail Address</strong></label></div><div class="col-sm-6 email_clone_div"><div class="mb-2 add-email-field"><input class=form-control name=emails type=email></div><a class=add-email-btn href=#><i class="fa-solid fa-circle-plus"></i></a></div></div><div class="align-items-center d-flex justify-content-end"><button class="btn-default btn-warning each_form_submut"type=submit>Save</button></div></div><a class=close-level href=#><i class="fa-solid fa-circle-xmark"></i></a></form></div>');
+    if(totalLevel >= 4){
+      $('body').find(".add-new-hops").hide();
+    }
+  }
+});
+
 })
 </script>

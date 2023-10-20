@@ -2315,18 +2315,18 @@ router.get('/premium-complaint-management/:slug', checkClientClaimedCompany, asy
         }
         // res.json(
         // {
-        //     menu_active_id: 'create-category',
-        //     page_title: 'Create Category',
+        //     menu_active_id: 'premium-complaint-management',
+        //     page_title: 'Complaint Management',
         //     currentUserData,
         //     globalPageMeta:globalPageMeta,
         //     company:company,
         //     companyReviewNumbers,
+        //     allRatingTags,
         //     facebook_url:facebook_url,
         //     twitter_url:twitter_url,
         //     instagram_url:instagram_url,
         //     linkedin_url:linkedin_url,
         //     youtube_url:youtube_url,
-        //     CompanyCategories:getCompanyCategories
         // });
         res.render('front-end/premium-complain-management',
         {

@@ -1198,21 +1198,21 @@ $('.premium-alert-box .btn-toggle').click(function() {
 /*=========================== btn switch toggle End =================*/
 
 /*=========================== Repeater function start =================*/
-$(".add-new-hops").click(function(e){
-  e.preventDefault();
-  var totalLevel = $(this).parents(".premium-complain-m-wrap").find(".premium-complain-m-content-body").length;
-  //console.log(totalLevel, 'hi');
-  if (totalLevel >= 5) {
-    console.log('কিছু হবে না');
-  }else {
-    //console.log(totalLevel+1,'cloned');
-    var count = totalLevel+1;
-    $(this).parents(".premium-complain-m-wrap").find(".premium-complain-clone").append('<div class=premium-complain-m-content-body><form class=level_form><input class=label_count name=label_count type=hidden value="'+count+'"><div class=premium-complain-m-content-repeat><div class="premium-complain-m-content-part count_number">'+count+'</div><div class=premium-complain-m-content-part><a class="btn-default btn-warning edit-save-btn"href=#>Edit</a></div></div><div class=edit-email><div class="mb-2 g-2 justify-content-around row align-items-center"><div class=col-sm-6><label class=col-form-label for=""><strong>ETA Days</strong></label></div><div class=col-sm-6><input class=form-control name=eta_days type=number></div></div><div class="mb-2 g-2 justify-content-around row"><div class="col-sm-6 email_field_label"><label class=col-form-label for=""><strong>Enter Your E-Mail Address</strong></label></div><div class="col-sm-6 email_clone_div"><div class="mb-2 add-email-field"><input class=form-control name=emails type=email></div><a class=add-email-btn href=#><i class="fa-solid fa-circle-plus"></i></a></div></div><div class="align-items-center d-flex justify-content-end"><button class="btn-default btn-warning each_form_submut"type=submit>Save</button></div></div><a class=close-level href=#><i class="fa-solid fa-circle-xmark"></i></a></form></div>');
-    if(totalLevel >= 4){
-      $('body').find(".add-new-hops").hide();
-    }
-  }
-});
+// $(".add-new-hops").click(function(e){
+//   e.preventDefault();
+//   var totalLevel = $(this).parents(".premium-complain-m-wrap").find(".premium-complain-m-content-body").length;
+//   //console.log(totalLevel, 'hi');
+//   if (totalLevel >= 5) {
+//     console.log('কিছু হবে না');
+//   }else {
+//     //console.log(totalLevel+1,'cloned');
+//     var count = totalLevel+1;
+//     $(this).parents(".premium-complain-m-wrap").find(".premium-complain-clone").append('<div class=premium-complain-m-content-body><form class=level_form><input class=label_count name=label_count type=hidden value="'+count+'"><input type="hidden" name="company_id" value="<%= company.ID %>" ><div class=premium-complain-m-content-repeat><div class="premium-complain-m-content-part count_number">'+count+'</div><div class=premium-complain-m-content-part><a class="btn-default btn-warning edit-save-btn"href=#>Edit</a></div></div><div class=edit-email><div class="mb-2 g-2 justify-content-around row align-items-center"><div class=col-sm-6><label class=col-form-label for=""><strong>ETA Days</strong></label></div><div class=col-sm-6><input class=form-control name=eta_days type=number></div></div><div class="mb-2 g-2 justify-content-around row"><div class="col-sm-6 email_field_label"><label class=col-form-label for=""><strong>Enter Your E-Mail Address</strong></label></div><div class="col-sm-6 email_clone_div"><div class="mb-2 add-email-field"><input class=form-control name=emails type=email></div><a class=add-email-btn href=#><i class="fa-solid fa-circle-plus"></i></a></div></div><div class="align-items-center d-flex justify-content-end"><button class="btn-default btn-warning each_form_submut"type=submit>Save</button></div></div><a class=close-level href=#><i class="fa-solid fa-circle-xmark"></i></a></form></div>');
+//     if(totalLevel >= 4){
+//       $('body').find(".add-new-hops").hide();
+//     }
+//   }
+// });
 
 /*=========================== Repeater function End =================*/
 

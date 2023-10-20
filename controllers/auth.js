@@ -4815,7 +4815,7 @@ exports.deleteCompanyCategory = async (req, res) => {
     })
 }
 
-//Update company category
+//Update complaint company category
 exports.updateCompanyCategory = async (req, res) => {
     //console.log('updateCompanyCategory',req.body ); 
     const {category_name,parent_category, company_id, cat_id } = req.body ;
@@ -4857,6 +4857,74 @@ exports.updateCompanyCategory = async (req, res) => {
 //createCompanyLevel
 exports.createCompanyLevel = async (req, res) => {
     console.log('createCompanyLevel',req.body ); 
+    const {company_id, label_count, eta_days, emails} = req.body;
+    let emailsArr = [];
+    if (typeof emails == 'string') {
+        emailsArr.push(emails);
+    } else {
+        emailsArr = [...emails];
+    }
+    //const filteredArray = emailsArr.filter(item => item !== "");
+    //console.log('emailsArr', emailsArr);
+    const strEmails = JSON.stringify(emailsArr.filter(item => item !== ""));
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+    const checkQuery = `SELECT id FROM complaint_level_management WHERE company_id  = ? AND level = ? `;
+    const checkData = [company_id, label_count ];
+    db.query(checkQuery, checkData, (checkErr, checkResult)=>{
+        if (checkErr) {
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong '+checkErr
+            });
+        }
+        if (checkResult.length > 0) {
+            const updateQuery = `UPDATE complaint_level_management SET ? WHERE company_id  = '${company_id}' AND level = '${label_count}' `;
+            const updateData = {
+                level: label_count || null,
+                emails: strEmails || [],
+                eta_days: eta_days || null,
+                created_at: formattedDate || null,
+            };
+
+            db.query(updateQuery, updateData, (updateErr, updateRes)=>{
+                if (updateErr) {
+                    return res.send({
+                        status: 'not ok',
+                        message: 'Something went wrong '+updateErr
+                    });
+                } else {
+                    return res.send({
+                        status: 'ok',
+                        message: 'Level data Updated successfully !'
+                    });
+                }
+            } )
+            
+        } else {
+            const insertQuery = `INSERT INTO complaint_level_management SET ?`;
+            const insertData = {
+                company_id:company_id,
+                level: label_count || null,
+                emails: strEmails || [],
+                eta_days: eta_days || null,
+                created_at: formattedDate || null,
+            }
+            db.query(insertQuery, insertData, (insertErr, insertRes)=>{
+                if (insertErr) {
+                    return res.send({
+                        status: 'not ok',
+                        message: 'Something went wrong '+insertErr
+                    });
+                } else {
+                    return res.send({
+                        status: 'ok',
+                        message: 'Level data added successfully !'
+                    });
+                }
+            } )
+        }
+    } )
 }
 
 
