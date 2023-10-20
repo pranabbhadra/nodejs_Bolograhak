@@ -908,9 +908,26 @@ exports.createUser = (req, res) => {
 }
 
 //Create New Category
-exports.createCategory = (req, res) => {
+exports.createCategory = async (req, res) => {
     //console.log('category', req.body);
     const { cat_name, cat_parent_id, country } = req.body;
+
+    //  comFunction2.generateUniqueSlugCategory(cat_name, (err, cat_slug)=>{
+
+    //     console.log(cat_slug);
+    // });
+
+    const catSlug = await new Promise((resolve, reject) => {
+        comFunction2.generateUniqueSlugCategory(cat_name, (error, generatedSlug) => {
+            if (error) {
+                console.log('Error:', error.message);
+                reject(error);
+            } else {
+                // console.log('Generated Company Slug:', generatedSlug);
+                resolve(generatedSlug);
+            }
+        });
+    });
     const cat_sql = "SELECT category_name FROM category WHERE category_name = ?";
     db.query(cat_sql, cat_name, (cat_err, cat_result) => {
         if (cat_err) throw cat_err;
@@ -924,8 +941,8 @@ exports.createCategory = (req, res) => {
         } else {
             if (req.file) {
                 if (cat_parent_id == '') {
-                    const val = [cat_name, 0, req.file.filename];
-                    const sql = 'INSERT INTO category (category_name, parent_id, category_img) VALUES (?, ?, ?)';
+                    const val = [cat_name, 0, req.file.filename, catSlug];
+                    const sql = 'INSERT INTO category (category_name, parent_id, category_img, category_slug ) VALUES (?, ?, ?, ?)';
                     db.query(sql, val, async (err, result) => {
                         if (err) {
                             console.log(err)
@@ -946,8 +963,8 @@ exports.createCategory = (req, res) => {
                         }
                     })
                 } else {
-                    const val = [cat_name, cat_parent_id, req.file.filename];
-                    const sql = 'INSERT INTO category (category_name, parent_id, category_img) VALUES (?, ?, ?)';
+                    const val = [cat_name, cat_parent_id, req.file.filename, catSlug];
+                    const sql = 'INSERT INTO category (category_name, parent_id, category_img, category_slug ) VALUES (?, ?, ?, ?)';
                     db.query(sql, val, async (err, result) => {
                         if (err) {
                             console.log(err)
@@ -970,8 +987,8 @@ exports.createCategory = (req, res) => {
                 }
             } else {
                 if (cat_parent_id == '') {
-                    const val = [cat_name, 0, 'NULL'];
-                    const sql = 'INSERT INTO category (category_name, parent_id, category_img) VALUES (?, ?, ?)';
+                    const val = [cat_name, 0, 'NULL', catSlug];
+                    const sql = 'INSERT INTO category (category_name, parent_id, category_img, category_slug ) VALUES (?, ?, ?, ?)';
                     db.query(sql, val, async (err, result) => {
                         if (err) {
                             console.log(err)
@@ -992,8 +1009,8 @@ exports.createCategory = (req, res) => {
                         }
                     })
                 } else {
-                    const val = [cat_name, cat_parent_id, 'NULL'];
-                    const sql = 'INSERT INTO category (category_name, parent_id, category_img) VALUES (?, ?, ?)';
+                    const val = [cat_name, cat_parent_id, 'NULL', catSlug];
+                    const sql = 'INSERT INTO category (category_name, parent_id, category_img, category_slug ) VALUES (?, ?, ?, ?)';
                     db.query(sql, val, async (err, result) => {
                         if (err) {
                             console.log(err)
@@ -1023,7 +1040,7 @@ exports.createCategory = (req, res) => {
 //Update Category
 exports.updateCategory = (req, res) => {
     console.log('category', req.body, req.file);
-    const { cat_id, cat_name, cat_parent_id, country } = req.body;
+    const { cat_id, cat_name, category_slug, cat_parent_id, country } = req.body;
     const check_arr = [cat_name, cat_id]
     const cat_sql = "SELECT category_name FROM category WHERE category_name = ? AND ID != ?";
     db.query(cat_sql, check_arr, (cat_err, cat_result) => {
@@ -1051,8 +1068,8 @@ exports.updateCategory = (req, res) => {
                     }
                 })
                 if (cat_parent_id == '') {
-                    const val = [cat_name, req.file.filename, cat_id];
-                    const sql = `UPDATE category SET category_name = ?, category_img = ? WHERE ID = ?`;
+                    const val = [cat_name, category_slug , req.file.filename, cat_id];
+                    const sql = `UPDATE category SET category_name = ?, category_slug  = ?, category_img = ? WHERE ID = ?`;
                     db.query(sql, val, async (err, result) => {
                         if (err) {
                             console.log(err)
@@ -1077,9 +1094,9 @@ exports.updateCategory = (req, res) => {
                         }
                     })
                 } else {
-                    const val = [cat_name, cat_parent_id, req.file.filename, cat_id];
+                    const val = [cat_name, category_slug , cat_parent_id, req.file.filename, cat_id];
 
-                    const sql = `UPDATE category SET category_name = ?, parent_id = ?, category_img = ? WHERE ID = ?`;
+                    const sql = `UPDATE category SET category_name = ?,category_slug  = ?, parent_id = ?, category_img = ? WHERE ID = ?`;
                     db.query(sql, val, async (err, result) => {
                         if (err) {
                             console.log(err)
@@ -1108,9 +1125,9 @@ exports.updateCategory = (req, res) => {
 
             } else {
                 if (cat_parent_id == '') {
-                    const val = [cat_name, cat_id];
+                    const val = [cat_name, category_slug , cat_id];
 
-                    const sql = `UPDATE category SET category_name = ? WHERE ID = ?`;
+                    const sql = `UPDATE category SET category_name = ?, category_slug =?  WHERE ID = ?`;
                     db.query(sql, val, async (err, result) => {
                         if (err) {
                             console.log(err)
@@ -1135,9 +1152,9 @@ exports.updateCategory = (req, res) => {
                         }
                     })
                 } else {
-                    const val = [cat_name, cat_parent_id, cat_id];
+                    const val = [cat_name, category_slug, cat_parent_id, cat_id];
 
-                    const sql = `UPDATE category SET category_name = ?, parent_id = ?  WHERE ID = ?`;
+                    const sql = `UPDATE category SET category_name = ?,category_slug = ?, parent_id = ?  WHERE ID = ?`;
                     db.query(sql, val, async (err, result) => {
                         if (err) {
                             console.log(err)
@@ -1272,7 +1289,7 @@ exports.deleteUser = (req, res) => {
                         } else {
                             return res.send({
                                 status: 'ok',
-                                message: 'User successfully deleted'
+                                message: 'User permanently deleted .'
                             });
                         }
                     })
@@ -1280,10 +1297,46 @@ exports.deleteUser = (req, res) => {
             })
         }
     })
+}
 
-    
+//--- Trash User ----//
+exports.trashUser = (req, res) => {
+    console.log(req.body.userid);
+    sql = `UPDATE users SET user_status = '0' WHERE user_id = ?`;
+    const data = [req.body.userid];
+    db.query(sql, data, (err, result) => {
+        if (err) {
+            return res.send({
+                status: 'error',
+                message: 'Something went wrong' +err
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'User successfully move to trash'
+            });
+        }
+    })
+}
 
-   
+//--- Restore User ----//
+exports.restoreUser = (req, res) => {
+    console.log(req.body.userid);
+    sql = `UPDATE users SET user_status = '1' WHERE user_id = ?`;
+    const data = [req.body.userid];
+    db.query(sql, data, (err, result) => {
+        if (err) {
+            return res.send({
+                status: 'error',
+                message: 'Something went wrong' +err
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'User successfully restore .'
+            });
+        }
+    })
 }
 
 //--- Create New Company ----//
@@ -1391,121 +1444,162 @@ exports.editCompany = (req, res) => {
 
     const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
-    // Update company details in the company table
-    const updateQuery = 'UPDATE company SET company_name = ?, heading = ?, logo = ?, about_company = ?, comp_phone = ?, comp_email = ?, comp_registration_id = ?, status = ?, trending = ?, updated_date = ?, tollfree_number = ?, main_address = ?, main_address_pin_code = ?, address_map_url = ?, main_address_country = ?, main_address_state = ?, main_address_city = ?, verified = ?, paid_status = ? WHERE ID = ?';
-    const updateValues = [
-                            req.body.company_name,
-                            req.body.heading,
-                            '',
-                            req.body.about_company,
-                            req.body.comp_phone,
-                            req.body.comp_email,
-                            req.body.comp_registration_id,
-                            req.body.status,
-                            req.body.trending,
-                            formattedDate,
-                            req.body.tollfree_number,
-                            req.body.main_address,
-                            req.body.main_address_pin_code,
-                            req.body.address_map_url,
-                            req.body.main_address_country,
-                            req.body.main_address_state,
-                            req.body.main_address_city,
-                            req.body.verified,
-                            req.body.payment_status,
-                            companyID
-                        ];
-
-    if (req.file) {
-        // Unlink (delete) the previous file
-        const unlinkcompanylogo = "uploads/" + req.body.previous_logo;
-        fs.unlink(unlinkcompanylogo, (err) => {
-            if (err) {
-                //console.error('Error deleting file:', err);
-            } else {
-                //console.log('Previous file deleted');
-            }
-        });
-
-        updateValues[2] = req.file.filename;
-    }else{
-        updateValues[2] = req.body.previous_logo;
-    }
-    db.query(updateQuery, updateValues, (err, results) => {
-        if (err) {
-            // Handle the error
+    db.query(`SELECT slug FROM company WHERE slug = '${req.body.company_slug}' AND ID != '${companyID}' `, (slugErr, slugResult)=>{
+        if (slugErr) {
             return res.send({
                 status: 'err',
                 data: '',
-                message: 'An error occurred while updating the company details: ' + err
+                message: 'An error occurred while updating the company details: ' + slugErr
             });
         }
+        if(slugResult.length > 0) {
+            return res.send({
+                status: 'err',
+                data: '',
+                message: 'Company slug already exist'
+            });
+        } else {
+                // Update company details in the company table
+            const updateQuery = 'UPDATE company SET company_name = ?, heading = ?, logo = ?, about_company = ?, comp_phone = ?, comp_email = ?, comp_registration_id = ?, status = ?, trending = ?, updated_date = ?, tollfree_number = ?, main_address = ?, main_address_pin_code = ?, address_map_url = ?, main_address_country = ?, main_address_state = ?, main_address_city = ?, verified = ?, paid_status = ?, slug  = ? WHERE ID = ?';
+            const updateValues = [
+                                    req.body.company_name,
+                                    req.body.heading,
+                                    '',
+                                    req.body.about_company,
+                                    req.body.comp_phone,
+                                    req.body.comp_email,
+                                    req.body.comp_registration_id,
+                                    req.body.status,
+                                    req.body.trending,
+                                    formattedDate,
+                                    req.body.tollfree_number,
+                                    req.body.main_address,
+                                    req.body.main_address_pin_code,
+                                    req.body.address_map_url,
+                                    req.body.main_address_country,
+                                    req.body.main_address_state,
+                                    req.body.main_address_city,
+                                    req.body.verified,
+                                    req.body.payment_status,
+                                    req.body.company_slug,
+                                    companyID
+                                ];
 
-        // Update company categories in the company_cactgory_relation table
-        const deleteQuery = 'DELETE FROM company_cactgory_relation WHERE company_id = ?';
-        db.query(deleteQuery, [companyID], (err) => {
-            if (err) {
-                // Handle the error
-                return res.send({
-                    status: 'err',
-                    data: '',
-                    message: 'An error occurred while deleting existing company categories: ' + err
+            if (req.file) {
+                // Unlink (delete) the previous file
+                const unlinkcompanylogo = "uploads/" + req.body.previous_logo;
+                fs.unlink(unlinkcompanylogo, (err) => {
+                    if (err) {
+                        //console.error('Error deleting file:', err);
+                    } else {
+                        //console.log('Previous file deleted');
+                    }
                 });
+
+                updateValues[2] = req.file.filename;
+            }else{
+                updateValues[2] = req.body.previous_logo;
             }
+            db.query(updateQuery, updateValues, (err, results) => {
+                if (err) {
+                    // Handle the error
+                    return res.send({
+                        status: 'err',
+                        data: '',
+                        message: 'An error occurred while updating the company details: ' + err
+                    });
+                }
 
-            if (req.body.category) {
-                // Create an array of arrays for bulk insert
-                const categoryArray = Array.isArray(req.body.category) ? req.body.category : [req.body.category];
-                const insertValues = categoryArray.map((categoryID) => [companyID, categoryID]);
-
-                const insertQuery = 'INSERT INTO company_cactgory_relation (company_id, category_id) VALUES ?';
-
-                db.query(insertQuery, [insertValues], (err) => {
+                // Update company categories in the company_cactgory_relation table
+                const deleteQuery = 'DELETE FROM company_cactgory_relation WHERE company_id = ?';
+                db.query(deleteQuery, [companyID], (err) => {
                     if (err) {
                         // Handle the error
                         return res.send({
                             status: 'err',
                             data: '',
-                            message: 'An error occurred while updating company categories: ' + err
+                            message: 'An error occurred while deleting existing company categories: ' + err
                         });
                     }
 
-                    // Insert claim request if req.body.claimed_by exists
-                    if (req.body.claimed_by) {
-                        const checkClaimRequestQuery = 'SELECT * FROM company_claim_request WHERE company_id = ?';
-                        db.query(checkClaimRequestQuery, [companyID], async (err, claimRequestResults) => {
+                    if (req.body.category) {
+                        // Create an array of arrays for bulk insert
+                        const categoryArray = Array.isArray(req.body.category) ? req.body.category : [req.body.category];
+                        const insertValues = categoryArray.map((categoryID) => [companyID, categoryID]);
+
+                        const insertQuery = 'INSERT INTO company_cactgory_relation (company_id, category_id) VALUES ?';
+
+                        db.query(insertQuery, [insertValues], (err) => {
                             if (err) {
                                 // Handle the error
                                 return res.send({
                                     status: 'err',
                                     data: '',
-                                    message: 'An error occurred while checking company claim request: ' + err
+                                    message: 'An error occurred while updating company categories: ' + err
                                 });
                             }
-                            
-                            if (claimRequestResults.length > 0) {
 
-                                console.log('checkClaimRequestQuery',claimRequestResults)
-                                const ReviewReplyByQuery = 'UPDATE review_reply SET reply_by = ? WHERE company_id = ? AND reply_by = ?';
-                                const ReviewReplyByData = [req.body.claimed_by,companyID,claimRequestResults[0].claimed_by]
-                                 db.query(ReviewReplyByQuery,ReviewReplyByData,(ReviewReplyByErr,ReviewReplyByResult)=>{
-                                    const ReviewReplyToQuery = 'UPDATE review_reply SET reply_to = ? WHERE company_id = ? AND reply_to = ?';
-                                    const ReviewReplyToData = [req.body.claimed_by,companyID,claimRequestResults[0].claimed_by]
-                                    db.query(ReviewReplyToQuery,ReviewReplyToData,(ReviewReplyToErr,ReviewReplyToResult)=>{
-                                        // Claim request already exists, handle accordingly
-                                        const updateClaimRequestQuery = 'UPDATE company_claim_request SET claimed_by = ?, claimed_date = ? WHERE company_id = ?';
-                                        const updateClaimRequestValues = [req.body.claimed_by, formattedDate, companyID];
+                            // Insert claim request if req.body.claimed_by exists
+                            if (req.body.claimed_by) {
+                                const checkClaimRequestQuery = 'SELECT * FROM company_claim_request WHERE company_id = ?';
+                                db.query(checkClaimRequestQuery, [companyID], async (err, claimRequestResults) => {
+                                    if (err) {
+                                        // Handle the error
+                                        return res.send({
+                                            status: 'err',
+                                            data: '',
+                                            message: 'An error occurred while checking company claim request: ' + err
+                                        });
+                                    }
+                                    
+                                    if (claimRequestResults.length > 0) {
 
-                                        db.query(updateClaimRequestQuery, updateClaimRequestValues, (err) => {
+                                        console.log('checkClaimRequestQuery',claimRequestResults)
+                                        const ReviewReplyByQuery = 'UPDATE review_reply SET reply_by = ? WHERE company_id = ? AND reply_by = ?';
+                                        const ReviewReplyByData = [req.body.claimed_by,companyID,claimRequestResults[0].claimed_by]
+                                        db.query(ReviewReplyByQuery,ReviewReplyByData,(ReviewReplyByErr,ReviewReplyByResult)=>{
+                                            const ReviewReplyToQuery = 'UPDATE review_reply SET reply_to = ? WHERE company_id = ? AND reply_to = ?';
+                                            const ReviewReplyToData = [req.body.claimed_by,companyID,claimRequestResults[0].claimed_by]
+                                            db.query(ReviewReplyToQuery,ReviewReplyToData,(ReviewReplyToErr,ReviewReplyToResult)=>{
+                                                // Claim request already exists, handle accordingly
+                                                const updateClaimRequestQuery = 'UPDATE company_claim_request SET claimed_by = ?, claimed_date = ? WHERE company_id = ?';
+                                                const updateClaimRequestValues = [req.body.claimed_by, formattedDate, companyID];
+
+                                                db.query(updateClaimRequestQuery, updateClaimRequestValues, (err) => {
+                                                    if (err) {
+                                                        // Handle the error
+                                                        return res.send({
+                                                            status: 'err',
+                                                            data: '',
+                                                            message: 'An error occurred while updating company claim request: ' + err
+                                                        });
+                                                    }
+
+                                                    // Return success response
+                                                    return res.send({
+                                                        status: 'ok',
+                                                        data: companyID,
+                                                        message: 'Company details updated successfully'
+                                                    });
+                                                });
+                                            })
+                                        })
+                                        
+                                        
+                                    }else{
+                                        const claimRequestQuery = 'INSERT INTO company_claim_request (company_id, claimed_by, status, claimed_date) VALUES (?, ?, ?, ?)';
+                                        const claimRequestValues = [companyID, req.body.claimed_by, '1', formattedDate];
+                    
+                                        db.query(claimRequestQuery, claimRequestValues, (err) => {
                                             if (err) {
                                                 // Handle the error
                                                 return res.send({
                                                     status: 'err',
                                                     data: '',
-                                                    message: 'An error occurred while updating company claim request: ' + err
+                                                    message: 'An error occurred while inserting company claim request: ' + err
                                                 });
                                             }
-
+                    
                                             // Return success response
                                             return res.send({
                                                 status: 'ok',
@@ -1513,79 +1607,78 @@ exports.editCompany = (req, res) => {
                                                 message: 'Company details updated successfully'
                                             });
                                         });
-                                    })
-                                })
-                                
-                                
-                            }else{
-                                const claimRequestQuery = 'INSERT INTO company_claim_request (company_id, claimed_by, status, claimed_date) VALUES (?, ?, ?, ?)';
-                                const claimRequestValues = [companyID, req.body.claimed_by, '1', formattedDate];
-            
-                                db.query(claimRequestQuery, claimRequestValues, (err) => {
-                                    if (err) {
-                                        // Handle the error
-                                        return res.send({
-                                            status: 'err',
-                                            data: '',
-                                            message: 'An error occurred while inserting company claim request: ' + err
-                                        });
                                     }
-            
-                                    // Return success response
-                                    return res.send({
-                                        status: 'ok',
-                                        data: companyID,
-                                        message: 'Company details updated successfully'
-                                    });
+                                });
+                            } else {
+                                // Return success response
+                                return res.send({
+                                    status: 'ok',
+                                    data: companyID,
+                                    message: 'Company details updated successfully'
                                 });
                             }
-                        });
-                    } else {
-                        // Return success response
-                        return res.send({
-                            status: 'ok',
-                            data: companyID,
-                            message: 'Company details updated successfully'
-                        });
-                    }
-                })
-            }else{
-                // Insert claim request if req.body.claimed_by exists
-                if (req.body.claimed_by) {
-                    const checkClaimRequestQuery = 'SELECT * FROM company_claim_request WHERE company_id = ?';
-                    db.query(checkClaimRequestQuery, [companyID], (err, claimRequestResults) => {
-                        if (err) {
-                            // Handle the error
-                            return res.send({
-                                status: 'err',
-                                data: '',
-                                message: 'An error occurred while checking company claim request: ' + err
-                            });
-                        }
-                        
-                        if (claimRequestResults.length > 0) {
+                        })
+                    }else{
+                        // Insert claim request if req.body.claimed_by exists
+                        if (req.body.claimed_by) {
+                            const checkClaimRequestQuery = 'SELECT * FROM company_claim_request WHERE company_id = ?';
+                            db.query(checkClaimRequestQuery, [companyID], (err, claimRequestResults) => {
+                                if (err) {
+                                    // Handle the error
+                                    return res.send({
+                                        status: 'err',
+                                        data: '',
+                                        message: 'An error occurred while checking company claim request: ' + err
+                                    });
+                                }
+                                
+                                if (claimRequestResults.length > 0) {
 
-                            console.log('checkClaimRequestQuery',claimRequestResults)
-                            const ReviewReplyByQuery = 'UPDATE review_reply SET reply_by = ? WHERE company_id = ? AND reply_by = ?';
-                            const ReviewReplyByData = [req.body.claimed_by,companyID,claimRequestResults[0].claimed_by]
-                                db.query(ReviewReplyByQuery,ReviewReplyByData,(ReviewReplyByErr,ReviewReplyByResult)=>{
-                                const ReviewReplyToQuery = 'UPDATE review_reply SET reply_to = ? WHERE company_id = ? AND reply_to = ?';
-                                const ReviewReplyToData = [req.body.claimed_by,companyID,claimRequestResults[0].claimed_by]
-                                db.query(ReviewReplyToQuery,ReviewReplyToData,(ReviewReplyToErr,ReviewReplyToResult)=>{
-                                    // Claim request already exists, handle accordingly
-                                    const updateClaimRequestQuery = 'UPDATE company_claim_request SET claimed_by = ?, claimed_date = ? WHERE company_id = ?';
-                                    const updateClaimRequestValues = [req.body.claimed_by, formattedDate, companyID];
+                                    console.log('checkClaimRequestQuery',claimRequestResults)
+                                    const ReviewReplyByQuery = 'UPDATE review_reply SET reply_by = ? WHERE company_id = ? AND reply_by = ?';
+                                    const ReviewReplyByData = [req.body.claimed_by,companyID,claimRequestResults[0].claimed_by]
+                                        db.query(ReviewReplyByQuery,ReviewReplyByData,(ReviewReplyByErr,ReviewReplyByResult)=>{
+                                        const ReviewReplyToQuery = 'UPDATE review_reply SET reply_to = ? WHERE company_id = ? AND reply_to = ?';
+                                        const ReviewReplyToData = [req.body.claimed_by,companyID,claimRequestResults[0].claimed_by]
+                                        db.query(ReviewReplyToQuery,ReviewReplyToData,(ReviewReplyToErr,ReviewReplyToResult)=>{
+                                            // Claim request already exists, handle accordingly
+                                            const updateClaimRequestQuery = 'UPDATE company_claim_request SET claimed_by = ?, claimed_date = ? WHERE company_id = ?';
+                                            const updateClaimRequestValues = [req.body.claimed_by, formattedDate, companyID];
 
-                                    db.query(updateClaimRequestQuery, updateClaimRequestValues, (err) => {
+                                            db.query(updateClaimRequestQuery, updateClaimRequestValues, (err) => {
+                                                if (err) {
+                                                    // Handle the error
+                                                    return res.send({
+                                                        status: 'err',
+                                                        data: '',
+                                                        message: 'An error occurred while updating company claim request: ' + err
+                                                    });
+                                                }
+
+                                                // Return success response
+                                                return res.send({
+                                                    status: 'ok',
+                                                    data: companyID,
+                                                    message: 'Company details updated successfully'
+                                                });
+                                            });
+                                        })
+                                    })
+                                    
+                                }else{
+                                    const claimRequestQuery = 'INSERT INTO company_claim_request (company_id, claimed_by, status, claimed_date) VALUES (?, ?, ?, ?)';
+                                    const claimRequestValues = [companyID, req.body.claimed_by, '1', formattedDate];
+                
+                                    db.query(claimRequestQuery, claimRequestValues, (err) => {
                                         if (err) {
                                             // Handle the error
                                             return res.send({
                                                 status: 'err',
                                                 data: '',
-                                                message: 'An error occurred while updating company claim request: ' + err
+                                                message: 'An error occurred while inserting company claim request: ' + err
                                             });
                                         }
-
+                
                                         // Return success response
                                         return res.send({
                                             status: 'ok',
@@ -1593,42 +1686,20 @@ exports.editCompany = (req, res) => {
                                             message: 'Company details updated successfully'
                                         });
                                     });
-                                })
-                            })
-                            
-                        }else{
-                            const claimRequestQuery = 'INSERT INTO company_claim_request (company_id, claimed_by, status, claimed_date) VALUES (?, ?, ?, ?)';
-                            const claimRequestValues = [companyID, req.body.claimed_by, '1', formattedDate];
-        
-                            db.query(claimRequestQuery, claimRequestValues, (err) => {
-                                if (err) {
-                                    // Handle the error
-                                    return res.send({
-                                        status: 'err',
-                                        data: '',
-                                        message: 'An error occurred while inserting company claim request: ' + err
-                                    });
                                 }
-        
-                                // Return success response
-                                return res.send({
-                                    status: 'ok',
-                                    data: companyID,
-                                    message: 'Company details updated successfully'
-                                });
                             });
-                        }
-                    });
-                } else {
-                    // Return success response
-                    return res.send({
-                        status: 'ok',
-                        data: companyID,
-                        message: 'Company details updated successfully'
-                    });
-                } 
-            }
-        })
+                        } else {
+                            // Return success response
+                            return res.send({
+                                status: 'ok',
+                                data: companyID,
+                                message: 'Company details updated successfully'
+                            });
+                        } 
+                    }
+                })
+            })
+        }
     })
 }
 
@@ -1827,6 +1898,46 @@ exports.deleteCompany = (req, res) => {
 
 }
 
+//--- Trash Company ----//
+exports.trashCompany = (req, res) => {
+    //console.log(req.body.companyid);
+    sql = `UPDATE company SET status = '3' WHERE ID = ?`;
+    const data = [req.body.companyid];
+    db.query(sql, data, (err, result) => {
+        if (err) {
+            return res.send({
+                status: 'error',
+                message: 'Something went wrong'
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Company successfully move to trash'
+            });
+        }
+    })
+}
+
+//--- Restore Company ----//
+exports.restoreCompany = (req, res) => {
+    //console.log(req.body.companyid);
+    sql = `UPDATE company SET status = '2' WHERE ID = ?`;
+    const data = [req.body.companyid];
+    db.query(sql, data, (err, result) => {
+        if (err) {
+            return res.send({
+                status: 'error',
+                message: 'Something went wrong'
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Company successfully restored with pending status'
+            });
+        }
+    })
+}
+
 exports.createRatingTags = (req, res) => {
     console.log(req.body);
     const ratingTagsArray = JSON.parse(req.body.rating_tags);
@@ -1946,11 +2057,10 @@ exports.editCustomerReview = async (req, res) => {
     // const ratingTagsArray = JSON.parse(req.body.rating_tags);
     // console.log(ratingTagsArray);
     //const editResponse1 = await comFunction.editCustomerReview( req.body );
-    const [editResponse, ApproveMailSend,RejectdEmailSend, CustomerReply] = await Promise.all([
+    const [editResponse, ApproveMailSend,RejectdEmailSend ] = await Promise.all([
         comFunction.editCustomerReview( req.body ),
         comFunction2.reviewApprovedEmail(req.body),
         comFunction2.reviewRejectdEmail(req.body),
-        comFunction2.updateCustomerReply(req.body),
     ]);
 
     if(editResponse == true){
@@ -1969,6 +2079,31 @@ exports.editCustomerReview = async (req, res) => {
     }
 }
 
+exports.editCustomerReviewReply = async (req, res) => {
+    console.log('editCustomerReviewReply',req.body);
+    //return false;
+    // const ratingTagsArray = JSON.parse(req.body.rating_tags);
+    // console.log(ratingTagsArray);
+    //const editResponse1 = await comFunction.editCustomerReview( req.body );
+    const [ CustomerReply] = await Promise.all([
+        comFunction2.updateCustomerReply(req.body),
+    ]);
+
+    if(CustomerReply == true){
+        // Return success response
+        return res.send({
+            status: 'ok',
+            data: '',
+            message: 'Review reply updated successfully'
+        });
+    }else{
+        return res.send({
+            status: 'err',
+            data: '',
+            message: editResponse
+        });        
+    }
+}
 // Update Contacts
 exports.updateContacts = async (req, res) => {
     //const formdata = JSON.parse(req.body.formData);
@@ -2261,7 +2396,7 @@ exports.updateHome = async (req, res) => {
     if(typeof app_cus_right_point == 'string'){
         cus_right_point.push(app_cus_right_point) ;
     } else {
-        cus_right_point = [...app_features_hashtag];
+        cus_right_point = [...app_cus_right_point];
     }
     const app_cus_right_points = JSON.stringify(cus_right_point); 
 
@@ -4257,7 +4392,7 @@ exports.resetPassword = async (req, res) => {
 }
 // Change Password
 exports.changePassword = async (req, res) => {
-    console.log('changePassword', req.body);
+    //console.log('changePassword', req.body);
     const {userid, current_password, new_password } = req.body;
     let CurrentHasPassword = await bcrypt.hash(current_password, 8);
     let hasPassword = await bcrypt.hash(new_password, 8);
@@ -4421,7 +4556,7 @@ exports.reviewVoting = async (req, res) => {
 }
 // Create poll
 exports.createPoll = async (req, res) => {
-    console.log('createPoll',req.body );
+    //console.log('createPoll',req.body );
     const {company_id, user_id, poll_question, poll_answer, expire_date} = req.body;
     //const answers = JSON.stringify(poll_answer);
      const currentDate = new Date();
@@ -4462,7 +4597,7 @@ exports.createPoll = async (req, res) => {
 
 // Update poll expire date
 exports.updatePollExpireDate = async (req, res) => {
-    console.log('updatePollExpireDate',req.body );
+    //console.log('updatePollExpireDate',req.body );
     const {poll_id,change_expire_date} = req.body;
     const sql = `UPDATE poll_company SET expired_at = ? WHERE id = ?`;
     const data= [change_expire_date, poll_id]
@@ -4483,7 +4618,7 @@ exports.updatePollExpireDate = async (req, res) => {
 
 // User polling
 exports.userPolling = async (req, res) => {
-    console.log('userPolling',req.body );
+    //console.log('userPolling',req.body );
     const {ansId, pollId, userId} = req.body
     const currentDate = new Date();
     const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
@@ -4506,7 +4641,7 @@ exports.userPolling = async (req, res) => {
 
 // Review Invitation
 exports.reviewInvitation = async (req, res) => {
-    console.log('reviewInvitation',req.body );
+    //console.log('reviewInvitation',req.body );
     const {emails, email_body, user_id, company_id, company_name } = req.body;
     const [InvitationDetails, sendInvitationEmail] = await Promise.all([
         comFunction2.insertInvitationDetails(req.body),
@@ -4517,4 +4652,287 @@ exports.reviewInvitation = async (req, res) => {
         status: 'ok',
         message: 'Invitation emails send successfully'
     });
+}
+
+//Add  Review Flag
+exports.addReviewFlag = async (req, res) => {
+    //console.log('addReviewFlag',req.body );
+    const [addFlagDetails, sendFlagEmail] = await Promise.all([
+        comFunction2.addFlagDetails(req.body),
+        comFunction2.sendFlagEmail(req.body)
+    ]);
+
+    return res.send({
+        status: 'ok',
+        message: 'Flag added successfully',
+        slug: req.body.company_slug
+    });
+}
+
+//Add  Review Flag site admin response
+exports.updateReviewFlag = async (req, res) => {
+    //console.log('updateReviewFlag',req.body ); 
+    const [updateFlagDetails] = await Promise.all([
+        comFunction2.updateFlagDetails(req.body),
+        comFunction2.flagApprovedEmail(req.body),
+        comFunction2.flagRejectdEmail(req.body),
+    ]);
+    return res.send({
+        status: 'ok',
+        message: 'Flag update successfully',
+    });
+    //return res.redirect('/flag-review');
+}
+
+//create new discussion
+exports.createDiscussion = async (req, res) => {
+    //console.log('createDiscussion',req.body ); 
+    //return false;
+    const {user_id, tags, topic, from_data, expire_date} = req.body;
+    const strTags = JSON.stringify(tags);
+    const sql = `INSERT INTO discussions ( user_id, topic, tags, created_at, expired_at) VALUES (?, ?, ?, ?, ?)` ;
+    const data = [user_id, topic, strTags, from_data, expire_date];
+    db.query(sql, data, (err, result) => {
+        if (err) {
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong '+err
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Your Discussion Topic Added Successfully'
+            });
+        }
+    })
+}
+
+//Add comment on discussion
+exports.addComment = async (req, res) => {
+    //console.log('addComment',req.body ); 
+    const {discussion_id,  comment } = req.body;
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+    //return false;
+    const Insertdata = {
+        discussion_id : discussion_id,
+        comment:comment,
+        ip_address: requestIp.getClientIp(req),
+        created_at: formattedDate,
+      };
+    const insertQuery = 'INSERT INTO discussions_user_response SET ?';
+    db.query(insertQuery, Insertdata, (insertErr, insertResult)=>{
+        if (insertErr) {
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong 3'+insertErr
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Your Comment Added Successfully'
+            });
+        }
+    })
+    
+}
+
+//Create company category
+exports.createCompanyCategory = async (req, res) => {
+    //console.log('createCompanyCategory',req.body ); 
+    const {category_name, parent_category, company_id} = req.body;
+    const checkQuery = `SELECT id FROM complaint_category WHERE category_name = '${category_name}'`;
+    db.query(checkQuery, (checkErr, checkResult)=>{
+        if (checkErr) {
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong '+checkErr
+            });
+        }
+        if (checkResult.length > 0) {
+            return res.send({
+                status: 'not ok',
+                message: 'Ctegory name already exist.'
+            });
+        } else {
+                const sql = `INSERT INTO complaint_category ( company_id, category_name, parent_id) VALUES (?, ?, ?)`;
+                const data = [company_id, category_name, parent_category ];
+                db.query(sql, data, (err, result) => {
+                    if (err) {
+                        return res.send({
+                            status: 'not ok',
+                            message: 'Something went wrong '+err
+                        });
+                    } else {
+                        return res.send({
+                            status: 'ok',
+                            message: 'Ctegory added successfully !'
+                        });
+                    }
+                })
+        }
+    })
+    
+}
+
+//Delete company category
+exports.deleteCompanyCategory = async (req, res) => {
+    //console.log('deleteCompanyCategory',req.body ); 
+    const checkQuery = `SELECT id, parent_id FROM complaint_category WHERE parent_id = '0' AND id = ${req.body.cat_id}`;
+    db.query(checkQuery,(checkErr,checkResult)=>{
+    
+        if (checkErr) {
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong 1'+checkErr
+            });
+        } else {
+            const delQuery = `DELETE FROM complaint_category WHERE id = '${req.body.cat_id}'`;
+            db.query(delQuery,(err, result)=>{
+                if (checkResult.length > 0 ) {
+                    const updateQuery = `UPDATE complaint_category SET  parent_id = '0' WHERE parent_id = '${req.body.cat_id}' `;
+                    db.query(updateQuery, (updateErr, updateResult)=>{
+                        if (updateErr) {
+                            return res.send({
+                                status: 'not ok',
+                                message: 'Something went wrong 2'+updateErr
+                            });
+                        } else {
+                            return res.send({
+                                status: 'ok',
+                                message: 'Ctegory Deleted successfully !'
+                            });
+                        }
+                    })
+                } else {
+                    return res.send({
+                        status: 'ok',
+                        message: 'Ctegory Deleted successfully !'
+                    });
+                }
+            })
+        }
+    })
+}
+
+//Update company category
+exports.updateCompanyCategory = async (req, res) => {
+    //console.log('updateCompanyCategory',req.body ); 
+    const {category_name,parent_category, company_id, cat_id } = req.body ;
+    //return false;
+    const checkQuery = `SELECT id FROM complaint_category WHERE category_name = '${category_name}' AND id != ${cat_id}`;
+    db.query(checkQuery, (checkErr, checkResult)=>{
+        if (checkErr) {
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong '+checkErr
+            });
+        }
+        if (checkResult.length > 0) {
+            return res.send({
+                status: 'not ok',
+                message: 'Ctegory name already exist.'
+            });
+        } else {
+            const data = [category_name, parent_category, cat_id];
+            const delQuery = `UPDATE complaint_category SET category_name = ?, parent_id = ? WHERE id = ? `;
+            db.query(delQuery, data, (err, result)=>{
+                if (err) {
+                    return res.send({
+                        status: 'not ok',
+                        message: 'Something went wrong '+err
+                    });
+                } else {
+                    return res.send({
+                        status: 'ok',
+                        message: 'Ctegory Updated successfully !'
+                    });
+                }
+            })
+        }
+    })
+
+}
+
+//createCompanyLevel
+exports.createCompanyLevel = async (req, res) => {
+    console.log('createCompanyLevel',req.body ); 
+}
+
+
+// Create Survey
+exports.createSurvey = async (req, res) => {
+    console.log( 'Survey Response', req.body );
+    const jsonString = Object.keys(req.body)[0];
+    const surveyResponse = JSON.parse(jsonString);
+    //console.log(surveyResponse[0].questions);
+
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth() + 1; // Months are zero-based (0 = January, 11 = December), so add 1
+    const day = currentDate.getDate();
+    const formattedDate = `${year}-${month < 10 ? '0' : ''}${month}-${day < 10 ? '0' : ''}${day}`;
+    const uniqueNumber = Date.now().toString().replace(/\D/g, "");
+
+    const surveyInsertData = [
+        uniqueNumber,
+        surveyResponse[0].company_id,
+        formattedDate,
+        surveyResponse[0].expire_at,
+        surveyResponse[0].title,
+        JSON.stringify(surveyResponse[0].questions)
+    ];
+    const sql = "INSERT INTO survey (unique_id, company_id, created_at, expire_at, title, questions) VALUES (?, ?, ?, ?, ?, ?)";
+
+    db.query(sql, surveyInsertData, async (err, result) => {
+        if(err){
+            return res.send({
+                status: 'error',
+                message: err
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Survey successfully created'
+            });
+        }
+    })
+}
+
+// Create Survey Answer
+exports.createSurveyAnswer = async (req, res) => {
+    console.log( 'Survey Response', req.body );
+    const jsonString = Object.keys(req.body)[0];
+    const surveyAnswerResponse = JSON.parse(jsonString);
+    console.log(surveyAnswerResponse);
+
+    
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth() + 1; // Months are zero-based (0 = January, 11 = December), so add 1
+    const day = currentDate.getDate();
+    const formattedDate = `${year}-${month < 10 ? '0' : ''}${month}-${day < 10 ? '0' : ''}${day}`;
+
+    const surveyAnswerInsertData = [
+        surveyAnswerResponse[0].company_id,
+        surveyAnswerResponse[0].survey_unique_id,
+        surveyAnswerResponse[0].customer_id,
+        JSON.stringify(surveyAnswerResponse[0].answers),
+        formattedDate
+    ];
+    const sql = "INSERT INTO survey_customer_answers (company_id, survey_unique_id, customer_id, answer, created_at) VALUES (?, ?, ?, ?, ?)";
+
+    db.query(sql, surveyAnswerInsertData, async (err, result) => {
+        if(err){
+            return res.send({
+                status: 'error',
+                message: err
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Your survey answer successfully submited'
+            });
+        }
+    })
 }

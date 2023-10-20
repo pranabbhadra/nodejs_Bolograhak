@@ -194,6 +194,7 @@
     margin: 0;
     padding: 0;
     display: none;
+    z-index: 9;
 }
 
 .company_profile_navigation>ul>li:hover>ul {
@@ -503,11 +504,13 @@
     box-shadow: none;
     padding: 0;
 }
-.premium_company_profile .basic_info_of_company{
+.premium_company_profile .basic_info_of_company {
     padding: 15px 15px;
     border-radius: 10px;
     background: #FFF;
     box-shadow: 0px 24px 34px 0px rgba(0, 0, 0, 0.70);
+    position: relative;
+    z-index: 9;
 }
 .basic_info_of_company .social_links{
     width: 100%;
@@ -1195,6 +1198,472 @@
 
 /* ============== add multiple email tag style end =============== */
 
+.action-select {
+    background: #FCCB06;
+    width: 100%;
+    max-width: 150px;
+    margin: 0 auto;
+    display: block;
+    padding: 8px 5px;
+    font-size: 14px;
+    position: relative;
+    cursor: pointer;
+}
+
+.action-arw {
+    display: inline-block;
+    vertical-align: middle;
+    color: #000;
+}
+
+.action-dropdown {
+    position: absolute;
+    background: #fff;
+    width: 100%;
+    max-width: 200px;
+    overflow: hidden;
+    display: none;
+    text-align: left;
+    margin-top: 8px;
+    margin-left: -5px;
+    z-index: 99;
+}
+
+.action-dropdown ul li {
+    line-height: normal;
+    display: block;
+    width: 100%;
+}
+
+.action-dropdown ul li a {
+    color: #000;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 5px;
+    line-height: normal;
+    display: block;
+    width: 100%;
+}
+
+.action-dropdown ul li a:hover {
+    background-color: #252525;
+    color: #FCCB06;
+}
+
+.basic-complain-content .main_box {
+    background-color: transparent;
+    box-shadow: none;
+    padding: 0;
+}
+
+.basic-complain-content {
+    background-image: url(../images/overlay-object7.png);
+    background-repeat: no-repeat;
+    background-position: left top 10px;
+}
+
+.complain-profile-content .custom-table thead,
+.complain-profile-content .custom-table tbody td,
+.complain-profile-content .action-select {
+    font-size: 12px;
+}
+
+.complain-profile-content table.dataTable thead .sorting:before, 
+.complain-profile-content table.dataTable thead .sorting:after, 
+.complain-profile-content table.dataTable thead .sorting_asc:before, 
+.complain-profile-content table.dataTable thead .sorting_asc:after, 
+.complain-profile-content table.dataTable thead .sorting_desc:before, 
+.complain-profile-content table.dataTable thead .sorting_desc:after, 
+.complain-profile-content table.dataTable thead .sorting_asc_disabled:before, 
+.complain-profile-content table.dataTable thead .sorting_asc_disabled:after, 
+.complain-profile-content table.dataTable thead .sorting_desc_disabled:before, 
+.complain-profile-content table.dataTable thead .sorting_desc_disabled:after {
+    bottom: 14px;
+}
+
+.premium-complain-m-head {
+    text-align: center;
+}
+
+a.add-new-hops {
+    color: #fccb06;
+    font-weight: 700;
+    font-size: 18px;
+}
+
+a.add-new-hops:hover {
+    color: #000000;
+}
+
+.premium-complain-m-head h2.inner-main-head,
+.premium-complain-m-head a,
+.premium-alert-part h2.inner-main-head {
+    color: #FCCB06;
+}
+
+.premium-complain-m-head a:hover {
+    color: #ffffff;
+}
+
+.premium-complain-m-wrap {
+    width: 100%;
+    max-width: 750px;
+    margin: 0 auto;
+    border-radius: 8px;
+    background: #FFF;
+    padding: 25px 40px;
+    margin-top: 30px;
+    position: relative;
+    z-index: 9;
+}
+
+.premium-complain-m-content-head,
+.premium-complain-m-content-repeat {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    gap: 10px;
+}
+
+
+.premium-complain-m-content-head .premium-complain-m-content-part {
+    font-size: 28px;
+    font-weight: 700;
+    width: 50%;
+    text-align: center;
+}
+
+.premium-complain-m-content-body {
+    position: relative;
+}
+
+.premium-complain-m-content-body {
+    border-bottom: 1px #9A9A9A dashed;
+}
+
+.premium-complain-m-content-body .premium-complain-m-content-part {
+    padding: 14px 0;
+    font-size: 22px;
+    font-weight: 700;
+    width: 50%;
+    text-align: center;
+}
+
+.premium-complain-m-content-body .btn-default {
+    padding: 7px 10px;
+}
+
+.edit-email {
+    max-width: 400px;
+    margin: 0 auto;
+    display: none;
+}
+
+.edit-email .form-control {
+    border: 1px solid #FCCB06;
+    background: #F5F5F5;
+}
+
+.edit-email .row>* {
+    position: relative;
+}
+
+.add-email-btn {
+    position: absolute;
+    right: -15px;
+    top: 8px;
+    color: #FCCB06;
+}
+
+.add-email-btn:hover {
+    color: #000;
+}
+
+.premium-complain-m-content-body.active {
+    box-shadow: 0px 25px 37px rgba(0, 0, 0, 0.10);
+    padding: 0 10px 15px 10px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    background: url(/front-end/images/edit-email-bg.svg) no-repeat bottom;
+    background-size: 100%;
+}
+
+.add-email-field {
+    position: relative;
+}
+
+a.close-email-field {
+    position: absolute;
+    right: -19px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #000;
+}
+
+a.close-level {
+    position: absolute;
+    right: 8px;
+    top: 25px;
+    color: #000;
+}
+
+a.close-email-field:hover,
+a.close-level:hover {
+    color: #FCCB06;
+}
+
+.premium-alert-box {
+    max-width: 555px;
+    margin: auto;
+    border-radius: 8px;
+    background: #FCCB06 url(/front-end/images/alert-bg.svg) no-repeat center;
+    background-size: 100%;
+    padding: 30px;
+    margin-top: 30px;
+}
+
+.premium-alert-box .btn-group.btn-toggle {
+    background: #fff;
+    padding: 3px;
+    width: 102px;
+}
+
+.premium-alert-box .btn-sm {
+    font-size: 12px;
+}
+
+.premium-alert-box .btn.active {
+    background-color: #000;
+    border-color: #000;
+    color: #F4DD35;
+}
+
+.premium-alert-box .form-control {
+    width: 102px;
+}
+
+.premium-alert-box .col-form-label {
+    width: 220px;
+}
+
+.premium-alert-part {
+    position: relative;
+    z-index: 9;
+}
+
+.c-overlay1 {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.c-overlay2 {
+    position: absolute;
+    bottom: 60px;
+    left: 0;
+}
+
+.create-category-wrapper {
+    padding: 35px 35px;
+    border-radius: 10px;
+    background: #FFF;
+    box-shadow: 0px 24px 34px 0px rgba(0, 0, 0, 0.70);
+    font-family: var(--inter);
+}
+
+.sub-category-list h4,
+.add-category-content h4 {
+    color: #C7C7C7;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin: 0 0 35px 0;
+}
+
+.sub-category-list ul li  {
+    color: var(--grey-01, #A5A5A5);
+    font-size: 18px;
+    font-weight: 600;
+    position: relative;
+}
+
+.sub-category-list ul li span {
+    font-size: 13px;
+    position: absolute;
+    right: 0;
+    top: 2px;
+}
+
+.sub-category-list ul li span a + a {
+    margin-left: 5px;
+}
+
+.sub-category-list ul li span a {
+    color: #a5a5a5;
+}
+
+.sub-category-list ul li span a:hover {
+    color: #FCCB06;
+}
+
+.sub-category-list ul li ul li {
+    font-size: 16px;
+    margin-top: 20px;
+    list-style-type: square;
+}
+
+.add-category-content .custom-form label span {
+    background-color: #ffffff;
+}
+
+.basic-complain-content .create-category-wrapper {
+    padding: 35px 35px;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.modal .custom-form label span {
+    background-color: #ffffff;
+}
+
+.survey-wrapper {
+    margin-top: 30px;
+    border-radius: 18px;
+    box-shadow: 0px 14px 34px 0px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+}
+
+.survey-body {
+    background: #252525 url(../images/survey-object.svg) no-repeat right top;
+    color: #ffffff;
+    padding: 25px 25px;
+}
+
+#giveratingmodal .survey-rating {
+    display: block;
+    text-align: center;
+}
+
+#giveratingmodal .survey-rating-part {
+    font-size: 18px;
+    font-weight: 900;
+    margin: 20px 0;
+}
+
+.survey-rating-part ul li {
+    display: inline-block;
+    margin: 0 20px;
+}
+
+.survey-rating-part ul {
+    padding: 0;
+    margin: 0;
+    line-height: 11px;
+}
+
+.survey-rating-part ul li a img {
+    width: 30px;
+    opacity: 0.3;
+    transition: all ease-in-out 0.5s;
+}
+
+.survey-rating-part ul li a:hover img,
+.survey-rating-part ul li.active a img {
+    opacity: 1;
+    transform: scale(1.1);
+    transition: all ease-in-out 0.5s;
+}
+
+.survey-rating-part .form-check.custom-check .form-check-label img {
+    max-width: 30px;
+    transition: all ease-in-out 0.5s;
+}
+
+.survey-rating-part .form-check.custom-check .form-check-label {
+    min-width: auto;
+    padding: 0;
+    border: none;
+    opacity: 0.3;
+    background: none;
+    min-height: auto;
+    margin: 5px;
+}
+
+.survey-rating-part .form-check.custom-check .form-check-input:checked[type=radio] + .form-check-label {
+    opacity: 1;
+}
+
+.survey-rating-part .form-check.custom-check .form-check-input:checked[type=radio] + .form-check-label img {
+    transform: scale(1.1);
+    transition: all ease-in-out 0.5s;
+}
+
+.company-user-complain-wrapper {
+    width: 100%;
+    display: block;
+    margin: 0;
+    padding:35px 20px;
+    border-radius: 20px;
+    background: #FFF;
+    box-shadow: 0px 14px 84px 0px rgba(0, 0, 0, 0.22);
+    position: relative;
+}
+
+.custom-text-label {
+    font-weight: 700;
+    margin: 30px 0 12px;
+}
+
+.custom-text-box {
+    padding: 20px 15px;
+    background: #f2f2f2;
+    border-radius: 8px;
+}
+
+.company-user-complain-wrapper .user-rating {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 29px;
+}
+
+.level-management {
+    font-weight: 700;
+}
+
+.company-user-complain-wrapper .level-management small {
+    color: #f00;
+    margin-left: 10px;
+}
+
+.basic-complain-content .company-user-complain-wrapper {
+    border: 1px #ccc solid;
+    box-shadow: none;
+}
+
+.c-u-top-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    background: #f2f2f2;
+    padding: 12px 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+}
+
+.c-u-top-head h6 {
+    margin: 0;
+}
+
+.all-complain-reg-info {
+    background: #fbca06;
+    padding: 12px 15px;
+    border-radius: 8px;
+}
+
+.c-u-layer-part {
+    margin: 10px 0;
+}
 
 /*========================================= responsive ====================================*/
 
@@ -1202,6 +1671,10 @@
 @media only screen and (max-width: 1199px) {
     .company_profile_navigation>ul>li>a {
         padding: 13px 12px;
+    }
+
+    .basic-complain-content .create-category-wrapper {
+        padding: 35px 0;
     }
 }
 
@@ -1252,6 +1725,16 @@
     .bulk-upload label {
         font-size: 16px;
     }
+
+    .basic-complain-content {
+        background-size: 10%;
+    }
+
+    .add-category-content {
+        margin-top: 20px;
+    }
+
+    
 }
 
 @media only screen and (max-width: 767px) {
@@ -1287,6 +1770,20 @@
     .premium_company_profile .data_by_locations .total_reviews .count{
         font-size: 30px;
     }
+
+    .premium-complain-m-content-head .premium-complain-m-content-part {
+        font-size: 18px;
+    }
+
+    .premium-complain-m-content-body .premium-complain-m-content-part {
+        font-size: 16px;
+    }
+
+    .premium-complain-m-wrap {
+        padding: 25px 20px;
+    }
+
+    
 }
 
 @media only screen and (max-width: 575px) {
@@ -1374,6 +1871,27 @@
     .change-expire-date-btn span {
         font-size: 14px;
     }
+
+    .premium-complain-m-head {
+        display: block;
+    }
+
+    .create-category-wrapper {
+        padding: 35px 20px;
+    }
+
+    .c-u-top-head {
+        display: block;
+    }
+
+    .c-u-top-head-part {
+        width: 100%;
+        margin: 4px 0;
+    }
+
+    .company-user-complain-wrapper {
+        padding: 20px 12px;
+    }
 }
 
 @media only screen and (max-width: 480px) {
@@ -1391,5 +1909,11 @@
     }
     .display_tags .all_tags > .row > .col-3{
         width: 50%;
+    }
+}
+
+@media only screen and (max-width: 420px) {
+    .premium-alert-box .col-form-label {
+        text-align: center;
     }
 }

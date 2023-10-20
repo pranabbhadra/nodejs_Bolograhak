@@ -97,7 +97,26 @@
                                 <div class="row">
                                     <!--begin::Col-->
                                     <div class="col-lg-12 fv-row">
-                                        <input type="text" name="company_name" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0" placeholder="Company name" value="<%= company.company_name %>" />
+                                        <input type="text" name="company_name" id="company_name" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0" placeholder="Company name" value="<%= company.company_name %>" />
+                                    </div>
+                                    <!--end::Col-->
+                                </div>
+                                <!--end::Row-->
+                            </div>
+                            <!--end::Col-->
+                        </div>
+                        
+                        <div class="row mb-6">
+                            <!--begin::Label-->
+                            <label class="col-lg-4 col-form-label required fw-bold fs-6">Company Slug</label>
+                            <!--end::Label-->
+                            <!--begin::Col-->
+                            <div class="col-lg-8">
+                                <!--begin::Row-->
+                                <div class="row">
+                                    <!--begin::Col-->
+                                    <div class="col-lg-12 fv-row">
+                                        <input type="text" name="company_slug" id="company_slug" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0" placeholder="Company slug" value="<%= company.slug %>" />
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -306,6 +325,10 @@
                                         <input class="form-check-input mt-1" name="status" type="radio" value="0" <% if(company.status == '0'){ %>checked <% } %> />
                                         <span class="fw-bold fs-6 badge badge-light-danger fw-bolder px-4 py-3">Rejected</span>
                                     </label>
+                                    <label class="form-check form-check-inline form-check-solid">
+                                        <input class="form-check-input mt-1" name="status" type="radio" value="3" <% if(company.status == '3'){ %>checked <% } %> />
+                                        <span class="fw-bold fs-6 badge badge-light-dark fw-bolder px-4 py-3">Trashed</span>
+                                    </label>
                                     <!--end::Option-->
                                 </div>
                                 <!--end::Options-->
@@ -363,7 +386,7 @@
                                 <div class="d-flex align-items-center mt-3">
                                     <!--begin::Option-->
                                     <label class="form-check form-check-inline form-check-solid me-5">
-                                        <input class="form-check-input mt-1" name="verified" type="radio" value="0" <% if(company.verified == '0'){ %>checked <% } %>/>
+                                        <input class="form-check-input mt-1" name="verified" type="radio" value="0" <% if(company.verified != '1'){ %>checked <% } %>/>
                                         <span class="fw-bold fs-6 badge badge-light-danger fw-bolder px-4 py-3">No</span>
                                     </label>
                                     <!--end::Option-->
@@ -555,6 +578,13 @@ var KTAccountSettingsProfileDetails = function () {
                             }
                         }
                     },
+                    company_slug: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Company slug is required'
+                            }
+                        }
+                    },
                     comp_email: {
                         validators: {
                             emailAddress: {
@@ -687,5 +717,19 @@ $('#claimed_by').on('change', function (e) {
         $("input[name=verified][value=" + verified_value + "]").prop('checked', true);
         $("input[name=payment_status][value=" + payment_status_value + "]").prop('checked', true);
     }
+});
+
+$(document).ready(function() {
+    // Function to generate a slug from a given string
+    function generateSlug(text) {
+        return text.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9-]/g, '');
+    }
+
+    // Event handler for the "keyup" event on the "Company Name" input field
+    $("#company_name").on("keyup", function() {
+        var companyName = $(this).val();
+        var companySlug = generateSlug(companyName);
+        $("#company_slug").val(companySlug);
+    });
 });
 </script>

@@ -215,7 +215,7 @@ async function getlatestReviews(reviewCount){
       LEFT JOIN users u ON r.customer_id = u.user_id 
       LEFT JOIN user_customer_meta ucm ON ucm.user_id = u.user_id 
       LEFT JOIN review_reply ON review_reply.review_id = r.id
-      WHERE r.review_status = "1" AND c.status = "1" 
+      WHERE r.review_status = "1" AND c.status = "1" AND (r.flag_status != '0' OR r.flag_status IS NULL)
       GROUP BY r.id
       ORDER BY r.created_at DESC
       LIMIT ${reviewCount};
@@ -245,7 +245,7 @@ async function getAllTrendingReviews(){
       LEFT JOIN users u ON r.customer_id = u.user_id 
       LEFT JOIN user_customer_meta ucm ON ucm.user_id = u.user_id 
       LEFT JOIN review_reply ON review_reply.review_id = r.id
-      WHERE r.review_status = "1" AND c.status = "1" AND c.trending = "1"
+      WHERE r.review_status = "1" AND c.status = "1" AND c.trending = "1" AND (r.flag_status != '0' OR r.flag_status IS NULL)
       GROUP BY r.id
       ORDER BY r.created_at DESC
   `;
@@ -274,7 +274,7 @@ async function getAllReviews(){
       LEFT JOIN users u ON r.customer_id = u.user_id 
       LEFT JOIN user_customer_meta ucm ON ucm.user_id = u.user_id 
       LEFT JOIN review_reply ON review_reply.review_id = r.id
-      WHERE r.review_status = "1" AND c.status = "1"
+      WHERE r.review_status = "1" AND c.status = "1" AND (r.flag_status != '0' OR r.flag_status IS NULL)
       GROUP BY r.id
       ORDER BY r.created_at DESC
   `;
@@ -1220,6 +1220,44 @@ function generateUniqueSlug(companyName, callback) {
   });
 }
 
+// Function to generate a unique slug from a string
+function generateUniqueSlugCategory(catName, callback) {
+  // Check if the generated slug already exists in the database
+  db.query('SELECT category_name, category_slug  FROM category', (err, existingSlugs) => {
+    if (err) {
+      callback(err);
+      return;
+    }
+
+    const baseSlug = slugify(catName, {
+      replacement: '-',  // replace spaces with hyphens
+      lower: true,      // convert to lowercase
+      strict: true,     // strip special characters
+      remove: /[*+~.()'"!:@]/g,
+    });
+
+    let slug = baseSlug;
+    let slugExists = false;
+    let count = 1;
+    // Check if the generated slug already exists in the existing slugs
+    existingSlugs.forEach((value) => {
+      if (value.category_slug === baseSlug) {
+        slugExists = true;
+      }
+      if (value.category_name == catName) {
+        count ++
+      }
+    });
+
+    if (slugExists) {
+      slug = `${baseSlug}-${count}`;
+      //slug = `${baseSlug}-${Math.floor(Math.random() * 10000)}`;
+    }
+
+    callback(null, slug);
+  });
+}
+
 // Function to fetch Sub Category
 async function getSubCategories(categorySlug) {
   const sql = `SELECT category.category_name,category.category_slug, GROUP_CONCAT(c.category_name) AS subcategories, GROUP_CONCAT(c.category_slug ) AS subcategoriesSlug
@@ -1528,6 +1566,790 @@ async function sendInvitationEmail(req) {
  
 }
 
+//Function to add Flag details to the review table
+async function addFlagDetails(req){
+  //console.log(req)
+  try {
+    if(req){
+      const currentDate = new Date();
+      // Format the date in 'YYYY-MM-DD HH:mm:ss' format (adjust the format as needed)
+      const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+      
+      const update_flag_query ='UPDATE reviews SET  flag_status = ?, flag_company_reason_radio = ? , flag_company_reason_details = ?  WHERE id  = ? ';
+  
+      const update_flag_values = [
+        '2',
+        req.flag_radio ,
+        req.flag_details || null,
+        req.review_id
+      ];
+      const update_flag_result = await query(update_flag_query, update_flag_values);
+
+      return true;
+    }else {
+      return false;
+    }
+  }catch (error) {
+    return 'Error during user update_flag_query:'+error;
+  }  
+}
+
+//Function to send email to admin for add Flag details to the company user
+async function sendFlagEmail(req){
+  //console.log(req)
+  try {
+    if(req){
+      const currentDate = new Date();
+      // Format the date in 'YYYY-MM-DD HH:mm:ss' format (adjust the format as needed)
+      const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+      
+      const template = `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
+                <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
+                 <tbody>
+                  <tr>
+                   <td align="center" valign="top">
+                     <div id="template_header_image"><p style="margin-top: 0;"></p></div>
+                     <table id="template_container" style="box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; background-color: #fdfdfd; border: 1px solid #dcdcdc; border-radius: 3px !important;" border="0" cellpadding="0" cellspacing="0" width="600">
+                      <tbody>
+                        <tr>
+                         <td align="center" valign="top">
+                           <!-- Header -->
+                           <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
+                             <tbody>
+                               <tr>
+                               <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
+                                <td id="header_wrapper" style="padding: 36px 48px; display: block;">
+                                   <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Flag Raised</h1>
+                                </td>
+          
+                               </tr>
+                             </tbody>
+                           </table>
+                     <!-- End Header -->
+                     </td>
+                        </tr>
+                        <tr>
+                         <td align="center" valign="top">
+                           <!-- Body -->
+                           <table id="template_body" border="0" cellpadding="0" cellspacing="0" width="600">
+                             <tbody>
+                               <tr>
+                                <td id="body_content" style="background-color: #fdfdfd;" valign="top">
+                                  <!-- Content -->
+                                  <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                                   <tbody>
+                                    <tr>
+                                     <td style="padding: 48px;" valign="top">
+                                       <div id="body_content_inner" style="color: #737373; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
+                                        
+                                        <table border="0" cellpadding="4" cellspacing="0" width="90%">
+                                          <tr>
+                                            <td colspan="2">
+                                            <strong>Hello,</strong>
+                                            <p style="font-size:15px; line-height:20px">A company user raised flag against a review. <a class="btn btn-primary" href="${process.env.MAIN_URL}edit-review/${req.review_id}">Click here </a>to check this review.</p>
+                                            </td>
+                                          </tr>
+                                        </table>
+                                        
+                                       </div>
+                                     </td>
+                                    </tr>
+                                   </tbody>
+                                  </table>
+                                <!-- End Content -->
+                                </td>
+                               </tr>
+                             </tbody>
+                           </table>
+                         <!-- End Body -->
+                         </td>
+                        </tr>
+                        <tr>
+                         <td align="center" valign="top">
+                           <!-- Footer -->
+                           <table id="template_footer" border="0" cellpadding="10" cellspacing="0" width="600">
+                            <tbody>
+                             <tr>
+                              <td style="padding: 0; -webkit-border-radius: 6px;" valign="top">
+                               <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                                 <tbody>
+                                   <tr>
+                                    <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
+                                         <p>This email was sent from <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a></p>
+                                    </td>
+                                   </tr>
+                                 </tbody>
+                               </table>
+                              </td>
+                             </tr>
+                            </tbody>
+                           </table>
+                         <!-- End Footer -->
+                         </td>
+                        </tr>
+                      </tbody>
+                     </table>
+                   </td>
+                  </tr>
+                 </tbody>
+                </table>
+               </div>`;
+                var mailOptions = {
+                    from: process.env.MAIL_USER,
+                    //to: 'pranab@scwebtech.com',
+                    to: process.env.MAIL_USER,
+                    subject: 'Flag raised',
+                    html: template
+                  }
+              
+                mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
+                    if (err) {
+                        console.log(err);
+                        return res.send({
+                            status: 'not ok',
+                            message: 'Something went wrong'
+                        });
+                    } else {
+                        console.log('Mail Send: ', info.response);
+                        return res.send(
+                        {
+                            status: 'ok',
+                            data: '',
+                            message: 'Review Mail send successfully'
+                        }
+                    )
+                    }
+                })
+
+      return true;
+    }else {
+      return false;
+    }
+  }catch (error) {
+    return 'Error during user update_flag_query:'+error;
+  }  
+}
+
+async function getAllFlaggedReviews() {
+  const all_review_query = `
+    SELECT r.*, c.company_name, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic, rr.status as reply_status
+      FROM reviews r
+      JOIN company c ON r.company_id = c.ID
+      JOIN company_location cl ON r.company_location_id = cl.ID
+      JOIN users u ON r.customer_id = u.user_id
+      LEFT JOIN user_customer_meta ucm ON u.user_id = ucm.user_id
+      LEFT JOIN review_reply rr ON rr.review_id = r.id AND rr.reply_by = r.customer_id
+      WHERE r.flag_status = '2' OR r.flag_status = '1' OR r.flag_status = '0'
+      ORDER BY r.created_at DESC;
+  `;
+  try{
+    const all_review_results = await query(all_review_query);
+    return all_review_results;
+  }
+  catch(error){
+    console.error('Error during all_review_query:', error);
+  }
+}
+
+//Function to add super admin Flag details to the review table
+async function updateFlagDetails(req){
+  //console.log(req)
+  try {
+    if(req){
+      const currentDate = new Date();
+      // Format the date in 'YYYY-MM-DD HH:mm:ss' format (adjust the format as needed)
+      const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+      
+      const update_flag_query ='UPDATE reviews SET  flag_status = ?, flag_admin_reason = ?   WHERE id  = ? ';
+  
+      const update_flag_values = [
+        req.flag_status,
+        req.flag_admin_reason ,
+        req.review_id
+      ];
+      const update_flag_result = await query(update_flag_query, update_flag_values);
+
+      return true;
+    }else {
+      return false;
+    }
+  }catch (error) {
+    return 'Error during admin update_flag_query:' +error;
+  }  
+}
+//Function to send mail to company user after approve the flag
+async function flagApprovedEmail(req) {
+  //console.log(req);
+
+  const sql = `
+    SELECT r.created_at, r.company_id, r.review_content, c.company_name, c.slug, u.first_name, u.email, claimed_user.email claimed_user_email, claimed_user.first_name claimed_user_name
+    FROM reviews r
+    LEFT JOIN company c ON r.company_id = c.ID 
+    LEFT JOIN users u ON r.customer_id = u.user_id 
+    LEFT JOIN company_claim_request ccr ON ccr.company_id = c.ID 
+    LEFT JOIN users claimed_user ON ccr.claimed_by = claimed_user.user_id 
+    WHERE r.flag_status = "1" AND r.id = "${req.review_id}"
+`;
+
+  const approveReviewData = await query(sql);
+
+
+  if(approveReviewData.length > 0){
+    const dateString = approveReviewData[0].created_at; 
+    const date = new Date(dateString); 
+    const reviewDate = date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' ,hour:'numeric',minute:'numeric',second: 'numeric' })
+  
+    //console.log('approve Function', reviewData)
+    var mailOptions = {
+      from: process.env.MAIL_USER,
+      //to: 'pranab@scwebtech.com',
+      to: approveReviewData[0].claimed_user_email,
+      subject: 'Flag Approval Email',
+      html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
+      <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
+       <tbody>
+        <tr>
+         <td align="center" valign="top">
+           <div id="template_header_image"><p style="margin-top: 0;"></p></div>
+           <table id="template_container" style="box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; background-color: #fdfdfd; border: 1px solid #dcdcdc; border-radius: 3px !important;" border="0" cellpadding="0" cellspacing="0" width="600">
+            <tbody>
+              <tr>
+               <td align="center" valign="top">
+                 <!-- Header -->
+                 <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
+                   <tbody>
+                     <tr>
+                     <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
+                      <td id="header_wrapper" style="padding: 36px 48px; display: block;">
+                         <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Flag Approval Email</h1>
+                      </td>
+
+                     </tr>
+                   </tbody>
+                 </table>
+           <!-- End Header -->
+           </td>
+              </tr>
+              <tr>
+               <td align="center" valign="top">
+                 <!-- Body -->
+                 <table id="template_body" border="0" cellpadding="0" cellspacing="0" width="600">
+                   <tbody>
+                     <tr>
+                      <td id="body_content" style="background-color: #fdfdfd;" valign="top">
+                        <!-- Content -->
+                        <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                         <tbody>
+                          <tr>
+                           <td style="padding: 48px;" valign="top">
+                             <div id="body_content_inner" style="color: #737373; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
+                              
+                              <table border="0" cellpadding="4" cellspacing="0" width="90%">
+                                <tr>
+                                  <td colspan="2">
+                                  <strong>Hello ${approveReviewData[0].claimed_user_name},</strong>
+                                  <p style="font-size:15px; line-height:20px">Your flag against the review <i><b>"${approveReviewData[0].review_content} " </b></i> has been approved. Now the review has been removed from <a  href="${process.env.MAIN_URL}">our website</a> .</p>
+                                  </td>
+                                </tr>
+                              </table>
+                              
+                             </div>
+                           </td>
+                          </tr>
+                         </tbody>
+                        </table>
+                      <!-- End Content -->
+                      </td>
+                     </tr>
+                   </tbody>
+                 </table>
+               <!-- End Body -->
+               </td>
+              </tr>
+              <tr>
+               <td align="center" valign="top">
+                 <!-- Footer -->
+                 <table id="template_footer" border="0" cellpadding="10" cellspacing="0" width="600">
+                  <tbody>
+                   <tr>
+                    <td style="padding: 0; -webkit-border-radius: 6px;" valign="top">
+                     <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                       <tbody>
+                         <tr>
+                          <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
+                               <p>This email was sent from <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a></p>
+                          </td>
+                         </tr>
+                       </tbody>
+                     </table>
+                    </td>
+                   </tr>
+                  </tbody>
+                 </table>
+               <!-- End Footer -->
+               </td>
+              </tr>
+            </tbody>
+           </table>
+         </td>
+        </tr>
+       </tbody>
+      </table>
+     </div>`
+    }
+      await mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
+        if (err) {
+            console.log(err);
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong'
+            });
+        } else {
+            console.log('Mail Send: ', info.response);
+            return res.send({
+                status: 'ok',
+                message: 'Flag Approve'
+            });
+        }
+      })
+    
+    
+  }
+ 
+    return true;
+}
+
+//Function to send mail to comapny user after reject the flag
+async function flagRejectdEmail(req) {
+  const sql = `
+  SELECT r.created_at, r.company_id, r.review_content, c.company_name, c.slug, u.first_name, u.email, claimed_user.email claimed_user_email, claimed_user.first_name claimed_user_name
+  FROM reviews r
+  LEFT JOIN company c ON r.company_id = c.ID 
+  LEFT JOIN users u ON r.customer_id = u.user_id 
+  LEFT JOIN company_claim_request ccr ON ccr.company_id = c.ID 
+  LEFT JOIN users claimed_user ON ccr.claimed_by = claimed_user.user_id 
+  WHERE r.flag_status = "0" AND r.id = "${req.review_id}"
+`;
+
+  const rejectReviewData = await query(sql);
+
+  console.log(rejectReviewData[0])
+  if(rejectReviewData.length > 0){
+
+    const dateString = rejectReviewData[0].created_at; 
+    const date = new Date(dateString); 
+    const reviewDate = date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' ,hour:'numeric',minute:'numeric',second: 'numeric' })
+  
+    //console.log('approve Function', reviewData)
+    var mailOptions = {
+      from: process.env.MAIL_USER,
+      //to: 'pranab@scwebtech.com',
+      to: rejectReviewData[0].claimed_user_email,
+      subject: 'Flag Rejected Email',
+      html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
+      <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
+       <tbody>
+        <tr>
+         <td align="center" valign="top">
+           <div id="template_header_image"><p style="margin-top: 0;"></p></div>
+           <table id="template_container" style="box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; background-color: #fdfdfd; border: 1px solid #dcdcdc; border-radius: 3px !important;" border="0" cellpadding="0" cellspacing="0" width="600">
+            <tbody>
+              <tr>
+               <td align="center" valign="top">
+                 <!-- Header -->
+                 <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
+                   <tbody>
+                     <tr>
+                     <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
+
+              <td id="header_wrapper" style="padding: 36px 48px; display: block;">
+                         <h1 style="color: red; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Flag Rejected Email</h1>
+                      </td>
+                     </tr>
+                   </tbody>
+                 </table>
+           <!-- End Header -->
+           </td>
+              </tr>
+              <tr>
+               <td align="center" valign="top">
+                 <!-- Body -->
+                 <table id="template_body" border="0" cellpadding="0" cellspacing="0" width="600">
+                   <tbody>
+                     <tr>
+                      <td id="body_content" style="background-color: #fdfdfd;" valign="top">
+                        <!-- Content -->
+                        <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                         <tbody>
+                          <tr>
+                           <td style="padding: 48px;" valign="top">
+                             <div id="body_content_inner" style="color: #737373; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
+                              
+                              <table border="0" cellpadding="4" cellspacing="0" width="90%">
+                                <tr>
+                                  <td colspan="2">
+                                  <strong>Hello ${rejectReviewData[0].claimed_user_name},</strong>
+                                  <p style="font-size:15px; line-height:20px">Your flag for <i><b>"${rejectReviewData[0].review_content} "</b></i> was unfortunately rejected because of the following reason:</p>
+                                   <p style="font-size:15px; line-height:25px;">${req.flag_admin_reason}.</p>
+                                   <small>For further details contact us at : <a href="mailto:${process.env.MAIL_SUPPORT}"><i>${process.env.MAIL_SUPPORT}</i></a></small>
+                                  </td>
+                                </tr>
+                              </table>
+                              
+                             </div>
+                           </td>
+                          </tr>
+                         </tbody>
+                        </table>
+                      <!-- End Content -->
+                      </td>
+                     </tr>
+                   </tbody>
+                 </table>
+               <!-- End Body -->
+               </td>
+              </tr>
+              <tr>
+               <td align="center" valign="top">
+                 <!-- Footer -->
+                 <table id="template_footer" border="0" cellpadding="10" cellspacing="0" width="600">
+                  <tbody>
+                   <tr>
+                    <td style="padding: 0; -webkit-border-radius: 6px;" valign="top">
+                     <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                       <tbody>
+                         <tr>
+                          <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
+                               <p>This email was sent from <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a></p>
+                          </td>
+                         </tr>
+                       </tbody>
+                     </table>
+                    </td>
+                   </tr>
+                  </tbody>
+                 </table>
+               <!-- End Footer -->
+               </td>
+              </tr>
+            </tbody>
+           </table>
+         </td>
+        </tr>
+       </tbody>
+      </table>
+     </div> `
+    }
+
+      mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
+        if (err) {
+            console.log(err);
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong'
+            });
+        } else {
+            console.log('Mail Send: ', info.response);
+            return res.send({
+                status: 'ok',
+                message: 'Review Rejected'
+            });
+        }
+      })
+  }
+ 
+    return true;
+}
+
+//Function to get all review by company id from  reviews table
+async function getAllReviewsByCompanyID(companyId) {
+  const all_review_query = `
+  SELECT r.*, c.company_name, c.slug, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic, count(rr.ID) as reply_count
+  FROM reviews r
+  JOIN company c ON r.company_id = c.ID
+  JOIN company_location cl ON r.company_location_id = cl.ID
+  JOIN users u ON r.customer_id = u.user_id
+  LEFT JOIN user_customer_meta ucm ON u.user_id = ucm.user_id
+  LEFT JOIN review_reply rr ON r.id = rr.review_id
+  WHERE r.company_id = ? AND r.review_status = '1' 
+  GROUP BY r.id
+  ORDER BY r.created_at DESC;
+  `;
+  try{
+    const all_review_results = await query(all_review_query, companyId);
+    return all_review_results;
+  }
+  catch(error){
+    console.error('Error during all_review_query:', error);
+  }
+}
+
+//Function to get latest discussion from discussions table
+async function getAllLatestDiscussion(limit) {
+  const sql = `
+    SELECT
+    discussions.*,
+    u.first_name,
+    u.last_name,
+    COALESCE(comments.total_comments, 0) as total_comments,
+    COALESCE(views.total_views, 0) as total_views
+  FROM discussions
+  LEFT JOIN users u ON discussions.user_id = u.user_id
+  LEFT JOIN (
+    SELECT discussion_id, COUNT(*) as total_comments
+    FROM discussions_user_response
+    GROUP BY discussion_id
+  ) comments ON discussions.id = comments.discussion_id
+  LEFT JOIN (
+    SELECT discussion_id, COUNT(*) as total_views
+    FROM discussions_user_view
+    GROUP BY discussion_id
+  ) views ON discussions.id = views.discussion_id
+  ORDER BY discussions.id DESC
+  LIMIT ${limit} ;
+  `;
+  try{
+    const results = await query(sql);
+    if (results.length>0) {
+      
+    return results;
+    } else {
+      return [];
+    }
+  }
+  catch(error){
+    console.error('Error during fetch All Latest Discussion:', error);
+  }
+}
+
+//Function to get popular discussion from discussions table
+async function getAllPopularDiscussion() {
+  const sql = `
+  SELECT
+    discussions.*,
+    u.first_name,
+    u.last_name,
+    COALESCE(comments.total_comments, 0) as total_comments,
+    COALESCE(views.total_views, 0) as total_views
+  FROM discussions
+  LEFT JOIN users u ON discussions.user_id = u.user_id
+  LEFT JOIN (
+    SELECT discussion_id, COUNT(*) as total_comments
+    FROM discussions_user_response
+    GROUP BY discussion_id
+  ) comments ON discussions.id = comments.discussion_id
+  LEFT JOIN (
+    SELECT discussion_id, COUNT(*) as total_views
+    FROM discussions_user_view
+    GROUP BY discussion_id
+  ) views ON discussions.id = views.discussion_id
+  ORDER BY total_comments DESC;
+  ;
+  `;
+  try{
+    const results = await query(sql);
+    if (results.length>0) {
+      
+    return results;
+    } else {
+      return [];
+    }
+  }
+  catch(error){
+    console.error('Error during fetch  Latest Discussion:', error);
+  }
+}
+
+//Function to get viewed discussion from discussions table
+async function getAllViewedDiscussion() {
+  const sql = `
+  SELECT
+    discussions.*,
+    u.first_name,
+    u.last_name,
+    COALESCE(comments.total_comments, 0) as total_comments,
+    COALESCE(views.total_views, 0) as total_views
+  FROM discussions
+  LEFT JOIN users u ON discussions.user_id = u.user_id
+  LEFT JOIN (
+    SELECT discussion_id, COUNT(*) as total_comments
+    FROM discussions_user_response
+    GROUP BY discussion_id
+  ) comments ON discussions.id = comments.discussion_id
+  LEFT JOIN (
+    SELECT discussion_id, COUNT(*) as total_views
+    FROM discussions_user_view
+    GROUP BY discussion_id
+  ) views ON discussions.id = views.discussion_id
+  ORDER BY total_views DESC;
+  ;
+  `;
+  try{
+    const results = await query(sql);
+    if (results.length>0) {
+      
+    return results;
+    } else {
+      return [];
+    }
+  }
+  catch(error){
+    console.error('Error during fetch All viewed discussion Discussion:', error);
+  }
+}
+
+//Function to get latest discussion from discussions table
+async function getAllDiscussions() {
+  const sql = `
+  SELECT
+    discussions.*,
+    u.first_name,
+    u.last_name,
+    COALESCE(comments.total_comments, 0) as total_comments,
+    COALESCE(views.total_views, 0) as total_views
+  FROM discussions
+  LEFT JOIN users u ON discussions.user_id = u.user_id
+  LEFT JOIN (
+    SELECT discussion_id, COUNT(*) as total_comments
+    FROM discussions_user_response
+    GROUP BY discussion_id
+  ) comments ON discussions.id = comments.discussion_id
+  LEFT JOIN (
+    SELECT discussion_id, COUNT(*) as total_views
+    FROM discussions_user_view
+    GROUP BY discussion_id
+  ) views ON discussions.id = views.discussion_id
+  ORDER BY discussions.id DESC
+  `;
+  try{
+    const results = await query(sql);
+    if (results.length>0) {
+      
+    return results;
+    } else {
+      return [];
+    }
+  }
+  catch(error){
+    console.error('Error during fetch All Latest Discussion:', error);
+  }
+}
+
+//Function to insert discussion response in discussions_user_response table
+async function insertDiscussionResponse(discussion_id, IP_address) {
+  const currentDate = new Date();
+  const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+  const data = {
+    discussion_id : discussion_id,
+    ip_address: IP_address,
+  };
+  const checkQuery = `SELECT * FROM discussions_user_view WHERE discussion_id = '${discussion_id}'  AND ip_address = '${IP_address}'`;
+  const check_result = await query(checkQuery);
+  if(check_result.length > 0){
+    console.log(check_result[0].id);
+    return check_result[0].id
+  }else{
+    const sql = 'INSERT INTO discussions_user_view SET ?'
+    const results = await query(sql, data);
+    try{
+      console.log(results.insertId);
+      return results.insertId;
+    }
+    catch(error){
+      console.error('Error during insert discussions_user_view:', error);
+    }
+  }
+}
+
+//Function to get all comment by discussion from discussions and discussions_user_response table
+async function getAllCommentByDiscusId(discussions_id) {
+  const sql = `
+  SELECT discussions.*, u.first_name, u.last_name 
+  FROM discussions 
+  LEFT JOIN users u ON discussions.user_id = u.user_id 
+  WHERE discussions.id = ${discussions_id}
+  `;
+  const commentQuery = `SELECT discussions_user_response.*
+  FROM discussions_user_response 
+  WHERE discussions_user_response.discussion_id = ${discussions_id}
+  ORDER BY created_at DESC;`
+  try{
+    const results = await query(sql);
+    const commentResult = await query(commentQuery);
+     const cmntData = JSON.stringify(commentResult);
+    results[0].commentData = cmntData;
+    //console.log('alldata',results)
+    return results;
+  }
+  catch(error){
+    console.error('Error during fetching getAllCommentByDiscusId:', error);
+  }
+}
+
+
+async function searchDiscussion(keyword){
+  const get_company_query = `
+    SELECT id , topic FROM discussions
+    WHERE topic LIKE '%${keyword}%' 
+    ORDER BY id DESC
+  `;
+  try{
+    const get_company_results = await query(get_company_query);
+    if(get_company_results.length > 0 ){
+      //console.log(get_company_results);
+      return {status: 'ok', data: get_company_results, message: ' Discussion data recived'};
+    }else{
+      return {status: 'ok', data: '', message: 'No Discussion data found'};
+    }
+  }catch(error){
+    return {status: 'err', data: '', message: 'No Discussion data found'};
+  }  
+}
+
+//Function to get user discussions from discussions table
+async function getDiscussionsByUserId(userId) {
+  const sql = `
+  SELECT discussions.*,  COUNT(dur.id) as total_comments , COUNT(duv.id) as total_views 
+  FROM discussions 
+  LEFT JOIN discussions_user_response dur ON discussions.id = dur.discussion_id 
+  LEFT JOIN discussions_user_view duv ON discussions.id = duv.discussion_id 
+  WHERE discussions.user_id = ${userId}
+  GROUP BY discussions.id
+  ORDER BY discussions.id DESC
+  `;
+  try{
+    const results = await query(sql);
+    if (results.length>0) {
+      
+    return results;
+    } else {
+      return [];
+    }
+  }
+  catch(error){
+    console.error('Error during fetch All Latest Discussion:', error);
+  }
+}
+
+//Function to get user discussions from discussions table
+async function getCompanyCategories(companyId) {
+  const sql = `
+  SELECT * FROM complaint_category WHERE company_id = '${companyId}'
+  `;
+  try{
+    const results = await query(sql);
+    if (results.length>0) {
+      
+    return results;
+    } else {
+      return [];
+    }
+  }
+  catch(error){
+    console.error('Error during fetch All Latest Discussion:', error);
+  }
+}
+
 module.exports = {
   getFaqPage,
   getFaqCategories,
@@ -1571,5 +2393,22 @@ module.exports = {
   countInvitationLabels,
   getCompanySurveyCount,
   getCompanySurveyListing,
-  getCompanySurveyQuestions
+  getCompanySurveyQuestions,
+  addFlagDetails,
+  sendFlagEmail,
+  getAllFlaggedReviews,
+  updateFlagDetails,
+  flagApprovedEmail,
+  flagRejectdEmail,
+  getAllReviewsByCompanyID,
+  getAllLatestDiscussion,
+  insertDiscussionResponse,
+  getAllCommentByDiscusId,
+  getAllPopularDiscussion,
+  getAllDiscussions,
+  getAllViewedDiscussion,
+  searchDiscussion,
+  getDiscussionsByUserId,
+  generateUniqueSlugCategory,
+  getCompanyCategories
 };

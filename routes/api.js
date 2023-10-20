@@ -21,4 +21,6 @@ router.post('/search-company', apiController.searchCompany);
 router.post('/states', apiController.states);
 router.put('/edit-profile', upload.single('profile_pic'), apiController.editProfile);
 
+router.post('/search-discussion', apiController.searchDiscussion);
+
 module.exports = router;

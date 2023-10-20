@@ -66,12 +66,16 @@ router.post('/update-category', upload.single('cat_image'), authController.updat
 router.post('/create-user', upload.single('profile_pic'), authController.createUser);
 router.put('/edit-user-data', upload.single('profile_pic'), authController.editUserData);
 router.post('/delete-user', authController.deleteUser);
+router.post('/trash-user', authController.trashUser);
+router.post('/restore-user', authController.restoreUser);
 
 //---Company--------//
 router.post('/create-company', upload.single('logo'), authController.createCompany);
 router.put('/edit-company-data', upload.single('logo'), authController.editCompany);
 router.post('/company-bulk-upload', csvupload.single('company_file'), authController.companyBulkUpload);
 router.post('/delete-company', authController.deleteCompany);
+router.post('/trash-company', authController.trashCompany);
+router.post('/restore-company', authController.restoreCompany);
 // Add FAQ
 router.post('/create-faq', authController.createFAQ);
 
@@ -177,6 +181,8 @@ router.post('/add-rating-tags', upload.single('rating_image'), authController.cr
 router.put('/edit-rating-tags', upload.single('rating_image'), authController.editRatingTags);
 //---Review--------//
 router.put('/edit-review', authController.editCustomerReview);
+//---Review reply--------//
+router.put('/edit-review-reply', authController.editCustomerReviewReply);
 
 //Create Featured Company
 router.post('/create-featured-company', authController.creatFeaturedCompany);
@@ -280,5 +286,33 @@ router.post('/user_polling', authController.userPolling);
 
 //Review Invitation Email
 router.post('/review_invitation', authController.reviewInvitation);
+
+//Add Review Flag
+router.post('/add-review-flag', authController.addReviewFlag);
+
+//Add Review Flag admin response
+router.post('/update-review-flag', authController.updateReviewFlag);
+
+//Create discussion
+router.post('/create-discussion', authController.createDiscussion);
+
+//Create discussion
+router.post('/add-comment', authController.addComment);
+
+//Create create-company-category
+router.post('/create-company-category', authController.createCompanyCategory);
+
+//Delete company-category
+router.post('/delete-company-category', authController.deleteCompanyCategory);
+
+//Update company-category
+router.post('/update-company-category', authController.updateCompanyCategory);
+
+//create-company-level
+router.post('/create-company-level', authController.createCompanyLevel);
+
+//Create Survey
+router.post('/create-survey', authController.createSurvey);
+router.post('/create-survey-answer', authController.createSurveyAnswer);
 
 module.exports = router;

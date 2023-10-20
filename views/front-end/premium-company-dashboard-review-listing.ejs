@@ -21,7 +21,8 @@
                                     <th scope="col">Tags</th>
                                     <th scope="col">Rating</th>
                                     <th scope="col">Replied</th>
-                                    <th scope="col">Acticon</th>
+                                    <th scope="col">Flagged</th>
+                                    <th scope="col" style="text-align: center;">Acticon</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -56,7 +57,21 @@
                                             <span class="badge badge-square badge-info">No</span>
                                         <% } %>
                                     </td>
-                                    <td><a class="rply_btn" href="/company-dashboard-review-replay/<%- company.slug -%>/<%- review.id -%>">Reply</a></td>
+                                    <td>
+                                        <% if(review.flag_status == '2'  ){ %>
+                                            <span class="badge badge-square badge-warning"><i class="fas fa-flag"></i></span>
+                                        <% } else if ( review.flag_status == '1'){ %>
+                                            <span class="badge badge-square badge-success"><i class="fas fa-flag"></i></span>
+                                            <% } else if(review.flag_status == '0'){ %>
+                                                <span class="badge badge-square badge-danger"><i class="fas fa-flag"></i></span>
+                                                <% } else { %>
+                                                    <% } %>
+                                    </td>
+                                    <td>
+                                        <div class="side_btn">
+                                            <a class="rply_btn" href="/company-dashboard-review-replay/<%- company.slug -%>/<%- review.id -%>">Reply</a> <a class="rply_btn" href="/company-dashboard-review-flag/<%- company.slug -%>/<%- review.id -%>">Flag</a>
+                                        </div>
+                                    </td>
                                 </tr>
                             <% }) %>
                             </tbody>
@@ -66,6 +81,14 @@
                 </div>
             </div>
         </section>
+
+        <style>
+        .side_btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+        </style>
         <!-- ============== Section6 End =============== -->
         <%- include('common/footer') -%>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap4.min.css" />

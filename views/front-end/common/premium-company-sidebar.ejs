@@ -123,6 +123,7 @@
 			<ul>
 				<li><a href="/myprofile">User Profile</a></li>
 				<li <% if( menu_active_id == 'company-profile-management') { %>  class="active" <% } %>><a href="/company-profile-management/<%= company.slug  %>">Company Profile</a></li>
+            <li><a href="/change-password">Change Password</a></li>
 			</ul>
 		</li>
 		<li <% if( menu_active_id == 'company-review-listing' || menu_active_id == 'send-review-invitation') { %> class="active" <% } %>>
@@ -131,11 +132,16 @@
 				<li <% if( menu_active_id == 'send-review-invitation') { %>  class="active" <% } %>><a href="/send-review-invitation/<%= company.slug  %>">Send Review Invitation</a></li>
 			</ul>
       </li>
-         <li <% if( menu_active_id == 'company-poll-listing') { %> class="active" <% } %>>
-            <a href="/company-poll-listing/<%= company.slug  %>"><i class="fas fa-poll"></i> Polls</a>
-         </li>
-		<!-- <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li> -->
-		<li><a href="/change-password"><i class="fas fa-lock"></i> Change Password</a></li>
-		<li><a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+      <li <% if( menu_active_id == 'company-poll-listing') { %> class="active" <% } %>>
+         <a href="/company-poll-listing/<%= company.slug  %>"><i class="fas fa-poll"></i> Polls</a>
+      </li>
+      <li <% if( menu_active_id == 'create-category') { %> class="active" <% } %>><a href="#"><i class="fa-solid fa-comment-exclamation"></i> Complaint</a>
+         <ul>
+            <li><a href="/create-category/<%= company.slug  %>">Create Category</a></li>
+         </ul>
+     </li>
+     <li <% if( menu_active_id == 'create-survey') { %> class="active" <% } %>><a href="/create-survey/<%= company.slug  %>"><i class="fa-solid fa-clipboard-question"></i> Survey</a></li>
+     <li><a href="/premium-complaint-management/<%= company.slug  %>"><i class="fas fa-cog"></i> Settings</a></li>
+     <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
 	</ul>
  </div>
