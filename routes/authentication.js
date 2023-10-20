@@ -61,6 +61,8 @@ router.post('/BasicCompanyprofileManagement', upload.single('logo'), authenContr
 router.post('/reviewVoting', verifyToken, authenController.reviewVoting);
 //Create Poll
 router.post('/createPoll', verifyToken, authenController.createPoll);
+//Submit Survey Poll
+router.post('/submitSurvey', verifyToken, authenController.submitSurvey);
 
 //Update Poll Expire Date
 router.post('/updatePollExpireDate', authenController.updatePollExpireDate);
@@ -409,23 +411,22 @@ router.get('/getComapniesDetails/:ID', verifyToken, async (req, res) => {
     console.log("companyId from request:", companyId);
 
     try {
-        // const claimed_by = await comFunction.getClaimedByForCompany(companyId);
-        // console.log("claimed_by:", claimed_by);
+        const claimed_by = await comFunction.getClaimedByForCompany(companyId);
+        console.log("claimed_by:", claimed_by);
 
-        const [company, companyreviews, allCompanyReviewTags, userReview, copmanyratings, PremiumCompanyData, Totalreplies, TotalReviewsAndCounts, reviewReplies, getReviewRepliescompany, getpolldetails, CompanyReviews] = await Promise.all([
+        const [company, allCompanyReviewTags, userReview, copmanyratings, PremiumCompanyData, Totalreplies, TotalReviewsAndCounts, reviewReplies, getReviewRepliescompany, getpolldetails, CompanyReviews, CompanySurveyCount] = await Promise.all([
             comFunction.getCompany(companyId),
-            comFunction.getCompanyReviews(companyId),
             comFunction2.getAllReviewTags(),
             comFunction.getUserReview(),
             comFunction.getCompanyRatings(companyId),
             comFunction2.getPremiumCompanyData(companyId),
-            //comFunction2.TotalReplied(companyId),
             comFunction.getTotalreplies(companyId),
             comFunction.getTotalReviewsAndCounts(companyId),
             comFunction.getReviewReplies(user_ID),
             comFunction.getReviewRepliescompany(companyId),
             comFunction.getpolldetails(companyId),
-            comFunction.CompanyReviews(companyId)
+            comFunction.CompanyReviews(companyId),
+            comFunction2.getCompanySurveyCount(companyId)
         ]);
 
         if (company) {
@@ -440,9 +441,13 @@ router.get('/getComapniesDetails/:ID', verifyToken, async (req, res) => {
             const finalCompanyallReviews = CompanyReviews.map(review => {
                 return {
                     ...review,
+                    // user_reply_status: review.reply_by === user_ID ? 1 : 0,
+                    // company_reply_status: review.reply_by === claimed_by ? 1 : 0,
                     Tags: reviewTagsMap[review.id] || []
                 };
             });
+            
+            PremiumCompanyData.surveycount = CompanySurveyCount[0].surveycount;
 
             return res.status(200).json({
                 status: 'success',
@@ -471,69 +476,61 @@ router.get('/getComapniesDetails/:ID', verifyToken, async (req, res) => {
 });
 
 
-router.get('/getComapniesDetails/:ID', verifyToken, async (req, res) => {
+router.get('/getCompanySurveyListing/:ID', verifyToken, async (req, res) => {
     const user_ID = req.user.user_id;
     console.log("user_id", user_ID)
     const companyId = req.params.ID;
-    console.log("companyId from request:", companyId);
 
     try {
-        const claimed_by = await comFunction.getClaimedByForCompany(companyId);
-        console.log("claimed_by:", claimed_by);
+        // const claimed_by = await comFunction.getClaimedByForCompany(companyId);
+        // console.log("claimed_by:", claimed_by);
 
-        const [company, allCompanyReviewTags, userReview, copmanyratings, PremiumCompanyData, Totalreplies, TotalReviewsAndCounts, reviewReplies, getReviewRepliescompany, getpolldetails, CompanyReviews] = await Promise.all([
-            comFunction.getCompany(companyId),
-            comFunction2.getAllReviewTags(),
-            comFunction.getUserReview(),
-            comFunction.getCompanyRatings(companyId),
-            comFunction2.getPremiumCompanyData(companyId),
-            comFunction.getTotalreplies(companyId),
-            comFunction.getTotalReviewsAndCounts(companyId),
-            comFunction.getReviewReplies(user_ID),
-            comFunction.getReviewRepliescompany(companyId),
-            comFunction.getpolldetails(companyId),
-            comFunction.CompanyReviews(companyId)
+        const [CompanySurveyListing] = await Promise.all([
+            comFunction2.getCompanySurveyListing(companyId)
         ]);
 
-        if (company) {
-            const reviewTagsMap = {};
-            allCompanyReviewTags.forEach(tag => {
-                if (!reviewTagsMap[tag.review_id]) {
-                    reviewTagsMap[tag.review_id] = [];
-                }
-                reviewTagsMap[tag.review_id].push({ review_id: tag.review_id, tag_name: tag.tag_name });
-            });
-
-            const finalCompanyallReviews = CompanyReviews.map(review => {
-                return {
-                    ...review,
-                    // user_reply_status: review.reply_by === user_ID ? 1 : 0,
-                    // company_reply_status: review.reply_by === claimed_by ? 1 : 0,
-                    Tags: reviewTagsMap[review.id] || []
-                };
-            });
-
+        if (CompanySurveyListing.length>0) {
             return res.status(200).json({
                 status: 'success',
                 data: {
-                    company,
-                    companyreviews: finalCompanyallReviews,
-                    copmanyratings,
-                    PremiumCompanyData,
-                    Totalreplies,
-                    TotalReviewsAndCounts,
-                    getpolldetails,
-                    CompanyReviews
+                    CompanySurveyListing
                 },
-                message: 'company data successfully received'
+                message: 'company survey data successfully received'
             });
         } else {
             return res.status(404).json({
                 status: 'error',
                 data: '',
-                message: 'Company not found'
+                message: 'company survey data not found'
             });
         }
+    } catch (error) {
+        console.error("An error occurred:", error);
+    }
+});
+
+router.get('/getCompanySurveyQuestions/:ID', verifyToken, async (req, res) => {
+    const user_ID = req.user.user_id;
+    console.log("user_id", user_ID)
+    const surveyuniqueId = req.params.ID;
+
+    try {
+        // const claimed_by = await comFunction.getClaimedByForCompany(companyId);
+        // console.log("claimed_by:", claimed_by);
+
+        const [CompanySurveyQuestions] = await Promise.all([
+            comFunction2.getCompanySurveyQuestions(surveyuniqueId, user_ID)
+        ]);
+
+        CompanySurveyQuestions.questions = JSON.parse(CompanySurveyQuestions.questions);
+
+        return res.status(200).json({
+            status: 'success',
+            data: {
+                CompanySurveyQuestions
+            },
+            message: 'company survey data successfully received'
+        });
     } catch (error) {
         console.error("An error occurred:", error);
     }
@@ -2502,15 +2499,3 @@ function verifyToken(req, res, next) {
 
 
 module.exports = router;
-
-
-
-
-
-
-
-
-
-
-
-

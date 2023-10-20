@@ -721,7 +721,68 @@ async function getPremiumCompanyData(companyId) {
   const PremiumCompanyData = await query(sql);
 
   //console.log('PremiumCompanyData',PremiumCompanyData[0])
-  return PremiumCompanyData[0];
+  if(PremiumCompanyData.length>0){
+    return PremiumCompanyData[0];
+  }else{
+    return {};
+  }
+}
+
+async function getCompanySurveyCount(companyId) {
+  const sql = `SELECT COUNT(id) as surveycount FROM survey where company_id = '${companyId}' AND CURDATE() <= expire_at`;
+  const CompanySurveyCountData = await query(sql);
+
+  //console.log('SurveyCountData',CompanySurveyCountData)
+  return CompanySurveyCountData;
+}
+
+async function getCompanySurveyListing(companyId) {
+  const get_company_survey_listing_query = `
+  SELECT survey.id, survey.unique_id, survey.title, COUNT(sca.ID) AS total_submission
+  FROM survey
+  LEFT JOIN survey_customer_answers sca ON survey.unique_id = sca.survey_unique_id
+  WHERE survey.company_id = ${companyId} AND CURDATE() <= expire_at
+  ORDER BY survey.id DESC;
+  `;
+  try{
+    const get_company_survey_details_result = await query(get_company_survey_listing_query);
+    return get_company_survey_details_result;
+  }catch(error){
+    return 'Error during user get_company_survey_details_query:'+error;
+  }
+}
+
+async function getCompanySurveyQuestions(surveyId, user_ID) {
+  const get_company_survey_question_query = `
+  SELECT survey.*
+  FROM survey
+  WHERE survey.unique_id = ${surveyId};
+  `;
+  try{
+    const get_company_survey_question_result = await query(get_company_survey_question_query);
+
+    const surveySubmitCheckQuery = `
+        SELECT COUNT(ID) as user_submission
+        FROM survey_customer_answers
+        WHERE survey_unique_id = ${surveyId} AND customer_id = ${user_ID};
+      `;
+      try {
+        const get_surveySubmitCheckQueryresult = await query(surveySubmitCheckQuery);
+        //console.log('get_surveySubmitCheckQueryresult'+user_ID, get_surveySubmitCheckQueryresult[0].user_submission);
+
+        if(get_surveySubmitCheckQueryresult[0].user_submission == 0){
+          get_company_survey_question_result[0].user_submission = false;
+        }else{
+          get_company_survey_question_result[0].user_submission = true;
+        }
+        return get_company_survey_question_result[0];
+      }catch (error) {
+        //return 'Error during insertion: ' + error;
+        return 'Error during user surveySubmitCheckQuery:'+error;
+      }
+  }catch(error){
+    return 'Error during user get_company_survey_question_query:'+error;
+  }
 }
 
 //Function to fetch User Name from the  users table
@@ -1507,5 +1568,8 @@ module.exports = {
   getCompanyPollDetails,
   insertInvitationDetails,
   sendInvitationEmail,
-  countInvitationLabels
+  countInvitationLabels,
+  getCompanySurveyCount,
+  getCompanySurveyListing,
+  getCompanySurveyQuestions
 };
