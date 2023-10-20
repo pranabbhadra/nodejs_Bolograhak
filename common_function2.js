@@ -721,11 +721,11 @@ async function getPremiumCompanyData(companyId) {
   const PremiumCompanyData = await query(sql);
 
   //console.log('PremiumCompanyData',PremiumCompanyData[0])
-  if(PremiumCompanyData.length>0){
+  //if(PremiumCompanyData.length>0){
     return PremiumCompanyData[0];
-  }else{
-    return {};
-  }
+  //}else{
+    //return {};
+  //}
 }
 
 async function getCompanySurveyCount(companyId) {
