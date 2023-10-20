@@ -1983,6 +1983,17 @@ async function getreviewreplis(review_id){
   }
 }
 
+async function getPremiumCompanyData(companyId) {
+  const sql = `SELECT * FROM premium_company_data where company_id = '${companyId}' `;
+  const PremiumCompanyData = await query(sql);
+
+  //console.log('PremiumCompanyData',PremiumCompanyData[0])
+  if(PremiumCompanyData.length>0){
+    return PremiumCompanyData[0];
+  }else{
+    return {};
+  }
+}
 
 module.exports = {
   getUser,
@@ -2043,5 +2054,6 @@ module.exports = {
   getClaimedByForCompany,
   CompanyReviews,
   getAllReviewReply,
-  getreviewreplis
+  getreviewreplis,
+  getPremiumCompanyData
 };
