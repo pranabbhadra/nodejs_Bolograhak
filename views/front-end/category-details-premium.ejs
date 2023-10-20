@@ -345,9 +345,29 @@
     <% } %>
      <!-- ONGOING POLL END -->
 
-
-
-
+    
+    <!--Survey Section-->
+    <% if(CompanySurveyDetails[0].id != null) {%>
+        <section class="ongoing_poll_sec">
+            <div class="container">
+                <h2 class="inner-main-head">Ongoing Survey</h2>
+                <div class="row">
+                    <div class="col-md-12">
+                        <% CompanySurveyDetails.forEach( (servey,index)=> {%>
+                        <div class="ongoing_poll_content" style="padding: 30px 40px; margin-bottom: 20px;">
+                            <a href="/<%= company.slug  %>/survey/<%= servey.unique_id  %>" style="display: inline-block;"><h3 style="margin-bottom: 0;"><%- servey.title -%></h3></a>
+                            <span style="background-color: #fff; padding: 4px 10px; border-radius: 100%; margin-left: 14px;"><%- servey.total_submission %></span>
+                            <div class="poll_box_icon">
+                                <img src="/front-end/images/poll-box-icons.png" alt="" style="width: 126px;">
+                            </div>
+                        </div>
+                        <% }) %>
+                    </div>
+                </div>
+            </div>
+        </section>        
+    <% } %>
+    <!--Survey Section End-->
 
     
     <!-- ============== Section3 start =============== -->

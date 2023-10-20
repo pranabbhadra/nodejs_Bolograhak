@@ -311,4 +311,8 @@ router.post('/update-company-category', authController.updateCompanyCategory);
 //create-company-level
 router.post('/create-company-level', authController.createCompanyLevel);
 
+//Create Survey
+router.post('/create-survey', authController.createSurvey);
+router.post('/create-survey-answer', authController.createSurveyAnswer);
+
 module.exports = router;
