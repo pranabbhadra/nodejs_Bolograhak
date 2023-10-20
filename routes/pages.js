@@ -2211,12 +2211,13 @@ router.get('/create-category/:slug', checkClientClaimedCompany, async (req, res)
     const comp_res =await comFunction2.getCompanyIdBySlug(slug);
     const companyId = comp_res.ID;
     //const companyId = req.params.compID;
-    const [globalPageMeta, company, companyReviewNumbers, PremiumCompanyData, getCompanyCategories] = await Promise.all([
+    const [globalPageMeta, company, companyReviewNumbers, PremiumCompanyData, getCompanyCategories, allRatingTags] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
         comFunction.getCompany(companyId),
         comFunction.getCompanyReviewNumbers(companyId),
         comFunction2.getPremiumCompanyData(companyId),
-        comFunction2.getCompanyCategories(companyId)
+        comFunction2.getCompanyCategories(companyId),
+        comFunction.getAllRatingTags(),
     ]);
     
     const companyPaidStatus = company.paid_status;
@@ -2229,6 +2230,7 @@ router.get('/create-category/:slug', checkClientClaimedCompany, async (req, res)
             globalPageMeta:globalPageMeta,
             company:company,
             companyReviewNumbers,
+            allRatingTags,
             CompanyCategories:getCompanyCategories
         });
     }else{
@@ -2268,6 +2270,7 @@ router.get('/create-category/:slug', checkClientClaimedCompany, async (req, res)
             globalPageMeta:globalPageMeta,
             company:company,
             companyReviewNumbers,
+            allRatingTags,
             facebook_url:facebook_url,
             twitter_url:twitter_url,
             instagram_url:instagram_url,
@@ -2287,11 +2290,12 @@ router.get('/premium-complaint-management/:slug', checkClientClaimedCompany, asy
     const comp_res =await comFunction2.getCompanyIdBySlug(slug);
     const companyId = comp_res.ID;
     //const companyId = req.params.compID;
-    const [globalPageMeta, company, companyReviewNumbers, PremiumCompanyData ] = await Promise.all([
+    const [globalPageMeta, company, companyReviewNumbers, PremiumCompanyData, allRatingTags ] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
         comFunction.getCompany(companyId),
         comFunction.getCompanyReviewNumbers(companyId),
-        comFunction2.getPremiumCompanyData(companyId)
+        comFunction2.getPremiumCompanyData(companyId),
+        comFunction.getAllRatingTags(),
     ]);
     
     const companyPaidStatus = company.paid_status;
@@ -2332,6 +2336,7 @@ router.get('/premium-complaint-management/:slug', checkClientClaimedCompany, asy
             globalPageMeta:globalPageMeta,
             company:company,
             companyReviewNumbers,
+            allRatingTags,
             facebook_url:facebook_url,
             twitter_url:twitter_url,
             instagram_url:instagram_url,
