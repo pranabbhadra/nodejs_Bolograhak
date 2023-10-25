@@ -23,4 +23,9 @@ router.put('/edit-profile', upload.single('profile_pic'), apiController.editProf
 
 router.post('/search-discussion', apiController.searchDiscussion);
 
+
+router.post('/complain_category', apiController.complainCategory);
+
+router.post('/complain_sub_category', apiController.complainSubCategory);
+
 module.exports = router;

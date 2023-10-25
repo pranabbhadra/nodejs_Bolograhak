@@ -16,6 +16,7 @@ const querystring = require('querystring');
 const app = express();
 const path = require('path');
 const crypto = require('crypto');
+const { v4: uuidv4 } = require('uuid');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -4927,6 +4928,64 @@ exports.createCompanyLevel = async (req, res) => {
     } )
 }
 
+//Delete company Complaint Level
+exports.deleteCompanyComplaintLevel = async (req, res) => {
+    console.log('deleteCompanyComplaintLevel',req.body ); 
+    //return false;
+    const delQuery = `DELETE FROM complaint_level_management WHERE id = '${req.body.level_id}'`;
+    db.query(delQuery,(err, result)=>{
+        if (err) {
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong 2 '+err
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Complaint Level  Deleted successfully !'
+            });
+        }
+    })
+}
+
+//Complaint Register
+exports.complaintRegister = async (req, res) => {
+    console.log('complaintRegister',req.body ); 
+    const {company_id, user_id, category_id, sub_category_id, model_no, allTags, transaction_date, location, message } = req.body;
+    //return false;
+    const uuid = uuidv4();  
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+    const data = {
+        user_id:user_id[0],
+        company_id:company_id[0],
+        ticket_id:uuid,
+        category_id:category_id[0],
+        sub_cat_id:sub_category_id[0],
+        model_desc:model_no[0],
+        purchase_date:transaction_date[0],
+        purchase_place:location[0],
+        message:message[0],
+        tags:JSON.stringify(allTags),
+        level_id:'1',
+        status:'2',
+        created_at:formattedDate,
+    }
+     const Query = `INSERT INTO complaint SET ?  `;
+    db.query(Query, data, (err, result)=>{
+        if (err) {
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong  '+err
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Complaint Registered  successfully !'
+            });
+        }
+    })
+}
 
 // Create Survey
 exports.createSurvey = async (req, res) => {

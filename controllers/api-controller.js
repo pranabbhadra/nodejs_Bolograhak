@@ -45,7 +45,7 @@ exports.countries = (req, res) => {
 
 //-- States --//
 exports.states = (req, res) => {
-    console.log(req.body);
+    //console.log(req.body);
 
     db.query('SELECT * FROM states WHERE country_id = ?', [req.body.country_id], async (err, results) => {
         if (err) {
@@ -71,6 +71,76 @@ exports.states = (req, res) => {
                         status: 'err',
                         data: '',
                         message: 'State not avilable for this country id'
+                    }
+                )
+            }
+        }
+    })
+}
+
+//-- complainCategory --//
+exports.complainCategory = (req, res) => {
+    //console.log('complainCategory',req.body);
+    //return false;
+    db.query('SELECT * FROM complaint_category WHERE company_id = ? AND parent_id = 0 ', [req.body.company_id], async (err, results) => {
+        if (err) {
+            return res.send(
+                {
+                    status: 'err',
+                    data: '',
+                    message: 'An error occurred while processing your request' + err
+                }
+            )
+        } else {
+            if (results.length > 0) {
+                return res.send(
+                    {
+                        status: 'ok',
+                        data: results,
+                        message: 'All category recived'
+                    }
+                )
+            } else {
+                return res.send(
+                    {
+                        status: 'err',
+                        data: '',
+                        message: 'Category is not avilable for this company id'
+                    }
+                )
+            }
+        }
+    })
+}
+
+//-- complainSubCategory --//
+exports.complainSubCategory = (req, res) => {
+    //console.log('complainSubCategory',req.body);
+    //return false;
+    db.query('SELECT * FROM complaint_category WHERE  parent_id = ? ', [req.body.category_id], async (err, results) => {
+        if (err) {
+            return res.send(
+                {
+                    status: 'err',
+                    data: '',
+                    message: 'An error occurred while processing your request' + err
+                }
+            )
+        } else {
+            if (results.length > 0) {
+                return res.send(
+                    {
+                        status: 'ok',
+                        data: results,
+                        message: 'All category recived'
+                    }
+                )
+            } else {
+                return res.send(
+                    {
+                        status: 'err',
+                        data: '',
+                        message: 'Category is not avilable for this company id'
                     }
                 )
             }

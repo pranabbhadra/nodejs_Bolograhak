@@ -2331,7 +2331,7 @@ async function getDiscussionsByUserId(userId) {
   }
 }
 
-//Function to get user discussions from discussions table
+//Function to get company complaint_category from complaint_category table
 async function getCompanyCategories(companyId) {
   const sql = `
   SELECT * FROM complaint_category WHERE company_id = '${companyId}'
@@ -2347,6 +2347,25 @@ async function getCompanyCategories(companyId) {
   }
   catch(error){
     console.error('Error during fetch All Latest Discussion:', error);
+  }
+}
+
+//Function to get user complaint_category from complaint_category table
+async function getComplaintLevelDetails(companyId) {
+  const sql = `
+  SELECT * FROM complaint_level_management WHERE company_id  = '${companyId}'
+  `;
+  try{
+    const results = await query(sql);
+    if (results.length>0) {
+      return results;
+    } else {
+      return [];
+    }
+  }
+  catch(error){
+    console.error('Error during fetch All complaint level details: ', error);
+    
   }
 }
 
@@ -2410,5 +2429,6 @@ module.exports = {
   searchDiscussion,
   getDiscussionsByUserId,
   generateUniqueSlugCategory,
-  getCompanyCategories
+  getCompanyCategories,
+  getComplaintLevelDetails
 };
