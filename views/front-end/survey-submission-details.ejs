@@ -63,21 +63,17 @@
                            <div class="survey-rating-part">
                               Disappointing
                            </div>
-                           <div class="survey-rating-part">
-                              <ul>
+                           <div class="survey-rating-part text-center">
                                  <% AllRatingTags.forEach(function(rating, index_inner) { %>
-                                    <li>
-                                       <div class="rating_each_option">
-                                          <input type="radio" id="<%- item.type %>_<%- index+1 %>_<%- index_inner+1 %>" name="question_<%- index+1 %>" value="<%- rating.review_rating_value %>"
+                                       <div class="rating_each_option form-check position-relative custom-check">
+                                          <input type="radio" class="form-check-input" id="<%- item.type %>_<%- index+1 %>_<%- index_inner+1 %>" name="question_<%- index+1 %>" value="<%- rating.review_rating_value %>"
                                           <% if( answerJsonObject['question_' + (index + 1)] == rating.review_rating_value ){ %>
                                              checked
                                           <% } %>
                                           >
                                           <label class="form-check-label" for="<%- item.type %>_<%- index+1 %>_<%- index_inner+1 %>"><img src="/<%- rating.rating_image %>" alt="<%- rating.review_rating_name %>"></label>
                                        </div>
-                                    </li>
                                  <% }); %>
-                              </ul>
                            </div>
                            <div class="survey-rating-part">
                               Excellent
@@ -129,17 +125,13 @@
                            <div class="survey-rating-part">
                               Disappointing
                            </div>
-                           <div class="survey-rating-part">
-                              <ul>
+                           <div class="survey-rating-part text-center">
                                  <% AllRatingTags.forEach(function(rating, index_inner) { %>
-                                    <li>
-                                       <div class="rating_each_option">
-                                          <input type="radio" id="<%- item.type %>_<%- index+1 %>_<%- index_inner+1 %>" name="question_<%- index+1 %>" value="<%- rating.review_rating_value %>">
+                                       <div class="rating_each_option form-check custom-check position-relative">
+                                          <input type="radio" class="form-check-input" id="<%- item.type %>_<%- index+1 %>_<%- index_inner+1 %>" name="question_<%- index+1 %>" value="<%- rating.review_rating_value %>">
                                           <label class="form-check-label" for="<%- item.type %>_<%- index+1 %>_<%- index_inner+1 %>"><img src="/<%- rating.rating_image %>" alt="<%- rating.review_rating_name %>"></label>
                                        </div>
-                                    </li>
                                  <% }); %>
-                              </ul>
                            </div>
                            <div class="survey-rating-part">
                               Excellent
@@ -154,7 +146,7 @@
                <input type="hidden" name="company_id" value="<%- company.ID %>">
                <input type="hidden" name="survey_unique_id" value="<%- companySurveyQuestions[0].unique_id %>">
                <input type="hidden" name="customer_id" value="<%- currentUserData.user_id %>">
-               <div class="text-center mt-5"><input type="submit" class="btn-default btn-warning btn-survey-default" value="Submit"></div>
+               <div class="text-center mt-5 mb-3"><input type="submit" class="btn-default btn-warning btn-survey-default" value="Submit"></div>
             </form>
             <div class="register-now frm-loading" style="display: none;">
                <span class="indicator-progress">Please wait...

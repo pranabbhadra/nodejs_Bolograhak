@@ -58,6 +58,10 @@
 	position: relative;
 }
 
+.discussions-left ul.resp-tabs-list {
+    max-width: 275px;
+}
+
 .discussions-left span.language-select {
     position: absolute;
     right: 0;
@@ -116,9 +120,22 @@
 }
 
 .discussion-user-img {
-	position: absolute;
-	left: 18px;
-	top: 25px;
+    background: #f4a835;
+    position: absolute;
+    left: 18px;
+    top: 25px;
+    width: 50px;
+    height: 50px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    color: #000;
+}
+
+.discussion-user-img h4 {
+    margin: 0;
 }
 
 .discussion-user-img img,
@@ -217,6 +234,10 @@
     margin-bottom: 35px;
 }
 
+.discussions-right-panel a.btn-default {
+    margin: 2px 0;
+}
+
 .dis-right-panel-item {
 	display: flex;
 	justify-content: space-between;
@@ -255,7 +276,7 @@
 }
 
 .start-a-discussion-btn {
-    margin-top: 28px;
+    margin-bottom: 28px;
 }
 
 .start-a-discussion-btn .btn-default {
@@ -399,5 +420,37 @@
     font-weight: 600;
     margin-bottom: 7px;
     font-size: 18px;
+}
+
+.submissions-result-wrapper .radio-questions {
+    background: #f2f2f2;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+.submissions-result-wrapper .radio-questions + .radio-questions {
+    margin-top: 10px;
+}
+
+.submissions-result-wrapper .radio-questions h5 {
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.submissions-result-wrapper .radio-questions ol li + li,
+.submissions-result-wrapper .radio-questions ul li + li {
+    margin-top: 12px;
+}
+
+.submissions-result-wrapper .radio-questions ol li,
+.submissions-result-wrapper .radio-questions ul li {
+    background: #f4a835;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+#creatediscussion .autofield-dropdown {
+    left: 0;
+    margin-top: -28px;
 }
 /*=============== Discussion Content End ==============*/

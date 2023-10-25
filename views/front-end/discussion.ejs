@@ -168,6 +168,11 @@
             </div>
             <div class="col-md-4">
             <div class="discussions-right mt-md-0 mt-4">
+                <% if(currentUserData){ %>
+                    <div class="start-a-discussion-btn text-center">
+                        <a href="#" class="btn-default btn-dark" data-bs-toggle="modal" data-bs-target="#creatediscussion"><i class="fa-solid fa-pen-to-square"></i> Start A Discussion</a>
+                    </div>
+                    <% } %>
                 <div class="search-area position-relative">
                     <form>
                         <input type="text" class="form-control" id="search-input"
@@ -306,11 +311,7 @@
                         <% }) %>
                     <% } %>
                 </div>
-                <% if(currentUserData){ %>
-                <div class="start-a-discussion-btn text-center">
-                    <a href="#" class="btn-default btn-dark" data-bs-toggle="modal" data-bs-target="#creatediscussion"><i class="fa-solid fa-pen-to-square"></i> Start A Discussion</a>
-                </div>
-                <% } %>
+                
             </div>
             </div>
         </div>
