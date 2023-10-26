@@ -314,8 +314,11 @@ router.post('/create-company-level', authController.createCompanyLevel);
 //Delete delete-company-complaint-level
 router.post('/delete-company-complaint-level', authController.deleteCompanyComplaintLevel);
 
-//Delete delete-company-complaint-level
+//complaint register
 router.post('/complaint-register', authController.complaintRegister);
+
+// company-query
+router.post('/company-query', authController.companyQuery);
 
 //Create Survey
 router.post('/create-survey', authController.createSurvey);

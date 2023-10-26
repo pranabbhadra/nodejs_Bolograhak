@@ -4961,7 +4961,7 @@ exports.complaintRegister = async (req, res) => {
         company_id:company_id[0],
         ticket_id:uuid,
         category_id:category_id[0],
-        sub_cat_id:sub_category_id[0],
+        sub_cat_id : sub_category_id && sub_category_id[0] !== undefined ? sub_category_id[0] : 0,
         model_desc:model_no[0],
         purchase_date:transaction_date[0],
         purchase_place:location[0],
@@ -4982,6 +4982,38 @@ exports.complaintRegister = async (req, res) => {
             return res.send({
                 status: 'ok',
                 message: 'Complaint Registered  successfully !'
+            });
+        }
+    })
+}
+
+//Insert Company Query and  to user
+exports.companyQuery = async (req, res) => {
+    console.log('companyQuery',req.body ); 
+    //return false;
+    const {company_id, user_id, complaint_id, message } = req.body;
+    
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+    const data = {
+        user_id:user_id,
+        company_id:company_id,
+        complaint_id :complaint_id,
+        query:message,
+        response : ' ',
+        created_at:formattedDate,
+    }
+     const Query = `INSERT INTO complaint_query_response SET ?  `;
+    db.query(Query, data, (err, result)=>{
+        if (err) {
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong  '+err
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Complaint response send successfully !'
             });
         }
     })
