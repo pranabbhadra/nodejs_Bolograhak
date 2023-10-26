@@ -895,7 +895,7 @@ header.main_header.fixed-top {
     color: #1773EA;
     font-size: 34px;
 }
-.log-browse-content > a:hover .fa-facebook-f {
+.log-browse-content > a:hover .fa-facebook-f, .log-browse-content > a:hover .fa-google {
     color: #000;
 }
 
