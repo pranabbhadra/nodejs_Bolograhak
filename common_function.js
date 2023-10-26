@@ -263,8 +263,10 @@ async function saveUserGoogleLoginDataToDB(userData) {
 
   //Checking external_registration_id and Email exist or not
   try{
-    const user_exist_query = 'SELECT * FROM users WHERE register_from = ? AND external_registration_id = ? AND email = ?';
-    const user_exist_values = ["gmail", userData.id, userData.emails[0].value];
+    // const user_exist_query = 'SELECT * FROM users WHERE register_from = ? AND external_registration_id = ? AND email = ?';
+    // const user_exist_values = ["gmail", userData.id, userData.emails[0].value];
+    const user_exist_query = 'SELECT * FROM users WHERE email = ?';
+    const user_exist_values = [userData.emails[0].value];
     const user_exist_results = await query(user_exist_query, user_exist_values);
     if (user_exist_results.length > 0) {
         //console.log(user_exist_results);
@@ -298,8 +300,10 @@ async function saveUserFacebookLoginDataToDB(userData) {
 
   //Checking external_registration_id and Email exist or not
   try{
-    const user_exist_query = 'SELECT * FROM users WHERE register_from = ? AND external_registration_id = ? AND email = ?';
-    const user_exist_values = ["facebook", userData.id, userData.emails[0].value];
+    //const user_exist_query = 'SELECT * FROM users WHERE register_from = ? AND external_registration_id = ? AND email = ?';
+    //const user_exist_values = ["facebook", userData.id, userData.emails[0].value];
+    const user_exist_query = 'SELECT * FROM users WHERE email = ?';
+    const user_exist_values = [userData.emails[0].value];
     const user_exist_results = await query(user_exist_query, user_exist_values);
     if (user_exist_results.length > 0) {
         //console.log(user_exist_results);
