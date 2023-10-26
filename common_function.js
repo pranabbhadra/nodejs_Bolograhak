@@ -249,159 +249,35 @@ function renderCategoryTreeHTMLforCompany(categories, com_category_array) {
 }
 
 //-------After Google Login Save User data Or Check User exist or Not.
-const saveUserGoogleLoginDataToDB = async (userData) => {
+async function saveUserGoogleLoginDataToDB(userData) {
   //console.log(userData);
-  //console.log(userData.name.familyName + ' ' + userData.name.givenName + ' ' + userData.emails[0].value + ' ' + userData.photos[0].value+ ' ' + userData.id);
+
+  const userFullName = userData.displayName;
+  const userFullNameArray = userFullName.split(" ");
+  const userFirstName = userData.name.givenName;
+  const userLastName = userData.name.familyName;
+  const userEmail = userData.emails[0].value;
+  const userPicture = userData.photos[0].value;
+  const external_registration_id = userData.id;
   
-  try {
-    // Check if the email already exists in the "users" table
-    const emailExists = await new Promise((resolve, reject) => {
-    db.query('SELECT email FROM users WHERE email = ?', [userData.emails[0].value], (err, results) => {
-        if (err) reject(err);
-            resolve(results.length > 0);
-        });
-    });
-    if (emailExists) {
-        try {
-          const gEmail = userData.emails[0].value;
-          const userSearchQuery = 'SELECT * FROM users WHERE email = ?';
-          const userResults = await query(userSearchQuery, [gEmail]);
-          if (userResults.length > 0) {
-            //console.log('Glogin user data', userResults);
-            const userMatch = userResults[0];
-            try{
-              const matchUserID = userMatch.user_id;
-              const userMetaSearchQuery = `SELECT user_meta.*, c.name as country_name, s.name as state_name
-                                            FROM user_customer_meta user_meta
-                                            JOIN countries c ON user_meta.country = c.id
-                                            JOIN states s ON user_meta.state = s.id
-                                            WHERE user_id = ?`;
-              const userMetaResults = await query(userMetaSearchQuery, [matchUserID]);
-              let usercookieData = {};
-              if (userMetaResults.length > 0) {
-                const matchUserMetaData = userMetaResults[0];
-                const dateString = matchUserMetaData.date_of_birth;
-                const date_of_birth_date = new Date(dateString);
-                const formattedDate = date_of_birth_date.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
-                usercookieData = {
-                  user_id: matchUserID,
-                  first_name: userMatch.first_name,
-                  last_name: userMatch.last_name,
-                  email: userMatch.email,
-                  phone: userMatch.phone,
-                  user_type_id: userMatch.user_type_id,
-                  address: matchUserMetaData.address,
-                  country: matchUserMetaData.country,
-                  country_name: matchUserMetaData.country_name,
-                  state: matchUserMetaData.state,
-                  state_name: matchUserMetaData.state_name,
-                  city: matchUserMetaData.city,
-                  zip: matchUserMetaData.zip,
-                  review_count: matchUserMetaData.review_count,
-                  date_of_birth: formattedDate,
-                  occupation: matchUserMetaData.occupation,
-                  gender: matchUserMetaData.gender,
-                  profile_pic: matchUserMetaData.profile_pic,
-                  source: 'gmail'
-                };
-                console.log(usercookieData, 'Logedin User All Data 111');
-              }else{
-                usercookieData = {
-                  user_id: matchUserID,
-                  first_name: userMatch.first_name,
-                  last_name: userMatch.last_name,
-                  email: userMatch.email,
-                  phone: userMatch.phone,
-                  user_type_id: userMatch.user_type_id,
-                  profile_pic: userData.photos[0].value,
-                  source: 'gmail'
-                };
-                console.log(usercookieData, 'Logedin User All Data 222');
-              }
 
-              try{
-                const wpUserSearchQuery = 'SELECT ID FROM bg_users WHERE user_login = ?';
-                const wpUserResults = await query(wpUserSearchQuery, [gEmail]);
-                if (wpUserResults.length > 0) {
-                  //console.log(wpUserResults, 'Wp User Query Result');
-                  usercookieData.wp_user_id = wpUserResults[0].ID;
-                }
-                console.log(usercookieData, 'Final Return data');
-                return usercookieData;
-              }catch(error){
-                console.error('Error executing SELECT wpUserSearchQuery:', error);
-              }
-              
-
-            } catch(error){
-              console.error('Error executing SELECT userMetaSearchQuery:', error);
-            }
-          }
-        } catch (error) {
-          console.error('Error executing SELECT userSearchQuery:', error);
-        }
+  //Checking external_registration_id and Email exist or not
+  try{
+    const user_exist_query = 'SELECT * FROM users WHERE register_from = ? AND external_registration_id = ? AND email = ?';
+    const user_exist_values = ["gmail", userData.id, userData.emails[0].value];
+    const user_exist_results = await query(user_exist_query, user_exist_values);
+    if (user_exist_results.length > 0) {
+        //console.log(user_exist_results);
+        // checking user status
+      return {user_id: user_exist_results[0].user_id, first_name:userFirstName, last_name:userLastName, email: userEmail, profile_pic: userPicture, status: 1};
 
     }else{
-      try {
-        // Hash the password asynchronously
-        const hashedPassword = await bcrypt.hash(userData.emails[0].value, 8);
-        const currentDate = new Date();
-
-        const year = currentDate.getFullYear();
-        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-        const day = String(currentDate.getDate()).padStart(2, '0');
-        const hours = String(currentDate.getHours()).padStart(2, '0');
-        const minutes = String(currentDate.getMinutes()).padStart(2, '0');
-        const seconds = String(currentDate.getSeconds()).padStart(2, '0');
-
-        const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-
-        const insertUser = (query, values) => {
-          return new Promise((resolve, reject) => {
-            db.query(query, values, (err, results) => {
-              if (err) reject(err);
-              resolve(results);
-            });
-          });
-        };
-
-        const userInsertQuery = 'INSERT INTO users (first_name, last_name, email, password, register_from, external_registration_id, user_registered, user_status, user_type_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
-        const userResults = await insertUser(userInsertQuery, [userData.name.givenName, userData.name.familyName, userData.emails[0].value, hashedPassword, 'google', userData.id, formattedDate, 1, 2]);
-
-        const registeredUserID = userResults.insertId;
-
-        // Insert the user into the "user_customer_meta" table
-        const userMetaInsertQuery = 'INSERT INTO user_customer_meta (user_id, address, country, state, city, zip, review_count, date_of_birth, occupation, gender, profile_pic) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-        await insertUser(userMetaInsertQuery, [registeredUserID, '', '', '', '', '', 0, '', '', '', userData.photos[0].value]);
-
-        try {
-          let userRegistrationData = {
-            user_id: registeredUserID,
-            username: userData.emails[0].value,
-            password: userData.emails[0].value,
-            first_name: userData.name.givenName,
-            last_name: userData.name.familyName,
-            email: userData.emails[0].value,
-            profile_pic: userData.photos[0].value,
-            source: 'gmail'
-          };
-          const response = await axios.post(process.env.BLOG_API_ENDPOINT + '/register', userRegistrationData);
-          userRegistrationData.wp_user_id = response.data.user_id;
-          console.log(userRegistrationData);
-          return userRegistrationData;
-        } catch (error) {
-          console.error('Error during user registration:', error);
-          throw error; // Re-throw the error to be caught in the calling function if needed
-        }
-      } catch (error) {
-        console.error('Error during user registration:', error);
-        throw error; // Re-throw the error to be caught in the calling function if needed
-      }
+      return {first_name:userFirstName, last_name:userLastName, email: userEmail, profile_pic: userPicture, external_registration_id: external_registration_id, status: 0};
     }
-  }
-  catch (error) {
-    console.error('Error during user registration:', error);
-  }
+  }catch(error){
+      console.error('Error during user_exist_query:', error);
+  }      
+
 };
 
 //-------After Facebook Login Save User data Or Check User exist or Not.
