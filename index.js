@@ -67,78 +67,12 @@ app.get('/auth/google',
 app.get('/auth/facebook', passport.authenticate('facebook',{scope:'email'}));
 
 // Google login callback
-app.get('/auth/google/callback',
-    passport.authenticate('google', { failureRedirect: '/login' }),
-    async (req, res) => {
-        // After successful login, redirect to the home page or any other page
-        //res.redirect('/profile');
-        
-        const user = req.user;
-        //res.json({ user });
-        try {
-            const UserResponse = await comFunction.saveUserGoogleLoginDataToDB(user);
-            console.log('aaaa',UserResponse);
-            // Set a cookie
-            let userCookieData = {
-                user_id: UserResponse.user_id,
-                first_name: UserResponse.first_name,
-                last_name: UserResponse.last_name,
-                email: UserResponse.email,
-                user_type_id: 2,
-                profile_pic: UserResponse.profile_pic,
-                source: 'gmail'
-            };
-            const encodedUserData = JSON.stringify(userCookieData);
-            res.cookie('user', encodedUserData);
-            try{
-                //-- check last Login Info-----//
-                const device_query = "SELECT * FROM user_device_info WHERE user_id = ?";
-                const device_queryResults = await query(device_query, [UserResponse.user_id]);
-                const userAgent = req.headers['user-agent'];
-                const agent = useragent.parse(userAgent);
-                const currentDate = new Date();
-                const year = currentDate.getFullYear();
-                const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-                const day = String(currentDate.getDate()).padStart(2, '0');
-                const hours = String(currentDate.getHours()).padStart(2, '0');
-                const minutes = String(currentDate.getMinutes()).padStart(2, '0');
-                const seconds = String(currentDate.getSeconds()).padStart(2, '0');
-                const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-
-                if (device_queryResults.length > 0) {
-                    try{
-                        const device_update_query = 'UPDATE user_device_info SET device_id = ?, IP_address = ?, last_logged_in = ? WHERE user_id = ?';
-                        const values = [agent.toAgent() + ' ' + agent.os.toString(), requestIp.getClientIp(req), formattedDate, UserResponse.user_id];
-                        const device_update_query_results = await query(device_update_query, values);
-                    }catch(error){
-                        console.error('Error during device_update_query:', error);
-                    }
-                } else {
-                    // User doesnot exist Insert New Row.
-                    try {
-                        const device_insert_query = 'INSERT INTO user_device_info (user_id, device_id, device_token, imei_no, model_name, make_name, IP_address, last_logged_in, created_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
-                        const values = [UserResponse.user_id, agent.toAgent() + ' ' + agent.os.toString(), '', '', '', '', requestIp.getClientIp(req), formattedDate, formattedDate];
-                    
-                        const device_insert_query_results = await query(device_insert_query, values);
-                    
-                        // Continue with any other code you need after the insert
-                        console.log('Device info inserted successfully.');
-                    } catch (error) {
-                        console.error('Error executing device_insert_query:', error);
-                    }
-
-                }
-            }catch (error) {
-                console.error('Error during device_queryResults:', error);
-            }
-
-            res.redirect(process.env.BLOG_URL+"?login_check="+UserResponse.wp_user_id);
-            
-        } catch (error) {
-            console.error('Error during google login:', error);
-            res.redirect('/');
-        }
-    }
+app.get(
+    '/auth/google/callback',
+    passport.authenticate('google', {
+        successRedirect: '/google-user-data',
+        failureRedirect: '/fail'
+    }),
 );
 
 // FB Login Callback
@@ -151,6 +85,11 @@ app.get(
 );
 app.get('/fail', async (req, res) => {
     res.send("Failed attempt");
+});
+
+app.get('/google-user-data', async(req, res) => {
+    const user = req.user;
+    res.json(user);
 });
 
 app.get('/facebook-user-data', async(req, res) => {
