@@ -67,15 +67,12 @@ app.get('/auth/google',
 app.get('/auth/facebook', passport.authenticate('facebook',{scope:'email'}));
 
 // Google login callback
-app.get('/auth/google/callback',
-    passport.authenticate('google', { failureRedirect: '/login' }),
-    async (req, res) => {
-        // After successful login, redirect to the home page or any other page
-        //res.redirect('/profile');
-        
-        const user = req.user;
-        res.json({ user });
-    }
+app.get(
+    '/auth/google/callback',
+    passport.authenticate('google', {
+        successRedirect: '/google-user-data',
+      failureRedirect: '/fail',
+    })
 );
 
 // FB Login Callback
@@ -88,6 +85,11 @@ app.get(
 );
 app.get('/fail', async (req, res) => {
     res.send("Failed attempt");
+});
+
+app.get('/google-user-data', async(req, res) => {
+    const user = req.user;
+    res.json(user);
 });
 
 app.get('/facebook-user-data', async(req, res) => {
