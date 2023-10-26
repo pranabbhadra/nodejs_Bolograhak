@@ -9,7 +9,7 @@ dotenv.config({ path: './.env' });
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: process.env.MAIN_URL+'/auth/google/callback'
+    callbackURL: process.env.MAIN_URL+'auth/google/callback'
 }, (accessToken, refreshToken, profile, done) => {
     // This function is called when the user logs in successfully
     // You can use the `profile` object to access user data
