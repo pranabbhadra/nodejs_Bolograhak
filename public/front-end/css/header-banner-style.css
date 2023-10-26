@@ -891,7 +891,7 @@ header.main_header.fixed-top {
    color: transparent;
    -webkit-text-fill-color: transparent;
 }
-.log-browse-content .fa-facebook-f {
+.log-browse-content .fa-facebook-f, .log-browse-content .fa-google {
     color: #1773EA;
     font-size: 34px;
 }
