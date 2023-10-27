@@ -449,6 +449,100 @@ router.get('/getComapniesDetails/:ID', verifyToken, async (req, res) => {
             });
             
             PremiumCompanyData.surveycount = CompanySurveyCount[0].surveycount;
+            let cover_img = '';
+            let youtube_iframe = '';
+            let gallery_img = [];
+            let products = [];
+            let promotions = [];
+            let facebook_url = '';
+            let twitter_url = '';
+            let instagram_url = '';
+            let linkedin_url = '';
+            let youtube_url = '';
+            let support_data = {};
+        //     if(typeof PremiumCompanyData !== 'undefined' ){
+        //         cover_img = PremiumCompanyData.cover_img;
+        //         youtube_iframe = PremiumCompanyData.youtube_iframe;
+        //         gallery_img = JSON.parse(PremiumCompanyData.gallery_img);
+        //         products = JSON.parse(PremiumCompanyData.products);
+        //         promotions = JSON.parse(PremiumCompanyData.promotions);
+        //         facebook_url = PremiumCompanyData.facebook_url;
+        //         twitter_url = PremiumCompanyData.twitter_url;
+        //         instagram_url = PremiumCompanyData.instagram_url;
+        //         linkedin_url = PremiumCompanyData.linkedin_url;
+        //         youtube_url = PremiumCompanyData.youtube_url;
+        //         support_data = {support_email:PremiumCompanyData.support_email,	escalation_one:PremiumCompanyData.escalation_one, escalation_two:PremiumCompanyData.escalation_two, escalation_three:PremiumCompanyData.escalation_three}
+               
+        //    }
+
+           if (typeof PremiumCompanyData !== 'undefined') {
+            if (PremiumCompanyData.cover_img) {
+                cover_img = PremiumCompanyData.cover_img;
+            }
+            if (PremiumCompanyData.youtube_iframe) {
+                youtube_iframe = PremiumCompanyData.youtube_iframe;
+            }
+            if (PremiumCompanyData.gallery_img) {
+                try {
+                    gallery_img = JSON.parse(PremiumCompanyData.gallery_img);
+                } catch (error) {
+                    console.error('Error while parsing JSON:', error);
+                }                
+            }
+            if (PremiumCompanyData.products) {
+                try {
+                    products = JSON.parse(PremiumCompanyData.products);
+                    if(PremiumCompanyData.products[0].product_title == undefined){
+                        PremiumCompanyData.products = [];
+                    }
+                } catch (error) {
+                    console.error('Error while parsing JSON:', error);
+                    
+                }                
+            }
+            if (PremiumCompanyData.promotions) {
+                try {
+                    PremiumCompanyData.promotions = JSON.parse(PremiumCompanyData.promotions);
+                    if(PremiumCompanyData.promotions[0].promotion_title == undefined){
+                        PremiumCompanyData.promotions = [];
+                    }
+                } catch (error) {
+                    console.error('Error while parsing JSON:', error);
+                }                
+            }
+            if (PremiumCompanyData.facebook_url) {
+                facebook_url = PremiumCompanyData.facebook_url;
+            }
+            if (PremiumCompanyData.twitter_url) {
+                twitter_url = PremiumCompanyData.twitter_url;
+            }
+            if (PremiumCompanyData.instagram_url) {
+                instagram_url = PremiumCompanyData.instagram_url;
+            }
+            if (PremiumCompanyData.linkedin_url) {
+                linkedin_url = PremiumCompanyData.linkedin_url;
+            }
+            if (PremiumCompanyData.youtube_url) {
+                youtube_url = PremiumCompanyData.youtube_url;
+            }
+            if (PremiumCompanyData.support_email) {
+                support_data.support_email = PremiumCompanyData.support_email;
+            }
+            if (PremiumCompanyData.escalation_one) {
+                support_data.escalation_one = PremiumCompanyData.escalation_one;
+            }
+            if (PremiumCompanyData.escalation_two) {
+                support_data.escalation_two = PremiumCompanyData.escalation_two;
+            }
+            if (PremiumCompanyData.escalation_three) {
+                support_data.escalation_three = PremiumCompanyData.escalation_three;
+            }
+        }
+        
+
+
+
+
 
             return res.status(200).json({
                 status: 'success',
@@ -1153,13 +1247,13 @@ router.get('/getreviewlisting', verifyToken, async (req, res) => {
                     reviewTagsMap[tag.review_id].push({ review_id: tag.review_id, tag_name: tag.tag_name });
                 });
                 getAllReviewReply.forEach(reply => {
-                    const reviewId = reply.review_id;
+                    //const reviewId = reply.review_id;
                     
-                    if (!reviewrepliesmap[reviewId]) {
-                        reviewrepliesmap[reviewId] = [];
+                    if (!reviewrepliesmap[reply.review_id]) {
+                        reviewrepliesmap[reply.review_id] = [];
                     }
                     
-                    reviewrepliesmap[reviewId].push({
+                    reviewrepliesmap[reply.review_id].push({
                         review_id:reply.review_id,
                         ID: reply.ID,
                         reply_by: reply.reply_by,
@@ -1167,15 +1261,87 @@ router.get('/getreviewlisting', verifyToken, async (req, res) => {
                         created_at: reply.created_at,
                     });
                 });
+                console.log(getAllReviewReply);
+                const latestReviewReplies = getAllReviewReply.filter(reply => latestReviews.some(review => review.id === reply.review_id));
 
                 const latest_reviews = latestReviews.map(review => {
+                    const filteredReviewReplies = reviewrepliesmap[review.id] || [];
                     return {
                         ...review,
                         //reply_status: hasReplyToUser ? 1 : 0,
                         Tags: reviewTagsMap[review.id] || [],
-                        review_reply: reviewrepliesmap[review.id] || []
+                        // review_reply: reviewrepliesmap[review.id] || []
+                        review_reply: filteredReviewReplies.map(reply => ({
+                            review_id: reply.review_id,
+                            ID: reply.ID,
+                            reply_by: reply.reply_by,
+                            comment: reply.comment,
+                            created_at: reply.created_at,
+                        }))
                     };
                 });
+
+                // if (TrendingReviews.length > 0) {
+                //     const reviewTagsMap = {};
+                //     allCompanyReviewTags.forEach(tag => {
+                //         if (!reviewTagsMap[tag.review_id]) {
+                //             reviewTagsMap[tag.review_id] = [];
+                //         }
+                //         reviewTagsMap[tag.review_id].push({ review_id: tag.review_id, tag_name: tag.tag_name });
+                //     });
+                //     getAllReviewReply.forEach(reply => {
+                //         //const reviewId = reply.review_id;
+                        
+                //         if (!reviewrepliesmap[reply.review_id]) {
+                //             reviewrepliesmap[reply.review_id] = [];
+                //         }
+                        
+                //         reviewrepliesmap[reply.review_id].push({
+                //             review_id:reply.review_id,
+                //             ID: reply.ID,
+                //             reply_by: reply.reply_by,
+                //             comment: reply.comment,
+                //             created_at: reply.created_at,
+                //         });
+                //     });
+                //     console.log(getAllReviewReply);
+                //     // const trendingReviewReplies = getAllReviewReply.filter(reply => TrendingReviews.some(review => review.id === reply.review_id));
+                //     // const trendingReviewReplies = getAllReviewReply.filter(reply => {
+                //     //     return trending_reviews.some(review => review.id === reply.review_id);
+                //     // });
+                //     const trendingReviewReplies = getAllReviewReply.filter(reply => trending_reviews.some(review => review.id === reply.review_id));
+
+
+                //     const trending_reviews = TrendingReviews.map(review => {
+                //         const filteredReviewReplies = reviewrepliesmap[review.id] || [];
+                //         return {
+                //             ...review,
+                //             Tags: reviewTagsMap[review.id] || [],
+                //             //review_reply: reviewrepliesmap[review.id] || []
+                //             // review_reply: trendingReviewReplies.filter(reply => reply.review_id === review.id) || []
+                //             review_reply: filteredReviewReplies.map(reply => ({
+                //                 review_id: reply.review_id,
+                //                 ID: reply.ID,
+                //                 reply_by: reply.reply_by,
+                //                 comment: reply.comment,
+                //                 created_at: reply.created_at,
+                //             }))
+                //         };
+                //     });
+
+                //     return res.status(200).json({
+                //         status: 'success',
+                //         data: {
+                //             //finalCompanyallReviews,
+                //             all,
+                //             latest_reviews,
+                //             trending_reviews,
+                //             //allCompanyReviewTags,
+                //         },
+                //         message: 'review data successfully received'
+                //     });
+                // }
+
 
                 if (TrendingReviews.length > 0) {
                     const reviewTagsMap = {};
@@ -1185,43 +1351,35 @@ router.get('/getreviewlisting', verifyToken, async (req, res) => {
                         }
                         reviewTagsMap[tag.review_id].push({ review_id: tag.review_id, tag_name: tag.tag_name });
                     });
-                    getAllReviewReply.forEach(reply => {
-                        const reviewId = reply.review_id;
-                        
-                        if (!reviewrepliesmap[reviewId]) {
-                            reviewrepliesmap[reviewId] = [];
-                        }
-                        
-                        reviewrepliesmap[reviewId].push({
-                            review_id:reply.review_id,
-                            ID: reply.ID,
-                            reply_by: reply.reply_by,
-                            comment: reply.comment,
-                            created_at: reply.created_at,
-                        });
-                    });
-                    console.log(getAllReviewReply);
-
+                
+                    const trendingReviewReplies = getAllReviewReply.filter(reply => TrendingReviews.some(review => review.id === reply.review_id));
+                
                     const trending_reviews = TrendingReviews.map(review => {
+                        const filteredReviewReplies = reviewrepliesmap[review.id] || [];
                         return {
                             ...review,
                             Tags: reviewTagsMap[review.id] || [],
-                            review_reply: reviewrepliesmap[review.id] || []
+                            review_reply: filteredReviewReplies.map(reply => ({
+                                review_id: reply.review_id,
+                                ID: reply.ID,
+                                reply_by: reply.reply_by,
+                                comment: reply.comment,
+                                created_at: reply.created_at,
+                            }))
                         };
                     });
-
+                
                     return res.status(200).json({
                         status: 'success',
                         data: {
-                            //finalCompanyallReviews,
                             all,
                             latest_reviews,
                             trending_reviews,
-                            //allCompanyReviewTags,
                         },
                         message: 'review data successfully received'
                     });
                 }
+                
             }
         }
     } catch (error) {

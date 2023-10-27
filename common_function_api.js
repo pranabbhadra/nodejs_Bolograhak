@@ -539,33 +539,33 @@ async function getTrendingReviews() {
   }
 }
 
-async function getTrendingReviews(){
-  const get_latest_review_query = `
-    SELECT r.*, c.company_name, c.logo, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, 
-    u.last_name, u.user_id, u.user_status, ucm.profile_pic, COUNT(review_reply.id) as review_reply_count
-      FROM reviews r
-      LEFT JOIN company c ON r.company_id = c.ID 
-      LEFT JOIN company_location cl ON r.company_location_id = cl.ID 
-      LEFT JOIN users u ON r.customer_id = u.user_id 
-      LEFT JOIN user_customer_meta ucm ON ucm.user_id = u.user_id 
-      LEFT JOIN review_reply ON review_reply.review_id = r.id
-      WHERE r.review_status = "1" AND c.status = "1" AND c.trending = "1"
-      GROUP BY r.id
-      ORDER BY r.created_at DESC
-  `;
-  try{
-    const get_latest_review_results = await query(get_latest_review_query);
-    if(get_latest_review_results.length > 0 ){
-      //console.log(get_latest_review_results);
-      return get_latest_review_results;
-    }else{
-      return [];
-    }
-  }catch(error){
-    console.error('Error during user get_latest_review_query:', error);
-  }
+// async function getTrendingReviews(){
+//   const get_latest_review_query = `
+//     SELECT r.*, c.company_name, c.logo, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, 
+//     u.last_name, u.user_id, u.user_status, ucm.profile_pic, COUNT(review_reply.id) as review_reply_count
+//       FROM reviews r
+//       LEFT JOIN company c ON r.company_id = c.ID 
+//       LEFT JOIN company_location cl ON r.company_location_id = cl.ID 
+//       LEFT JOIN users u ON r.customer_id = u.user_id 
+//       LEFT JOIN user_customer_meta ucm ON ucm.user_id = u.user_id 
+//       LEFT JOIN review_reply ON review_reply.review_id = r.id
+//       WHERE r.review_status = "1" AND c.status = "1" AND c.trending = "1"
+//       GROUP BY r.id
+//       ORDER BY r.created_at DESC
+//   `;
+//   try{
+//     const get_latest_review_results = await query(get_latest_review_query);
+//     if(get_latest_review_results.length > 0 ){
+//       //console.log(get_latest_review_results);
+//       return get_latest_review_results;
+//     }else{
+//       return [];
+//     }
+//   }catch(error){
+//     console.error('Error during user get_latest_review_query:', error);
+//   }
   
-}
+// }
 
 async function getLatestReview(limit = null) {
   const all_review_query = `

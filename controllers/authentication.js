@@ -1125,6 +1125,7 @@ exports.submitReview = async (req, res) => {
       review_title,
       review_content,
       user_privacy,
+      user_contact,
       tags
     } = req.body;
     console.log("Rating from request:", rating);
@@ -1218,8 +1219,9 @@ exports.submitReview = async (req, res) => {
         review_status,
         labels,
         created_at,
-        updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        updated_at,
+        user_contact
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     const create_review_values = [
@@ -1234,8 +1236,8 @@ exports.submitReview = async (req, res) => {
       '2',
       '1',
       formattedDate,
-      formattedDate
-
+      formattedDate,
+      user_contact
     ];
 
     console.log("Inserting Review Data:", create_review_values);
