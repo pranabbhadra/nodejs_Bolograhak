@@ -271,7 +271,7 @@ async function saveUserGoogleLoginDataToDB(userData) {
     if (user_exist_results.length > 0) {
         //console.log(user_exist_results);
         // checking user status
-      return {user_id: user_exist_results[0].user_id, first_name:userFirstName, last_name:userLastName, email: userEmail, profile_pic: userPicture, status: 1};
+      return {user_id: user_exist_results[0].user_id, first_name:userFirstName, last_name:userLastName, email: userEmail, profile_pic: userPicture, status: 1, register_from:user_exist_results[0].register_from};
 
     }else{
       return {first_name:userFirstName, last_name:userLastName, email: userEmail, profile_pic: userPicture, external_registration_id: external_registration_id, status: 0};
@@ -308,7 +308,7 @@ async function saveUserFacebookLoginDataToDB(userData) {
     if (user_exist_results.length > 0) {
         //console.log(user_exist_results);
         // checking user status
-      return {user_id: user_exist_results[0].user_id, first_name:userFirstName, last_name:userLastName, email: userEmail, profile_pic: userPicture, status: 1};
+      return {user_id: user_exist_results[0].user_id, first_name:userFirstName, last_name:userLastName, email: userEmail, profile_pic: userPicture, status: 1, register_from:user_exist_results[0].register_from};
 
     }else{
       return {first_name:userFirstName, last_name:userLastName, email: userEmail, profile_pic: userPicture, external_registration_id: external_registration_id, status: 0};

@@ -367,197 +367,200 @@ app.get('/google-user-data', async(req, res) => {
             }
 
         }else{
+            if(UserResponse.register_from=='web'){
+                alert('This email-ID already exist please login with your email and password.');
+            }else{
+                //login code gose here
+                const userFirstName = UserResponse.first_name;
+                const userLastName = UserResponse.last_name;
+                const userEmail = UserResponse.email;
+                const userPicture = UserResponse.profile_pic;
+                const external_id = UserResponse.external_registration_id;
 
-            //login code gose here
-            const userFirstName = UserResponse.first_name;
-            const userLastName = UserResponse.last_name;
-            const userEmail = UserResponse.email;
-            const userPicture = UserResponse.profile_pic;
-            const external_id = UserResponse.external_registration_id;
-
-            //----User Login to Node and WP---------//
-            const userAgent = req.headers['user-agent'];
-            const agent = useragent.parse(userAgent);
-            db.query('SELECT * FROM users WHERE email = ?', [userEmail], async (err, results) => {
-                if (err) {
-                    // return res.send(
-                    //     {
-                    //         status: 'err',
-                    //         data: '',
-                    //         message: 'An error occurred while processing your request' + err
-                    //     }
-                    // )
-                    res.json(err);
-                } else {
-                    if (results.length > 0) {
-                        const user = results[0];
-                        //console.log(user);
-        
-                        //check Customer Login
-                        if (user.user_type_id == 2 && user.user_status == 1) {
-                            const query = `
-                                        SELECT user_meta.*, c.name as country_name, s.name as state_name, ccr.company_id as claimed_comp_id
-                                        FROM user_customer_meta user_meta
-                                        LEFT JOIN countries c ON user_meta.country = c.id
-                                        LEFT JOIN states s ON user_meta.state = s.id
-                                        LEFT JOIN company_claim_request ccr ON user_meta.user_id = ccr.claimed_by
-                                        WHERE user_id = ?
-                                        `;
-                            db.query(query, [user.user_id], async (err, results) => {
-                                let userData = {};
-                                if (results.length > 0) {
-                                    const user_meta = results[0];
-                                    //console.log(user_meta,'aaaaaaaa');
-                                    // Set a cookie
-                                    const dateString = user_meta.date_of_birth;
-                                    const date_of_birth_date = new Date(dateString);
-                                    const formattedDate = date_of_birth_date.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
-        
-                                    let userData = {
-                                        user_id: user.user_id,
-                                        first_name: user.first_name,
-                                        last_name: user.last_name,
-                                        email: user.email,
-                                        phone: user.phone,
-                                        user_type_id: user.user_type_id,
-                                        address: user_meta.address,
-                                        country: user_meta.country,
-                                        country_name: user_meta.country_name,
-                                        state: user_meta.state,
-                                        state_name: user_meta.state_name,
-                                        city: user_meta.city,
-                                        zip: user_meta.zip,
-                                        review_count: user_meta.review_count,
-                                        date_of_birth: formattedDate,
-                                        occupation: user_meta.occupation,
-                                        gender: user_meta.gender,
-                                        profile_pic: user_meta.profile_pic,
-                                        claimed_comp_id: user_meta.claimed_comp_id
-                                    };
-                                    const encodedUserData = JSON.stringify(userData);
-                                    res.cookie('user', encodedUserData);
-                                    console.log(encodedUserData, 'login user data');
-                                } else {
-                                    // Set a cookie
-                                    let userData = {
-                                        user_id: user.user_id,
-                                        first_name: user.first_name,
-                                        last_name: user.last_name,
-                                        email: user.email,
-                                        phone: user.phone,
-                                        user_type_id: user.user_type_id,
-                                        claimed_comp_id: ''
-                                    };
-                                    const encodedUserData = JSON.stringify(userData);
-                                    res.cookie('user', encodedUserData);
-                                }
-        
-                                (async () => {
-                                    //---- Login to Wordpress Blog-----//
-                                    //let wp_user_data;
-                                    try {
-                                        const userLoginData = {
-                                            email: userEmail,
-                                            password: userEmail,
-                                        };
-        
-                                        const response = await axios.post(process.env.BLOG_API_ENDPOINT + '/login', userLoginData);
-                                        const wp_user_data = response.data.data;
-        
-                                        //-- check last Login Info-----//
-                                        const device_query = "SELECT * FROM user_device_info WHERE user_id = ?";
-                                        db.query(device_query, [user.user_id], async (err, device_query_results) => {
-                                            const currentDate = new Date();
-                                            const year = currentDate.getFullYear();
-                                            const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-                                            const day = String(currentDate.getDate()).padStart(2, '0');
-                                            const hours = String(currentDate.getHours()).padStart(2, '0');
-                                            const minutes = String(currentDate.getMinutes()).padStart(2, '0');
-                                            const seconds = String(currentDate.getSeconds()).padStart(2, '0');
-                                            const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-        
-                                            if (device_query_results.length > 0) {
-                                                // User exist update info
-                                                const device_update_query = 'UPDATE user_device_info SET device_id = ?, IP_address = ?, last_logged_in = ? WHERE user_id = ?';
-                                                const values = [agent.toAgent() + ' ' + agent.os.toString(), requestIp.getClientIp(req), formattedDate, user.user_id];
-                                                db.query(device_update_query, values, (err, device_update_query_results) => {
-                                                    // return res.send(
-                                                    //     {
-                                                    //         status: 'ok',
-                                                    //         data: userData,
-                                                    //         wp_user: wp_user_data,
-                                                    //         currentUrlPath: '/',
-                                                    //         message: 'Login Successful'
-                                                    //     }
-                                                    // )
-                                                    if(wp_user_data){
-                                                        res.redirect(process.env.BLOG_URL+"?login_check="+wp_user_data+"&currentUrlPath=");
-                                                    }
-                                                })
-                                            } else {
-                                                // User doesnot exist Insert New Row.
-        
-                                                const device_insert_query = 'INSERT INTO user_device_info (user_id, device_id, device_token, imei_no, model_name, make_name, IP_address, last_logged_in, created_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
-                                                const values = [user.user_id, agent.toAgent() + ' ' + agent.os.toString(), '', '', '', '', requestIp.getClientIp(req), formattedDate, formattedDate];
-        
-                                                db.query(device_insert_query, values, (err, device_insert_query_results) => {
-                                                    // return res.send(
-                                                    //     {
-                                                    //         status: 'ok',
-                                                    //         data: userData,
-                                                    //         wp_user: wp_user_data,
-                                                    //         currentUrlPath: '/',
-                                                    //         message: 'Login Successful'
-                                                    //     }
-                                                    // )
-                                                    if(wp_user_data){
-                                                        res.redirect(process.env.BLOG_URL+"?login_check="+wp_user_data+"&currentUrlPath=");
-                                                    }
-                                                })
-        
-                                            }
-                                        })
-                                    } catch (error) {
-                                        console.error('User login failed. Error:', error);
-                                        if (error.response && error.response.data) {
-                                            console.log('Error response data:', error.response.data);
-                                        }
-                                    }
-                                })();
-                            })
-                        } else {
-                            let err_msg = '';
-                            if (user.user_status == 0) {
-                                err_msg = 'your account is inactive, please contact with administrator.';
-                            } else {
-                                err_msg = 'Do you want to login as administrator, then please go to proper route';
-                            }
-                            res.json(
-                                {
-                                    status: 'err',
-                                    data: '',
-                                    message: err_msg
-                                }
-                            )
-                        }
-                    } else {
+                //----User Login to Node and WP---------//
+                const userAgent = req.headers['user-agent'];
+                const agent = useragent.parse(userAgent);
+                db.query('SELECT * FROM users WHERE email = ?', [userEmail], async (err, results) => {
+                    if (err) {
                         // return res.send(
                         //     {
                         //         status: 'err',
                         //         data: '',
-                        //         message: 'Invalid Email'
+                        //         message: 'An error occurred while processing your request' + err
                         //     }
                         // )
-                        res.json(
-                            {
-                                status: 'err',
-                                data: '',
-                                message: 'Invalid Email'
+                        res.json(err);
+                    } else {
+                        if (results.length > 0) {
+                            const user = results[0];
+                            //console.log(user);
+            
+                            //check Customer Login
+                            if (user.user_type_id == 2 && user.user_status == 1) {
+                                const query = `
+                                            SELECT user_meta.*, c.name as country_name, s.name as state_name, ccr.company_id as claimed_comp_id
+                                            FROM user_customer_meta user_meta
+                                            LEFT JOIN countries c ON user_meta.country = c.id
+                                            LEFT JOIN states s ON user_meta.state = s.id
+                                            LEFT JOIN company_claim_request ccr ON user_meta.user_id = ccr.claimed_by
+                                            WHERE user_id = ?
+                                            `;
+                                db.query(query, [user.user_id], async (err, results) => {
+                                    let userData = {};
+                                    if (results.length > 0) {
+                                        const user_meta = results[0];
+                                        //console.log(user_meta,'aaaaaaaa');
+                                        // Set a cookie
+                                        const dateString = user_meta.date_of_birth;
+                                        const date_of_birth_date = new Date(dateString);
+                                        const formattedDate = date_of_birth_date.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+            
+                                        let userData = {
+                                            user_id: user.user_id,
+                                            first_name: user.first_name,
+                                            last_name: user.last_name,
+                                            email: user.email,
+                                            phone: user.phone,
+                                            user_type_id: user.user_type_id,
+                                            address: user_meta.address,
+                                            country: user_meta.country,
+                                            country_name: user_meta.country_name,
+                                            state: user_meta.state,
+                                            state_name: user_meta.state_name,
+                                            city: user_meta.city,
+                                            zip: user_meta.zip,
+                                            review_count: user_meta.review_count,
+                                            date_of_birth: formattedDate,
+                                            occupation: user_meta.occupation,
+                                            gender: user_meta.gender,
+                                            profile_pic: user_meta.profile_pic,
+                                            claimed_comp_id: user_meta.claimed_comp_id
+                                        };
+                                        const encodedUserData = JSON.stringify(userData);
+                                        res.cookie('user', encodedUserData);
+                                        console.log(encodedUserData, 'login user data');
+                                    } else {
+                                        // Set a cookie
+                                        let userData = {
+                                            user_id: user.user_id,
+                                            first_name: user.first_name,
+                                            last_name: user.last_name,
+                                            email: user.email,
+                                            phone: user.phone,
+                                            user_type_id: user.user_type_id,
+                                            claimed_comp_id: ''
+                                        };
+                                        const encodedUserData = JSON.stringify(userData);
+                                        res.cookie('user', encodedUserData);
+                                    }
+            
+                                    (async () => {
+                                        //---- Login to Wordpress Blog-----//
+                                        //let wp_user_data;
+                                        try {
+                                            const userLoginData = {
+                                                email: userEmail,
+                                                password: userEmail,
+                                            };
+            
+                                            const response = await axios.post(process.env.BLOG_API_ENDPOINT + '/login', userLoginData);
+                                            const wp_user_data = response.data.data;
+            
+                                            //-- check last Login Info-----//
+                                            const device_query = "SELECT * FROM user_device_info WHERE user_id = ?";
+                                            db.query(device_query, [user.user_id], async (err, device_query_results) => {
+                                                const currentDate = new Date();
+                                                const year = currentDate.getFullYear();
+                                                const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+                                                const day = String(currentDate.getDate()).padStart(2, '0');
+                                                const hours = String(currentDate.getHours()).padStart(2, '0');
+                                                const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+                                                const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+                                                const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+            
+                                                if (device_query_results.length > 0) {
+                                                    // User exist update info
+                                                    const device_update_query = 'UPDATE user_device_info SET device_id = ?, IP_address = ?, last_logged_in = ? WHERE user_id = ?';
+                                                    const values = [agent.toAgent() + ' ' + agent.os.toString(), requestIp.getClientIp(req), formattedDate, user.user_id];
+                                                    db.query(device_update_query, values, (err, device_update_query_results) => {
+                                                        // return res.send(
+                                                        //     {
+                                                        //         status: 'ok',
+                                                        //         data: userData,
+                                                        //         wp_user: wp_user_data,
+                                                        //         currentUrlPath: '/',
+                                                        //         message: 'Login Successful'
+                                                        //     }
+                                                        // )
+                                                        if(wp_user_data){
+                                                            res.redirect(process.env.BLOG_URL+"?login_check="+wp_user_data+"&currentUrlPath=");
+                                                        }
+                                                    })
+                                                } else {
+                                                    // User doesnot exist Insert New Row.
+            
+                                                    const device_insert_query = 'INSERT INTO user_device_info (user_id, device_id, device_token, imei_no, model_name, make_name, IP_address, last_logged_in, created_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+                                                    const values = [user.user_id, agent.toAgent() + ' ' + agent.os.toString(), '', '', '', '', requestIp.getClientIp(req), formattedDate, formattedDate];
+            
+                                                    db.query(device_insert_query, values, (err, device_insert_query_results) => {
+                                                        // return res.send(
+                                                        //     {
+                                                        //         status: 'ok',
+                                                        //         data: userData,
+                                                        //         wp_user: wp_user_data,
+                                                        //         currentUrlPath: '/',
+                                                        //         message: 'Login Successful'
+                                                        //     }
+                                                        // )
+                                                        if(wp_user_data){
+                                                            res.redirect(process.env.BLOG_URL+"?login_check="+wp_user_data+"&currentUrlPath=");
+                                                        }
+                                                    })
+            
+                                                }
+                                            })
+                                        } catch (error) {
+                                            console.error('User login failed. Error:', error);
+                                            if (error.response && error.response.data) {
+                                                console.log('Error response data:', error.response.data);
+                                            }
+                                        }
+                                    })();
+                                })
+                            } else {
+                                let err_msg = '';
+                                if (user.user_status == 0) {
+                                    err_msg = 'your account is inactive, please contact with administrator.';
+                                } else {
+                                    err_msg = 'Do you want to login as administrator, then please go to proper route';
+                                }
+                                res.json(
+                                    {
+                                        status: 'err',
+                                        data: '',
+                                        message: err_msg
+                                    }
+                                )
                             }
-                        );
+                        } else {
+                            // return res.send(
+                            //     {
+                            //         status: 'err',
+                            //         data: '',
+                            //         message: 'Invalid Email'
+                            //     }
+                            // )
+                            res.json(
+                                {
+                                    status: 'err',
+                                    data: '',
+                                    message: 'Invalid Email'
+                                }
+                            );
+                        }
                     }
-                }
-            })                
+                })
+            }
 
         }            
     } catch (error) {
@@ -846,197 +849,200 @@ app.get('/facebook-user-data', async(req, res) => {
                 }
 
             }else{
+                if(UserResponse.register_from=='web'){
+                    alert('This email-ID already exist please login with your email and password.');
+                }else{
+                    //login code gose here
+                    const userFirstName = UserResponse.first_name;
+                    const userLastName = UserResponse.last_name;
+                    const userEmail = UserResponse.email;
+                    const userPicture = UserResponse.profile_pic;
+                    const external_id = UserResponse.external_registration_id;
 
-                //login code gose here
-                const userFirstName = UserResponse.first_name;
-                const userLastName = UserResponse.last_name;
-                const userEmail = UserResponse.email;
-                const userPicture = UserResponse.profile_pic;
-                const external_id = UserResponse.external_registration_id;
-
-                //----User Login to Node and WP---------//
-                const userAgent = req.headers['user-agent'];
-                const agent = useragent.parse(userAgent);
-                db.query('SELECT * FROM users WHERE email = ?', [userEmail], async (err, results) => {
-                    if (err) {
-                        // return res.send(
-                        //     {
-                        //         status: 'err',
-                        //         data: '',
-                        //         message: 'An error occurred while processing your request' + err
-                        //     }
-                        // )
-                        res.json(err);
-                    } else {
-                        if (results.length > 0) {
-                            const user = results[0];
-                            //console.log(user);
-            
-                            //check Customer Login
-                            if (user.user_type_id == 2 && user.user_status == 1) {
-                                const query = `
-                                            SELECT user_meta.*, c.name as country_name, s.name as state_name, ccr.company_id as claimed_comp_id
-                                            FROM user_customer_meta user_meta
-                                            LEFT JOIN countries c ON user_meta.country = c.id
-                                            LEFT JOIN states s ON user_meta.state = s.id
-                                            LEFT JOIN company_claim_request ccr ON user_meta.user_id = ccr.claimed_by
-                                            WHERE user_id = ?
-                                            `;
-                                db.query(query, [user.user_id], async (err, results) => {
-                                    let userData = {};
-                                    if (results.length > 0) {
-                                        const user_meta = results[0];
-                                        //console.log(user_meta,'aaaaaaaa');
-                                        // Set a cookie
-                                        const dateString = user_meta.date_of_birth;
-                                        const date_of_birth_date = new Date(dateString);
-                                        const formattedDate = date_of_birth_date.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
-            
-                                        let userData = {
-                                            user_id: user.user_id,
-                                            first_name: user.first_name,
-                                            last_name: user.last_name,
-                                            email: user.email,
-                                            phone: user.phone,
-                                            user_type_id: user.user_type_id,
-                                            address: user_meta.address,
-                                            country: user_meta.country,
-                                            country_name: user_meta.country_name,
-                                            state: user_meta.state,
-                                            state_name: user_meta.state_name,
-                                            city: user_meta.city,
-                                            zip: user_meta.zip,
-                                            review_count: user_meta.review_count,
-                                            date_of_birth: formattedDate,
-                                            occupation: user_meta.occupation,
-                                            gender: user_meta.gender,
-                                            profile_pic: user_meta.profile_pic,
-                                            claimed_comp_id: user_meta.claimed_comp_id
-                                        };
-                                        const encodedUserData = JSON.stringify(userData);
-                                        res.cookie('user', encodedUserData);
-                                        console.log(encodedUserData, 'login user data');
-                                    } else {
-                                        // Set a cookie
-                                        let userData = {
-                                            user_id: user.user_id,
-                                            first_name: user.first_name,
-                                            last_name: user.last_name,
-                                            email: user.email,
-                                            phone: user.phone,
-                                            user_type_id: user.user_type_id,
-                                            claimed_comp_id: ''
-                                        };
-                                        const encodedUserData = JSON.stringify(userData);
-                                        res.cookie('user', encodedUserData);
-                                    }
-            
-                                    (async () => {
-                                        //---- Login to Wordpress Blog-----//
-                                        //let wp_user_data;
-                                        try {
-                                            const userLoginData = {
-                                                email: userEmail,
-                                                password: userEmail,
-                                            };
-            
-                                            const response = await axios.post(process.env.BLOG_API_ENDPOINT + '/login', userLoginData);
-                                            const wp_user_data = response.data.data;
-            
-                                            //-- check last Login Info-----//
-                                            const device_query = "SELECT * FROM user_device_info WHERE user_id = ?";
-                                            db.query(device_query, [user.user_id], async (err, device_query_results) => {
-                                                const currentDate = new Date();
-                                                const year = currentDate.getFullYear();
-                                                const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-                                                const day = String(currentDate.getDate()).padStart(2, '0');
-                                                const hours = String(currentDate.getHours()).padStart(2, '0');
-                                                const minutes = String(currentDate.getMinutes()).padStart(2, '0');
-                                                const seconds = String(currentDate.getSeconds()).padStart(2, '0');
-                                                const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-            
-                                                if (device_query_results.length > 0) {
-                                                    // User exist update info
-                                                    const device_update_query = 'UPDATE user_device_info SET device_id = ?, IP_address = ?, last_logged_in = ? WHERE user_id = ?';
-                                                    const values = [agent.toAgent() + ' ' + agent.os.toString(), requestIp.getClientIp(req), formattedDate, user.user_id];
-                                                    db.query(device_update_query, values, (err, device_update_query_results) => {
-                                                        // return res.send(
-                                                        //     {
-                                                        //         status: 'ok',
-                                                        //         data: userData,
-                                                        //         wp_user: wp_user_data,
-                                                        //         currentUrlPath: '/',
-                                                        //         message: 'Login Successful'
-                                                        //     }
-                                                        // )
-                                                        if(wp_user_data){
-                                                            res.redirect(process.env.BLOG_URL+"?login_check="+wp_user_data+"&currentUrlPath=");
-                                                        }
-                                                    })
-                                                } else {
-                                                    // User doesnot exist Insert New Row.
-            
-                                                    const device_insert_query = 'INSERT INTO user_device_info (user_id, device_id, device_token, imei_no, model_name, make_name, IP_address, last_logged_in, created_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
-                                                    const values = [user.user_id, agent.toAgent() + ' ' + agent.os.toString(), '', '', '', '', requestIp.getClientIp(req), formattedDate, formattedDate];
-            
-                                                    db.query(device_insert_query, values, (err, device_insert_query_results) => {
-                                                        // return res.send(
-                                                        //     {
-                                                        //         status: 'ok',
-                                                        //         data: userData,
-                                                        //         wp_user: wp_user_data,
-                                                        //         currentUrlPath: '/',
-                                                        //         message: 'Login Successful'
-                                                        //     }
-                                                        // )
-                                                        if(wp_user_data){
-                                                            res.redirect(process.env.BLOG_URL+"?login_check="+wp_user_data+"&currentUrlPath=");
-                                                        }
-                                                    })
-            
-                                                }
-                                            })
-                                        } catch (error) {
-                                            console.error('User login failed. Error:', error);
-                                            if (error.response && error.response.data) {
-                                                console.log('Error response data:', error.response.data);
-                                            }
-                                        }
-                                    })();
-                                })
-                            } else {
-                                let err_msg = '';
-                                if (user.user_status == 0) {
-                                    err_msg = 'your account is inactive, please contact with administrator.';
-                                } else {
-                                    err_msg = 'Do you want to login as administrator, then please go to proper route';
-                                }
-                                res.json(
-                                    {
-                                        status: 'err',
-                                        data: '',
-                                        message: err_msg
-                                    }
-                                )
-                            }
-                        } else {
+                    //----User Login to Node and WP---------//
+                    const userAgent = req.headers['user-agent'];
+                    const agent = useragent.parse(userAgent);
+                    db.query('SELECT * FROM users WHERE email = ?', [userEmail], async (err, results) => {
+                        if (err) {
                             // return res.send(
                             //     {
                             //         status: 'err',
                             //         data: '',
-                            //         message: 'Invalid Email'
+                            //         message: 'An error occurred while processing your request' + err
                             //     }
                             // )
-                            res.json(
-                                {
-                                    status: 'err',
-                                    data: '',
-                                    message: 'Invalid Email'
+                            res.json(err);
+                        } else {
+                            if (results.length > 0) {
+                                const user = results[0];
+                                //console.log(user);
+                
+                                //check Customer Login
+                                if (user.user_type_id == 2 && user.user_status == 1) {
+                                    const query = `
+                                                SELECT user_meta.*, c.name as country_name, s.name as state_name, ccr.company_id as claimed_comp_id
+                                                FROM user_customer_meta user_meta
+                                                LEFT JOIN countries c ON user_meta.country = c.id
+                                                LEFT JOIN states s ON user_meta.state = s.id
+                                                LEFT JOIN company_claim_request ccr ON user_meta.user_id = ccr.claimed_by
+                                                WHERE user_id = ?
+                                                `;
+                                    db.query(query, [user.user_id], async (err, results) => {
+                                        let userData = {};
+                                        if (results.length > 0) {
+                                            const user_meta = results[0];
+                                            //console.log(user_meta,'aaaaaaaa');
+                                            // Set a cookie
+                                            const dateString = user_meta.date_of_birth;
+                                            const date_of_birth_date = new Date(dateString);
+                                            const formattedDate = date_of_birth_date.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+                
+                                            let userData = {
+                                                user_id: user.user_id,
+                                                first_name: user.first_name,
+                                                last_name: user.last_name,
+                                                email: user.email,
+                                                phone: user.phone,
+                                                user_type_id: user.user_type_id,
+                                                address: user_meta.address,
+                                                country: user_meta.country,
+                                                country_name: user_meta.country_name,
+                                                state: user_meta.state,
+                                                state_name: user_meta.state_name,
+                                                city: user_meta.city,
+                                                zip: user_meta.zip,
+                                                review_count: user_meta.review_count,
+                                                date_of_birth: formattedDate,
+                                                occupation: user_meta.occupation,
+                                                gender: user_meta.gender,
+                                                profile_pic: user_meta.profile_pic,
+                                                claimed_comp_id: user_meta.claimed_comp_id
+                                            };
+                                            const encodedUserData = JSON.stringify(userData);
+                                            res.cookie('user', encodedUserData);
+                                            console.log(encodedUserData, 'login user data');
+                                        } else {
+                                            // Set a cookie
+                                            let userData = {
+                                                user_id: user.user_id,
+                                                first_name: user.first_name,
+                                                last_name: user.last_name,
+                                                email: user.email,
+                                                phone: user.phone,
+                                                user_type_id: user.user_type_id,
+                                                claimed_comp_id: ''
+                                            };
+                                            const encodedUserData = JSON.stringify(userData);
+                                            res.cookie('user', encodedUserData);
+                                        }
+                
+                                        (async () => {
+                                            //---- Login to Wordpress Blog-----//
+                                            //let wp_user_data;
+                                            try {
+                                                const userLoginData = {
+                                                    email: userEmail,
+                                                    password: userEmail,
+                                                };
+                
+                                                const response = await axios.post(process.env.BLOG_API_ENDPOINT + '/login', userLoginData);
+                                                const wp_user_data = response.data.data;
+                
+                                                //-- check last Login Info-----//
+                                                const device_query = "SELECT * FROM user_device_info WHERE user_id = ?";
+                                                db.query(device_query, [user.user_id], async (err, device_query_results) => {
+                                                    const currentDate = new Date();
+                                                    const year = currentDate.getFullYear();
+                                                    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+                                                    const day = String(currentDate.getDate()).padStart(2, '0');
+                                                    const hours = String(currentDate.getHours()).padStart(2, '0');
+                                                    const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+                                                    const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+                                                    const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+                
+                                                    if (device_query_results.length > 0) {
+                                                        // User exist update info
+                                                        const device_update_query = 'UPDATE user_device_info SET device_id = ?, IP_address = ?, last_logged_in = ? WHERE user_id = ?';
+                                                        const values = [agent.toAgent() + ' ' + agent.os.toString(), requestIp.getClientIp(req), formattedDate, user.user_id];
+                                                        db.query(device_update_query, values, (err, device_update_query_results) => {
+                                                            // return res.send(
+                                                            //     {
+                                                            //         status: 'ok',
+                                                            //         data: userData,
+                                                            //         wp_user: wp_user_data,
+                                                            //         currentUrlPath: '/',
+                                                            //         message: 'Login Successful'
+                                                            //     }
+                                                            // )
+                                                            if(wp_user_data){
+                                                                res.redirect(process.env.BLOG_URL+"?login_check="+wp_user_data+"&currentUrlPath=");
+                                                            }
+                                                        })
+                                                    } else {
+                                                        // User doesnot exist Insert New Row.
+                
+                                                        const device_insert_query = 'INSERT INTO user_device_info (user_id, device_id, device_token, imei_no, model_name, make_name, IP_address, last_logged_in, created_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+                                                        const values = [user.user_id, agent.toAgent() + ' ' + agent.os.toString(), '', '', '', '', requestIp.getClientIp(req), formattedDate, formattedDate];
+                
+                                                        db.query(device_insert_query, values, (err, device_insert_query_results) => {
+                                                            // return res.send(
+                                                            //     {
+                                                            //         status: 'ok',
+                                                            //         data: userData,
+                                                            //         wp_user: wp_user_data,
+                                                            //         currentUrlPath: '/',
+                                                            //         message: 'Login Successful'
+                                                            //     }
+                                                            // )
+                                                            if(wp_user_data){
+                                                                res.redirect(process.env.BLOG_URL+"?login_check="+wp_user_data+"&currentUrlPath=");
+                                                            }
+                                                        })
+                
+                                                    }
+                                                })
+                                            } catch (error) {
+                                                console.error('User login failed. Error:', error);
+                                                if (error.response && error.response.data) {
+                                                    console.log('Error response data:', error.response.data);
+                                                }
+                                            }
+                                        })();
+                                    })
+                                } else {
+                                    let err_msg = '';
+                                    if (user.user_status == 0) {
+                                        err_msg = 'your account is inactive, please contact with administrator.';
+                                    } else {
+                                        err_msg = 'Do you want to login as administrator, then please go to proper route';
+                                    }
+                                    res.json(
+                                        {
+                                            status: 'err',
+                                            data: '',
+                                            message: err_msg
+                                        }
+                                    )
                                 }
-                            );
+                            } else {
+                                // return res.send(
+                                //     {
+                                //         status: 'err',
+                                //         data: '',
+                                //         message: 'Invalid Email'
+                                //     }
+                                // )
+                                res.json(
+                                    {
+                                        status: 'err',
+                                        data: '',
+                                        message: 'Invalid Email'
+                                    }
+                                );
+                            }
                         }
-                    }
-                })                
+                    }) 
+                }               
 
             }            
         } catch (error) {
