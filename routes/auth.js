@@ -320,6 +320,9 @@ router.post('/complaint-register', authController.complaintRegister);
 // company-query
 router.post('/company-query', authController.companyQuery);
 
+// // company-response
+// router.post('/company-response', authController.companyResponse);
+
 //Create Survey
 router.post('/create-survey', authController.createSurvey);
 router.post('/create-survey-answer', authController.createSurveyAnswer);

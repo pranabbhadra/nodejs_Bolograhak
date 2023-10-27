@@ -4710,13 +4710,14 @@ exports.createDiscussion = async (req, res) => {
 
 //Add comment on discussion
 exports.addComment = async (req, res) => {
-    //console.log('addComment',req.body ); 
-    const {discussion_id,  comment } = req.body;
+    console.log('addComment',req.body ); 
+    const {discussion_id, user_id,  comment } = req.body;
     const currentDate = new Date();
     const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
     //return false;
     const Insertdata = {
         discussion_id : discussion_id,
+        user_id:user_id,
         comment:comment,
         ip_address: requestIp.getClientIp(req),
         created_at: formattedDate,

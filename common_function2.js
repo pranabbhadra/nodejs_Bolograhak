@@ -2269,8 +2269,9 @@ async function getAllCommentByDiscusId(discussions_id) {
   LEFT JOIN users u ON discussions.user_id = u.user_id 
   WHERE discussions.id = ${discussions_id}
   `;
-  const commentQuery = `SELECT discussions_user_response.*
+  const commentQuery = `SELECT discussions_user_response.*, u.first_name comment_first_name, u.last_name comment_last_name
   FROM discussions_user_response 
+  LEFT JOIN users u ON discussions_user_response.user_id = u.user_id 
   WHERE discussions_user_response.discussion_id = ${discussions_id}
   ORDER BY created_at DESC;`
   try{

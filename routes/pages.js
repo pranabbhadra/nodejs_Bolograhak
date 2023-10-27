@@ -961,7 +961,15 @@ router.get('/discussion-details/:discussion_id', checkCookieValue, async (req, r
         comFunction2.getAllDiscussions(),
     ]);
     try {
-
+        // res.json( {
+        //     menu_active_id: 'discussion-details',
+        //     page_title: 'Comments',
+        //     currentUserData,
+        //     globalPageMeta:globalPageMeta,
+        //     commentID:insertDiscussionResponse,
+        //     AllCommentByDiscusId:getAllCommentByDiscusId,
+        //     AllDiscussions:getAllDiscussions
+        // });
         res.render('front-end/discussion-details', {
             menu_active_id: 'discussion-details',
             page_title: 'Comments',
