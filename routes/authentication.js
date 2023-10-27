@@ -484,32 +484,33 @@ router.get('/getComapniesDetails/:ID', verifyToken, async (req, res) => {
             }
             if (PremiumCompanyData.gallery_img) {
                 try {
-                    gallery_img = JSON.parse(PremiumCompanyData.gallery_img);
+                    gallery_img = JSON.stringify(PremiumCompanyData.gallery_img);
                 } catch (error) {
                     console.error('Error while parsing JSON:', error);
                 }                
             }
             if (PremiumCompanyData.products) {
                 try {
-                    products = JSON.parse(PremiumCompanyData.products);
-                    if(PremiumCompanyData.products[0].product_title == undefined){
-                        PremiumCompanyData.products = [];
+                    products = JSON.stringify(PremiumCompanyData.products);
+                    if (Array.isArray(PremiumCompanyData.products) && PremiumCompanyData.products.length === 0) {
+                        products = '[]';
                     }
                 } catch (error) {
                     console.error('Error while parsing JSON:', error);
-                    
                 }                
             }
+            
             if (PremiumCompanyData.promotions) {
                 try {
-                    PremiumCompanyData.promotions = JSON.parse(PremiumCompanyData.promotions);
-                    if(PremiumCompanyData.promotions[0].promotion_title == undefined){
-                        PremiumCompanyData.promotions = [];
+                    products = JSON.stringify(PremiumCompanyData.promotions);
+                    if (Array.isArray(PremiumCompanyData.promotions) && PremiumCompanyData.promotions.length === 0) {
+                        promotions = '[]';
                     }
                 } catch (error) {
                     console.error('Error while parsing JSON:', error);
                 }                
             }
+            
             if (PremiumCompanyData.facebook_url) {
                 facebook_url = PremiumCompanyData.facebook_url;
             }
