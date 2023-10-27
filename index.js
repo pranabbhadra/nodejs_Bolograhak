@@ -172,12 +172,16 @@ app.get('/google-user-data', async(req, res) => {
                                                     <table border="0" cellpadding="4" cellspacing="0" width="90%">
                                                     <tr>
                                                         <td colspan="2">
-                                                        <strong>Hello ${userFirstName},</strong>
-                                                        <p style="font-size:15px; line-height:20px">Welcome to our <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a> family.</p>
+                                                            <strong>Hello ${userFirstName},</strong>
+                                                            <p style="font-size:15px; line-height:20px">Warm greetings from the Bolo Grahak team!
+                                                            You have joined a community dedicated to empowering all Grahaks (Customers) and ensuring their voices are heard <b>LOUD</b> and <b>C L E A R</b>.</p>
+                                                            <p style="font-size:15px; line-height:20px"> Keep sharing your Customer experiences (positive or negative), read about others' experience and get to know Customer centric information.</p>
+                                                            <p style="font-size:15px; line-height:20px">Share this platform with all your friends and family.
+                                                            Together, we can make Organisations listen and improve because <b>#CustomersHavePower</b>.</p><p style="font-size:15px; line-height:20px">Let's usher in this Customer Revolution coz <b>#CustomerRightsMatter</b>.</p><p style="font-size:15px; line-height:20px">Welcome Onboard!</p><br><p style="font-size:15px; line-height:20px">Kind Regards,</p><p style="font-size:15px; line-height:20px">Bolo Grahak Team</p><br>
                                                         </td>
                                                     </tr>
                                                     </table>
-                                                    
+                                                    <p style="font-size:15px; line-height:20px">Download the app from Google Playstore or visit  <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak.com </a>.</p>
                                                 </div>
                                                 </td>
                                                 </tr>
@@ -647,12 +651,16 @@ app.get('/facebook-user-data', async(req, res) => {
                                                         <table border="0" cellpadding="4" cellspacing="0" width="90%">
                                                         <tr>
                                                             <td colspan="2">
-                                                            <strong>Hello ${userFirstName},</strong>
-                                                            <p style="font-size:15px; line-height:20px">Welcome to our <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a> family.</p>
+                                                                <strong>Hello ${userFirstName},</strong>
+                                                                <p style="font-size:15px; line-height:20px">Warm greetings from the Bolo Grahak team!
+                                                                You have joined a community dedicated to empowering all Grahaks (Customers) and ensuring their voices are heard <b>LOUD</b> and <b>C L E A R</b>.</p>
+                                                                <p style="font-size:15px; line-height:20px"> Keep sharing your Customer experiences (positive or negative), read about others' experience and get to know Customer centric information.</p>
+                                                                <p style="font-size:15px; line-height:20px">Share this platform with all your friends and family.
+                                                                Together, we can make Organisations listen and improve because <b>#CustomersHavePower</b>.</p><p style="font-size:15px; line-height:20px">Let's usher in this Customer Revolution coz <b>#CustomerRightsMatter</b>.</p><p style="font-size:15px; line-height:20px">Welcome Onboard!</p><br><p style="font-size:15px; line-height:20px">Kind Regards,</p><p style="font-size:15px; line-height:20px">Bolo Grahak Team</p><br>
                                                             </td>
                                                         </tr>
                                                         </table>
-                                                        
+                                                        <p style="font-size:15px; line-height:20px">Download the app from Google Playstore or visit  <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak.com </a>.</p>
                                                     </div>
                                                     </td>
                                                     </tr>
