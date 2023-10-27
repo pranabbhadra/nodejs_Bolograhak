@@ -144,9 +144,9 @@ exports.frontendUserRegister = async (req, res) => {
         if (emailExists) {
             let register_from = results[0].register_from;
             if(register_from=='web'){
-                let message = 'Email ID already exists, Please login with your email-ID and password';
+                var message = 'Email ID already exists, Please login with your email-ID and password';
             }else{
-                let message = 'Email ID already exists, login with '+register_from;
+                var message = 'Email ID already exists, login with '+register_from;
             }
             return res.send(
                 {
