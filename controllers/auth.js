@@ -138,18 +138,26 @@ exports.frontendUserRegister = async (req, res) => {
         const emailExists = await new Promise((resolve, reject) => {
             db.query('SELECT email FROM users WHERE email = ?', [email], (err, results) => {
                 if (err) reject(err);
+
+                if (results.length > 0) {
+                    let register_from = results[0].register_from;
+                    if(register_from=='web'){
+                        var message = 'Email ID already exists, Please login with your email-ID and password';
+                    }else{
+                        var message = 'Email ID already exists, login with '+register_from;
+                    }
+                    return res.send(
+                        {
+                            status: 'err',
+                            data: '',
+                            message: message
+                        }
+                    )
+                }
+
                 resolve(results.length > 0);
             });
         });
-        if (emailExists) {
-            return res.send(
-                {
-                    status: 'err',
-                    data: '',
-                    message: 'Email ID already exists, Please login with your email-ID and password'
-                }
-            )
-        }
 
         // Hash the password asynchronously
         const hashedPassword = await bcrypt.hash(register_password, 8);
