@@ -30,7 +30,7 @@
                <% comments.forEach((comment) =>{ %> 
                <% if(comment.comment) { %>
                   <div class="user-comment-repeat">
-                     <div class="discussion-details-user-img">
+                     <div  class="discussion-user-img" title="<%= comment && comment.comment_first_name ? comment.comment_first_name : '' %> <%= comment && comment.comment_first_name ? comment.comment_last_name : '' %>">
                         <!-- <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60"> -->
                         <h4><%= comment && comment.comment_first_name ? comment.comment_first_name.charAt(0).toUpperCase() : '' %></h4>
                      </div>
@@ -67,9 +67,10 @@
             </div>
             <div class="discussion-similar-thread">
                
-             
+               
                <% if (AllDiscussions.length > 0) { %>
                  <% let AllDiscussionTags = [] %>
+                 <% let headingDisplayed = false %>
                  <% AllDiscussions.forEach((AllDiscussion,index) => { %>
                    <%
                    if (AllDiscussion.tags !== '') {
@@ -78,9 +79,10 @@
                    %>
                    <% const matchingTags = tags.filter((tag,key) => AllDiscussionTags.includes(tag)); %>
                    <% if (matchingTags.length > 0 && AllCommentByDiscusId[0].id != AllDiscussion.id ) { %>
-                     <% if(index == '0'){ %>
+                     <% if (!headingDisplayed) { %>
                         <h3>Similar threads</h3>
-                     <% } %>
+                        <% headingDisplayed = true %>
+                      <% } %>
                      <div class="discussion-review-panel">
                        <a href="/discussion-details/<%= AllDiscussion.id %>" title="<%= AllDiscussion.topic %>" >
                          <div class="discussion-user-img" title="<%= AllDiscussion.first_name %> <%= AllDiscussion.last_name %>">
