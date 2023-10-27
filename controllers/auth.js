@@ -136,7 +136,7 @@ exports.frontendUserRegister = async (req, res) => {
     try {
         // Check if the email already exists in the "users" table
         const emailExists = await new Promise((resolve, reject) => {
-            db.query('SELECT email FROM users WHERE email = ?', [email], (err, results) => {
+            db.query('SELECT email, register_from FROM users WHERE email = ?', [email], (err, results) => {
                 if (err) reject(err);
 
                 if (results.length > 0) {
@@ -149,7 +149,7 @@ exports.frontendUserRegister = async (req, res) => {
                     return res.send(
                         {
                             status: 'err',
-                            data: results,
+                            data: '',
                             message: message
                         }
                     )
