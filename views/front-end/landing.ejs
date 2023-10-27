@@ -833,6 +833,9 @@
       </div>
       <div class="col-md-4">
         <div class="discussions-right mt-md-0 mt-4">
+          <div class="start-a-discussion-btn text-center">
+            <a href="#" class="btn-default btn-dark" data-bs-toggle="modal" data-bs-target="#creatediscussion"><i class="fa-solid fa-pen-to-square"></i> Start A Discussion</a>
+          </div>
           <div class="discussions-right-panel">
             <h4>Popular Discussions</h4>
             <% if(AllPopularDiscussion.length > 0) { %>
@@ -905,6 +908,49 @@
   </div>
 </section>
 <% } %>
+
+<!-- The Modal -->
+<div class="modal fade" id="creatediscussion">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <!-- Modal Header -->
+      <div class="modal-header">
+          <h2>Create Discussion</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <!-- Modal body -->
+      <div class="modal-body">
+        <form id="create_discussion_form">
+          <div id="sendreviewtags" class="custom-form">
+              <label style="background-color: #ffffff;">Tags</label>
+              <input type="text" name="tags" placeholder="Add tag" data-gtm-form-interact-field-id="0">
+           </div>
+           <div class="custom-form">
+              <label><span style="background-color: #ffffff;">Message<span style="color: red;">*</span></span></label>
+              <textarea name="topic" id="search-topic" class="form-control mb-4" required=""></textarea>
+           </div>
+          <div class="row">
+              <div class="col-sm-6">
+                  <div class="custom-form">
+                      <label><span style="background-color: #ffffff;">From</span></label>
+                      <input type="date" class="form-control" name="from_data" value="" placeholder="" style="pointer-events: none;">
+                  </div>
+              </div>
+              <div class="col-sm-6">
+                  <div class="custom-form">
+                      <label><span style="background-color: #ffffff;">To</span></label>
+                      <input type="date" class="form-control" name="expire_date" value="" style="padding-right: 18px;">
+                  </div>
+              </div>
+          </div>
+          <div class="custom-form mb-sm-0">
+              <input type="submit" class="btn-default btn-warning" value="Submit">
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 <!-- ============== Discussions section End =============== -->
 
  

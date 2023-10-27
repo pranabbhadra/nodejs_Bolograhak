@@ -831,14 +831,6 @@
 	    padding: 20px 30px;
 	}
 
-	.discussion-view {
-		position: relative;
-		right: 0;
-		top: 0;
-		margin-bottom: 10px;
-		text-align: center;
-	}
-
 	ul.resp-tabs-list {
 		max-width: 100%;
 	}
@@ -1510,6 +1502,23 @@
 		font-size: 16px;
 	}
 
+	.discussion-user-img {
+		width: 40px;
+		height: 40px;
+	}
+	
+	.discussion-user-img h4 {
+		font-size: 18px;
+	}
+
+	.discussion-view {
+		position: relative;
+		right: 0;
+		top: 0;
+		margin-bottom: 10px;
+		text-align: center;
+	}
+
 }
 
 @media only screen and (max-width:660.98px) {
@@ -1788,6 +1797,10 @@
 	.acc_heading::before {
 	    width: 32px;
 	    height: 33px;
+	}
+
+	#creatediscussion .autofield-dropdown {
+		margin-top: -24px;
 	}
 
 	.overlay-shape1 img, 

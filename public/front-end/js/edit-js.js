@@ -785,9 +785,15 @@ jQuery(function ($) {
   // /////////////////////////////////////// Switch Toggle business show End
 
   // /////////////////////////////////////// Modal Start
-  $(".autofield-dropdown ul > li").click(function () {
-    $(".custom-modal").fadeIn();
+  $(".autofield-dropdown ul > li ").click(function () {
+     $(".custom-modal").fadeIn();
   });
+
+  $(document).on('click','.custom_link',function(){
+    location.replace($(this).attr('href'));
+  })
+
+
 
   $(".custom-modal-close").click(function (e) {
     e.preventDefault();
