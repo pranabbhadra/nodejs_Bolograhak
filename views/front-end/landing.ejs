@@ -1879,6 +1879,15 @@
             }
          })
       })
+
+      $(document).ready(function() {
+        var currentURL = window.location.href;
+        if (currentURL.indexOf('?error=web') !== -1) {
+            $('.frm-error-message').text('This email-ID already exist, Please login with your Email and Password.');
+            $('.frm-error-message').show();
+            $('.login').trigger('click');
+        }
+      });
     </script>
 
     <script src="https://maps.googleapis.com/maps/api/js?key=<%= AddressapiKey %>&libraries=places&callback=initMap"

@@ -369,7 +369,7 @@ app.get('/google-user-data', async(req, res) => {
         }else{
             if(UserResponse.register_from=='web'){
                 //alert('This email-ID already exist please login with your email and password.');
-                return res.redirect('/error/'+UserResponse.register_from);
+                return res.redirect('/?error='+UserResponse.register_from);
             }else{
                 //login code gose here
                 const userFirstName = UserResponse.first_name;
@@ -566,7 +566,7 @@ app.get('/google-user-data', async(req, res) => {
         }            
     } catch (error) {
         console.error('Error saving user data:', error);
-        return res.redirect('/error2/'+error.message);
+        return res.redirect('/error/'+error.message);
     }    
 });
 
@@ -851,7 +851,7 @@ app.get('/facebook-user-data', async(req, res) => {
 
             }else{
                 if(UserResponse.register_from=='web'){
-                    alert('This email-ID already exist please login with your email and password.');
+                    return res.redirect('/?error='+UserResponse.register_from);
                 }else{
                     //login code gose here
                     const userFirstName = UserResponse.first_name;
