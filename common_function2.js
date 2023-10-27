@@ -2269,8 +2269,9 @@ async function getAllCommentByDiscusId(discussions_id) {
   LEFT JOIN users u ON discussions.user_id = u.user_id 
   WHERE discussions.id = ${discussions_id}
   `;
-  const commentQuery = `SELECT discussions_user_response.*
+  const commentQuery = `SELECT discussions_user_response.*, u.first_name comment_first_name, u.last_name comment_last_name
   FROM discussions_user_response 
+  LEFT JOIN users u ON discussions_user_response.user_id = u.user_id 
   WHERE discussions_user_response.discussion_id = ${discussions_id}
   ORDER BY created_at DESC;`
   try{
@@ -2331,7 +2332,7 @@ async function getDiscussionsByUserId(userId) {
   }
 }
 
-//Function to get user discussions from discussions table
+//Function to get company complaint_category from complaint_category table
 async function getCompanyCategories(companyId) {
   const sql = `
   SELECT * FROM complaint_category WHERE company_id = '${companyId}'
@@ -2347,6 +2348,75 @@ async function getCompanyCategories(companyId) {
   }
   catch(error){
     console.error('Error during fetch All Latest Discussion:', error);
+  }
+}
+
+//Function to get  getComplaintLevelDetails from complaint_level_management table
+async function getComplaintLevelDetails(companyId) {
+  const sql = `
+  SELECT * FROM complaint_level_management WHERE company_id  = '${companyId}'
+  `;
+  try{
+    const results = await query(sql);
+    if (results.length>0) {
+      return results;
+    } else {
+      return [];
+    }
+  }
+  catch(error){
+    console.error('Error during fetch All complaint level details: ', error);
+    
+  }
+}
+
+//Function to get All Complaints By CompanyId from complaint table
+async function getAllComplaintsByCompanyId(companyId) {
+  const sql = `
+  SELECT complaint.*, cc.category_name, subcat.category_name AS sub_category_name
+  FROM complaint 
+  LEFT JOIN complaint_category cc ON complaint.category_id = cc.id 
+  LEFT JOIN complaint_category subcat ON complaint.sub_cat_id = subcat.id 
+  WHERE complaint.company_id  = '${companyId}'
+  ORDER BY complaint.id DESC
+  `;
+
+  try{
+    const results = await query(sql);
+    if ( results.length > 0 ) {
+      return results;
+    } else {
+      return [];
+    }
+  }
+  catch(error){
+    console.error('Error during fetch all complaint details: ', error);
+    
+  }
+}
+
+//Function to get All Complaints By userID from complaint table
+async function getAllComplaintsByUserId(user_id) {
+  const sql = `
+  SELECT complaint.*, cc.category_name, subcat.category_name AS sub_category_name
+  FROM complaint 
+  LEFT JOIN complaint_category cc ON complaint.category_id = cc.id 
+  LEFT JOIN complaint_category subcat ON complaint.sub_cat_id = subcat.id 
+  WHERE complaint.user_id  = '${user_id}'
+  ORDER BY complaint.id DESC
+  `;
+
+  try{
+    const results = await query(sql);
+    if ( results.length > 0 ) {
+      return results;
+    } else {
+      return [];
+    }
+  }
+  catch(error){
+    console.error('Error during fetch all complaint details: ', error);
+    
   }
 }
 
@@ -2410,5 +2480,8 @@ module.exports = {
   searchDiscussion,
   getDiscussionsByUserId,
   generateUniqueSlugCategory,
-  getCompanyCategories
+  getCompanyCategories,
+  getComplaintLevelDetails,
+  getAllComplaintsByCompanyId,
+  getAllComplaintsByUserId
 };

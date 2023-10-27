@@ -125,7 +125,7 @@ router.get('', checkCookieValue, async (req, res) => {
             "success_message": blogPosts.success_message,
             "error_message": blogPosts.error_message
         };
-        console.log('restructuredResponse', restructuredResponse);
+        //console.log('restructuredResponse', restructuredResponse);
 
         const sql = `SELECT * FROM page_info where secret_Key = 'home' `;
         db.query(sql, (err, results, fields) => {
@@ -961,7 +961,15 @@ router.get('/discussion-details/:discussion_id', checkCookieValue, async (req, r
         comFunction2.getAllDiscussions(),
     ]);
     try {
-
+        // res.json( {
+        //     menu_active_id: 'discussion-details',
+        //     page_title: 'Comments',
+        //     currentUserData,
+        //     globalPageMeta:globalPageMeta,
+        //     commentID:insertDiscussionResponse,
+        //     AllCommentByDiscusId:getAllCommentByDiscusId,
+        //     AllDiscussions:getAllDiscussions
+        // });
         res.render('front-end/discussion-details', {
             menu_active_id: 'discussion-details',
             page_title: 'Comments',
@@ -1221,91 +1229,9 @@ router.get('/survey-submission-details/:slug/:survey_uniqueid/:submission_id', c
     }
 });
 
-//register complain page
-router.get('/register-complain', checkCookieValue, async (req, res) => {
-    let currentUserData = JSON.parse(req.userData);
-    const [globalPageMeta, getAllCompany] = await Promise.all([
-        comFunction2.getPageMetaValues('global'),
-        comFunction.getAllCompany()
-    ]);
-    try {
 
-        res.render('front-end/register-complain', {
-            menu_active_id: 'register-complain',
-            page_title: 'Register Complainant',
-            currentUserData,
-            globalPageMeta:globalPageMeta,
-            AllCompany:getAllCompany
-        });
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('An error occurred');
-    }
-    //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
-});
 
-//premium register complain page
-router.get('/premium-register-complain', checkCookieValue, async (req, res) => {
-    let currentUserData = JSON.parse(req.userData);
-    const [globalPageMeta] = await Promise.all([
-        comFunction2.getPageMetaValues('global'),
-    ]);
-    try {
 
-        res.render('front-end/premium-register-complain', {
-            menu_active_id: 'premium-register-complain',
-            page_title: 'Dashboard',
-            currentUserData,
-            globalPageMeta:globalPageMeta
-        });
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('An error occurred');
-    }
-    //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
-});
-
-//basic register complain page
-router.get('/basic-complain-free', checkCookieValue, async (req, res) => {
-    let currentUserData = JSON.parse(req.userData);
-    const [globalPageMeta] = await Promise.all([
-        comFunction2.getPageMetaValues('global'),
-    ]);
-    try {
-
-        res.render('front-end/basic-complain-free', {
-            menu_active_id: 'basic-complain-free',
-            page_title: 'Dashboard',
-            currentUserData,
-            globalPageMeta:globalPageMeta
-        });
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('An error occurred');
-    }
-    //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
-});
-
-//basic register complain page
-router.get('/complain-profile', checkCookieValue, async (req, res) => {
-    let currentUserData = JSON.parse(req.userData);
-    const [globalPageMeta] = await Promise.all([
-        comFunction2.getPageMetaValues('global'),
-    ]);
-    try {
-
-        res.render('front-end/complain-profile', {
-            menu_active_id: 'complain-profile',
-            page_title: 'Dashboard',
-            currentUserData,
-            globalPageMeta:globalPageMeta
-        });
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('An error occurred');
-    }
-    //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
-});
 
 
 
@@ -2224,7 +2150,7 @@ router.get('/create-category/:slug', checkClientClaimedCompany, async (req, res)
     if(companyPaidStatus=='free'){
         res.render('front-end/basic-create-category',
         {
-            menu_active_id: 'create-category',
+            menu_active_id: 'complaint',
             page_title: 'Create Category',
             currentUserData,
             globalPageMeta:globalPageMeta,
@@ -2264,7 +2190,7 @@ router.get('/create-category/:slug', checkClientClaimedCompany, async (req, res)
         // });
         res.render('front-end/premium-create-category',
         {
-            menu_active_id: 'create-category',
+            menu_active_id: 'complaint',
             page_title: 'Create Category',
             currentUserData,
             globalPageMeta:globalPageMeta,
@@ -2290,12 +2216,13 @@ router.get('/premium-complaint-management/:slug', checkClientClaimedCompany, asy
     const comp_res =await comFunction2.getCompanyIdBySlug(slug);
     const companyId = comp_res.ID;
     //const companyId = req.params.compID;
-    const [globalPageMeta, company, companyReviewNumbers, PremiumCompanyData, allRatingTags ] = await Promise.all([
+    const [globalPageMeta, company, companyReviewNumbers, PremiumCompanyData, allRatingTags, getComplaintLevelDetails ] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
         comFunction.getCompany(companyId),
         comFunction.getCompanyReviewNumbers(companyId),
         comFunction2.getPremiumCompanyData(companyId),
         comFunction.getAllRatingTags(),
+        comFunction2.getComplaintLevelDetails(companyId),
     ]);
     
     const companyPaidStatus = company.paid_status;
@@ -2315,18 +2242,19 @@ router.get('/premium-complaint-management/:slug', checkClientClaimedCompany, asy
         }
         // res.json(
         // {
-        //     menu_active_id: 'create-category',
-        //     page_title: 'Create Category',
+        //     menu_active_id: 'premium-complaint-management',
+        //     page_title: 'Complaint Management',
         //     currentUserData,
         //     globalPageMeta:globalPageMeta,
         //     company:company,
         //     companyReviewNumbers,
+        //     allRatingTags,
         //     facebook_url:facebook_url,
         //     twitter_url:twitter_url,
         //     instagram_url:instagram_url,
         //     linkedin_url:linkedin_url,
         //     youtube_url:youtube_url,
-        //     CompanyCategories:getCompanyCategories
+        //     ComplaintLevelDetails:getComplaintLevelDetails,
         // });
         res.render('front-end/premium-complain-management',
         {
@@ -2342,7 +2270,88 @@ router.get('/premium-complaint-management/:slug', checkClientClaimedCompany, asy
             instagram_url:instagram_url,
             linkedin_url:linkedin_url,
             youtube_url:youtube_url,
+            ComplaintLevelDetails:getComplaintLevelDetails,
         });
+});
+
+//company dashboard Review listing Page 
+router.get('/company-complaint-listing/:slug', checkClientClaimedCompany, async (req, res) => {
+    const encodedUserData = req.cookies.user;
+    const currentUserData = JSON.parse(encodedUserData);
+    const slug = req.params.slug;
+    const comp_res =await comFunction2.getCompanyIdBySlug(slug);
+    const companyId = comp_res.ID;
+    //const companyId = req.params.compID;
+    const [globalPageMeta, company, companyReviewNumbers, allRatingTags, PremiumCompanyData, getAllComplaintsByCompanyId] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+        comFunction.getCompany(companyId),
+        comFunction.getCompanyReviewNumbers(companyId),
+        comFunction.getAllRatingTags(),
+        comFunction2.getPremiumCompanyData(companyId),
+        comFunction2.getAllComplaintsByCompanyId(companyId)
+    ]);
+    
+   
+    const companyPaidStatus = company.paid_status;
+    if(companyPaidStatus=='free'){
+        res.render('front-end/basic-complaint-listing',
+        {
+            menu_active_id: 'complaint',
+            page_title: 'Complaint Listing',
+            currentUserData,
+            globalPageMeta:globalPageMeta,
+            company:company,
+            companyReviewNumbers,
+            allRatingTags,
+            AllComplaintsByCompanyId:getAllComplaintsByCompanyId
+        });
+    }else{
+        let facebook_url = '';
+        let twitter_url = '';
+        let instagram_url = '';
+        let linkedin_url = '';
+        let youtube_url = '';
+    
+        if(typeof PremiumCompanyData !== 'undefined' ){
+             facebook_url = PremiumCompanyData.facebook_url;
+             twitter_url = PremiumCompanyData.twitter_url;
+             instagram_url = PremiumCompanyData.instagram_url;
+             linkedin_url = PremiumCompanyData.linkedin_url;
+             youtube_url = PremiumCompanyData.youtube_url;
+        }
+        // res.json(
+        // {
+        //     menu_active_id: 'complaint',
+        //     page_title: 'Complaint Listing',
+        //     currentUserData,
+        //     globalPageMeta:globalPageMeta,
+        //     company:company,
+        //     companyReviewNumbers,
+        //     allRatingTags,
+        //     facebook_url:facebook_url,
+        //     twitter_url:twitter_url,
+        //     instagram_url:instagram_url,
+        //     linkedin_url:linkedin_url,
+        //     youtube_url:youtube_url,
+        //     AllComplaintsByCompanyId:getAllComplaintsByCompanyId
+        // });
+        res.render('front-end/premium-complaint-listing',
+        {
+            menu_active_id: 'complaint',
+            page_title: 'Complaint Listing',
+            currentUserData,
+            globalPageMeta:globalPageMeta,
+            company:company,
+            companyReviewNumbers,
+            allRatingTags,
+            facebook_url:facebook_url,
+            twitter_url:twitter_url,
+            instagram_url:instagram_url,
+            linkedin_url:linkedin_url,
+            youtube_url:youtube_url,
+            AllComplaintsByCompanyId:getAllComplaintsByCompanyId
+        });
+    }
 });
 
 ///////////////////////////////////////////////////////////////////////
@@ -3940,7 +3949,60 @@ router.get('/my-discussions', checkFrontEndLoggedIn, async (req, res) => {
     //res.render('front-end/profile-dashboard', { menu_active_id: 'profile-dashboard', page_title: 'My Dashboard', currentUserData });
 });
 
+//register complaint page
+router.get('/register-complaint', checkFrontEndLoggedIn, async (req, res) => {
+    const encodedUserData = req.cookies.user;
+    const currentUserData = JSON.parse(encodedUserData);
+    const [globalPageMeta, getAllCompany] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+        comFunction.getAllCompany()
+    ]);
+    try {
 
+        res.render('front-end/register-complain', {
+            menu_active_id: 'register-complaint',
+            page_title: 'Complaint Registration',
+            currentUserData,
+            globalPageMeta:globalPageMeta,
+            AllCompany:getAllCompany
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+    //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
+});
+
+//basic register complain page
+router.get('/my-complaints', checkFrontEndLoggedIn, async (req, res) => {
+    const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+        const userId = currentUserData.user_id;
+        const [user, userMeta, globalPageMeta, AllCompaniesReviews, getAllComplaintsByUserId] = await Promise.all([
+            comFunction.getUser(userId),
+            comFunction.getUserMeta(userId),
+            comFunction2.getPageMetaValues('global'),
+            comFunction2.getAllCompaniesReviews(userId),
+            comFunction2.getAllComplaintsByUserId(userId),
+        ]);
+    try {
+
+        res.render('front-end/complain-profile', {
+            menu_active_id: 'complain-profile',
+            page_title: 'Dashboard',
+            currentUserData,
+            user: user,
+            userMeta: userMeta,
+            globalPageMeta:globalPageMeta,
+            AllCompaniesReviews: AllCompaniesReviews,
+            AllComplaintsByUserId:getAllComplaintsByUserId
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+    //res.render('front-end/terms-of-service', { menu_active_id: 'terms-of-service', page_title: 'Terms Of Service', currentUserData });
+});
 //-----------------------------------------------------------------//
 
 

@@ -1799,6 +1799,10 @@
 	    height: 33px;
 	}
 
+	#creatediscussion .autofield-dropdown {
+		margin-top: -24px;
+	}
+
 	.overlay-shape1 img, 
 	.overlay-shape2 img,
 	.overlay-object3 img, 

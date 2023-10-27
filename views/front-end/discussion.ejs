@@ -38,7 +38,7 @@
                         <% if(daysDiff > -1){ %>
                         <div class="discussion-review-panel">
                             <a href="/discussion-details/<%= LatestDiscussion.id %>" title="<%= LatestDiscussion.topic %>" >
-                                <div class="discussion-user-img">
+                                <div class="discussion-user-img" title="<%= LatestDiscussion.first_name %> <%= LatestDiscussion.last_name %>">
                                 <!-- <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60"> -->
                                 <h4><%= LatestDiscussion.first_name.charAt(0).toUpperCase()  %></h4>
                                 </div>
@@ -76,7 +76,7 @@
                                 <% if(daysDiff > -1){ %>
                                     <div class="discussion-review-panel">
                                         <a href="/discussion-details/<%= PopularDiscussion.id %>" title="<%= PopularDiscussion.topic %>" >
-                                            <div class="discussion-user-img">
+                                            <div class="discussion-user-img" title="<%= PopularDiscussion.first_name %> <%= PopularDiscussion.last_name %>">
                                             <!-- <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60"> -->
                                             <h4><%= PopularDiscussion.first_name.charAt(0).toUpperCase()  %></h4>
                                             </div>
@@ -114,7 +114,7 @@
                                 <% if(daysDiff > -1){ %>
                                     <div class="discussion-review-panel">
                                         <a href="/discussion-details/<%= AllDiscussion.id %>" title="<%= AllDiscussion.topic %>" >
-                                            <div class="discussion-user-img">
+                                            <div class="discussion-user-img" title="<%= AllDiscussion.first_name %> <%= AllDiscussion.last_name %>">
                                             <!-- <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60"> -->
                                             <h4><%= AllDiscussion.first_name.charAt(0).toUpperCase()  %></h4>
                                             </div>
@@ -180,17 +180,6 @@
                     </form>
                     <input type="submit" value="Search">
                     <div class="autofield-dropdown">
-                        <!-- <ul class="p-0 m-0">
-                        <li><a href="#">Nunc non posuere justo erat semper enim</a></li>
-                        <li><a href="#">Nunc non posuere justo erat semper enim</a></li>
-                        <li><a href="#">Nunc non posuere justo erat semper enim</a></li>
-                        <li><a href="#">Nunc non posuere justo erat semper enim</a></li>
-                        <li><a href="#">Nunc non posuere justo erat semper enim</a></li>
-                        <li><a href="#">Nunc non posuere justo erat semper enim</a></li>
-                        <li><a href="#">Nunc non posuere justo erat semper enim</a></li>
-                        <li><a href="#">Nunc non posuere justo erat semper enim</a></li>
-                        <li><a href="#">Nunc non posuere justo erat semper enim</a></li>
-                        </ul> -->
                     </div>
                 </div>
                 <div class="discussions-right-panel">
@@ -218,16 +207,6 @@
                             <% } %>
                     <% }) %>
                     <% } %>
-                    
-                    <!-- 
-                    <div class="dis-right-panel-item">
-                        <div class="dis-r-panel-item-left">
-                        <a href="#"><i class="fa-regular fa-arrow-right-long"></i>Lorem Ipsum</a> 
-                        </div>
-                        <div class="dis-r-panel-item-right">
-                        12
-                        </div>
-                    </div> -->
                 </div>
                 <div class="discussions-right-panel">
                     <h4>Newest Showcase</h4>
@@ -280,14 +259,6 @@
                         <% } %>
                     <% }) %>
                     <% } %>
-                    <!-- <div class="dis-right-panel-item">
-                        <div class="dis-r-panel-item-left">
-                            <a href="#"><i class="fa-regular fa-arrow-right-long"></i>Lorem Ipsum</a> 
-                        </div>
-                        <div class="dis-r-panel-item-right">
-                            50
-                        </div>
-                    </div> -->
                 </div>
                 <div class="discussions-right-panel">
                     <h4>Popular Tags</h4>
@@ -437,7 +408,7 @@
                   let respData = data.data;
                   let html = '<ul class="p-0 m-0">';
                   respData.forEach(discussion => {
-                    html += '<li><a href="/discussion-details/' + discussion.id + '" >' + discussion.topic + '</a></li>';
+                    html += '<li><a class="custom_link" href="/discussion-details/' + discussion.id + '" >' + discussion.topic + '</a></li>';
                   });
                   html += '</ul>';
                   $('.autofield-dropdown').html(html);
