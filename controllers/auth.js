@@ -149,7 +149,7 @@ exports.frontendUserRegister = async (req, res) => {
                     return res.send(
                         {
                             status: 'err',
-                            data: '',
+                            data: results,
                             message: message
                         }
                     )
