@@ -437,7 +437,7 @@
                   let respData = data.data;
                   let html = '<ul class="p-0 m-0">';
                   respData.forEach(discussion => {
-                    html += '<li><a href="/discussion-details/' + discussion.id + '" >' + discussion.topic + '</a></li>';
+                    html += '<li><a class="custom_link" href="/discussion-details/' + discussion.id + '" >' + discussion.topic + '</a></li>';
                   });
                   html += '</ul>';
                   $('.autofield-dropdown').html(html);
