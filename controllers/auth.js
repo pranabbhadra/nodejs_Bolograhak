@@ -4990,7 +4990,7 @@ exports.complaintRegister = async (req, res) => {
 
 //Insert Company Query and  to user
 exports.companyQuery = async (req, res) => {
-    console.log('companyQuery',req.body ); 
+    //console.log('companyQuery',req.body ); 
     //return false;
     const {company_id, user_id, complaint_id, message } = req.body;
     
@@ -5018,6 +5018,60 @@ exports.companyQuery = async (req, res) => {
             });
         }
     })
+}
+
+//user Complaint Rating
+exports.userComplaintRating = async (req, res) => {
+    console.log('userComplaintRating',req.body ); 
+    //return false;
+    const { user_id, complaint_id, rating } = req.body;
+    
+    const data = {
+        user_id:user_id,
+        complaint_id:complaint_id,
+        rating:rating,
+    }
+    const checkQuery = `SELECT id FROM complaint_rating WHERE complaint_id = '${complaint_id}' AND user_id = '${user_id}' `;
+    db.query(checkQuery, (checkErr, checkResult)=>{
+        if(checkErr){
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong  '+checkErr
+            });
+        }
+        if (checkResult.length > 0) {
+            const updateQuery = `UPDATE complaint_rating SET rating='${rating}' WHERE complaint_id = '${complaint_id}' AND user_id = '${user_id}' `;
+            db.query(updateQuery, (updateErr, updateResult)=>{
+                if (updateErr) {
+                    return res.send({
+                        status: 'not ok',
+                        message: 'Something went wrong  '+updateErr
+                    });
+                } else {
+                    return res.send({
+                        status: 'ok',
+                        message: 'Complaint rating updated successfully !'
+                    });
+                }
+            })
+        } else {
+            const Query = `INSERT INTO complaint_rating SET ?  `;
+            db.query(Query, data, (err, result)=>{
+                if (err) {
+                    return res.send({
+                        status: 'not ok',
+                        message: 'Something went wrong  '+err
+                    });
+                } else {
+                    return res.send({
+                        status: 'ok',
+                        message: 'Complaint rating submitted successfully !'
+                    });
+                }
+            })
+        }
+    })
+    
 }
 
 // Create Survey

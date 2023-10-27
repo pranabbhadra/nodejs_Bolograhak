@@ -2373,11 +2373,38 @@ async function getComplaintLevelDetails(companyId) {
 //Function to get All Complaints By CompanyId from complaint table
 async function getAllComplaintsByCompanyId(companyId) {
   const sql = `
-  SELECT complaint.*, cc.category_name, subcat.category_name AS sub_category_name
+  SELECT complaint.*,c.company_name, cc.category_name, subcat.category_name AS sub_category_name
   FROM complaint 
   LEFT JOIN complaint_category cc ON complaint.category_id = cc.id 
   LEFT JOIN complaint_category subcat ON complaint.sub_cat_id = subcat.id 
+  LEFT JOIN company c ON complaint.company_id = c.ID 
   WHERE complaint.company_id  = '${companyId}'
+  ORDER BY complaint.id DESC
+  `;
+
+  try{
+    const results = await query(sql);
+    if ( results.length > 0 ) {
+      return results;
+    } else {
+      return [];
+    }
+  }
+  catch(error){
+    console.error('Error during fetch all complaint details: ', error);
+    
+  }
+}
+
+//Function to get Complaints By ComplaintId from complaint table
+async function getAllComplaintsByComplaintId(ComplaintId) {
+  const sql = `
+  SELECT complaint.*,c.company_name, cc.category_name, subcat.category_name AS sub_category_name
+  FROM complaint 
+  LEFT JOIN complaint_category cc ON complaint.category_id = cc.id 
+  LEFT JOIN complaint_category subcat ON complaint.sub_cat_id = subcat.id 
+  LEFT JOIN company c ON complaint.company_id = c.ID 
+  WHERE complaint.id  = '${ComplaintId}'
   ORDER BY complaint.id DESC
   `;
 
@@ -2398,10 +2425,11 @@ async function getAllComplaintsByCompanyId(companyId) {
 //Function to get All Complaints By userID from complaint table
 async function getAllComplaintsByUserId(user_id) {
   const sql = `
-  SELECT complaint.*, cc.category_name, subcat.category_name AS sub_category_name
+  SELECT complaint.*,c.company_name, cc.category_name, subcat.category_name AS sub_category_name
   FROM complaint 
   LEFT JOIN complaint_category cc ON complaint.category_id = cc.id 
   LEFT JOIN complaint_category subcat ON complaint.sub_cat_id = subcat.id 
+  LEFT JOIN company c ON complaint.company_id = c.ID 
   WHERE complaint.user_id  = '${user_id}'
   ORDER BY complaint.id DESC
   `;
@@ -2483,5 +2511,6 @@ module.exports = {
   getCompanyCategories,
   getComplaintLevelDetails,
   getAllComplaintsByCompanyId,
-  getAllComplaintsByUserId
+  getAllComplaintsByUserId,
+  getAllComplaintsByComplaintId
 };

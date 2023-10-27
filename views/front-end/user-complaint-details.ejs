@@ -1,0 +1,106 @@
+<%- include('common/header') -%>
+<link href="/front-end/css/profile-dashboard-style.css" rel="stylesheet" type="text/css">
+<link href="/front-end/css/company-profile-dashboard.css" rel="stylesheet" type="text/css">
+<%- include('common/header-banner') -%>
+
+<!-- ============== Section1 start =============== -->
+<section class="main-content my-profile-content">
+    <div class="container">
+      <div class="my-profile-wrapper">
+         <div class="row">
+            <%- include('common/profile-sidebar') -%>
+            <div class="col-md-8">
+               <div class="company-user-complain-wrapper p-0" style="box-shadow: none;">
+                  <div class="c-u-top-head">
+                      <div class="c-u-top-head-part">
+                         <strong>Token ID:</strong> <%= ComplaintsByComplaintId.ticket_id %>
+                      </div>
+                      <div class="c-u-top-head-part">
+                         <strong>Date:</strong> 
+                         <% const createdateString = ComplaintsByComplaintId.created_at; %>
+                         <% const createdate = new Date(createdateString); %>
+                         <%= createdate.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %>
+                      </div>
+                      <div class="c-u-top-head-part">
+                         <strong>Status:</strong> 
+                           <% if(ComplaintsByComplaintId.status == '0') { %>
+                              <span class="text-danger"><strong>Reopen</strong></span>
+                           <% } else if(ComplaintsByComplaintId.status == '1') { %>
+                              <span class="text-success"><strong>Solved</strong></span>
+                           <% } else { %>
+                              <span class="text-warning"><strong>Pending</strong></span>
+                           <% } %>
+                      </div>
+                   </div>
+                   <div class="all-complain-reg-info">
+                      <div class="row">
+                         <div class="col-lg-4">
+                            <div class="c-u-layer-part">
+                               <strong>Company Name:</strong> <%= ComplaintsByComplaintId.company_name %>
+                            </div>
+                         </div>
+                         <div class="col-lg-4">
+                            <div class="c-u-layer-part">
+                               <strong>Category:</strong> <%= ComplaintsByComplaintId.category_name %>
+                            </div>
+                         </div>
+                         <div class="col-lg-4">
+                            <div class="c-u-layer-part">
+                               <strong>Sub Category:</strong> <%= ComplaintsByComplaintId.sub_category_name %>
+                            </div>
+                         </div>
+                         <div class="col-lg-4">
+                            <div class="c-u-layer-part">
+                               <strong>Model Number:</strong> <%= ComplaintsByComplaintId.model_desc %>
+                            </div>
+                         </div>
+                         <div class="col-lg-4">
+                            <div class="c-u-layer-part">
+                               <strong>Date of Purchase:</strong> 
+                               <% const dateString = ComplaintsByComplaintId.purchase_date; %>
+                              <% const date = new Date(dateString); %>
+                              <%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %>
+                            </div>
+                         </div>
+                         <div class="col-md-4">
+                            <div class="c-u-layer-part">
+                               <strong>Place of Order:</strong> <%= ComplaintsByComplaintId.purchase_place %>
+                            </div>
+                         </div>
+                         <div class="col-lg-12">
+                            <div class="c-u-layer-part">
+                               <strong>Tags:</strong> <%= ComplaintsByComplaintId.tags ? JSON.parse(ComplaintsByComplaintId.tags) : ''  %>
+                            </div>
+                         </div>
+                         <div class="col-lg-12">
+                            <div class="c-u-layer-part">
+                               <strong>Message:</strong> <%= ComplaintsByComplaintId.message %>
+                            </div>
+                         </div>
+                      </div>
+                   </div>
+                  <div class="custom-text-label">
+                      Company Query
+                     </div>
+                     <div class="custom-text-box" style="background-color: #FFF5CA;">
+                      Lorem ipsum dolor sit, amet consectetur adipisicing elit. Libero, porro amet corrupti deserunt dolore, dignissimos officiis tenetur saepe ea nihil ipsum eaque nisi, sed ipsa eum sit beatae dicta itaque. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Non accusantium ullam veniam expedita nulla fuga omnis ipsum placeat facilis iste, exercitationem impedit dolor repellat incidunt? Explicabo quas eos amet saepe?
+                     </div>
+                     <div class="custom-text-label">
+                      Company Rating
+                     </div>
+                     <div class="user-rating">
+                      <span><img src="/1691875890277-10.High.gif" alt="" style="display: inline-block;" width="35"></span>
+                      <span>4.5/5</span>
+                     </div>
+                     <a href="#" class="btn-default btn-warning mt-4">Reopen your Complain</a>
+                 </div>
+            </div>
+         </div>
+      </div>
+       
+    </div>
+</section>
+<!-- ============== Section1 end =============== -->
+
+
+<%- include('common/footer') -%>
