@@ -451,6 +451,9 @@ router.get('/getComapniesDetails/:ID', verifyToken, async (req, res) => {
             PremiumCompanyData.surveycount = CompanySurveyCount[0].surveycount;
             let cover_img = '';
             let youtube_iframe = '';
+            // let gallery_img = [];
+            // let products = [];
+            // let promotions = [];
             let gallery_img = [];
             let products = [];
             let promotions = [];
@@ -488,61 +491,39 @@ router.get('/getComapniesDetails/:ID', verifyToken, async (req, res) => {
                     } catch (error) {
                         console.error('Error while parsing JSON:', error);
                     }
+                }else{
+                    PremiumCompanyData.gallery_img = "[]";
                 }
 
-                //new 
-                // if (PremiumCompanyData.products) {
-                //     try {
-                //         products = JSON.stringify(PremiumCompanyData.products);
-                //         console.log("prtodyucts",products)
-                //         if(PremiumCompanyData.products[0].product_title == undefined){
-                //             PremiumCompanyData.products = "[]";
-                //         }
-                //         console.log("prtodyucts",products)
-                //     } catch (error) {
-                //         console.error('Error while parsing JSON:', error);
 
-                //     }                
-                // }
-
-                // if (PremiumCompanyData.promotions) {
-                //     try {
-                //         promotions = JSON.stringify(PremiumCompanyData.promotions);
-                //         if(PremiumCompanyData.promotions[0].promotion_title == undefined){
-                //             PremiumCompanyData.promotions = "[]";
-                //         }
-                //     } catch (error) {
-                //         console.error('Error while parsing JSON:', error);
-
-                //     }                
-                // }
-
-
-                if (Array.isArray(PremiumCompanyData.products)) {
+                if (PremiumCompanyData.products) {
                     try {
-                        const validProducts = PremiumCompanyData.products.filter(product => product.product_title !== null);
+                        let validProducts = [];
+                        if (Array.isArray(PremiumCompanyData.products)) {
+                            validProducts = PremiumCompanyData.products.filter(product => product.product_title !== null);
+                        }
                         products = JSON.stringify(validProducts);
-                        if (validProducts.length === 0) {
-                            products = '[]';
-                        }
                     } catch (error) {
                         console.error('Error while parsing JSON:', error);
                     }
+                }else{
+                    PremiumCompanyData.products = "[]";
                 }
-
-
-                if (Array.isArray(PremiumCompanyData.promotions)) {
+                
+                if (PremiumCompanyData.promotions) {
                     try {
-                        const validProducts = PremiumCompanyData.promotions.filter(promotion => promotion.promotion_title !== null);
-                        promotions = JSON.stringify(validProducts);
-                        if (validProducts.length === 0) {
-                            promotions = '[]';
+                        let validPromotions = [];
+                        if (Array.isArray(PremiumCompanyData.promotions)) {
+                            validPromotions = PremiumCompanyData.promotions.filter(promotion => promotion.promotion_title !== null);
                         }
+                        promotions = JSON.stringify(validPromotions);
                     } catch (error) {
                         console.error('Error while parsing JSON:', error);
                     }
+                }else{
+                    PremiumCompanyData.promotions = "[]";
                 }
-
+ 
 
                 if (PremiumCompanyData.facebook_url) {
                     facebook_url = PremiumCompanyData.facebook_url;
