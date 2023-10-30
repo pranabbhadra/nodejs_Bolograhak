@@ -135,7 +135,7 @@
 <script>
 $(document).ready(function () {
    $('#select_company').change(function() {
-      //$('#select_category').empty();
+      $('#select_category').empty().append($('<option value="">Select Category</option>'));
       //$("#select_state").prop('required',false);
       $('#dynamic_state_field_wrapper').hide();
       var company_id = $(this).val();
@@ -151,6 +151,7 @@ $(document).ready(function () {
                if (data.status == 'ok') {
                   $('#dynamic_state_field_wrapper').show();
                   //$("#select_state").prop('required',true);
+                  //$('#select_category').empty().append($('<option value="">Select Category</option>'));
                   $.each(data.data, function (i, item) {
                         $('#select_category').append($('<option>', { 
                            value: item.id,
@@ -179,7 +180,7 @@ $(document).ready(function () {
    });
 
    $('#select_category').change(function() {
-      $('#select_sub_category').empty();
+      $('#select_sub_category').empty().append($('<option value="">Select Sub Category</option>'));
       //$("#select_state").prop('required',false);
       $('#dynamic_sub_category_field_wrapper').hide();
       var category_id = $(this).val();

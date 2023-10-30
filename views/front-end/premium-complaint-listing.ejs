@@ -50,15 +50,16 @@
                                        <% if(compnaint.status=='0' ) { %>
                                           <span class="text-danger"><strong>Reopen</strong></span>
                                           <% } else if(compnaint.status=='1' ) { %>
-                                             <span class="text-success"><strong>Solved</strong></span>
+                                             <span class="text-success"><strong>Resolved</strong></span>
                                              <% } else { %>
-                                                <span class="text-yellow"><strong>Pending</strong></span>
+                                                <span class="text-yellow"><strong>Ongoing</strong></span>
                                                 <% } %>
                                     </td>
                                     <td style="text-align: center;">
                                        <span class="action-select">
                                           <span class="action-change">Action</span> <a href="" class="action-arw"><i
                                                 class="fa-solid fa-angle-down"></i></a>
+                                          <% if(compnaint.status != '1') { %>      
                                           <div class="action-dropdown">
                                              <ul class="p-0 m-0">
                                                 <li><a href="#" data-bs-toggle="modal"
@@ -71,9 +72,10 @@
                                                       data-complaint-id="<%= compnaint.id %>" data-customer-id="<%= compnaint.user_id %>"
                                                       data-bs-target="#respondcustomermodal"
                                                       class="respond-link">Respond to customer & Close</a></li>
-                                                <li><a href="">Escalate to next level</a></li>
+                                                <!-- <li><a href="">Escalate to next level</a></li> -->
                                              </ul>
                                           </div>
+                                          <% } %>
                                        </span>
                                     </td>
                                  </tr>
@@ -107,6 +109,7 @@
                      <input type="hidden" name="user_id" id="customer-id-query" value="" />
                      <input type="hidden" name="company_id" value="<%= company.ID %>" />
                      <input type="hidden" id="complaint-id-input" name="complaint_id" value="">
+                     <input type="hidden"  name="complaint_status" value="">
                      <input type="submit" class="btn-default btn-warning submit_btn"  value="Submit">
                   </form>
                   <div class="register-now frm-loading" style=" display: none; ">
@@ -142,6 +145,7 @@
                      <input type="hidden" name="user_id" id="customer_id_resolve" value="" />
                      <input type="hidden" name="company_id" value="<%= company.ID %>" />
                      <input type="hidden" id="complaint-id-resolve" name="complaint_id" value="">
+                     <input type="hidden"  name="complaint_status" value="1">
                      <input type="submit" class="btn-default btn-warning submit_btn" id="" value="Resolved">
                   </form>
                   <div class="register-now frm-loading" style=" display: none; ">

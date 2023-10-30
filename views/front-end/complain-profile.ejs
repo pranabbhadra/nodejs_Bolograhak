@@ -24,7 +24,7 @@
                                           <th scope="col">Category</th>
                                           <th scope="col">Product Name</th>
                                           <th scope="col">Status</th>
-                                          <th scope="col" style="width: 210px; text-align: center;">Action</th>
+                                          <!-- <th scope="col" style="width: 210px; text-align: center;">Action</th> -->
                                        </tr>
                                     </thead>
                                     <tbody>
@@ -53,12 +53,12 @@
                                                 <% if(compnaint.status=='0' ) { %>
                                                    <span class="text-danger"><strong>Reopen</strong></span>
                                                    <% } else if(compnaint.status=='1' ) { %>
-                                                      <span class="text-success"><strong>Solved</strong></span>
+                                                      <span class="text-success"><strong>Resolved</strong></span>
                                                       <% } else { %>
-                                                         <span class="text-yellow"><strong>Pending</strong></span>
+                                                         <span class="text-yellow"><strong>Ongoing</strong></span>
                                                          <% } %>
                                              </td>
-                                             <td style="text-align: center;">
+                                             <!-- <td style="text-align: center;">
                                                 <span class="action-select">
                                                    <span class="action-change">Action</span> <a href="" class="action-arw"><i
                                                          class="fa-solid fa-angle-down"></i></a>
@@ -69,7 +69,7 @@
                                                       </ul>
                                                    </div>
                                                 </span>
-                                             </td>
+                                             </td> -->
                                           </tr>
                                        <% }) %>
                                     </tbody>

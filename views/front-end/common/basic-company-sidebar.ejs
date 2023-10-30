@@ -112,6 +112,7 @@
 				<li><a href="/company-complaint-listing/<%= company.slug  %>">Complaint Listing</a></li>
 			 </ul>
 		</li>
-		<li><a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+		<li <% if( menu_active_id == 'settings') { %> class="active" <% } %> ><a href="/complaint-level-management/<%= company.slug  %>"><i class="fas fa-cog"></i> Settings</a></li>
+		<!-- <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li> -->
 	</ul>
 </div>

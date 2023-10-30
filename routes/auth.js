@@ -323,6 +323,9 @@ router.post('/company-query', authController.companyQuery);
 // user-complaint-rating
 router.post('/user-complaint-rating', authController.userComplaintRating);
 
+// user-complaint-response
+router.post('/user_complaint_response', authController.userComplaintResponse);
+
 //Create Survey
 router.post('/create-survey', authController.createSurvey);
 router.post('/create-survey-answer', authController.createSurveyAnswer);

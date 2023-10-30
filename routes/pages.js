@@ -2129,7 +2129,7 @@ router.get('/send-review-invitation/:slug', checkClientClaimedCompany, async (re
   
 });
 
-//company dcreate category Page 
+//company create category Page 
 router.get('/create-category/:slug', checkClientClaimedCompany, async (req, res) => {
     const encodedUserData = req.cookies.user;
     const currentUserData = JSON.parse(encodedUserData);
@@ -2208,8 +2208,8 @@ router.get('/create-category/:slug', checkClientClaimedCompany, async (req, res)
     }
 });
 
-//permium complain management page
-router.get('/premium-complaint-management/:slug', checkClientClaimedCompany, async (req, res) => {
+//company complaint-level-management Page 
+router.get('/complaint-level-management/:slug', checkClientClaimedCompany, async (req, res) => {
     const encodedUserData = req.cookies.user;
     const currentUserData = JSON.parse(encodedUserData);
     const slug = req.params.slug;
@@ -2226,7 +2226,19 @@ router.get('/premium-complaint-management/:slug', checkClientClaimedCompany, asy
     ]);
     
     const companyPaidStatus = company.paid_status;
-    
+    if(companyPaidStatus=='free'){
+        res.render('front-end/basic-complain-management',
+        {
+            menu_active_id: 'settings',
+            page_title: 'Complaint Management',
+            currentUserData,
+            globalPageMeta:globalPageMeta,
+            company:company,
+            companyReviewNumbers,
+            allRatingTags,
+            ComplaintLevelDetails:getComplaintLevelDetails,
+        });
+    }else{
         let facebook_url = '';
         let twitter_url = '';
         let instagram_url = '';
@@ -2240,25 +2252,9 @@ router.get('/premium-complaint-management/:slug', checkClientClaimedCompany, asy
              linkedin_url = PremiumCompanyData.linkedin_url;
              youtube_url = PremiumCompanyData.youtube_url;
         }
-        // res.json(
-        // {
-        //     menu_active_id: 'premium-complaint-management',
-        //     page_title: 'Complaint Management',
-        //     currentUserData,
-        //     globalPageMeta:globalPageMeta,
-        //     company:company,
-        //     companyReviewNumbers,
-        //     allRatingTags,
-        //     facebook_url:facebook_url,
-        //     twitter_url:twitter_url,
-        //     instagram_url:instagram_url,
-        //     linkedin_url:linkedin_url,
-        //     youtube_url:youtube_url,
-        //     ComplaintLevelDetails:getComplaintLevelDetails,
-        // });
         res.render('front-end/premium-complain-management',
         {
-            menu_active_id: 'premium-complaint-management',
+            menu_active_id: 'settings',
             page_title: 'Complaint Management',
             currentUserData,
             globalPageMeta:globalPageMeta,
@@ -2272,6 +2268,8 @@ router.get('/premium-complaint-management/:slug', checkClientClaimedCompany, asy
             youtube_url:youtube_url,
             ComplaintLevelDetails:getComplaintLevelDetails,
         });
+        
+    }
 });
 
 //company dashboard Review listing Page 
@@ -4109,6 +4107,16 @@ router.get('/user-compnaint-details/:complainId', checkFrontEndLoggedIn, async (
         ]);
     try {
 
+        // res.json({
+        //     menu_active_id: 'complain-profile',
+        //     page_title: 'Dashboard',
+        //     currentUserData,
+        //     user: user,
+        //     userMeta: userMeta,
+        //     globalPageMeta:globalPageMeta,
+        //     AllCompaniesReviews: AllCompaniesReviews,
+        //     ComplaintsByComplaintId:getAllComplaintsByComplaintId[0]
+        // });
         res.render('front-end/user-complaint-details', {
             menu_active_id: 'complain-profile',
             page_title: 'Dashboard',
