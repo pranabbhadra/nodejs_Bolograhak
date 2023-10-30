@@ -230,7 +230,7 @@ router.get('/getUserDetails/:user_id', verifyToken, async (req, res) => {
         });
     }
     const ClaimCompany = [];
-    const [userBasicInfo, userMetaInfo, userCompany, userReview, userReviewCompany, allCompanyReviewTags, reviewReplies, getReviewRepliescompany,getAllReviewReply] = await Promise.all([
+    const [userBasicInfo, userMetaInfo, userCompany, userReview, userReviewCompany, allCompanyReviewTags, reviewReplies, getReviewRepliescompany, getAllReviewReply] = await Promise.all([
         comFunction.getUser(user_ID),
         comFunction.getUserMeta(user_ID),
         comFunction.getUserCompany(user_ID),
@@ -270,12 +270,12 @@ router.get('/getUserDetails/:user_id', verifyToken, async (req, res) => {
         console.log(allCompanyReviewTags)
         getAllReviewReply.forEach(reply => {
             //const reviewId = reply.review_id;
-            
+
             if (!reviewrepliesmap[reply.review_id]) {
                 reviewrepliesmap[reply.review_id] = [];
             }
             reviewrepliesmap[reply.review_id].push({
-                review_id:reply.review_id,
+                review_id: reply.review_id,
                 ID: reply.ID,
                 reply_by: reply.reply_by,
                 comment: reply.comment,
@@ -447,10 +447,13 @@ router.get('/getComapniesDetails/:ID', verifyToken, async (req, res) => {
                     Tags: reviewTagsMap[review.id] || []
                 };
             });
-            
+
             PremiumCompanyData.surveycount = CompanySurveyCount[0].surveycount;
             let cover_img = '';
             let youtube_iframe = '';
+            // let gallery_img = [];
+            // let products = [];
+            // let promotions = [];
             let gallery_img = [];
             let products = [];
             let promotions = [];
@@ -460,86 +463,97 @@ router.get('/getComapniesDetails/:ID', verifyToken, async (req, res) => {
             let linkedin_url = '';
             let youtube_url = '';
             let support_data = {};
-        //     if(typeof PremiumCompanyData !== 'undefined' ){
-        //         cover_img = PremiumCompanyData.cover_img;
-        //         youtube_iframe = PremiumCompanyData.youtube_iframe;
-        //         gallery_img = JSON.parse(PremiumCompanyData.gallery_img);
-        //         products = JSON.parse(PremiumCompanyData.products);
-        //         promotions = JSON.parse(PremiumCompanyData.promotions);
-        //         facebook_url = PremiumCompanyData.facebook_url;
-        //         twitter_url = PremiumCompanyData.twitter_url;
-        //         instagram_url = PremiumCompanyData.instagram_url;
-        //         linkedin_url = PremiumCompanyData.linkedin_url;
-        //         youtube_url = PremiumCompanyData.youtube_url;
-        //         support_data = {support_email:PremiumCompanyData.support_email,	escalation_one:PremiumCompanyData.escalation_one, escalation_two:PremiumCompanyData.escalation_two, escalation_three:PremiumCompanyData.escalation_three}
-               
-        //    }
+            //     if(typeof PremiumCompanyData !== 'undefined' ){
+            //         cover_img = PremiumCompanyData.cover_img;
+            //         youtube_iframe = PremiumCompanyData.youtube_iframe;
+            //         gallery_img = JSON.parse(PremiumCompanyData.gallery_img);
+            //         products = JSON.parse(PremiumCompanyData.products);
+            //         promotions = JSON.parse(PremiumCompanyData.promotions);
+            //         facebook_url = PremiumCompanyData.facebook_url;
+            //         twitter_url = PremiumCompanyData.twitter_url;
+            //         instagram_url = PremiumCompanyData.instagram_url;
+            //         linkedin_url = PremiumCompanyData.linkedin_url;
+            //         youtube_url = PremiumCompanyData.youtube_url;
+            //         support_data = {support_email:PremiumCompanyData.support_email,	escalation_one:PremiumCompanyData.escalation_one, escalation_two:PremiumCompanyData.escalation_two, escalation_three:PremiumCompanyData.escalation_three}
 
-           if (typeof PremiumCompanyData !== 'undefined') {
-            if (PremiumCompanyData.cover_img) {
-                cover_img = PremiumCompanyData.cover_img;
-            }
-            if (PremiumCompanyData.youtube_iframe) {
-                youtube_iframe = PremiumCompanyData.youtube_iframe;
-            }
-            if (PremiumCompanyData.gallery_img) {
-                try {
-                    gallery_img = JSON.stringify(PremiumCompanyData.gallery_img);
-                } catch (error) {
-                    console.error('Error while parsing JSON:', error);
-                }                
-            }
-            if (PremiumCompanyData.products) {
-                try {
-                    products = JSON.stringify(PremiumCompanyData.products);
-                    if (Array.isArray(PremiumCompanyData.products) && PremiumCompanyData.products.length === 0) {
-                        products = '[]';
+            //    }
+
+            if (typeof PremiumCompanyData !== 'undefined') {
+                if (PremiumCompanyData.cover_img) {
+                    cover_img = PremiumCompanyData.cover_img;
+                }
+                if (PremiumCompanyData.youtube_iframe) {
+                    youtube_iframe = PremiumCompanyData.youtube_iframe;
+                }
+                if (PremiumCompanyData.gallery_img) {
+                    try {
+                        gallery_img = JSON.stringify(PremiumCompanyData.gallery_img);
+                    } catch (error) {
+                        console.error('Error while parsing JSON:', error);
                     }
-                } catch (error) {
-                    console.error('Error while parsing JSON:', error);
-                }                
-            }
-            
-            if (PremiumCompanyData.promotions) {
-                try {
-                    products = JSON.stringify(PremiumCompanyData.promotions);
-                    if (Array.isArray(PremiumCompanyData.promotions) && PremiumCompanyData.promotions.length === 0) {
-                        promotions = '[]';
+                }else{
+                    PremiumCompanyData.gallery_img = "[]";
+                }
+
+
+                if (PremiumCompanyData.products) {
+                    try {
+                        let validProducts = [];
+                        if (Array.isArray(PremiumCompanyData.products)) {
+                            validProducts = PremiumCompanyData.products.filter(product => product.product_title !== null);
+                        }
+                        products = JSON.stringify(validProducts);
+                    } catch (error) {
+                        console.error('Error while parsing JSON:', error);
                     }
-                } catch (error) {
-                    console.error('Error while parsing JSON:', error);
-                }                
+                }else{
+                    PremiumCompanyData.products = "[]";
+                }
+                
+                if (PremiumCompanyData.promotions) {
+                    try {
+                        let validPromotions = [];
+                        if (Array.isArray(PremiumCompanyData.promotions)) {
+                            validPromotions = PremiumCompanyData.promotions.filter(promotion => promotion.promotion_title !== null);
+                        }
+                        promotions = JSON.stringify(validPromotions);
+                    } catch (error) {
+                        console.error('Error while parsing JSON:', error);
+                    }
+                }else{
+                    PremiumCompanyData.promotions = "[]";
+                }
+ 
+
+                if (PremiumCompanyData.facebook_url) {
+                    facebook_url = PremiumCompanyData.facebook_url;
+                }
+                if (PremiumCompanyData.twitter_url) {
+                    twitter_url = PremiumCompanyData.twitter_url;
+                }
+                if (PremiumCompanyData.instagram_url) {
+                    instagram_url = PremiumCompanyData.instagram_url;
+                }
+                if (PremiumCompanyData.linkedin_url) {
+                    linkedin_url = PremiumCompanyData.linkedin_url;
+                }
+                if (PremiumCompanyData.youtube_url) {
+                    youtube_url = PremiumCompanyData.youtube_url;
+                }
+                if (PremiumCompanyData.support_email) {
+                    support_data.support_email = PremiumCompanyData.support_email;
+                }
+                if (PremiumCompanyData.escalation_one) {
+                    support_data.escalation_one = PremiumCompanyData.escalation_one;
+                }
+                if (PremiumCompanyData.escalation_two) {
+                    support_data.escalation_two = PremiumCompanyData.escalation_two;
+                }
+                if (PremiumCompanyData.escalation_three) {
+                    support_data.escalation_three = PremiumCompanyData.escalation_three;
+                }
             }
-            
-            if (PremiumCompanyData.facebook_url) {
-                facebook_url = PremiumCompanyData.facebook_url;
-            }
-            if (PremiumCompanyData.twitter_url) {
-                twitter_url = PremiumCompanyData.twitter_url;
-            }
-            if (PremiumCompanyData.instagram_url) {
-                instagram_url = PremiumCompanyData.instagram_url;
-            }
-            if (PremiumCompanyData.linkedin_url) {
-                linkedin_url = PremiumCompanyData.linkedin_url;
-            }
-            if (PremiumCompanyData.youtube_url) {
-                youtube_url = PremiumCompanyData.youtube_url;
-            }
-            if (PremiumCompanyData.support_email) {
-                support_data.support_email = PremiumCompanyData.support_email;
-            }
-            if (PremiumCompanyData.escalation_one) {
-                support_data.escalation_one = PremiumCompanyData.escalation_one;
-            }
-            if (PremiumCompanyData.escalation_two) {
-                support_data.escalation_two = PremiumCompanyData.escalation_two;
-            }
-            if (PremiumCompanyData.escalation_three) {
-                support_data.escalation_three = PremiumCompanyData.escalation_three;
-            }
-        }
-        
+
 
 
 
@@ -585,7 +599,7 @@ router.get('/getCompanySurveyListing/:ID', verifyToken, async (req, res) => {
             comFunction2.getCompanySurveyListing(companyId)
         ]);
 
-        if (CompanySurveyListing.length>0) {
+        if (CompanySurveyListing.length > 0) {
             return res.status(200).json({
                 status: 'success',
                 data: {
@@ -1075,11 +1089,11 @@ router.get('/reviewslistofallcompaniesbyuser/:user_id', verifyToken, (req, res) 
 //             console.log(allCompanyReviewTags)
 //             getAllReviewReply.forEach(reply => {
 //                 const reviewId = reply.review_id;
-                
+
 //                 if (!reviewrepliesmap[reviewId]) {
 //                     reviewrepliesmap[reviewId] = [];
 //                 }
-                
+
 //                 reviewrepliesmap[reviewId].push({
 //                     review_id:reply.review_id,
 //                     reply_id: reply.ID,
@@ -1089,7 +1103,7 @@ router.get('/reviewslistofallcompaniesbyuser/:user_id', verifyToken, (req, res) 
 //                 });
 //             });
 //             console.log(getAllReviewReply);
-            
+
 
 //             const all = allreviews.map(review => {
 //                 return {
@@ -1215,12 +1229,12 @@ router.get('/getreviewlisting', verifyToken, async (req, res) => {
             console.log(allCompanyReviewTags)
             getAllReviewReply.forEach(reply => {
                 //const reviewId = reply.review_id;
-                
+
                 if (!reviewrepliesmap[reply.review_id]) {
                     reviewrepliesmap[reply.review_id] = [];
                 }
                 reviewrepliesmap[reply.review_id].push({
-                    review_id:reply.review_id,
+                    review_id: reply.review_id,
                     ID: reply.ID,
                     reply_by: reply.reply_by,
                     comment: reply.comment,
@@ -1228,7 +1242,7 @@ router.get('/getreviewlisting', verifyToken, async (req, res) => {
                 });
             });
             console.log(getAllReviewReply);
-            
+
 
             const all = allreviews.map(review => {
                 return {
@@ -1249,13 +1263,13 @@ router.get('/getreviewlisting', verifyToken, async (req, res) => {
                 });
                 getAllReviewReply.forEach(reply => {
                     //const reviewId = reply.review_id;
-                    
+
                     if (!reviewrepliesmap[reply.review_id]) {
                         reviewrepliesmap[reply.review_id] = [];
                     }
-                    
+
                     reviewrepliesmap[reply.review_id].push({
-                        review_id:reply.review_id,
+                        review_id: reply.review_id,
                         ID: reply.ID,
                         reply_by: reply.reply_by,
                         comment: reply.comment,
@@ -1292,11 +1306,11 @@ router.get('/getreviewlisting', verifyToken, async (req, res) => {
                 //     });
                 //     getAllReviewReply.forEach(reply => {
                 //         //const reviewId = reply.review_id;
-                        
+
                 //         if (!reviewrepliesmap[reply.review_id]) {
                 //             reviewrepliesmap[reply.review_id] = [];
                 //         }
-                        
+
                 //         reviewrepliesmap[reply.review_id].push({
                 //             review_id:reply.review_id,
                 //             ID: reply.ID,
@@ -1352,9 +1366,9 @@ router.get('/getreviewlisting', verifyToken, async (req, res) => {
                         }
                         reviewTagsMap[tag.review_id].push({ review_id: tag.review_id, tag_name: tag.tag_name });
                     });
-                
+
                     const trendingReviewReplies = getAllReviewReply.filter(reply => TrendingReviews.some(review => review.id === reply.review_id));
-                
+
                     const trending_reviews = TrendingReviews.map(review => {
                         const filteredReviewReplies = reviewrepliesmap[review.id] || [];
                         return {
@@ -1369,7 +1383,7 @@ router.get('/getreviewlisting', verifyToken, async (req, res) => {
                             }))
                         };
                     });
-                
+
                     return res.status(200).json({
                         status: 'success',
                         data: {
@@ -1380,7 +1394,7 @@ router.get('/getreviewlisting', verifyToken, async (req, res) => {
                         message: 'review data successfully received'
                     });
                 }
-                
+
             }
         }
     } catch (error) {
@@ -1443,7 +1457,7 @@ router.get('/getstates/:country_id', verifyToken, async (req, res) => {
 // Api for home page content
 router.get('/app-home', verifyToken, async (req, res) => {
     try {
-        const [latestReviews, AllReviewTags,getAllReviewReply] = await Promise.all([
+        const [latestReviews, AllReviewTags, getAllReviewReply] = await Promise.all([
             comFunction2.getlatestReviews(20),
             comFunction2.getAllReviewTags(),
             //comFunction.getReviewReplies(user_ID),
@@ -1474,12 +1488,12 @@ router.get('/app-home', verifyToken, async (req, res) => {
                     });
                     getAllReviewReply.forEach(reply => {
                         //const reviewId = reply.review_id;
-                        
+
                         if (!reviewrepliesmap[reply.review_id]) {
                             reviewrepliesmap[reply.review_id] = [];
                         }
                         reviewrepliesmap[reply.review_id].push({
-                            review_id:reply.review_id,
+                            review_id: reply.review_id,
                             ID: reply.ID,
                             reply_by: reply.reply_by,
                             comment: reply.comment,
@@ -1487,7 +1501,7 @@ router.get('/app-home', verifyToken, async (req, res) => {
                         });
                     });
                     var latest_reviews = latestReviews.map(review => {
-                        
+
                         return {
                             ...review,
                             Tags: reviewTagsMap[review.id] || [],
@@ -2435,21 +2449,21 @@ WHERE
     }
 });
 
-router.get('/reviewReplies/:review_id', verifyToken, async (req,res)=>{
+router.get('/reviewReplies/:review_id', verifyToken, async (req, res) => {
     const review_id = req.params.review_id;
-    try{
+    try {
         const [getreviewreplis] = await Promise.all([
             comFunction.getreviewreplis(review_id)
         ]);
         res.json({
             getreviewreplis
         });
-    } catch(error){
+    } catch (error) {
         console.error(error);
         res.status(500).json({
             status: 'error',
             message: 'An error occurred ' + error,
-        }); 
+        });
     }
 })
 
