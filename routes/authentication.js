@@ -497,28 +497,29 @@ router.get('/getComapniesDetails/:ID', verifyToken, async (req, res) => {
 
 
                 if (PremiumCompanyData.products) {
-                    try {
-                        let validProducts = [];
-                        if (Array.isArray(PremiumCompanyData.products)) {
-                            validProducts = PremiumCompanyData.products.filter(product => product.product_title !== null);
-                        }
-                        products = JSON.stringify(validProducts);
-                    } catch (error) {
-                        console.error('Error while parsing JSON:', error);
+                    // try {
+                    //     let validProducts = [];
+                    //     if (Array.isArray(PremiumCompanyData.products)) {
+                    //         validProducts = PremiumCompanyData.products.filter(product => product.product_title !== null);
+                    //     }
+                    //     products = JSON.stringify(validProducts);
+                    // } catch (error) {
+                    //     console.error('Error while parsing JSON:', error);
+                    // }
+                    if(JSON.parse(PremiumCompanyData.products)[0].product_title){
+                        //
+                    }else{
+                        PremiumCompanyData.products = "[]";
                     }
                 }else{
                     PremiumCompanyData.products = "[]";
                 }
                 
                 if (PremiumCompanyData.promotions) {
-                    try {
-                        let validPromotions = [];
-                        if (Array.isArray(PremiumCompanyData.promotions)) {
-                            validPromotions = PremiumCompanyData.promotions.filter(promotion => promotion.promotion_title !== null);
-                        }
-                        promotions = JSON.stringify(validPromotions);
-                    } catch (error) {
-                        console.error('Error while parsing JSON:', error);
+                    if(JSON.parse(PremiumCompanyData.promotions)[0].promotion_title){
+                        //
+                    }else{
+                        PremiumCompanyData.promotions = "[]";
                     }
                 }else{
                     PremiumCompanyData.promotions = "[]";
