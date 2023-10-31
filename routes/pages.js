@@ -3704,6 +3704,41 @@ router.get('/edit-global', checkLoggedIn, (req, res) => {
         res.status(500).send('An error occurred');
     }
 });
+
+//Edit Complaint ragister Page
+router.get('/edit-complaint', checkLoggedIn, (req, res) => {
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+        const sql = `SELECT * FROM page_info where secret_Key = 'complaint' `;
+        db.query(sql, (err, results, fields) => {
+            if (err) throw err;
+            const common = results[0];
+            const meta_sql = `SELECT * FROM page_meta where page_id = ${common.id}`;
+            db.query(meta_sql, async (meta_err, _meta_result) => {
+                if (meta_err) throw meta_err;
+
+                const meta_values = _meta_result;
+                let meta_values_array = {};
+                await meta_values.forEach((item) => {
+                    meta_values_array[item.page_meta_key] = item.page_meta_value;
+                })
+                console.log(meta_values_array);
+                res.render('pages/update-complaint', {
+                    menu_active_id: 'pages',
+                    page_title: 'Update Complaint Register',
+                    currentUserData,
+                    common,
+                    meta_values_array,
+                });
+            })
+
+        })
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
 //-----------------------------------------------------------------//
 
 
@@ -4032,8 +4067,9 @@ router.get('/my-discussions', checkFrontEndLoggedIn, async (req, res) => {
 router.get('/register-complaint', checkFrontEndLoggedIn, async (req, res) => {
     const encodedUserData = req.cookies.user;
     const currentUserData = JSON.parse(encodedUserData);
-    const [globalPageMeta, getAllCompany] = await Promise.all([
+    const [globalPageMeta,PageMetaValues, getAllCompany] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
+        comFunction2.getPageMetaValues('complaint'),
         comFunction.getAllCompany()
     ]);
     try {
@@ -4043,6 +4079,7 @@ router.get('/register-complaint', checkFrontEndLoggedIn, async (req, res) => {
             page_title: 'Complaint Registration',
             currentUserData,
             globalPageMeta:globalPageMeta,
+            meta_values_array:PageMetaValues,
             AllCompany:getAllCompany
         });
     } catch (err) {

@@ -2269,9 +2269,10 @@ async function getAllCommentByDiscusId(discussions_id) {
   LEFT JOIN users u ON discussions.user_id = u.user_id 
   WHERE discussions.id = ${discussions_id}
   `;
-  const commentQuery = `SELECT discussions_user_response.*, u.first_name comment_first_name, u.last_name comment_last_name
+  const commentQuery = `SELECT discussions_user_response.*, u.first_name comment_first_name, u.last_name comment_last_name, ucm.profile_pic
   FROM discussions_user_response 
   LEFT JOIN users u ON discussions_user_response.user_id = u.user_id 
+  LEFT JOIN user_customer_meta ucm ON discussions_user_response.user_id = ucm.user_id 
   WHERE discussions_user_response.discussion_id = ${discussions_id}
   ORDER BY created_at DESC;`
   try{
@@ -2739,10 +2740,20 @@ async function complaintCompanyResponseEmail(complaint_id) {
 async function complaintScheduleEmail(email,result) {
   
   try{
+
+    const createdateString = result.created_at;
+    const createdate = new Date(createdateString);
+    createdate.setHours(0, 0, 0, 0); 
+    const date2 = new Date(); 
+    date2.setHours(0, 0, 0, 0) ;
+    const daysDiff = Math.round((date2 - createdate)/(1000 * 60 * 60 * 24)) ;
+    const daysLeft = result.eta_days - daysDiff;
+    
+
       var mailOptions = {
         from: process.env.MAIL_USER,
-        to: 'pranab@scwebtech.com',
-        //to: email,
+        //to: 'pranab@scwebtech.com',
+        to: email,
         subject: 'Schedule Complaint Email',
         html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
         <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
@@ -2786,8 +2797,8 @@ async function complaintScheduleEmail(email,result) {
                                 <table border="0" cellpadding="4" cellspacing="0" width="90%">
                                   <tr>
                                     <td colspan="2">
-                                    <strong>Hello ,</strong>
-                                    <p style="font-size:15px; line-height:20px">You have pending complaint in ticket id: ${result.ticket_id}. 
+                                    <strong>Hello Dear,</strong>
+                                    <p style="font-size:15px; line-height:20px">You have a pending complaint on ticket id: ${result.ticket_id}. Hurry up only ${daysLeft} days left.
                                     </p>
                                     </td>
                                   </tr>

@@ -1108,6 +1108,11 @@
 	    margin: 0 auto 20px;
 	}
 
+	.user-comment-control-wrapper .discussion-user-img img, .user-comment-control-wrapper .discussion-details-user-img img {
+		width: 40px;
+		height: 40px !important;
+	}
+
 	/*.social-widgets-wrapper {
 	    max-width: 550px;
 	}*/

@@ -3366,7 +3366,61 @@ exports.updateTermsOfService = (req, res) => {
 
     
 }
-
+// Update complaint
+exports.updateComplaint = async (req, res) => {
+     //console.log('updateComplaint', req.body);
+     //console.log('updateComplaint', req.files);
+    const form_data = req.body;
+    const { common_id, title, meta_title, meta_desc, meta_keyword } = req.body;
+    const { banner_img_1, banner_img_2, banner_img_3, banner_img_4, banner_img_5, banner_img_6, banner_img_7, banner_img_8 } = req.files;
+    const file_meta_value = [banner_img_1, banner_img_2, banner_img_3, banner_img_4, banner_img_5, banner_img_6, banner_img_7, banner_img_8];
+    const file_meta_key = ['banner_img_1', 'banner_img_2', 'banner_img_3', 'banner_img_4', 'banner_img_5', 'banner_img_6', 'banner_img_7', 'banner_img_8'];
+    await file_meta_key.forEach((item, key) => {
+        //console.log(item, key);
+        if (req.files[item]) {
+            //console.log(file_meta_value[key][0].filename);
+            const check_sql = `SELECT * FROM page_meta WHERE page_id = ? AND page_meta_key = ?`;
+            const check_data = [common_id, item];
+            db.query(check_sql, check_data, (check_err, check_result) => {
+                if (check_err) {
+                    return res.send(
+                        {
+                            status: 'err',
+                            data: '',
+                            message: 'An error occurred while processing your request'
+                        }
+                    )
+                } else {
+                    if (check_result.length > 0) {
+                        const update_sql = `UPDATE page_meta SET page_meta_value = ? WHERE page_id = ? AND page_meta_key = ?`;
+                        const update_data = [file_meta_value[key][0].filename, common_id, item];
+                        db.query(update_sql, update_data, (update_err, update_result) => {
+                            if (update_err) throw update_err;
+                        })
+                    } else {
+                        const insert_sql = `INSERT INTO page_meta (page_id , page_meta_key, page_meta_value) VALUES (?,?,?)`;
+                        const insert_data = [common_id, item, file_meta_value[key][0].filename];
+                        db.query(insert_sql, insert_data, (insert_err, insert_result) => {
+                            if (insert_err) throw insert_err;
+                        })
+                    }
+                }
+            });
+        }
+    });
+    const title_sql = `UPDATE page_info SET title = ?, meta_title = ?, meta_desc = ?, meta_keyword = ? WHERE id  = ?`;
+    const title_data = [title, meta_title, meta_desc, meta_keyword, common_id];
+    //console.log(title_data);
+    db.query(title_sql, title_data, (title_err, title_result) => {
+        return res.send(
+            {
+                status: 'ok',
+                data: '',
+                message: 'Updated successfully'
+            }
+        )
+    })
+}
 // Frontend Update Myprofile page
 exports.updateMyProfile = (req, res) => {
     // console.log('edit profile', req.body)
@@ -4998,7 +5052,7 @@ exports.complaintRegister = async (req, res) => {
 exports.companyQuery = async (req, res) => {
     console.log('companyQuery',req.body ); 
     //return false;
-    const {company_id, user_id, complaint_id, message, complaint_status } = req.body;
+    const {company_id, user_id, complaint_id, message, complaint_status, complaint_level } = req.body;
     
     await comFunction2.complaintCompanyResponseEmail(complaint_id)
 
@@ -5017,6 +5071,7 @@ exports.companyQuery = async (req, res) => {
         query:message,
         response : '',
         created_at:formattedDate,
+        level_id:complaint_level
     }
      const Query = `INSERT INTO complaint_query_response SET ?  `;
     db.query(Query, data, (err, result)=>{
@@ -5216,6 +5271,5 @@ exports.createSurveyAnswer = async (req, res) => {
                 })
             }
         })
-        
     }
   });
