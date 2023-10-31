@@ -66,6 +66,7 @@
                            <div class="survey-rating-part text-center">
                                  <% AllRatingTags.forEach(function(rating, index_inner) { %>
                                        <div class="rating_each_option form-check position-relative custom-check">
+                                          <span><%- rating.review_rating_value %></span>
                                           <input type="radio" class="form-check-input" id="<%- item.type %>_<%- index+1 %>_<%- index_inner+1 %>" name="question_<%- index+1 %>" value="<%- rating.review_rating_value %>"
                                           <% if( answerJsonObject['question_' + (index + 1)] == rating.review_rating_value ){ %>
                                              checked
@@ -128,6 +129,7 @@
                            <div class="survey-rating-part text-center">
                                  <% AllRatingTags.forEach(function(rating, index_inner) { %>
                                        <div class="rating_each_option form-check custom-check position-relative">
+                                          <span><%- rating.review_rating_value %></span>
                                           <input type="radio" class="form-check-input" id="<%- item.type %>_<%- index+1 %>_<%- index_inner+1 %>" name="question_<%- index+1 %>" value="<%- rating.review_rating_value %>">
                                           <label class="form-check-label" for="<%- item.type %>_<%- index+1 %>_<%- index_inner+1 %>"><img src="/<%- rating.rating_image %>" alt="<%- rating.review_rating_name %>"></label>
                                        </div>

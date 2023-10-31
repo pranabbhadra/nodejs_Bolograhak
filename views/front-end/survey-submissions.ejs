@@ -10,7 +10,29 @@
             <div class="col-md-12">
             <div class="discussions-left">
                 <div id="horizontalTab">
-                    <h2><%- CompanySurveyDetails[0].title %></h2>
+                    <div class="survey-details-with-date">
+                        <h2><%- CompanySurveyDetails[0].title %></h2>
+                        <div class="survet-update-form">
+                            <%
+                                var created_at = CompanySurveyDetails[0].created_at;
+                                var created_at_date = new Date(created_at);
+                                var formatted_created_at_Date = created_at_date.toISOString().split('T')[0];
+
+                                var expire_at = CompanySurveyDetails[0].expire_at;
+                                var expire_at_date = new Date(expire_at);
+                                var formatted_expire_at_Date = expire_at_date.toISOString().split('T')[0];
+                            %>
+                            <form method="post" action="" id="survey_update_form" name="survey_update_form">
+                                <div class="all-inputs">
+                                    <input type="date" class="form-control" name="created_at" value="<%- formatted_created_at_Date %>" readonly>
+                                    <input type="date" class="form-control" name="expire_at" value="<%- formatted_expire_at_Date %>">
+                                    <input type="hidden" name="survey_id" value="<%- CompanySurveyDetails[0].id %>">
+                                    <input type="submit" name="update_survey" class="btn btn-primary" value="Update">
+                                </div>
+                            </form>
+                            <p class="survey-update-message" style="display: none;"></p>
+                        </div>
+                    </div>
                     <div class="submissions-result-wrapper">
                         <p>Total submissions: <%- companySurveySubmissions.length %></p>
                         <% if(companySurveySubmissions.length > 0){ %>
@@ -60,7 +82,7 @@
                                         </div>
                                         <div class="discussion-user-info">
                                             <a href="/survey-submission-details/<%- company.slug %>/<%- submission.survey_unique_id %>/<%- submission.ID %>"><h4><%- submission.first_name +' '+ submission.last_name %></h4></a>
-                                            <p>Submited at <%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></p>
+                                            <p>Submitted at <%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></p>
                                         </div>
                                     </div>
                                 </div>
@@ -86,57 +108,38 @@
 
 <script>
     $(document).ready(function () {
-        var allTags = [];
-        var transformedResponse = {};
-        $('form#create_discussion_form').submit(function (e) {
-          e.preventDefault();
-          $('.response-message').hide();
-          $('.response-message').text('');
-          $('#invitation_email').prop('disabled', true);
-          $('.frm-loading').show(); 
-          //alert('aaaaaa')
-          $(this).find('#sendreviewtags').find('span').each(function(){
-             var enteredTag= $(this).text();
-             allTags.push(enteredTag);
-          });
-            const formData = $('#create_discussion_form').serializeArray();
-            $(formData).each(function (index, field) {
-                transformedResponse[field.name] = field.value;
-            });
-          transformedResponse['tags'] = allTags;
-          console.log(transformedResponse);
+        $('#survey_update_form').submit(function (e) {
+            e.preventDefault();
             //return false;
-          
+            const formData = $('#survey_update_form').serializeArray();
+            const jsonData = {};
+            $(formData).each(function (index, field) {
+                jsonData[field.name] = field.value;
+            });
+            console.log(jsonData);
             $.ajax({
-            url: '/auth/create-discussion', // URL for your API endpoint
-            method: 'POST',
-            data: JSON.stringify(transformedResponse),
-            processData: false,
-            contentType: 'application/json',
-            success: function (data) {
-                if (data.status == 'ok') {
-                    $('.response-message').text(data.message);
-                    $('.response-message').show();
-                    $('#invitation_email').prop('disabled', false);
-                    $('.frm-loading').hide();
-                    setTimeout(function() {
-                        window.location.reload();
-                    }, 2000);
-                } else {
-                    $('.response-message').text(data.message);
-                    $('.response-message').show();
-                    $('#invitation_email').prop('disabled', false);
-                    $('.frm-loading').hide();
-                    console.log('Something went wrong');
+                url: '/auth/update-survey', // URL for your API endpoint
+                method: 'POST',
+                data: JSON.stringify(jsonData),
+                processData: false,
+                contentType: 'application/json',
+                success: function (data) {
+                    if (data.status == 'ok') {
+                       $('.survey-update-message').text(data.message);
+                       $('.survey-update-message').show();
+                       setTimeout( function() {
+                          location.reload(true);
+                       }, 3000);
+                    } else {
+                        $('.survey-update-message').text(data.message);
+                        $('.survey-update-message').show();
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // Handle any errors that occur during the request
+                    console.log(error);
                 }
-            },
-            error: function (xhr, status, error) {
-                // Handle any errors that occur during the request
-                console.log(error);
-            }
+            });
         });
-    
-          
-       });
     });
     </script>

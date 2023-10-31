@@ -74,6 +74,25 @@
     font-weight: 900;
 }
 
+.survey-rating-part .rating_each_option span {
+    opacity: 0;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: -18px;
+    font-size: 14px;
+    background: #fbce40;
+    min-width: 34px;
+    border-radius: 5px;
+    color: #000;
+    transition: all ease-in-out 0.3s;
+}
+
+.survey-rating-part .rating_each_option:hover span {
+    opacity: 1;
+    transition: all ease-in-out 0.3s;
+}
+
 .survey-rating-part ul li {
     display: inline-block;
     margin: 0 20px;

@@ -552,7 +552,7 @@ router.get('/company/:slug', checkCookieValue, async (req, res) => {
         // console.log(comp_res);
         // console.log(companyID);
         // countInvitationLabels 1=No Labels,2=Invitation
-        const [allRatingTags, CompanyInfo, companyReviewNumbers, getCompanyReviews, globalPageMeta, PremiumCompanyData, CompanyPollDetails, countInvitationLabels, CompanySurveyDetails] = await Promise.all([
+        const [allRatingTags, CompanyInfo, companyReviewNumbers, getCompanyReviews, globalPageMeta, PremiumCompanyData, CompanyPollDetails, countInvitationLabels, CompanySurveyDetails, CompanySurveySubmitionsCount] = await Promise.all([
             comFunction.getAllRatingTags(),
             comFunction.getCompany(companyID),
             comFunction.getCompanyReviewNumbers(companyID),
@@ -561,7 +561,8 @@ router.get('/company/:slug', checkCookieValue, async (req, res) => {
             comFunction2.getPremiumCompanyData(companyID),
             comFunction2.getCompanyPollDetails(companyID),
             comFunction2.countInvitationLabels('2', companyID),
-            comFunction.getCompanySurveyDetails(companyID),
+            comFunction.getCompanyOngoingSurveyDetails(companyID),
+            comFunction.getCompanySurveySubmitionsCount()
         ]);
         
         //console.log(get_company_id.ID)
@@ -610,32 +611,21 @@ router.get('/company/:slug', checkCookieValue, async (req, res) => {
                     voting_answer_id: row.voting_answer_id ? row.voting_answer_id.split(',') : [],
                     voting_user_id: row.voting_user_id ? row.voting_user_id.split(',') : [],
                 }));
+
+                
+                const submitionsCountMap = CompanySurveySubmitionsCount.reduce((map, item) => {
+                    map[item.survey_unique_id] = item;
+                    return map;
+                }, {});
+
+                const CompanySurveyDetails_formatted = CompanySurveyDetails.map(detail => ({
+                ...detail,
+                ...(submitionsCountMap[detail.unique_id] || {}) // Add submitionsCount if it exists
+                }));
+
                 // res.json(
                 // {
-                //     menu_active_id: 'company',
-                //     page_title: 'Organization Details',
-                //     currentUserData,
-                //     allRatingTags,
-                //     company:CompanyInfo,
-                //     CompanyInfo,
-                //     companyReviewNumbers,
-                //     getCompanyReviews,
-                //     globalPageMeta:globalPageMeta,
-                //     cover_img:cover_img,
-                //     gallery_img:gallery_img,
-                //     youtube_iframe:youtube_iframe,
-                //     products:products,
-                //     promotions:promotions,
-                //     facebook_url:facebook_url,
-                //     twitter_url:twitter_url,
-                //     instagram_url:instagram_url,
-                //     linkedin_url:linkedin_url,
-                //     youtube_url:youtube_url,
-                //     support_data:support_data,
-                //     PollDetails,
-                //     labeltype,
-                //     countInvitationLabels,
-                //     CompanySurveyDetails
+                //     CompanySurveyDetails_formatted
                 // });
                 res.render('front-end/category-details-premium',
                 {
@@ -662,7 +652,7 @@ router.get('/company/:slug', checkCookieValue, async (req, res) => {
                     PollDetails,
                     labeltype,
                     countInvitationLabels,
-                    CompanySurveyDetails
+                    CompanySurveyDetails_formatted
                 });
             }else{
                 res.render('front-end/company-details',
@@ -678,7 +668,7 @@ router.get('/company/:slug', checkCookieValue, async (req, res) => {
                     globalPageMeta:globalPageMeta,
                     labeltype,
                     countInvitationLabels,
-                    CompanySurveyDetails
+                    CompanySurveyDetails_formatted
                 });
                 // res.json(
                 // {
@@ -1051,7 +1041,7 @@ router.get('/create-survey/:slug', checkClientClaimedCompany, async (req, res) =
     const formattedDate = `${day < 10 ? '0' : ''}${day}/${month < 10 ? '0' : ''}${month}/${year}`;
 
 
-    const [globalPageMeta, company, allRatingTags, companyReviewNumbers, allCompanyReviews, allCompanyReviewTags, PremiumCompanyData, reviewTagsCount, CompanySurveyDetails ] = await Promise.all([
+    const [globalPageMeta, company, allRatingTags, companyReviewNumbers, allCompanyReviews, allCompanyReviewTags, PremiumCompanyData, reviewTagsCount, CompanySurveyDetails, CompanySurveySubmitionsCount ] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
         comFunction.getCompany(companyId),
         comFunction.getAllRatingTags(),
@@ -1060,7 +1050,8 @@ router.get('/create-survey/:slug', checkClientClaimedCompany, async (req, res) =
         comFunction2.getAllReviewTags(),
         comFunction2.getPremiumCompanyData(companyId),
         comFunction.reviewTagsCountByCompanyID(companyId),
-        comFunction.getCompanySurveyDetails(companyId)
+        comFunction.getCompanySurveyDetails(companyId),
+        comFunction.getCompanySurveySubmitionsCount()
     ]);
 
     let facebook_url = '';
@@ -1103,11 +1094,21 @@ router.get('/create-survey/:slug', checkClientClaimedCompany, async (req, res) =
     if(companyPaidStatus=='free'){
         res.redirect('/');
     }else{
+        const submitionsCountMap = CompanySurveySubmitionsCount.reduce((map, item) => {
+            map[item.survey_unique_id] = item;
+            return map;
+        }, {});
+
+        const CompanySurveyDetails_formatted = CompanySurveyDetails.map(detail => ({
+          ...detail,
+          ...(submitionsCountMap[detail.unique_id] || {}) // Add submitionsCount if it exists
+        }));
         // res.json( 
         // { 
         //     CompanySurveyDetails,
-        //     company
+        //     mergedArray
         // });
+
         res.render('front-end/premium-company-create-survey', 
         { 
             menu_active_id: 'create-survey',
@@ -1127,7 +1128,7 @@ router.get('/create-survey/:slug', checkClientClaimedCompany, async (req, res) =
             instagram_url:instagram_url,
             linkedin_url:linkedin_url,
             youtube_url:youtube_url,
-            CompanySurveyDetails
+            CompanySurveyDetails_formatted
         });
     }
 });
@@ -1144,7 +1145,7 @@ router.get('/survey-submissions/:slug/:survey_id', checkClientClaimedCompany, as
     const [globalPageMeta, company, CompanySurveyDetails, companySurveySubmissions ] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
         comFunction.getCompany(companyId),
-        comFunction.getCompanySurveyDetails(companyId),
+        comFunction.getCompanySurveyDetailsBySurveyID(survey_unique_id),
         comFunction.getCompanySurveySubmissions(companyId, survey_unique_id),
     ]);
 

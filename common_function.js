@@ -1224,9 +1224,8 @@ async function getVisitorCheck(ClientIp) {
 
 async function getCompanySurveyDetails(companyID) {
   const get_company_survey_details_query = `
-  SELECT survey.*, COUNT(sca.ID) AS total_submission
+  SELECT survey.*
   FROM survey
-  LEFT JOIN survey_customer_answers sca ON survey.unique_id = sca.survey_unique_id
   WHERE survey.company_id = ${companyID}
   ORDER BY survey.id DESC;
   `;
@@ -1235,6 +1234,49 @@ async function getCompanySurveyDetails(companyID) {
     return get_company_survey_details_result;
   }catch(error){
     return 'Error during user get_company_survey_details_query:'+error;
+  }
+}
+
+async function getCompanyOngoingSurveyDetails(companyID) {
+  const get_company_survey_details_query = `
+  SELECT survey.*
+  FROM survey
+  WHERE survey.company_id = ${companyID} AND CURDATE() <= expire_at
+  ORDER BY survey.id DESC;
+  `;
+  try{
+    const get_company_survey_details_result = await query(get_company_survey_details_query);
+    return get_company_survey_details_result;
+  }catch(error){
+    return 'Error during user get_company_survey_details_query:'+error;
+  }
+}
+
+async function getCompanySurveyDetailsBySurveyID(survey_unique_id) {
+  const get_company_survey_details_query = `
+  SELECT survey.*
+  FROM survey
+  WHERE survey.unique_id = ${survey_unique_id};
+  `;
+  try{
+    const get_company_survey_details_result = await query(get_company_survey_details_query);
+    return get_company_survey_details_result;
+  }catch(error){
+    return 'Error during user get_company_survey_details_query:'+error;
+  }
+}
+
+async function getCompanySurveySubmitionsCount() {
+  const get_company_survey_submitions_count_query = `
+  SELECT survey_unique_id, COUNT(ID) as total_submission
+  FROM survey_customer_answers
+  GROUP BY survey_unique_id;
+  `;
+  try{
+    const get_company_survey_submitions_count_result = await query(get_company_survey_submitions_count_query);
+    return get_company_survey_submitions_count_result;
+  }catch(error){
+    return 'Error during user get_company_survey_submitions_count_query:'+error;
   }
 }
 
@@ -1343,5 +1385,8 @@ module.exports = {
     getCompanySurveyQuestions,
     getCompanySurveyAnswersByUser,
     getCompanySurveySubmissions,
-    getCompanySurveyAnswersByID
+    getCompanySurveyAnswersByID,
+    getCompanySurveySubmitionsCount,
+    getCompanySurveyDetailsBySurveyID,
+    getCompanyOngoingSurveyDetails
 };

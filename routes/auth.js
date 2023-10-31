@@ -325,6 +325,7 @@ router.post('/company-query', authController.companyQuery);
 
 //Create Survey
 router.post('/create-survey', authController.createSurvey);
+router.post('/update-survey', authController.updateSurvey);
 router.post('/create-survey-answer', authController.createSurveyAnswer);
 
 module.exports = router;

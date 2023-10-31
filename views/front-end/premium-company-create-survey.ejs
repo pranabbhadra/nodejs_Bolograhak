@@ -11,7 +11,7 @@
 
          <div class="survey-content">
             <div class="container">
-               <% const dateString = CompanySurveyDetails[0].expire_at; %>
+               <% const dateString = CompanySurveyDetails_formatted[0].expire_at; %>
                <% const date = new Date(dateString); %>
                <%
                   const year = date.getFullYear();
@@ -20,7 +20,14 @@
                   const formattedDate = `${year}-${month}-${day}`;
                %>
                <% const date2 = new Date(); 
-                  date2.setHours(0, 0, 0, 0) %>
+                  date2.setHours(0, 0, 0, 0);
+                  
+                  const created_at_year = date2.getFullYear();
+                  const created_at_month = String(date2.getMonth() + 1).padStart(2, '0');
+                  const created_at_day = String(date2.getDate()).padStart(2, '0');
+                  const created_at_formattedDate = `${created_at_year}-${created_at_month}-${created_at_day}`;
+                  const created_at_formattedDate_display = `${created_at_day}/${created_at_month}/${created_at_year}`;
+               %>
                <% const daysDiff = Math.round((date - date2)/(1000 * 60 * 60 * 24)) %>
                <% if(daysDiff >= 0){
                   //Already running 1 Survey
@@ -33,7 +40,8 @@
                            <div class="row">
                               <div class="col-sm-6">
                                  <div class="custom-form mb-sm-0 mb-2">
-                                    <input type="text" class="form-control" name="created_at" value="<%= formattedDate %>" readonly>
+                                    <input type="text" class="form-control" value="<%= created_at_formattedDate_display %>" readonly>
+                                    <input type="hidden" class="form-control" name="created_at" value="<%= created_at_formattedDate %>" readonly>
                                     <small>from</small>
                                  </div>
                               </div>
@@ -95,7 +103,7 @@
                </div>
                <% } %>
 
-               <% if(CompanySurveyDetails[0].id != null) {%>
+               <% if(CompanySurveyDetails_formatted[0].id != null) {%>
                <div class="each_box update_basic_information all_review_listing_for_company">
                   <div class="table-responsive">
                       <table class="table table-hover custom-table">
@@ -109,7 +117,7 @@
                               </tr>
                           </thead>
                           <tbody>
-                        <% CompanySurveyDetails.forEach((survey)=>{  %>
+                        <% CompanySurveyDetails_formatted.forEach((survey)=>{  %>
                            <% const dateString = survey.expire_at; %>
                            <% const date = new Date(dateString); %>
                            <%
@@ -125,7 +133,13 @@
                                   <td>
                                     <%= survey.title %>
                                   </td>
-                                  <td><%= survey.total_submission %></td>
+                                  <td>
+                                    <% if(survey.total_submission){ %>
+                                       <%= survey.total_submission %>
+                                    <% }else{ %>
+                                       0
+                                    <% }%>
+                                 </td>
                                   <td>
                                     <%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %>
                                     <!-- ,<br>

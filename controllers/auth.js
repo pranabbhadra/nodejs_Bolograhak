@@ -5059,6 +5059,23 @@ exports.createSurvey = async (req, res) => {
     })
 }
 
+// Update Survey
+exports.updateSurvey = async (req, res) => {
+    //console.log( 'Survey Response', req.body );
+    
+    const survey_update_query = 'UPDATE survey SET expire_at = ? WHERE id = ?';
+    const values = [req.body.expire_at, req.body.survey_id];
+    db.query(survey_update_query, values, (err, survey_update_query_results) => {
+        return res.send(
+            {
+                status: 'ok',
+                data: '',
+                message: 'Survey successful updated'
+            }
+        )
+    })
+}
+
 // Create Survey Answer
 exports.createSurveyAnswer = async (req, res) => {
     console.log( 'Survey Response', req.body );
@@ -5091,7 +5108,7 @@ exports.createSurveyAnswer = async (req, res) => {
         } else {
             return res.send({
                 status: 'ok',
-                message: 'Your survey answer successfully submited'
+                message: 'Your survey answers successfully submitted'
             });
         }
     })
