@@ -5006,9 +5006,9 @@ exports.deleteCompanyComplaintLevel = async (req, res) => {
 
 //Complaint Register
 exports.complaintRegister =  (req, res) => {
-    console.log('complaintRegister',req.body ); 
+    //console.log('complaintRegister',req.body ); 
     const {company_id, user_id, category_id, sub_category_id, model_no, allTags, transaction_date, location, message } = req.body;
-    return false;
+    //return false;
     const uuid = uuidv4();  
     const currentDate = new Date();
     const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
@@ -5017,7 +5017,7 @@ exports.complaintRegister =  (req, res) => {
         company_id:company_id[0],
         ticket_id:uuid,
         category_id:category_id[0],
-        sub_cat_id : sub_category_id && sub_category_id[0] !== undefined ? sub_category_id[0] : 0,
+        sub_cat_id : sub_category_id && sub_category_id[0] !== undefined  ? sub_category_id[0] : 0,
         model_desc:model_no[0],
         purchase_date:transaction_date[0],
         purchase_place:location[0],

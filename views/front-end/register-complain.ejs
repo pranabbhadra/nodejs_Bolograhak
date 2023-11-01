@@ -180,7 +180,7 @@ $(document).ready(function () {
    });
 
    $('#select_category').change(function() {
-      $('#select_sub_category').empty().append($('<option value="">Select Sub Category</option>'));
+      $('#select_sub_category').empty().append($('<option value="0">Select Sub Category</option>'));
       //$("#select_state").prop('required',false);
       $('#dynamic_sub_category_field_wrapper').hide();
       var category_id = $(this).val();
