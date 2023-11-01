@@ -4067,10 +4067,10 @@ router.get('/my-discussions', checkFrontEndLoggedIn, async (req, res) => {
 router.get('/register-complaint', checkFrontEndLoggedIn, async (req, res) => {
     const encodedUserData = req.cookies.user;
     const currentUserData = JSON.parse(encodedUserData);
-    const [globalPageMeta,PageMetaValues, getAllCompany] = await Promise.all([
+    const [globalPageMeta,PageMetaValues, getAllPremiumCompany] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
         comFunction2.getPageMetaValues('complaint'),
-        comFunction.getAllCompany()
+        comFunction2.getAllPremiumCompany()
     ]);
     try {
 
@@ -4080,7 +4080,7 @@ router.get('/register-complaint', checkFrontEndLoggedIn, async (req, res) => {
             currentUserData,
             globalPageMeta:globalPageMeta,
             meta_values_array:PageMetaValues,
-            AllCompany:getAllCompany
+            AllCompany:getAllPremiumCompany
         });
     } catch (err) {
         console.error(err);
