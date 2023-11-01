@@ -207,7 +207,12 @@
             <% if( menu_active_id == 'home'){ %>
               <span class="header-middle-menu-link mbl-hide-link">
                 <ul>
-                  <li><a href="#">Lodge A Complaint</a></li>
+                  
+                  <% if(currentUserData ){ %>
+                    <li><a href="#">Lodge A Complaint</a></li>
+                  <% } else { %>
+                    <li><a href="#" class=" login">Lodge A Complaint</a></li>
+                  <% } %>
                 </ul>
               </span>
               <!-- <span class="country-select">
@@ -229,7 +234,13 @@
               </div>
             </span>
             <% } %>
-            <span class="tab-hide-link"><a href="/register-complaint" class="single-link">Lodge A Complaint</a></span>
+            <% if(menu_active_id != 'register-complaint'){ %>
+              <% if(currentUserData   ){ %>
+                <span class="tab-hide-link"><a href="/register-complaint" class="single-link">Lodge A Complaint</a></span>
+              <% } else { %>
+                <span class="tab-hide-link"><a href="#" class="single-link login">Lodge A Complaint</a></span>
+              <% } %>
+            <% } %>
             <span class="mbl-hide-link always"><a href="/review" class="btn-default btn-outline-warning">All Reviews</a></span>
             <% if(menu_active_id!='business'){%>
             <span class="tab-hide-link"><a href="/business" class="btn-default btn-outline-warning">For Business</a></span>
@@ -271,7 +282,12 @@
                 <li><a href="/about-us">About Us</a></li>
                 <li><a href="/business">Business</a></li>
                 <li><a href="/contact-us">Contact</a></li>
-                <li class="tab-show-link"><a href="/register-complaint">Lodge A Complaint</a></li>
+                <% if(currentUserData){ %>
+                  <li class="tab-show-link"><a href="/register-complaint">Lodge A Complaint</a></li>
+                <% } else { %>
+                  <li class="tab-show-link"><a href="#" class=" login">Lodge A Complaint</a></li>
+                  
+                <% } %>
                 <li class="tab-show-link"><a href="/review" class="btn-default btn-outline-warning">All Reviews</a></li>
                 <li class="tab-show-link"><a href="/business" class="btn-default btn-outline-warning">For business</a></li>
                 <% if(currentUserData){ %>

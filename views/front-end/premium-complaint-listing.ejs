@@ -53,10 +53,10 @@
                                           <% } %>
                               </td>
                               <td style="text-align: center;">
+                                 <% if(compnaint.status != '1') { %>   
                                  <span class="action-select">
                                     <span class="action-change">Action</span> <a href="" class="action-arw"><i
-                                          class="fa-solid fa-angle-down"></i></a>
-                                    <% if(compnaint.status != '1') { %>      
+                                          class="fa-solid fa-angle-down"></i></a>   
                                     <div class="action-dropdown">
                                        <ul class="p-0 m-0">
                                           <li><a href="#" data-bs-toggle="modal"
@@ -72,8 +72,8 @@
                                           <!-- <li><a href="">Escalate to next level</a></li> -->
                                        </ul>
                                     </div>
-                                    <% } %>
                                  </span>
+                                 <% } %>
                               </td>
                            </tr>
                         <% }) %>

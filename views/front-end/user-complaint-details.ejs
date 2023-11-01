@@ -13,16 +13,16 @@
                <div class="company-user-complain-wrapper p-0" style="box-shadow: none;">
                   <div class="c-u-top-head">
                       <div class="c-u-top-head-part">
-                         <strong>Token ID:</strong> <%= ComplaintsByComplaintId.ticket_id %>
+                         <strong>Token ID:</strong> <br><%= ComplaintsByComplaintId.ticket_id %>
                       </div>
                       <div class="c-u-top-head-part">
-                         <strong>Date:</strong> 
+                         <strong>Date:</strong> <br>
                          <% const createdateString = ComplaintsByComplaintId.created_at; %>
                          <% const createdate = new Date(createdateString); %>
                          <%= createdate.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %>
                       </div>
                       <div class="c-u-top-head-part">
-                         <strong>Status:</strong> 
+                         <strong>Status:</strong> <br>
                            <% if(ComplaintsByComplaintId.status == '0') { %>
                               <span class="text-danger"><strong>Reopen</strong></span>
                            <% } else if(ComplaintsByComplaintId.status == '1') { %>
@@ -99,7 +99,7 @@
                      <% }) %>
                      
                   <% } %>
-                     <!-- <% if(ComplaintsByComplaintId && ComplaintsByComplaintId.user_complaint_rating) { %>
+                     <% if(ComplaintsByComplaintId && ComplaintsByComplaintId.user_complaint_rating) { %>
                         <div class="custom-text-label">
                            My Rating
                         </div>
@@ -121,8 +121,8 @@
                                  <span><%= ComplaintsByComplaintId.user_complaint_rating %>/5</span>
                            <% } %>
                         </div>
-                     <% } %> -->
-                     <% if(ComplaintsByComplaintId.queryResponseData.length > 0 ) { %>
+                     <% } %>
+                     <% if(ComplaintsByComplaintId.queryResponseData.length > 0 && ComplaintsByComplaintId.status != '1' ) { %>
                      <div class="custom-text-label">
                         Your Response
                        </div>
@@ -132,7 +132,9 @@
                             <input type="hidden" name="user_id"  value="<%= currentUserData.user_id %>" />
                             <input type="hidden" name="company_id" value="<%= ComplaintsByComplaintId.company_id %>" />
                             <input type="hidden" name="complaint_id" value="<%= ComplaintsByComplaintId.id %>">
-                            <button type="submit" class="btn-default btn-warning mt-4 submit_btn" id=""><img src="/front-end/images/send-icon.png" alt="icon"></button>
+                            <input type="hidden"  name="complaint_status" value="">
+                            <input type="hidden" id="complaint-query-level" name="complaint_level" value="<%= ComplaintsByComplaintId.level_id %>">
+                            <button type="submit" class="btn-default btn-warning mt-4 submit_btn" id="">Submit</button>
                         </form>
                         <div class="register-now frm-loading" style=" display: none; ">
                            <span class="indicator-progress">Please wait...

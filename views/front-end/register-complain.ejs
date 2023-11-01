@@ -259,7 +259,7 @@ $(document).ready(function () {
                $('#submit_btn').prop('disabled', false);
                $('.frm-loading').hide();
                setTimeout(function() {
-                  window.location.reload();
+                  window.location.href = "/my-complaints";
                }, 2000);
             } else {
                $('.response-message').text(data.message);

@@ -21,7 +21,7 @@
                                     <th scope="col">Category</th>
                                     <th scope="col">Product Name</th>
                                     <th scope="col">Status</th>
-                                    <!-- <th scope="col" style="width: 210px; text-align: center;">Action</th> -->
+                                    <th scope="col" style=" text-align: center;">Action</th>
                                  </tr>
                               </thead>
                               <tbody>
@@ -55,18 +55,20 @@
                                                    <span class="text-yellow"><strong>Ongoing</strong></span>
                                                    <% } %>
                                        </td>
-                                       <!-- <td style="text-align: center;">
+                                       <td style="text-align: center;">
+                                          <% if(compnaint.status=='1'){ %>
                                           <span class="action-select">
                                              <span class="action-change">Action</span> <a href="" class="action-arw"><i
                                                    class="fa-solid fa-angle-down"></i></a>
                                              <div class="action-dropdown">
                                                 <ul class="p-0 m-0">
-                                                   <li><a href="">Reopen</a></li>
+                                                   <!-- <li><a href="">Reopen</a></li> -->
                                                    <li><a href="#" class="respond-link" data-complaint-id="<%= compnaint.id %>" data-customer-id="<%= compnaint.user_id %>" data-bs-toggle="modal" data-bs-target="#giveratingmodal">Give your rating</a></li>
                                                 </ul>
                                              </div>
                                           </span>
-                                       </td> -->
+                                          <% } %>
+                                       </td>
                                     </tr>
                                  <% }) %>
                               </tbody>

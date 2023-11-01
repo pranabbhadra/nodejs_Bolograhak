@@ -5005,7 +5005,7 @@ exports.deleteCompanyComplaintLevel = async (req, res) => {
 }
 
 //Complaint Register
-exports.complaintRegister = async (req, res) => {
+exports.complaintRegister =  (req, res) => {
     //console.log('complaintRegister',req.body ); 
     const {company_id, user_id, category_id, sub_category_id, model_no, allTags, transaction_date, location, message } = req.body;
     //return false;
@@ -5028,18 +5028,21 @@ exports.complaintRegister = async (req, res) => {
         created_at:formattedDate,
     }
 
-    const [complaintEmailToCompany] = await Promise.all([
-        comFunction2.complaintEmailToCompany(company_id[0])
-    ]);
-    console.log(complaintEmailToCompany);
+    
+   // console.log(complaintEmailToCompany);
     const Query = `INSERT INTO complaint SET ?  `;
-    db.query(Query, data, (err, result)=>{
+    db.query(Query, data, async (err, result)=>{
         if (err) {
             return res.send({
                 status: 'not ok',
                 message: 'Something went wrong  '+err
             });
         } else {
+            console.log(company_id[0],user_id[0], uuid, result.insertId)
+            const [complaintEmailToCompany,complaintSuccessEmailToUser] = await Promise.all([
+                comFunction2.complaintEmailToCompany(company_id[0], uuid, result.insertId),
+                comFunction2.complaintSuccessEmailToUser(user_id[0], uuid, result.insertId)
+            ]);
             return res.send({
                 status: 'ok',
                 message: 'Complaint Registered  successfully !'
@@ -5054,12 +5057,14 @@ exports.companyQuery = async (req, res) => {
     //return false;
     const {company_id, user_id, complaint_id, message, complaint_status, complaint_level } = req.body;
     
-    await comFunction2.complaintCompanyResponseEmail(complaint_id)
 
     if (complaint_status == '1') {
-        const [updateComplaintStatus] = await Promise.all([
-            comFunction2.updateComplaintStatus(complaint_id, '1')
+        const [updateComplaintStatus, complaintCompanyResolvedEmail] = await Promise.all([
+            comFunction2.updateComplaintStatus(complaint_id, '1'),
+             comFunction2.complaintCompanyResolvedEmail(complaint_id)
         ]);
+    } else {
+        await comFunction2.complaintCompanyResponseEmail(complaint_id)
     }
     
     const currentDate = new Date();
@@ -5081,10 +5086,18 @@ exports.companyQuery = async (req, res) => {
                 message: 'Something went wrong  '+err
             });
         } else {
-            return res.send({
-                status: 'ok',
-                message: 'Complaint response send successfully !'
-            });
+            if (complaint_status == '1' ) {
+                return res.send({
+                    status: 'ok',
+                    message: 'Complaint resolved successfully !'
+                });
+            } else {
+                return res.send({
+                    status: 'ok',
+                    message: 'Complaint query send successfully !'
+                });
+            }
+            
         }
     })
 }
@@ -5269,24 +5282,30 @@ exports.createSurveyAnswer = async (req, res) => {
     })
 }
 
- cron.schedule('0 10 * * *',async () => {
+cron.schedule('0 * * * *', async () => {
     //console.log('running a task every minute');
-    const sql = `SELECT complaint.* , clm.emails, clm.eta_days, cc.category_name, subcat.category_name AS sub_category_name
+    const sql = `SELECT complaint.* ,u.email , clm.emails, clm.eta_days, cc.category_name, subcat.category_name AS sub_category_name
     FROM complaint 
     LEFT JOIN  complaint_level_management clm ON complaint.level_id = clm.level AND  complaint.company_id = clm.company_id
     LEFT JOIN complaint_category cc ON complaint.category_id = cc.id 
     LEFT JOIN complaint_category subcat ON complaint.sub_cat_id = subcat.id 
+    LEFT JOIN company_claim_request ccr ON ccr.company_id = complaint.company_id 
+    LEFT JOIN users u ON u.user_id = ccr.claimed_by
     WHERE complaint.status != '1' `
     const results =await query(sql);
     //console.log(results);
     if (results.length > 0) {
-        results.forEach((result)=>{
-            let emailArr = JSON.parse(result.emails); 
-            if (emailArr.length > 0) {
-                emailArr.forEach(async (email)=>{
-                    await comFunction2.complaintScheduleEmail(email,result);
-                })
+        results.forEach(async (result)=>{
+            let emailArr = []; 
+            if(result.emails){
+                emailArr = JSON.parse(result.emails); 
             }
+            
+                await comFunction2.complaintScheduleEmail(emailArr,result);
+
+                // emailArr.forEach(async (email)=>{
+                //     await comFunction2.complaintScheduleEmail(email,result);
+                // })
         })
     }
   });
