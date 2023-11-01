@@ -52,6 +52,14 @@ body.home header.main_header {
     transition: all ease-in-out 0.5s;
 }
 
+.header-right-content a.single-link {
+    color: #ffffff;
+}
+
+.header-right-content a.single-link:hover {
+    color: #FCCB06;
+}
+
 .header-right-content span {
     display: inline-block;
     position: relative;

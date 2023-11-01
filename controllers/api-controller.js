@@ -115,8 +115,17 @@ exports.complainCategory = (req, res) => {
 
 //-- complainSubCategory --//
 exports.complainSubCategory = (req, res) => {
-    //console.log('complainSubCategory',req.body);
+    console.log('complainSubCategory',req.body);
     //return false;
+    if (req.body.category_id == 0) {
+        return res.send(
+            {
+                status: 'err',
+                data: '',
+                message: 'Sub Category is not avilable for this company id'
+            }
+        )
+    }
     db.query('SELECT * FROM complaint_category WHERE  parent_id = ? ', [req.body.category_id], async (err, results) => {
         if (err) {
             return res.send(
@@ -128,11 +137,12 @@ exports.complainSubCategory = (req, res) => {
             )
         } else {
             if (results.length > 0) {
+
                 return res.send(
                     {
                         status: 'ok',
                         data: results,
-                        message: 'All category recived'
+                        message: 'All sub category recived'
                     }
                 )
             } else {
@@ -140,7 +150,7 @@ exports.complainSubCategory = (req, res) => {
                     {
                         status: 'err',
                         data: '',
-                        message: 'Category is not avilable for this company id'
+                        message: 'Sub Category is not avilable for this company id'
                     }
                 )
             }

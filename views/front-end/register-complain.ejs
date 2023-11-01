@@ -92,7 +92,7 @@
                         <div class="col-sm-12">
                            <div class="tag-label">Tags</div>
                            <div id="sendreviewtags">
-                           <input type="text" name="tags" placeholder="Add Complain" data-gtm-form-interact-field-id="0">
+                           <input type="text" name="tags" placeholder="Add Tags" data-gtm-form-interact-field-id="0">
                         </div>
                         </div>
                         <div class="col-sm-6">
@@ -135,7 +135,7 @@
 <script>
 $(document).ready(function () {
    $('#select_company').change(function() {
-      $('#select_category').empty().append($('<option value="">Select Category</option>'));
+      $('#select_category').empty().append($('<option value="">Select Category</option><option value="0">General</option>'));
       //$("#select_state").prop('required',false);
       $('#dynamic_state_field_wrapper').hide();
       var company_id = $(this).val();

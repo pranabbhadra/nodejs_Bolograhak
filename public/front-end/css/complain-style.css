@@ -189,6 +189,11 @@
     outline: none;
 }
 
+.complain-register-form #sendreviewtags > input {
+    background: rgb(242 242 242 / 16%);
+    color: #fff;
+}
+
 @media only screen and (max-width: 575.98px) {
 #sendreviewtags {
     margin-bottom: 20px;
