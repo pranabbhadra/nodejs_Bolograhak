@@ -824,6 +824,24 @@
 		padding: 30px 20px;
 	}
 
+	.survey-details-with-date {
+		display: block;
+		margin-bottom: 20px;
+	}
+
+	.survey-details-with-date h2 {
+		margin-bottom: 25px;
+		text-align: center;
+	}
+
+	.survey-details-with-date .all-inputs {
+		justify-content: center;
+	}
+
+	.survey-update-message {
+		text-align: center;
+	}
+
 }
 
 @media only screen and (max-width:840.98px) {
@@ -2311,6 +2329,14 @@
 
 	.survey-rating-part + .survey-rating-part {
 		margin: 20px 0 0 0;
+	}
+
+	.survey-details-with-date .all-inputs {
+		display: block;
+	}
+
+	.survey-details-with-date .all-inputs .custom-form {
+		margin-bottom: 20px;
 	}
 }
 

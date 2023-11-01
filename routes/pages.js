@@ -1142,11 +1142,12 @@ router.get('/survey-submissions/:slug/:survey_id', checkClientClaimedCompany, as
     const companyId = comp_res.ID;
     const survey_unique_id = req.params.survey_id;
 
-    const [globalPageMeta, company, CompanySurveyDetails, companySurveySubmissions ] = await Promise.all([
+    const [globalPageMeta, company, CompanySurveyDetails, companySurveySubmissions, AllRatingTags ] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
         comFunction.getCompany(companyId),
         comFunction.getCompanySurveyDetailsBySurveyID(survey_unique_id),
         comFunction.getCompanySurveySubmissions(companyId, survey_unique_id),
+        comFunction.getAllRatingTags(),
     ]);
 
     CompanySurveyDetails.forEach(item => {
@@ -1164,13 +1165,15 @@ router.get('/survey-submissions/:slug/:survey_id', checkClientClaimedCompany, as
         // res.json({
         //     company,
         //     CompanySurveyDetails,
-        //     companySurveySubmissions
+        //     companySurveySubmissions,
+        //     AllRatingTags
         // });
         res.render('front-end/survey-submissions', {
             menu_active_id: 'survey-submissions',
             page_title: 'Survey Submissions',
             currentUserData,
             company,
+            AllRatingTags,
             CompanySurveyDetails,
             companySurveySubmissions,
             globalPageMeta:globalPageMeta

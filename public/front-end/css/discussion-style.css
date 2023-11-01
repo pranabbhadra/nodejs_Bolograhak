@@ -444,11 +444,65 @@
     margin-top: 12px;
 }
 
-.submissions-result-wrapper .radio-questions ol li,
-.submissions-result-wrapper .radio-questions ul li {
+.submissions-result-wrapper .radio-questions ul li,
+.submissions-result-wrapper .radio-questions ol li {
+    position: relative;
+}
+
+.submissions-result-wrapper .radio-questions ol li span.suvey-progress-value,
+.submissions-result-wrapper .radio-questions ul li span.suvey-progress-value {
     background: #f4a835;
     padding: 5px 10px;
     border-radius: 5px;
+    position: absolute;
+    left: -3px;
+    height: 100%;
+}
+
+.submissions-result-wrapper .radio-questions ol.survey-rating-emoji-list {
+    padding-left: 10px;
+}
+
+.submissions-result-wrapper .radio-questions ol.survey-rating-emoji-list li {
+    list-style-type: none;
+    background-repeat: no-repeat;
+    background-position: left top;
+    background-size: 25px;
+    padding-left: 35px;
+}
+
+.submissions-result-wrapper .radio-questions ol.survey-rating-emoji-list li span.suvey-progress-value {
+    left: 32px;
+}
+
+.survey-details-with-date {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.survey-details-with-date .all-inputs {
+    display: flex;
+    gap: 20px;
+}
+
+.survey-details-with-date .all-inputs .custom-form {
+    margin-bottom: 0;
+}
+
+.survey-details-with-date .custom-form .form-control,
+.survey-details-with-date .custom-form .form-select {
+    padding-right: 18px;
+}
+
+.survey-details-with-date .all-inputs .btn-default {
+    min-width: 100px;
+}
+
+.survey-update-message {
+    margin-top: 6px;
+    color: #06852b;
+    font-size: 14px;
 }
 
 /*=============== Discussion Content End ==============*/

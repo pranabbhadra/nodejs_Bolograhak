@@ -24,10 +24,16 @@
                             %>
                             <form method="post" action="" id="survey_update_form" name="survey_update_form">
                                 <div class="all-inputs">
+                                    <div class="custom-form">
+                                    <label><span style="background-color: #ffffff;">Started at:</span> </label>
                                     <input type="date" class="form-control" name="created_at" value="<%- formatted_created_at_Date %>" readonly>
+                                    </div>
+                                    <div class="custom-form">
+                                    <label><span style="background-color: #ffffff;">Expire at:</span></label>
                                     <input type="date" class="form-control" name="expire_at" value="<%- formatted_expire_at_Date %>">
+                                    </div>
                                     <input type="hidden" name="survey_id" value="<%- CompanySurveyDetails[0].id %>">
-                                    <input type="submit" name="update_survey" class="btn btn-primary" value="Update">
+                                    <input type="submit" name="update_survey" class="btn-default btn-dark" value="Update">
                                 </div>
                             </form>
                             <p class="survey-update-message" style="display: none;"></p>
@@ -36,30 +42,77 @@
                     <div class="submissions-result-wrapper">
                         <p>Total submissions: <%- companySurveySubmissions.length %></p>
                         <% if(companySurveySubmissions.length > 0){ %>
-                        <div class="radio-questions">
-                        <% CompanySurveyDetails[0].questions.forEach((qun, index)=>{  %>
-                            <% if( qun.type == 'type_radio' ){ %>
-                                <h5><%- qun.question %></h5>
-                                <% var question_name = 'question_'+(index+1); %>
-                                <ol>
-                                    <% qun.options.forEach((opt)=>{  %>
-                                        <%
-                                            let opt_count = 0;
-                                            companySurveySubmissions.forEach(submission => {
-                                                if (submission.answer && submission.answer[question_name]) {
-                                                  if ( submission.answer[question_name] === opt) {
-                                                    opt_count++;
-                                                  }
-                                                }
-                                            });
-                                            var opt_percentage = (opt_count/companySurveySubmissions.length)*100;
-                                        %>
-                                        <li><%- opt %> : <%- opt_percentage.toFixed(2) %>%</li>
-                                    <% }) %>
-                                </ol>
-                            <% } %>
-                        <% }) %>
-                        </div>
+                            <div class="radio-questions">
+                            <% CompanySurveyDetails[0].questions.forEach((qun, index)=>{  %>
+                                <% if( qun.type == 'type_radio' ){ %>
+                                    <h5><%- qun.question %></h5>
+                                    <% var question_name = 'question_'+(index+1); %>
+                                    <ol>
+                                        <% qun.options.forEach((opt)=>{  %>
+                                            <%
+                                                let opt_count = 0;
+                                                companySurveySubmissions.forEach(submission => {
+                                                    if (submission.answer && submission.answer[question_name]) {
+                                                    if ( submission.answer[question_name] === opt) {
+                                                        opt_count++;
+                                                    }
+                                                    }
+                                                });
+                                                var opt_percentage = (opt_count/companySurveySubmissions.length)*100;
+                                            %>
+                                            <li><span class="position-relative" style="z-index: 9;"><%- opt %> : <%- opt_percentage.toFixed(2) %>%</span> <span class="suvey-progress-value" style="width:<%- opt_percentage.toFixed(2) %>%"></span></li>
+                                        <% }) %>
+                                    </ol>
+                                <% } %>
+                                <% if( qun.type == 'type_checkbox' ){ %>
+                                    <h5><%- qun.question %></h5>
+                                    <%  %>
+                                    <ol>
+                                        <% qun.options.forEach((opt, option_index)=>{  %>
+                                            <%
+                                                var question_name = 'question_'+(index+1)+'_'+(option_index+1);
+                                                let opt_count = 0;
+                                                companySurveySubmissions.forEach(submission => {
+                                                    if (submission.answer && submission.answer[question_name]) {
+                                                        if ( submission.answer[question_name] === opt) {
+                                                            opt_count++;
+                                                        }
+                                                    }
+                                                });
+                                                var opt_percentage = (opt_count/companySurveySubmissions.length)*100;
+                                            %>
+                                            <li><span class="position-relative" style="z-index: 9;"><%- opt %> : <%- opt_percentage.toFixed(2) %>%</span> <span class="suvey-progress-value" style="width:<%- opt_percentage.toFixed(2) %>%"></span></li>
+                                        <% }) %>
+                                    </ol>
+                                <% } %>
+                                <% if( qun.type == 'type_ratings' ){ %>
+                                    <h5><%- qun.question %></h5>
+                                    <%  %>
+                                    <ol class="survey-rating-emoji-list">
+                                        <% for (let i = 0.5; i <= 5; i += 0.5) {  %>
+                                            <%
+                                                var question_name = 'question_'+(index+1);
+                                                let opt_count = 0;
+                                                companySurveySubmissions.forEach(submission => {
+                                                    if (submission.answer && submission.answer[question_name]) {
+                                                        if ( parseInt(submission.answer[question_name]) === i) {
+                                                            opt_count++;
+                                                        }
+                                                    }
+                                                });
+                                                var opt_percentage = (opt_count/companySurveySubmissions.length)*100;
+                                                AllRatingTags.forEach(tag => {
+                                                    if (tag.review_rating_value == i) {
+                                                        rating_image = tag.rating_image;
+                                                    }
+                                                });
+                                            %>
+                                            <li style="background-image: url(/<%- rating_image %>);"><span class="position-relative" style="z-index: 9;"><%- i %> : <%- opt_percentage.toFixed(2) %>%</span><span class="suvey-progress-value" style="width:<%- opt_percentage.toFixed(2) %>%"></span></li>
+                                        <% } %>
+                                    </ol>
+                                <% } %>
+                            <% }) %>
+                            </div>
                         <% } %>
                     </div>
                     <div class="resp-tabs-container">
