@@ -17,6 +17,7 @@ const app = express();
 const path = require('path');
 const crypto = require('crypto');
 const { v4: uuidv4 } = require('uuid');
+var cron = require('node-cron');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -3365,7 +3366,61 @@ exports.updateTermsOfService = (req, res) => {
 
     
 }
-
+// Update complaint
+exports.updateComplaint = async (req, res) => {
+     //console.log('updateComplaint', req.body);
+     //console.log('updateComplaint', req.files);
+    const form_data = req.body;
+    const { common_id, title, meta_title, meta_desc, meta_keyword } = req.body;
+    const { banner_img_1, banner_img_2, banner_img_3, banner_img_4, banner_img_5, banner_img_6, banner_img_7, banner_img_8 } = req.files;
+    const file_meta_value = [banner_img_1, banner_img_2, banner_img_3, banner_img_4, banner_img_5, banner_img_6, banner_img_7, banner_img_8];
+    const file_meta_key = ['banner_img_1', 'banner_img_2', 'banner_img_3', 'banner_img_4', 'banner_img_5', 'banner_img_6', 'banner_img_7', 'banner_img_8'];
+    await file_meta_key.forEach((item, key) => {
+        //console.log(item, key);
+        if (req.files[item]) {
+            //console.log(file_meta_value[key][0].filename);
+            const check_sql = `SELECT * FROM page_meta WHERE page_id = ? AND page_meta_key = ?`;
+            const check_data = [common_id, item];
+            db.query(check_sql, check_data, (check_err, check_result) => {
+                if (check_err) {
+                    return res.send(
+                        {
+                            status: 'err',
+                            data: '',
+                            message: 'An error occurred while processing your request'
+                        }
+                    )
+                } else {
+                    if (check_result.length > 0) {
+                        const update_sql = `UPDATE page_meta SET page_meta_value = ? WHERE page_id = ? AND page_meta_key = ?`;
+                        const update_data = [file_meta_value[key][0].filename, common_id, item];
+                        db.query(update_sql, update_data, (update_err, update_result) => {
+                            if (update_err) throw update_err;
+                        })
+                    } else {
+                        const insert_sql = `INSERT INTO page_meta (page_id , page_meta_key, page_meta_value) VALUES (?,?,?)`;
+                        const insert_data = [common_id, item, file_meta_value[key][0].filename];
+                        db.query(insert_sql, insert_data, (insert_err, insert_result) => {
+                            if (insert_err) throw insert_err;
+                        })
+                    }
+                }
+            });
+        }
+    });
+    const title_sql = `UPDATE page_info SET title = ?, meta_title = ?, meta_desc = ?, meta_keyword = ? WHERE id  = ?`;
+    const title_data = [title, meta_title, meta_desc, meta_keyword, common_id];
+    //console.log(title_data);
+    db.query(title_sql, title_data, (title_err, title_result) => {
+        return res.send(
+            {
+                status: 'ok',
+                data: '',
+                message: 'Updated successfully'
+            }
+        )
+    })
+}
 // Frontend Update Myprofile page
 exports.updateMyProfile = (req, res) => {
     // console.log('edit profile', req.body)
@@ -4951,7 +5006,7 @@ exports.deleteCompanyComplaintLevel = async (req, res) => {
 
 //Complaint Register
 exports.complaintRegister = async (req, res) => {
-    console.log('complaintRegister',req.body ); 
+    //console.log('complaintRegister',req.body ); 
     const {company_id, user_id, category_id, sub_category_id, model_no, allTags, transaction_date, location, message } = req.body;
     //return false;
     const uuid = uuidv4();  
@@ -4972,7 +5027,12 @@ exports.complaintRegister = async (req, res) => {
         status:'2',
         created_at:formattedDate,
     }
-     const Query = `INSERT INTO complaint SET ?  `;
+
+    const [complaintEmailToCompany] = await Promise.all([
+        comFunction2.complaintEmailToCompany(company_id[0])
+    ]);
+    console.log(complaintEmailToCompany);
+    const Query = `INSERT INTO complaint SET ?  `;
     db.query(Query, data, (err, result)=>{
         if (err) {
             return res.send({
@@ -4992,7 +5052,15 @@ exports.complaintRegister = async (req, res) => {
 exports.companyQuery = async (req, res) => {
     console.log('companyQuery',req.body ); 
     //return false;
-    const {company_id, user_id, complaint_id, message } = req.body;
+    const {company_id, user_id, complaint_id, message, complaint_status, complaint_level } = req.body;
+    
+    await comFunction2.complaintCompanyResponseEmail(complaint_id)
+
+    if (complaint_status == '1') {
+        const [updateComplaintStatus] = await Promise.all([
+            comFunction2.updateComplaintStatus(complaint_id, '1')
+        ]);
+    }
     
     const currentDate = new Date();
     const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
@@ -5001,7 +5069,94 @@ exports.companyQuery = async (req, res) => {
         company_id:company_id,
         complaint_id :complaint_id,
         query:message,
-        response : ' ',
+        response : '',
+        created_at:formattedDate,
+        level_id:complaint_level
+    }
+     const Query = `INSERT INTO complaint_query_response SET ?  `;
+    db.query(Query, data, (err, result)=>{
+        if (err) {
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong  '+err
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Complaint response send successfully !'
+            });
+        }
+    })
+}
+
+//user Complaint Rating
+exports.userComplaintRating = async (req, res) => {
+    //console.log('userComplaintRating',req.body ); 
+    //return false;
+    const { user_id, complaint_id, rating } = req.body;
+    
+    const data = {
+        user_id:user_id,
+        complaint_id:complaint_id,
+        rating:rating,
+    }
+    const checkQuery = `SELECT id FROM complaint_rating WHERE complaint_id = '${complaint_id}' AND user_id = '${user_id}' `;
+    db.query(checkQuery, (checkErr, checkResult)=>{
+        if(checkErr){
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong  '+checkErr
+            });
+        }
+        if (checkResult.length > 0) {
+            const updateQuery = `UPDATE complaint_rating SET rating='${rating}' WHERE complaint_id = '${complaint_id}' AND user_id = '${user_id}' `;
+            db.query(updateQuery, (updateErr, updateResult)=>{
+                if (updateErr) {
+                    return res.send({
+                        status: 'not ok',
+                        message: 'Something went wrong  '+updateErr
+                    });
+                } else {
+                    return res.send({
+                        status: 'ok',
+                        message: 'Complaint rating updated successfully !'
+                    });
+                }
+            })
+        } else {
+            const Query = `INSERT INTO complaint_rating SET ?  `;
+            db.query(Query, data, (err, result)=>{
+                if (err) {
+                    return res.send({
+                        status: 'not ok',
+                        message: 'Something went wrong  '+err
+                    });
+                } else {
+                    return res.send({
+                        status: 'ok',
+                        message: 'Complaint rating submitted successfully !'
+                    });
+                }
+            })
+        }
+    })
+    
+}
+
+//Insert user Complaint Response  to company
+exports.userComplaintResponse = async (req, res) => {
+    console.log('userComplaintResponse',req.body ); 
+    //return false;
+    const {company_id, user_id, complaint_id, user_response } = req.body;
+    
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+    const data = {
+        user_id:user_id,
+        company_id:company_id,
+        complaint_id :complaint_id,
+        query:'',
+        response : user_response,
         created_at:formattedDate,
     }
      const Query = `INSERT INTO complaint_query_response SET ?  `;
@@ -5113,3 +5268,25 @@ exports.createSurveyAnswer = async (req, res) => {
         }
     })
 }
+
+ cron.schedule('0 10 * * *',async () => {
+    //console.log('running a task every minute');
+    const sql = `SELECT complaint.* , clm.emails, clm.eta_days, cc.category_name, subcat.category_name AS sub_category_name
+    FROM complaint 
+    LEFT JOIN  complaint_level_management clm ON complaint.level_id = clm.level AND  complaint.company_id = clm.company_id
+    LEFT JOIN complaint_category cc ON complaint.category_id = cc.id 
+    LEFT JOIN complaint_category subcat ON complaint.sub_cat_id = subcat.id 
+    WHERE complaint.status != '1' `
+    const results =await query(sql);
+    //console.log(results);
+    if (results.length > 0) {
+        results.forEach((result)=>{
+            let emailArr = JSON.parse(result.emails); 
+            if (emailArr.length > 0) {
+                emailArr.forEach(async (email)=>{
+                    await comFunction2.complaintScheduleEmail(email,result);
+                })
+            }
+        })
+    }
+  });

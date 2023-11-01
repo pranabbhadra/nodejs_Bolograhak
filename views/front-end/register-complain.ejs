@@ -5,43 +5,43 @@
 <section class="main-content bottom-main-content">
     <div class="complain-content">
        <div class="container">
-          <h2 class="inner-main-head text-center mb-4">Fill out the form to register a complain</h2>
+          <h2 class="inner-main-head text-center mb-4">Fill out the form to register a complaint</h2>
           <div class="row">
             <div class="col-md-6 my-auto">
                <div class="about-left-slider my-3">
                   <div class="about-50-right">
                      <div class="gr-slider3">
                         <div class="item">
-                           <img src="/1691685993263-12.png" alt="img" width="298" height="434">
+                           <img src="/<%= meta_values_array.banner_img_1 %>" alt="img" width="298" height="434">
                         </div>
                         <div class="item">
-                           <img src="/1691685993261-11.png" alt="img" width="298" height="434">
+                           <img src="/<%= meta_values_array.banner_img_2 %>" alt="img" width="298" height="434">
                         </div>
                      </div>
                      <div class="gr-slider4">
                         <div class="item">
-                           <img src="/1691827002816-slider-small-22.png" alt="img" width="252" height="250">
+                           <img src="/<%= meta_values_array.banner_img_3 %>" alt="img" width="252" height="250">
                         </div>
                         <div class="item">
-                           <img src="/1691685993267-13.png" alt="img" width="252" height="250">
+                           <img src="/<%= meta_values_array.banner_img_4 %>" alt="img" width="252" height="250">
                         </div>
                      </div>
                   </div>
                   <div class="about-50-left">
                      <div class="gr-slider1">
                         <div class="item">
-                           <img src="/1692166188624-1691685839562-81.png" alt="img" width="194" height="228">
+                           <img src="/<%= meta_values_array.banner_img_5 %>" alt="img" width="194" height="228">
                         </div>
                         <div class="item">
-                           <img src="/1691685839561-7.png" alt="img" width="194" height="228">
+                           <img src="/<%= meta_values_array.banner_img_6 %>" alt="img" width="194" height="228">
                         </div>
                      </div>
                      <div class="gr-slider2">
                         <div class="item">
-                           <img src="/1691685993258-10.png" alt="img" width="212" height="312">
+                           <img src="/<%= meta_values_array.banner_img_7 %>" alt="img" width="212" height="312">
                         </div>
                         <div class="item">
-                           <img src="/1691685993257-9.png" alt="img" width="212" height="312">
+                           <img src="/<%= meta_values_array.banner_img_8 %>" alt="img" width="212" height="312">
                         </div>
                      </div>
                   </div>
@@ -107,7 +107,7 @@
                         </div>
                         <div class="col-sm-12">
                            <div class="custom-form">
-                              <textarea name="message" id="" class="form-control" placeholder="Your Message"></textarea>
+                              <textarea name="message" id="" class="form-control" placeholder="Your Message" required></textarea>
                            </div>
                         </div>
                      </div>
@@ -135,7 +135,7 @@
 <script>
 $(document).ready(function () {
    $('#select_company').change(function() {
-      //$('#select_category').empty();
+      $('#select_category').empty().append($('<option value="">Select Category</option>'));
       //$("#select_state").prop('required',false);
       $('#dynamic_state_field_wrapper').hide();
       var company_id = $(this).val();
@@ -151,6 +151,7 @@ $(document).ready(function () {
                if (data.status == 'ok') {
                   $('#dynamic_state_field_wrapper').show();
                   //$("#select_state").prop('required',true);
+                  //$('#select_category').empty().append($('<option value="">Select Category</option>'));
                   $.each(data.data, function (i, item) {
                         $('#select_category').append($('<option>', { 
                            value: item.id,
@@ -179,7 +180,7 @@ $(document).ready(function () {
    });
 
    $('#select_category').change(function() {
-      $('#select_sub_category').empty();
+      $('#select_sub_category').empty().append($('<option value="">Select Sub Category</option>'));
       //$("#select_state").prop('required',false);
       $('#dynamic_sub_category_field_wrapper').hide();
       var category_id = $(this).val();

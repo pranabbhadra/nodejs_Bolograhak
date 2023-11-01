@@ -14,7 +14,7 @@
           }
            %>
           <% tags.forEach((tag) =>{ %> 
-          <a href="#" class="btn-default btn-warning dis-details-top-btn"><%= tag %></a>
+          <a href="#" class="btn-default btn-warning dis-details-top-btn my-1"><%= tag %></a>
           <% }) %>
           <div class="discussion-details-left">
             <div class="contribute-discussion">
@@ -27,22 +27,36 @@
                      comments = JSON.parse(AllCommentByDiscusId[0].commentData)
                   }
                   %>
+                <div class="user-comment-control-wrapper">
                <% comments.forEach((comment) =>{ %> 
                <% if(comment.comment) { %>
+                <div class="user-repeat-main">
                   <div class="user-comment-repeat">
-                     <div  class="discussion-user-img" title="<%= comment && comment.comment_first_name ? comment.comment_first_name : '' %> <%= comment && comment.comment_first_name ? comment.comment_last_name : '' %>">
-                        <!-- <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60"> -->
-                        <h4><%= comment && comment.comment_first_name ? comment.comment_first_name.charAt(0).toUpperCase() : '' %></h4>
+                    <% if(comment.profile_pic){ %>
+                      <div  class="discussion-user-img" title="<%= comment && comment.comment_first_name ? comment.comment_first_name : '' %> <%= comment && comment.comment_first_name ? comment.comment_last_name : '' %>">
+                        <img src="/<%= comment.profile_pic %>" alt="img" width="60" height="60">
                      </div>
+                    <% } else{ %>
+                        <div  class="discussion-user-img" title="<%= comment && comment.comment_first_name ? comment.comment_first_name : '' %> <%= comment && comment.comment_first_name ? comment.comment_last_name : '' %>">
+                          <!-- <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60"> -->
+                          <h4><%= comment && comment.comment_first_name ? comment.comment_first_name.charAt(0).toUpperCase() : '' %></h4>
+                       </div>
+                    <% } %>
+                     
                      <% const date = new Date(comment.created_at); %>
                      <div class="discussion-details-user-info">
-                        <h4><%= AllCommentByDiscusId[0].topic.charAt(0).toUpperCase() + AllCommentByDiscusId[0].topic.slice(1)%> <small><%= date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) %> </small></h4>
-                        
-                        <p><%= comment.comment %></p>
+                        <h4><small class="m-0" style="display: inline-block; vertical-align: middle;">
+                          <% if(AllCommentByDiscusId[0].user_id == comment.user_id ) { %>
+                          <span class="badge bg-warning text-dark">Author</span>
+                          <% } %>
+                        </small> <%= comment && comment.comment_first_name ? comment.comment_first_name : '' %> <%= comment && comment.comment_first_name ? comment.comment_last_name : '' %> <small><%= date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) %> </small></h4>
                      </div>
                   </div>
+                  <p><%= comment.comment %></p>
+                </div>
                <% } %>
                <% }) %>
+              </div>
                <div class="write-discussion-field">
                   <form id="comment_form">
                      <textarea rows="5" class="form-control" placeholder="Write a comment" id="discussiontext" name="comment" required></textarea>

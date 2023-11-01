@@ -230,6 +230,19 @@ router.post('/update-disclaimer', authController.updateDisclaimer);
 //Update terms-of-service
 router.post('/update-terms-of-service', authController.updateTermsOfService);
 
+//Update Complaint register Page
+router.post('/update-complaint', upload.fields([
+    { name: 'banner_img_1', maxCount: 1 },
+    { name: 'banner_img_2', maxCount: 1 },
+    { name: 'banner_img_3', maxCount: 1 },
+    { name: 'banner_img_4', maxCount: 1 },
+    { name: 'banner_img_5', maxCount: 1 },
+    { name: 'banner_img_6', maxCount: 1 },
+    { name: 'banner_img_7', maxCount: 1 },
+    { name: 'banner_img_8', maxCount: 1 },
+
+]), authController.updateComplaint);
+
 //Update My Profile
 router.post('/update-myprofile',upload.single('profile_pic'), authController.updateMyProfile);
 
@@ -320,8 +333,11 @@ router.post('/complaint-register', authController.complaintRegister);
 // company-query
 router.post('/company-query', authController.companyQuery);
 
-// // company-response
-// router.post('/company-response', authController.companyResponse);
+// user-complaint-rating
+router.post('/user-complaint-rating', authController.userComplaintRating);
+
+// user-complaint-response
+router.post('/user_complaint_response', authController.userComplaintResponse);
 
 //Create Survey
 router.post('/create-survey', authController.createSurvey);
