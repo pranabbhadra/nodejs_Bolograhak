@@ -2123,7 +2123,7 @@ async function getAllLatestDiscussion(limit) {
 }
 
 //Function to get popular discussion from discussions table
-async function getAllPopularDiscussion(limit) {
+async function getAllPopularDiscussion() {
   const sql = `
   SELECT
     discussions.*,
@@ -2143,8 +2143,8 @@ async function getAllPopularDiscussion(limit) {
     FROM discussions_user_view
     GROUP BY discussion_id
   ) views ON discussions.id = views.discussion_id
-  ORDER BY total_comments DESC
-  LIMIT ${limit};
+  ORDER BY total_comments DESC;
+  ;
   `;
   try{
     const results = await query(sql);
@@ -2199,7 +2199,7 @@ async function getAllViewedDiscussion() {
 }
 
 //Function to get latest discussion from discussions table
-async function getAllDiscussions(limit) {
+async function getAllDiscussions() {
   const sql = `
   SELECT
     discussions.*,
@@ -2220,7 +2220,7 @@ async function getAllDiscussions(limit) {
     GROUP BY discussion_id
   ) views ON discussions.id = views.discussion_id
   ORDER BY discussions.id DESC
-  LIMIT ${limit}`;
+  `;
   try{
     const results = await query(sql);
     if (results.length>0) {
