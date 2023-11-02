@@ -993,10 +993,6 @@ router.get('/:slug/survey/:id', checkCookieValue, async (req, res) => {
         ]);        
         if(companySurveyQuestions.length>0){
             // res.json({
-            //     menu_active_id: 'survey',
-            //     page_title: 'Survey',
-            //     currentUserData,
-            //     globalPageMeta:globalPageMeta,
             //     company:company,
             //     companySurveyQuestions,
             //     AllRatingTags,

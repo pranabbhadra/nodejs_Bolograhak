@@ -60,7 +60,7 @@
                                                 });
                                                 var opt_percentage = (opt_count/companySurveySubmissions.length)*100;
                                             %>
-                                            <li><span class="position-relative" style="z-index: 9;"><%- opt %> : <%- opt_percentage.toFixed(2) %>%</span> <span class="suvey-progress-value" style="width:<%- opt_percentage.toFixed(2) %>%"></span></li>
+                                            <li><span class="position-relative" style="z-index: 9;"><%- opt %> : <%- opt_count %>/<%- companySurveySubmissions.length %></span> <span class="suvey-progress-value" style="width:<%- opt_percentage.toFixed(2) %>%"></span></li>
                                         <% }) %>
                                     </ol>
                                 <% } %>
@@ -81,7 +81,7 @@
                                                 });
                                                 var opt_percentage = (opt_count/companySurveySubmissions.length)*100;
                                             %>
-                                            <li><span class="position-relative" style="z-index: 9;"><%- opt %> : <%- opt_percentage.toFixed(2) %>%</span> <span class="suvey-progress-value" style="width:<%- opt_percentage.toFixed(2) %>%"></span></li>
+                                            <li><span class="position-relative" style="z-index: 9;"><%- opt %> : <%- opt_count %>/<%- companySurveySubmissions.length %></span> <span class="suvey-progress-value" style="width:<%- opt_percentage.toFixed(2) %>%"></span></li>
                                         <% }) %>
                                     </ol>
                                 <% } %>
@@ -89,13 +89,15 @@
                                     <h5><%- qun.question %></h5>
                                     <%  %>
                                     <ol class="survey-rating-emoji-list">
-                                        <% for (let i = 0.5; i <= 5; i += 0.5) {  %>
+                                        <% 
+                                        let counter = 1;
+                                        for (let i = 0.5; i <= 5; i += 0.5) {  %>
                                             <%
                                                 var question_name = 'question_'+(index+1);
                                                 let opt_count = 0;
                                                 companySurveySubmissions.forEach(submission => {
                                                     if (submission.answer && submission.answer[question_name]) {
-                                                        if ( parseInt(submission.answer[question_name]) === i) {
+                                                        if ( submission.answer[question_name] == i ) {
                                                             opt_count++;
                                                         }
                                                     }
@@ -107,8 +109,8 @@
                                                     }
                                                 });
                                             %>
-                                            <li style="background-image: url(/<%- rating_image %>);"><span class="position-relative" style="z-index: 9;"><%- i %> : <%- opt_percentage.toFixed(2) %>%</span><span class="suvey-progress-value" style="width:<%- opt_percentage.toFixed(2) %>%"></span></li>
-                                        <% } %>
+                                            <li style="background-image: url(/<%- rating_image %>);"><span class="position-relative" style="z-index: 9;"><%- i %> : <%- opt_count %>/<%- companySurveySubmissions.length %></span><span class="suvey-progress-value" style="width:<%- opt_percentage.toFixed(2) %>%"></span></li>
+                                        <% counter++; } %>
                                     </ol>
                                 <% } %>
                             <% }) %>

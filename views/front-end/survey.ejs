@@ -205,8 +205,9 @@ $('#survey_form').submit( function( event ) {
             $('.poll-create-message').text(data.message);
             $('.poll-create-message').show();
             $('.btn-survey-default').prop("disabled", false);
+            var company_url = '/company/<%- company.slug %>';
             setTimeout( function() {
-               location.reload(true);
+               window.location.href = company_url;
             }, 3000);
          } else {
             $('.frm-loading').hide();
