@@ -2480,20 +2480,21 @@ router.get('/reviewReplies/:review_id', verifyToken, async (req, res) => {
 })
 
 
-router.get('/discussionlisting', verifyToken, async (req, res) => {
+router.get('/discussionlisting/:limit', verifyToken, async (req, res) => {
     try {
-        const [getAllLatestDiscussion, getAllPopularDiscussion, getAllDiscussions,getAllViewedDiscussion] = await Promise.all([
-            comFunction2.getAllLatestDiscussion(20),
-            comFunction2.getAllPopularDiscussion(20),
-            comFunction2.getAllDiscussions(),
-            comFunction2.getAllViewedDiscussion(),
+        const limit = req.params.limit;
+        const [getAllLatestDiscussion, getAllPopularDiscussion, getAllDiscussions] = await Promise.all([
+            comFunction2.getAllLatestDiscussion(limit),
+            comFunction2.getAllPopularDiscussion(limit),
+            comFunction2.getAllDiscussions(limit),
+            //comFunction2.getAllViewedDiscussion(),
         ]);
         console.log(getAllLatestDiscussion);
         res.json({
             AllLatestDiscussion: getAllLatestDiscussion,
             AllPopularDiscussion: getAllPopularDiscussion,
             AllDiscussions: getAllDiscussions,
-            AllViewedDiscussion: getAllViewedDiscussion
+            //AllViewedDiscussion: getAllViewedDiscussion
         });
     }
     catch (error) {
@@ -2506,10 +2507,13 @@ router.get('/discussionlisting', verifyToken, async (req, res) => {
 
 router.get('/discussiondetails/:discussion_id', verifyToken, async (req, res) => {
     const discussion_id = req.params.discussion_id;
+    //const ip_address = req.body.ip_address;
+    const ip_address = requestIp.getClientIp(req);
+    const limit = req.body.limit;
     const [insertDiscussionResponse, getAllCommentByDiscusId, getAllDiscussions] = await Promise.all([
-        comFunction2.insertDiscussionResponse(discussion_id, requestIp.getClientIp(req)),
+        comFunction2.insertDiscussionResponse(discussion_id, ip_address),
         comFunction.getAllCommentByDiscusId(discussion_id),
-        comFunction2.getAllDiscussions(),
+        comFunction2.getAllDiscussions(limit),
     ]);
     try {
 

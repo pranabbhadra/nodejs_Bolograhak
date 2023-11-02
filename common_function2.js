@@ -2123,7 +2123,7 @@ async function getAllLatestDiscussion(limit) {
 }
 
 //Function to get popular discussion from discussions table
-async function getAllPopularDiscussion() {
+async function getAllPopularDiscussion(limit) {
   const sql = `
   SELECT
     discussions.*,
@@ -2143,8 +2143,8 @@ async function getAllPopularDiscussion() {
     FROM discussions_user_view
     GROUP BY discussion_id
   ) views ON discussions.id = views.discussion_id
-  ORDER BY total_comments DESC;
-  ;
+  ORDER BY total_comments DESC
+  LIMIT ${limit};
   `;
   try{
     const results = await query(sql);
@@ -2199,7 +2199,7 @@ async function getAllViewedDiscussion() {
 }
 
 //Function to get latest discussion from discussions table
-async function getAllDiscussions() {
+async function getAllDiscussions(limit) {
   const sql = `
   SELECT
     discussions.*,
@@ -2220,7 +2220,7 @@ async function getAllDiscussions() {
     GROUP BY discussion_id
   ) views ON discussions.id = views.discussion_id
   ORDER BY discussions.id DESC
-  `;
+  LIMIT ${limit}`;
   try{
     const results = await query(sql);
     if (results.length>0) {
@@ -2236,14 +2236,14 @@ async function getAllDiscussions() {
 }
 
 //Function to insert discussion response in discussions_user_response table
-async function insertDiscussionResponse(discussion_id, IP_address) {
+async function insertDiscussionResponse(discussion_id, ip_address) {
   const currentDate = new Date();
   const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
   const data = {
     discussion_id : discussion_id,
-    ip_address: IP_address,
+    ip_address: ip_address,
   };
-  const checkQuery = `SELECT * FROM discussions_user_view WHERE discussion_id = '${discussion_id}'  AND ip_address = '${IP_address}'`;
+  const checkQuery = `SELECT * FROM discussions_user_view WHERE discussion_id = '${discussion_id}'  AND ip_address = '${ip_address}'`;
   const check_result = await query(checkQuery);
   if(check_result.length > 0){
     console.log(check_result[0].id);
