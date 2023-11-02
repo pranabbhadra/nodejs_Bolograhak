@@ -26,7 +26,7 @@
                            <% if(ComplaintsByComplaintId.status == '0') { %>
                               <span class="text-danger"><strong>Reopen</strong></span>
                            <% } else if(ComplaintsByComplaintId.status == '1') { %>
-                              <span class="text-success"><strong>Solved</strong></span>
+                              <span class="text-success"><strong>Resolved</strong></span>
                            <% } else { %>
                               <span class="text-warning"><strong>Pending</strong></span>
                            <% } %>
@@ -79,11 +79,39 @@
                          </div>
                       </div>
                    </div>
+                   <% if(ComplaintsByComplaintId && ComplaintsByComplaintId.user_complaint_rating) { %>
+                     <div class="custom-text-label">
+                        My Rating
+                     </div>
+                     <div class="user-rating">
+                        <% if(ComplaintsByComplaintId.user_complaint_rating == '1'){ %>
+                           <span><img src="/1691876041063-2.Low.gif" alt="" style="display: inline-block;" width="35"></span>
+                           <span><%= ComplaintsByComplaintId.user_complaint_rating %>/5</span>
+                        <% } else if (ComplaintsByComplaintId.user_complaint_rating == '2') { %>
+                           <span><img src="/1691876024849-3.NotBad.gif" alt="" style="display: inline-block;" width="35"></span>
+                           <span><%= ComplaintsByComplaintId.user_complaint_rating %>/5</span>
+                        <% } else if (ComplaintsByComplaintId.user_complaint_rating == '3') { %>
+                           <span><img src="/1691875972021-6.Good.gif" alt="" style="display: inline-block;" width="35"></span>
+                           <span><%= ComplaintsByComplaintId.user_complaint_rating %>/5</span>
+                        <% } else if (ComplaintsByComplaintId.user_complaint_rating == '4') { %>
+                           <span><img src="/1691875935385-8.Awesome.gif" alt="" style="display: inline-block;" width="35"></span>
+                           <span><%= ComplaintsByComplaintId.user_complaint_rating %>/5</span>
+                        <% } else { %>
+                              <span><img src="/1691875890277-10.High.gif" alt="" style="display: inline-block;" width="35"></span>
+                              <span><%= ComplaintsByComplaintId.user_complaint_rating %>/5</span>
+                        <% } %>
+                     </div>
+                  <% } %>
+
                    <% if(ComplaintsByComplaintId.queryResponseData.length > 0 ) { %>
                      <% ComplaintsByComplaintId.queryResponseData.forEach((response,index)=>{ %>
                         <% if(response.response == '') { %>
                            <div class="custom-text-label">
-                              Company Query
+                              <% if(response.resolve_status == '1'){ %>
+                                 Company Resolve Response 
+                                 <% } else { %>
+                                    Company Query
+                                    <% } %>
                            </div>
                            <div class="custom-text-box" style="background-color: #FFF5CA;">
                               <%= response.query %>
@@ -99,29 +127,7 @@
                      <% }) %>
                      
                   <% } %>
-                     <% if(ComplaintsByComplaintId && ComplaintsByComplaintId.user_complaint_rating) { %>
-                        <div class="custom-text-label">
-                           My Rating
-                        </div>
-                        <div class="user-rating">
-                           <% if(ComplaintsByComplaintId.user_complaint_rating == '1'){ %>
-                              <span><img src="/1691876041063-2.Low.gif" alt="" style="display: inline-block;" width="35"></span>
-                              <span><%= ComplaintsByComplaintId.user_complaint_rating %>/5</span>
-                           <% } else if (ComplaintsByComplaintId.user_complaint_rating == '2') { %>
-                              <span><img src="/1691876024849-3.NotBad.gif" alt="" style="display: inline-block;" width="35"></span>
-                              <span><%= ComplaintsByComplaintId.user_complaint_rating %>/5</span>
-                           <% } else if (ComplaintsByComplaintId.user_complaint_rating == '3') { %>
-                              <span><img src="/1691875972021-6.Good.gif" alt="" style="display: inline-block;" width="35"></span>
-                              <span><%= ComplaintsByComplaintId.user_complaint_rating %>/5</span>
-                           <% } else if (ComplaintsByComplaintId.user_complaint_rating == '4') { %>
-                              <span><img src="/1691875935385-8.Awesome.gif" alt="" style="display: inline-block;" width="35"></span>
-                              <span><%= ComplaintsByComplaintId.user_complaint_rating %>/5</span>
-                           <% } else { %>
-                                 <span><img src="/1691875890277-10.High.gif" alt="" style="display: inline-block;" width="35"></span>
-                                 <span><%= ComplaintsByComplaintId.user_complaint_rating %>/5</span>
-                           <% } %>
-                        </div>
-                     <% } %>
+                     
                      <% if(ComplaintsByComplaintId.queryResponseData.length > 0 && ComplaintsByComplaintId.status != '1' ) { %>
                      <div class="custom-text-label">
                         Your Response

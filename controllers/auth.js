@@ -4809,7 +4809,7 @@ exports.createCompanyCategory = async (req, res) => {
         if (checkResult.length > 0) {
             return res.send({
                 status: 'not ok',
-                message: 'Ctegory name already exist.'
+                message: 'Category name already exist.'
             });
         } else {
                 const sql = `INSERT INTO complaint_category ( company_id, category_name, parent_id) VALUES (?, ?, ?)`;
@@ -4823,7 +4823,7 @@ exports.createCompanyCategory = async (req, res) => {
                     } else {
                         return res.send({
                             status: 'ok',
-                            message: 'Ctegory added successfully !'
+                            message: 'Category added successfully !'
                         });
                     }
                 })
@@ -4857,14 +4857,14 @@ exports.deleteCompanyCategory = async (req, res) => {
                         } else {
                             return res.send({
                                 status: 'ok',
-                                message: 'Ctegory Deleted successfully !'
+                                message: 'Category Deleted successfully !'
                             });
                         }
                     })
                 } else {
                     return res.send({
                         status: 'ok',
-                        message: 'Ctegory Deleted successfully !'
+                        message: 'Category Deleted successfully !'
                     });
                 }
             })
@@ -4888,7 +4888,7 @@ exports.updateCompanyCategory = async (req, res) => {
         if (checkResult.length > 0) {
             return res.send({
                 status: 'not ok',
-                message: 'Ctegory name already exist.'
+                message: 'Category name already exist.'
             });
         } else {
             const data = [category_name, parent_category, cat_id];
@@ -4902,7 +4902,7 @@ exports.updateCompanyCategory = async (req, res) => {
                 } else {
                     return res.send({
                         status: 'ok',
-                        message: 'Ctegory Updated successfully !'
+                        message: 'Category Updated successfully !'
                     });
                 }
             })
@@ -5011,11 +5011,12 @@ exports.complaintRegister =  (req, res) => {
     //return false;
     const uuid = uuidv4();  
     const currentDate = new Date();
+    const randomNo = Math.floor(Math.random() * (100 - 0 + 1)) + 0 ;
     const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
     const data = {
         user_id:user_id[0],
         company_id:company_id[0],
-        ticket_id:uuid,
+        ticket_id:randomNo + currentDate.getTime(),
         category_id:category_id[0],
         sub_cat_id : sub_category_id && sub_category_id[0] !== undefined  ? sub_category_id[0] : 0,
         model_desc:model_no[0],
@@ -5053,11 +5054,10 @@ exports.complaintRegister =  (req, res) => {
 
 //Insert Company Query and  to user
 exports.companyQuery = async (req, res) => {
-    console.log('companyQuery',req.body ); 
+    //console.log('companyQuery',req.body ); 
     //return false;
     const {company_id, user_id, complaint_id, message, complaint_status, complaint_level } = req.body;
     
-
     if (complaint_status == '1') {
         const [updateComplaintStatus, complaintCompanyResolvedEmail] = await Promise.all([
             comFunction2.updateComplaintStatus(complaint_id, '1'),
@@ -5076,7 +5076,9 @@ exports.companyQuery = async (req, res) => {
         query:message,
         response : '',
         created_at:formattedDate,
-        level_id:complaint_level
+        level_id:complaint_level,
+        notification_status: '0',
+        resolve_status:complaint_status
     }
      const Query = `INSERT INTO complaint_query_response SET ?  `;
     db.query(Query, data, (err, result)=>{
@@ -5158,12 +5160,15 @@ exports.userComplaintRating = async (req, res) => {
 
 //Insert user Complaint Response  to company
 exports.userComplaintResponse = async (req, res) => {
-    console.log('userComplaintResponse',req.body ); 
+    //console.log('userComplaintResponse',req.body ); 
     //return false;
-    const {company_id, user_id, complaint_id, user_response } = req.body;
+    const {company_id, user_id, complaint_id, user_response, complaint_level } = req.body;
     
     const currentDate = new Date();
     const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+
+    await comFunction2.complaintUserResponseEmail(company_id);
+
     const data = {
         user_id:user_id,
         company_id:company_id,
@@ -5171,6 +5176,8 @@ exports.userComplaintResponse = async (req, res) => {
         query:'',
         response : user_response,
         created_at:formattedDate,
+        level_id:complaint_level,
+        notification_status:'0'
     }
      const Query = `INSERT INTO complaint_query_response SET ?  `;
     db.query(Query, data, (err, result)=>{
@@ -5282,7 +5289,7 @@ exports.createSurveyAnswer = async (req, res) => {
     })
 }
 
-cron.schedule('0 * * * *', async () => {
+cron.schedule('0 10 * * *', async () => {
     //console.log('running a task every minute');
     const sql = `SELECT complaint.* ,u.email , clm.emails, clm.eta_days, cc.category_name, subcat.category_name AS sub_category_name
     FROM complaint 
@@ -5301,11 +5308,11 @@ cron.schedule('0 * * * *', async () => {
                 emailArr = JSON.parse(result.emails); 
             }
             
-                await comFunction2.complaintScheduleEmail(emailArr,result);
+            await comFunction2.complaintScheduleEmail(emailArr,result);
 
                 // emailArr.forEach(async (email)=>{
                 //     await comFunction2.complaintScheduleEmail(email,result);
                 // })
         })
     }
-  });
+});

@@ -20,7 +20,8 @@
                                     <th scope="col">Company Name</th>
                                     <th scope="col">Category</th>
                                     <th scope="col">Product Name</th>
-                                    <th scope="col">Status</th>
+                                    <th scope="col">Status </th>
+                                    <th scope="col">Notification </th>
                                     <th scope="col" style=" text-align: center;">Action</th>
                                  </tr>
                               </thead>
@@ -41,7 +42,11 @@
                                           <%= compnaint.company_name %>
                                        </td>
                                        <td>
-                                          <%= compnaint.category_name %>
+                                          <% if(compnaint.category_id == '0'){ %>
+                                             General
+                                          <% } else { %>
+                                             <%= compnaint.category_name %>
+                                          <% } %>
                                        </td>
                                        <td>
                                           <%= compnaint.model_desc %>
@@ -49,11 +54,26 @@
                                        <td>
                                           <% if(compnaint.status=='0' ) { %>
                                              <span class="text-danger"><strong>Reopen</strong></span>
-                                             <% } else if(compnaint.status=='1' ) { %>
+                                          <% } else if(compnaint.status=='1' ) { %>
                                                 <span class="text-success"><strong>Resolved</strong></span>
-                                                <% } else { %>
+                                          <% } else { %>
                                                    <span class="text-yellow"><strong>Ongoing</strong></span>
-                                                   <% } %>
+                                          <% } %>
+
+                                          
+                                       </td>
+                                       <td>
+                                          <% if(compnaint.notification_statuses.length > 1){ %>
+                                             <% let count = 0; %>
+                                             <% compnaint.notification_statuses.forEach((notification, index) => { %>
+                                                <% if(notification == '0' && compnaint.customer_response[index] == "" ){ %>
+                                                   <% count ++ ; %>
+                                                <% } %>
+                                             <% })  %>
+                                             <% if(count > 0) { %>
+                                                <i class="fa-solid fa-bell"></i> <%= count %>
+                                             <% } %>
+                                          <% }  %>
                                        </td>
                                        <td style="text-align: center;">
                                           <% if(compnaint.status=='1'){ %>

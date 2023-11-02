@@ -24,7 +24,7 @@
                   <% if(item.type=='type_textarea'){ %>
                   <div class="survey-body">
                      <div class="custom-form">
-                        <textarea type="text" rows="5" class="form-control" name="question_<%- index+1 %>" readonly><%- answerJsonObject['question_' + (index + 1)] %></textarea>
+                        <textarea type="text" placeholder="Express your views" rows="5" class="form-control" name="question_<%- index+1 %>" readonly><%- answerJsonObject['question_' + (index + 1)] %></textarea>
                      </div>
                   </div>
                   <% }else if(item.type=='type_radio'){ %>
