@@ -3676,3 +3676,100 @@ GROUP BY pa.id, pa.answer;
     });
   });
 };
+
+
+
+exports.createDiscussion = async (req, res) => {
+  console.log('createDiscussion', req.body);
+  const { user_id, tags, topic, from_data, expiration_date } = req.body;
+
+  const currentDate = new Date();
+
+  const year = currentDate.getFullYear();
+  const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+  const day = String(currentDate.getDate()).padStart(2, '0');
+  const hours = String(currentDate.getHours()).padStart(2, '0');
+  const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+  const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+
+  const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+  const tagsArray = tags ? tags.split(',').map(tag => tag.trim()) : [];
+
+  const sql = `INSERT INTO discussions (user_id, topic, tags, created_at, expired_at) VALUES (?, ?, ?, ?, ?)`;
+  const data = [user_id, topic, JSON.stringify(tagsArray), formattedDate, expiration_date]; 
+
+  db.query(sql, data, (err, result) => {
+    if (err) {
+      return res.send({
+        status: 'not ok',
+        message: 'Something went wrong ' + err,
+      });
+    } else {
+      return res.send({
+        status: 'ok',
+        data:data,
+        message: 'Your Discussion Topic Added Successfully',
+      });
+    }
+  });
+}
+
+
+
+
+//Add comment on discussion
+exports.addDiscussionComment = async (req, res) => {
+  console.log('addDiscussionComment',req.body ); 
+  const {discussion_id,  comment} = req.body;
+
+  const authenticatedUserId = parseInt(req.user.user_id);
+  console.log('authenticatedUserId: ', authenticatedUserId);
+
+  const user_id = parseInt(req.body.user_id);
+  console.log('req.body.user_id: ', parseInt(req.body.user_id));
+
+  if (user_id !== authenticatedUserId) {
+    return res.status(403).json({
+      status: 'error',
+      message: 'Access denied: You are not authorized to create a discussion topic for another user.',
+    });
+  }
+
+  const currentDate = new Date();
+
+  const year = currentDate.getFullYear();
+  const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+  const day = String(currentDate.getDate()).padStart(2, '0');
+  const hours = String(currentDate.getHours()).padStart(2, '0');
+  const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+  const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+
+  const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  //const clientIp = req.clientIp;
+
+  const Insertdata = {
+      discussion_id : discussion_id,
+      comment:comment,
+      user_id:user_id,
+      ip_address: requestIp.getClientIp(req),
+      //ip_address : clientIp,
+      created_at: formattedDate,
+    };
+  const insertQuery = 'INSERT INTO discussions_user_response SET ?';
+  db.query(insertQuery, Insertdata, (insertErr, insertResult)=>{
+      if (insertErr) {
+          return res.send({
+              status: 'not ok',
+              message: 'Something went wrong 3'+insertErr
+          });
+      } else {
+          return res.send({
+              status: 'ok',
+              Insertdata:Insertdata,
+              message: 'Your Comment Added Successfully'
+          });
+      }
+  })
+  
+}
