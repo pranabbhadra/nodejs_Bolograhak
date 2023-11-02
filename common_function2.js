@@ -2374,11 +2374,14 @@ async function getComplaintLevelDetails(companyId) {
 //Function to get All Complaints By CompanyId from complaint table
 async function getAllComplaintsByCompanyId(companyId) {
   const sql = `
-  SELECT complaint.*,c.company_name, cc.category_name, subcat.category_name AS sub_category_name
+  SELECT complaint.*,c.company_name, cc.category_name, subcat.category_name AS sub_category_name,GROUP_CONCAT(cqr.notification_status) AS notification_statuses,
+  GROUP_CONCAT(cqr.query) AS company_query,
+  GROUP_CONCAT(cqr.response) AS user_response
   FROM complaint 
   LEFT JOIN complaint_category cc ON complaint.category_id = cc.id 
   LEFT JOIN complaint_category subcat ON complaint.sub_cat_id = subcat.id 
   LEFT JOIN company c ON complaint.company_id = c.ID 
+  LEFT JOIN complaint_query_response cqr ON complaint.id = cqr.complaint_id
   WHERE complaint.company_id  = '${companyId}'
   ORDER BY complaint.id DESC
   `;
@@ -2436,13 +2439,23 @@ async function getAllComplaintsByComplaintId(ComplaintId) {
 //Function to get All Complaints By userID from complaint table
 async function getAllComplaintsByUserId(user_id) {
   const sql = `
-  SELECT complaint.*,c.company_name, cc.category_name, subcat.category_name AS sub_category_name
-  FROM complaint 
-  LEFT JOIN complaint_category cc ON complaint.category_id = cc.id 
-  LEFT JOIN complaint_category subcat ON complaint.sub_cat_id = subcat.id 
-  LEFT JOIN company c ON complaint.company_id = c.ID 
-  WHERE complaint.user_id  = '${user_id}'
-  ORDER BY complaint.id DESC
+  SELECT 
+  complaint.*,
+  c.company_name, 
+  cc.category_name, 
+  subcat.category_name AS sub_category_name,
+  GROUP_CONCAT(cqr.notification_status) AS notification_statuses,
+  GROUP_CONCAT(cqr.query) AS company_query,
+  GROUP_CONCAT(cqr.response) AS user_response
+  FROM complaint
+  LEFT JOIN complaint_category cc ON complaint.category_id = cc.id
+  LEFT JOIN complaint_category subcat ON complaint.sub_cat_id = subcat.id
+  LEFT JOIN company c ON complaint.company_id = c.ID
+  LEFT JOIN complaint_query_response cqr ON complaint.id = cqr.complaint_id
+  WHERE complaint.user_id = '${user_id}'
+  GROUP BY complaint.id
+  ORDER BY complaint.id DESC;
+
   `;
 
   try{
@@ -2475,6 +2488,38 @@ async function updateComplaintStatus(complaint_id, status) {
   }
 }
 
+//Function to update complaint notification status to complaint_query_response table
+async function updateUserNotificationStatus(complaint_id) {
+  const sql = `
+  UPDATE complaint_query_response SET notification_status='1' WHERE complaint_id = '${complaint_id}' AND response = ''
+  `;
+
+  try{
+    const results = await query(sql);
+      return true;
+  }
+  catch(error){
+    console.error('Error during fetch all complaint details: ', error);
+    
+  }
+}
+
+//Function to update complaint notification status to complaint_query_response table
+async function updateCompanyrNotificationStatus(complaint_id) {
+  const sql = `
+  UPDATE complaint_query_response SET notification_status='1' WHERE complaint_id = '${complaint_id}' AND query = ''
+  `;
+
+  try{
+    const results = await query(sql);
+      return true;
+  }
+  catch(error){
+    console.error('Error during fetch all complaint details: ', error);
+    
+  }
+}
+
 //Function send email to company by companyId 
 async function complaintEmailToCompany(companyId, tokenId, insertId) {
   const sql = `
@@ -2491,7 +2536,7 @@ async function complaintEmailToCompany(companyId, tokenId, insertId) {
         from: process.env.MAIL_USER,
         //to: 'pranab@scwebtech.com',
         to: results[0].email,
-        subject: 'Complaint Email',
+        subject: 'New Complaint Email',
         html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
         <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
          <tbody>
@@ -2508,7 +2553,7 @@ async function complaintEmailToCompany(companyId, tokenId, insertId) {
                        <tr>
                        <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
                         <td id="header_wrapper" style="padding: 36px 48px; display: block;">
-                           <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Complaint Email</h1>
+                           <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">New Complaint Email</h1>
                         </td>
     
                        </tr>
@@ -2535,7 +2580,7 @@ async function complaintEmailToCompany(companyId, tokenId, insertId) {
                                   <tr>
                                     <td colspan="2">
                                     <strong>Hello ${results[0].first_name},</strong>
-                                    <p style="font-size:15px; line-height:20px">A customer register a complaint on your company.Its Token Id is: <a  href="${process.env.MAIN_URL}company-compnaint-details/${results[0].slug}/${insertId}">${tokenId}</a>. 
+                                    <p style="font-size:15px; line-height:20px">A customer register a complaint to your company. It's Token Id is: <a  href="${process.env.MAIN_URL}company-compnaint-details/${results[0].slug}/${insertId}">${tokenId}</a>. 
                                     </p>
                                     </td>
                                   </tr>
@@ -2620,7 +2665,7 @@ async function complaintSuccessEmailToUser(userId, tokenId, insertId) {
         from: process.env.MAIL_USER,
         //to: 'pranab@scwebtech.com',
         to: results[0].email,
-        subject: 'Complaint Register Email',
+        subject: 'Complaint registration Email',
         html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
         <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
          <tbody>
@@ -2637,7 +2682,7 @@ async function complaintSuccessEmailToUser(userId, tokenId, insertId) {
                        <tr>
                        <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
                         <td id="header_wrapper" style="padding: 36px 48px; display: block;">
-                           <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Complaint Register Email</h1>
+                           <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Complaint registration Email</h1>
                         </td>
     
                        </tr>
@@ -2751,7 +2796,7 @@ async function complaintCompanyResponseEmail(complaint_id) {
         from: process.env.MAIL_USER,
         //to: 'pranab@scwebtech.com',
         to: results[0].email,
-        subject: 'Company Response Email',
+        subject: `Email response from ${results[0].company_name}`,
         html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
         <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
          <tbody>
@@ -2768,7 +2813,7 @@ async function complaintCompanyResponseEmail(complaint_id) {
                        <tr>
                        <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
                         <td id="header_wrapper" style="padding: 36px 48px; display: block;">
-                           <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Company Response Email</h1>
+                           <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Email response from ${results[0].company_name}</h1>
                         </td>
     
                        </tr>
@@ -2795,7 +2840,139 @@ async function complaintCompanyResponseEmail(complaint_id) {
                                   <tr>
                                     <td colspan="2">
                                     <strong>Hello ${results[0].first_name},</strong>
-                                    <p style="font-size:15px; line-height:20px">${results[0].company_name} has been response on your complaint. 
+                                    <p style="font-size:15px; line-height:20px">${results[0].company_name} has responded on your complaint. 
+                                    </p>
+                                    </td>
+                                  </tr>
+                                </table>
+                                
+                               </div>
+                             </td>
+                            </tr>
+                           </tbody>
+                          </table>
+                        <!-- End Content -->
+                        </td>
+                       </tr>
+                     </tbody>
+                   </table>
+                 <!-- End Body -->
+                 </td>
+                </tr>
+                <tr>
+                 <td align="center" valign="top">
+                   <!-- Footer -->
+                   <table id="template_footer" border="0" cellpadding="10" cellspacing="0" width="600">
+                    <tbody>
+                     <tr>
+                      <td style="padding: 0; -webkit-border-radius: 6px;" valign="top">
+                       <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                         <tbody>
+                           <tr>
+                            <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
+                                 <p>This email was sent from <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a></p>
+                            </td>
+                           </tr>
+                         </tbody>
+                       </table>
+                      </td>
+                     </tr>
+                    </tbody>
+                   </table>
+                 <!-- End Footer -->
+                 </td>
+                </tr>
+              </tbody>
+             </table>
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>`
+      }
+     mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
+          if (err) {
+              console.log(err);
+              return res.send({
+                  status: 'not ok',
+                  message: 'Something went wrong'
+              });
+          } else {
+              console.log('Mail Send: ', info.response);
+              
+          }
+      })
+    } else {
+      return false;
+    }
+  }
+  catch(error){
+    console.error('Error during fetch All Latest Discussion:', error);
+  }
+}
+
+//Function send User Response Email  to company by complaint_id 
+async function complaintUserResponseEmail(companyId) {
+  const sql = `
+  SELECT users.email, users.first_name, c.slug
+  FROM users 
+  LEFT JOIN company_claim_request ccr ON ccr.claimed_by = users.user_id 
+  LEFT JOIN company c ON c.ID = ccr.company_id
+  WHERE ccr.company_id = '${companyId}'
+
+  `;
+  try{
+    const results = await query(sql);
+    if (results.length > 0) {
+      var mailOptions = {
+        from: process.env.MAIL_USER,
+        //to: 'pranab@scwebtech.com',
+        to: results[0].email,
+        subject: `Email response from customer`,
+        html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
+        <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
+         <tbody>
+          <tr>
+           <td align="center" valign="top">
+             <div id="template_header_image"><p style="margin-top: 0;"></p></div>
+             <table id="template_container" style="box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; background-color: #fdfdfd; border: 1px solid #dcdcdc; border-radius: 3px !important;" border="0" cellpadding="0" cellspacing="0" width="600">
+              <tbody>
+                <tr>
+                 <td align="center" valign="top">
+                   <!-- Header -->
+                   <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
+                     <tbody>
+                       <tr>
+                       <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
+                        <td id="header_wrapper" style="padding: 36px 48px; display: block;">
+                           <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Email response from customer </h1>
+                        </td>
+    
+                       </tr>
+                     </tbody>
+                   </table>
+             <!-- End Header -->
+             </td>
+                </tr>
+                <tr>
+                 <td align="center" valign="top">
+                   <!-- Body -->
+                   <table id="template_body" border="0" cellpadding="0" cellspacing="0" width="600">
+                     <tbody>
+                       <tr>
+                        <td id="body_content" style="background-color: #fdfdfd;" valign="top">
+                          <!-- Content -->
+                          <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                           <tbody>
+                            <tr>
+                             <td style="padding: 48px;" valign="top">
+                               <div id="body_content_inner" style="color: #737373; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
+                                
+                                <table border="0" cellpadding="4" cellspacing="0" width="90%">
+                                  <tr>
+                                    <td colspan="2">
+                                    <strong>Hello ${results[0].first_name},</strong>
+                                    <p style="font-size:15px; line-height:20px">A customer has responded on your query. 
                                     </p>
                                     </td>
                                   </tr>
@@ -2880,8 +3057,8 @@ async function complaintCompanyResolvedEmail(complaint_id) {
     if (results.length > 0) {
       var mailOptions = {
         from: process.env.MAIL_USER,
-        to: 'pranab@scwebtech.com',
-        //to: results[0].email,
+        //to: 'pranab@scwebtech.com',
+        to: results[0].email,
         subject: 'Complaint Resolved Email',
         html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
         <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
@@ -2926,7 +3103,7 @@ async function complaintCompanyResolvedEmail(complaint_id) {
                                   <tr>
                                     <td colspan="2">
                                     <strong>Hello ${results[0].first_name},</strong>
-                                    <p style="font-size:15px; line-height:20px">${results[0].company_name} has been resolved on your complaint. Please give us feedback rating.
+                                    <p style="font-size:15px; line-height:20px">${results[0].company_name} has resolved on your complaint. Please give us feedback rating.
                                     </p>
                                     </td>
                                   </tr>
@@ -3219,5 +3396,8 @@ module.exports = {
   complaintScheduleEmail,
   getAllPremiumCompany,
   complaintSuccessEmailToUser,
-  complaintCompanyResolvedEmail
+  complaintCompanyResolvedEmail,
+  updateUserNotificationStatus,
+  updateCompanyrNotificationStatus,
+  complaintUserResponseEmail
 };
