@@ -1995,6 +1995,87 @@ async function getPremiumCompanyData(companyId) {
   }
 }
 
+//Function to get all comment by discussion from discussions and discussions_user_response table
+async function getAllCommentByDiscusId(discussions_id) {
+  const sql = `
+    SELECT discussions.*, u.first_name, u.last_name, um.profile_pic
+    FROM discussions 
+    LEFT JOIN users u ON discussions.user_id = u.user_id 
+    LEFT JOIN user_customer_meta um ON discussions.user_id = um.user_id
+    WHERE discussions.id = ${discussions_id}
+  `;
+  const commentQuery = `
+    SELECT discussions_user_response.*
+    FROM discussions_user_response 
+    WHERE discussions_user_response.discussion_id = ${discussions_id}
+    ORDER BY created_at DESC;
+  `;
+
+  // const tagQuery = `
+  //   SELECT discussions.tags
+  //   FROM discussions
+  //   WHERE discussions.id = ${discussions_id};
+  // `;
+
+  try {
+    const results = await query(sql);
+    const commentResult = await query(commentQuery);
+    // const tagResult = await query(tagQuery);
+
+    const cmntData = JSON.stringify(commentResult);
+    // const tagData = JSON.stringify(tagResult);
+
+
+    results[0].commentData = cmntData;
+    // results[0].tagData = tagData;
+    return results;
+  } catch (error) {
+    console.error('Error during fetching getAllCommentByDiscusId:', error);
+  }
+}
+
+
+
+// async function getAllCommentByDiscusId(discussions_id) {
+//   const sql = `
+//   SELECT discussions.*, u.first_name, u.last_name, um.profile_pic
+//   FROM discussions 
+//   LEFT JOIN users u ON discussions.user_id = u.user_id 
+//   LEFT JOIN user_customer_meta um ON discussions.user_id = um.user_id
+//   WHERE discussions.id = ${discussions_id}
+//   `;
+//   const commentQuery = `
+//   SELECT discussions_user_response.*
+//   FROM discussions_user_response 
+//   WHERE discussions_user_response.discussion_id = ${discussions_id}
+//   ORDER BY created_at DESC;
+//   `;
+//   const tagQuery = `
+//   SELECT tags.*
+//   FROM tags
+//   WHERE tags.discussion_id = ${discussions_id};
+//   `;
+//   try {
+//     const results = await query(sql);
+//     const commentResult = await query(commentQuery);
+//     const tagResult = await query(tagQuery);
+
+//     const cmntData = JSON.stringify(commentResult);
+//     const tagData = JSON.stringify(tagResult);
+
+//     // const cmntData = commentResult.length > 0 ? JSON.stringify(commentResult) : '[]';
+//     // const tagData = tagResult.length > 0 ? JSON.stringify(tagResult) : '[]';
+//     results[0].commentData = cmntData;
+//     results[0].tagData = tagData;
+//     return results;
+//   } catch (error) {
+//     console.error('Error during fetching getAllCommentByDiscusId:', error);
+//   }
+// }
+
+
+
+
 module.exports = {
   getUser,
   getUserMeta,
@@ -2055,5 +2136,6 @@ module.exports = {
   CompanyReviews,
   getAllReviewReply,
   getreviewreplis,
-  getPremiumCompanyData
+  getPremiumCompanyData,
+  getAllCommentByDiscusId
 };
