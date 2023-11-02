@@ -4,6 +4,7 @@ const authenController = require('../controllers/authentication');
 const jwt = require('jsonwebtoken');
 const jwtsecretKey = 'grahak-secret-key';
 const db = require('../config');
+const requestIp = require('request-ip');
 const comFunction = require('../common_function_api');
 const comFunction2 = require('../common_function2');
 const commonFunction = require('../common_function');
@@ -75,6 +76,16 @@ router.put('/editUserReview', verifyToken, authenController.editUserReview);
 router.post('/reviewInvitation', verifyToken, authenController.reviewInvitation);
 
 router.post('/userPoll', verifyToken, authenController.userPoll);
+
+
+//discussion routes
+//add discussion
+router.post('/creatediscussion', verifyToken, authenController.createDiscussion);
+//add comment on discussion
+router.post('/add/discussioncomment', verifyToken, authenController.addDiscussionComment);
+
+
+
 
 //forget password
 router.post('/forgotPassword', authenController.forgotPassword);
@@ -2467,6 +2478,59 @@ router.get('/reviewReplies/:review_id', verifyToken, async (req, res) => {
         });
     }
 })
+
+
+router.get('/discussionlisting/:limit', verifyToken, async (req, res) => {
+    try {
+        const limit = req.params.limit;
+        const [getAllLatestDiscussion, getAllPopularDiscussion, getAllDiscussions] = await Promise.all([
+            comFunction2.getAllLatestDiscussion(limit),
+            comFunction2.getAllPopularDiscussion(limit),
+            comFunction2.getAllDiscussions(limit),
+            //comFunction2.getAllViewedDiscussion(),
+        ]);
+        console.log(getAllLatestDiscussion);
+        res.json({
+            AllLatestDiscussion: getAllLatestDiscussion,
+            AllPopularDiscussion: getAllPopularDiscussion,
+            AllDiscussions: getAllDiscussions,
+            //AllViewedDiscussion: getAllViewedDiscussion
+        });
+    }
+    catch (error) {
+        console.error(err);
+        res.status(500).send('An error occurred during discussion listing');
+    }
+});
+
+//discussion details by discussion-id
+
+router.get('/discussiondetails/:discussion_id', verifyToken, async (req, res) => {
+    const discussion_id = req.params.discussion_id;
+    //const ip_address = req.body.ip_address;
+    const ip_address = requestIp.getClientIp(req);
+    const limit = req.body.limit;
+    const [insertDiscussionResponse, getAllCommentByDiscusId, getAllDiscussions] = await Promise.all([
+        comFunction2.insertDiscussionResponse(discussion_id, ip_address),
+        comFunction.getAllCommentByDiscusId(discussion_id),
+        comFunction2.getAllDiscussions(limit),
+    ]);
+    try {
+
+        res.json({
+            commentID: insertDiscussionResponse,
+            AllCommentByDiscusId: getAllCommentByDiscusId,
+            AllDiscussions: getAllDiscussions
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+
+
+
+
 
 // router.get('/reviewReplies/:review_id', verifyToken, async (req, res) => {
 //     const review_id = req.params.review_id;

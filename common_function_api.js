@@ -1995,6 +1995,210 @@ async function getPremiumCompanyData(companyId) {
   }
 }
 
+async function getAllCommentByDiscusId(discussions_id) {
+  const sql = `
+    SELECT discussions.*, u.first_name, u.last_name, um.profile_pic
+    FROM discussions 
+    LEFT JOIN users u ON discussions.user_id = u.user_id 
+    LEFT JOIN user_customer_meta um ON discussions.user_id = um.user_id
+    WHERE discussions.id = ${discussions_id}
+  `;
+  const commentQuery = `
+    SELECT discussions_user_response.*
+    FROM discussions_user_response 
+    WHERE discussions_user_response.discussion_id = ${discussions_id}
+    ORDER BY created_at DESC;
+  `;
+
+  // const tagQuery = `
+  //   SELECT discussions.tags
+  //   FROM discussions
+  //   WHERE discussions.id = ${discussions_id};
+  // `;
+
+  try {
+    const results = await query(sql);
+    const commentResult = await query(commentQuery);
+    // const tagResult = await query(tagQuery);
+
+    const cmntData = JSON.stringify(commentResult);
+    // const tagData = JSON.stringify(tagResult);
+
+
+    results[0].commentData = cmntData;
+    // results[0].tagData = tagData;
+    return results;
+  } catch (error) {
+    console.error('Error during fetching getAllCommentByDiscusId:', error);
+  }
+}
+
+async function getAllPopularDiscussion(limit) {
+  const sql = `
+  SELECT
+    discussions.*,
+    u.first_name,
+    u.last_name,
+    COALESCE(comments.total_comments, 0) as total_comments,
+    COALESCE(views.total_views, 0) as total_views
+  FROM discussions
+  LEFT JOIN users u ON discussions.user_id = u.user_id
+  LEFT JOIN (
+    SELECT discussion_id, COUNT(*) as total_comments
+    FROM discussions_user_response
+    GROUP BY discussion_id
+  ) comments ON discussions.id = comments.discussion_id
+  LEFT JOIN (
+    SELECT discussion_id, COUNT(*) as total_views
+    FROM discussions_user_view
+    GROUP BY discussion_id
+  ) views ON discussions.id = views.discussion_id
+  ORDER BY total_comments DESC
+  LIMIT ${limit};
+  ;
+  `;
+  try{
+    const results = await query(sql);
+    if (results.length>0) {
+      
+    return results;
+    } else {
+      return [];
+    }
+  }
+  catch(error){
+    console.error('Error during fetch  Latest Discussion:', error);
+  }
+}
+
+async function insertDiscussionResponse(discussion_id, IP_address) {
+  const currentDate = new Date();
+  const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+  const data = {
+    discussion_id : discussion_id,
+    ip_address: IP_address,
+  };
+  const checkQuery = `SELECT * FROM discussions_user_view WHERE discussion_id = '${discussion_id}'  AND ip_address = '${IP_address}'`;
+  const check_result = await query(checkQuery);
+  if(check_result.length > 0){
+    console.log(check_result[0].id);
+    return check_result[0].id
+  }else{
+    const sql = 'INSERT INTO discussions_user_view SET ?'
+    const results = await query(sql, data);
+    try{
+      console.log(results.insertId);
+      return results.insertId;
+    }
+    catch(error){
+      console.error('Error during insert discussions_user_view:', error);
+    }
+  }
+}
+
+
+//Function to get latest discussion from discussions table
+async function getAllLatestDiscussion(limit) {
+  const sql = `
+    SELECT
+    discussions.*,
+    u.first_name,
+    u.last_name,
+    COALESCE(comments.total_comments, 0) as total_comments,
+    COALESCE(views.total_views, 0) as total_views
+  FROM discussions
+  LEFT JOIN users u ON discussions.user_id = u.user_id
+  LEFT JOIN (
+    SELECT discussion_id, COUNT(*) as total_comments
+    FROM discussions_user_response
+    GROUP BY discussion_id
+  ) comments ON discussions.id = comments.discussion_id
+  LEFT JOIN (
+    SELECT discussion_id, COUNT(*) as total_views
+    FROM discussions_user_view
+    GROUP BY discussion_id
+  ) views ON discussions.id = views.discussion_id
+  ORDER BY discussions.id DESC
+  LIMIT ${limit} ;
+  `;
+  try{
+    const results = await query(sql);
+    if (results.length>0) {
+      
+    return results;
+    } else {
+      return [];
+    }
+  }
+  catch(error){
+    console.error('Error during fetch All Latest Discussion:', error);
+  }
+}
+
+//Function to get popular discussion from discussions table
+async function getAllPopularDiscussion() {
+  const sql = `
+  SELECT
+    discussions.*,
+    u.first_name,
+    u.last_name,
+    COALESCE(comments.total_comments, 0) as total_comments,
+    COALESCE(views.total_views, 0) as total_views
+  FROM discussions
+  LEFT JOIN users u ON discussions.user_id = u.user_id
+  LEFT JOIN (
+    SELECT discussion_id, COUNT(*) as total_comments
+    FROM discussions_user_response
+    GROUP BY discussion_id
+  ) comments ON discussions.id = comments.discussion_id
+  LEFT JOIN (
+    SELECT discussion_id, COUNT(*) as total_views
+    FROM discussions_user_view
+    GROUP BY discussion_id
+  ) views ON discussions.id = views.discussion_id
+  ORDER BY total_comments DESC;
+  ;
+  `;
+  try{
+    const results = await query(sql);
+    if (results.length>0) {
+      
+    return results;
+    } else {
+      return [];
+    }
+  }
+  catch(error){
+    console.error('Error during fetch  Latest Discussion:', error);
+  }
+}
+
+
+// async function insertDiscussionResponse(discussion_id, IP_address) {
+//   const currentDate = new Date();
+//   const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+//   const data = {
+//     discussion_id : discussion_id,
+//     ip_address: IP_address,
+//   };
+//   const checkQuery = `SELECT * FROM discussions_user_view WHERE discussion_id = '${discussion_id}'  AND ip_address = '${IP_address}'`;
+//   const check_result = await query(checkQuery);
+//   if(check_result.length > 0){
+//     console.log(check_result[0].id);
+//     return check_result[0].id
+//   }else{
+//     const sql = 'INSERT INTO discussions_user_view SET ?'
+//     const results = await query(sql, data);
+//     try{
+//       console.log(results.insertId);
+//       return results.insertId;
+//     }
+//     catch(error){
+//       console.error('Error during insert discussions_user_view:', error);
+//     }
+//   }
+// }
+
 module.exports = {
   getUser,
   getUserMeta,
@@ -2055,5 +2259,8 @@ module.exports = {
   CompanyReviews,
   getAllReviewReply,
   getreviewreplis,
-  getPremiumCompanyData
+  getPremiumCompanyData,
+  getAllCommentByDiscusId,
+  getAllPopularDiscussion,
+  insertDiscussionResponse
 };
