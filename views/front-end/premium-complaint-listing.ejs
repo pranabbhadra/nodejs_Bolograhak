@@ -61,7 +61,7 @@
                                           <span class="text-yellow"><strong>Ongoing</strong></span>
                                           <% } %>
                               </td>
-                              <td>
+                              <td style="text-align: center;" >
                                  <% if(compnaint.notification_statuses.length > 1){ %>
                                     <% let count = 0; %>
                                     <% compnaint.notification_statuses.forEach((notification, index) => { %>
@@ -196,7 +196,7 @@
             jQuery(function ($) {
                $(document).ready(() => {
                   $('.table').DataTable({
-                     "order": [[4, "desc"]]
+                     "order": [[0, "desc"]]
                   });
                });
             });

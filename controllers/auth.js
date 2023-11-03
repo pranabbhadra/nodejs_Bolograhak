@@ -5012,11 +5012,12 @@ exports.complaintRegister =  (req, res) => {
     const uuid = uuidv4();  
     const currentDate = new Date();
     const randomNo = Math.floor(Math.random() * (100 - 0 + 1)) + 0 ;
+    const ticket_no = randomNo + currentDate.getTime();
     const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
     const data = {
         user_id:user_id[0],
         company_id:company_id[0],
-        ticket_id:randomNo + currentDate.getTime(),
+        ticket_id:ticket_no,
         category_id:category_id[0],
         sub_cat_id : sub_category_id && sub_category_id[0] !== undefined  ? sub_category_id[0] : 0,
         model_desc:model_no[0],
@@ -5041,8 +5042,8 @@ exports.complaintRegister =  (req, res) => {
         } else {
             console.log(company_id[0],user_id[0], uuid, result.insertId)
             const [complaintEmailToCompany,complaintSuccessEmailToUser] = await Promise.all([
-                comFunction2.complaintEmailToCompany(company_id[0], uuid, result.insertId),
-                comFunction2.complaintSuccessEmailToUser(user_id[0], uuid, result.insertId)
+                comFunction2.complaintEmailToCompany(company_id[0], ticket_no, result.insertId),
+                comFunction2.complaintSuccessEmailToUser(user_id[0], ticket_no, result.insertId)
             ]);
             return res.send({
                 status: 'ok',
@@ -5167,7 +5168,7 @@ exports.userComplaintResponse = async (req, res) => {
     const currentDate = new Date();
     const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
 
-    await comFunction2.complaintUserResponseEmail(company_id);
+    await comFunction2.complaintUserResponseEmail(complaint_id);
 
     const data = {
         user_id:user_id,
