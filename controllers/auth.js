@@ -5161,24 +5161,33 @@ exports.userComplaintRating = async (req, res) => {
 
 //Insert user Complaint Response  to company
 exports.userComplaintResponse = async (req, res) => {
-    //console.log('userComplaintResponse',req.body ); 
+    console.log('userComplaintResponse',req.body ); 
     //return false;
-    const {company_id, user_id, complaint_id, user_response, complaint_level } = req.body;
+    const {company_id, user_id, complaint_id, message, complaint_level, complaint_status } = req.body;
     
     const currentDate = new Date();
     const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
 
-    await comFunction2.complaintUserResponseEmail(complaint_id);
+    
+    if (complaint_status == '0') {
+        const [updateComplaintStatus, complaintCompanyResolvedEmail] = await Promise.all([
+            comFunction2.updateComplaintStatus(complaint_id, '0'),
+             comFunction2.complaintUserReopenEmail(complaint_id)
+        ]);
+    } else {
+        await comFunction2.complaintUserResponseEmail(complaint_id);
+    }
 
     const data = {
         user_id:user_id,
         company_id:company_id,
         complaint_id :complaint_id,
         query:'',
-        response : user_response,
+        response : message,
         created_at:formattedDate,
         level_id:complaint_level,
-        notification_status:'0'
+        notification_status:'0',
+        resolve_status:complaint_status
     }
      const Query = `INSERT INTO complaint_query_response SET ?  `;
     db.query(Query, data, (err, result)=>{

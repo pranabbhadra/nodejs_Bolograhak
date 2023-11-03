@@ -126,9 +126,9 @@
                <% if(response.response == '') { %>
                   <div class="custom-text-label">
                      <% if(response.resolve_status == '1'){ %>
-                        Your Resolve Response to Customer  
+                        <%= ComplaintsByComplaintId.company_name %> (s) Resolve Response to Customer  
                         <% } else { %>
-                           Your Query to Customer  
+                           <%= ComplaintsByComplaintId.company_name %> (s) Query to Customer  
                            <% } %>
                      
                      <% const responsedateString = response.created_at; %>
@@ -138,6 +138,16 @@
                   <div class="custom-text-box" style="background-color: #FFF5CA;">
                      <%= response.query %>
                   </div>
+                  <% } else if(response.resolve_status == '0') { %>
+                     <div class="custom-text-label">
+                        Customer Reopen Response 
+                        <% const responsedateString = response.created_at; %>
+                        <% const responsedate = new Date(responsedateString); %>
+                        <strong class="badge bg-warning"><%= responsedate.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></strong>
+                     </div>
+                     <div class="custom-text-box" style="background-color: #FFF5CA;">
+                        <%= response.response %>
+                     </div>
                   <% } else { %>
                      <div class="custom-text-label">
                         Customer Response 
@@ -161,7 +171,7 @@
                 <input type="hidden" name="user_id"  value="<%= currentUserData.user_id %>" />
                 <input type="hidden" name="company_id" value="<%= ComplaintsByComplaintId.company_id %>" />
                 <input type="hidden" name="complaint_id" value="<%= ComplaintsByComplaintId.id %>"> 
-                <input type="hidden"  name="complaint_status" value="">
+                <input type="hidden"  name="complaint_status" value="2">
                 <input type="hidden" name="complaint_level" value="<%= ComplaintsByComplaintId.level_id %>">
                 <button type="submit" class="btn-default btn-warning mt-4 submit_btn" id="">Submit</button>
             </form>
@@ -264,6 +274,8 @@
             //contentType: false,
             contentType: 'application/json',
             success: function (data) {
+               
+               $('#message_form')[0].reset();
                if (data.status == 'ok') {
                   $('.response-message').text(data.message);
                   $('.response-message').show();
@@ -311,6 +323,7 @@
             //contentType: false,
             contentType: 'application/json',
             success: function (data) {
+               $('#resolved_message_form')[0].reset();
                if (data.status == 'ok') {
                   $('.response-message').text(data.message);
                   $('.response-message').show();
