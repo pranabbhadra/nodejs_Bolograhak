@@ -26,7 +26,7 @@
                <% } else if(ComplaintsByComplaintId.status == '1') { %>
                   <span class="text-success"><strong>Resolved</strong></span>
                   <% } else { %>
-                     <span class="text-warning"><strong>Pending</strong></span>
+                     <span class="text-warning"><strong>Ongoing</strong></span>
                      <% } %>
             </div>
          </div>
@@ -156,7 +156,7 @@
             Your Query
            </div>
          <div class="custom-text-box">
-            <form action="" id="" class="message_form">
+            <form action="" id="message_form" class="message_form">
                 <textarea class="form-control" name="message" placeholder="Type Here..." required></textarea>
                 <input type="hidden" name="user_id"  value="<%= currentUserData.user_id %>" />
                 <input type="hidden" name="company_id" value="<%= ComplaintsByComplaintId.company_id %>" />
@@ -198,7 +198,7 @@
 
          <!-- Modal body -->
          <div class="modal-body">
-            <form id="resolved_message_form" class="message_form">
+            <form id="resolved_message_form" >
                <div class="custom-form">
                   <label for=""><span>Resolved Message</span></label>
                   <textarea name="message" id="" class="form-control"></textarea>
@@ -241,7 +241,7 @@
          $('#complaint-resolve-level').val(levelId);
       });
 
-      $('form.message_form').submit(function (e) {
+      $('form#message_form').submit(function (e) {
          e.preventDefault();
          $('.response-message').hide();
          $('.response-message').text('');
@@ -288,7 +288,7 @@
 
       });
 
-      $('form.message_form').submit(function (e) {
+      $('form#resolved_message_form').submit(function (e) {
          e.preventDefault();
          $('.response-message').hide();
          $('.response-message').text('');

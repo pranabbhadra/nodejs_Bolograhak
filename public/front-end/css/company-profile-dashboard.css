@@ -1237,7 +1237,7 @@
 
 .action-dropdown ul li a {
     color: #000;
-    font-size: 12px;
+    font-size: 10px;
     font-weight: 600;
     padding: 5px 5px;
     line-height: normal;
@@ -1663,6 +1663,24 @@ a.close-level:hover {
 
 .c-u-layer-part {
     margin: 10px 0;
+}
+.survey-rating-part .rating_each_option span {
+    opacity: 0;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: -18px;
+    font-size: 14px;
+    background: #fbce40;
+    min-width: 34px;
+    border-radius: 5px;
+    color: #000;
+    transition: all ease-in-out 0.3s;
+}
+
+.survey-rating-part .rating_each_option:hover span {
+    opacity: 1;
+    transition: all ease-in-out 0.3s;
 }
 
 /*========================================= responsive ====================================*/

@@ -136,7 +136,7 @@
       <li <% if( menu_active_id == 'company-poll-listing') { %> class="active" <% } %>>
          <a href="/company-poll-listing/<%= company.slug  %>"><i class="fas fa-poll"></i> Polls</a>
       </li>
-      <li <% if( menu_active_id == 'complaint') { %> class="active" <% } %>><a href="#"><i class="fa-solid fa-comment-exclamation"></i> Complaint</a>
+      <li <% if( menu_active_id == 'complaint') { %> class="active" <% } %>><a href="/company-complaint-listing/<%= company.slug  %>"><i class="fa-solid fa-comment-exclamation"></i> Complaint</a>
          <ul>
             <li><a href="/create-category/<%= company.slug  %>">Create Category</a></li>
             <li><a href="/company-complaint-listing/<%= company.slug  %>">Complaint Listing</a></li>

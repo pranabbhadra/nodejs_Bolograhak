@@ -2354,7 +2354,7 @@ router.get('/company-complaint-listing/:slug', checkClientClaimedCompany, async 
         //     instagram_url:instagram_url,
         //     linkedin_url:linkedin_url,
         //     youtube_url:youtube_url,
-        //     AllComplaintsByCompanyId:getAllComplaintsByCompanyId
+        //     AllComplaintsByCompanyId:formattedCoplaintData
         // });
         res.render('front-end/premium-complaint-listing',
         {

@@ -62,7 +62,7 @@
 
                                           
                                        </td>
-                                       <td>
+                                       <td style="text-align: center;">
                                           <% if(compnaint.notification_statuses.length > 1){ %>
                                              <% let count = 0; %>
                                              <% compnaint.notification_statuses.forEach((notification, index) => { %>
@@ -121,23 +121,28 @@
                         Disappointing
                      </div>
                      <div class="survey-rating-part">
-                        <div class="form-check position-relative custom-check">
+                        <div class="rating_each_option form-check position-relative custom-check">
+                           <span>1</span>
                            <input class="form-check-input" type="radio" name="rating" id="inlineRadio1" value="1" checked>
                            <label class="form-check-label" for="inlineRadio1"><img src="/1691876041063-2.Low.gif" alt="gif"></label>
                         </div>
-                        <div class="form-check position-relative custom-check">
+                        <div class="rating_each_option form-check position-relative custom-check">
+                           <span>2</span>
                            <input class="form-check-input" type="radio" name="rating" id="inlineRadio2" value="2">
                            <label class="form-check-label" for="inlineRadio2"><img src="/1691876024849-3.NotBad.gif" alt="gif"></label>
                         </div>
-                        <div class="form-check position-relative custom-check">
+                        <div class="rating_each_option form-check position-relative custom-check">
+                           <span>3</span>
                            <input class="form-check-input" type="radio" name="rating" id="inlineRadio3" value="3">
                            <label class="form-check-label" for="inlineRadio3"><img src="/1691875972021-6.Good.gif" alt="gif"></label>
                         </div>
-                        <div class="form-check position-relative custom-check">
+                        <div class="rating_each_option form-check position-relative custom-check">
+                           <span>4</span>
                            <input class="form-check-input" type="radio" name="rating" id="inlineRadio4" value="4">
                            <label class="form-check-label" for="inlineRadio4"><img src="/1691875935385-8.Awesome.gif" alt="gif"></label>
                         </div>
-                        <div class="form-check position-relative custom-check">
+                        <div class="rating_each_option form-check position-relative custom-check">
+                           <span>5</span>
                            <input class="form-check-input" type="radio" name="rating" id="inlineRadio5" value="5">
                            <label class="form-check-label" for="inlineRadio5"><img src="/1691875890277-10.High.gif" alt="gif"></label>
                         </div>
@@ -185,7 +190,7 @@
          jQuery(function ($) {
             $(document).ready(() => {
                $('.table').DataTable({
-                     "order": [[ 4, "desc" ]]
+                     "order": [[ 0, "desc" ]]
                });
             });
          });

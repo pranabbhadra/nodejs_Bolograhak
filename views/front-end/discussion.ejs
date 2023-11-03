@@ -262,25 +262,26 @@
                 </div>
                 <div class="discussions-right-panel">
                     <h4>Popular Tags</h4>
-                    <% if(AllPopularDiscussion.length > 0) { %>
-                        <% var tags = [] %>
-                        <% AllPopularDiscussion.forEach((PopularDiscussion,index)=>{  %>
-                        <% const ExpireDate = new Date(PopularDiscussion.expired_at); %>
-                        <% const date2 = new Date(); %>
-                        <% const daysDiff = Math.round((ExpireDate - date2)/(1000 * 60 * 60 * 24)) %>
-                        <% if(daysDiff > -1){ %>
-                            <% 
-                                if(PopularDiscussion.tags != ''){
-                                tags = JSON.parse(PopularDiscussion.tags)
-                                }
-                             %>
-                            <% tags.forEach((tag) =>{ %> 
-                            <a href="/discussion-details/<%= PopularDiscussion.id %>" class="btn-default btn-warning dis-details-top-btn"><%= tag %></a>
-                            <% }) %>
-                        <!-- <a href="#" class="btn-default btn-warning pop-tag-btn"><%= PopularDiscussion.tags %></a>  -->
-                        <% } %>
+                    <% if (AllPopularDiscussion.length > 0) { %>
+                        <% var uniqueTags = new Set(); %>
+                        <% AllPopularDiscussion.forEach((PopularDiscussion, index) => { %>
+                            <% const ExpireDate = new Date(PopularDiscussion.expired_at); %>
+                            <% const date2 = new Date(); %>
+                            <% const daysDiff = Math.round((ExpireDate - date2) / (1000 * 60 * 60 * 24)) %>
+                            <% if (daysDiff > -1) { %>
+                                <% if (PopularDiscussion.tags != '') { %>
+                                    <% const tags = JSON.parse(PopularDiscussion.tags); %>
+                                    <% tags.forEach((tag) => { %>
+                                        <% if (!uniqueTags.has(tag)) { %>
+                                            <% uniqueTags.add(tag); %>
+                                            <a href="/discussion-details/<%= PopularDiscussion.id %>" class="btn-default btn-warning dis-details-top-btn"><%= tag %></a>
+                                        <% } %>
+                                    <% }) %>
+                                <% } %>
+                            <% } %>
                         <% }) %>
                     <% } %>
+                    
                 </div>
                 
             </div>

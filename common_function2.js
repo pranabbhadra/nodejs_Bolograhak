@@ -2374,16 +2374,22 @@ async function getComplaintLevelDetails(companyId) {
 //Function to get All Complaints By CompanyId from complaint table
 async function getAllComplaintsByCompanyId(companyId) {
   const sql = `
-  SELECT complaint.*,c.company_name, cc.category_name, subcat.category_name AS sub_category_name,GROUP_CONCAT(cqr.notification_status) AS notification_statuses,
+  SELECT 
+  complaint.*,
+  c.company_name, 
+  cc.category_name, 
+  subcat.category_name AS sub_category_name,
+  GROUP_CONCAT(cqr.notification_status) AS notification_statuses,
   GROUP_CONCAT(cqr.query) AS company_query,
   GROUP_CONCAT(cqr.response) AS user_response
-  FROM complaint 
-  LEFT JOIN complaint_category cc ON complaint.category_id = cc.id 
-  LEFT JOIN complaint_category subcat ON complaint.sub_cat_id = subcat.id 
-  LEFT JOIN company c ON complaint.company_id = c.ID 
+  FROM complaint
+  LEFT JOIN complaint_category cc ON complaint.category_id = cc.id
+  LEFT JOIN complaint_category subcat ON complaint.sub_cat_id = subcat.id
+  LEFT JOIN company c ON complaint.company_id = c.ID
   LEFT JOIN complaint_query_response cqr ON complaint.id = cqr.complaint_id
-  WHERE complaint.company_id  = '${companyId}'
-  ORDER BY complaint.id DESC
+  WHERE complaint.company_id = '${companyId}'
+  GROUP BY complaint.id
+  ORDER BY complaint.id DESC;
   `;
 
   try{
@@ -2840,7 +2846,7 @@ async function complaintCompanyResponseEmail(complaint_id) {
                                   <tr>
                                     <td colspan="2">
                                     <strong>Hello ${results[0].first_name},</strong>
-                                    <p style="font-size:15px; line-height:20px">${results[0].company_name} has responded on your complaint. 
+                                    <p style="font-size:15px; line-height:20px">${results[0].company_name} has responded on your complaint. <a  href="${process.env.MAIN_URL}user-compnaint-details/${complaint_id}">Click here</a> to view detaiis.
                                     </p>
                                     </td>
                                   </tr>
@@ -2912,13 +2918,14 @@ async function complaintCompanyResponseEmail(complaint_id) {
 }
 
 //Function send User Response Email  to company by complaint_id 
-async function complaintUserResponseEmail(companyId) {
+async function complaintUserResponseEmail(complaint_id) {
   const sql = `
-  SELECT users.email, users.first_name, c.slug
+  SELECT users.email, users.first_name, c.slug, complaint.ticket_id
   FROM users 
   LEFT JOIN company_claim_request ccr ON ccr.claimed_by = users.user_id 
   LEFT JOIN company c ON c.ID = ccr.company_id
-  WHERE ccr.company_id = '${companyId}'
+  LEFT JOIN complaint ON c.ID = complaint.company_id
+  WHERE complaint.id = '${complaint_id}'
 
   `;
   try{
@@ -2972,7 +2979,7 @@ async function complaintUserResponseEmail(companyId) {
                                   <tr>
                                     <td colspan="2">
                                     <strong>Hello ${results[0].first_name},</strong>
-                                    <p style="font-size:15px; line-height:20px">A customer has responded on your query. 
+                                    <p style="font-size:15px; line-height:20px">A customer has responded on your query. <a href="${process.env.MAIN_URL}company-compnaint-details/${results[0].slug}/${complaint_id}">Click here</a> to view datails.
                                     </p>
                                     </td>
                                   </tr>
@@ -3103,7 +3110,7 @@ async function complaintCompanyResolvedEmail(complaint_id) {
                                   <tr>
                                     <td colspan="2">
                                     <strong>Hello ${results[0].first_name},</strong>
-                                    <p style="font-size:15px; line-height:20px">${results[0].company_name} has resolved on your complaint. Please give us feedback rating.
+                                    <p style="font-size:15px; line-height:20px">${results[0].company_name} has resolved on your complaint. Please <a  href="${process.env.MAIN_URL}user-compnaint-details/${complaint_id}">give us</a> feedback.
                                     </p>
                                     </td>
                                   </tr>
