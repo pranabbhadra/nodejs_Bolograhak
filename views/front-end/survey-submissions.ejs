@@ -60,7 +60,7 @@
                                                 });
                                                 var opt_percentage = (opt_count/companySurveySubmissions.length)*100;
                                             %>
-                                            <li><span class="position-relative" style="z-index: 9;"><%- opt %> : <%- opt_count %>/<%- companySurveySubmissions.length %></span> <span class="suvey-progress-value" style="width:<%- opt_percentage.toFixed(2) %>%"></span></li>
+                                            <li><span class="position-relative" style="z-index: 9;"><%- opt %> : (<%- opt_count %>/<%- companySurveySubmissions.length %>)</span> <span class="suvey-progress-value" style="width:<%- opt_percentage.toFixed(2) %>%"></span></li>
                                         <% }) %>
                                     </ol>
                                 <% } %>
@@ -81,7 +81,7 @@
                                                 });
                                                 var opt_percentage = (opt_count/companySurveySubmissions.length)*100;
                                             %>
-                                            <li><span class="position-relative" style="z-index: 9;"><%- opt %> : <%- opt_count %>/<%- companySurveySubmissions.length %></span> <span class="suvey-progress-value" style="width:<%- opt_percentage.toFixed(2) %>%"></span></li>
+                                            <li><span class="position-relative" style="z-index: 9;"><%- opt %> : (<%- opt_count %>/<%- companySurveySubmissions.length %>)</span> <span class="suvey-progress-value" style="width:<%- opt_percentage.toFixed(2) %>%"></span></li>
                                         <% }) %>
                                     </ol>
                                 <% } %>
@@ -109,7 +109,7 @@
                                                     }
                                                 });
                                             %>
-                                            <li style="background-image: url(/<%- rating_image %>);"><span class="position-relative" style="z-index: 9;"><%- i %> : <%- opt_count %>/<%- companySurveySubmissions.length %></span><span class="suvey-progress-value" style="width:<%- opt_percentage.toFixed(2) %>%"></span></li>
+                                            <li style="background-image: url(/<%- rating_image %>);"><span class="position-relative" style="z-index: 9;"><%- i %> : (<%- opt_count %>/<%- companySurveySubmissions.length %>)</span><span class="suvey-progress-value" style="width:<%- opt_percentage.toFixed(2) %>%"></span></li>
                                         <% counter++; } %>
                                     </ol>
                                 <% } %>
