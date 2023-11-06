@@ -2047,10 +2047,12 @@ async function getAllPopularDiscussion(limit, offset) {
     discussions.*,
     u.first_name,
     u.last_name,
+    mu.profile_pic AS user_profile_pic,
     COALESCE(comments.total_comments, 0) as total_comments,
     COALESCE(views.total_views, 0) as total_views
   FROM discussions
   LEFT JOIN users u ON discussions.user_id = u.user_id
+  LEFT JOIN user_customer_meta mu ON discussions.user_id = mu.user_id
   LEFT JOIN (
     SELECT discussion_id, COUNT(*) as total_comments
     FROM discussions_user_response
@@ -2113,10 +2115,12 @@ async function getAllLatestDiscussion(limit, offset) {
     discussions.*,
     u.first_name,
     u.last_name,
+    mu.profile_pic AS user_profile_pic,
     COALESCE(comments.total_comments, 0) as total_comments,
     COALESCE(views.total_views, 0) as total_views
   FROM discussions
   LEFT JOIN users u ON discussions.user_id = u.user_id
+  LEFT JOIN user_customer_meta mu ON discussions.user_id = mu.user_id
   LEFT JOIN (
     SELECT discussion_id, COUNT(*) as total_comments
     FROM discussions_user_response
@@ -2150,10 +2154,12 @@ async function getAllDiscussions(limit, offset) {
       discussions.*,
       u.first_name,
       u.last_name,
+      mu.profile_pic AS user_profile_pic,
       COALESCE(comments.total_comments, 0) as total_comments,
       COALESCE(views.total_views, 0) as total_views
     FROM discussions
     LEFT JOIN users u ON discussions.user_id = u.user_id
+    LEFT JOIN user_customer_meta mu ON discussions.user_id = mu.user_id
     LEFT JOIN (
       SELECT discussion_id, COUNT(*) as total_comments
       FROM discussions_user_response
