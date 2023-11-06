@@ -2518,7 +2518,7 @@ router.get('/discussionlisting', verifyToken, async (req, res) => {
         res.json({
             AllLatestDiscussion: getAllLatestDiscussion,
             AllPopularDiscussion: getAllPopularDiscussion,
-            AllRelatedDiscussions: getAllDiscussions,
+            AllDiscussions: getAllDiscussions,
             //AllViewedDiscussion: getAllViewedDiscussion
         });
     }
@@ -2552,7 +2552,7 @@ router.get('/discussiondetails/:discussion_id', verifyToken, async (req, res) =>
         res.json({
             commentID: insertDiscussionResponse,
             AllCommentByDiscusId: getAllCommentByDiscusId,
-            AllDiscussions: getRelatedDiscussionsByTags
+            AllRelatedDiscussions: getRelatedDiscussionsByTags
         });
     } catch (err) {
         console.error(err);
