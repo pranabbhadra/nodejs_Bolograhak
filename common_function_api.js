@@ -2387,36 +2387,73 @@ async function getRelatedDiscussionsByTags(discussion_id) {
 //
 
 
-const relatedDiscussionsQuery = `
-SELECT discussions.*,
-  u.first_name AS discussion_user_first_name, 
-  u.last_name AS discussion_user_last_name,
-  du.user_id AS author_id,
-  du.created_at AS comment_date,
-  au.first_name AS author_first_name,
-  au.last_name AS author_last_name,
-  mu.profile_pic AS author_profile_pic,
-  COALESCE(cr.total_comments, 0) as total_comments,
-  COALESCE(vr.total_views, 0) as total_views
+// const relatedDiscussionsQuery = `
+// SELECT discussions.*,
+//   u.first_name AS discussion_user_first_name, 
+//   u.last_name AS discussion_user_last_name,
+//   du.user_id AS author_id,
+//   du.created_at AS comment_date,
+//   au.first_name AS author_first_name,
+//   au.last_name AS author_last_name,
+//   mu.profile_pic AS author_profile_pic,
+//   COALESCE(cr.total_comments, 0) as total_comments,
+//   COALESCE(vr.total_views, 0) as total_views
+// FROM discussions
+// LEFT JOIN users u ON discussions.user_id = u.user_id
+// LEFT JOIN discussions_user_response du ON discussions.id = du.discussion_id
+// LEFT JOIN users au ON du.user_id = au.user_id
+// LEFT JOIN user_customer_meta mu ON du.user_id = mu.user_id
+// LEFT JOIN (
+//   SELECT discussion_id, COUNT(*) as total_comments
+//   FROM discussions_user_response
+//   GROUP BY discussion_id
+// ) cr ON discussions.id = cr.discussion_id
+// LEFT JOIN (
+//   SELECT discussion_id, COUNT(*) as total_views
+//   FROM discussions_user_view
+//   GROUP BY discussion_id
+// ) vr ON discussions.id = vr.discussion_id
+// WHERE discussions.id <> ${discussion_id} 
+//   AND (${tagQueries})
+// ORDER BY discussions.id DESC
+// `;
+
+const relatedDiscussionsQuery = `SELECT discussions.id,
+discussions.user_id,
+discussions.topic,
+discussions.tags,
+discussions.created_at,
+discussions.expired_at,
+u.first_name AS discussion_user_first_name,
+u.last_name AS discussion_user_last_name,
+MAX(du.user_id) AS author_id,
+MAX(du.created_at) AS comment_date,
+MAX(au.first_name) AS author_first_name,
+MAX(au.last_name) AS author_last_name,
+MAX(mu.profile_pic) AS author_profile_pic,
+COALESCE(SUM(cr.total_comments), 0) as total_comments,
+COALESCE(SUM(vr.total_views), 0) as total_views
 FROM discussions
 LEFT JOIN users u ON discussions.user_id = u.user_id
 LEFT JOIN discussions_user_response du ON discussions.id = du.discussion_id
 LEFT JOIN users au ON du.user_id = au.user_id
 LEFT JOIN user_customer_meta mu ON du.user_id = mu.user_id
 LEFT JOIN (
-  SELECT discussion_id, COUNT(*) as total_comments
-  FROM discussions_user_response
-  GROUP BY discussion_id
+SELECT discussion_id, COUNT(*) as total_comments
+FROM discussions_user_response
+GROUP BY discussion_id
 ) cr ON discussions.id = cr.discussion_id
 LEFT JOIN (
-  SELECT discussion_id, COUNT(*) as total_views
-  FROM discussions_user_view
-  GROUP BY discussion_id
+SELECT discussion_id, COUNT(*) as total_views
+FROM discussions_user_view
+GROUP BY discussion_id
 ) vr ON discussions.id = vr.discussion_id
 WHERE discussions.id <> ${discussion_id} 
-  AND (${tagQueries})
-ORDER BY discussions.id DESC
+AND (${tagQueries})
+GROUP BY discussions.id
+ORDER BY discussions.id DESC;
 `;
+
 
 const relatedDiscussions = await query(relatedDiscussionsQuery);
 
