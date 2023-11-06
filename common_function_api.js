@@ -2480,14 +2480,14 @@ mu.profile_pic AS user_profile_pic,
 COALESCE(cr.total_comments, 0) as total_comments,
 COALESCE(vr.total_views, 0) as total_views,
 MAX(du.created_at) AS comment_date,
-au.user_id AS author_id,             -- Added this line
-au.first_name AS author_first_name,   -- Added this line
-au.last_name AS author_last_name      -- Added this line
+au.user_id AS author_id,            
+au.first_name AS author_first_name,   
+au.last_name AS author_last_name      
 FROM discussions
 LEFT JOIN users u ON discussions.user_id = u.user_id
 LEFT JOIN discussions_user_response du ON discussions.id = du.discussion_id
 LEFT JOIN user_customer_meta mu ON u.user_id = mu.user_id 
-LEFT JOIN users au ON du.user_id = au.user_id -- Added this LEFT JOIN
+LEFT JOIN users au ON du.user_id = au.user_id 
 LEFT JOIN (
 SELECT discussion_id, COUNT(*) as total_comments
 FROM discussions_user_response
