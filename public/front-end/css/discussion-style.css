@@ -118,7 +118,6 @@
 .user-comment-control-wrapper {
     background: #252525;
     border-radius: 20px;
-    padding: 20px 25px;
     color: #fff;
 }
 
@@ -350,7 +349,7 @@
     min-height: 50px;
     display: flex;
     align-items: center;
-    margin-bottom: 15px;
+    margin: 15px 0;
     background-image: url(../images/discussion-object-bg2.svg);
     background-repeat: no-repeat;
     background-position: right top;
@@ -364,9 +363,12 @@
     margin-bottom: 25px;
 }
 
+.user-repeat-main {
+    padding: 20px 25px;
+}
+
 .user-repeat-main + .user-repeat-main {
     border-top: 1px #5e5b5b solid;
-    margin-top: 30px;
 }
 
 .user-comment-control-wrapper  .discussion-details-user-info h4 {

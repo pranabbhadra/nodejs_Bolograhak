@@ -61,7 +61,7 @@
                                           <span class="text-yellow"><strong>Ongoing</strong></span>
                                           <% } %>
                               </td>
-                              <td style="text-align: center;" >
+                              <td style="text-align: center;" class="complaint-status" >
                                  <% if(compnaint.notification_statuses.length > 0){ %>
                                     <% let count = 0; %>
                                     <% compnaint.notification_statuses.forEach((notification, index) => { %>
@@ -70,8 +70,9 @@
                                        <% } %>
                                     <% })  %>
                                     <% if(count > 0) { %>
-                                       <i class="fa-solid fa-bell"></i> <%= count %>
+                                      <span class="bell_icon"><i class="fa-solid fa-bell"></i> <span class="bell_icon1"><%= count %></span> </span>
                                     <% } %>
+                                    
                                  <% }  %>
                               </td>
                               <td style="text-align: center;">
@@ -181,6 +182,34 @@
          </div>
       </div>
       <!-- ============== Section1 end =============== -->
+      <style>
+         .complaint-status {
+            position: relative;
+            left: 0px;
+            min-width: 96px;
+            font-size: 12px;
+         }
+         .bell_icon{
+            position: relative;
+         }
+         .bell_icon i {
+            font-size: 14px;
+            position: relative;
+         }
+         
+         .bell_icon .bell_icon1 {
+            position: absolute;
+            right: -6px;
+            background-color: #F8A401;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 15px;
+            height: 15px;
+            top: -11px;
+         }
+         </style>
 
       <%- include('common/footer') -%>
 

@@ -20,8 +20,7 @@
                                     <th scope="col">Company Name</th>
                                     <th scope="col">Category</th>
                                     <th scope="col">Product Name</th>
-                                    <th scope="col">Status </th>
-                                    <th scope="col">Notification </th>
+                                    <th scope="col" >Status </th>
                                     <th scope="col" style=" text-align: center;">Action</th>
                                  </tr>
                               </thead>
@@ -51,7 +50,7 @@
                                        <td>
                                           <%= compnaint.model_desc %>
                                        </td>
-                                       <td>
+                                       <td class="complaint-status">
                                           <% if(compnaint.status=='0' ) { %>
                                              <span class="text-danger"><strong>Reopen</strong></span>
                                           <% } else if(compnaint.status=='1' ) { %>
@@ -59,10 +58,7 @@
                                           <% } else { %>
                                                    <span class="text-yellow"><strong>Ongoing</strong></span>
                                           <% } %>
-
                                           
-                                       </td>
-                                       <td style="text-align: center;">
                                           <% if(compnaint.notification_statuses.length > 0){ %>
                                              <% let count = 0; %>
                                              <% compnaint.notification_statuses.forEach((notification, index) => { %>
@@ -71,9 +67,10 @@
                                                 <% } %>
                                              <% })  %>
                                              <% if(count > 0) { %>
-                                                <i class="fa-solid fa-bell"></i> <%= count %>
+                                                &nbsp;<span class="bell_icon"><i class="fa-solid fa-bell"></i> <span class="bell_icon1"><%= count %></span> </span>
                                              <% } %>
                                           <% }  %>
+                                          
                                        </td>
                                        <td style="text-align: center;">
                                           <% if(compnaint.status=='1'){ %>
@@ -212,6 +209,34 @@
    </div>
 </div>
 <!-- ============== Section1 End =============== -->
+
+<style>
+.complaint-status {
+	position: relative;
+	left: 0px;
+	min-width: 96px;
+}
+.bell_icon{
+   position: relative;
+}
+.bell_icon i {
+	font-size: 14px;
+   position: relative;
+}
+
+.bell_icon .bell_icon1 {
+	position: absolute;
+	right: -6px;
+	background-color: #F8A401;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 15px;
+	height: 15px;
+	top: -11px;
+}
+</style>
 
 <%- include('common/footer') -%>
 
