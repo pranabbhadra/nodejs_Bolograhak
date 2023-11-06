@@ -3680,7 +3680,7 @@ GROUP BY pa.id, pa.answer;
 
 
 exports.createDiscussion = async (req, res) => {
-  console.log('createDiscussion', req.body);
+  //console.log('createDiscussion', req.body);
   const { user_id, tags, topic, from_data, expiration_date } = req.body;
 
   const currentDate = new Date();
@@ -3700,6 +3700,7 @@ exports.createDiscussion = async (req, res) => {
   const data = [user_id, topic, JSON.stringify(tagsArray), formattedDate, expiration_date]; 
 
   db.query(sql, data, (err, result) => {
+    // console.log("tags",data);
     if (err) {
       return res.send({
         status: 'not ok',
@@ -3712,6 +3713,7 @@ exports.createDiscussion = async (req, res) => {
         message: 'Your Discussion Topic Added Successfully',
       });
     }
+    
   });
 }
 
@@ -3720,14 +3722,14 @@ exports.createDiscussion = async (req, res) => {
 
 //Add comment on discussion
 exports.addDiscussionComment = async (req, res) => {
-  console.log('addDiscussionComment',req.body ); 
+  //console.log('addDiscussionComment',req.body ); 
   const {discussion_id,  comment} = req.body;
 
   const authenticatedUserId = parseInt(req.user.user_id);
-  console.log('authenticatedUserId: ', authenticatedUserId);
+  //console.log('authenticatedUserId: ', authenticatedUserId);
 
   const user_id = parseInt(req.body.user_id);
-  console.log('req.body.user_id: ', parseInt(req.body.user_id));
+  //console.log('req.body.user_id: ', parseInt(req.body.user_id));
 
   if (user_id !== authenticatedUserId) {
     return res.status(403).json({

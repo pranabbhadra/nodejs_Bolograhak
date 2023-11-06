@@ -2480,16 +2480,41 @@ router.get('/reviewReplies/:review_id', verifyToken, async (req, res) => {
 })
 
 
-router.get('/discussionlisting/:limit', verifyToken, async (req, res) => {
+// router.get('/discussionlisting/:limit', verifyToken, async (req, res) => {
+//     try {
+//         const limit = req.params.limit;
+//         const [getAllLatestDiscussion, getAllPopularDiscussion, getAllDiscussions] = await Promise.all([
+//             comFunction.getAllLatestDiscussion(limit),
+//             comFunction.getAllPopularDiscussion(limit),
+//             comFunction.getAllDiscussions(limit),
+//             //comFunction2.getAllViewedDiscussion(),
+//         ]);
+//         console.log(getAllLatestDiscussion);
+//         res.json({
+//             AllLatestDiscussion: getAllLatestDiscussion,
+//             AllPopularDiscussion: getAllPopularDiscussion,
+//             AllDiscussions: getAllDiscussions,
+//             //AllViewedDiscussion: getAllViewedDiscussion
+//         });
+//     }
+//     catch (error) {
+//         console.error(err);
+//         res.status(500).send('An error occurred during discussion listing');
+//     }
+// });
+
+
+router.get('/discussionlisting', verifyToken, async (req, res) => {
     try {
-        const limit = req.params.limit;
+        const limit = req.body.limit;
+        const offset = req.body.offset;
         const [getAllLatestDiscussion, getAllPopularDiscussion, getAllDiscussions] = await Promise.all([
-            comFunction2.getAllLatestDiscussion(limit),
-            comFunction2.getAllPopularDiscussion(limit),
-            comFunction2.getAllDiscussions(limit),
+            comFunction.getAllLatestDiscussion(limit,offset),
+            comFunction.getAllPopularDiscussion(limit,offset),
+            comFunction.getAllDiscussions(limit,offset),
             //comFunction2.getAllViewedDiscussion(),
         ]);
-        console.log(getAllLatestDiscussion);
+        //console.log(getAllLatestDiscussion);
         res.json({
             AllLatestDiscussion: getAllLatestDiscussion,
             AllPopularDiscussion: getAllPopularDiscussion,
@@ -2507,26 +2532,60 @@ router.get('/discussionlisting/:limit', verifyToken, async (req, res) => {
 
 router.get('/discussiondetails/:discussion_id', verifyToken, async (req, res) => {
     const discussion_id = req.params.discussion_id;
-    //const ip_address = req.body.ip_address;
-    const ip_address = requestIp.getClientIp(req);
-    const limit = req.body.limit;
-    const [insertDiscussionResponse, getAllCommentByDiscusId, getAllDiscussions] = await Promise.all([
-        comFunction2.insertDiscussionResponse(discussion_id, ip_address),
+    const ip_address = req.body.ip_address;
+
+    const user_id = parseInt(req.user.user_id);
+    //console.log("user_id",user_id);
+
+    //const ip_address = requestIp.getClientIp(req);
+    //const limit = req.body.limit;
+    const [insertDiscussionResponse, getAllCommentByDiscusId, getRelatedDiscussionsByTags] = await Promise.all([
+        comFunction.insertDiscussionResponse(discussion_id, ip_address, user_id),
         comFunction.getAllCommentByDiscusId(discussion_id),
-        comFunction2.getAllDiscussions(limit),
+        comFunction.getRelatedDiscussionsByTags(discussion_id),
+        //comFunction.getAllRelatedDiscussion()
     ]);
+    // console.log("discuss",getAllCommentByDiscusId[0].tags);
+    // console.log("discuss2",getRelatedDiscussionsByTags[0].tags);
     try {
 
         res.json({
-            commentID: insertDiscussionResponse,
+            commentviewID: insertDiscussionResponse,
             AllCommentByDiscusId: getAllCommentByDiscusId,
-            AllDiscussions: getAllDiscussions
+            AllRelatedDiscussions: getRelatedDiscussionsByTags
         });
     } catch (err) {
         console.error(err);
         res.status(500).send('An error occurred');
     }
 });
+
+// router.get('/discussiondetails/:discussion_id', verifyToken, async (req, res) => {
+//     const discussion_id = req.params.discussion_id;
+//     const ip_address = requestIp.getClientIp(req);
+
+//     // Retrieve the discussion and its associated tags
+//     const discussion = await comFunction.getAllCommentByDiscusId(discussion_id);
+//     const tags = JSON.stringify(discussion[0].tags); 
+//     console.log("tags",tags);
+
+//     const insertDiscussionResponse = await comFunction.insertDiscussionResponse(discussion_id, ip_address);
+
+//     // Query for related discussions based on the tags
+//     const relatedDiscussions = await comFunction.getRelatedDiscussionsByTags(tags);
+
+//     try {
+//         res.json({
+//             commentID: insertDiscussionResponse,
+//             AllCommentByDiscusId: discussion,
+//             AllDiscussions: relatedDiscussions
+//         });
+//     } catch (err) {
+//         console.error(err);
+//         res.status(500).send('An error occurred');
+//     }
+// });
+
 
 
 

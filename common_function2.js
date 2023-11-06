@@ -2236,14 +2236,14 @@ async function getAllDiscussions() {
 }
 
 //Function to insert discussion response in discussions_user_response table
-async function insertDiscussionResponse(discussion_id, ip_address) {
+async function insertDiscussionResponse(discussion_id, IP_address) {
   const currentDate = new Date();
   const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
   const data = {
     discussion_id : discussion_id,
-    ip_address: ip_address,
+    ip_address: IP_address,
   };
-  const checkQuery = `SELECT * FROM discussions_user_view WHERE discussion_id = '${discussion_id}'  AND ip_address = '${ip_address}'`;
+  const checkQuery = `SELECT * FROM discussions_user_view WHERE discussion_id = '${discussion_id}'  AND ip_address = '${IP_address}'`;
   const check_result = await query(checkQuery);
   if(check_result.length > 0){
     console.log(check_result[0].id);
