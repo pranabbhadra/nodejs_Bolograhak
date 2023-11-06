@@ -2418,30 +2418,57 @@ async function getRelatedDiscussionsByTags(discussion_id) {
 // ORDER BY discussions.id DESC
 // `;
 
-const relatedDiscussionsQuery = `
-SELECT discussions.*,
-       u.first_name AS discussion_user_first_name, 
-       u.last_name AS discussion_user_last_name,
-       COALESCE(cr.total_comments, 0) as total_comments,
-       COALESCE(vr.total_views, 0) as total_views
+
+//ac
+// const relatedDiscussionsQuery = `
+// SELECT discussions.*,
+//        u.first_name AS discussion_user_first_name, 
+//        u.last_name AS discussion_user_last_name,
+//        COALESCE(cr.total_comments, 0) as total_comments,
+//        COALESCE(vr.total_views, 0) as total_views
+// FROM discussions
+// LEFT JOIN users u ON discussions.user_id = u.user_id
+// LEFT JOIN (
+//   SELECT discussion_id, COUNT(*) as total_comments
+//   FROM discussions_user_response
+//   GROUP BY discussion_id
+// ) cr ON discussions.id = cr.discussion_id
+// LEFT JOIN (
+//   SELECT discussion_id, COUNT(*) as total_views
+//   FROM discussions_user_view
+//   GROUP BY discussion_id
+// ) vr ON discussions.id = vr.discussion_id
+// WHERE discussions.id <> ${discussion_id} 
+//   AND (${tagQueries})
+// GROUP BY discussions.id
+// ORDER BY discussions.id DESC;
+// `;
+
+
+const relatedDiscussionsQuery = `SELECT discussions.*,
+u.first_name AS discussion_user_first_name, 
+u.last_name AS discussion_user_last_name,
+COALESCE(cr.total_comments, 0) as total_comments,
+COALESCE(vr.total_views, 0) as total_views,
+MAX(du.created_at) AS comment_date
 FROM discussions
 LEFT JOIN users u ON discussions.user_id = u.user_id
+LEFT JOIN discussions_user_response du ON discussions.id = du.discussion_id
 LEFT JOIN (
-  SELECT discussion_id, COUNT(*) as total_comments
-  FROM discussions_user_response
-  GROUP BY discussion_id
+SELECT discussion_id, COUNT(*) as total_comments
+FROM discussions_user_response
+GROUP BY discussion_id
 ) cr ON discussions.id = cr.discussion_id
 LEFT JOIN (
-  SELECT discussion_id, COUNT(*) as total_views
-  FROM discussions_user_view
-  GROUP BY discussion_id
+SELECT discussion_id, COUNT(*) as total_views
+FROM discussions_user_view
+GROUP BY discussion_id
 ) vr ON discussions.id = vr.discussion_id
 WHERE discussions.id <> ${discussion_id} 
-  AND (${tagQueries})
+AND (${tagQueries})
 GROUP BY discussions.id
 ORDER BY discussions.id DESC;
 `;
-
 
 
 const relatedDiscussions = await query(relatedDiscussionsQuery);
