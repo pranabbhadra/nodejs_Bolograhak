@@ -2386,8 +2386,7 @@ async function getRelatedDiscussionsByTags(discussion_id) {
 
 //
 const relatedDiscussionsQuery = `
-SELECT DISTINCT
-  discussions.*,
+SELECT discussions.*,
   u.first_name AS discussion_user_first_name, 
   u.last_name AS discussion_user_last_name,
   du.user_id AS author_id,
