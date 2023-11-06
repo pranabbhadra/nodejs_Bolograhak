@@ -2550,7 +2550,7 @@ router.get('/discussiondetails/:discussion_id', verifyToken, async (req, res) =>
     try {
 
         res.json({
-            commentID: insertDiscussionResponse,
+            commentviewID: insertDiscussionResponse,
             AllCommentByDiscusId: getAllCommentByDiscusId,
             AllRelatedDiscussions: getRelatedDiscussionsByTags
         });
