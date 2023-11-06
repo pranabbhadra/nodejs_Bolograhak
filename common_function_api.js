@@ -2385,6 +2385,8 @@ async function getRelatedDiscussionsByTags(discussion_id) {
 // `;
 
 //
+
+
 const relatedDiscussionsQuery = `
 SELECT discussions.*,
   u.first_name AS discussion_user_first_name, 
@@ -2415,6 +2417,7 @@ WHERE discussions.id <> ${discussion_id}
   AND (${tagQueries})
 ORDER BY discussions.id DESC
 `;
+
 const relatedDiscussions = await query(relatedDiscussionsQuery);
 
     return relatedDiscussions;
