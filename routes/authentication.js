@@ -2518,7 +2518,7 @@ router.get('/discussionlisting', verifyToken, async (req, res) => {
         res.json({
             AllLatestDiscussion: getAllLatestDiscussion,
             AllPopularDiscussion: getAllPopularDiscussion,
-            AllDiscussions: getAllDiscussions,
+            AllRelatedDiscussions: getAllDiscussions,
             //AllViewedDiscussion: getAllViewedDiscussion
         });
     }
