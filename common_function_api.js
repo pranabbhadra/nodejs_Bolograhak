@@ -2444,7 +2444,7 @@ async function getRelatedDiscussionsByTags(discussion_id) {
 // ORDER BY discussions.id DESC;
 // `;
 
-
+//REAL
 // const relatedDiscussionsQuery = `SELECT discussions.*,
 // u.first_name AS discussion_user_first_name, 
 // u.last_name AS discussion_user_last_name,
@@ -2472,29 +2472,28 @@ async function getRelatedDiscussionsByTags(discussion_id) {
 // ORDER BY discussions.id DESC;
 // `;
 
-
 const relatedDiscussionsQuery = `SELECT discussions.*,
 u.first_name AS discussion_user_first_name, 
 u.last_name AS discussion_user_last_name,
 mu.profile_pic AS user_profile_pic,
-COALESCE(cr.total_comments, 0) as total_comments,
-COALESCE(vr.total_views, 0) as total_views,
-MAX(du.created_at) AS comment_date,
-au.user_id AS author_id,            
-au.first_name AS author_first_name,   
-au.last_name AS author_last_name      
+COALESCE(cr.total_comments, 0) AS total_comments,
+COALESCE(vr.total_views, 0) AS total_views,
+recent_comment.created_at AS comment_date
 FROM discussions
 LEFT JOIN users u ON discussions.user_id = u.user_id
-LEFT JOIN discussions_user_response du ON discussions.id = du.discussion_id
-LEFT JOIN user_customer_meta mu ON u.user_id = mu.user_id 
-LEFT JOIN users au ON du.user_id = au.user_id 
+LEFT JOIN user_customer_meta mu ON u.user_id = mu.user_id
 LEFT JOIN (
-SELECT discussion_id, COUNT(*) as total_comments
+SELECT discussion_id, MAX(created_at) AS created_at
+FROM discussions_user_response
+GROUP BY discussion_id
+) AS recent_comment ON discussions.id = recent_comment.discussion_id
+LEFT JOIN (
+SELECT discussion_id, COUNT(*) AS total_comments
 FROM discussions_user_response
 GROUP BY discussion_id
 ) cr ON discussions.id = cr.discussion_id
 LEFT JOIN (
-SELECT discussion_id, COUNT(*) as total_views
+SELECT discussion_id, COUNT(*) AS total_views
 FROM discussions_user_view
 GROUP BY discussion_id
 ) vr ON discussions.id = vr.discussion_id
@@ -2503,6 +2502,9 @@ AND (${tagQueries})
 GROUP BY discussions.id
 ORDER BY discussions.id DESC;
 `;
+
+
+
 
 const relatedDiscussions = await query(relatedDiscussionsQuery);
 
