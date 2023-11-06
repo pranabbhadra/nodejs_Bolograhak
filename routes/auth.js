@@ -344,4 +344,6 @@ router.post('/create-survey', authController.createSurvey);
 router.post('/update-survey', authController.updateSurvey);
 router.post('/create-survey-answer', authController.createSurveyAnswer);
 
+router.post('/delete-discussion', authController.deleteDiscussion);
+
 module.exports = router;

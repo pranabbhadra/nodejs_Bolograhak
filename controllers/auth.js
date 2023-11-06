@@ -4986,7 +4986,7 @@ exports.createCompanyLevel = async (req, res) => {
 
 //Delete company Complaint Level
 exports.deleteCompanyComplaintLevel = async (req, res) => {
-    console.log('deleteCompanyComplaintLevel',req.body ); 
+    //console.log('deleteCompanyComplaintLevel',req.body ); 
     //return false;
     const delQuery = `DELETE FROM complaint_level_management WHERE id = '${req.body.level_id}'`;
     db.query(delQuery,(err, result)=>{
@@ -5294,6 +5294,26 @@ exports.createSurveyAnswer = async (req, res) => {
             return res.send({
                 status: 'ok',
                 message: 'Your survey answers successfully submitted'
+            });
+        }
+    })
+}
+
+//Delete Discussion 
+exports.deleteDiscussion = async (req, res) => {
+    //console.log('deleteDiscussion',req.body ); 
+    //return false;
+    const delQuery = `DELETE FROM discussions WHERE id = '${req.body.discussionid}'`;
+    db.query(delQuery,(err, result)=>{
+        if (err) {
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong 2 '+err
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Discussion Deleted successfully !'
             });
         }
     })
