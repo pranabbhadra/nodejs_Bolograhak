@@ -61,8 +61,8 @@
                                           <span class="text-yellow"><strong>Ongoing</strong></span>
                                           <% } %>
                               </td>
-                              <td style="text-align: center;" >
-                                 <% if(compnaint.notification_statuses.length > 1){ %>
+                              <td style="text-align: center;" class="complaint-status" >
+                                 <% if(compnaint.notification_statuses.length > 0){ %>
                                     <% let count = 0; %>
                                     <% compnaint.notification_statuses.forEach((notification, index) => { %>
                                        <% if(notification == '0' && compnaint.company_query[index] == "" ){ %>
@@ -70,8 +70,9 @@
                                        <% } %>
                                     <% })  %>
                                     <% if(count > 0) { %>
-                                       <i class="fa-solid fa-bell"></i> <%= count %>
+                                      <span class="bell_icon"><i class="fa-solid fa-bell"></i> <span class="bell_icon1"><%= count %></span> </span>
                                     <% } %>
+                                    
                                  <% }  %>
                               </td>
                               <td style="text-align: center;">
@@ -128,7 +129,7 @@
                      <input type="hidden" name="company_id" value="<%= company.ID %>" />
                      <input type="hidden" id="complaint-id-input" name="complaint_id" value="">
                      <input type="hidden" id="complaint-query-level" name="complaint_level" value="">
-                     <input type="hidden"  name="complaint_status" value="">
+                     <input type="hidden"  name="complaint_status" value="2">
                      <input type="submit" class="btn-default btn-warning submit_btn"  value="Submit">
                   </form>
                   <div class="register-now frm-loading" style=" display: none; ">
@@ -181,6 +182,34 @@
          </div>
       </div>
       <!-- ============== Section1 end =============== -->
+      <style>
+         .complaint-status {
+            position: relative;
+            left: 0px;
+            min-width: 96px;
+            font-size: 12px;
+         }
+         .bell_icon{
+            position: relative;
+         }
+         .bell_icon i {
+            font-size: 14px;
+            position: relative;
+         }
+         
+         .bell_icon .bell_icon1 {
+            position: absolute;
+            right: -6px;
+            background-color: #F8A401;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 15px;
+            height: 15px;
+            top: -11px;
+         }
+         </style>
 
       <%- include('common/footer') -%>
 
@@ -214,53 +243,6 @@
                   $('#complaint-query-level').val(levelId);
                   $('#complaint-resolve-level').val(levelId);
                });
-
-               // $('form.message_form').submit(function (e) {
-               //    e.preventDefault();
-               //    $('.response-message').hide();
-               //    $('.response-message').text('');
-               //    $('.submit_btn').prop('disabled', true);
-               //    $('.frm-loading').show();
-               //    //alert('aaaaaa')
-               //    const transformedResponse = {};
-               //    const formData = $(this).serializeArray();
-               //    $(formData).each(function (index, field) {
-               //       transformedResponse[field.name] = field.value;
-               //    });
-               //    console.log(transformedResponse);
-               //    return false;
-               //    $.ajax({
-               //       url: '/auth/company-response', // URL for your API endpoint
-               //       method: 'POST',
-               //       data: JSON.stringify(transformedResponse),
-               //       //data: formData,
-               //       processData: false,
-               //       //contentType: false,
-               //       contentType: 'application/json',
-               //       success: function (data) {
-               //          if (data.status == 'ok') {
-               //             $('.response-message').text(data.message);
-               //             $('.response-message').show();
-               //             $('.submit_btn').prop('disabled', false);
-               //             $('.frm-loading').hide();
-               //             setTimeout(function () {
-               //                window.location.reload();
-               //             }, 2000);
-               //          } else {
-               //             $('.response-message').text(data.message);
-               //             $('.response-message').show();
-               //             $('.submit_btn').prop('disabled', false);
-               //             $('.frm-loading').hide();
-               //             console.log('Something went wrong');
-               //          }
-               //       },
-               //       error: function (xhr, status, error) {
-               //          // Handle any errors that occur during the request
-               //          console.log(error);
-               //       }
-               //    });
-
-               // });
 
                $('form.message_form').submit(function (e) {
                   e.preventDefault();
