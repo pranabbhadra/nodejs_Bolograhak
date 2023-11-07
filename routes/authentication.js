@@ -2576,6 +2576,9 @@ router.get('/discussiondetails/:discussion_id', verifyToken, async (req, res) =>
     const discussion_id = req.params.discussion_id;
     const ip_address = req.body.ip_address;
     console.log("ipaddress",ip_address);
+    if (!ip_address) {
+        return res.status(400).json({ error: 'ip_address is required in the request body' });
+    }
 
     const user_id = parseInt(req.user.user_id);
     //console.log("user_id",user_id);
