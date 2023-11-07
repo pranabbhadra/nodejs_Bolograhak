@@ -5299,6 +5299,22 @@ exports.createSurveyAnswer = async (req, res) => {
     })
 }
 
+
+// Survey Invitation
+exports.surveyInvitation = async (req, res) => {
+    console.log('surveyInvitation',req.body );
+    //return false;
+    const {emails, email_body, user_id, company_id, company_name, company_slug, survey_id, unique_id  } = req.body;
+    const [ sendSurveyInvitationEmail] = await Promise.all([
+        comFunction2.sendSurveyInvitationEmail(req.body)
+    ]);
+
+    return res.send({
+        status: 'ok',
+        message: 'Survey Invitation emails send successfully'
+    });
+}
+
 //Delete Discussion 
 exports.deleteDiscussion = async (req, res) => {
     //console.log('deleteDiscussion',req.body ); 

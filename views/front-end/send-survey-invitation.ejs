@@ -9,18 +9,19 @@
             <%- include('common/premium-company-sidebar') -%>
          </div>
         <div class="send-review-invitation">
-            <form id="form_review_invitation">
+            <form id="form_survey_invitation">
                <input type="hidden" name="company_id" id="company_id" value="<%= company.ID  %>" />
                <input type="hidden" name="company_name" id="company_name" value="<%= company.company_name  %>" />
                <input type="hidden" name="user_id" id="user_id" value="<%= currentUserData.user_id  %>" />
                <input type="hidden" name="company_slug" id="company_slug" value="<%= company.slug  %>" />
+               <input type="hidden" name="company_slug" id="company_slug" value="<%= company.slug  %>" />
                <div class="custom-form">
                     <label><span>Select a survey</span></label>
-                    <select class="form-select mb-4">
+                    <select class="form-select mb-4" name="survey_id" id="survey_id">
                         <option value="">Select a survey</option>
                         <% if( CompanyOngoingSurveyDetails.length > 0 ) { %>
                             <% CompanyOngoingSurveyDetails.forEach((survey)=>{  %>
-                            <option><%= survey.title %></option>
+                            <option value="<%= survey.id %>" data-survey-unique_id="<%= survey.unique_id %>"><%= survey.title %></option>
                             <% }) %>
                         <% } %>
                     </select>
@@ -31,7 +32,7 @@
                <div class="custom-form">
                   <label><span>Message</span></label>
                   <textarea name="email_body" id="email_body" class="form-control mb-4">Hello Dear,
-                     <%= company.company_name  %> cordially invite you to provide your valuable opinion regarding our company, through the platform of BoloGrahak. 
+                     <%= company.company_name  %> cordially invite you to participate our company survey, through the platform of BoloGrahak. 
                   </textarea>
                </div>
                <!-- <div class="bulk-upload mb-4">
@@ -46,6 +47,7 @@
             </span>
          </div>
          <div style=" width: 100%; text-align: center; display: block; border: 2px solid #fccb06; padding: 6px; margin-top: 20px; border-radius: 5px; display: none;" class="response-message"></div>
+         <div style=" width: 100%; text-align: center; display: block; border: 2px solid #fc0606; padding: 6px; margin-top: 20px; border-radius: 5px; display: none;" class="error-message"></div>
         </div>
     </div>
 </section>
@@ -56,7 +58,8 @@
 <script>
 $(document).ready(function () {
    var allEmails = [];
-    $('form#form_review_invitation').submit(function (e) {
+   var survey_unique_id = '';
+    $('form#form_survey_invitation').submit(function (e) {
       e.preventDefault();
       $('.response-message').hide();
       $('.response-message').text('');
@@ -75,13 +78,20 @@ $(document).ready(function () {
       transformedResponse['company_id'] = $('#company_id').val();
       transformedResponse['company_name'] = $('#company_name').val();
       transformedResponse['company_slug'] = $('#company_slug').val();
-      if (allEmails.length > 100) {
-         $('.response-message').text('You can not add more than 100 email id`s in your current membership. ');
-         $('.response-message').show();
+      transformedResponse['survey_id'] = $('#survey_id').val();
+      transformedResponse['unique_id'] = $('#survey_id option:selected').data('survey-unique_id');
+      if ($('#survey_id').val() == '') {
+         $('.error-message').text('No such ongoing survey here.');
+         $('.error-message').show();
          $('#invitation_email').prop('disabled', false);
-      } else {
-            $.ajax({
-            url: '/auth/review_invitation', // URL for your API endpoint
+         $('.frm-loading').hide();
+         setTimeout(function() {
+            $('.error-message').hide();
+         }, 3000);
+         //console.log('Something went wrong');
+      } else{ 
+         $.ajax({
+            url: '/auth/survey_invitation', // URL for your API endpoint
             method: 'POST',
             data: JSON.stringify(transformedResponse),
             //data: formData,
@@ -111,8 +121,6 @@ $(document).ready(function () {
             }
          });
       }
-
-      
    });
 });
 </script>
