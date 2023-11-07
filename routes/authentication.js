@@ -2504,35 +2504,78 @@ router.get('/reviewReplies/:review_id', verifyToken, async (req, res) => {
 // });
 
 
+// router.get('/discussionlisting?limit=limit&offset=offset', verifyToken, async (req, res) => {
+//     try {
+//         const limit = req.params.limit;
+//         const offset = req.params.offset;
+//         // console.log("limit",limit);
+//         // console.log("offset",offset);
+//         const [getAllLatestDiscussion, getAllPopularDiscussion, getAllDiscussions] = await Promise.all([
+//             comFunction.getAllLatestDiscussion(limit,offset),
+//             comFunction.getAllPopularDiscussion(limit,offset),
+//             comFunction.getAllDiscussions(limit,offset),
+//             //comFunction2.getAllViewedDiscussion(),
+//         ]);
+//         //console.log(getAllLatestDiscussion);
+//         res.json({
+//             AllLatestDiscussion: getAllLatestDiscussion,
+//             AllPopularDiscussion: getAllPopularDiscussion,
+//             AllDiscussions: getAllDiscussions,
+//             //AllViewedDiscussion: getAllViewedDiscussion
+//         });
+//     }
+//     catch (error) {
+//         console.error(err);
+//         res.status(500).send('An error occurred during discussion listing');
+//     }
+// });
+
+
 router.get('/discussionlisting', verifyToken, async (req, res) => {
     try {
-        const limit = req.body.limit;
-        const offset = req.body.offset;
-        const [getAllLatestDiscussion, getAllPopularDiscussion, getAllDiscussions] = await Promise.all([
-            comFunction.getAllLatestDiscussion(limit,offset),
-            comFunction.getAllPopularDiscussion(limit,offset),
-            comFunction.getAllDiscussions(limit,offset),
-            //comFunction2.getAllViewedDiscussion(),
-        ]);
-        //console.log(getAllLatestDiscussion);
-        res.json({
-            AllLatestDiscussion: getAllLatestDiscussion,
-            AllPopularDiscussion: getAllPopularDiscussion,
-            AllDiscussions: getAllDiscussions,
-            //AllViewedDiscussion: getAllViewedDiscussion
-        });
-    }
-    catch (error) {
-        console.error(err);
+        const limit = req.query.limit;
+        const offset = req.query.offset;
+        const discussionType = req.query.type; 
+
+        const parsedLimit = parseInt(limit);
+        const parsedOffset = parseInt(offset);
+
+        if (isNaN(parsedLimit) || isNaN(parsedOffset)) {
+            res.status(400).json({ error: 'Invalid limit or offset' });
+            return;
+        }
+
+        let discussions = [];
+
+        if (discussionType === 'all') {
+            discussions = await comFunction.getAllDiscussions(parsedLimit, parsedOffset);
+        } else if (discussionType === 'latest') {
+            discussions = await comFunction.getAllLatestDiscussion(parsedLimit, parsedOffset);
+        } else if (discussionType === 'popular') {
+            discussions = await comFunction.getAllPopularDiscussion(parsedLimit, parsedOffset);
+        } else {
+            res.status(400).json({ error: 'Invalid discussion type' });
+            return;
+        }
+
+        const getPopularTags = await comFunction.getPopularTags();
+
+        res.json({ discussions,getPopularTags });
+    } catch (error) {
+        console.error(error);
         res.status(500).send('An error occurred during discussion listing');
     }
 });
+
+
+
 
 //discussion details by discussion-id
 
 router.get('/discussiondetails/:discussion_id', verifyToken, async (req, res) => {
     const discussion_id = req.params.discussion_id;
     const ip_address = req.body.ip_address;
+    console.log("ipaddress",ip_address);
 
     const user_id = parseInt(req.user.user_id);
     //console.log("user_id",user_id);
@@ -2559,6 +2602,43 @@ router.get('/discussiondetails/:discussion_id', verifyToken, async (req, res) =>
         res.status(500).send('An error occurred');
     }
 });
+
+//discussionlisting by tags name
+router.get('/discussionlistingbytag', verifyToken, async(req,res) => {
+    try{
+        const limit = req.query.limit;
+        const offset = req.query.offset;
+        const tag = req.query.tag;
+
+        const parsedLimit = parseInt(limit);
+        const parsedOffset = parseInt(offset);
+
+        if (isNaN(parsedLimit) || isNaN(parsedOffset)) {
+            res.status(400).json({ error: 'Invalid limit or offset' });
+            return;
+        }
+    
+            //  console.log("limit",limit);
+            //  console.log("offset",offset);
+            //  console.log("tag",tag)
+
+             const getDiscussionListingByTag = await comFunction.getDiscussionListingByTag(tag,parsedLimit,parsedOffset);
+             //console.log(getDiscussionListingByTag);
+             res.json({
+                getDiscussionListingByTag: getDiscussionListingByTag
+             });
+         }
+         catch (error) {
+             console.error(error);
+             res.status(500).send('An error occurred during discussion listing');
+         }
+})
+
+
+
+
+
+
 
 // router.get('/discussiondetails/:discussion_id', verifyToken, async (req, res) => {
 //     const discussion_id = req.params.discussion_id;

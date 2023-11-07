@@ -9,6 +9,7 @@ const requestIp = require('request-ip');
 const axios = require('axios');
 const nodemailer = require('nodemailer');
 const { cache } = require('ejs');
+const { stringify } = require('querystring');
 
 dotenv.config({ path: './.env' });
 const query = util.promisify(db.query).bind(db);
@@ -564,7 +565,7 @@ async function getTrendingReviews() {
 //   }catch(error){
 //     console.error('Error during user get_latest_review_query:', error);
 //   }
-  
+
 // }
 
 async function getLatestReview(limit = null) {
@@ -1518,7 +1519,7 @@ async function getReviewRepliescompany(companyId, reviewIDs) {
 // }
 
 async function getpolldetails(company_id) {
-                  const sql = ` SELECT
+  const sql = ` SELECT
                   pc.*,
                   pa.poll_answer,
                   pa.poll_answer_id,
@@ -1551,7 +1552,7 @@ async function getpolldetails(company_id) {
                   AND pc.expired_at >= CURDATE()  
                 ORDER BY
                   pc.id DESC;`;
-                
+
 
   // const sql = `SELECT poll_company.*, GROUP_CONCAT(pa.answer) AS poll_answer, GROUP_CONCAT(pa.id) AS poll_answer_id, GROUP_CONCAT(pv.answer_id) AS voting_answer_id
   // FROM poll_company  
@@ -1560,14 +1561,14 @@ async function getpolldetails(company_id) {
   // WHERE poll_company.company_id = '${company_id}' 
   // GROUP BY poll_company.id
   // ORDER BY poll_company.id DESC `;
-//there is a poll in the database whose expiration date is today but that is not showing.want to get if the expiry date is today then even today it will show in company poll details and from tommorow it will not show in company poll details
+  //there is a poll in the database whose expiration date is today but that is not showing.want to get if the expiry date is today then even today it will show in company poll details and from tommorow it will not show in company poll details
   const result = await query(sql);
-  if(result.length > 0 ){
+  if (result.length > 0) {
     return result;
-  }else{
+  } else {
     return [];
   }
-  
+
 }
 
 async function updateReview(reviewIfo) {
@@ -1899,7 +1900,7 @@ async function getClaimedByForCompany(companyId) {
 }
 
 
-async function CompanyReviews(companyID){
+async function CompanyReviews(companyID) {
   const get_company_reviews_query = `
   SELECT r.*, ur.first_name, ur.last_name, ur.email, ucm.profile_pic,
   c.company_name, c.logo,  
@@ -1943,7 +1944,7 @@ LIMIT 20
     return finalResult;
   } catch (error) {
     console.error('An error occurred in CompanyReviews:', error);
-    return []; 
+    return [];
   }
 }
 function getAllReviewReply() {
@@ -1951,7 +1952,7 @@ function getAllReviewReply() {
     const reviewed_companies_query = `
       SELECT *
       FROM review_reply
-      WHERE review_id IS NOT NULL`; 
+      WHERE review_id IS NOT NULL`;
     db.query(reviewed_companies_query, (err, result) => {
       if (err) {
         reject(err);
@@ -1962,8 +1963,8 @@ function getAllReviewReply() {
   });
 }
 
-async function getreviewreplis(review_id){
-  try{
+async function getreviewreplis(review_id) {
+  try {
     const sql = `SELECT review_reply.*, company.logo, company.company_name, user_customer_meta.profile_pic, user_customer_meta.user_id, users.first_name, users.last_name
     FROM review_reply
     INNER JOIN reviews ON review_reply.review_id = reviews.id
@@ -1972,7 +1973,7 @@ async function getreviewreplis(review_id){
     LEFT JOIN users ON reviews.customer_id = users.user_id 
     WHERE review_reply.review_id = ?;
     `;
-    
+
 
     const result = await query(sql, [review_id]);
 
@@ -1988,9 +1989,9 @@ async function getPremiumCompanyData(companyId) {
   const PremiumCompanyData = await query(sql);
 
   //console.log('PremiumCompanyData',PremiumCompanyData[0])
-  if(PremiumCompanyData.length>0){
+  if (PremiumCompanyData.length > 0) {
     return PremiumCompanyData[0];
-  }else{
+  } else {
     return {};
   }
 }
@@ -2041,67 +2042,108 @@ async function getAllCommentByDiscusId(discussions_id) {
   }
 }
 
+// async function getAllPopularDiscussion(limit, offset) {
+//   const sql = `
+//   SELECT
+//     discussions.*,
+//     u.first_name,
+//     u.last_name,
+//     mu.profile_pic AS user_profile_pic,
+//     COALESCE(comments.total_comments, 0) as total_comments,
+//     COALESCE(views.total_views, 0) as total_views
+//   FROM discussions
+//   LEFT JOIN users u ON discussions.user_id = u.user_id
+//   LEFT JOIN user_customer_meta mu ON discussions.user_id = mu.user_id
+//   LEFT JOIN (
+//     SELECT discussion_id, COUNT(*) as total_comments
+//     FROM discussions_user_response
+//     GROUP BY discussion_id
+//   ) comments ON discussions.id = comments.discussion_id
+//   LEFT JOIN (
+//     SELECT discussion_id, COUNT(*) as total_views
+//     FROM discussions_user_view
+//     GROUP BY discussion_id
+//   ) views ON discussions.id = views.discussion_id
+//   ORDER BY total_comments DESC
+//   LIMIT ? OFFSET ?;
+//   ;
+//   `;
+//   try{
+//     const results = await query(sql, [limit, offset]);
+//     if (results.length>0) {
+
+//     return results;
+//     } else {
+//       return [];
+//     }
+//   }
+//   catch(error){
+//     console.error('Error during fetch  Latest Discussion:', error);
+//   }
+// }
+
+
+//
 async function getAllPopularDiscussion(limit, offset) {
   const sql = `
-  SELECT
-    discussions.*,
-    u.first_name,
-    u.last_name,
-    mu.profile_pic AS user_profile_pic,
-    COALESCE(comments.total_comments, 0) as total_comments,
-    COALESCE(views.total_views, 0) as total_views
-  FROM discussions
-  LEFT JOIN users u ON discussions.user_id = u.user_id
-  LEFT JOIN user_customer_meta mu ON discussions.user_id = mu.user_id
-  LEFT JOIN (
-    SELECT discussion_id, COUNT(*) as total_comments
-    FROM discussions_user_response
-    GROUP BY discussion_id
-  ) comments ON discussions.id = comments.discussion_id
-  LEFT JOIN (
-    SELECT discussion_id, COUNT(*) as total_views
-    FROM discussions_user_view
-    GROUP BY discussion_id
-  ) views ON discussions.id = views.discussion_id
-  ORDER BY total_comments DESC
-  LIMIT ? OFFSET ?;
-  ;
+    SELECT
+      discussions.*,
+      u.first_name,
+      u.last_name,
+      mu.profile_pic AS user_profile_pic,
+      COALESCE(comments.total_comments, 0) as total_comments,
+      COALESCE(views.total_views, 0) as total_views
+    FROM discussions
+    LEFT JOIN users u ON discussions.user_id = u.user_id
+    LEFT JOIN user_customer_meta mu ON discussions.user_id = mu.user_id
+    LEFT JOIN (
+      SELECT discussion_id, COUNT(*) as total_comments
+      FROM discussions_user_response
+      GROUP BY discussion_id
+    ) comments ON discussions.id = comments.discussion_id
+    LEFT JOIN (
+      SELECT discussion_id, COUNT(*) as total_views
+      FROM discussions_user_view
+      GROUP BY discussion_id
+    ) views ON discussions.id = views.discussion_id
+    ORDER BY total_comments DESC
+    LIMIT ? OFFSET ?;
   `;
-  try{
-    const results = await query(sql, [limit, offset]);
-    if (results.length>0) {
-      
-    return results;
+  try {
+    const results = await query(sql, [parseInt(limit), parseInt(offset)]);
+    if (results.length > 0) {
+      return results;
     } else {
       return [];
     }
-  }
-  catch(error){
-    console.error('Error during fetch  Latest Discussion:', error);
+  } catch (error) {
+    console.error('Error during fetch Latest Discussion:', error);
   }
 }
+
+
 
 async function insertDiscussionResponse(discussion_id, ip_address, user_id) {
   const currentDate = new Date();
   const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
   const data = {
-    discussion_id : discussion_id,
+    discussion_id: discussion_id,
     ip_address: ip_address,
     user_id: user_id
   };
   const checkQuery = `SELECT * FROM discussions_user_view WHERE discussion_id = '${discussion_id}'  AND ip_address = '${ip_address}'`;
   const check_result = await query(checkQuery);
-  if(check_result.length > 0){
+  if (check_result.length > 0) {
     console.log(check_result[0].id);
     return check_result[0].id
-  }else{
+  } else {
     const sql = 'INSERT INTO discussions_user_view SET ?'
     const results = await query(sql, data);
-    try{
+    try {
       console.log(results.insertId);
       return results.insertId;
     }
-    catch(error){
+    catch (error) {
       console.error('Error during insert discussions_user_view:', error);
     }
   }
@@ -2109,6 +2151,45 @@ async function insertDiscussionResponse(discussion_id, ip_address, user_id) {
 
 
 //Function to get latest discussion from discussions table
+// async function getAllLatestDiscussion(limit, offset) {
+//   const sql = `
+//     SELECT
+//     discussions.*,
+//     u.first_name,
+//     u.last_name,
+//     mu.profile_pic AS user_profile_pic,
+//     COALESCE(comments.total_comments, 0) as total_comments,
+//     COALESCE(views.total_views, 0) as total_views
+//   FROM discussions
+//   LEFT JOIN users u ON discussions.user_id = u.user_id
+//   LEFT JOIN user_customer_meta mu ON discussions.user_id = mu.user_id
+//   LEFT JOIN (
+//     SELECT discussion_id, COUNT(*) as total_comments
+//     FROM discussions_user_response
+//     GROUP BY discussion_id
+//   ) comments ON discussions.id = comments.discussion_id
+//   LEFT JOIN (
+//     SELECT discussion_id, COUNT(*) as total_views
+//     FROM discussions_user_view
+//     GROUP BY discussion_id
+//   ) views ON discussions.id = views.discussion_id
+//   ORDER BY discussions.id DESC
+//   LIMIT ? OFFSET ?;
+//   `;
+//   try{
+//     const results = await query(sql, [limit, offset]);
+//     if (results.length>0) {
+
+//     return results;
+//     } else {
+//       return [];
+//     }
+//   }
+//   catch(error){
+//     console.error('Error during fetch All Latest Discussion:', error);
+//   }
+// }
+
 async function getAllLatestDiscussion(limit, offset) {
   const sql = `
     SELECT
@@ -2118,36 +2199,76 @@ async function getAllLatestDiscussion(limit, offset) {
     mu.profile_pic AS user_profile_pic,
     COALESCE(comments.total_comments, 0) as total_comments,
     COALESCE(views.total_views, 0) as total_views
-  FROM discussions
-  LEFT JOIN users u ON discussions.user_id = u.user_id
-  LEFT JOIN user_customer_meta mu ON discussions.user_id = mu.user_id
-  LEFT JOIN (
-    SELECT discussion_id, COUNT(*) as total_comments
-    FROM discussions_user_response
-    GROUP BY discussion_id
-  ) comments ON discussions.id = comments.discussion_id
-  LEFT JOIN (
-    SELECT discussion_id, COUNT(*) as total_views
-    FROM discussions_user_view
-    GROUP BY discussion_id
-  ) views ON discussions.id = views.discussion_id
-  ORDER BY discussions.id DESC
-  LIMIT ? OFFSET ?;
+    FROM discussions
+    LEFT JOIN users u ON discussions.user_id = u.user_id
+    LEFT JOIN user_customer_meta mu ON discussions.user_id = mu.user_id
+    LEFT JOIN (
+      SELECT discussion_id, COUNT(*) as total_comments
+      FROM discussions_user_response
+      GROUP BY discussion_id
+    ) comments ON discussions.id = comments.discussion_id
+    LEFT JOIN (
+      SELECT discussion_id, COUNT(*) as total_views
+      FROM discussions_user_view
+      GROUP BY discussion_id
+    ) views ON discussions.id = views.discussion_id
+    ORDER BY discussions.id DESC
+    LIMIT ? OFFSET ?;
   `;
-  try{
-    const results = await query(sql, [limit, offset]);
-    if (results.length>0) {
-      
-    return results;
+  try {
+    const results = await query(sql, [parseInt(limit), parseInt(offset)]);
+    if (results.length > 0) {
+      return results;
     } else {
       return [];
     }
-  }
-  catch(error){
+  } catch (error) {
     console.error('Error during fetch All Latest Discussion:', error);
   }
 }
+
+
+
+
 //function to get all discussion from discussions table
+// async function getAllDiscussions(limit, offset) {
+//   const sql = `
+//     SELECT
+//       discussions.*,
+//       u.first_name,
+//       u.last_name,
+//       mu.profile_pic AS user_profile_pic,
+//       COALESCE(comments.total_comments, 0) as total_comments,
+//       COALESCE(views.total_views, 0) as total_views
+//     FROM discussions
+//     LEFT JOIN users u ON discussions.user_id = u.user_id
+//     LEFT JOIN user_customer_meta mu ON discussions.user_id = mu.user_id
+//     LEFT JOIN (
+//       SELECT discussion_id, COUNT(*) as total_comments
+//       FROM discussions_user_response
+//       GROUP BY discussion_id
+//     ) comments ON discussions.id = comments.discussion_id
+//     LEFT JOIN (
+//       SELECT discussion_id, COUNT(*) as total_views
+//       FROM discussions_user_view
+//       GROUP BY discussion_id
+//     ) views ON discussions.id = views.discussion_id
+//     ORDER BY discussions.id DESC
+//     LIMIT ? OFFSET ?;
+//   `;
+
+//   try {
+//     const results = await query(sql, [limit, offset]);
+//     if (results.length > 0) {
+//       return results;
+//     } else {
+//       return [];
+//     }
+//   } catch (error) {
+//     console.error('Error during fetch All Latest Discussion:', error);
+//   }
+// }
+
 async function getAllDiscussions(limit, offset) {
   const sql = `
     SELECT
@@ -2175,7 +2296,7 @@ async function getAllDiscussions(limit, offset) {
   `;
 
   try {
-    const results = await query(sql, [limit, offset]);
+    const results = await query(sql, [parseInt(limit), parseInt(offset)]);
     if (results.length > 0) {
       return results;
     } else {
@@ -2187,7 +2308,10 @@ async function getAllDiscussions(limit, offset) {
 }
 
 
-async function getAllRelatedDiscussion(){
+
+
+
+async function getAllRelatedDiscussion() {
   const sql = `
   SELECT
     discussions.*,
@@ -2208,16 +2332,16 @@ async function getAllRelatedDiscussion(){
     GROUP BY discussion_id
   ) views ON discussions.id = views.discussion_id
   ORDER BY discussions.id DESC`;
-  try{
+  try {
     const results = await query(sql);
-    if (results.length>0) {
-      
-    return results;
+    if (results.length > 0) {
+
+      return results;
     } else {
       return [];
     }
   }
-  catch(error){
+  catch (error) {
     console.error('Error during fetch All Latest Discussion:', error);
   }
 }
@@ -2281,7 +2405,7 @@ async function getRelatedDiscussionsByTags(discussion_id) {
       console.log("Discussion not found.");
       return [];
     }
-
+    console.log("tags", tagsResult)
     const tags = JSON.parse(tagsResult[0].tags);
     //console.log("relatedtag", tags);
 
@@ -2303,182 +2427,182 @@ async function getRelatedDiscussionsByTags(discussion_id) {
 
     //new
 
-// const relatedDiscussionsQuery = `
-// SELECT DISTINCT
-//   discussions.*,
-//   u.first_name, 
-//   u.last_name,
-//   COALESCE(cr.total_comments, 0) as total_comments,
-//   COALESCE(vr.total_views, 0) as total_views,
-//   cr.author_id
-// FROM discussions
-// LEFT JOIN users u ON discussions.user_id = u.user_id
-// LEFT JOIN (
-//   SELECT discussion_id, COUNT(*) as total_comments, user_id AS author_id
-//   FROM discussions_user_response
-//   GROUP BY discussion_id, user_id 
-// ) cr ON discussions.id = cr.discussion_id
-// LEFT JOIN (
-//   SELECT discussion_id, COUNT(*) as total_views
-//   FROM discussions_user_view
-//   GROUP BY discussion_id
-// ) vr ON discussions.id = vr.discussion_id
-// WHERE discussions.id <> ${discussion_id} 
-//   AND (${tagQueries})
-// ORDER BY discussions.id DESC
-// `;
+    // const relatedDiscussionsQuery = `
+    // SELECT DISTINCT
+    //   discussions.*,
+    //   u.first_name, 
+    //   u.last_name,
+    //   COALESCE(cr.total_comments, 0) as total_comments,
+    //   COALESCE(vr.total_views, 0) as total_views,
+    //   cr.author_id
+    // FROM discussions
+    // LEFT JOIN users u ON discussions.user_id = u.user_id
+    // LEFT JOIN (
+    //   SELECT discussion_id, COUNT(*) as total_comments, user_id AS author_id
+    //   FROM discussions_user_response
+    //   GROUP BY discussion_id, user_id 
+    // ) cr ON discussions.id = cr.discussion_id
+    // LEFT JOIN (
+    //   SELECT discussion_id, COUNT(*) as total_views
+    //   FROM discussions_user_view
+    //   GROUP BY discussion_id
+    // ) vr ON discussions.id = vr.discussion_id
+    // WHERE discussions.id <> ${discussion_id} 
+    //   AND (${tagQueries})
+    // ORDER BY discussions.id DESC
+    // `;
 
-//actual
-// const relatedDiscussionsQuery = `
-// SELECT DISTINCT
-//   discussions.*,
-//   u.first_name, 
-//   u.last_name,
-//   COALESCE(cr.total_comments, 0) as total_comments,
-//   COALESCE(vr.total_views, 0) as total_views,
-//   cr.author_id  
-// FROM discussions
-// LEFT JOIN users u ON discussions.user_id = u.user_id
-// LEFT JOIN (
-//   SELECT discussion_id, COUNT(*) as total_comments, user_id AS author_id
-//   FROM discussions_user_response
-//   GROUP BY discussion_id, user_id  
-// ) cr ON discussions.id = cr.discussion_id
-// LEFT JOIN (
-//   SELECT discussion_id, COUNT(*) as total_views
-//   FROM discussions_user_view
-//   GROUP BY discussion_id
-// ) vr ON discussions.id = vr.discussion_id
-// WHERE discussions.id <> ${discussion_id} 
-//   AND (${tagQueries})
-// ORDER BY discussions.id DESC
-// `;
+    //actual
+    // const relatedDiscussionsQuery = `
+    // SELECT DISTINCT
+    //   discussions.*,
+    //   u.first_name, 
+    //   u.last_name,
+    //   COALESCE(cr.total_comments, 0) as total_comments,
+    //   COALESCE(vr.total_views, 0) as total_views,
+    //   cr.author_id  
+    // FROM discussions
+    // LEFT JOIN users u ON discussions.user_id = u.user_id
+    // LEFT JOIN (
+    //   SELECT discussion_id, COUNT(*) as total_comments, user_id AS author_id
+    //   FROM discussions_user_response
+    //   GROUP BY discussion_id, user_id  
+    // ) cr ON discussions.id = cr.discussion_id
+    // LEFT JOIN (
+    //   SELECT discussion_id, COUNT(*) as total_views
+    //   FROM discussions_user_view
+    //   GROUP BY discussion_id
+    // ) vr ON discussions.id = vr.discussion_id
+    // WHERE discussions.id <> ${discussion_id} 
+    //   AND (${tagQueries})
+    // ORDER BY discussions.id DESC
+    // `;
 
-// const relatedDiscussionsQuery = `
-// SELECT discussions.*,
-//   u.first_name AS discussion_user_first_name,
-//   u.last_name AS discussion_user_last_name,
-//   au.user_id AS author_id,
-//   du.created_at AS comment_date,
-//   au.first_name AS author_first_name,
-//   au.last_name AS author_last_name,
-//   mu.profile_pic AS author_profile_pic,
-//   COALESCE(cr.total_comments, 0) as total_comments,
-//   COALESCE(vr.total_views, 0) as total_views
-// FROM discussions
-// LEFT JOIN users u ON discussions.user_id = u.user_id
-// LEFT JOIN (
-//   SELECT discussion_id, MAX(created_at) AS max_comment_date
-//   FROM discussions_user_response
-//   GROUP BY discussion_id
-// ) latest_comments ON discussions.id = latest_comments.discussion_id
-// LEFT JOIN discussions_user_response du ON discussions.id = du.discussion_id AND du.created_at = latest_comments.max_comment_date
-// LEFT JOIN users au ON du.user_id = au.user_id
-// LEFT JOIN user_customer_meta mu ON au.user_id = mu.user_id
-// LEFT JOIN (
-//   SELECT discussion_id, COUNT(*) as total_comments
-//   FROM discussions_user_response
-//   GROUP BY discussion_id
-// ) cr ON discussions.id = cr.discussion_id
-// LEFT JOIN (
-//   SELECT discussion_id, COUNT(*) as total_views
-//   FROM discussions_user_view
-//   GROUP BY discussion_id
-// ) vr ON discussions.id = vr.discussion_id
-// WHERE discussions.id <> ${discussion_id} 
-//   AND (${tagQueries})
-// ORDER BY discussions.id DESC;
-// `;
+    // const relatedDiscussionsQuery = `
+    // SELECT discussions.*,
+    //   u.first_name AS discussion_user_first_name,
+    //   u.last_name AS discussion_user_last_name,
+    //   au.user_id AS author_id,
+    //   du.created_at AS comment_date,
+    //   au.first_name AS author_first_name,
+    //   au.last_name AS author_last_name,
+    //   mu.profile_pic AS author_profile_pic,
+    //   COALESCE(cr.total_comments, 0) as total_comments,
+    //   COALESCE(vr.total_views, 0) as total_views
+    // FROM discussions
+    // LEFT JOIN users u ON discussions.user_id = u.user_id
+    // LEFT JOIN (
+    //   SELECT discussion_id, MAX(created_at) AS max_comment_date
+    //   FROM discussions_user_response
+    //   GROUP BY discussion_id
+    // ) latest_comments ON discussions.id = latest_comments.discussion_id
+    // LEFT JOIN discussions_user_response du ON discussions.id = du.discussion_id AND du.created_at = latest_comments.max_comment_date
+    // LEFT JOIN users au ON du.user_id = au.user_id
+    // LEFT JOIN user_customer_meta mu ON au.user_id = mu.user_id
+    // LEFT JOIN (
+    //   SELECT discussion_id, COUNT(*) as total_comments
+    //   FROM discussions_user_response
+    //   GROUP BY discussion_id
+    // ) cr ON discussions.id = cr.discussion_id
+    // LEFT JOIN (
+    //   SELECT discussion_id, COUNT(*) as total_views
+    //   FROM discussions_user_view
+    //   GROUP BY discussion_id
+    // ) vr ON discussions.id = vr.discussion_id
+    // WHERE discussions.id <> ${discussion_id} 
+    //   AND (${tagQueries})
+    // ORDER BY discussions.id DESC;
+    // `;
 
-//
-
-
-// const relatedDiscussionsQuery = `
-// SELECT discussions.*,
-//   u.first_name AS discussion_user_first_name, 
-//   u.last_name AS discussion_user_last_name,
-//   du.user_id AS author_id,
-//   du.created_at AS comment_date,
-//   au.first_name AS author_first_name,
-//   au.last_name AS author_last_name,
-//   mu.profile_pic AS author_profile_pic,
-//   COALESCE(cr.total_comments, 0) as total_comments,
-//   COALESCE(vr.total_views, 0) as total_views
-// FROM discussions
-// LEFT JOIN users u ON discussions.user_id = u.user_id
-// LEFT JOIN discussions_user_response du ON discussions.id = du.discussion_id
-// LEFT JOIN users au ON du.user_id = au.user_id
-// LEFT JOIN user_customer_meta mu ON du.user_id = mu.user_id
-// LEFT JOIN (
-//   SELECT discussion_id, COUNT(*) as total_comments
-//   FROM discussions_user_response
-//   GROUP BY discussion_id
-// ) cr ON discussions.id = cr.discussion_id
-// LEFT JOIN (
-//   SELECT discussion_id, COUNT(*) as total_views
-//   FROM discussions_user_view
-//   GROUP BY discussion_id
-// ) vr ON discussions.id = vr.discussion_id
-// WHERE discussions.id <> ${discussion_id} 
-//   AND (${tagQueries})
-// ORDER BY discussions.id DESC
-// `;
+    //
 
 
-//ac
-// const relatedDiscussionsQuery = `
-// SELECT discussions.*,
-//        u.first_name AS discussion_user_first_name, 
-//        u.last_name AS discussion_user_last_name,
-//        COALESCE(cr.total_comments, 0) as total_comments,
-//        COALESCE(vr.total_views, 0) as total_views
-// FROM discussions
-// LEFT JOIN users u ON discussions.user_id = u.user_id
-// LEFT JOIN (
-//   SELECT discussion_id, COUNT(*) as total_comments
-//   FROM discussions_user_response
-//   GROUP BY discussion_id
-// ) cr ON discussions.id = cr.discussion_id
-// LEFT JOIN (
-//   SELECT discussion_id, COUNT(*) as total_views
-//   FROM discussions_user_view
-//   GROUP BY discussion_id
-// ) vr ON discussions.id = vr.discussion_id
-// WHERE discussions.id <> ${discussion_id} 
-//   AND (${tagQueries})
-// GROUP BY discussions.id
-// ORDER BY discussions.id DESC;
-// `;
+    // const relatedDiscussionsQuery = `
+    // SELECT discussions.*,
+    //   u.first_name AS discussion_user_first_name, 
+    //   u.last_name AS discussion_user_last_name,
+    //   du.user_id AS author_id,
+    //   du.created_at AS comment_date,
+    //   au.first_name AS author_first_name,
+    //   au.last_name AS author_last_name,
+    //   mu.profile_pic AS author_profile_pic,
+    //   COALESCE(cr.total_comments, 0) as total_comments,
+    //   COALESCE(vr.total_views, 0) as total_views
+    // FROM discussions
+    // LEFT JOIN users u ON discussions.user_id = u.user_id
+    // LEFT JOIN discussions_user_response du ON discussions.id = du.discussion_id
+    // LEFT JOIN users au ON du.user_id = au.user_id
+    // LEFT JOIN user_customer_meta mu ON du.user_id = mu.user_id
+    // LEFT JOIN (
+    //   SELECT discussion_id, COUNT(*) as total_comments
+    //   FROM discussions_user_response
+    //   GROUP BY discussion_id
+    // ) cr ON discussions.id = cr.discussion_id
+    // LEFT JOIN (
+    //   SELECT discussion_id, COUNT(*) as total_views
+    //   FROM discussions_user_view
+    //   GROUP BY discussion_id
+    // ) vr ON discussions.id = vr.discussion_id
+    // WHERE discussions.id <> ${discussion_id} 
+    //   AND (${tagQueries})
+    // ORDER BY discussions.id DESC
+    // `;
 
-//REAL
-// const relatedDiscussionsQuery = `SELECT discussions.*,
-// u.first_name AS discussion_user_first_name, 
-// u.last_name AS discussion_user_last_name,
-// mu.profile_pic AS user_profile_pic,
-// COALESCE(cr.total_comments, 0) as total_comments,
-// COALESCE(vr.total_views, 0) as total_views,
-// MAX(du.created_at) AS comment_date
-// FROM discussions
-// LEFT JOIN users u ON discussions.user_id = u.user_id
-// LEFT JOIN discussions_user_response du ON discussions.id = du.discussion_id
-// LEFT JOIN user_customer_meta mu ON u.user_id = mu.user_id 
-// LEFT JOIN (
-// SELECT discussion_id, COUNT(*) as total_comments
-// FROM discussions_user_response
-// GROUP BY discussion_id
-// ) cr ON discussions.id = cr.discussion_id
-// LEFT JOIN (
-// SELECT discussion_id, COUNT(*) as total_views
-// FROM discussions_user_view
-// GROUP BY discussion_id
-// ) vr ON discussions.id = vr.discussion_id
-// WHERE discussions.id <> ${discussion_id} 
-// AND (${tagQueries})
-// GROUP BY discussions.id
-// ORDER BY discussions.id DESC;
-// `;
 
-const relatedDiscussionsQuery = `SELECT discussions.*,
+    //ac
+    // const relatedDiscussionsQuery = `
+    // SELECT discussions.*,
+    //        u.first_name AS discussion_user_first_name, 
+    //        u.last_name AS discussion_user_last_name,
+    //        COALESCE(cr.total_comments, 0) as total_comments,
+    //        COALESCE(vr.total_views, 0) as total_views
+    // FROM discussions
+    // LEFT JOIN users u ON discussions.user_id = u.user_id
+    // LEFT JOIN (
+    //   SELECT discussion_id, COUNT(*) as total_comments
+    //   FROM discussions_user_response
+    //   GROUP BY discussion_id
+    // ) cr ON discussions.id = cr.discussion_id
+    // LEFT JOIN (
+    //   SELECT discussion_id, COUNT(*) as total_views
+    //   FROM discussions_user_view
+    //   GROUP BY discussion_id
+    // ) vr ON discussions.id = vr.discussion_id
+    // WHERE discussions.id <> ${discussion_id} 
+    //   AND (${tagQueries})
+    // GROUP BY discussions.id
+    // ORDER BY discussions.id DESC;
+    // `;
+
+    //REAL
+    // const relatedDiscussionsQuery = `SELECT discussions.*,
+    // u.first_name AS discussion_user_first_name, 
+    // u.last_name AS discussion_user_last_name,
+    // mu.profile_pic AS user_profile_pic,
+    // COALESCE(cr.total_comments, 0) as total_comments,
+    // COALESCE(vr.total_views, 0) as total_views,
+    // MAX(du.created_at) AS comment_date
+    // FROM discussions
+    // LEFT JOIN users u ON discussions.user_id = u.user_id
+    // LEFT JOIN discussions_user_response du ON discussions.id = du.discussion_id
+    // LEFT JOIN user_customer_meta mu ON u.user_id = mu.user_id 
+    // LEFT JOIN (
+    // SELECT discussion_id, COUNT(*) as total_comments
+    // FROM discussions_user_response
+    // GROUP BY discussion_id
+    // ) cr ON discussions.id = cr.discussion_id
+    // LEFT JOIN (
+    // SELECT discussion_id, COUNT(*) as total_views
+    // FROM discussions_user_view
+    // GROUP BY discussion_id
+    // ) vr ON discussions.id = vr.discussion_id
+    // WHERE discussions.id <> ${discussion_id} 
+    // AND (${tagQueries})
+    // GROUP BY discussions.id
+    // ORDER BY discussions.id DESC;
+    // `;
+
+    const relatedDiscussionsQuery = `SELECT discussions.*,
 u.first_name AS discussion_user_first_name, 
 u.last_name AS discussion_user_last_name,
 mu.profile_pic AS user_profile_pic,
@@ -2512,7 +2636,7 @@ ORDER BY discussions.id DESC;
 
 
 
-const relatedDiscussions = await query(relatedDiscussionsQuery);
+    const relatedDiscussions = await query(relatedDiscussionsQuery);
 
     return relatedDiscussions;
   } catch (error) {
@@ -2520,6 +2644,259 @@ const relatedDiscussions = await query(relatedDiscussionsQuery);
     return [];
   }
 }
+
+// async function getPopularTags() {
+//   try {
+//     const sql = `
+//       SELECT tag, COUNT(*) as tag_count
+//       FROM (
+//         SELECT JSON_UNQUOTE(JSON_EXTRACT(tags, '$[*]')) as tag
+//         FROM discussions
+//       ) extracted_tags
+//       WHERE tag IS NOT NULL AND tag != ''
+//       GROUP BY tag
+//       ORDER BY tag_count DESC;
+//     `;
+//     const rows = await query(sql);
+//     //const pp = stringify.rows
+//     console.log("rows",rows);
+//     //console.log("pp",pp)
+
+//     // const tags = rows.map(row => ({
+//     //   tag: row.tag,
+//     //   tag_count: row.tag_count,
+//     // }));
+
+//     // const result = {
+//     //   getPopularTags: tags,
+//     // };
+
+//     return rows;
+//   } catch (error) {
+//     console.error('Error getting popular tags:', error);
+//     throw error;
+//   }
+// }
+
+// async function getPopularTags() {
+//   try {
+//     const sql = `
+//       SELECT JSON_UNQUOTE(JSON_EXTRACT(tags, '$[*]')) as tags
+//       FROM discussions
+//       WHERE JSON_UNQUOTE(JSON_EXTRACT(tags, '$[*]')) IS NOT NULL;
+//     `;
+
+//     const rows = await query(sql);
+
+//     // Process the result to extract individual tags
+//     const tags = rows.reduce((accumulator, row) => {
+//       const parsedTags = JSON.parse(row.tags);
+//       accumulator.push(...parsedTags);
+//       return accumulator;
+//     }, []);
+
+//     // Count the occurrences of each tag
+//     const tagCounts = {};
+//     tags.forEach(tag => {
+//       if (tagCounts[tag]) {
+//         tagCounts[tag]++;
+//       } else {
+//         tagCounts[tag] = 1;
+//       }
+//     });
+
+//     const popularTags = Object.entries(tagCounts).map(([tag, tagCount]) => ({
+//       tag,
+//       tag_count: tagCount,
+//     }));
+
+//     //popularTags.sort((a, b) => b.tag_count - a.tag_count);
+
+//     const result = popularTags.sort((a, b) => b.tag_count - a.tag_count)
+
+//     console.log("result",result);
+//     return result;
+//   } catch (error) {
+//     console.error('Error getting popular tags:', error);
+//     throw error;
+//   }
+// }
+
+async function getPopularTags(limit = 20) {
+  try {
+    const sql = `
+      SELECT JSON_UNQUOTE(JSON_EXTRACT(tags, '$[*]')) as tags
+      FROM discussions
+      WHERE JSON_UNQUOTE(JSON_EXTRACT(tags, '$[*]')) IS NOT NULL
+      LIMIT ${limit};
+    `;
+
+    const rows = await query(sql);
+
+    // Process the result to extract individual tags
+    const tags = rows.reduce((accumulator, row) => {
+      const parsedTags = JSON.parse(row.tags);
+      accumulator.push(...parsedTags);
+      return accumulator;
+    }, []);
+
+    // Count the occurrences of each tag
+    const tagCounts = {};
+    tags.forEach(tag => {
+      if (tagCounts[tag]) {
+        tagCounts[tag]++;
+      } else {
+        tagCounts[tag] = 1;
+      }
+    });
+
+    const popularTags = Object.entries(tagCounts).map(([tag, tagCount]) => ({
+      tag,
+      tag_count: tagCount,
+    }));
+
+    // Sort the popularTags by tag_count in descending order
+    popularTags.sort((a, b) => b.tag_count - a.tag_count);
+
+    return popularTags;
+  } catch (error) {
+    console.error('Error getting popular tags:', error);
+    throw error;
+  }
+}
+
+// async function getDiscussionListingByTag(limit, offset, tagname) {
+//   const sql = `
+//     SELECT
+//       discussions.*,
+//       u.first_name,
+//       u.last_name,
+//       mu.profile_pic AS user_profile_pic,
+//       COALESCE(comments.total_comments, 0) as total_comments,
+//       COALESCE(views.total_views, 0) as total_views
+//     FROM discussions
+//     LEFT JOIN users u ON discussions.user_id = u.user_id
+//     LEFT JOIN user_customer_meta mu ON discussions.user_id = mu.user_id
+//     LEFT JOIN (
+//       SELECT discussion_id, COUNT(*) as total_comments
+//       FROM discussions_user_response
+//       GROUP BY discussion_id
+//     ) comments ON discussions.id = comments.discussion_id
+//     LEFT JOIN (
+//       SELECT discussion_id, COUNT(*) as total_views
+//       FROM discussions_user_view
+//       GROUP BY discussion_id
+//     ) views ON discussions.id = views.discussion_id
+//     WHERE tagname = ?
+//     ORDER BY discussions.id DESC
+//     LIMIT ? OFFSET ?;
+//   `;
+
+//   try {
+//     const results = await query(sql, [tagname, parseInt(limit), parseInt(offset)]);
+//     if (results.length > 0) {
+//       return results;
+//     } else {
+//       return [];
+//     }
+//   } catch (error) {
+//     console.error('Error during fetch All Latest Discussion:', error);
+//   }
+// }
+
+// async function getDiscussionListingByTag(limit,offset,tag) {
+//   try {
+
+//     //   const sql = `
+//     //   SELECT discussions.*
+//     //   FROM discussions
+//     //   WHERE JSON_CONTAINS(tags, JSON_QUOTE(?), '$')
+//     //   ORDER BY discussions.id DESC;
+//     // `;
+
+//     const sql = `
+//     SELECT discussions.*,
+//     u.first_name,
+//     u.last_name,
+//     mu.profile_pic AS user_profile_pic,
+//     COALESCE(comments.total_comments, 0) as total_comments,
+//     COALESCE(views.total_views, 0) as total_views
+// FROM discussions
+// LEFT JOIN users u ON discussions.user_id = u.user_id
+// LEFT JOIN user_customer_meta mu ON discussions.user_id = mu.user_id
+// LEFT JOIN (
+//     SELECT discussion_id, COUNT(*) as total_comments
+//     FROM discussions_user_response
+//     GROUP BY discussion_id
+// ) comments ON discussions.id = comments.discussion_id
+// LEFT JOIN (
+//     SELECT discussion_id, COUNT(*) as total_views
+//     FROM discussions_user_view
+//     GROUP BY discussion_id
+// ) views ON discussions.id = views.discussion_id
+// WHERE JSON_CONTAINS(tags, JSON_QUOTE(?), '$')
+// ORDER BY discussions.id DESC
+// LIMIT ? OFFSET ?;
+// `;
+
+
+//     // const results = await query(sql, [tag]);
+
+//     const results = await query(sql, [parseInt(limit), parseInt(offset),tag]);
+//     console.log("results", results);
+//     return results;
+//   } catch (error) {
+//     console.error('Error getting discussions by tag:', error);
+//     throw error;
+//   }
+// }
+
+
+async function getDiscussionListingByTag(tag, limit, offset) {
+  try {
+    const sql = `
+      SELECT
+        discussions.*,
+        u.first_name,
+        u.last_name,
+        mu.profile_pic AS user_profile_pic,
+        COALESCE(comments.total_comments, 0) as total_comments,
+        COALESCE(views.total_views, 0) as total_views
+      FROM discussions
+      LEFT JOIN users u ON discussions.user_id = u.user_id
+      LEFT JOIN user_customer_meta mu ON discussions.user_id = mu.user_id
+      LEFT JOIN (
+        SELECT discussion_id, COUNT(*) as total_comments
+        FROM discussions_user_response
+        GROUP BY discussion_id
+      ) comments ON discussions.id = comments.discussion_id
+      LEFT JOIN (
+        SELECT discussion_id, COUNT(*) as total_views
+        FROM discussions_user_view
+        GROUP BY discussion_id
+      ) views ON discussions.id = views.discussion_id
+      WHERE JSON_CONTAINS(tags, JSON_QUOTE(?), '$')
+      ORDER BY discussions.id DESC
+      LIMIT ? OFFSET ?;
+    `;
+
+    const results = await query(sql, [tag, parseInt(limit), parseInt(offset)]);
+    if (results.length > 0) {
+      return results;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.error('Error getting discussions by tag:', error);
+    throw error;
+  }
+}
+
+
+
+
+
+
 
 
 
@@ -2556,7 +2933,7 @@ const relatedDiscussions = await query(relatedDiscussionsQuery);
 //   try{
 //     const results = await query(sql);
 //     if (results.length>0) {
-      
+
 //     return results;
 //     } else {
 //       return [];
@@ -2660,5 +3037,7 @@ module.exports = {
   getAllLatestDiscussion,
   getAllDiscussions,
   getAllRelatedDiscussion,
-  getRelatedDiscussionsByTags
+  getRelatedDiscussionsByTags,
+  getPopularTags,
+  getDiscussionListingByTag
 };
