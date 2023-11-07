@@ -4798,7 +4798,7 @@ exports.addComment = async (req, res) => {
 exports.createCompanyCategory = async (req, res) => {
     //console.log('createCompanyCategory',req.body ); 
     const {category_name, parent_category, company_id} = req.body;
-    const checkQuery = `SELECT id FROM complaint_category WHERE category_name = '${category_name}'`;
+    const checkQuery = `SELECT id FROM complaint_category WHERE category_name = '${category_name}' AND company_id = '${company_id}' `;
     db.query(checkQuery, (checkErr, checkResult)=>{
         if (checkErr) {
             return res.send({
