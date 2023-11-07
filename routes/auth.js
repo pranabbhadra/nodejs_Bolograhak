@@ -343,5 +343,9 @@ router.post('/user_complaint_response', authController.userComplaintResponse);
 router.post('/create-survey', authController.createSurvey);
 router.post('/update-survey', authController.updateSurvey);
 router.post('/create-survey-answer', authController.createSurveyAnswer);
+//survey Invitation Email
+router.post('/survey_invitation', authController.surveyInvitation);
+
+router.post('/delete-discussion', authController.deleteDiscussion);
 
 module.exports = router;

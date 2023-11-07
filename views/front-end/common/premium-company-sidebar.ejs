@@ -142,7 +142,12 @@
             <li><a href="/company-complaint-listing/<%= company.slug  %>">Complaint Listing</a></li>
          </ul>
      </li>
-     <li <% if( menu_active_id == 'create-survey') { %> class="active" <% } %>><a href="/create-survey/<%= company.slug  %>"><i class="fa-solid fa-clipboard-question"></i> Survey</a></li>
+     <li <% if( menu_active_id == 'survey') { %> class="active" <% } %> >
+         <a href="/create-survey/<%= company.slug  %>"><i class="fa-solid fa-clipboard-question"></i> Survey</a>
+         <ul>
+				<li <% if( menu_active_id == 'survey') { %>  class="active" <% } %>><a href="/send-survey-invitation/<%= company.slug  %>">Send Survey Invitation</a></li>
+			</ul>
+      </li>
      <li <% if( menu_active_id == 'settings') { %> class="active" <% } %> ><a href="/complaint-level-management/<%= company.slug  %>"><i class="fas fa-cog"></i> Settings</a></li>
 	</ul>
  </div>

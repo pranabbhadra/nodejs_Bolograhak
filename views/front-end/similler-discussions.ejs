@@ -1,0 +1,116 @@
+<%- include('common/header') -%>
+<link href="/front-end/css/discussion-style.css" rel="stylesheet" type="text/css">
+<%- include('common/header-banner') -%>
+
+<!-- ============== Section1 Start =============== -->
+<section class="main-content bottom-main-content">
+    <div class="discussion-page-content">
+       <div class="container">
+          <%
+          let tags = []
+          if(AllCommentByDiscusId[0].tags != ''){
+             tags = JSON.parse(AllCommentByDiscusId[0].tags)
+          }
+           %>
+            <div class="discussion-similar-thread">
+               
+               
+               <% if (AllDiscussions.length > 0) { %>
+                 <% let AllDiscussionTags = [] %>
+                 <% let headingDisplayed = false %>
+                 <% AllDiscussions.forEach((AllDiscussion,index) => { %>
+                   <%
+                   if (AllDiscussion.tags !== '') {
+                     AllDiscussionTags = JSON.parse(AllDiscussion.tags);
+                   }
+                   %>
+                   <% const matchingTags = tags.filter((tag,key) => AllDiscussionTags.includes(tag)); %>
+                   <% if (matchingTags.length > 0  ) { %>
+                     <% if (!headingDisplayed) { %>
+                        <h3>Discussions</h3>
+                        <% headingDisplayed = true %>
+                      <% } %>
+                     <div class="discussion-review-panel">
+                       <a href="/discussion-details/<%= AllDiscussion.id %>" title="<%= AllDiscussion.topic %>" >
+                         <div class="discussion-user-img" title="<%= AllDiscussion.first_name %> <%= AllDiscussion.last_name %>">
+                           <h4><%= AllDiscussion.first_name.charAt(0).toUpperCase() %></h4>
+                         </div>
+                         <div class="discussion-user-info">
+                           <h4>
+                             <% if (AllDiscussion.topic.length > 75) { %>
+                               <%= AllDiscussion.topic.substring(0, 75) + ' . . . ' %>
+                             <% } else { %>
+                               <%= AllDiscussion.topic %>
+                             <% } %> 
+                           </h4>
+                           <% const date = new Date(AllDiscussion.created_at); %>
+                           <p>Created <%= date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) %> by <%= AllDiscussion.first_name %> <%= AllDiscussion.last_name %></p>
+                         </div>
+                         <div class="dis-comment-views">
+                           <span><%= AllDiscussion.total_comments %> Comments</span>
+                           <span><%= AllDiscussion.total_views %> Views</span>
+                         </div>
+                       </a>
+                     </div>
+                     <% } %>
+                 <% }) %>
+               <% } %>
+             </div>
+             
+               
+        </div>
+       </div>
+    </div>
+ </section>
+<!-- ============== Section1 End =============== -->
+
+<%- include('common/footer') -%>   
+<script>
+   jQuery(function ($) {
+
+       //---Review reply submit-------//
+       $('#comment_form').submit(function(e){
+           event.preventDefault();
+           $('#comment_btn').prop( "disabled", true );
+           $('.submit-success, .submit-error').hide();
+           $('.submit-loading').show();
+
+           const formData = $('#comment_form').serializeArray();
+           const jsonData = {};
+           $(formData).each(function (index, field) {
+               jsonData[field.name] = field.value;
+           });
+
+           $.ajax({
+             url: '/auth/add-comment',
+             method: 'POST',
+             data: jsonData,
+             ContentType: 'application/json',
+             success: function (data) {
+               if (data.status == 'ok') {
+                 $('.submit-loading').hide();
+                 $('#comment_btn').prop( "disabled", false );
+                 $('.submit-success').text(data.message);
+                 $('.submit-success').show();
+                 setTimeout( function(){
+                        window.location.reload();
+                 }, 3000 );
+               } else {
+                   $('.submit-loading').hide();
+                   $('.submit-error').text(data.message);
+                   $('.submit-error').show();
+                   $('#comment_btn').prop( "disabled", false );
+               }
+               //console.log(data);
+             },
+             error: function (error) {
+               $('.submit-loading').hide();
+               $('.submit-error').text(error);
+               $('.submit-error').show();
+             }
+           });
+       });
+
+
+   });
+</script>

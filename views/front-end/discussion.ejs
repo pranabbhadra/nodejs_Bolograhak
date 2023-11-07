@@ -274,7 +274,7 @@
                                     <% tags.forEach((tag) => { %>
                                         <% if (!uniqueTags.has(tag)) { %>
                                             <% uniqueTags.add(tag); %>
-                                            <a href="/discussion-details/<%= PopularDiscussion.id %>" class="btn-default btn-warning dis-details-top-btn"><%= tag %></a>
+                                            <a href="/similler-discussions/<%= PopularDiscussion.id %>" class="btn-default btn-warning dis-details-top-btn"><%= tag %></a>
                                         <% } %>
                                     <% }) %>
                                 <% } %>

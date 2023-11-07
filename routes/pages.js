@@ -975,6 +975,41 @@ router.get('/discussion-details/:discussion_id', checkCookieValue, async (req, r
     }
 });
 
+//Discussion Details page
+router.get('/similler-discussions/:discussion_id', checkCookieValue, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
+    const discussion_id = req.params.discussion_id;
+    const [globalPageMeta, insertDiscussionResponse, getAllCommentByDiscusId, getAllDiscussions] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+        comFunction2.insertDiscussionResponse(discussion_id,  requestIp.getClientIp(req)),
+        comFunction2.getAllCommentByDiscusId(discussion_id),
+        comFunction2.getAllDiscussions(),
+    ]);
+    try {
+        // res.json( {
+        //     menu_active_id: 'discussion-details',
+        //     page_title: 'Comments',
+        //     currentUserData,
+        //     globalPageMeta:globalPageMeta,
+        //     commentID:insertDiscussionResponse,
+        //     AllCommentByDiscusId:getAllCommentByDiscusId,
+        //     AllDiscussions:getAllDiscussions
+        // });
+        res.render('front-end/similler-discussions', {
+            menu_active_id: 'similler-discussions',
+            page_title: 'Similler Discussions',
+            currentUserData,
+            globalPageMeta:globalPageMeta,
+            commentID:insertDiscussionResponse,
+            AllCommentByDiscusId:getAllCommentByDiscusId,
+            AllDiscussions:getAllDiscussions
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+
 //Survey page
 router.get('/:slug/survey/:id', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
@@ -1107,7 +1142,7 @@ router.get('/create-survey/:slug', checkClientClaimedCompany, async (req, res) =
 
         res.render('front-end/premium-company-create-survey', 
         { 
-            menu_active_id: 'create-survey',
+            menu_active_id: 'survey',
             page_title: 'Create Survey',
             currentUserData,
             globalPageMeta:globalPageMeta,
@@ -2453,6 +2488,82 @@ router.get('/company-compnaint-details/:slug/:complaintId', checkClientClaimedCo
     }
 });
 
+//send review invitation page
+router.get('/send-survey-invitation/:slug', checkClientClaimedCompany, async (req, res) => {
+
+    const encodedUserData = req.cookies.user;
+    const currentUserData = JSON.parse(encodedUserData);
+    const slug = req.params.slug;
+    const comp_res =await comFunction2.getCompanyIdBySlug(slug);
+    const companyId = comp_res.ID;
+    const [globalPageMeta, company, PremiumCompanyData, companyReviewNumbers, allRatingTags, getCompanyOngoingSurveyDetails ] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+        comFunction.getCompany(companyId),
+        comFunction2.getPremiumCompanyData(companyId),
+        comFunction.getCompanyReviewNumbers(companyId),
+        comFunction.getAllRatingTags(),
+        comFunction.getCompanyOngoingSurveyDetails(companyId),
+    ]);
+   
+    try {
+        let cover_img = '';
+        let facebook_url = '';
+        let twitter_url = '';
+        let instagram_url = '';
+        let linkedin_url = '';
+        let youtube_url = '';
+    
+        if(typeof PremiumCompanyData !== 'undefined' ){
+             cover_img = PremiumCompanyData.cover_img;
+             facebook_url = PremiumCompanyData.facebook_url;
+             twitter_url = PremiumCompanyData.twitter_url;
+             instagram_url = PremiumCompanyData.instagram_url;
+             linkedin_url = PremiumCompanyData.linkedin_url;
+             youtube_url = PremiumCompanyData.youtube_url;
+        }
+        // res.json( {
+        //     menu_active_id: 'survey',
+        //     page_title: 'Send Survey Invitation',
+        //     currentUserData,
+        //     globalPageMeta:globalPageMeta,
+        //     company,
+        //     companyReviewNumbers,
+        //     facebook_url:facebook_url,
+        //     twitter_url:twitter_url,
+        //     instagram_url:instagram_url,
+        //     linkedin_url:linkedin_url,
+        //     youtube_url:youtube_url,
+        //     allRatingTags,
+        //     CompanyOngoingSurveyDetails:getCompanyOngoingSurveyDetails
+        // });
+        res.render('front-end/send-survey-invitation', {
+            menu_active_id: 'survey',
+            page_title: 'Send Survey Invitation',
+            currentUserData,
+            globalPageMeta:globalPageMeta,
+            company,
+            companyReviewNumbers,
+            facebook_url:facebook_url,
+            twitter_url:twitter_url,
+            instagram_url:instagram_url,
+            linkedin_url:linkedin_url,
+            youtube_url:youtube_url,
+            allRatingTags,
+            CompanyOngoingSurveyDetails:getCompanyOngoingSurveyDetails
+        });
+    } catch (err) {
+        console.error(err);
+        res.render('front-end/404', {
+            menu_active_id: '404',
+            page_title: '404',
+            currentUserData,
+            globalPageMeta:globalPageMeta
+        });
+    }
+    /////////////////////////////////////////////////
+  
+});
+
 ///////////////////////////////////////////////////////////////////////
 // Middleware function to check if user is logged in
 async function checkLoggedIn(req, res, next) {
@@ -3035,6 +3146,35 @@ router.get('/edit-company/:id', checkLoggedIn, async (req, res) => {
             Allusers: users
             //countries: countries,
             //states: states            
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+
+router.get('/discussion-listing', checkLoggedIn, async (req, res) => {
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+
+        // Fetch all the required data asynchronously
+        const [AllDiscussions] = await Promise.all([
+            comFunction2.getAllDiscussions(),
+        ]);
+
+        // Render the 'edit-user' EJS view and pass the data
+        // res.json( {
+        //     menu_active_id: 'pages',
+        //     page_title: 'Discussion Listing',
+        //     currentUserData,
+        //     AllDiscussions: AllDiscussions
+        // });
+        res.render('discussion-listing', {
+            menu_active_id: 'pages',
+            page_title: 'Discussion Listing',
+            currentUserData,
+            AllDiscussions: AllDiscussions
         });
     } catch (err) {
         console.error(err);

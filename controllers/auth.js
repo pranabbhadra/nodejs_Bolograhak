@@ -4798,7 +4798,7 @@ exports.addComment = async (req, res) => {
 exports.createCompanyCategory = async (req, res) => {
     //console.log('createCompanyCategory',req.body ); 
     const {category_name, parent_category, company_id} = req.body;
-    const checkQuery = `SELECT id FROM complaint_category WHERE category_name = '${category_name}'`;
+    const checkQuery = `SELECT id FROM complaint_category WHERE category_name = '${category_name}' AND company_id = '${company_id}' `;
     db.query(checkQuery, (checkErr, checkResult)=>{
         if (checkErr) {
             return res.send({
@@ -4986,7 +4986,7 @@ exports.createCompanyLevel = async (req, res) => {
 
 //Delete company Complaint Level
 exports.deleteCompanyComplaintLevel = async (req, res) => {
-    console.log('deleteCompanyComplaintLevel',req.body ); 
+    //console.log('deleteCompanyComplaintLevel',req.body ); 
     //return false;
     const delQuery = `DELETE FROM complaint_level_management WHERE id = '${req.body.level_id}'`;
     db.query(delQuery,(err, result)=>{
@@ -5294,6 +5294,42 @@ exports.createSurveyAnswer = async (req, res) => {
             return res.send({
                 status: 'ok',
                 message: 'Your survey answers successfully submitted'
+            });
+        }
+    })
+}
+
+
+// Survey Invitation
+exports.surveyInvitation = async (req, res) => {
+    console.log('surveyInvitation',req.body );
+    //return false;
+    const {emails, email_body, user_id, company_id, company_name, company_slug, survey_id, unique_id  } = req.body;
+    const [ sendSurveyInvitationEmail] = await Promise.all([
+        comFunction2.sendSurveyInvitationEmail(req.body)
+    ]);
+
+    return res.send({
+        status: 'ok',
+        message: 'Survey Invitation emails send successfully'
+    });
+}
+
+//Delete Discussion 
+exports.deleteDiscussion = async (req, res) => {
+    //console.log('deleteDiscussion',req.body ); 
+    //return false;
+    const delQuery = `DELETE FROM discussions WHERE id = '${req.body.discussionid}'`;
+    db.query(delQuery,(err, result)=>{
+        if (err) {
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong 2 '+err
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Discussion Deleted successfully !'
             });
         }
     })
