@@ -2637,7 +2637,19 @@ router.get('/discussionlistingbytag', verifyToken, async(req,res) => {
          }
 })
 
-
+router.get('/discussionlistingbytopic/:keyword', verifyToken, async (req,res) => {
+    try{
+        const keyword = req.params.keyword;
+        const discussions = await comFunction.searchDiscussion(keyword);
+        res.json({
+            discussions: discussions
+         });
+    } catch(error){
+        console.error(error);
+        res.status(500).send('An error occurred during fetching discussion');
+    }
+   
+})
 
 
 
