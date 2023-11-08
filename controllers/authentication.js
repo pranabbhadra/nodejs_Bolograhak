@@ -3696,6 +3696,15 @@ exports.createDiscussion = async (req, res) => {
 
   const tagsArray = tags ? tags.split(',').map(tag => tag.trim()) : [];
 
+  if (!topic.trim()) {
+    return res.send({
+      status: 'not ok',
+      message: 'Topic is empty or only contains whitespace',
+    });
+  }
+  // const topicData= topic?.trim() 
+  // !topicData
+
   const sql = `INSERT INTO discussions (user_id, topic, tags, created_at, expired_at) VALUES (?, ?, ?, ?, ?)`;
   const data = [user_id, topic, JSON.stringify(tagsArray), formattedDate, expiration_date]; 
 
