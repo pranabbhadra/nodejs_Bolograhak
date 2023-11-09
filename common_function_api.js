@@ -2893,7 +2893,24 @@ async function getDiscussionListingByTag(tag, limit, offset) {
 }
 
 
-
+async function searchDiscussion(keyword){
+  const get_company_query = `
+    SELECT id , topic FROM discussions
+    WHERE topic LIKE '%${keyword}%' 
+    ORDER BY id DESC
+  `;
+  try{
+    const get_company_results = await query(get_company_query);
+    if(get_company_results.length > 0 ){
+      //console.log(get_company_results);
+      return {status: 'ok', data: get_company_results, message: ' Discussion data recived'};
+    }else{
+      return {status: 'ok', data: '', message: 'No Discussion data found'};
+    }
+  }catch(error){
+    return {status: 'err', data: '', message: 'No Discussion data found'};
+  }  
+}
 
 
 
@@ -3039,5 +3056,6 @@ module.exports = {
   getAllRelatedDiscussion,
   getRelatedDiscussionsByTags,
   getPopularTags,
-  getDiscussionListingByTag
+  getDiscussionListingByTag,
+  searchDiscussion
 };
