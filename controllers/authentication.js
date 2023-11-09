@@ -1125,6 +1125,7 @@ exports.submitReview = async (req, res) => {
       review_title,
       review_content,
       user_privacy,
+      user_contact,
       tags
     } = req.body;
     console.log("Rating from request:", rating);
@@ -1218,8 +1219,9 @@ exports.submitReview = async (req, res) => {
         review_status,
         labels,
         created_at,
-        updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        updated_at,
+        user_contact
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     const create_review_values = [
@@ -1234,8 +1236,8 @@ exports.submitReview = async (req, res) => {
       '2',
       '1',
       formattedDate,
-      formattedDate
-
+      formattedDate,
+      user_contact
     ];
 
     console.log("Inserting Review Data:", create_review_values);
@@ -2235,9 +2237,22 @@ exports.submitReviewReply = async (req, res) => {
         message: 'Access denied: You are not authorized to update this user.',
       });
     }
-
+    const currentTimestamp = Date.now();
     const currentDate = new Date();
-    const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+  
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+    const day = String(currentDate.getDate()).padStart(2, '0');
+    const hours = String(currentDate.getHours()).padStart(2, '0');
+    const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+    const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+  
+    const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  
+    // console.log(formattedDateTime);
+    // const currentDate = new Date();
+    //const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+    console.log("aaa",formattedDate);
     const replyData = {
       review_id: review_id,
       company_id: company_id,
@@ -2281,7 +2296,7 @@ exports.submitReviewReply = async (req, res) => {
 };
 
 
-exports.profileManagement = async (req, res) => {
+exports.PremiumCompanyprofileManagement = async (req, res) => {
   const companyID = req.body.company_id;
   const currentDate = new Date();
 
@@ -2638,6 +2653,74 @@ exports.profileManagement = async (req, res) => {
   });
 }
 
+exports.BasicCompanyprofileManagement = (req, res) => {
+  console.log('updateBasicCompany:', req.body);
+  console.log('updateBasicCompany File:', req.file);
+  //return false;
+  const companyID = req.body.company_id;
+  const currentDate = new Date();
+
+  const year = currentDate.getFullYear();
+  const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+  const day = String(currentDate.getDate()).padStart(2, '0');
+  const hours = String(currentDate.getHours()).padStart(2, '0');
+  const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+  const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+
+  const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+  // Update company details in the company table
+  const updateQuery = 'UPDATE company SET  heading = ?, logo = ?, about_company = ?, comp_phone = ?, comp_email = ?, updated_date = ?, tollfree_number = ?, main_address = ?, operating_hours = ?  WHERE ID = ?';
+  const updateValues = [
+    req.body.heading,
+    '',
+    req.body.about_company,
+    req.body.comp_phone,
+    req.body.comp_email,
+    formattedDate,
+    req.body.tollfree_number,
+    req.body.main_address,
+    req.body.operating_hours,
+    companyID
+  ];
+
+  if (req.file) {
+    // Unlink (delete) the previous file
+    const unlinkcompanylogo = "uploads/" + req.body.previous_logo;
+    fs.unlink(unlinkcompanylogo, (err) => {
+      if (err) {
+        console.error('Error deleting file:', err);
+      } else {
+        console.log('Previous file deleted');
+      }
+    });
+
+    updateValues[1] = req.file.filename;
+  } else {
+    updateValues[1] = req.body.previous_logo;
+  }
+  db.query(updateQuery, updateValues, (err, results) => {
+    if (err) {
+      // Handle the error
+      return res.send({
+        status: 'err',
+        data: '',
+        message: 'An error occurred while updating the company details: ' + err
+      });
+    } else {
+      return res.send(
+        {
+          status: 'ok',
+          data: companyID,
+          message: 'Successfully Updated'
+        }
+      )
+    }
+
+
+  })
+}
+
 exports.reviewVoting = async (req, res) => {
   try {
     const authenticatedUserId = parseInt(req.user.user_id);
@@ -2718,3 +2801,986 @@ exports.reviewVoting = async (req, res) => {
     });
   }
 };
+//create poll
+exports.createPoll = async (req, res) => {
+  try {
+    // console.log('req.user:', req.user);
+    // console.log('req.body:', req.body);
+
+    const authenticatedUserId = parseInt(req.user.user_id);
+    console.log('authenticatedUserId: ', authenticatedUserId);
+    const ApiuserId = parseInt(req.body.user_id);
+    if (isNaN(ApiuserId)) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Invalid user_id provided in request body.',
+      });
+    }
+    console.log('req.body.user_id: ', parseInt(req.body.user_id));
+    console.log('createPoll', req.body);
+    const { company_id, user_id, poll_question, poll_answer, expire_date } = req.body;
+    console.log('user_id from request:', req.body.user_id);
+    if (ApiuserId !== authenticatedUserId) {
+      return res.status(403).json({
+        status: 'error',
+        message: 'Access denied: You are not authorized to update this user.',
+      });
+    }
+    //const answers = JSON.stringify(poll_answer);
+    const currentDate = new Date();
+    // const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth() + 1; // Months are zero-based (0 = January, 11 = December), so add 1
+    const day = currentDate.getDate();
+    const formattedDate = `${year}-${month < 10 ? '0' : ''}${month}-${day < 10 ? '0' : ''}${day}`;
+    const sql = `INSERT INTO poll_company ( company_id, poll_creator_id, question, created_at, expired_at) VALUES (?,?,?,?,?)`;
+    const data = [company_id, user_id, poll_question, formattedDate, expire_date];
+    db.query(sql, data, async (err, result) => {
+      if (err) {
+        return res.send({
+          status: 'not ok',
+          message: 'Something went wrong ' + err
+        });
+      } else {
+        await poll_answer.forEach((answer) => {
+          const ansQuery = `INSERT INTO poll_answer ( poll_id, answer) VALUES (?,?)`;
+          const ansData = [result.insertId, answer];
+          db.query(ansQuery, ansData, (ansErr, ansResult) => {
+            if (ansErr) {
+              return res.send({
+                status: 'not ok',
+                message: 'Something went wrong ' + ansErr
+              });
+            }
+          })
+        })
+
+        return res.send({
+          status: 'ok',
+          message: 'Poll Created Successfully'
+        });
+      }
+    })
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: 'error',
+      message: 'An error occurred ' + error,
+    });
+  }
+};
+
+//submit Survey
+exports.submitSurvey = async (req, res) => {
+  try {
+    // console.log('req.user:', req.user);
+    // console.log('req.body:', req.body);
+    db.query(
+      'SELECT * FROM survey_customer_answers WHERE survey_unique_id = ? AND customer_id = ?',
+      [req.body.survey_unique_id, req.body.user_id],
+      async (err, results) => {
+        if (err) {
+          return res.status(500).json({
+            status: 'error',
+            message: 'An error occurred while processing your request' + err,
+          });
+        } else {
+          if(results.length>0){
+            return res.status(500).json({
+              status: 'error',
+              message: 'You have already submitted this survey form',
+            });
+          }else{
+            const authenticatedUserId = parseInt(req.user.user_id);
+            console.log('authenticatedUserId: ', authenticatedUserId);
+            const ApiuserId = parseInt(req.body.user_id);
+            if (isNaN(ApiuserId)) {
+              return res.status(400).json({
+                status: 'error',
+                message: 'Invalid user_id provided in request body.',
+              });
+            }
+            console.log('req.body.user_id: ', parseInt(req.body.user_id));
+            console.log('Survey', req.body);
+        
+            if (ApiuserId !== authenticatedUserId) {
+              return res.status(403).json({
+                status: 'error',
+                message: 'Access denied: You are not authorized to update this user.',
+              });
+            }
+        
+            const currentDate = new Date();
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth() + 1; // Months are zero-based (0 = January, 11 = December), so add 1
+            const day = currentDate.getDate();
+            const formattedDate = `${year}-${month < 10 ? '0' : ''}${month}-${day < 10 ? '0' : ''}${day}`;
+            
+            const surveyAnswerInsertData = [
+              req.body.company_id,
+              req.body.survey_unique_id,
+              req.body.user_id,
+              JSON.stringify(req.body.answers),
+              formattedDate
+            ];
+            const sql = "INSERT INTO survey_customer_answers (company_id, survey_unique_id, customer_id, answer, created_at) VALUES (?, ?, ?, ?, ?)";
+        
+            db.query(sql, surveyAnswerInsertData, async (err, result) => {
+              if (err) {
+                return res.send({
+                  status: 'error',
+                  message: 'Something went wrong ' + err
+                });
+              } else {
+                return res.send({
+                  status: 'ok',
+                  message: 'Your survey answer successfully submited'
+                });
+              }
+            })
+          }
+        }
+      }
+    );
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: 'error',
+      message: 'An error occurred ' + error,
+    });
+  }
+};
+
+// Update poll expire date
+exports.updatePollExpireDate = async (req, res) => {
+  try {
+    // const authenticatedUserId = parseInt(req.user.user_id);
+    // console.log('authenticatedUserId: ', authenticatedUserId);
+    // const ApiuserId = parseInt(req.body.user_id);
+    // if (isNaN(ApiuserId)) {
+    //   return res.status(400).json({
+    //     status: 'error',
+    //     message: 'Invalid user_id provided in request body.',
+    //   });
+    // }
+    // console.log('req.body.user_id: ', parseInt(req.body.user_id));
+    console.log('updatePollExpireDate', req.body);
+    const { poll_id, change_expire_date, user_id } = req.body;
+    // console.log('user_id from request:', req.body.user_id);
+    // if (ApiuserId !== authenticatedUserId) {
+    //   return res.status(403).json({
+    //     status: 'error',
+    //     message: 'Access denied: You are not authorized to update this user.',
+    //   });
+    // }
+    const sql = `UPDATE poll_company SET expired_at = ? WHERE id = ?`;
+    const data = [change_expire_date, poll_id]
+    db.query(sql, data, (err, result) => {
+      if (err) {
+        return res.send({
+          status: 'not ok',
+          message: 'Something went wrong ' + err
+        });
+      } else {
+        return res.send({
+          status: 'ok',
+          message: 'Expire Date Updated Successfully'
+        });
+      }
+    })
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: 'error',
+      message: 'An error occurred ' + error,
+    });
+  }
+}
+// User polling
+exports.userPolling = async (req, res) => {
+  try {
+    const authenticatedUserId = parseInt(req.user.user_id);
+    console.log('authenticatedUserId: ', authenticatedUserId);
+    const ApiuserId = parseInt(req.body.user_id);
+    if (isNaN(ApiuserId)) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Invalid user_id provided in request body.',
+      });
+    }
+    console.log('req.body.user_id: ', parseInt(req.body.user_id));
+    console.log('userPolling', req.body);
+    const { ans_id, poll_id, user_id } = req.body
+    console.log('user_id from request:', req.body.user_id);
+    if (ApiuserId !== authenticatedUserId) {
+      return res.status(403).json({
+        status: 'error',
+        message: 'Access denied: You are not authorized to update this user.',
+      });
+    }
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+    const sql = `INSERT INTO poll_voting ( poll_id, answer_id, user_id, voting_date) VALUES (?, ?, ?, ?)`;
+    const data = [poll_id, ans_id, user_id, formattedDate];
+    db.query(sql, data, (err, result) => {
+      if (err) {
+        return res.send({
+          status: 'not ok',
+          message: 'Something went wrong ' + err
+        });
+      } else {
+        return res.send({
+          status: 'ok',
+          message: 'Your Poll Submited Successfully'
+        });
+      }
+    })
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: 'error',
+      message: 'An error occurred ' + error,
+    });
+  }
+}
+
+//edit user review
+exports.editUserReview = async (req, res) => {
+  try {
+    const authenticatedUserId = parseInt(req.user.user_id);
+    const ApiuserId = parseInt(req.body.user_id);
+
+    if (isNaN(ApiuserId)) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Invalid user_id provided in request body.',
+      });
+    }
+
+    if (ApiuserId !== authenticatedUserId) {
+      return res.status(403).json({
+        status: 'error',
+        message: 'Access denied: You are not authorized to update this user.',
+      });
+    }
+
+    const { review_id, user_id, review_title, rating, review_content, user_privacy, tags } = req.body;
+    console.log('Request Body:', req.body);
+    console.log('Request Body:', req.body);
+
+    // Check if the review exists and retrieve its creation date
+    const reviewQuery = 'SELECT created_at FROM reviews WHERE id = ? AND customer_id=?';
+    const reviewData = await query(reviewQuery, [review_id, user_id]);
+
+    if (reviewData.length === 0) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Review not found.',
+      });
+    }
+
+    const createdAt = new Date(reviewData[0].created_at);
+    const currentDate = new Date();
+
+    // Calculate the time difference in milliseconds
+    const timeDifference = currentDate - createdAt;
+
+    // Calculate the number of days
+    const daysDifference = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+
+    // Check if the review is within the 30-day window
+    if (daysDifference > 30) {
+      return res.status(403).json({
+        status: 'error',
+        message: 'Review cannot be edited after 30 days.',
+      });
+    }
+
+    // If the review is within the 30-day window, proceed with the update
+    const reviewDataToUpdate = {
+      review_id,
+      review_title,
+      rating,
+      review_content,
+      user_privacy,
+      tags,
+    };
+
+    await comFunction.updateReview(reviewDataToUpdate);
+
+    // Send a success response
+    res.status(200).json({
+      status: 'ok',
+      message: 'Review edited successfully',
+    });
+  } catch (error) {
+    console.error('Error editing review:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'An error occurred while editing the review',
+    });
+  }
+};
+
+
+
+exports.reviewInvitation = async (req, res) => {
+  console.log("reviewInvitation", req.body);
+  try {
+    const authenticatedUserId = parseInt(req.user.user_id);
+    console.log('authenticatedUserId: ', authenticatedUserId);
+    const ApiuserId = parseInt(req.body.user_id);
+    if (isNaN(ApiuserId)) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Invalid user_id provided in request body.',
+      });
+    }
+    console.log('req.body.user_id: ', parseInt(req.body.user_id));
+    console.log('userPolling', req.body);
+    const { emails, email_body, user_id, company_id, company_name } = req.body;
+    console.log('user_id from request:', req.body.user_id);
+    if (ApiuserId !== authenticatedUserId) {
+      return res.status(403).json({
+        status: 'error',
+        message: 'Access denied: You are not authorized to update this user.',
+      });
+    }
+    const [InvitationDetails, sendInvitationEmail] = await Promise.all([
+      comFunction.insertInvitationDetails(req.body),
+      comFunction.sendInvitationEmail(req.body)
+    ]);
+
+    return res.send({
+      status: 'ok',
+      data: {
+        InvitationDetails,
+        sendInvitationEmail
+      },
+      message: 'Invitation emails send successfully'
+    });
+  } catch (error) {
+    console.error('Error editing review:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'An error occurred while sending the invitation for reviews',
+    });
+  }
+}
+
+
+// exports.userPoll = async (req, res) => {
+//   const authenticatedUserId = parseInt(req.user.user_id);
+//   const ApiuserId = parseInt(req.body.user_id);
+
+//   if (isNaN(ApiuserId)) {
+//     return res.status(400).json({
+//       status: 'error',
+//       message: 'Invalid user_id provided in the request body.',
+//     });
+//   }
+//   if (ApiuserId !== authenticatedUserId) {
+//     return res.status(403).json({
+//       status: 'error',
+//       message: 'Access denied: You are not authorized to update this user.',
+//     });
+//   }
+
+//   const { poll_id, user_id } = req.body;
+
+//   const queryWhenUserHasVoted = `
+//     SELECT
+//       pc.id AS poll_id,
+//       pc.question AS poll_question,
+//       pc.poll_creator_id,
+//       CASE
+//         WHEN pv.user_id IS NOT NULL THEN pa.id
+//         ELSE NULL
+//       END AS answer_id,
+//       CASE
+//         WHEN pv.user_id IS NOT NULL THEN pa.answer
+//         ELSE NULL
+//       END AS answer_text
+//     FROM
+//       poll_company AS pc
+//     LEFT JOIN
+//       poll_voting AS pv ON pc.id = pv.poll_id AND pv.user_id = ?
+//     LEFT JOIN
+//       poll_answer AS pa ON pv.answer_id = pa.id AND pc.id = pa.poll_id
+//     WHERE
+//       pc.id = ? AND pv.user_id = ?;
+//   `;
+
+//   // Check if the user has voted
+//   db.query(queryWhenUserHasVoted, [ApiuserId, poll_id, ApiuserId], (err, results) => {
+//     if (err) {
+//       console.error(err);
+//       return res.status(500).json({
+//         status: 'error',
+//         message: 'An error occurred while fetching poll data.',
+//       });
+//     }
+//     console.log('aqaaa', results);
+//     if (results.length > 0) {
+//       const pollData = {
+//         poll_id: results[0].poll_id,
+//         poll_question: results[0].poll_question,
+//         poll_creator_id: results[0].poll_creator_id,
+//         data: results.map((result) => ({
+//           id: result.answer_id,
+//           answer: result.answer_text,
+//         })),
+//       };
+
+//       return res.status(200).json({
+//         status: 'success',
+//         data: pollData,
+//         message: 'Poll data retrieved successfully.',
+//       });
+//     }
+
+//     // If the user hasn't voted, query for poll data without vote details
+//     const queryWhenUserHasNotVoted = `
+//       SELECT
+//         pc.id AS poll_id,
+//         pc.question AS poll_question,
+//         pc.poll_creator_id,
+//         pa.id AS answer_id,
+//         pa.answer AS answer_text
+//       FROM
+//         poll_company AS pc
+//       LEFT JOIN
+//         poll_answer AS pa ON pc.id = pa.poll_id
+//       WHERE
+//         pc.id = ?;
+//     `;
+
+//     db.query(queryWhenUserHasNotVoted, [poll_id], (err, results) => {
+//       if (err) {
+//         console.error(err);
+//         return res.status(500).json({
+//           status: 'error',
+//           message: 'An error occurred while fetching poll data.',
+//         });
+//       }
+//       console.log('aqaaa', results);
+//       if (results.length > 0) {
+//         const pollData = {
+//           poll_id: results[0].poll_id,
+//           poll_question: results[0].poll_question,
+//           poll_creator_id: results[0].poll_creator_id,
+//           data: results.map((result) => ({
+//             id: result.answer_id,
+//             answer: result.answer_text,
+//           })),
+//         };
+
+//         return res.status(200).json({
+//           status: 'success',
+//           data: pollData,
+//           message: 'Poll data retrieved successfully.',
+//         });
+//       } else {
+//         return res.status(404).json({
+//           status: 'error',
+//           data: null,
+//           message: 'Poll data not found for the given user and poll ID.',
+//         });
+//       }
+//     });
+//   });
+// };
+
+
+
+// exports.userPoll = async (req, res) => {
+//   const authenticatedUserId = parseInt(req.user.user_id);
+//   const ApiuserId = parseInt(req.body.user_id);
+
+//   if (isNaN(ApiuserId)) {
+//     return res.status(400).json({
+//       status: 'error',
+//       message: 'Invalid user_id provided in the request body.',
+//     });
+//   }
+//   if (ApiuserId !== authenticatedUserId) {
+//     return res.status(403).json({
+//       status: 'error',
+//       message: 'Access denied: You are not authorized to update this user.',
+//     });
+//   }
+
+//   const { poll_id, user_id } = req.body;
+
+//   const queryTotalVotes = `
+//     SELECT COUNT(*) AS totalVotes
+//     FROM poll_voting
+//     WHERE poll_id = ?;
+//   `;
+
+//   // Check if the user has voted
+//   db.query(queryTotalVotes, [poll_id], (err, totalVotesResult) => {
+//     if (err) {
+//       console.error(err);
+//       return res.status(500).json({
+//         status: 'error',
+//         message: 'An error occurred while fetching total votes for the poll.',
+//       });
+//     }
+
+//     const totalVotes = totalVotesResult[0].totalVotes;
+
+//     const queryWhenUserHasVoted = `
+//       SELECT
+//         pc.id AS poll_id,
+//         pc.question AS poll_question,
+//         pc.poll_creator_id,
+//         CASE
+//           WHEN pv.user_id IS NOT NULL THEN pa.id
+//           ELSE NULL
+//         END AS answer_id,
+//         CASE
+//           WHEN pv.user_id IS NOT NULL THEN pa.answer
+//           ELSE NULL
+//         END AS answer_text,
+//         (
+//           SELECT COUNT(*)
+//           FROM poll_voting AS pv2
+//           WHERE pv2.poll_id = pc.id AND pv2.answer_id = pa.id
+//         ) AS vote_count
+//       FROM
+//         poll_company AS pc
+//       LEFT JOIN
+//         poll_voting AS pv ON pc.id = pv.poll_id AND pv.user_id = ?
+//       LEFT JOIN
+//         poll_answer AS pa ON pv.answer_id = pa.id AND pc.id = pa.poll_id
+//       WHERE
+//         pc.id = ? AND pv.user_id = ?;
+//     `;
+
+//     // Check if the user has voted
+//     db.query(queryWhenUserHasVoted, [ApiuserId, poll_id, ApiuserId], (err, results) => {
+//       if (err) {
+//         console.error(err);
+//         return res.status(500).json({
+//           status: 'error',
+//           message: 'An error occurred while fetching poll data.',
+//         });
+//       }
+
+//       if (results.length > 0) {
+//         const userSelectedAnswerId = results[0].answer_id;
+
+//         // If the user has voted, query for vote counts for all answers
+//         const queryVoteCountsForAllAnswers = `
+//         SELECT
+//           pa.id AS answer_id,
+//           pa.answer AS answer_text,
+//           COUNT(*) AS vote_count
+//         FROM
+//           poll_voting AS pv
+//         JOIN
+//           poll_answer AS pa ON pv.answer_id = pa.id
+//         WHERE
+//           pv.poll_id = ?
+//         GROUP BY
+//           pa.id, pa.answer
+//       `;      
+
+//         db.query(queryVoteCountsForAllAnswers, [poll_id, userSelectedAnswerId], (err, voteCounts) => {
+//           if (err) {
+//             console.error(err);
+//             return res.status(500).json({
+//               status: 'error',
+//               message: 'An error occurred while fetching vote counts for other answers.',
+//             });
+//           }
+
+//           const pollData = {
+//             poll_id: results[0].poll_id,
+//             poll_question: results[0].poll_question,
+//             poll_creator_id: results[0].poll_creator_id,
+//             totalVotes: totalVotes,
+//             data: results.map((result) => ({
+//               id: result.answer_id,
+//               answer: result.answer_text,
+//               submittedVotes: result.vote_count,
+//               userSelected: result.answer_id !== null,
+//             })),
+//             voteCountsForOtherAnswers: voteCounts.map((voteCount) => ({
+//               id: voteCount.answer_id,
+//               answer: voteCount.answer_text,
+//               submittedVotes: voteCount.vote_count,
+//             })),
+//           };
+
+//           return res.status(200).json({
+//             status: 'success',
+//             data: pollData,
+//             message: 'Poll data retrieved successfully.',
+//           });
+//         });
+//       } else {
+//         // If the user hasn't voted, query for poll data without vote details
+//         const queryWhenUserHasNotVoted = `
+//           SELECT
+//             pc.id AS poll_id,
+//             pc.question AS poll_question,
+//             pc.poll_creator_id,
+//             pa.id AS answer_id,
+//             pa.answer AS answer_text
+//           FROM
+//             poll_company AS pc
+//           LEFT JOIN
+//             poll_answer AS pa ON pc.id = pa.poll_id
+//           WHERE
+//             pc.id = ?;
+//         `;
+
+//         db.query(queryWhenUserHasNotVoted, [poll_id], (err, results) => {
+//           if (err) {
+//             console.error(err);
+//             return res.status(500).json({
+//               status: 'error',
+//               message: 'An error occurred while fetching poll data.',
+//             });
+//           }
+
+//           if (results.length > 0) {
+//             const pollData = {
+//               poll_id: results[0].poll_id,
+//               poll_question: results[0].poll_question,
+//               poll_creator_id: results[0].poll_creator_id,
+//               totalVotes: totalVotes,
+//               data: results.map((result) => ({
+//                 id: result.answer_id,
+//                 answer: result.answer_text,
+//                 submittedVotes: 0, // Initialize submittedVotes as 0 for answers when user hasn't voted
+//                 userSelected: false,
+//               })),
+//             };
+
+//             return res.status(200).json({
+//               status: 'success',
+//               data: pollData,
+//               message: 'Poll data retrieved successfully.',
+//             });
+//           } else {
+//             return res.status(404).json({
+//               status: 'error',
+//               data: null,
+//               message: 'Poll data not found for the given user and poll ID.',
+//             });
+//           }
+//         });
+//       }
+//     });
+//   });
+// };
+
+exports.userPoll = async (req, res) => {
+  const authenticatedUserId = parseInt(req.user.user_id);
+  const ApiuserId = parseInt(req.body.user_id);
+
+  if (isNaN(ApiuserId)) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Invalid user_id provided in the request body.',
+    });
+  }
+  if (ApiuserId !== authenticatedUserId) {
+    return res.status(403).json({
+      status: 'error',
+      message: 'Access denied: You are not authorized to update this user.',
+    });
+  }
+
+  const { poll_id, user_id } = req.body;
+
+  const queryTotalVotes = `
+    SELECT COUNT(*) AS totalVotes
+    FROM poll_voting
+    WHERE poll_id = ?;
+  `;
+
+  // Check if the user has voted
+  db.query(queryTotalVotes, [poll_id], (err, totalVotesResult) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({
+        status: 'error',
+        message: 'An error occurred while fetching total votes for the poll.',
+      });
+    }
+
+    const totalVotes = totalVotesResult[0].totalVotes;
+
+    const queryWhenUserHasVoted = `
+      SELECT
+        pc.id AS poll_id,
+        pc.question AS poll_question,
+        pc.poll_creator_id,
+        pc.created_at AS poll_creation,
+        pc.expired_at AS poll_expiration,
+        CASE
+          WHEN pv.user_id IS NOT NULL THEN pa.id
+          ELSE NULL
+        END AS answer_id,
+        CASE
+          WHEN pv.user_id IS NOT NULL THEN pa.answer
+          ELSE NULL
+        END AS answer_text,
+        (
+          SELECT COUNT(*)
+          FROM poll_voting AS pv2
+          WHERE pv2.poll_id = pc.id AND pv2.answer_id = pa.id
+        ) AS vote_count
+      FROM
+        poll_company AS pc
+      LEFT JOIN
+        poll_voting AS pv ON pc.id = pv.poll_id AND pv.user_id = ?
+      LEFT JOIN
+        poll_answer AS pa ON pv.answer_id = pa.id AND pc.id = pa.poll_id
+      WHERE
+        pc.id = ? AND pv.user_id = ?;
+    `;
+
+    // Check if the user has voted
+    db.query(queryWhenUserHasVoted, [ApiuserId, poll_id, ApiuserId], (err, results) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({
+          status: 'error',
+          message: 'An error occurred while fetching poll data.',
+        });
+      }
+
+      if (results.length > 0) {
+        const userSelectedAnswerId = results[0].answer_id;
+
+       
+  // If the user has voted, query for vote counts for all answers
+  const queryVoteCountsForAllAnswers = `
+  SELECT
+  pa.id AS answer_id,
+  pa.answer AS answer_text,
+  COUNT(pv.answer_id) AS submittedVotes
+FROM poll_answer AS pa
+LEFT JOIN poll_voting AS pv ON pa.id = pv.answer_id
+WHERE pa.poll_id = ?
+GROUP BY pa.id, pa.answer;
+  `;
+
+  db.query(queryVoteCountsForAllAnswers, [poll_id, poll_id], (err, voteCounts) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({
+        status: 'error',
+        message: 'An error occurred while fetching vote counts for other answers.',
+      });
+    }
+
+          const pollData = {
+            poll_id: results[0].poll_id,
+            poll_question: results[0].poll_question,
+            poll_creator_id: results[0].poll_creator_id,
+            totalVotes: totalVotes,
+            // data: results.map((result) => ({
+            //   id: result.answer_id,
+            //   answer: result.answer_text,
+            //   submittedVotes: result.vote_count,
+            //   userSelected: result.answer_id !== null,
+            // })),
+            data: [], 
+            Answers: voteCounts.map((voteCount) => ({
+              id: voteCount.answer_id,
+              answer: voteCount.answer_text,
+              submittedVotes: voteCount.submittedVotes,
+            })),
+            poll_created_at: results[0].poll_creation,
+            poll_expired_at: results[0].poll_expiration,
+          };
+          if (userSelectedAnswerId !== null) {
+            pollData.data.push({
+              id: results[0].answer_id,
+              answer: results[0].answer_text,
+              //submittedVotes: results[0].vote_count,
+              userSelected: true,
+            });
+          }
+          return res.status(200).json({
+            status: 'success',
+            data: pollData,
+            message: 'Poll data retrieved successfully.',
+          });
+        });
+      } else {
+        // If the user hasn't voted, query for poll data without vote details
+        const queryWhenUserHasNotVoted = `
+          SELECT
+            pc.id AS poll_id,
+            pc.question AS poll_question,
+            pc.poll_creator_id,
+            pc.created_at AS poll_creation,
+            pc.expired_at AS poll_expiration,
+            pa.id AS answer_id,
+            pa.answer AS answer_text
+          FROM
+            poll_company AS pc
+          LEFT JOIN
+            poll_answer AS pa ON pc.id = pa.poll_id
+          WHERE
+            pc.id = ?;
+        `;
+
+        db.query(queryWhenUserHasNotVoted, [poll_id], (err, results) => {
+          if (err) {
+            console.error(err);
+            return res.status(500).json({
+              status: 'error',
+              message: 'An error occurred while fetching poll data.',
+            });
+          }
+
+          if (results.length > 0) {
+            const pollData = {
+              poll_id: results[0].poll_id,
+              poll_question: results[0].poll_question,
+              poll_creator_id: results[0].poll_creator_id,
+              totalVotes: totalVotes,
+              data: results.map((result) => ({
+                id: result.answer_id,
+                answer: result.answer_text,
+                //submittedVotes: 0, // Initialize submittedVotes as 0 for answers when user hasn't voted
+                userSelected: false,
+              })),
+              poll_created_at: results[0].poll_creation,
+              poll_expired_at: results[0].poll_expiration,
+            };
+
+            return res.status(200).json({
+              status: 'success',
+              data: pollData,
+              message: 'Poll data retrieved successfully.',
+            });
+          } else {
+            return res.status(404).json({
+              status: 'error',
+              data: null,
+              message: 'Poll data not found for the given user and poll ID.',
+            });
+          }
+        });
+      }
+    });
+  });
+};
+
+
+
+exports.createDiscussion = async (req, res) => {
+  //console.log('createDiscussion', req.body);
+  const { user_id, tags, topic, from_data, expiration_date } = req.body;
+
+  const currentDate = new Date();
+
+  const year = currentDate.getFullYear();
+  const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+  const day = String(currentDate.getDate()).padStart(2, '0');
+  const hours = String(currentDate.getHours()).padStart(2, '0');
+  const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+  const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+
+  const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+  const tagsArray = tags ? tags.split(',').map(tag => tag.trim()) : [];
+
+  if (!topic.trim()) {
+    return res.send({
+      status: 'not ok',
+      message: 'Topic is empty or only contains whitespace',
+    });
+  }
+  // const topicData= topic?.trim() 
+  // !topicData
+
+  const sql = `INSERT INTO discussions (user_id, topic, tags, created_at, expired_at) VALUES (?, ?, ?, ?, ?)`;
+  const data = [user_id, topic, JSON.stringify(tagsArray), formattedDate, expiration_date]; 
+
+  db.query(sql, data, (err, result) => {
+    // console.log("tags",data);
+    if (err) {
+      return res.send({
+        status: 'not ok',
+        message: 'Something went wrong ' + err,
+      });
+    } else {
+      return res.send({
+        status: 'ok',
+        data:data,
+        message: 'Your Discussion Topic Added Successfully',
+      });
+    }
+    
+  });
+}
+
+
+
+
+//Add comment on discussion
+exports.addDiscussionComment = async (req, res) => {
+  //console.log('addDiscussionComment',req.body ); 
+  const {discussion_id,  comment} = req.body;
+
+  const authenticatedUserId = parseInt(req.user.user_id);
+  //console.log('authenticatedUserId: ', authenticatedUserId);
+
+  const user_id = parseInt(req.body.user_id);
+  //console.log('req.body.user_id: ', parseInt(req.body.user_id));
+
+  if (user_id !== authenticatedUserId) {
+    return res.status(403).json({
+      status: 'error',
+      message: 'Access denied: You are not authorized to create a discussion topic for another user.',
+    });
+  }
+
+  const currentDate = new Date();
+
+  const year = currentDate.getFullYear();
+  const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+  const day = String(currentDate.getDate()).padStart(2, '0');
+  const hours = String(currentDate.getHours()).padStart(2, '0');
+  const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+  const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+
+  const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  //const clientIp = req.clientIp;
+
+  const Insertdata = {
+      discussion_id : discussion_id,
+      comment:comment,
+      user_id:user_id,
+      ip_address: requestIp.getClientIp(req),
+      //ip_address : clientIp,
+      created_at: formattedDate,
+    };
+  const insertQuery = 'INSERT INTO discussions_user_response SET ?';
+  db.query(insertQuery, Insertdata, (insertErr, insertResult)=>{
+      if (insertErr) {
+          return res.send({
+              status: 'not ok',
+              message: 'Something went wrong 3'+insertErr
+          });
+      } else {
+          return res.send({
+              status: 'ok',
+              Insertdata:Insertdata,
+              message: 'Your Comment Added Successfully'
+          });
+      }
+  })
+  
+}

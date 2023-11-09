@@ -66,12 +66,16 @@ router.post('/update-category', upload.single('cat_image'), authController.updat
 router.post('/create-user', upload.single('profile_pic'), authController.createUser);
 router.put('/edit-user-data', upload.single('profile_pic'), authController.editUserData);
 router.post('/delete-user', authController.deleteUser);
+router.post('/trash-user', authController.trashUser);
+router.post('/restore-user', authController.restoreUser);
 
 //---Company--------//
 router.post('/create-company', upload.single('logo'), authController.createCompany);
 router.put('/edit-company-data', upload.single('logo'), authController.editCompany);
 router.post('/company-bulk-upload', csvupload.single('company_file'), authController.companyBulkUpload);
 router.post('/delete-company', authController.deleteCompany);
+router.post('/trash-company', authController.trashCompany);
+router.post('/restore-company', authController.restoreCompany);
 // Add FAQ
 router.post('/create-faq', authController.createFAQ);
 
@@ -177,6 +181,8 @@ router.post('/add-rating-tags', upload.single('rating_image'), authController.cr
 router.put('/edit-rating-tags', upload.single('rating_image'), authController.editRatingTags);
 //---Review--------//
 router.put('/edit-review', authController.editCustomerReview);
+//---Review reply--------//
+router.put('/edit-review-reply', authController.editCustomerReviewReply);
 
 //Create Featured Company
 router.post('/create-featured-company', authController.creatFeaturedCompany);
@@ -223,6 +229,19 @@ router.post('/update-disclaimer', authController.updateDisclaimer);
 
 //Update terms-of-service
 router.post('/update-terms-of-service', authController.updateTermsOfService);
+
+//Update Complaint register Page
+router.post('/update-complaint', upload.fields([
+    { name: 'banner_img_1', maxCount: 1 },
+    { name: 'banner_img_2', maxCount: 1 },
+    { name: 'banner_img_3', maxCount: 1 },
+    { name: 'banner_img_4', maxCount: 1 },
+    { name: 'banner_img_5', maxCount: 1 },
+    { name: 'banner_img_6', maxCount: 1 },
+    { name: 'banner_img_7', maxCount: 1 },
+    { name: 'banner_img_8', maxCount: 1 },
+
+]), authController.updateComplaint);
 
 //Update My Profile
 router.post('/update-myprofile',upload.single('profile_pic'), authController.updateMyProfile);
@@ -280,5 +299,61 @@ router.post('/user_polling', authController.userPolling);
 
 //Review Invitation Email
 router.post('/review_invitation', authController.reviewInvitation);
+
+//Add Review Flag
+router.post('/add-review-flag', authController.addReviewFlag);
+
+//Add Review Flag admin response
+router.post('/update-review-flag', authController.updateReviewFlag);
+
+//Create discussion
+router.post('/create-discussion', authController.createDiscussion);
+
+//Create discussion
+router.post('/add-comment', authController.addComment);
+
+//Create create-company-category
+router.post('/create-company-category', authController.createCompanyCategory);
+
+//Delete company-category
+router.post('/delete-company-category', authController.deleteCompanyCategory);
+
+//Update company-category
+router.post('/update-company-category', authController.updateCompanyCategory);
+
+//create-company-level
+router.post('/create-company-level', authController.createCompanyLevel);
+
+//Delete delete-company-complaint-level
+router.post('/delete-company-complaint-level', authController.deleteCompanyComplaintLevel);
+
+//complaint register
+router.post('/complaint-register', authController.complaintRegister);
+
+// company-query
+router.post('/company-query', authController.companyQuery);
+
+// user-complaint-rating
+router.post('/user-complaint-rating', authController.userComplaintRating);
+
+// user-complaint-response
+router.post('/user_complaint_response', authController.userComplaintResponse);
+
+//Create Survey
+router.post('/create-survey', authController.createSurvey);
+router.post('/update-survey', authController.updateSurvey);
+router.post('/create-survey-answer', authController.createSurveyAnswer);
+//survey Invitation Email
+router.post('/survey_invitation', authController.surveyInvitation);
+
+router.post('/delete-discussion', authController.deleteDiscussion);
+
+//Notification Content
+router.post('/notification-content',upload.single('image'), authController.notificationContent);
+
+//Create company discussion tags
+router.post('/company-create-tags', authController.companyCreateTags);
+//Update company discussion tags
+router.post('/update-company-tags', authController.updateCompanyTags);
 
 module.exports = router;

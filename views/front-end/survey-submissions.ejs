@@ -1,0 +1,200 @@
+<%- include('common/header') -%>
+<link href="/front-end/css/discussion-style.css" rel="stylesheet" type="text/css">
+<%- include('common/header-banner') -%>
+
+<!-- ============== Section1 Start =============== -->
+<section class="main-content bottom-main-content">
+  <div class="discussion-page-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+            <div class="discussions-left">
+                <div id="horizontalTab">
+                    <div class="survey-details-with-date">
+                        <h2><%- CompanySurveyDetails[0].title %></h2>
+                        <div class="survet-update-form">
+                            <%
+                                var created_at = CompanySurveyDetails[0].created_at;
+                                var created_at_date = new Date(created_at);
+                                var formatted_created_at_Date = created_at_date.toISOString().split('T')[0];
+
+                                var expire_at = CompanySurveyDetails[0].expire_at;
+                                var expire_at_date = new Date(expire_at);
+                                var formatted_expire_at_Date = expire_at_date.toISOString().split('T')[0];
+                            %>
+                            <form method="post" action="" id="survey_update_form" name="survey_update_form">
+                                <div class="all-inputs">
+                                    <div class="custom-form">
+                                    <label><span style="background-color: #ffffff;">Started at:</span> </label>
+                                    <input type="date" class="form-control" name="created_at" value="<%- formatted_created_at_Date %>" readonly>
+                                    </div>
+                                    <div class="custom-form">
+                                    <label><span style="background-color: #ffffff;">Expire at:</span></label>
+                                    <input type="date" class="form-control" name="expire_at" value="<%- formatted_expire_at_Date %>">
+                                    </div>
+                                    <input type="hidden" name="survey_id" value="<%- CompanySurveyDetails[0].id %>">
+                                    <input type="submit" name="update_survey" class="btn-default btn-dark" value="Update">
+                                </div>
+                            </form>
+                            <p class="survey-update-message" style="display: none;"></p>
+                        </div>
+                    </div>
+                    <div class="submissions-result-wrapper">
+                        <p>Total submissions: <%- companySurveySubmissions.length %></p>
+                        <% if(companySurveySubmissions.length > 0){ %>
+                            <div class="radio-questions">
+                            <% CompanySurveyDetails[0].questions.forEach((qun, index)=>{  %>
+                                <% if( qun.type == 'type_radio' ){ %>
+                                    <h5><%- qun.question %></h5>
+                                    <% var question_name = 'question_'+(index+1); %>
+                                    <ol>
+                                        <% qun.options.forEach((opt)=>{  %>
+                                            <%
+                                                let opt_count = 0;
+                                                companySurveySubmissions.forEach(submission => {
+                                                    if (submission.answer && submission.answer[question_name]) {
+                                                    if ( submission.answer[question_name] === opt) {
+                                                        opt_count++;
+                                                    }
+                                                    }
+                                                });
+                                                var opt_percentage = (opt_count/companySurveySubmissions.length)*100;
+                                            %>
+                                            <li><span class="position-relative" style="z-index: 9;"><%- opt %> : (<%- opt_count %>/<%- companySurveySubmissions.length %>)</span> <span class="suvey-progress-value" style="width:<%- opt_percentage.toFixed(2) %>%"></span></li>
+                                        <% }) %>
+                                    </ol>
+                                <% } %>
+                                <% if( qun.type == 'type_checkbox' ){ %>
+                                    <h5><%- qun.question %></h5>
+                                    <%  %>
+                                    <ol>
+                                        <% qun.options.forEach((opt, option_index)=>{  %>
+                                            <%
+                                                var question_name = 'question_'+(index+1)+'_'+(option_index+1);
+                                                let opt_count = 0;
+                                                companySurveySubmissions.forEach(submission => {
+                                                    if (submission.answer && submission.answer[question_name]) {
+                                                        if ( submission.answer[question_name] === opt) {
+                                                            opt_count++;
+                                                        }
+                                                    }
+                                                });
+                                                var opt_percentage = (opt_count/companySurveySubmissions.length)*100;
+                                            %>
+                                            <li><span class="position-relative" style="z-index: 9;"><%- opt %> : (<%- opt_count %>/<%- companySurveySubmissions.length %>)</span> <span class="suvey-progress-value" style="width:<%- opt_percentage.toFixed(2) %>%"></span></li>
+                                        <% }) %>
+                                    </ol>
+                                <% } %>
+                                <% if( qun.type == 'type_ratings' ){ %>
+                                    <h5><%- qun.question %></h5>
+                                    <%  %>
+                                    <ol class="survey-rating-emoji-list">
+                                        <% 
+                                        let counter = 1;
+                                        for (let i = 0.5; i <= 5; i += 0.5) {  %>
+                                            <%
+                                                var question_name = 'question_'+(index+1);
+                                                let opt_count = 0;
+                                                companySurveySubmissions.forEach(submission => {
+                                                    if (submission.answer && submission.answer[question_name]) {
+                                                        if ( submission.answer[question_name] == i ) {
+                                                            opt_count++;
+                                                        }
+                                                    }
+                                                });
+                                                var opt_percentage = (opt_count/companySurveySubmissions.length)*100;
+                                                AllRatingTags.forEach(tag => {
+                                                    if (tag.review_rating_value == i) {
+                                                        rating_image = tag.rating_image;
+                                                    }
+                                                });
+                                            %>
+                                            <li style="background-image: url(/<%- rating_image %>);"><span class="position-relative" style="z-index: 9;"><%- i %> : (<%- opt_count %>/<%- companySurveySubmissions.length %>)</span><span class="suvey-progress-value" style="width:<%- opt_percentage.toFixed(2) %>%"></span></li>
+                                        <% counter++; } %>
+                                    </ol>
+                                <% } %>
+                            <% }) %>
+                            </div>
+                        <% } %>
+                    </div>
+                    <div class="resp-tabs-container">
+                        <% if(companySurveySubmissions.length > 0){ %>
+                            <% companySurveySubmissions.forEach((submission)=>{  %>
+                                <% const dateString = submission.created_at; %>
+                                <% const date = new Date(dateString); %>
+                                <div class="tab-content-wrap" style="display: block;">
+                                    <div class="discussion-review-panel">
+                                        <%
+                                            const letters = '0123456789ABCDEF';
+                                            let color = '#';
+                                            for (let i = 0; i < 6; i++) {
+                                                color += letters[Math.floor(Math.random() * 16)];
+                                            }
+
+                                        %>
+                                        <div class="discussion-user-img" style="padding: 5px 15px; border-radius: 100%; font-size: 28px; background-color: <%- color %>;">
+                                           <%- submission.first_name[0] %>
+                                        </div>
+                                        <div class="discussion-user-info">
+                                            <a href="/survey-submission-details/<%- company.slug %>/<%- submission.survey_unique_id %>/<%- submission.ID %>"><h4><%- submission.first_name +' '+ submission.last_name %></h4></a>
+                                            <p>Submitted at <%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }) %>
+                        <% }else{ %>
+                            <p style="margin-top: 15px;
+                            font-size: 18px;
+                            font-weight: 600;
+                            color: #fca634;">No one has submitted this survey form yet.</p>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+        </div>
+    </div>
+  </section>
+
+<!-- ============== Section1 End =============== -->
+
+<%- include('common/footer') -%>   
+
+<script>
+    $(document).ready(function () {
+        $('#survey_update_form').submit(function (e) {
+            e.preventDefault();
+            //return false;
+            const formData = $('#survey_update_form').serializeArray();
+            const jsonData = {};
+            $(formData).each(function (index, field) {
+                jsonData[field.name] = field.value;
+            });
+            console.log(jsonData);
+            $.ajax({
+                url: '/auth/update-survey', // URL for your API endpoint
+                method: 'POST',
+                data: JSON.stringify(jsonData),
+                processData: false,
+                contentType: 'application/json',
+                success: function (data) {
+                    if (data.status == 'ok') {
+                       $('.survey-update-message').text(data.message);
+                       $('.survey-update-message').show();
+                       setTimeout( function() {
+                          location.reload(true);
+                       }, 3000);
+                    } else {
+                        $('.survey-update-message').text(data.message);
+                        $('.survey-update-message').show();
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // Handle any errors that occur during the request
+                    console.log(error);
+                }
+            });
+        });
+    });
+    </script>

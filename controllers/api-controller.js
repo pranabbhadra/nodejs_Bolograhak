@@ -7,6 +7,7 @@ const fs = require('fs');
 const dotenv = require('dotenv');
 dotenv.config({ path: './.env' });
 
+const comFunction2 = require('../common_function2');
 const comFunction = require('../common_function');
 const axios = require('axios');
 
@@ -44,7 +45,7 @@ exports.countries = (req, res) => {
 
 //-- States --//
 exports.states = (req, res) => {
-    console.log(req.body);
+    //console.log(req.body);
 
     db.query('SELECT * FROM states WHERE country_id = ?', [req.body.country_id], async (err, results) => {
         if (err) {
@@ -77,11 +78,104 @@ exports.states = (req, res) => {
     })
 }
 
+//-- complainCategory --//
+exports.complainCategory = (req, res) => {
+    //console.log('complainCategory',req.body);
+    //return false;
+    db.query('SELECT * FROM complaint_category WHERE company_id = ? AND parent_id = 0 ', [req.body.company_id], async (err, results) => {
+        if (err) {
+            return res.send(
+                {
+                    status: 'err',
+                    data: '',
+                    message: 'An error occurred while processing your request' + err
+                }
+            )
+        } else {
+            if (results.length > 0) {
+                return res.send(
+                    {
+                        status: 'ok',
+                        data: results,
+                        message: 'All category recived'
+                    }
+                )
+            } else {
+                return res.send(
+                    {
+                        status: 'err',
+                        data: '',
+                        message: 'Category is not avilable for this company id'
+                    }
+                )
+            }
+        }
+    })
+}
+
+//-- complainSubCategory --//
+exports.complainSubCategory = (req, res) => {
+    console.log('complainSubCategory',req.body);
+    //return false;
+    if (req.body.category_id == 0) {
+        return res.send(
+            {
+                status: 'err',
+                data: '',
+                message: 'Sub Category is not avilable for this company id'
+            }
+        )
+    }
+    db.query('SELECT * FROM complaint_category WHERE  parent_id = ? ', [req.body.category_id], async (err, results) => {
+        if (err) {
+            return res.send(
+                {
+                    status: 'err',
+                    data: '',
+                    message: 'An error occurred while processing your request' + err
+                }
+            )
+        } else {
+            if (results.length > 0) {
+
+                return res.send(
+                    {
+                        status: 'ok',
+                        data: results,
+                        message: 'All sub category recived'
+                    }
+                )
+            } else {
+                return res.send(
+                    {
+                        status: 'err',
+                        data: '',
+                        message: 'Sub Category is not avilable for this company id'
+                    }
+                )
+            }
+        }
+    })
+}
+
 // --searchCompany --//
 exports.searchCompany = async (req, res) => {
     //console.log(req.body);
     const keyword = req.body.keyword; //Approved Company
     const CompanyResponse = await comFunction.searchCompany(keyword);
+    if(CompanyResponse.status == 'ok'){
+        res.status(200).json(CompanyResponse);
+    }else{
+        res.status(404).json(CompanyResponse);
+    }
+
+}
+
+// --search Discussion --//
+exports.searchDiscussion = async (req, res) => {
+    console.log('req.body');
+    const keyword = req.body.keyword; //Approved Company
+    const CompanyResponse = await comFunction2.searchDiscussion(keyword);
     if(CompanyResponse.status == 'ok'){
         res.status(200).json(CompanyResponse);
     }else{

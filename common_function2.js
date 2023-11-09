@@ -201,6 +201,9 @@ function getAllReviewTags() {
     });
   });
 }
+
+
+
 //Function to fetch latest Reviews from the  reviews,company,company_location,users,user_customer_meta table
 async function getlatestReviews(reviewCount){
   const get_latest_review_query = `
@@ -212,7 +215,7 @@ async function getlatestReviews(reviewCount){
       LEFT JOIN users u ON r.customer_id = u.user_id 
       LEFT JOIN user_customer_meta ucm ON ucm.user_id = u.user_id 
       LEFT JOIN review_reply ON review_reply.review_id = r.id
-      WHERE r.review_status = "1" AND c.status = "1" 
+      WHERE r.review_status = "1" AND c.status = "1" AND (r.flag_status != '0' OR r.flag_status IS NULL)
       GROUP BY r.id
       ORDER BY r.created_at DESC
       LIMIT ${reviewCount};
@@ -242,7 +245,7 @@ async function getAllTrendingReviews(){
       LEFT JOIN users u ON r.customer_id = u.user_id 
       LEFT JOIN user_customer_meta ucm ON ucm.user_id = u.user_id 
       LEFT JOIN review_reply ON review_reply.review_id = r.id
-      WHERE r.review_status = "1" AND c.status = "1" AND c.trending = "1"
+      WHERE r.review_status = "1" AND c.status = "1" AND c.trending = "1" AND (r.flag_status != '0' OR r.flag_status IS NULL)
       GROUP BY r.id
       ORDER BY r.created_at DESC
   `;
@@ -271,7 +274,7 @@ async function getAllReviews(){
       LEFT JOIN users u ON r.customer_id = u.user_id 
       LEFT JOIN user_customer_meta ucm ON ucm.user_id = u.user_id 
       LEFT JOIN review_reply ON review_reply.review_id = r.id
-      WHERE r.review_status = "1" AND c.status = "1"
+      WHERE r.review_status = "1" AND c.status = "1" AND (r.flag_status != '0' OR r.flag_status IS NULL)
       GROUP BY r.id
       ORDER BY r.created_at DESC
   `;
@@ -718,7 +721,68 @@ async function getPremiumCompanyData(companyId) {
   const PremiumCompanyData = await query(sql);
 
   //console.log('PremiumCompanyData',PremiumCompanyData[0])
-  return PremiumCompanyData[0];
+  //if(PremiumCompanyData.length>0){
+    return PremiumCompanyData[0];
+  //}else{
+    //return {};
+  //}
+}
+
+async function getCompanySurveyCount(companyId) {
+  const sql = `SELECT COUNT(id) as surveycount FROM survey where company_id = '${companyId}' AND CURDATE() <= expire_at`;
+  const CompanySurveyCountData = await query(sql);
+
+  //console.log('SurveyCountData',CompanySurveyCountData)
+  return CompanySurveyCountData;
+}
+
+async function getCompanySurveyListing(companyId) {
+  const get_company_survey_listing_query = `
+  SELECT survey.id, survey.unique_id, survey.title, COUNT(sca.ID) AS total_submission
+  FROM survey
+  LEFT JOIN survey_customer_answers sca ON survey.unique_id = sca.survey_unique_id
+  WHERE survey.company_id = ${companyId} AND CURDATE() <= expire_at
+  ORDER BY survey.id DESC;
+  `;
+  try{
+    const get_company_survey_details_result = await query(get_company_survey_listing_query);
+    return get_company_survey_details_result;
+  }catch(error){
+    return 'Error during user get_company_survey_details_query:'+error;
+  }
+}
+
+async function getCompanySurveyQuestions(surveyId, user_ID) {
+  const get_company_survey_question_query = `
+  SELECT survey.*
+  FROM survey
+  WHERE survey.unique_id = ${surveyId};
+  `;
+  try{
+    const get_company_survey_question_result = await query(get_company_survey_question_query);
+
+    const surveySubmitCheckQuery = `
+        SELECT COUNT(ID) as user_submission
+        FROM survey_customer_answers
+        WHERE survey_unique_id = ${surveyId} AND customer_id = ${user_ID};
+      `;
+      try {
+        const get_surveySubmitCheckQueryresult = await query(surveySubmitCheckQuery);
+        //console.log('get_surveySubmitCheckQueryresult'+user_ID, get_surveySubmitCheckQueryresult[0].user_submission);
+
+        if(get_surveySubmitCheckQueryresult[0].user_submission == 0){
+          get_company_survey_question_result[0].user_submission = false;
+        }else{
+          get_company_survey_question_result[0].user_submission = true;
+        }
+        return get_company_survey_question_result[0];
+      }catch (error) {
+        //return 'Error during insertion: ' + error;
+        return 'Error during user surveySubmitCheckQuery:'+error;
+      }
+  }catch(error){
+    return 'Error during user get_company_survey_question_query:'+error;
+  }
 }
 
 //Function to fetch User Name from the  users table
@@ -980,7 +1044,7 @@ function ReviewReplyToCustomer(mailReplyData){
 
  //Function to fetch User total replied from the  review_reply table
 async function TotalReplied(Id){
-  const sql = `SELECT COUNT(ID) AS totalReplied
+  const sql = `SELECT COUNT(ID) AS totalReplied, status AS replied
               FROM review_reply 
               WHERE reply_by = '${Id}'  `;
 
@@ -1155,7 +1219,6 @@ function generateUniqueSlug(companyName, callback) {
     callback(null, slug);
   });
 }
-
 
 // Function to generate a unique slug from a string
 function generateUniqueSlugCategory(catName, callback) {
@@ -1503,6 +1566,2123 @@ async function sendInvitationEmail(req) {
  
 }
 
+//Function to add Flag details to the review table
+async function addFlagDetails(req){
+  //console.log(req)
+  try {
+    if(req){
+      const currentDate = new Date();
+      // Format the date in 'YYYY-MM-DD HH:mm:ss' format (adjust the format as needed)
+      const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+      
+      const update_flag_query ='UPDATE reviews SET  flag_status = ?, flag_company_reason_radio = ? , flag_company_reason_details = ?  WHERE id  = ? ';
+  
+      const update_flag_values = [
+        '2',
+        req.flag_radio ,
+        req.flag_details || null,
+        req.review_id
+      ];
+      const update_flag_result = await query(update_flag_query, update_flag_values);
+
+      return true;
+    }else {
+      return false;
+    }
+  }catch (error) {
+    return 'Error during user update_flag_query:'+error;
+  }  
+}
+
+//Function to send email to admin for add Flag details to the company user
+async function sendFlagEmail(req){
+  //console.log(req)
+  try {
+    if(req){
+      const currentDate = new Date();
+      // Format the date in 'YYYY-MM-DD HH:mm:ss' format (adjust the format as needed)
+      const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+      
+      const template = `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
+                <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
+                 <tbody>
+                  <tr>
+                   <td align="center" valign="top">
+                     <div id="template_header_image"><p style="margin-top: 0;"></p></div>
+                     <table id="template_container" style="box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; background-color: #fdfdfd; border: 1px solid #dcdcdc; border-radius: 3px !important;" border="0" cellpadding="0" cellspacing="0" width="600">
+                      <tbody>
+                        <tr>
+                         <td align="center" valign="top">
+                           <!-- Header -->
+                           <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
+                             <tbody>
+                               <tr>
+                               <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
+                                <td id="header_wrapper" style="padding: 36px 48px; display: block;">
+                                   <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Flag Raised</h1>
+                                </td>
+          
+                               </tr>
+                             </tbody>
+                           </table>
+                     <!-- End Header -->
+                     </td>
+                        </tr>
+                        <tr>
+                         <td align="center" valign="top">
+                           <!-- Body -->
+                           <table id="template_body" border="0" cellpadding="0" cellspacing="0" width="600">
+                             <tbody>
+                               <tr>
+                                <td id="body_content" style="background-color: #fdfdfd;" valign="top">
+                                  <!-- Content -->
+                                  <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                                   <tbody>
+                                    <tr>
+                                     <td style="padding: 48px;" valign="top">
+                                       <div id="body_content_inner" style="color: #737373; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
+                                        
+                                        <table border="0" cellpadding="4" cellspacing="0" width="90%">
+                                          <tr>
+                                            <td colspan="2">
+                                            <strong>Hello,</strong>
+                                            <p style="font-size:15px; line-height:20px">A company user raised flag against a review. <a class="btn btn-primary" href="${process.env.MAIN_URL}edit-review/${req.review_id}">Click here </a>to check this review.</p>
+                                            </td>
+                                          </tr>
+                                        </table>
+                                        
+                                       </div>
+                                     </td>
+                                    </tr>
+                                   </tbody>
+                                  </table>
+                                <!-- End Content -->
+                                </td>
+                               </tr>
+                             </tbody>
+                           </table>
+                         <!-- End Body -->
+                         </td>
+                        </tr>
+                        <tr>
+                         <td align="center" valign="top">
+                           <!-- Footer -->
+                           <table id="template_footer" border="0" cellpadding="10" cellspacing="0" width="600">
+                            <tbody>
+                             <tr>
+                              <td style="padding: 0; -webkit-border-radius: 6px;" valign="top">
+                               <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                                 <tbody>
+                                   <tr>
+                                    <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
+                                         <p>This email was sent from <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a></p>
+                                    </td>
+                                   </tr>
+                                 </tbody>
+                               </table>
+                              </td>
+                             </tr>
+                            </tbody>
+                           </table>
+                         <!-- End Footer -->
+                         </td>
+                        </tr>
+                      </tbody>
+                     </table>
+                   </td>
+                  </tr>
+                 </tbody>
+                </table>
+               </div>`;
+                var mailOptions = {
+                    from: process.env.MAIL_USER,
+                    //to: 'pranab@scwebtech.com',
+                    to: process.env.MAIL_USER,
+                    subject: 'Flag raised',
+                    html: template
+                  }
+              
+                mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
+                    if (err) {
+                        console.log(err);
+                        return res.send({
+                            status: 'not ok',
+                            message: 'Something went wrong'
+                        });
+                    } else {
+                        console.log('Mail Send: ', info.response);
+                        return res.send(
+                        {
+                            status: 'ok',
+                            data: '',
+                            message: 'Review Mail send successfully'
+                        }
+                    )
+                    }
+                })
+
+      return true;
+    }else {
+      return false;
+    }
+  }catch (error) {
+    return 'Error during user update_flag_query:'+error;
+  }  
+}
+
+async function getAllFlaggedReviews() {
+  const all_review_query = `
+    SELECT r.*, c.company_name, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic, rr.status as reply_status
+      FROM reviews r
+      JOIN company c ON r.company_id = c.ID
+      JOIN company_location cl ON r.company_location_id = cl.ID
+      JOIN users u ON r.customer_id = u.user_id
+      LEFT JOIN user_customer_meta ucm ON u.user_id = ucm.user_id
+      LEFT JOIN review_reply rr ON rr.review_id = r.id AND rr.reply_by = r.customer_id
+      WHERE r.flag_status = '2' OR r.flag_status = '1' OR r.flag_status = '0'
+      ORDER BY r.created_at DESC;
+  `;
+  try{
+    const all_review_results = await query(all_review_query);
+    return all_review_results;
+  }
+  catch(error){
+    console.error('Error during all_review_query:', error);
+  }
+}
+
+//Function to add super admin Flag details to the review table
+async function updateFlagDetails(req){
+  //console.log(req)
+  try {
+    if(req){
+      const currentDate = new Date();
+      // Format the date in 'YYYY-MM-DD HH:mm:ss' format (adjust the format as needed)
+      const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+      
+      const update_flag_query ='UPDATE reviews SET  flag_status = ?, flag_admin_reason = ?   WHERE id  = ? ';
+  
+      const update_flag_values = [
+        req.flag_status,
+        req.flag_admin_reason ,
+        req.review_id
+      ];
+      const update_flag_result = await query(update_flag_query, update_flag_values);
+
+      return true;
+    }else {
+      return false;
+    }
+  }catch (error) {
+    return 'Error during admin update_flag_query:' +error;
+  }  
+}
+//Function to send mail to company user after approve the flag
+async function flagApprovedEmail(req) {
+  //console.log(req);
+
+  const sql = `
+    SELECT r.created_at, r.company_id, r.review_content, c.company_name, c.slug, u.first_name, u.email, claimed_user.email claimed_user_email, claimed_user.first_name claimed_user_name
+    FROM reviews r
+    LEFT JOIN company c ON r.company_id = c.ID 
+    LEFT JOIN users u ON r.customer_id = u.user_id 
+    LEFT JOIN company_claim_request ccr ON ccr.company_id = c.ID 
+    LEFT JOIN users claimed_user ON ccr.claimed_by = claimed_user.user_id 
+    WHERE r.flag_status = "1" AND r.id = "${req.review_id}"
+`;
+
+  const approveReviewData = await query(sql);
+
+
+  if(approveReviewData.length > 0){
+    const dateString = approveReviewData[0].created_at; 
+    const date = new Date(dateString); 
+    const reviewDate = date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' ,hour:'numeric',minute:'numeric',second: 'numeric' })
+  
+    //console.log('approve Function', reviewData)
+    var mailOptions = {
+      from: process.env.MAIL_USER,
+      //to: 'pranab@scwebtech.com',
+      to: approveReviewData[0].claimed_user_email,
+      subject: 'Flag Approval Email',
+      html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
+      <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
+       <tbody>
+        <tr>
+         <td align="center" valign="top">
+           <div id="template_header_image"><p style="margin-top: 0;"></p></div>
+           <table id="template_container" style="box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; background-color: #fdfdfd; border: 1px solid #dcdcdc; border-radius: 3px !important;" border="0" cellpadding="0" cellspacing="0" width="600">
+            <tbody>
+              <tr>
+               <td align="center" valign="top">
+                 <!-- Header -->
+                 <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
+                   <tbody>
+                     <tr>
+                     <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
+                      <td id="header_wrapper" style="padding: 36px 48px; display: block;">
+                         <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Flag Approval Email</h1>
+                      </td>
+
+                     </tr>
+                   </tbody>
+                 </table>
+           <!-- End Header -->
+           </td>
+              </tr>
+              <tr>
+               <td align="center" valign="top">
+                 <!-- Body -->
+                 <table id="template_body" border="0" cellpadding="0" cellspacing="0" width="600">
+                   <tbody>
+                     <tr>
+                      <td id="body_content" style="background-color: #fdfdfd;" valign="top">
+                        <!-- Content -->
+                        <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                         <tbody>
+                          <tr>
+                           <td style="padding: 48px;" valign="top">
+                             <div id="body_content_inner" style="color: #737373; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
+                              
+                              <table border="0" cellpadding="4" cellspacing="0" width="90%">
+                                <tr>
+                                  <td colspan="2">
+                                  <strong>Hello ${approveReviewData[0].claimed_user_name},</strong>
+                                  <p style="font-size:15px; line-height:20px">Your flag against the review <i><b>"${approveReviewData[0].review_content} " </b></i> has been approved. Now the review has been removed from <a  href="${process.env.MAIN_URL}">our website</a> .</p>
+                                  </td>
+                                </tr>
+                              </table>
+                              
+                             </div>
+                           </td>
+                          </tr>
+                         </tbody>
+                        </table>
+                      <!-- End Content -->
+                      </td>
+                     </tr>
+                   </tbody>
+                 </table>
+               <!-- End Body -->
+               </td>
+              </tr>
+              <tr>
+               <td align="center" valign="top">
+                 <!-- Footer -->
+                 <table id="template_footer" border="0" cellpadding="10" cellspacing="0" width="600">
+                  <tbody>
+                   <tr>
+                    <td style="padding: 0; -webkit-border-radius: 6px;" valign="top">
+                     <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                       <tbody>
+                         <tr>
+                          <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
+                               <p>This email was sent from <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a></p>
+                          </td>
+                         </tr>
+                       </tbody>
+                     </table>
+                    </td>
+                   </tr>
+                  </tbody>
+                 </table>
+               <!-- End Footer -->
+               </td>
+              </tr>
+            </tbody>
+           </table>
+         </td>
+        </tr>
+       </tbody>
+      </table>
+     </div>`
+    }
+      await mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
+        if (err) {
+            console.log(err);
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong'
+            });
+        } else {
+            console.log('Mail Send: ', info.response);
+            return res.send({
+                status: 'ok',
+                message: 'Flag Approve'
+            });
+        }
+      })
+    
+    
+  }
+ 
+    return true;
+}
+
+//Function to send mail to comapny user after reject the flag
+async function flagRejectdEmail(req) {
+  const sql = `
+  SELECT r.created_at, r.company_id, r.review_content, c.company_name, c.slug, u.first_name, u.email, claimed_user.email claimed_user_email, claimed_user.first_name claimed_user_name
+  FROM reviews r
+  LEFT JOIN company c ON r.company_id = c.ID 
+  LEFT JOIN users u ON r.customer_id = u.user_id 
+  LEFT JOIN company_claim_request ccr ON ccr.company_id = c.ID 
+  LEFT JOIN users claimed_user ON ccr.claimed_by = claimed_user.user_id 
+  WHERE r.flag_status = "0" AND r.id = "${req.review_id}"
+`;
+
+  const rejectReviewData = await query(sql);
+
+  console.log(rejectReviewData[0])
+  if(rejectReviewData.length > 0){
+
+    const dateString = rejectReviewData[0].created_at; 
+    const date = new Date(dateString); 
+    const reviewDate = date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' ,hour:'numeric',minute:'numeric',second: 'numeric' })
+  
+    //console.log('approve Function', reviewData)
+    var mailOptions = {
+      from: process.env.MAIL_USER,
+      //to: 'pranab@scwebtech.com',
+      to: rejectReviewData[0].claimed_user_email,
+      subject: 'Flag Rejected Email',
+      html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
+      <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
+       <tbody>
+        <tr>
+         <td align="center" valign="top">
+           <div id="template_header_image"><p style="margin-top: 0;"></p></div>
+           <table id="template_container" style="box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; background-color: #fdfdfd; border: 1px solid #dcdcdc; border-radius: 3px !important;" border="0" cellpadding="0" cellspacing="0" width="600">
+            <tbody>
+              <tr>
+               <td align="center" valign="top">
+                 <!-- Header -->
+                 <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
+                   <tbody>
+                     <tr>
+                     <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
+
+              <td id="header_wrapper" style="padding: 36px 48px; display: block;">
+                         <h1 style="color: red; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Flag Rejected Email</h1>
+                      </td>
+                     </tr>
+                   </tbody>
+                 </table>
+           <!-- End Header -->
+           </td>
+              </tr>
+              <tr>
+               <td align="center" valign="top">
+                 <!-- Body -->
+                 <table id="template_body" border="0" cellpadding="0" cellspacing="0" width="600">
+                   <tbody>
+                     <tr>
+                      <td id="body_content" style="background-color: #fdfdfd;" valign="top">
+                        <!-- Content -->
+                        <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                         <tbody>
+                          <tr>
+                           <td style="padding: 48px;" valign="top">
+                             <div id="body_content_inner" style="color: #737373; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
+                              
+                              <table border="0" cellpadding="4" cellspacing="0" width="90%">
+                                <tr>
+                                  <td colspan="2">
+                                  <strong>Hello ${rejectReviewData[0].claimed_user_name},</strong>
+                                  <p style="font-size:15px; line-height:20px">Your flag for <i><b>"${rejectReviewData[0].review_content} "</b></i> was unfortunately rejected because of the following reason:</p>
+                                   <p style="font-size:15px; line-height:25px;">${req.flag_admin_reason}.</p>
+                                   <small>For further details contact us at : <a href="mailto:${process.env.MAIL_SUPPORT}"><i>${process.env.MAIL_SUPPORT}</i></a></small>
+                                  </td>
+                                </tr>
+                              </table>
+                              
+                             </div>
+                           </td>
+                          </tr>
+                         </tbody>
+                        </table>
+                      <!-- End Content -->
+                      </td>
+                     </tr>
+                   </tbody>
+                 </table>
+               <!-- End Body -->
+               </td>
+              </tr>
+              <tr>
+               <td align="center" valign="top">
+                 <!-- Footer -->
+                 <table id="template_footer" border="0" cellpadding="10" cellspacing="0" width="600">
+                  <tbody>
+                   <tr>
+                    <td style="padding: 0; -webkit-border-radius: 6px;" valign="top">
+                     <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                       <tbody>
+                         <tr>
+                          <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
+                               <p>This email was sent from <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a></p>
+                          </td>
+                         </tr>
+                       </tbody>
+                     </table>
+                    </td>
+                   </tr>
+                  </tbody>
+                 </table>
+               <!-- End Footer -->
+               </td>
+              </tr>
+            </tbody>
+           </table>
+         </td>
+        </tr>
+       </tbody>
+      </table>
+     </div> `
+    }
+
+      mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
+        if (err) {
+            console.log(err);
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong'
+            });
+        } else {
+            console.log('Mail Send: ', info.response);
+            return res.send({
+                status: 'ok',
+                message: 'Review Rejected'
+            });
+        }
+      })
+  }
+ 
+    return true;
+}
+
+//Function to get all review by company id from  reviews table
+async function getAllReviewsByCompanyID(companyId) {
+  const all_review_query = `
+  SELECT r.*, c.company_name, c.slug, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic, count(rr.ID) as reply_count
+  FROM reviews r
+  JOIN company c ON r.company_id = c.ID
+  JOIN company_location cl ON r.company_location_id = cl.ID
+  JOIN users u ON r.customer_id = u.user_id
+  LEFT JOIN user_customer_meta ucm ON u.user_id = ucm.user_id
+  LEFT JOIN review_reply rr ON r.id = rr.review_id
+  WHERE r.company_id = ? AND r.review_status = '1' 
+  GROUP BY r.id
+  ORDER BY r.created_at DESC;
+  `;
+  try{
+    const all_review_results = await query(all_review_query, companyId);
+    return all_review_results;
+  }
+  catch(error){
+    console.error('Error during all_review_query:', error);
+  }
+}
+
+//Function to get latest discussion from discussions table
+async function getAllLatestDiscussion(limit) {
+  const sql = `
+    SELECT
+    discussions.*,
+    u.first_name,
+    u.last_name,
+    COALESCE(comments.total_comments, 0) as total_comments,
+    COALESCE(views.total_views, 0) as total_views
+  FROM discussions
+  LEFT JOIN users u ON discussions.user_id = u.user_id
+  LEFT JOIN (
+    SELECT discussion_id, COUNT(*) as total_comments
+    FROM discussions_user_response
+    GROUP BY discussion_id
+  ) comments ON discussions.id = comments.discussion_id
+  LEFT JOIN (
+    SELECT discussion_id, COUNT(*) as total_views
+    FROM discussions_user_view
+    GROUP BY discussion_id
+  ) views ON discussions.id = views.discussion_id
+  ORDER BY discussions.id DESC
+  LIMIT ${limit} ;
+  `;
+  try{
+    const results = await query(sql);
+    if (results.length>0) {
+      
+    return results;
+    } else {
+      return [];
+    }
+  }
+  catch(error){
+    console.error('Error during fetch All Latest Discussion:', error);
+  }
+}
+
+//Function to get popular discussion from discussions table
+async function getAllPopularDiscussion() {
+  const sql = `
+  SELECT
+    discussions.*,
+    u.first_name,
+    u.last_name,
+    COALESCE(comments.total_comments, 0) as total_comments,
+    COALESCE(views.total_views, 0) as total_views
+  FROM discussions
+  LEFT JOIN users u ON discussions.user_id = u.user_id
+  LEFT JOIN (
+    SELECT discussion_id, COUNT(*) as total_comments
+    FROM discussions_user_response
+    GROUP BY discussion_id
+  ) comments ON discussions.id = comments.discussion_id
+  LEFT JOIN (
+    SELECT discussion_id, COUNT(*) as total_views
+    FROM discussions_user_view
+    GROUP BY discussion_id
+  ) views ON discussions.id = views.discussion_id
+  ORDER BY total_comments DESC;
+  ;
+  `;
+  try{
+    const results = await query(sql);
+    if (results.length>0) {
+      
+    return results;
+    } else {
+      return [];
+    }
+  }
+  catch(error){
+    console.error('Error during fetch  Latest Discussion:', error);
+  }
+}
+
+//Function to get viewed discussion from discussions table
+async function getAllViewedDiscussion() {
+  const sql = `
+  SELECT
+    discussions.*,
+    u.first_name,
+    u.last_name,
+    COALESCE(comments.total_comments, 0) as total_comments,
+    COALESCE(views.total_views, 0) as total_views
+  FROM discussions
+  LEFT JOIN users u ON discussions.user_id = u.user_id
+  LEFT JOIN (
+    SELECT discussion_id, COUNT(*) as total_comments
+    FROM discussions_user_response
+    GROUP BY discussion_id
+  ) comments ON discussions.id = comments.discussion_id
+  LEFT JOIN (
+    SELECT discussion_id, COUNT(*) as total_views
+    FROM discussions_user_view
+    GROUP BY discussion_id
+  ) views ON discussions.id = views.discussion_id
+  ORDER BY total_views DESC;
+  ;
+  `;
+  try{
+    const results = await query(sql);
+    if (results.length>0) {
+      
+    return results;
+    } else {
+      return [];
+    }
+  }
+  catch(error){
+    console.error('Error during fetch All viewed discussion Discussion:', error);
+  }
+}
+
+//Function to get latest discussion from discussions table
+async function getAllDiscussions() {
+  const sql = `
+  SELECT
+    discussions.*,
+    u.first_name,
+    u.last_name,
+    COALESCE(comments.total_comments, 0) as total_comments,
+    COALESCE(views.total_views, 0) as total_views
+  FROM discussions
+  LEFT JOIN users u ON discussions.user_id = u.user_id
+  LEFT JOIN (
+    SELECT discussion_id, COUNT(*) as total_comments
+    FROM discussions_user_response
+    GROUP BY discussion_id
+  ) comments ON discussions.id = comments.discussion_id
+  LEFT JOIN (
+    SELECT discussion_id, COUNT(*) as total_views
+    FROM discussions_user_view
+    GROUP BY discussion_id
+  ) views ON discussions.id = views.discussion_id
+  ORDER BY discussions.id DESC
+  `;
+  try{
+    const results = await query(sql);
+    if (results.length>0) {
+      
+    return results;
+    } else {
+      return [];
+    }
+  }
+  catch(error){
+    console.error('Error during fetch All Latest Discussion:', error);
+  }
+}
+
+//Function to insert discussion response in discussions_user_response table
+async function insertDiscussionResponse(discussion_id, IP_address) {
+  const currentDate = new Date();
+  const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+  const data = {
+    discussion_id : discussion_id,
+    ip_address: IP_address,
+  };
+  const checkQuery = `SELECT * FROM discussions_user_view WHERE discussion_id = '${discussion_id}'  AND ip_address = '${IP_address}'`;
+  const check_result = await query(checkQuery);
+  if(check_result.length > 0){
+    console.log(check_result[0].id);
+    return check_result[0].id
+  }else{
+    const sql = 'INSERT INTO discussions_user_view SET ?'
+    const results = await query(sql, data);
+    try{
+      console.log(results.insertId);
+      return results.insertId;
+    }
+    catch(error){
+      console.error('Error during insert discussions_user_view:', error);
+    }
+  }
+}
+
+//Function to get all comment by discussion from discussions and discussions_user_response table
+async function getAllCommentByDiscusId(discussions_id) {
+  const sql = `
+  SELECT discussions.*, u.first_name, u.last_name 
+  FROM discussions 
+  LEFT JOIN users u ON discussions.user_id = u.user_id 
+  WHERE discussions.id = ${discussions_id}
+  `;
+  const commentQuery = `SELECT discussions_user_response.*, u.first_name comment_first_name, u.last_name comment_last_name, ucm.profile_pic
+  FROM discussions_user_response 
+  LEFT JOIN users u ON discussions_user_response.user_id = u.user_id 
+  LEFT JOIN user_customer_meta ucm ON discussions_user_response.user_id = ucm.user_id 
+  WHERE discussions_user_response.discussion_id = ${discussions_id}
+  ORDER BY created_at DESC;`
+  try{
+    const results = await query(sql);
+    const commentResult = await query(commentQuery);
+     const cmntData = JSON.stringify(commentResult);
+    results[0].commentData = cmntData;
+    //console.log('alldata',results)
+    return results;
+  }
+  catch(error){
+    console.error('Error during fetching getAllCommentByDiscusId:', error);
+  }
+}
+
+
+async function searchDiscussion(keyword){
+  const get_company_query = `
+    SELECT id , topic FROM discussions
+    WHERE topic LIKE '%${keyword}%' 
+    ORDER BY id DESC
+  `;
+  try{
+    const get_company_results = await query(get_company_query);
+    if(get_company_results.length > 0 ){
+      //console.log(get_company_results);
+      return {status: 'ok', data: get_company_results, message: ' Discussion data recived'};
+    }else{
+      return {status: 'ok', data: '', message: 'No Discussion data found'};
+    }
+  }catch(error){
+    return {status: 'err', data: '', message: 'No Discussion data found'};
+  }  
+}
+
+//Function to get user discussions from discussions table
+async function getDiscussionsByUserId(userId) {
+  const sql = `
+  SELECT discussions.*,  COUNT(dur.id) as total_comments , COUNT(duv.id) as total_views 
+  FROM discussions 
+  LEFT JOIN discussions_user_response dur ON discussions.id = dur.discussion_id 
+  LEFT JOIN discussions_user_view duv ON discussions.id = duv.discussion_id 
+  WHERE discussions.user_id = ${userId}
+  GROUP BY discussions.id
+  ORDER BY discussions.id DESC
+  `;
+  try{
+    const results = await query(sql);
+    if (results.length>0) {
+      
+    return results;
+    } else {
+      return [];
+    }
+  }
+  catch(error){
+    console.error('Error during fetch All Latest Discussion:', error);
+  }
+}
+
+//Function to get company complaint_category from complaint_category table
+async function getCompanyCategories(companyId) {
+  const sql = `
+  SELECT * FROM complaint_category WHERE company_id = '${companyId}'
+  `;
+  try{
+    const results = await query(sql);
+    if (results.length>0) {
+      
+    return results;
+    } else {
+      return [];
+    }
+  }
+  catch(error){
+    console.error('Error during fetch All Latest Discussion:', error);
+  }
+}
+
+//Function to get  getComplaintLevelDetails from complaint_level_management table
+async function getComplaintLevelDetails(companyId) {
+  const sql = `
+  SELECT * FROM complaint_level_management WHERE company_id  = '${companyId}'
+  `;
+  try{
+    const results = await query(sql);
+    if (results.length>0) {
+      return results;
+    } else {
+      return [];
+    }
+  }
+  catch(error){
+    console.error('Error during fetch All complaint level details: ', error);
+    
+  }
+}
+
+//Function to get All Complaints By CompanyId from complaint table
+async function getAllComplaintsByCompanyId(companyId) {
+  const sql = `
+  SELECT 
+  complaint.*,
+  c.company_name, 
+  cc.category_name, 
+  subcat.category_name AS sub_category_name,
+  GROUP_CONCAT(cqr.notification_status) AS notification_statuses,
+  GROUP_CONCAT(cqr.query) AS company_query,
+  GROUP_CONCAT(cqr.response) AS user_response
+  FROM complaint
+  LEFT JOIN complaint_category cc ON complaint.category_id = cc.id
+  LEFT JOIN complaint_category subcat ON complaint.sub_cat_id = subcat.id
+  LEFT JOIN company c ON complaint.company_id = c.ID
+  LEFT JOIN complaint_query_response cqr ON complaint.id = cqr.complaint_id
+  WHERE complaint.company_id = '${companyId}'
+  GROUP BY complaint.id
+  ORDER BY complaint.id DESC;
+  `;
+
+  try{
+    const results = await query(sql);
+    if ( results.length > 0 ) {
+      return results;
+    } else {
+      return [];
+    }
+  }
+  catch(error){
+    console.error('Error during fetch all complaint details: ', error);
+    
+  }
+}
+
+//Function to get Complaints By ComplaintId from complaint table
+async function getAllComplaintsByComplaintId(ComplaintId) {
+  const sql = `
+  SELECT complaint.*,c.company_name,c.slug, cc.category_name, subcat.category_name AS sub_category_name, cr.rating user_complaint_rating, clm.eta_days 
+  FROM complaint 
+  LEFT JOIN complaint_category cc ON complaint.category_id = cc.id 
+  LEFT JOIN complaint_category subcat ON complaint.sub_cat_id = subcat.id 
+  LEFT JOIN company c ON complaint.company_id = c.ID 
+  LEFT JOIN complaint_rating cr ON complaint.id = cr.complaint_id 
+  LEFT JOIN complaint_level_management clm ON complaint.level_id = clm.level AND complaint.company_id = clm.company_id
+  WHERE complaint.id  = '${ComplaintId}'
+  ORDER BY complaint.id DESC
+  `;
+
+  const commentQuery = `SELECT *
+  FROM complaint_query_response 
+  WHERE complaint_id = '${ComplaintId}'
+  ORDER BY id;`;
+
+  try{
+    const results = await query(sql);
+    const commentResult = await query(commentQuery);
+    //const cmntData = JSON.stringify(commentResult);
+    results[0].queryResponseData = commentResult;
+    if ( results.length > 0 ) {
+      return results;
+    } else {
+      return [];
+    }
+  }
+  catch(error){
+    console.error('Error during fetch all complaint details: ', error);
+    
+  }
+}
+
+//Function to get All Complaints By userID from complaint table
+async function getAllComplaintsByUserId(user_id) {
+  const sql = `
+  SELECT 
+  complaint.*,
+  c.company_name, 
+  cc.category_name, 
+  subcat.category_name AS sub_category_name,
+  GROUP_CONCAT(cqr.notification_status) AS notification_statuses,
+  GROUP_CONCAT(cqr.query) AS company_query,
+  GROUP_CONCAT(cqr.response) AS user_response
+  FROM complaint
+  LEFT JOIN complaint_category cc ON complaint.category_id = cc.id
+  LEFT JOIN complaint_category subcat ON complaint.sub_cat_id = subcat.id
+  LEFT JOIN company c ON complaint.company_id = c.ID
+  LEFT JOIN complaint_query_response cqr ON complaint.id = cqr.complaint_id
+  WHERE complaint.user_id = '${user_id}'
+  GROUP BY complaint.id
+  ORDER BY complaint.id DESC;
+
+  `;
+
+  try{
+    const results = await query(sql);
+    if ( results.length > 0 ) {
+      return results;
+    } else {
+      return [];
+    }
+  }
+  catch(error){
+    console.error('Error during fetch all complaint details: ', error);
+    
+  }
+}
+
+//Function to update complaint status to complaint table
+async function updateComplaintStatus(complaint_id, status) {
+  const sql = `
+  UPDATE complaint SET status='${status}' WHERE id = '${complaint_id}'
+  `;
+
+  try{
+    const results = await query(sql);
+      return true;
+  }
+  catch(error){
+    console.error('Error during fetch all complaint details: ', error);
+    
+  }
+}
+
+//Function to update complaint notification status to complaint_query_response table
+async function updateUserNotificationStatus(complaint_id) {
+  const sql = `
+  UPDATE complaint_query_response SET notification_status='1' WHERE complaint_id = '${complaint_id}' AND response = ''
+  `;
+
+  try{
+    const results = await query(sql);
+      return true;
+  }
+  catch(error){
+    console.error('Error during fetch all complaint details: ', error);
+    
+  }
+}
+
+//Function to update complaint notification status to complaint_query_response table
+async function updateCompanyrNotificationStatus(complaint_id) {
+  const sql = `
+  UPDATE complaint_query_response SET notification_status='1' WHERE complaint_id = '${complaint_id}' AND query = ''
+  `;
+
+  try{
+    const results = await query(sql);
+      return true;
+  }
+  catch(error){
+    console.error('Error during fetch all complaint details: ', error);
+    
+  }
+}
+
+//Function send email to company by companyId 
+async function complaintEmailToCompany(companyId, tokenId, insertId) {
+  const sql = `
+  SELECT users.email, users.first_name, c.slug
+  FROM users 
+  LEFT JOIN company_claim_request ccr ON ccr.claimed_by = users.user_id 
+  LEFT JOIN company c ON c.ID = ccr.company_id
+  WHERE ccr.company_id = '${companyId}'
+  `;
+  try{
+    const results = await query(sql);
+    if (results.length > 0) {
+      var mailOptions = {
+        from: process.env.MAIL_USER,
+        //to: 'pranab@scwebtech.com',
+        to: results[0].email,
+        subject: 'New Complaint Email',
+        html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
+        <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
+         <tbody>
+          <tr>
+           <td align="center" valign="top">
+             <div id="template_header_image"><p style="margin-top: 0;"></p></div>
+             <table id="template_container" style="box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; background-color: #fdfdfd; border: 1px solid #dcdcdc; border-radius: 3px !important;" border="0" cellpadding="0" cellspacing="0" width="600">
+              <tbody>
+                <tr>
+                 <td align="center" valign="top">
+                   <!-- Header -->
+                   <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
+                     <tbody>
+                       <tr>
+                       <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
+                        <td id="header_wrapper" style="padding: 36px 48px; display: block;">
+                           <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">New Complaint Email</h1>
+                        </td>
+    
+                       </tr>
+                     </tbody>
+                   </table>
+             <!-- End Header -->
+             </td>
+                </tr>
+                <tr>
+                 <td align="center" valign="top">
+                   <!-- Body -->
+                   <table id="template_body" border="0" cellpadding="0" cellspacing="0" width="600">
+                     <tbody>
+                       <tr>
+                        <td id="body_content" style="background-color: #fdfdfd;" valign="top">
+                          <!-- Content -->
+                          <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                           <tbody>
+                            <tr>
+                             <td style="padding: 48px;" valign="top">
+                               <div id="body_content_inner" style="color: #737373; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
+                                
+                                <table border="0" cellpadding="4" cellspacing="0" width="90%">
+                                  <tr>
+                                    <td colspan="2">
+                                    <strong>Hello ${results[0].first_name},</strong>
+                                    <p style="font-size:15px; line-height:20px">A customer register a complaint to your company. It's Token Id is: <a  href="${process.env.MAIN_URL}company-compnaint-details/${results[0].slug}/${insertId}">${tokenId}</a>. 
+                                    </p>
+                                    </td>
+                                  </tr>
+                                </table>
+                                
+                               </div>
+                             </td>
+                            </tr>
+                           </tbody>
+                          </table>
+                        <!-- End Content -->
+                        </td>
+                       </tr>
+                     </tbody>
+                   </table>
+                 <!-- End Body -->
+                 </td>
+                </tr>
+                <tr>
+                 <td align="center" valign="top">
+                   <!-- Footer -->
+                   <table id="template_footer" border="0" cellpadding="10" cellspacing="0" width="600">
+                    <tbody>
+                     <tr>
+                      <td style="padding: 0; -webkit-border-radius: 6px;" valign="top">
+                       <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                         <tbody>
+                           <tr>
+                            <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
+                                 <p>This email was sent from <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a></p>
+                            </td>
+                           </tr>
+                         </tbody>
+                       </table>
+                      </td>
+                     </tr>
+                    </tbody>
+                   </table>
+                 <!-- End Footer -->
+                 </td>
+                </tr>
+              </tbody>
+             </table>
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>`
+      }
+     mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
+          if (err) {
+              console.log(err);
+              return res.send({
+                  status: 'not ok',
+                  message: 'Something went wrong'
+              });
+          } else {
+              console.log('Mail Send: ', info.response);
+              
+          }
+      })
+    } else {
+      return false;
+    }
+  }
+  catch(error){
+    console.error('Error during fetch All Latest Discussion:', error);
+  }
+}
+
+//Function send success complaint email to user by userID 
+async function complaintSuccessEmailToUser(userId, tokenId, insertId) {
+  const sql = `
+  SELECT users.email, users.first_name  
+  FROM users 
+  WHERE users.user_id = '${userId}'
+  `;
+  try{
+    const results = await query(sql);
+    if (results.length > 0) {
+      var mailOptions = {
+        from: process.env.MAIL_USER,
+        //to: 'pranab@scwebtech.com',
+        to: results[0].email,
+        subject: 'Complaint registration Email',
+        html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
+        <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
+         <tbody>
+          <tr>
+           <td align="center" valign="top">
+             <div id="template_header_image"><p style="margin-top: 0;"></p></div>
+             <table id="template_container" style="box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; background-color: #fdfdfd; border: 1px solid #dcdcdc; border-radius: 3px !important;" border="0" cellpadding="0" cellspacing="0" width="600">
+              <tbody>
+                <tr>
+                 <td align="center" valign="top">
+                   <!-- Header -->
+                   <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
+                     <tbody>
+                       <tr>
+                       <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
+                        <td id="header_wrapper" style="padding: 36px 48px; display: block;">
+                           <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Complaint registration Email</h1>
+                        </td>
+    
+                       </tr>
+                     </tbody>
+                   </table>
+             <!-- End Header -->
+             </td>
+                </tr>
+                <tr>
+                 <td align="center" valign="top">
+                   <!-- Body -->
+                   <table id="template_body" border="0" cellpadding="0" cellspacing="0" width="600">
+                     <tbody>
+                       <tr>
+                        <td id="body_content" style="background-color: #fdfdfd;" valign="top">
+                          <!-- Content -->
+                          <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                           <tbody>
+                            <tr>
+                             <td style="padding: 48px;" valign="top">
+                               <div id="body_content_inner" style="color: #737373; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
+                                
+                                <table border="0" cellpadding="4" cellspacing="0" width="90%">
+                                  <tr>
+                                    <td colspan="2">
+                                    <strong>Hello ${results[0].first_name},</strong>
+                                    <p style="font-size:15px; line-height:20px">Your complaint registered successfully.Your Token Id is: <a  href="${process.env.MAIN_URL}user-compnaint-details/${insertId}">${tokenId}</a>. 
+                                    </p>
+                                    </td>
+                                  </tr>
+                                </table>
+                                
+                               </div>
+                             </td>
+                            </tr>
+                           </tbody>
+                          </table>
+                        <!-- End Content -->
+                        </td>
+                       </tr>
+                     </tbody>
+                   </table>
+                 <!-- End Body -->
+                 </td>
+                </tr>
+                <tr>
+                 <td align="center" valign="top">
+                   <!-- Footer -->
+                   <table id="template_footer" border="0" cellpadding="10" cellspacing="0" width="600">
+                    <tbody>
+                     <tr>
+                      <td style="padding: 0; -webkit-border-radius: 6px;" valign="top">
+                       <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                         <tbody>
+                           <tr>
+                            <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
+                                 <p>This email was sent from <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a></p>
+                            </td>
+                           </tr>
+                         </tbody>
+                       </table>
+                      </td>
+                     </tr>
+                    </tbody>
+                   </table>
+                 <!-- End Footer -->
+                 </td>
+                </tr>
+              </tbody>
+             </table>
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>`
+      }
+     mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
+          if (err) {
+              console.log(err);
+              return res.send({
+                  status: 'not ok',
+                  message: 'Something went wrong'
+              });
+          } else {
+              console.log('Mail Send: ', info.response);
+              
+          }
+      })
+    } else {
+      return false;
+    }
+  }
+  catch(error){
+    console.error('Error during fetch All Latest Discussion:', error);
+  }
+}
+
+//Function send Company Response Email email to customer by complaint_id 
+async function complaintCompanyResponseEmail(complaint_id) {
+  const sql = `
+  SELECT u.email, u.first_name, c.company_name  
+  FROM complaint 
+  LEFT JOIN users u ON complaint.user_id = u.user_id 
+  LEFT JOIN company c ON complaint.company_id = c.ID 
+  WHERE complaint.id  = '${complaint_id}'
+  `;
+  try{
+    const results = await query(sql);
+    if (results.length > 0) {
+      var mailOptions = {
+        from: process.env.MAIL_USER,
+        //to: 'pranab@scwebtech.com',
+        to: results[0].email,
+        subject: `Email response from ${results[0].company_name}`,
+        html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
+        <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
+         <tbody>
+          <tr>
+           <td align="center" valign="top">
+             <div id="template_header_image"><p style="margin-top: 0;"></p></div>
+             <table id="template_container" style="box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; background-color: #fdfdfd; border: 1px solid #dcdcdc; border-radius: 3px !important;" border="0" cellpadding="0" cellspacing="0" width="600">
+              <tbody>
+                <tr>
+                 <td align="center" valign="top">
+                   <!-- Header -->
+                   <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
+                     <tbody>
+                       <tr>
+                       <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
+                        <td id="header_wrapper" style="padding: 36px 48px; display: block;">
+                           <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Email response from ${results[0].company_name}</h1>
+                        </td>
+    
+                       </tr>
+                     </tbody>
+                   </table>
+             <!-- End Header -->
+             </td>
+                </tr>
+                <tr>
+                 <td align="center" valign="top">
+                   <!-- Body -->
+                   <table id="template_body" border="0" cellpadding="0" cellspacing="0" width="600">
+                     <tbody>
+                       <tr>
+                        <td id="body_content" style="background-color: #fdfdfd;" valign="top">
+                          <!-- Content -->
+                          <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                           <tbody>
+                            <tr>
+                             <td style="padding: 48px;" valign="top">
+                               <div id="body_content_inner" style="color: #737373; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
+                                
+                                <table border="0" cellpadding="4" cellspacing="0" width="90%">
+                                  <tr>
+                                    <td colspan="2">
+                                    <strong>Hello ${results[0].first_name},</strong>
+                                    <p style="font-size:15px; line-height:20px">${results[0].company_name} has responded on your complaint. <a  href="${process.env.MAIN_URL}user-compnaint-details/${complaint_id}">Click here</a> to view detaiis.
+                                    </p>
+                                    </td>
+                                  </tr>
+                                </table>
+                                
+                               </div>
+                             </td>
+                            </tr>
+                           </tbody>
+                          </table>
+                        <!-- End Content -->
+                        </td>
+                       </tr>
+                     </tbody>
+                   </table>
+                 <!-- End Body -->
+                 </td>
+                </tr>
+                <tr>
+                 <td align="center" valign="top">
+                   <!-- Footer -->
+                   <table id="template_footer" border="0" cellpadding="10" cellspacing="0" width="600">
+                    <tbody>
+                     <tr>
+                      <td style="padding: 0; -webkit-border-radius: 6px;" valign="top">
+                       <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                         <tbody>
+                           <tr>
+                            <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
+                                 <p>This email was sent from <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a></p>
+                            </td>
+                           </tr>
+                         </tbody>
+                       </table>
+                      </td>
+                     </tr>
+                    </tbody>
+                   </table>
+                 <!-- End Footer -->
+                 </td>
+                </tr>
+              </tbody>
+             </table>
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>`
+      }
+     mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
+          if (err) {
+              console.log(err);
+              return res.send({
+                  status: 'not ok',
+                  message: 'Something went wrong'
+              });
+          } else {
+              console.log('Mail Send: ', info.response);
+              
+          }
+      })
+    } else {
+      return false;
+    }
+  }
+  catch(error){
+    console.error('Error during fetch All Latest Discussion:', error);
+  }
+}
+
+//Function send User Response Email  to company by complaint_id 
+async function complaintUserResponseEmail(complaint_id) {
+  const sql = `
+  SELECT users.email, users.first_name, c.slug, complaint.ticket_id
+  FROM users 
+  LEFT JOIN company_claim_request ccr ON ccr.claimed_by = users.user_id 
+  LEFT JOIN company c ON c.ID = ccr.company_id
+  LEFT JOIN complaint ON c.ID = complaint.company_id
+  WHERE complaint.id = '${complaint_id}'
+
+  `;
+  try{
+    const results = await query(sql);
+    if (results.length > 0) {
+      var mailOptions = {
+        from: process.env.MAIL_USER,
+        //to: 'pranab@scwebtech.com',
+        to: results[0].email,
+        subject: `Email response from customer`,
+        html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
+        <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
+         <tbody>
+          <tr>
+           <td align="center" valign="top">
+             <div id="template_header_image"><p style="margin-top: 0;"></p></div>
+             <table id="template_container" style="box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; background-color: #fdfdfd; border: 1px solid #dcdcdc; border-radius: 3px !important;" border="0" cellpadding="0" cellspacing="0" width="600">
+              <tbody>
+                <tr>
+                 <td align="center" valign="top">
+                   <!-- Header -->
+                   <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
+                     <tbody>
+                       <tr>
+                       <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
+                        <td id="header_wrapper" style="padding: 36px 48px; display: block;">
+                           <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Email response from customer </h1>
+                        </td>
+    
+                       </tr>
+                     </tbody>
+                   </table>
+             <!-- End Header -->
+             </td>
+                </tr>
+                <tr>
+                 <td align="center" valign="top">
+                   <!-- Body -->
+                   <table id="template_body" border="0" cellpadding="0" cellspacing="0" width="600">
+                     <tbody>
+                       <tr>
+                        <td id="body_content" style="background-color: #fdfdfd;" valign="top">
+                          <!-- Content -->
+                          <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                           <tbody>
+                            <tr>
+                             <td style="padding: 48px;" valign="top">
+                               <div id="body_content_inner" style="color: #737373; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
+                                
+                                <table border="0" cellpadding="4" cellspacing="0" width="90%">
+                                  <tr>
+                                    <td colspan="2">
+                                    <strong>Hello ${results[0].first_name},</strong>
+                                    <p style="font-size:15px; line-height:20px">A customer has responded on your query. <a href="${process.env.MAIN_URL}company-compnaint-details/${results[0].slug}/${complaint_id}">Click here</a> to view datails.
+                                    </p>
+                                    </td>
+                                  </tr>
+                                </table>
+                                
+                               </div>
+                             </td>
+                            </tr>
+                           </tbody>
+                          </table>
+                        <!-- End Content -->
+                        </td>
+                       </tr>
+                     </tbody>
+                   </table>
+                 <!-- End Body -->
+                 </td>
+                </tr>
+                <tr>
+                 <td align="center" valign="top">
+                   <!-- Footer -->
+                   <table id="template_footer" border="0" cellpadding="10" cellspacing="0" width="600">
+                    <tbody>
+                     <tr>
+                      <td style="padding: 0; -webkit-border-radius: 6px;" valign="top">
+                       <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                         <tbody>
+                           <tr>
+                            <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
+                                 <p>This email was sent from <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a></p>
+                            </td>
+                           </tr>
+                         </tbody>
+                       </table>
+                      </td>
+                     </tr>
+                    </tbody>
+                   </table>
+                 <!-- End Footer -->
+                 </td>
+                </tr>
+              </tbody>
+             </table>
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>`
+      }
+     mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
+          if (err) {
+              console.log(err);
+              return res.send({
+                  status: 'not ok',
+                  message: 'Something went wrong'
+              });
+          } else {
+              console.log('Mail Send: ', info.response);
+              
+          }
+      })
+    } else {
+      return false;
+    }
+  }
+  catch(error){
+    console.error('Error during fetch All Latest Discussion:', error);
+  }
+}
+
+//Function send Company Resolved Email  to customer by complaint_id 
+async function complaintCompanyResolvedEmail(complaint_id) {
+  const sql = `
+  SELECT u.email, u.first_name, c.company_name  
+  FROM complaint 
+  LEFT JOIN users u ON complaint.user_id = u.user_id 
+  LEFT JOIN company c ON complaint.company_id = c.ID 
+  WHERE complaint.id  = '${complaint_id}'
+  `;
+  try{
+    const results = await query(sql);
+    if (results.length > 0) {
+      var mailOptions = {
+        from: process.env.MAIL_USER,
+        //to: 'pranab@scwebtech.com',
+        to: results[0].email,
+        subject: 'Complaint Resolved Email',
+        html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
+        <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
+         <tbody>
+          <tr>
+           <td align="center" valign="top">
+             <div id="template_header_image"><p style="margin-top: 0;"></p></div>
+             <table id="template_container" style="box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; background-color: #fdfdfd; border: 1px solid #dcdcdc; border-radius: 3px !important;" border="0" cellpadding="0" cellspacing="0" width="600">
+              <tbody>
+                <tr>
+                 <td align="center" valign="top">
+                   <!-- Header -->
+                   <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
+                     <tbody>
+                       <tr>
+                       <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
+                        <td id="header_wrapper" style="padding: 36px 48px; display: block;">
+                           <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Complaint Resolved Email</h1>
+                        </td>
+    
+                       </tr>
+                     </tbody>
+                   </table>
+             <!-- End Header -->
+             </td>
+                </tr>
+                <tr>
+                 <td align="center" valign="top">
+                   <!-- Body -->
+                   <table id="template_body" border="0" cellpadding="0" cellspacing="0" width="600">
+                     <tbody>
+                       <tr>
+                        <td id="body_content" style="background-color: #fdfdfd;" valign="top">
+                          <!-- Content -->
+                          <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                           <tbody>
+                            <tr>
+                             <td style="padding: 48px;" valign="top">
+                               <div id="body_content_inner" style="color: #737373; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
+                                
+                                <table border="0" cellpadding="4" cellspacing="0" width="90%">
+                                  <tr>
+                                    <td colspan="2">
+                                    <strong>Hello ${results[0].first_name},</strong>
+                                    <p style="font-size:15px; line-height:20px">${results[0].company_name} has resolved on your complaint. Please <a  href="${process.env.MAIN_URL}user-compnaint-details/${complaint_id}">give us</a> feedback.
+                                    </p>
+                                    </td>
+                                  </tr>
+                                </table>
+                                
+                               </div>
+                             </td>
+                            </tr>
+                           </tbody>
+                          </table>
+                        <!-- End Content -->
+                        </td>
+                       </tr>
+                     </tbody>
+                   </table>
+                 <!-- End Body -->
+                 </td>
+                </tr>
+                <tr>
+                 <td align="center" valign="top">
+                   <!-- Footer -->
+                   <table id="template_footer" border="0" cellpadding="10" cellspacing="0" width="600">
+                    <tbody>
+                     <tr>
+                      <td style="padding: 0; -webkit-border-radius: 6px;" valign="top">
+                       <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                         <tbody>
+                           <tr>
+                            <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
+                                 <p>This email was sent from <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a></p>
+                            </td>
+                           </tr>
+                         </tbody>
+                       </table>
+                      </td>
+                     </tr>
+                    </tbody>
+                   </table>
+                 <!-- End Footer -->
+                 </td>
+                </tr>
+              </tbody>
+             </table>
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>`
+      }
+     mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
+          if (err) {
+              console.log(err);
+              return res.send({
+                  status: 'not ok',
+                  message: 'Something went wrong'
+              });
+          } else {
+              console.log('Mail Send: ', info.response);
+              
+          }
+      })
+    } else {
+      return false;
+    }
+  }
+  catch(error){
+    console.error('Error during fetch All Latest Discussion:', error);
+  }
+}
+
+//Function send User Response Email  to company by complaint_id 
+async function complaintUserReopenEmail(complaint_id) {
+  const sql = `
+  SELECT users.email, users.first_name, c.slug, complaint.ticket_id
+  FROM users 
+  LEFT JOIN company_claim_request ccr ON ccr.claimed_by = users.user_id 
+  LEFT JOIN company c ON c.ID = ccr.company_id
+  LEFT JOIN complaint ON c.ID = complaint.company_id
+  WHERE complaint.id = '${complaint_id}'
+
+  `;
+  try{
+    const results = await query(sql);
+    if (results.length > 0) {
+      var mailOptions = {
+        from: process.env.MAIL_USER,
+        //to: 'pranab@scwebtech.com',
+        to: results[0].email,
+        subject: `Complaint reopen email from customer`,
+        html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
+        <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
+         <tbody>
+          <tr>
+           <td align="center" valign="top">
+             <div id="template_header_image"><p style="margin-top: 0;"></p></div>
+             <table id="template_container" style="box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; background-color: #fdfdfd; border: 1px solid #dcdcdc; border-radius: 3px !important;" border="0" cellpadding="0" cellspacing="0" width="600">
+              <tbody>
+                <tr>
+                 <td align="center" valign="top">
+                   <!-- Header -->
+                   <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
+                     <tbody>
+                       <tr>
+                       <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
+                        <td id="header_wrapper" style="padding: 36px 48px; display: block;">
+                           <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Complaint reopen email from customer </h1>
+                        </td>
+    
+                       </tr>
+                     </tbody>
+                   </table>
+             <!-- End Header -->
+             </td>
+                </tr>
+                <tr>
+                 <td align="center" valign="top">
+                   <!-- Body -->
+                   <table id="template_body" border="0" cellpadding="0" cellspacing="0" width="600">
+                     <tbody>
+                       <tr>
+                        <td id="body_content" style="background-color: #fdfdfd;" valign="top">
+                          <!-- Content -->
+                          <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                           <tbody>
+                            <tr>
+                             <td style="padding: 48px;" valign="top">
+                               <div id="body_content_inner" style="color: #737373; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
+                                
+                                <table border="0" cellpadding="4" cellspacing="0" width="90%">
+                                  <tr>
+                                    <td colspan="2">
+                                    <strong>Hello ${results[0].first_name},</strong>
+                                    <p style="font-size:15px; line-height:20px">Complaint <a href="${process.env.MAIN_URL}company-compnaint-details/${results[0].slug}/${complaint_id}">${results[0].ticket_id}</a> has been reopened by user. Please review and address the issue.
+                                    </p>
+                                    </td>
+                                  </tr>
+                                </table>
+                                
+                               </div>
+                             </td>
+                            </tr>
+                           </tbody>
+                          </table>
+                        <!-- End Content -->
+                        </td>
+                       </tr>
+                     </tbody>
+                   </table>
+                 <!-- End Body -->
+                 </td>
+                </tr>
+                <tr>
+                 <td align="center" valign="top">
+                   <!-- Footer -->
+                   <table id="template_footer" border="0" cellpadding="10" cellspacing="0" width="600">
+                    <tbody>
+                     <tr>
+                      <td style="padding: 0; -webkit-border-radius: 6px;" valign="top">
+                       <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                         <tbody>
+                           <tr>
+                            <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
+                                 <p>This email was sent from <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a></p>
+                            </td>
+                           </tr>
+                         </tbody>
+                       </table>
+                      </td>
+                     </tr>
+                    </tbody>
+                   </table>
+                 <!-- End Footer -->
+                 </td>
+                </tr>
+              </tbody>
+             </table>
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>`
+      }
+     mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
+          if (err) {
+              console.log(err);
+              return res.send({
+                  status: 'not ok',
+                  message: 'Something went wrong'
+              });
+          } else {
+              console.log('Mail Send: ', info.response);
+              
+          }
+      })
+    } else {
+      return false;
+    }
+  }
+  catch(error){
+    console.error('Error during fetch All Latest Discussion:', error);
+  }
+}
+
+//Function send email to company by companyId 
+async function complaintScheduleEmail(emailArr,result) {
+  
+  try{
+
+    const createdateString = result.created_at;
+    const createdate = new Date(createdateString);
+    createdate.setHours(0, 0, 0, 0); 
+    const date2 = new Date(); 
+    date2.setHours(0, 0, 0, 0) ;
+    const daysDiff = Math.round((date2 - createdate)/(1000 * 60 * 60 * 24)) ;
+    const daysLeft = result.eta_days - daysDiff;
+    
+
+      var mailOptions = {
+        from: process.env.MAIL_USER,
+        //to: 'pranab@scwebtech.com',
+        to: result.email,
+        cc: emailArr,
+        subject: 'Schedule Complaint Email',
+        html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
+        <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
+         <tbody>
+          <tr>
+           <td align="center" valign="top">
+             <div id="template_header_image"><p style="margin-top: 0;"></p></div>
+             <table id="template_container" style="box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; background-color: #fdfdfd; border: 1px solid #dcdcdc; border-radius: 3px !important;" border="0" cellpadding="0" cellspacing="0" width="600">
+              <tbody>
+                <tr>
+                 <td align="center" valign="top">
+                   <!-- Header -->
+                   <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
+                     <tbody>
+                       <tr>
+                       <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
+                        <td id="header_wrapper" style="padding: 36px 48px; display: block;">
+                           <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Schedule Complaint Email</h1>
+                        </td>
+    
+                       </tr>
+                     </tbody>
+                   </table>
+             <!-- End Header -->
+             </td>
+                </tr>
+                <tr>
+                 <td align="center" valign="top">
+                   <!-- Body -->
+                   <table id="template_body" border="0" cellpadding="0" cellspacing="0" width="600">
+                     <tbody>
+                       <tr>
+                        <td id="body_content" style="background-color: #fdfdfd;" valign="top">
+                          <!-- Content -->
+                          <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                           <tbody>
+                            <tr>
+                             <td style="padding: 48px;" valign="top">
+                               <div id="body_content_inner" style="color: #737373; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
+                                
+                                <table border="0" cellpadding="4" cellspacing="0" width="90%">
+                                  <tr>
+                                    <td colspan="2">
+                                    <strong>Hello Dear,</strong>
+                                    <p style="font-size:15px; line-height:20px">You have a pending complaint on ticket id: ${result.ticket_id}. Hurry up only ${daysLeft} days left.
+                                    </p>
+                                    </td>
+                                  </tr>
+                                </table>
+                                
+                               </div>
+                             </td>
+                            </tr>
+                           </tbody>
+                          </table>
+                        <!-- End Content -->
+                        </td>
+                       </tr>
+                     </tbody>
+                   </table>
+                 <!-- End Body -->
+                 </td>
+                </tr>
+                <tr>
+                 <td align="center" valign="top">
+                   <!-- Footer -->
+                   <table id="template_footer" border="0" cellpadding="10" cellspacing="0" width="600">
+                    <tbody>
+                     <tr>
+                      <td style="padding: 0; -webkit-border-radius: 6px;" valign="top">
+                       <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                         <tbody>
+                           <tr>
+                            <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
+                                 <p>This email was sent from <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a></p>
+                            </td>
+                           </tr>
+                         </tbody>
+                       </table>
+                      </td>
+                     </tr>
+                    </tbody>
+                   </table>
+                 <!-- End Footer -->
+                 </td>
+                </tr>
+              </tbody>
+             </table>
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>`
+      }
+     mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
+          if (err) {
+              console.log(err);
+              return res.send({
+                  status: 'not ok',
+                  message: 'Something went wrong'
+              });
+          } else {
+              console.log('Mail Send: ', info.response);
+              
+          }
+      })
+  }
+  catch(error){
+    console.error('Error during fetch All Latest Discussion:', error);
+  }
+}
+
+// Fetch all premium Company
+function getAllPremiumCompany() {
+  return new Promise((resolve, reject) => {
+    db.query(
+      `SELECT c.*, GROUP_CONCAT(cat.category_name) AS categories
+      FROM company c
+      LEFT JOIN company_cactgory_relation cr ON c.ID = cr.company_id
+      LEFT JOIN category cat ON cr.category_id = cat.ID
+      WHERE c.status != '3' and c.paid_status = 'paid'
+      GROUP BY c.ID`,
+      async(err, result) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
+
+//Function to send Survey Invitation email 
+async function sendSurveyInvitationEmail(req) {
+  console.log('sendInvitationEmail',req)
+  const {emails, email_body, user_id, company_id, company_name, company_slug, survey_id, unique_id } = req;
+  if(emails.length > 0){
+    await emails.forEach((email)=>{
+      var mailOptions = {
+        from: process.env.MAIL_USER,
+        //to: 'pranab@scwebtech.com',
+        to: email,
+        subject: 'Invitation Email',
+        html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
+        <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
+         <tbody>
+          <tr>
+           <td align="center" valign="top">
+             <div id="template_header_image"><p style="margin-top: 0;"></p></div>
+             <table id="template_container" style="box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; background-color: #fdfdfd; border: 1px solid #dcdcdc; border-radius: 3px !important;" border="0" cellpadding="0" cellspacing="0" width="600">
+              <tbody>
+                <tr>
+                 <td align="center" valign="top">
+                   <!-- Header -->
+                   <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
+                     <tbody>
+                       <tr>
+                       <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
+                        <td id="header_wrapper" style="padding: 36px 48px; display: block;">
+                           <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Invitation Email</h1>
+                        </td>
+    
+                       </tr>
+                     </tbody>
+                   </table>
+             <!-- End Header -->
+             </td>
+                </tr>
+                <tr>
+                 <td align="center" valign="top">
+                   <!-- Body -->
+                   <table id="template_body" border="0" cellpadding="0" cellspacing="0" width="600">
+                     <tbody>
+                       <tr>
+                        <td id="body_content" style="background-color: #fdfdfd;" valign="top">
+                          <!-- Content -->
+                          <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                           <tbody>
+                            <tr>
+                             <td style="padding: 48px;" valign="top">
+                               <div id="body_content_inner" style="color: #737373; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
+                                
+                                <table border="0" cellpadding="4" cellspacing="0" width="90%">
+                                  <tr>
+                                    <td colspan="2">
+                                    <p style="font-size:15px; line-height:20px">${email_body}</p>
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td colspan="2">
+                                    <p style="font-size:15px; line-height:20px">Please <a href="${process.env.MAIN_URL}${company_slug}/survey/${unique_id}">click here</a> to participate this survey.</p>
+                                    </td>
+                                  </tr>
+                                </table>
+                                
+                               </div>
+                             </td>
+                            </tr>
+                           </tbody>
+                          </table>
+                        <!-- End Content -->
+                        </td>
+                       </tr>
+                     </tbody>
+                   </table>
+                 <!-- End Body -->
+                 </td>
+                </tr>
+                <tr>
+                 <td align="center" valign="top">
+                   <!-- Footer -->
+                   <table id="template_footer" border="0" cellpadding="10" cellspacing="0" width="600">
+                    <tbody>
+                     <tr>
+                      <td style="padding: 0; -webkit-border-radius: 6px;" valign="top">
+                       <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                         <tbody>
+                           <tr>
+                            <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
+                                 <p>This email was sent from <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a></p>
+                            </td>
+                           </tr>
+                         </tbody>
+                       </table>
+                      </td>
+                     </tr>
+                    </tbody>
+                   </table>
+                 <!-- End Footer -->
+                 </td>
+                </tr>
+              </tbody>
+             </table>
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>`
+      }
+      mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
+          if (err) {
+              console.log(err);
+              return false;
+          } else {
+              console.log('Mail Send: ', info.response);
+              
+          }
+      })
+    })
+    return true;
+  }
+ 
+}
+
+async function getPopularTags(limit = 20) {
+  try {
+    const sql = `
+      SELECT JSON_UNQUOTE(JSON_EXTRACT(tags, '$[*]')) as tags
+      FROM discussions
+      WHERE JSON_UNQUOTE(JSON_EXTRACT(tags, '$[*]')) IS NOT NULL
+      LIMIT ${limit};
+    `;
+
+    const rows = await query(sql);
+
+    // Process the result to extract individual tags
+    const tags = rows.reduce((accumulator, row) => {
+      const parsedTags = JSON.parse(row.tags);
+      accumulator.push(...parsedTags);
+      return accumulator;
+    }, []);
+
+    // Count the occurrences of each tag
+    const tagCounts = {};
+    tags.forEach(tag => {
+      if (tagCounts[tag]) {
+        tagCounts[tag]++;
+      } else {
+        tagCounts[tag] = 1;
+      }
+    });
+
+    const popularTags = Object.entries(tagCounts).map(([tag, tagCount]) => ({
+      tag,
+      tag_count: tagCount,
+    }));
+
+    // Sort the popularTags by tag_count in descending order
+    popularTags.sort((a, b) => b.tag_count - a.tag_count);
+
+    return popularTags;
+  } catch (error) {
+    console.error('Error getting popular tags:', error);
+    throw error;
+  }
+}
+
+async function getDiscussionListingByTag(tag) {
+  try {
+    const sql = `
+      SELECT
+        discussions.*,
+        u.first_name,
+        u.last_name,
+        mu.profile_pic AS user_profile_pic,
+        COALESCE(comments.total_comments, 0) as total_comments,
+        COALESCE(views.total_views, 0) as total_views
+      FROM discussions
+      LEFT JOIN users u ON discussions.user_id = u.user_id
+      LEFT JOIN user_customer_meta mu ON discussions.user_id = mu.user_id
+      LEFT JOIN (
+        SELECT discussion_id, COUNT(*) as total_comments
+        FROM discussions_user_response
+        GROUP BY discussion_id
+      ) comments ON discussions.id = comments.discussion_id
+      LEFT JOIN (
+        SELECT discussion_id, COUNT(*) as total_views
+        FROM discussions_user_view
+        GROUP BY discussion_id
+      ) views ON discussions.id = views.discussion_id
+      WHERE JSON_CONTAINS(tags, JSON_QUOTE(?), '$')
+      ORDER BY discussions.id DESC
+       ;
+    `;
+
+    const results = await query(sql, [tag]);
+    if (results.length > 0) {
+      return results;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.error('Error getting discussions by tag:', error);
+    throw error;
+  }
+}
+
+//Function to fetch company created tags from duscussions_company_tags table
+async function getCompanyCreatedTags(company_id) {
+  const sql = `SELECT * FROM duscussions_company_tags WHERE  company_id = '${company_id}'
+  `;
+  const result = await query(sql);
+  if(result.length > 0 ){
+    return result;
+  }else{
+    return [];
+  }
+ 
+}
+
 module.exports = {
   getFaqPage,
   getFaqCategories,
@@ -1544,5 +3724,43 @@ module.exports = {
   insertInvitationDetails,
   sendInvitationEmail,
   countInvitationLabels,
-  generateUniqueSlugCategory
+  getCompanySurveyCount,
+  getCompanySurveyListing,
+  getCompanySurveyQuestions,
+  addFlagDetails,
+  sendFlagEmail,
+  getAllFlaggedReviews,
+  updateFlagDetails,
+  flagApprovedEmail,
+  flagRejectdEmail,
+  getAllReviewsByCompanyID,
+  getAllLatestDiscussion,
+  insertDiscussionResponse,
+  getAllCommentByDiscusId,
+  getAllPopularDiscussion,
+  getAllDiscussions,
+  getAllViewedDiscussion,
+  searchDiscussion,
+  getDiscussionsByUserId,
+  generateUniqueSlugCategory,
+  getCompanyCategories,
+  getComplaintLevelDetails,
+  getAllComplaintsByCompanyId,
+  getAllComplaintsByUserId,
+  getAllComplaintsByComplaintId,
+  updateComplaintStatus,
+  complaintEmailToCompany,
+  complaintCompanyResponseEmail,
+  complaintScheduleEmail,
+  getAllPremiumCompany,
+  complaintSuccessEmailToUser,
+  complaintCompanyResolvedEmail,
+  updateUserNotificationStatus,
+  updateCompanyrNotificationStatus,
+  complaintUserResponseEmail,
+  complaintUserReopenEmail,
+  sendSurveyInvitationEmail,
+  getPopularTags,
+  getDiscussionListingByTag,
+  getCompanyCreatedTags
 };

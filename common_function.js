@@ -130,6 +130,27 @@ function getAllCompany() {
       FROM company c
       LEFT JOIN company_cactgory_relation cr ON c.ID = cr.company_id
       LEFT JOIN category cat ON cr.category_id = cat.ID
+      WHERE c.status != '3'
+      GROUP BY c.ID`,
+      async(err, result) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
+
+// Fetch all trashed Company
+function getAllTrashedCompany() {
+  return new Promise((resolve, reject) => {
+    db.query(
+      `SELECT c.*, GROUP_CONCAT(cat.category_name) AS categories
+      FROM company c
+      LEFT JOIN company_cactgory_relation cr ON c.ID = cr.company_id
+      LEFT JOIN category cat ON cr.category_id = cat.ID
+      WHERE c.status = '3'
       GROUP BY c.ID`,
       async(err, result) => {
       if (err) {
@@ -353,6 +374,7 @@ async function getAllReviews() {
       JOIN users u ON r.customer_id = u.user_id
       LEFT JOIN user_customer_meta ucm ON u.user_id = ucm.user_id
       LEFT JOIN review_reply rr ON rr.review_id = r.id AND rr.reply_by = r.customer_id
+      WHERE r.flag_status = '0' OR r.flag_status IS NULL
       ORDER BY r.created_at DESC;
   `;
   try{
@@ -373,7 +395,7 @@ async function getAllReviewsByCompanyID(companyId) {
   JOIN users u ON r.customer_id = u.user_id
   LEFT JOIN user_customer_meta ucm ON u.user_id = ucm.user_id
   LEFT JOIN review_reply rr ON r.id = rr.review_id
-  WHERE r.company_id = ? AND r.review_status = '1'
+  WHERE r.company_id = ? AND r.review_status = '1' AND (r.flag_status != '0' OR r.flag_status IS NULL)
   GROUP BY r.id
   ORDER BY r.created_at DESC;
   `;
@@ -828,7 +850,7 @@ async function getCompanyReviews(companyID){
     JOIN users ur ON r.customer_id = ur.user_id
     LEFT JOIN user_customer_meta ucm ON ur.user_id = ucm.user_id
     LEFT JOIN review_reply rr ON r.id = rr.review_id 
-    WHERE r.company_id = ? AND r.review_status = "1"
+    WHERE r.company_id = ? AND r.review_status = "1" AND (r.flag_status != '0' OR r.flag_status IS NULL)
     ORDER BY r.created_at DESC, rr.created_at ASC
     LIMIT 20`;
   const get_company_reviews_values = [companyID];
@@ -1116,6 +1138,123 @@ async function getVisitorCheck(ClientIp) {
   }
 }
 
+
+async function getCompanySurveyDetails(companyID) {
+  const get_company_survey_details_query = `
+  SELECT survey.*
+  FROM survey
+  WHERE survey.company_id = ${companyID}
+  ORDER BY survey.id DESC;
+  `;
+  try{
+    const get_company_survey_details_result = await query(get_company_survey_details_query);
+    return get_company_survey_details_result;
+  }catch(error){
+    return 'Error during user get_company_survey_details_query:'+error;
+  }
+}
+
+async function getCompanyOngoingSurveyDetails(companyID) {
+  const get_company_survey_details_query = `
+  SELECT survey.*
+  FROM survey
+  WHERE survey.company_id = ${companyID} AND CURDATE() <= expire_at
+  ORDER BY survey.id DESC;
+  `;
+  try{
+    const get_company_survey_details_result = await query(get_company_survey_details_query);
+    return get_company_survey_details_result;
+  }catch(error){
+    return 'Error during user get_company_survey_details_query:'+error;
+  }
+}
+
+async function getCompanySurveyDetailsBySurveyID(survey_unique_id) {
+  const get_company_survey_details_query = `
+  SELECT survey.*
+  FROM survey
+  WHERE survey.unique_id = ${survey_unique_id};
+  `;
+  try{
+    const get_company_survey_details_result = await query(get_company_survey_details_query);
+    return get_company_survey_details_result;
+  }catch(error){
+    return 'Error during user get_company_survey_details_query:'+error;
+  }
+}
+
+async function getCompanySurveySubmitionsCount() {
+  const get_company_survey_submitions_count_query = `
+  SELECT survey_unique_id, COUNT(ID) as total_submission
+  FROM survey_customer_answers
+  GROUP BY survey_unique_id;
+  `;
+  try{
+    const get_company_survey_submitions_count_result = await query(get_company_survey_submitions_count_query);
+    return get_company_survey_submitions_count_result;
+  }catch(error){
+    return 'Error during user get_company_survey_submitions_count_query:'+error;
+  }
+}
+
+async function getCompanySurveySubmissions(companyID, survey_unique_id) {
+  const get_company_survey_submissions_query = `
+  SELECT survey_customer_answers.*, users.first_name, users.last_name
+  FROM survey_customer_answers
+  JOIN users ON survey_customer_answers.customer_id = users.user_id
+  WHERE company_id = ${companyID} AND survey_unique_id = ${survey_unique_id}
+  ORDER BY ID DESC;
+  `;
+  try{
+    const get_company_survey_submissions_result = await query(get_company_survey_submissions_query);
+    return get_company_survey_submissions_result;
+  }catch(error){
+    return 'Error during user get_company_survey_submissions_query:'+error;
+  }
+}
+
+async function getCompanySurveyQuestions(survey_uniqueid, companyId){
+  const get_company_survey_question_query = `
+  SELECT *
+  FROM survey
+  WHERE company_id = ${companyId} AND unique_id = ${survey_uniqueid};
+  `;
+  try{
+    const get_company_survey_question_result = await query(get_company_survey_question_query);
+    return get_company_survey_question_result;
+  }catch(error){
+    return 'Error during user get_company_survey_question_query:'+error;
+  }
+}
+
+async function getCompanySurveyAnswersByUser(survey_uniqueid, userID){
+  const get_company_survey_answer_query = `
+  SELECT *
+  FROM survey_customer_answers
+  WHERE survey_unique_id = ${survey_uniqueid} AND customer_id = ${userID};
+  `;
+  try{
+    const get_company_survey_question_result = await query(get_company_survey_answer_query);
+    return get_company_survey_question_result;
+  }catch(error){
+    return 'Error during user get_company_survey_answer_query:'+error;
+  }
+}
+
+async function getCompanySurveyAnswersByID(survey_submission_id){
+  const get_company_survey_answer_query = `
+  SELECT *
+  FROM survey_customer_answers
+  WHERE ID = ${survey_submission_id};
+  `;
+  try{
+    const get_company_survey_question_result = await query(get_company_survey_answer_query);
+    return get_company_survey_question_result;
+  }catch(error){
+    return 'Error during user get_company_survey_answer_query:'+error;
+  }
+}
+
 module.exports = {
     getUser,
     getUserMeta,
@@ -1157,5 +1296,14 @@ module.exports = {
     getParentCategories,
     getPositiveReviewsCompany,
     getNegativeReviewsCompany,
-    getVisitorCheck
+    getVisitorCheck,
+    getAllTrashedCompany,
+    getCompanySurveyDetails,
+    getCompanySurveyQuestions,
+    getCompanySurveyAnswersByUser,
+    getCompanySurveySubmissions,
+    getCompanySurveyAnswersByID,
+    getCompanySurveySubmitionsCount,
+    getCompanySurveyDetailsBySurveyID,
+    getCompanyOngoingSurveyDetails
 };

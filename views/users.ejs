@@ -328,7 +328,7 @@
                                                         class="menu-link px-3">Edit</a>
                                                 </div>
                                                 <div class="menu-item px-3">
-                                                    <a href="#" class="menu-link px-3" data-userid="<%= user.user_id %>" data-userEmail="<%= user.email %>"  data-kt-users-table-filter="delete_row">Delete</a>
+                                                    <a href="#" class="menu-link px-3" data-userid="<%= user.user_id %>" data-userEmail="<%= user.email %>"  data-kt-users-table-filter="delete_row">Trash</a>
                                                 </div>
                                             </div>
                                             <!--end::Menu-->
@@ -573,11 +573,11 @@
 
                                 // SweetAlert2 pop up --- official docs reference: https://sweetalert2.github.io/
                                 Swal.fire({
-                                    text: "Are you sure you want to delete",
+                                    text: "Are you sure you want to trash ?",
                                     icon: "warning",
                                     showCancelButton: true,
                                     buttonsStyling: false,
-                                    confirmButtonText: "Yes, delete!",
+                                    confirmButtonText: "Yes, trash!",
                                     cancelButtonText: "No, cancel",
                                     customClass: {
                                         confirmButton: "btn fw-bold btn-danger",
@@ -586,7 +586,8 @@
                                 }).then(function (result) {
                                     if (result.value) {
                                         $.ajax({
-                                            url: '/auth/delete-user', // URL for your API endpoint
+                                            //url: '/auth/delete-user', // URL for your API endpoint
+                                            url: '/auth/trash-user',
                                             method: 'POST',
                                             data: {userid:userid, userEmail:userEmail},
                                             ContentType: 'application/json',
@@ -624,7 +625,7 @@
                                         });
                                     } else if (result.dismiss === 'cancel') {
                                         Swal.fire({
-                                            text: customerName + " was not deleted.",
+                                            text:  "User is not move to trash .",
                                             icon: "error",
                                             buttonsStyling: false,
                                             confirmButtonText: "Ok, got it!",

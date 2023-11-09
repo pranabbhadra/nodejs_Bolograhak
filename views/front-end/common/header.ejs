@@ -207,7 +207,12 @@
             <% if( menu_active_id == 'home'){ %>
               <span class="header-middle-menu-link mbl-hide-link">
                 <ul>
-                  <li><a href="#">Lodge A Complaint</a></li>
+                  
+                  <% if(currentUserData ){ %>
+                    <li><a href="#">Lodge A Complaint</a></li>
+                  <% } else { %>
+                    <li><a href="#" class=" login">Lodge A Complaint</a></li>
+                  <% } %>
                 </ul>
               </span>
               <!-- <span class="country-select">
@@ -228,6 +233,13 @@
                 </ul>
               </div>
             </span>
+            <% } %>
+            <% if(menu_active_id != 'register-complaint'){ %>
+              <% if(currentUserData   ){ %>
+                <span class="tab-hide-link"><a href="/register-complaint" class="single-link">Lodge A Complaint</a></span>
+              <% } else { %>
+                <span class="tab-hide-link"><a href="#" class="single-link login">Lodge A Complaint</a></span>
+              <% } %>
             <% } %>
             <span class="mbl-hide-link always"><a href="/review" class="btn-default btn-outline-warning">All Reviews</a></span>
             <% if(menu_active_id!='business'){%>
@@ -270,7 +282,12 @@
                 <li><a href="/about-us">About Us</a></li>
                 <li><a href="/business">Business</a></li>
                 <li><a href="/contact-us">Contact</a></li>
-                <!-- <li class="desk-991-show-link"><a href="#">Lodge A Complaint</a></li> -->
+                <% if(currentUserData){ %>
+                  <li class="tab-show-link"><a href="/register-complaint">Lodge A Complaint</a></li>
+                <% } else { %>
+                  <li class="tab-show-link"><a href="#" class=" login">Lodge A Complaint</a></li>
+                  
+                <% } %>
                 <li class="tab-show-link"><a href="/review" class="btn-default btn-outline-warning">All Reviews</a></li>
                 <li class="tab-show-link"><a href="/business" class="btn-default btn-outline-warning">For business</a></li>
                 <% if(currentUserData){ %>
@@ -363,9 +380,9 @@
                 </a>
                 <a href="/auth/facebook" style="margin-left: 15px;">
                   <i class="fa-brands fa-facebook-f"></i><span>Facebook</span>
-                </a>
+                </a>-->
               </div>
-              <div class="or-connect"><span>Or continue with</span></div>
+              <!--<div class="or-connect"><span>Or continue with</span></div>-->
               <form id="user-signin" name="user-signin-frm" method="post">
                 <div class="custom-form">
                   <label><span>Email</span></label>
@@ -411,9 +428,9 @@
                   </a>
                   <a href="/auth/facebook" style="margin-left: 15px;">
                     <i class="fa-brands fa-facebook-f"></i><span>Facebook</span>
-                  </a>
+                  </a>-->
                 </div>
-              <div class="or-connect"><span>Or continue with</span></div>
+              <!--<div class="or-connect"><span>Or continue with</span></div>-->
               <form id="user-signup" name="user-signup-frm" method="post">
                 <div class="custom-form">
                   <label><span>First Name</span></label>
@@ -468,10 +485,10 @@
                 <span><i class="fa-brands fa-google"></i></span>
                   <span>Log in with Google</span>
                 </a>#%>
-                <a href="/auth/facebook" target="_blank" class="quick-login">
+                <!--<a href="/auth/facebook" target="_blank" class="quick-login">
                   <span><i class="fa-brands fa-facebook-f"></i></span>
                   <span>Log in with Facebook</span>
-                </a>
+                </a>-->
                 <div style="clear: both;"></div>
                 <span class="my-3 d-inline-block">Or</span>
                 <div style="clear: both;"></div>

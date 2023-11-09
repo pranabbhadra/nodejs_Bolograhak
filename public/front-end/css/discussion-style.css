@@ -58,6 +58,10 @@
 	position: relative;
 }
 
+.discussions-left ul.resp-tabs-list {
+    max-width: 275px;
+}
+
 .discussions-left span.language-select {
     position: absolute;
     right: 0;
@@ -111,14 +115,39 @@
 	margin-top: 30px;
 }
 
+.user-comment-control-wrapper {
+    background: #252525;
+    border-radius: 20px;
+    color: #fff;
+}
+
+.user-comment-control-wrapper .discussion-user-img {
+    position: relative;
+    left: 0;
+    top: 0;
+}
+
 .discussion-review-panel:nth-child(even) {
 	background-image: url(../images/discussion-object-bg2.svg);
 }
 
 .discussion-user-img {
-	position: absolute;
-	left: 18px;
-	top: 25px;
+    background: #f4a835;
+    position: absolute;
+    left: 18px;
+    top: 25px;
+    width: 50px;
+    height: 50px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    color: #000;
+}
+
+.discussion-user-img h4 {
+    margin: 0;
 }
 
 .discussion-user-img img,
@@ -128,6 +157,12 @@
 	border-radius: 50%;
 	object-fit: cover;
 	object-position: center;
+}
+
+.user-comment-control-wrapper .discussion-user-img img,
+.user-comment-control-wrapper .discussion-details-user-img img {
+	width: 50px;
+	height: 50px !important;
 }
 
 .discussion-details-user-img {
@@ -167,15 +202,11 @@
 	line-height: normal;
 }
 
-.dis-comment-views a {
+.dis-comment-views span {
 	color: #FFF;
 }
 
-.dis-comment-views a:hover {
-	color: #F1AE00;
-}
-
-.dis-comment-views a + a {
+.dis-comment-views span + span {
 	margin-left: 10px;
 }
 
@@ -221,6 +252,10 @@
     margin-bottom: 35px;
 }
 
+.discussions-right-panel a.btn-default {
+    margin: 2px 0;
+}
+
 .dis-right-panel-item {
 	display: flex;
 	justify-content: space-between;
@@ -259,7 +294,7 @@
 }
 
 .start-a-discussion-btn {
-    margin-top: 28px;
+    margin-bottom: 28px;
 }
 
 .start-a-discussion-btn .btn-default {
@@ -280,8 +315,17 @@
 
 .discussion-details-panel {
     position: relative;
+}
+
+.user-comment-repeat {
+    position: relative;
     padding-left: 75px;
     margin-top: 28px;
+}
+
+.user-comment-control-wrapper .user-comment-repeat + .user-comment-repeat {
+    margin-top: 0;
+    border-top: 1px #48463e solid;
 }
 
 .discussion-details-user-info {
@@ -295,12 +339,40 @@
     background-position: right top;
 }
 
+.user-comment-control-wrapper .discussion-details-user-info {
+    padding: 0;
+    background-image: none;
+}
+
+.user-comment-control-wrapper .user-comment-repeat {
+    padding-left: 0;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    margin: 15px 0;
+    background-image: url(../images/discussion-object-bg2.svg);
+    background-repeat: no-repeat;
+    background-position: right top;
+    gap: 20px;
+}
 .discussion-details-user-info h4 {
     color: #FCCB06;
     font-family: var(--nunito);
     font-size: 20px;
     font-weight: 600;
     margin-bottom: 25px;
+}
+
+.user-repeat-main {
+    padding: 20px 25px;
+}
+
+.user-repeat-main + .user-repeat-main {
+    border-top: 1px #5e5b5b solid;
+}
+
+.user-comment-control-wrapper  .discussion-details-user-info h4 {
+    margin-bottom: 0;
 }
 
 .discussion-details-user-info h4 small {
@@ -353,10 +425,135 @@
     color: #ffffff;
 }
 
-/* .discussionpage-nav {
-    overflow: auto;
-    position: -webkit-sticky;
-    position: sticky;
-    top: 5%;
-} */
+#sendreviewtags {
+    border: 2px solid #fccb06;
+    padding: 5px 9px;
+    border-radius: 6px;
+    margin-bottom: 32px;
+}
+
+#sendreviewtags > span {
+    cursor: pointer;
+    display: block;
+    float: left;
+    color: #fff;
+    background: #fccb06;
+    padding: 7px;
+    padding-right: 25px;
+    margin: 4px;
+    border-radius: 4px;
+    position: relative;
+}
+
+#sendreviewtags > span:hover{
+    opacity:0.7;
+}
+
+#sendreviewtags > span:after{
+    position:absolute;
+    content:"×";
+    border:1px solid;
+    padding:2px 5px;
+    margin-left:3px;
+    font-size:11px;
+}
+
+#sendreviewtags > input {
+    background: #f2f2f2;
+    border: 0;
+    margin: 4px;
+    padding: 7px;
+    width: auto;
+    border-radius: 4px;
+    outline: none;
+    position: relative;
+}
+
+.bulk-upload label {
+    font-weight: 600;
+    margin-bottom: 7px;
+    font-size: 18px;
+}
+
+.submissions-result-wrapper .radio-questions {
+    background: #f2f2f2;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+.submissions-result-wrapper .radio-questions + .radio-questions {
+    margin-top: 10px;
+}
+
+.submissions-result-wrapper .radio-questions h5 {
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.submissions-result-wrapper .radio-questions ol li + li,
+.submissions-result-wrapper .radio-questions ul li + li {
+    margin-top: 12px;
+}
+
+.submissions-result-wrapper .radio-questions ul li,
+.submissions-result-wrapper .radio-questions ol li {
+    position: relative;
+}
+
+.submissions-result-wrapper .radio-questions ol li span.suvey-progress-value,
+.submissions-result-wrapper .radio-questions ul li span.suvey-progress-value {
+    background: #f4a835;
+    padding: 5px 10px;
+    border-radius: 5px;
+    position: absolute;
+    left: -3px;
+    height: 100%;
+}
+
+.submissions-result-wrapper .radio-questions ol.survey-rating-emoji-list {
+    padding-left: 10px;
+}
+
+.submissions-result-wrapper .radio-questions ol.survey-rating-emoji-list li {
+    list-style-type: none;
+    background-repeat: no-repeat;
+    background-position: left top;
+    background-size: 25px;
+    padding-left: 35px;
+}
+
+.submissions-result-wrapper .radio-questions ol.survey-rating-emoji-list li span.suvey-progress-value {
+    left: 32px;
+}
+
+.survey-details-with-date {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.survey-details-with-date .all-inputs {
+    display: flex;
+    gap: 20px;
+}
+
+.survey-details-with-date .all-inputs .custom-form {
+    margin-bottom: 0;
+}
+
+.survey-details-with-date .custom-form .form-control,
+.survey-details-with-date .custom-form .form-select {
+    padding-right: 18px;
+}
+
+.survey-details-with-date .all-inputs .btn-default {
+    min-width: 100px;
+}
+
+.survey-update-message {
+    margin-top: 6px;
+    color: #06852b;
+    font-size: 14px;
+}
+
 /*=============== Discussion Content End ==============*/

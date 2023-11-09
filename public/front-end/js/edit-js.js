@@ -623,6 +623,20 @@ jQuery(function ($) {
       $(".custom-select-dropdown").slideUp();
   });
 
+  // =================================table action button start
+
+  $(".action-select").click(function (e) {
+    e.preventDefault();
+    $(this).find(".action-dropdown").slideToggle();
+  });
+
+  // $(".action-dropdown ul li a").click(function (e) {
+  //   e.preventDefault();
+  //   var text = $(this).html();
+  //   $(this).parents(".action-select").find(".action-change").html(text);
+  //   $(this).parents(".action-select").find(".action-dropdown").slideUp();
+  // });
+
   // /////////////////////////////////////// language / Country and custom Select end
 
   // /////////////////////////////////////// Load More Blog slice Start
@@ -679,6 +693,19 @@ jQuery(function ($) {
          $(".load-all-categories").hide();
     }
   });
+
+  // $(".add-option").click(function(e){
+  //   e.preventDefault();
+  //   $(this).parent(".create-survey-field-repater").find(".multiple-ans-repeat:hidden").slice(0,1).fadeIn("slow");
+  // });
+
+  // $(".qst-repeat").slice(0,1).show();
+  // $(".add-qut").click(function(e){
+  //   e.preventDefault();
+  //   $(".qst-repeat:hidden").slice(0,1).fadeIn("slow");
+  // });
+
+
 
   //$(".multiple-ans-repeat").slice(0,0).show();
   // $(".add-ans-btn").click(function(e){
@@ -758,9 +785,15 @@ jQuery(function ($) {
   // /////////////////////////////////////// Switch Toggle business show End
 
   // /////////////////////////////////////// Modal Start
-  $(".autofield-dropdown ul > li").click(function () {
-    $(".custom-modal").fadeIn();
+  $(".autofield-dropdown ul > li ").click(function () {
+     $(".custom-modal").fadeIn();
   });
+
+  $(document).on('click','.custom_link',function(){
+    location.replace($(this).attr('href'));
+  })
+
+
 
   $(".custom-modal-close").click(function (e) {
     e.preventDefault();
@@ -797,7 +830,7 @@ jQuery(function ($) {
 
   setTimeout(function () {
     $("body").find('.login').trigger('click');
-  }, 10000);
+  }, 60000);
 
   $(".quicklog").click(function (e) {
     e.preventDefault();
@@ -1092,24 +1125,28 @@ $('#horizontalTab').easyResponsiveTabs({
   });
 /*=========================== Math random review box function End =================*/
 
-/*=========================== Discussion modal function Start =================*/
-$('#discussiontext').focus(function(){
-  //open bootsrap modal
-  $("#disscussionmodal").modal('show');
+/*=========================== Discussion scroll function Start =================*/
+$('.discussionscrollbtn').click(function(e) {
+  e.preventDefault();
+  var headerHeight = $(".inner_header").innerHeight();
+  $('html, body').animate({
+    scrollTop: $("#discussiontext").offset().top - headerHeight
+  }, 1000);
 });
-/*=========================== Discussion modal function End =================*/
+/*=========================== Discussion scroll function End =================*/
 
 /*=========================== Creat a Poll slidedown function start =================*/
 $(".create-poll-btn .btn-default").click(function(e){
   e.preventDefault();
   $(".creat-poll-field").slideToggle();
-  });
+});
 /*=========================== Creat a Poll slidedown function End =================*/
 
 /*=========================== Remove multiple answer function End =================*/
-$(".remove-ans").click(function(){
-$(this).parents(".multiple-ans-repeat").find(".custom-form").hide();
-});
+// $(".remove-ans").click(function(){
+//   $(this).parents(".multiple-ans-repeat").find(".custom-form").hide();
+// });
+
 /*=========================== Remove multiple answer function End =================*/
 
 /*=========================== Send Review request tags start =================*/
@@ -1128,6 +1165,112 @@ $('#sendreviewtags').on('click', 'span', function() {
   if(confirm("Remove "+ $(this).text() +"?")) $(this).remove(); 
 });
 /*=========================== Send Review request tags End =================*/
+
+/*=========================== Create survey add question add option Start =================*/
+// $('.form-check-input').click(function() {
+//   if($(this).is(':checked')) {
+//       if($(this).val() == 'type_radio'){
+//         $(this).parents(".qst-repeat").find('.create-survey-field-repater').show();    
+//       }
+//       else if($(this).val() == 'type_checkbox'){
+//         $(this).parents(".qst-repeat").find('.create-survey-field-repater').hide();
+//       }else{
+//         $(this).parents(".qst-repeat").find('.create-survey-field-repater').hide();
+//       }
+//     }
+// });
+
+// $('.form-check-input').click(function() {
+//   if($(this).is(':checked')) {
+//       if($(this).val() == 'type_checkbox'){
+//         $(this).parents(".qst-repeat").find('.create-survey-field-repater2').show();    
+//       }
+//       else if($(this).val() == 'type_radio'){
+//         $(this).parents(".qst-repeat").find('.create-survey-field-repater2').hide();
+//       }else{
+//         $(this).parents(".qst-repeat").find('.create-survey-field-repater2').hide();
+//       }
+//     }
+// });
+/*=========================== Create survey add question add option End =================*/
+
+/*=========================== btn switch toggle start =================*/
+$('.premium-alert-box .btn-toggle').click(function() {
+  $(this).find('.btn').toggleClass('active'); 
+  if ($(this).find('.btn-primary').length>0) {
+    $(this).find('.btn').toggleClass('btn-primary');
+  }
+});
+/*=========================== btn switch toggle End =================*/
+
+/*=========================== Repeater function start =================*/
+// $(".add-new-hops").click(function(e){
+//   e.preventDefault();
+//   var totalLevel = $(this).parents(".premium-complain-m-wrap").find(".premium-complain-m-content-body").length;
+//   //console.log(totalLevel, 'hi');
+//   if (totalLevel >= 5) {
+//     console.log('কিছু হবে না');
+//   }else {
+//     //console.log(totalLevel+1,'cloned');
+//     var count = totalLevel+1;
+//     $(this).parents(".premium-complain-m-wrap").find(".premium-complain-clone").append('<div class=premium-complain-m-content-body><form class=level_form><input class=label_count name=label_count type=hidden value="'+count+'"><input type="hidden" name="company_id" value="<%= company.ID %>" ><div class=premium-complain-m-content-repeat><div class="premium-complain-m-content-part count_number">'+count+'</div><div class=premium-complain-m-content-part><a class="btn-default btn-warning edit-save-btn"href=#>Edit</a></div></div><div class=edit-email><div class="mb-2 g-2 justify-content-around row align-items-center"><div class=col-sm-6><label class=col-form-label for=""><strong>ETA Days</strong></label></div><div class=col-sm-6><input class=form-control name=eta_days type=number></div></div><div class="mb-2 g-2 justify-content-around row"><div class="col-sm-6 email_field_label"><label class=col-form-label for=""><strong>Enter Your E-Mail Address</strong></label></div><div class="col-sm-6 email_clone_div"><div class="mb-2 add-email-field"><input class=form-control name=emails type=email></div><a class=add-email-btn href=#><i class="fa-solid fa-circle-plus"></i></a></div></div><div class="align-items-center d-flex justify-content-end"><button class="btn-default btn-warning each_form_submut"type=submit>Save</button></div></div><a class=close-level href=#><i class="fa-solid fa-circle-xmark"></i></a></form></div>');
+//     if(totalLevel >= 4){
+//       $('body').find(".add-new-hops").hide();
+//     }
+//   }
+// });
+
+/*=========================== Repeater function End =================*/
+
+/*=========================== Edit email start =================*/
+$("body").on('click' , '.edit-save-btn' , function (e){
+  e.preventDefault();
+  $(this).parents(".premium-complain-m-content-body").find(".edit-email").slideToggle();
+  $(this).parents(".premium-complain-m-content-body").toggleClass("active");
+  if ($(this).text() == "Edit") {
+    $(this).text("Edited");
+  } else {
+    $(this).text("Edit");
+  }
+});
+/*=========================== Edit email End =================*/
+
+/*=========================== email repeater Start =================*/
+$("body").on('click' , '.add-email-btn' , function (e) {
+  e.preventDefault();
+  $(this).parents(".email_clone_div").append('<div class="add-email-field mb-2"> <input type="email" name="emails" id="" class="form-control"><a href="#" class="close-email-field"><i class="fa-solid fa-circle-xmark"></i></a> </div>');
+  });
+
+/*=========================== email repeater End =================*/
+
+
+/*=========================== Level Email repeater close Start =================*/
+  $("body").on('click' , '.close-level' , function (e){
+    e.preventDefault();
+    var levelcloseLength = $(this).parents('.premium-complain-clone').find('.premium-complain-m-content-body').length-1;
+    $(this).parents('.premium-complain-m-content-body').remove();
+    setTimeout(function () {
+      console.log('hi');
+      $('body').find('.premium-complain-clone').find('.premium-complain-m-content-body').each(function(index){
+        console.log(index+1);
+        $(this).find('.count_number').text(index+1);
+      });
+    }, 100);
+    if(levelcloseLength < 5 ){
+      $(".add-new-hops").show();
+    }else{
+      $(".add-new-hops").hide();
+    }
+  });
+  
+  $("body").on('click' , '.close-email-field' , function (e){
+    e.preventDefault();
+    $(this).parent().remove();
+  });
+  
+/*=========================== Level Email repeater close End =================*/
+
+
 
 
 labels = document.querySelectorAll('.ongoing-poll')
