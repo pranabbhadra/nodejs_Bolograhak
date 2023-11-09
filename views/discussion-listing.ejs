@@ -206,6 +206,7 @@
                                 </th>
                                 <th class="min-w-125px">Topic</th>
                                 <th class="min-w-125px">Tag(s)</th>
+                                <th class="min-w-125px">Creator</th>
                                 <th class="min-w-125px">Comments</th>
                                 <th class="min-w-125px">Views</th>
                                 <th class="min-w-125px">Created Date</th>
@@ -258,8 +259,9 @@
                                         <span class="badge badge-light-info fw-bolder px-4 py-3"><%= tag %></span>
                                         <% }) %>
                                 </td>
-                                <!--end::Last login=-->
-                                <!--begin::Two step=-->
+                                <td>
+                                    <%= discussion.first_name %> <%= discussion.last_name %>
+                                </td>
                                 <td>
                                     <%= discussion.total_comments %>
                                 </td>

@@ -904,24 +904,27 @@ router.get('/home', checkCookieValue, async (req, res) => {
 //Discussion page
 router.get('/discussion', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
-    const [globalPageMeta, getAllLatestDiscussion, getAllPopularDiscussion, getAllDiscussions, getAllViewedDiscussion] = await Promise.all([
+    const [globalPageMeta, getAllLatestDiscussion, getAllPopularDiscussion, getAllDiscussions, getAllViewedDiscussion, getPopularTags] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
         comFunction2.getAllLatestDiscussion(20),
         comFunction2.getAllPopularDiscussion(),
         comFunction2.getAllDiscussions(),
         comFunction2.getAllViewedDiscussion(),
+        comFunction2.getPopularTags(20),
     ]);
     //console.log(getAllLatestDiscussion);
     try {
-        // res.json({
+        // res.json( {
         //     menu_active_id: 'discussion',
-        //     page_title: 'Recent Discussions',
+        //     page_title: 'Discussions',
         //     currentUserData,
         //     globalPageMeta:globalPageMeta,
         //     AllLatestDiscussion: getAllLatestDiscussion,
         //     AllPopularDiscussion: getAllPopularDiscussion,
         //     AllDiscussions: getAllDiscussions,
-        //     AllViewedDiscussion: getAllViewedDiscussion
+        //     AllViewedDiscussion: getAllViewedDiscussion,
+        //     PopularTags: getPopularTags
+
         // });
         res.render('front-end/discussion', {
             menu_active_id: 'discussion',
@@ -931,7 +934,8 @@ router.get('/discussion', checkCookieValue, async (req, res) => {
             AllLatestDiscussion: getAllLatestDiscussion,
             AllPopularDiscussion: getAllPopularDiscussion,
             AllDiscussions: getAllDiscussions,
-            AllViewedDiscussion: getAllViewedDiscussion
+            AllViewedDiscussion: getAllViewedDiscussion,
+            PopularTags: getPopularTags
 
         });
     } catch (err) {
@@ -976,33 +980,27 @@ router.get('/discussion-details/:discussion_id', checkCookieValue, async (req, r
 });
 
 //Discussion Details page
-router.get('/similler-discussions/:discussion_id', checkCookieValue, async (req, res) => {
+router.get('/similar-discussions/:tag', checkCookieValue, async (req, res) => {
     let currentUserData = JSON.parse(req.userData);
-    const discussion_id = req.params.discussion_id;
-    const [globalPageMeta, insertDiscussionResponse, getAllCommentByDiscusId, getAllDiscussions] = await Promise.all([
+    const tag = req.params.tag;
+    const [globalPageMeta, getDiscussionListingByTag] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
-        comFunction2.insertDiscussionResponse(discussion_id,  requestIp.getClientIp(req)),
-        comFunction2.getAllCommentByDiscusId(discussion_id),
-        comFunction2.getAllDiscussions(),
+        comFunction2.getDiscussionListingByTag(tag),
     ]);
     try {
         // res.json( {
-        //     menu_active_id: 'discussion-details',
-        //     page_title: 'Comments',
+        //     menu_active_id: 'similler-discussions',
+        //     page_title: 'Similler Discussions',
         //     currentUserData,
         //     globalPageMeta:globalPageMeta,
-        //     commentID:insertDiscussionResponse,
-        //     AllCommentByDiscusId:getAllCommentByDiscusId,
-        //     AllDiscussions:getAllDiscussions
+        //     DiscussionListingByTag:getDiscussionListingByTag
         // });
         res.render('front-end/similler-discussions', {
-            menu_active_id: 'similler-discussions',
-            page_title: 'Similler Discussions',
+            menu_active_id: 'similar-discussions',
+            page_title: 'Similar Discussions',
             currentUserData,
             globalPageMeta:globalPageMeta,
-            commentID:insertDiscussionResponse,
-            AllCommentByDiscusId:getAllCommentByDiscusId,
-            AllDiscussions:getAllDiscussions
+            DiscussionListingByTag:getDiscussionListingByTag
         });
     } catch (err) {
         console.error(err);
@@ -3898,6 +3896,22 @@ router.get('/edit-complaint', checkLoggedIn, (req, res) => {
             })
 
         })
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+
+//push-notification Page
+router.get('/push-notification', checkLoggedIn, (req, res) => {
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+        res.render('pages/push-notification', {
+            menu_active_id: 'pages',
+            page_title: 'Push Notification',
+            currentUserData,
+        });
     } catch (err) {
         console.error(err);
         res.status(500).send('An error occurred');
