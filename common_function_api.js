@@ -1996,7 +1996,7 @@ async function getPremiumCompanyData(companyId) {
   }
 }
 
-async function getAllCommentByDiscusId(discussions_id) {
+async function getAllCommentByDiscusId(discussions_id,limit,offset) {
   const sql = `
     SELECT discussions.*, u.first_name, u.last_name, um.profile_pic
     FROM discussions 
@@ -2015,7 +2015,8 @@ async function getAllCommentByDiscusId(discussions_id) {
   LEFT JOIN users u ON discussions_user_response.user_id = u.user_id 
   LEFT JOIN user_customer_meta ucm ON discussions_user_response.user_id = ucm.user_id 
   WHERE discussions_user_response.discussion_id = ${discussions_id}
-  ORDER BY created_at DESC;`
+  ORDER BY created_at DESC
+  LIMIT ? OFFSET ?;`
 
 
 
@@ -2027,7 +2028,7 @@ async function getAllCommentByDiscusId(discussions_id) {
 
   try {
     const results = await query(sql);
-    const commentResult = await query(commentQuery);
+    const commentResult = await query(commentQuery, [parseInt(limit), parseInt(offset)]);
     // const tagResult = await query(tagQuery);
 
     const cmntData = JSON.stringify(commentResult);
@@ -2634,10 +2635,10 @@ ORDER BY discussions.id DESC;
 `;
 
 
-
-
     const relatedDiscussions = await query(relatedDiscussionsQuery);
-
+    if (relatedDiscussions.length === 0) {
+      return 'No related discussions found'; 
+  }
     return relatedDiscussions;
   } catch (error) {
     console.error('Error during fetching related discussions by tags:', error);

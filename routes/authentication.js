@@ -2572,10 +2572,16 @@ router.get('/discussionlisting', verifyToken, async (req, res) => {
 
 //discussion details by discussion-id
 
-router.get('/discussiondetails/:discussion_id', verifyToken, async (req, res) => {
-    const discussion_id = req.params.discussion_id;
+router.post('/discussiondetails', verifyToken, async (req, res) => {
+    const discussion_id = req.query.discussion_id;
+    const limit = req.query.limit;
+    const offset = req.query.offset;
     const ip_address = req.body.ip_address;
-    console.log("ipaddress",ip_address);
+    //console.log("ipaddress",ip_address);
+    
+    const parsedLimit = parseInt(limit);
+    const parsedOffset = parseInt(offset);
+    
     if (!ip_address) {
         return res.status(400).json({ error: 'ip_address is required in the request body' });
     }
@@ -2587,8 +2593,8 @@ router.get('/discussiondetails/:discussion_id', verifyToken, async (req, res) =>
     //const limit = req.body.limit;
     const [insertDiscussionResponse, getAllCommentByDiscusId, getRelatedDiscussionsByTags] = await Promise.all([
         comFunction.insertDiscussionResponse(discussion_id, ip_address, user_id),
-        comFunction.getAllCommentByDiscusId(discussion_id),
-        comFunction.getRelatedDiscussionsByTags(discussion_id),
+        comFunction.getAllCommentByDiscusId(discussion_id,parsedLimit,parsedOffset),
+        //comFunction.getRelatedDiscussionsByTags(discussion_id),
         //comFunction.getAllRelatedDiscussion()
     ]);
     // console.log("discuss",getAllCommentByDiscusId[0].tags);
@@ -2598,7 +2604,7 @@ router.get('/discussiondetails/:discussion_id', verifyToken, async (req, res) =>
         res.json({
             commentviewID: insertDiscussionResponse,
             AllCommentByDiscusId: getAllCommentByDiscusId,
-            AllRelatedDiscussions: getRelatedDiscussionsByTags
+            //AllRelatedDiscussions: getRelatedDiscussionsByTags
         });
     } catch (err) {
         console.error(err);
@@ -2651,7 +2657,21 @@ router.get('/discussionlistingbytopic/:keyword', verifyToken, async (req,res) =>
    
 })
 
+//get realted discussion listing
+router.get('/getRelatedDiscussionsByTags/:discussion_id',verifyToken, async (req,res) => {
+    try{
+    const discussion_id = req.params.discussion_id;
+    const relatedDiscussions = await comFunction.getRelatedDiscussionsByTags(discussion_id);
 
+    res.json({
+        relatedDiscussions: relatedDiscussions
+     });
+
+    }catch(error){
+        console.error(error);
+        res.status(500).send('An error occurred during fetching related discussion');
+    }
+})
 
 
 
