@@ -351,5 +351,9 @@ router.post('/delete-discussion', authController.deleteDiscussion);
 //Notification Content
 router.post('/notification-content',upload.single('image'), authController.notificationContent);
 
+//Create company discussion tags
+router.post('/company-create-tags', authController.companyCreateTags);
+//Update company discussion tags
+router.post('/update-company-tags', authController.updateCompanyTags);
 
 module.exports = router;

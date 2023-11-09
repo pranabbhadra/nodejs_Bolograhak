@@ -2574,13 +2574,13 @@ router.get('/discussion-tag-management/:slug', checkClientClaimedCompany, async 
     const slug = req.params.slug;
     const comp_res =await comFunction2.getCompanyIdBySlug(slug);
     const companyId = comp_res.ID;
-    const [globalPageMeta, company, PremiumCompanyData, companyReviewNumbers, allRatingTags, getCompanyOngoingSurveyDetails ] = await Promise.all([
+    const [globalPageMeta, company, PremiumCompanyData, companyReviewNumbers, allRatingTags, getCompanyCreatedTags  ] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
         comFunction.getCompany(companyId),
         comFunction2.getPremiumCompanyData(companyId),
         comFunction.getCompanyReviewNumbers(companyId),
         comFunction.getAllRatingTags(),
-        comFunction.getCompanyOngoingSurveyDetails(companyId),
+        comFunction2.getCompanyCreatedTags(companyId),
     ]);
    
     try {
@@ -2627,7 +2627,7 @@ router.get('/discussion-tag-management/:slug', checkClientClaimedCompany, async 
             linkedin_url:linkedin_url,
             youtube_url:youtube_url,
             allRatingTags,
-            CompanyOngoingSurveyDetails:getCompanyOngoingSurveyDetails
+            CompanyCreatedTags:getCompanyCreatedTags
         });
     } catch (err) {
         console.error(err);

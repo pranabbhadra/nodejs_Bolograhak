@@ -3670,6 +3670,19 @@ async function getDiscussionListingByTag(tag) {
   }
 }
 
+//Function to fetch company created tags from duscussions_company_tags table
+async function getCompanyCreatedTags(company_id) {
+  const sql = `SELECT * FROM duscussions_company_tags WHERE  company_id = '${company_id}'
+  `;
+  const result = await query(sql);
+  if(result.length > 0 ){
+    return result;
+  }else{
+    return [];
+  }
+ 
+}
+
 module.exports = {
   getFaqPage,
   getFaqCategories,
@@ -3748,5 +3761,6 @@ module.exports = {
   complaintUserReopenEmail,
   sendSurveyInvitationEmail,
   getPopularTags,
-  getDiscussionListingByTag
+  getDiscussionListingByTag,
+  getCompanyCreatedTags
 };
