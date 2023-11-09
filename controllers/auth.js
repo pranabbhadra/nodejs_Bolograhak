@@ -5057,7 +5057,7 @@ exports.complaintRegister =  (req, res) => {
 exports.companyQuery = async (req, res) => {
     //console.log('companyQuery',req.body ); 
     //return false;
-    const {company_id, user_id, complaint_id, message, complaint_status, complaint_level } = req.body;
+    const {company_id, user_id, complaint_id, message, complaint_status, complaint_level, company_slug } = req.body;
     
     if (complaint_status == '1') {
         const [updateComplaintStatus, complaintCompanyResolvedEmail] = await Promise.all([
@@ -5092,11 +5092,13 @@ exports.companyQuery = async (req, res) => {
             if (complaint_status == '1' ) {
                 return res.send({
                     status: 'ok',
+                    slug:company_slug,
                     message: 'Complaint resolved successfully !'
                 });
             } else {
                 return res.send({
                     status: 'ok',
+                    slug:company_slug,
                     message: 'Complaint query send successfully !'
                 });
             }
@@ -5161,7 +5163,7 @@ exports.userComplaintRating = async (req, res) => {
 
 //Insert user Complaint Response  to company
 exports.userComplaintResponse = async (req, res) => {
-    console.log('userComplaintResponse',req.body ); 
+    //console.log('userComplaintResponse',req.body ); 
     //return false;
     const {company_id, user_id, complaint_id, message, complaint_level, complaint_status } = req.body;
     

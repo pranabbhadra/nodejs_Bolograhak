@@ -2409,7 +2409,7 @@ async function getAllComplaintsByCompanyId(companyId) {
 //Function to get Complaints By ComplaintId from complaint table
 async function getAllComplaintsByComplaintId(ComplaintId) {
   const sql = `
-  SELECT complaint.*,c.company_name, cc.category_name, subcat.category_name AS sub_category_name, cr.rating user_complaint_rating, clm.eta_days 
+  SELECT complaint.*,c.company_name,c.slug, cc.category_name, subcat.category_name AS sub_category_name, cr.rating user_complaint_rating, clm.eta_days 
   FROM complaint 
   LEFT JOIN complaint_category cc ON complaint.category_id = cc.id 
   LEFT JOIN complaint_category subcat ON complaint.sub_cat_id = subcat.id 

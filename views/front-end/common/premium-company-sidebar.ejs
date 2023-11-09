@@ -148,6 +148,10 @@
 				<li <% if( menu_active_id == 'survey') { %>  class="active" <% } %>><a href="/send-survey-invitation/<%= company.slug  %>">Send Survey Invitation</a></li>
 			</ul>
       </li>
-     <li <% if( menu_active_id == 'settings') { %> class="active" <% } %> ><a href="/complaint-level-management/<%= company.slug  %>"><i class="fas fa-cog"></i> Settings</a></li>
+     <li <% if( menu_active_id == 'settings') { %> class="active" <% } %> ><a href="/complaint-level-management/<%= company.slug  %>"><i class="fas fa-cog"></i> Settings</a>
+      <!-- <ul>
+         <li><a href="/discussion-tag-management/<%= company.slug  %>">Discussion tag management</a></li>
+      </ul> -->
+   </li>
 	</ul>
  </div>

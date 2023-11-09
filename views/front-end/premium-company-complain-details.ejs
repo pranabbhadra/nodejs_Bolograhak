@@ -90,9 +90,9 @@
          </div>
          <div class="custom-text-box">
             <% if(ComplaintsByComplaintId.status == '1') { %>
-               <strong>Complain Manegement Level 1</strong> <small class="badge bg-success"> Resolved </small>
+               <strong>Complaint Management Level 1</strong> <small class="badge bg-success"> Resolved </small>
             <% }else { %>
-                  <strong>Complain Manegement Level 1</strong> <small class="badge bg-danger"><%= ComplaintsByComplaintId.eta_days - daysDiff %>  days Left</small>
+                  <strong>Complaint Management Level 1</strong> <small class="badge bg-danger"><%= ComplaintsByComplaintId.eta_days - daysDiff %>  days Left</small>
             <% } %>
          </div>
          
@@ -170,6 +170,7 @@
                 <textarea class="form-control" name="message" placeholder="Type Here..." required></textarea>
                 <input type="hidden" name="user_id"  value="<%= currentUserData.user_id %>" />
                 <input type="hidden" name="company_id" value="<%= ComplaintsByComplaintId.company_id %>" />
+                <input type="hidden" name="company_slug" value="<%= company.slug %>" />
                 <input type="hidden" name="complaint_id" value="<%= ComplaintsByComplaintId.id %>"> 
                 <input type="hidden"  name="complaint_status" value="2">
                 <input type="hidden" name="complaint_level" value="<%= ComplaintsByComplaintId.level_id %>">
@@ -215,6 +216,7 @@
                </div>
                <input type="hidden" name="user_id" id="customer_id_resolve" value="" />
                <input type="hidden" name="company_id" value="<%= company.ID %>" />
+               <input type="hidden" name="company_slug" value="<%= company.slug %>" />
                <input type="hidden" id="complaint-id-resolve" name="complaint_id" value="">
                <input type="hidden"  name="complaint_status" value="1">
                <input type="hidden" id="complaint-resolve-level" name="complaint_level" value="">
@@ -282,7 +284,8 @@
                   $('#query_submit_btn').prop('disabled', false);
                   $('.frm-loading').hide();
                   setTimeout(function () {
-                     window.location.reload();
+                     //window.location.reload();
+                     window.location.href="/company-complaint-listing/"+data.slug;
                   }, 2000);
                } else {
                   $('.response-message').text(data.message);
@@ -330,7 +333,7 @@
                   $('#query_submit_btn').prop('disabled', false);
                   $('.frm-loading').hide();
                   setTimeout(function () {
-                     window.location.reload();
+                     window.location.href="/company-complaint-listing/"+data.slug;
                   }, 2000);
                } else {
                   $('.response-message').text(data.message);
