@@ -2635,10 +2635,10 @@ ORDER BY discussions.id DESC;
 `;
 
 
-
-
     const relatedDiscussions = await query(relatedDiscussionsQuery);
-
+    if (relatedDiscussions.length === 0) {
+      return 'No related discussions found'; 
+  }
     return relatedDiscussions;
   } catch (error) {
     console.error('Error during fetching related discussions by tags:', error);
