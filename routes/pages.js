@@ -2486,7 +2486,7 @@ router.get('/company-compnaint-details/:slug/:complaintId', checkClientClaimedCo
     }
 });
 
-//send review invitation page
+//send survey invitation page
 router.get('/send-survey-invitation/:slug', checkClientClaimedCompany, async (req, res) => {
 
     const encodedUserData = req.cookies.user;
@@ -2548,6 +2548,82 @@ router.get('/send-survey-invitation/:slug', checkClientClaimedCompany, async (re
             youtube_url:youtube_url,
             allRatingTags,
             CompanyOngoingSurveyDetails:getCompanyOngoingSurveyDetails
+        });
+    } catch (err) {
+        console.error(err);
+        res.render('front-end/404', {
+            menu_active_id: '404',
+            page_title: '404',
+            currentUserData,
+            globalPageMeta:globalPageMeta
+        });
+    }
+    /////////////////////////////////////////////////
+  
+});
+
+//send review invitation page
+router.get('/discussion-tag-management/:slug', checkClientClaimedCompany, async (req, res) => {
+
+    const encodedUserData = req.cookies.user;
+    const currentUserData = JSON.parse(encodedUserData);
+    const slug = req.params.slug;
+    const comp_res =await comFunction2.getCompanyIdBySlug(slug);
+    const companyId = comp_res.ID;
+    const [globalPageMeta, company, PremiumCompanyData, companyReviewNumbers, allRatingTags, getCompanyCreatedTags  ] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+        comFunction.getCompany(companyId),
+        comFunction2.getPremiumCompanyData(companyId),
+        comFunction.getCompanyReviewNumbers(companyId),
+        comFunction.getAllRatingTags(),
+        comFunction2.getCompanyCreatedTags(companyId),
+    ]);
+   
+    try {
+        let cover_img = '';
+        let facebook_url = '';
+        let twitter_url = '';
+        let instagram_url = '';
+        let linkedin_url = '';
+        let youtube_url = '';
+    
+        if(typeof PremiumCompanyData !== 'undefined' ){
+             cover_img = PremiumCompanyData.cover_img;
+             facebook_url = PremiumCompanyData.facebook_url;
+             twitter_url = PremiumCompanyData.twitter_url;
+             instagram_url = PremiumCompanyData.instagram_url;
+             linkedin_url = PremiumCompanyData.linkedin_url;
+             youtube_url = PremiumCompanyData.youtube_url;
+        }
+        // res.json( {
+        //     menu_active_id: 'survey',
+        //     page_title: 'Send Survey Invitation',
+        //     currentUserData,
+        //     globalPageMeta:globalPageMeta,
+        //     company,
+        //     companyReviewNumbers,
+        //     facebook_url:facebook_url,
+        //     twitter_url:twitter_url,
+        //     instagram_url:instagram_url,
+        //     linkedin_url:linkedin_url,
+        //     youtube_url:youtube_url,
+        //     allRatingTags,
+        //     CompanyOngoingSurveyDetails:getCompanyOngoingSurveyDetails
+        // });
+        res.render('front-end/discussion-tag-management', {
+            menu_active_id: 'settings',
+            page_title: 'Discussion Tag Managemen',
+            currentUserData,
+            globalPageMeta:globalPageMeta,
+            company,
+            companyReviewNumbers,
+            facebook_url:facebook_url,
+            twitter_url:twitter_url,
+            instagram_url:instagram_url,
+            linkedin_url:linkedin_url,
+            youtube_url:youtube_url,
+            allRatingTags,
+            CompanyCreatedTags:getCompanyCreatedTags
         });
     } catch (err) {
         console.error(err);

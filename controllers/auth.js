@@ -5057,7 +5057,7 @@ exports.complaintRegister =  (req, res) => {
 exports.companyQuery = async (req, res) => {
     //console.log('companyQuery',req.body ); 
     //return false;
-    const {company_id, user_id, complaint_id, message, complaint_status, complaint_level } = req.body;
+    const {company_id, user_id, complaint_id, message, complaint_status, complaint_level, company_slug } = req.body;
     
     if (complaint_status == '1') {
         const [updateComplaintStatus, complaintCompanyResolvedEmail] = await Promise.all([
@@ -5092,11 +5092,13 @@ exports.companyQuery = async (req, res) => {
             if (complaint_status == '1' ) {
                 return res.send({
                     status: 'ok',
+                    slug:company_slug,
                     message: 'Complaint resolved successfully !'
                 });
             } else {
                 return res.send({
                     status: 'ok',
+                    slug:company_slug,
                     message: 'Complaint query send successfully !'
                 });
             }
@@ -5161,7 +5163,7 @@ exports.userComplaintRating = async (req, res) => {
 
 //Insert user Complaint Response  to company
 exports.userComplaintResponse = async (req, res) => {
-    console.log('userComplaintResponse',req.body ); 
+    //console.log('userComplaintResponse',req.body ); 
     //return false;
     const {company_id, user_id, complaint_id, message, complaint_level, complaint_status } = req.body;
     
@@ -5333,6 +5335,86 @@ exports.deleteDiscussion = async (req, res) => {
             });
         }
     })
+}
+
+//discussion company create tags
+exports.companyCreateTags = async (req, res) => {
+    console.log('createDiscussion',req.body ); 
+    //return false;
+    const { user_id, tags, company_id } = req.body;
+    const strTags = JSON.stringify(tags);
+    checkQuery = `SELECT * FROM duscussions_company_tags WHERE company_id = '${company_id}' `;
+    db.query(checkQuery,(checkErr, checkResult)=>{
+        if (checkErr) {
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong '+checkErr
+            });
+        }
+        if (checkResult.length > 0) {
+            let preTags = JSON.parse(checkResult[0].tags);
+            const joinTags = preTags.concat(tags);
+            let uniqueArray = joinTags.filter((it, i, ar) => ar.indexOf(it) === i);
+            const updateTags = JSON.stringify(uniqueArray);
+            //console.log(tags, preTags,joinTags, uniqueArray)
+            const sql = `UPDATE duscussions_company_tags SET tags = ? WHERE company_id = ? ` ;
+            const data = [ updateTags, company_id];
+            db.query(sql, data, (err, result) => {
+                if (err) {
+                    return res.send({
+                        status: 'not ok',
+                        message: 'Something went wrong '+err
+                    });
+                } else {
+                    return res.send({
+                        status: 'ok',
+                        message: 'Your Discussion Tags Updated Successfully'
+                    });
+                }
+            })
+        } else {
+            const sql = `INSERT INTO duscussions_company_tags ( company_id, tags) VALUES (?, ?)` ;
+            const data = [ company_id, strTags ];
+            db.query(sql, data, (err, result) => {
+                if (err) {
+                    return res.send({
+                        status: 'not ok',
+                        message: 'Something went wrong '+err
+                    });
+                } else {
+                    return res.send({
+                        status: 'ok',
+                        message: 'Your Discussion Tags Added Successfully'
+                    });
+                }
+            })
+        }
+    })
+
+}
+
+//discussion company update tags
+exports.updateCompanyTags = async (req, res) => {
+    console.log('updateCompanyTags',req.body ); 
+    //return false;
+    const {  tags, company_id } = req.body;
+    const strTags = JSON.stringify(tags);
+    const sql = `UPDATE duscussions_company_tags SET tags = ? WHERE company_id = ? ` ;
+    const data = [ strTags, company_id];
+    db.query(sql, data, (err, result) => {
+        if (err) {
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong '+err
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Your Discussion Tag Deleted Successfully'
+            });
+        }
+    })
+
 }
 
 //Notification Content

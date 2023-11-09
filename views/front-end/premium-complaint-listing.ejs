@@ -127,6 +127,7 @@
                      </div>
                      <input type="hidden" name="user_id" id="customer-id-query" value="" />
                      <input type="hidden" name="company_id" value="<%= company.ID %>" />
+                     <input type="hidden" name="company_slug" value="<%= company.slug %>" />
                      <input type="hidden" id="complaint-id-input" name="complaint_id" value="">
                      <input type="hidden" id="complaint-query-level" name="complaint_level" value="">
                      <input type="hidden"  name="complaint_status" value="2">
@@ -164,6 +165,7 @@
                      </div>
                      <input type="hidden" name="user_id" id="customer_id_resolve" value="" />
                      <input type="hidden" name="company_id" value="<%= company.ID %>" />
+                     <input type="hidden" name="company_slug" value="<%= company.slug %>" />
                      <input type="hidden" id="complaint-id-resolve" name="complaint_id" value="">
                      <input type="hidden"  name="complaint_status" value="1">
                      <input type="hidden" id="complaint-resolve-level" name="complaint_level" value="">

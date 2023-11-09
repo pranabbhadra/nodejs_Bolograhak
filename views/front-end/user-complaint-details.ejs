@@ -156,6 +156,7 @@
                             <textarea class="form-control" name="message" placeholder="Type Here..." required></textarea>
                             <input type="hidden" name="user_id"  value="<%= currentUserData.user_id %>" />
                             <input type="hidden" name="company_id" value="<%= ComplaintsByComplaintId.company_id %>" />
+                            <input type="hidden" name="company_slug" value="<%= ComplaintsByComplaintId.slug %>" />
                             <input type="hidden" name="complaint_id" value="<%= ComplaintsByComplaintId.id %>">
                             <input type="hidden"  name="complaint_status" value="2">
                             <input type="hidden" id="complaint-query-level" name="complaint_level" value="<%= ComplaintsByComplaintId.level_id %>">
@@ -244,6 +245,7 @@
             </div>
             <input type="hidden" name="user_id" id="customer-id-query" value="" />
             <input type="hidden" id="complaint-id-input" name="complaint_id" value="">
+            <input type="hidden" name="company_slug" value="<%= ComplaintsByComplaintId.slug %>" />
             <input type="submit" class="btn-default btn-warning mt-3" value="Submit"> 
          </form>
          <div class="register-now frm-loading" style=" display: none; ">
@@ -296,7 +298,7 @@
                   $('.submit_btn').prop('disabled', false);
                   $('.frm-loading').hide();
                   setTimeout(function () {
-                     window.location.reload();
+                     window.location.href = "/my-complaints";
                   }, 2000);
                } else {
                   $('.response-message').text(data.message);
@@ -351,7 +353,7 @@
                      $('.submit_btn').prop('disabled', false);
                      $('.frm-loading').hide();
                      setTimeout(function () {
-                        window.location.reload();
+                        window.location.href = "/my-complaints";
                      }, 2000);
                   } else {
                      $('.response-message').text(data.message);
