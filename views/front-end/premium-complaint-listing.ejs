@@ -19,8 +19,8 @@
                            <th scope="col">Sub-Category</th>
                            <th scope="col">Product Name</th>
                            <th scope="col">Status</th>
-                           <th scope="col">Notification</th>
-                           <th scope="col" style="width: 210px; text-align: center;">Action</th>
+                           <th scope="col">Messages</th>
+                           <th scope="col" style="width: 110px; text-align: center;">Action</th>
                         </tr>
                      </thead>
                      <tbody>
@@ -65,12 +65,12 @@
                                  <% if(compnaint.notification_statuses.length > 0){ %>
                                     <% let count = 0; %>
                                     <% compnaint.notification_statuses.forEach((notification, index) => { %>
-                                       <% if(notification == '0' && compnaint.company_query[index] == "" ){ %>
+                                       <% if( compnaint.company_query[index] == "" ){ %>
                                           <% count ++ ; %>
                                        <% } %>
                                     <% })  %>
                                     <% if(count > 0) { %>
-                                      <span class="bell_icon"><i class="fa-solid fa-bell"></i> <span class="bell_icon1"><%= count %></span> </span>
+                                      <span class="bell_icon"><i class="fa-solid fa-message"></i> <span class="bell_icon1"><%= count %></span> </span>
                                     <% } %>
                                     
                                  <% }  %>

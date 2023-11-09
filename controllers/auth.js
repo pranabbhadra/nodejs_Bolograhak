@@ -5335,6 +5335,14 @@ exports.deleteDiscussion = async (req, res) => {
     })
 }
 
+//Notification Content
+exports.notificationContent = async (req, res) => {
+    console.log('notificationContent',req.body ); 
+    console.log('notificationContent',req.file ); 
+    //return false;
+   
+}
+
 cron.schedule('0 10 * * *', async () => {
     //console.log('running a task every minute');
     const sql = `SELECT complaint.* ,u.email , clm.emails, clm.eta_days, cc.category_name, subcat.category_name AS sub_category_name

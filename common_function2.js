@@ -3587,6 +3587,89 @@ async function sendSurveyInvitationEmail(req) {
  
 }
 
+async function getPopularTags(limit = 20) {
+  try {
+    const sql = `
+      SELECT JSON_UNQUOTE(JSON_EXTRACT(tags, '$[*]')) as tags
+      FROM discussions
+      WHERE JSON_UNQUOTE(JSON_EXTRACT(tags, '$[*]')) IS NOT NULL
+      LIMIT ${limit};
+    `;
+
+    const rows = await query(sql);
+
+    // Process the result to extract individual tags
+    const tags = rows.reduce((accumulator, row) => {
+      const parsedTags = JSON.parse(row.tags);
+      accumulator.push(...parsedTags);
+      return accumulator;
+    }, []);
+
+    // Count the occurrences of each tag
+    const tagCounts = {};
+    tags.forEach(tag => {
+      if (tagCounts[tag]) {
+        tagCounts[tag]++;
+      } else {
+        tagCounts[tag] = 1;
+      }
+    });
+
+    const popularTags = Object.entries(tagCounts).map(([tag, tagCount]) => ({
+      tag,
+      tag_count: tagCount,
+    }));
+
+    // Sort the popularTags by tag_count in descending order
+    popularTags.sort((a, b) => b.tag_count - a.tag_count);
+
+    return popularTags;
+  } catch (error) {
+    console.error('Error getting popular tags:', error);
+    throw error;
+  }
+}
+
+async function getDiscussionListingByTag(tag) {
+  try {
+    const sql = `
+      SELECT
+        discussions.*,
+        u.first_name,
+        u.last_name,
+        mu.profile_pic AS user_profile_pic,
+        COALESCE(comments.total_comments, 0) as total_comments,
+        COALESCE(views.total_views, 0) as total_views
+      FROM discussions
+      LEFT JOIN users u ON discussions.user_id = u.user_id
+      LEFT JOIN user_customer_meta mu ON discussions.user_id = mu.user_id
+      LEFT JOIN (
+        SELECT discussion_id, COUNT(*) as total_comments
+        FROM discussions_user_response
+        GROUP BY discussion_id
+      ) comments ON discussions.id = comments.discussion_id
+      LEFT JOIN (
+        SELECT discussion_id, COUNT(*) as total_views
+        FROM discussions_user_view
+        GROUP BY discussion_id
+      ) views ON discussions.id = views.discussion_id
+      WHERE JSON_CONTAINS(tags, JSON_QUOTE(?), '$')
+      ORDER BY discussions.id DESC
+       ;
+    `;
+
+    const results = await query(sql, [tag]);
+    if (results.length > 0) {
+      return results;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.error('Error getting discussions by tag:', error);
+    throw error;
+  }
+}
+
 module.exports = {
   getFaqPage,
   getFaqCategories,
@@ -3663,5 +3746,7 @@ module.exports = {
   updateCompanyrNotificationStatus,
   complaintUserResponseEmail,
   complaintUserReopenEmail,
-  sendSurveyInvitationEmail
+  sendSurveyInvitationEmail,
+  getPopularTags,
+  getDiscussionListingByTag
 };

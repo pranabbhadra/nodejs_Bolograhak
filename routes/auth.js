@@ -348,4 +348,8 @@ router.post('/survey_invitation', authController.surveyInvitation);
 
 router.post('/delete-discussion', authController.deleteDiscussion);
 
+//Notification Content
+router.post('/notification-content',upload.single('image'), authController.notificationContent);
+
+
 module.exports = router;

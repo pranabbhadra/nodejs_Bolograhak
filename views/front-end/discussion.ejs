@@ -262,26 +262,12 @@
                 </div>
                 <div class="discussions-right-panel">
                     <h4>Popular Tags</h4>
-                    <% if (AllPopularDiscussion.length > 0) { %>
-                        <% var uniqueTags = new Set(); %>
-                        <% AllPopularDiscussion.forEach((PopularDiscussion, index) => { %>
-                            <% const ExpireDate = new Date(PopularDiscussion.expired_at); %>
-                            <% const date2 = new Date(); %>
-                            <% const daysDiff = Math.round((ExpireDate - date2) / (1000 * 60 * 60 * 24)) %>
-                            <% if (daysDiff > -1) { %>
-                                <% if (PopularDiscussion.tags != '') { %>
-                                    <% const tags = JSON.parse(PopularDiscussion.tags); %>
-                                    <% tags.forEach((tag) => { %>
-                                        <% if (!uniqueTags.has(tag)) { %>
-                                            <% uniqueTags.add(tag); %>
-                                            <a href="/similler-discussions/<%= PopularDiscussion.id %>" class="btn-default btn-warning dis-details-top-btn"><%= tag %></a>
-                                        <% } %>
-                                    <% }) %>
-                                <% } %>
-                            <% } %>
+
+                    <% if (PopularTags.length > 0) { %>
+                        <% PopularTags.forEach((tag, index) => { %>
+                            <a href="/similar-discussions/<%= tag.tag %>" class="btn-default btn-warning dis-details-top-btn"><%= tag.tag %></a>
                         <% }) %>
                     <% } %>
-                    
                 </div>
                 
             </div>
