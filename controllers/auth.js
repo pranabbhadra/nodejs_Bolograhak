@@ -4753,8 +4753,8 @@ exports.createDiscussion = async (req, res) => {
     //return false;
     const {user_id, tags, topic, from_data, expire_date} = req.body;
     const strTags = JSON.stringify(tags);
-    const sql = `INSERT INTO discussions ( user_id, topic, tags, created_at, expired_at) VALUES (?, ?, ?, ?, ?)` ;
-    const data = [user_id, topic, strTags, from_data, expire_date];
+    const sql = `INSERT INTO discussions ( user_id, topic, tags, created_at, expired_at, query_alert_status) VALUES (?, ?, ?, ?, ?, ?)` ;
+    const data = [user_id, topic, strTags, from_data, expire_date, '0'];
     db.query(sql, data, (err, result) => {
         if (err) {
             return res.send({
@@ -5034,7 +5034,7 @@ exports.complaintRegister =  (req, res) => {
         tags:JSON.stringify(allTags),
         level_id:'1',
         status:'2',
-        created_at:formattedDate,
+        created_at:formattedDate
     }
 
     
@@ -5432,6 +5432,8 @@ exports.notificationContent = async (req, res) => {
    
 }
 
+
+// Schedule mail for pending complaint
 cron.schedule('0 10 * * *', async () => {
     //console.log('running a task every minute');
     const sql = `SELECT complaint.* ,u.email , clm.emails, clm.eta_days, cc.category_name, subcat.category_name AS sub_category_name
@@ -5459,3 +5461,8 @@ cron.schedule('0 10 * * *', async () => {
         })
     }
 });
+
+//Discussion customer query alert
+cron.schedule('0 5 * * *', async () => {
+    await comFunction2.duscussionQueryAlert();
+})
