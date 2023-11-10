@@ -23,7 +23,7 @@
                   const created_at_formattedDate_display = `${created_at_day}/${created_at_month}/${created_at_year}`;
                   var daysDiff = 0;
                %>
-               <% if(CompanySurveyDetails_formatted.length > 0){?>
+               <% if(CompanySurveyDetails_formatted.length > 0){ %>
                   <% const dateString = CompanySurveyDetails_formatted[0].expire_at; %>
                   <% const date = new Date(dateString); %>
                   <%
