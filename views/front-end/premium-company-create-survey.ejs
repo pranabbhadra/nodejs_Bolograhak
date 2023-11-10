@@ -21,7 +21,7 @@
                   const created_at_day = String(date2.getDate()).padStart(2, '0');
                   const created_at_formattedDate = `${created_at_year}-${created_at_month}-${created_at_day}`;
                   const created_at_formattedDate_display = `${created_at_day}/${created_at_month}/${created_at_year}`;
-                  var daysDiff = 0;
+                  var daysDiff = null;
                %>
                <% if(CompanySurveyDetails_formatted.length > 0){ %>
                   <% const dateString = CompanySurveyDetails_formatted[0].expire_at; %>
