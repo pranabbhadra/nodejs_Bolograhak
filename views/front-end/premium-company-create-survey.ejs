@@ -11,14 +11,8 @@
 
          <div class="survey-content">
             <div class="container">
-               <% const dateString = CompanySurveyDetails_formatted[0].expire_at; %>
-               <% const date = new Date(dateString); %>
-               <%
-                  const year = date.getFullYear();
-                  const month = String(date.getMonth() + 1).padStart(2, '0');
-                  const day = String(date.getDate()).padStart(2, '0');
-                  const formattedDate = `${year}-${month}-${day}`;
-               %>
+               
+                  
                <% const date2 = new Date(); 
                   date2.setHours(0, 0, 0, 0);
                   
@@ -27,8 +21,20 @@
                   const created_at_day = String(date2.getDate()).padStart(2, '0');
                   const created_at_formattedDate = `${created_at_year}-${created_at_month}-${created_at_day}`;
                   const created_at_formattedDate_display = `${created_at_day}/${created_at_month}/${created_at_year}`;
+                  var daysDiff = 0;
                %>
-               <% const daysDiff = Math.round((date - date2)/(1000 * 60 * 60 * 24)) %>
+               <% if(CompanySurveyDetails_formatted.length > 0){?>
+                  <% const dateString = CompanySurveyDetails_formatted[0].expire_at; %>
+                  <% const date = new Date(dateString); %>
+                  <%
+                     const year = date.getFullYear();
+                     const month = String(date.getMonth() + 1).padStart(2, '0');
+                     const day = String(date.getDate()).padStart(2, '0');
+                     const formattedDate = `${year}-${month}-${day}`;
+                  %>
+
+                  <% var daysDiff = Math.round((date - date2)/(1000 * 60 * 60 * 24)) %>
+               <% } %>   
                <% if(daysDiff >= 0){
                   //Already running 1 Survey
                } else { %>
