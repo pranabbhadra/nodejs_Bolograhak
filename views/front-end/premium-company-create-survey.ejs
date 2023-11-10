@@ -109,6 +109,78 @@
                </div>
                <% } %>
 
+               <% if(CompanySurveyDetails_formatted.length == 0){ %>
+                  <div class="create-survey-field">
+                     <form id="survey-form-submit" name="survey-form" method="post">
+                        <div class="create-survey-head">
+                           <div class="survey-title">Survey</div>
+                           <div class="survey-ex-date">
+                              <div class="row">
+                                 <div class="col-sm-6">
+                                    <div class="custom-form mb-sm-0 mb-2">
+                                       <input type="text" class="form-control" value="<%= created_at_formattedDate_display %>" readonly>
+                                       <input type="hidden" class="form-control" name="created_at" value="<%= created_at_formattedDate %>" readonly>
+                                       <small>from</small>
+                                    </div>
+                                 </div>
+                                 <div class="col-sm-6">
+                                    <div class="custom-form mb-sm-0 mb-2">
+                                       <input type="date" class="form-control" name="expire_at" required="" id="todatePicker" >
+                                       <small>to</small>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="create-survey-body">
+                        
+                           <div class="custom-form">
+                              <label><span>Survey Title</span><span style="color: red;">*</span></label>
+                              <textarea type="text" class="form-control" name="title" required=""></textarea>
+                           </div>
+                           <!-- repeater1 start -->
+                           <div class="qst-repeat dynamic-question-1" data-questionid="1">
+                              <div class="custom-form">
+                                 <label><span>Q1</span></label>
+                                 <input type="text" class="form-control" name="question" required="">
+                              </div>
+   
+                              <div class="custom-form">
+                                 <span class="fw-bold d-inline-block me-2">Select Type:</span>
+                                 <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="question_type_1" id="inlineRadio1" value="type_textarea" checked>
+                                    <label class="form-check-label" for="inlineRadio1">Textarea</label>
+                                 </div>
+                                 <div class="form-check form-check-inline">
+                                    <input class="form-check-input select-radio" type="radio" name="question_type_1" id="inlineRadio2" value="type_radio">
+                                    <label class="form-check-label" for="inlineRadio2">Radio</label>
+                                 </div>
+                                 <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="question_type_1" id="inlineRadio3" value="type_checkbox">
+                                    <label class="form-check-label" for="inlineRadio3">Checkbox</label>
+                                 </div>
+                                 <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="question_type_1" id="inlineRadio4" value="type_ratings">
+                                    <label class="form-check-label" for="inlineRadio4">Rating</label>
+                                 </div>
+                              </div>
+                           </div>
+                           <!-- repeater1 end -->
+                           
+                           <a href="#" class="btn-default btn-warning add-question my-1">Add Question</a>
+                           <input type="hidden" name="company_id" value="<%- company.ID %>">
+                           <input type="submit" class="btn-survey-default btn-dark my-1" value="Submit">
+                        </div>
+                     </form>
+                     <div class="register-now frm-loading" style="display: none;">
+                        <span class="indicator-progress">Please wait...
+                           <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                        </span>
+                     </div>
+                     <div style="width: 85%; text-align: center; display: block; border: 2px solid #fccb06; padding: 6px; margin: 0 auto; border-radius: 5px; display: none;" class="poll-create-message"></div>
+                  </div>
+               <% } %>
+
                <% if(CompanySurveyDetails_formatted.length > 0 && CompanySurveyDetails_formatted[0].id != null) {%>
                <div class="each_box update_basic_information all_review_listing_for_company">
                   <div class="table-responsive">
