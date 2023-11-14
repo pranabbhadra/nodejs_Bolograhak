@@ -5022,15 +5022,15 @@ exports.complaintRegister =  (req, res) => {
     const ticket_no = randomNo + currentDate.getTime();
     const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
     const data = {
-        user_id:user_id[0],
-        company_id:company_id[0],
+        user_id:user_id,
+        company_id:company_id,
         ticket_id:ticket_no,
-        category_id:category_id[0],
-        sub_cat_id : sub_category_id && sub_category_id[0] !== undefined  ? sub_category_id[0] : 0,
-        model_desc:model_no[0],
-        purchase_date:transaction_date[0],
-        purchase_place:location[0],
-        message:message[0],
+        category_id:category_id,
+        sub_cat_id : sub_category_id && sub_category_id !== undefined  ? sub_category_id : 0,
+        model_desc:model_no,
+        purchase_date:transaction_date,
+        purchase_place:location,
+        message:message,
         tags:JSON.stringify(allTags),
         level_id:'1',
         status:'2',

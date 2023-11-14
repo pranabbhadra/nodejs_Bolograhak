@@ -3784,3 +3784,111 @@ exports.addDiscussionComment = async (req, res) => {
   })
   
 }
+
+// --search Premium Company --//
+exports.searchPremiumCompany = async (req, res) => {
+  //console.log(req.body);
+  const keyword = req.params.keyword; //Approved Company
+  const get_company_query = `
+  SELECT c.ID, c.company_name
+  FROM company c
+  WHERE c.company_name LIKE '%${keyword}%' AND status="1" AND c.paid_status = "paid"
+  GROUP BY c.ID, c.company_name
+  ORDER BY c.created_date DESC  
+`;
+
+  try {
+    const get_company_results = await query(get_company_query);
+    if (get_company_results.length > 0) {
+      res.status(200).json({
+        status: 'success',
+        data: get_company_results,
+        message: get_company_results.length + ' company data recived'
+      });
+      return { status: 'success', data: get_company_results, message: get_company_results.length + ' company data recived' };
+    } else {
+      res.status(200).json({ status: 'success', data: '', message: 'No company data found' });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      status: 'error',
+      message: 'An error occurred while posting the request: ' + error
+    });
+  }
+}
+
+// --Complaint Companies Category Subcategory --//
+exports.complaintCategorySubcategory = async (req, res) => {
+  //console.log(req.body);
+  const companyId = req.params.companyId; //Approved Company
+  const get_company_query = `
+  SELECT 
+    parent.id AS parent_id,
+    parent.category_name AS parent_name,
+    child.id AS sub_category_id,
+    child.category_name AS sub_category_name
+    FROM 
+        complaint_category parent
+    LEFT JOIN 
+        complaint_category child ON parent.id = child.parent_id
+    WHERE 
+        parent.parent_id = 0
+        AND parent.company_id = ${companyId}; 
+ 
+`;
+
+  try {
+    const get_company_results = await query(get_company_query);
+    if (get_company_results.length > 0) {
+
+      //const companyId = 1; // replace with the actual company id
+      const companies = [];
+
+      // Assuming 'rows' contains the result of the SQL query
+      // You can replace this with the result object from your database library
+
+      // Group data by parent category
+      const groupedData = {};
+      get_company_results.forEach(row => {
+          if (!groupedData[row.parent_id]) {
+              groupedData[row.parent_id] = {
+                  id: row.parent_id,
+                  name: row.parent_name,
+                  subCategories: [],
+              };
+          }
+
+          if (row.sub_category_id) {
+              groupedData[row.parent_id].subCategories.push({
+                  id: row.sub_category_id,
+                  name: row.sub_category_name,
+              });
+          }
+      });
+
+      // Organize data into the desired structure
+      for (const key in groupedData) {
+          if (groupedData.hasOwnProperty(key)) {
+              companies.push(groupedData[key]);
+          }
+      }
+
+      //console.log(companies);
+
+
+      res.status(200).json({
+        status: 'success',
+        data: companies,
+        message: get_company_results.length + ' company data recived'
+      });
+      return { status: 'success', data: get_company_results, message: get_company_results.length + ' company data recived' };
+    } else {
+      res.status(200).json({ status: 'success', data: '', message: 'No company data found' });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      status: 'error',
+      message: 'An error occurred while posting the request: ' + error
+    });
+  }
+}

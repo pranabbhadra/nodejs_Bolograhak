@@ -239,7 +239,7 @@ $(document).ready(function () {
       });
       const formData = $(this).serializeArray();
       $(formData).each(function(index, field) {
-         transformedResponse[field.name] = [field.value]; 
+         transformedResponse[field.name] = field.value; 
       });
       transformedResponse['allTags'] = allTags;
       console.log(transformedResponse);

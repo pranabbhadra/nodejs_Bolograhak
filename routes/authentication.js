@@ -8,6 +8,7 @@ const requestIp = require('request-ip');
 const comFunction = require('../common_function_api');
 const comFunction2 = require('../common_function2');
 const commonFunction = require('../common_function');
+const authController = require('../controllers/auth');
 const router = express.Router();
 //const publicPath = path.join(__dirname,'../public');
 
@@ -2674,6 +2675,14 @@ router.get('/getRelatedDiscussionsByTags/:discussion_id',verifyToken, async (req
 })
 
 
+//Search Premium Company By Keyword
+router.get('/search-premium-company/:keyword',verifyToken, authenController.searchPremiumCompany);
+
+//Search Category subCategry By companyID
+router.get('/complaint-category/:companyId',verifyToken, authenController.complaintCategorySubcategory);
+
+//Complaint Register
+router.post('/complaint-register',verifyToken, authController.complaintRegister);
 
 // router.get('/discussiondetails/:discussion_id', verifyToken, async (req, res) => {
 //     const discussion_id = req.params.discussion_id;
@@ -2844,6 +2853,9 @@ router.get('/getRelatedDiscussionsByTags/:discussion_id',verifyToken, async (req
 //         });
 //     }
 // }
+
+
+
 
 function verifyToken(req, res, next) {
     let token = req.headers['authorization'];
