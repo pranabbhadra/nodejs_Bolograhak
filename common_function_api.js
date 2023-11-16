@@ -2388,7 +2388,7 @@ async function getAllRelatedDiscussion() {
 
 
 //new
-async function getRelatedDiscussionsByTags(discussion_id) {
+async function getRelatedDiscussionsByTags(discussion_id, limit = 15) {
   const discussionTagsQuery = `
     SELECT tags
     FROM discussions
@@ -2627,7 +2627,8 @@ GROUP BY discussion_id
 WHERE discussions.id <> ${discussion_id} 
 AND (${tagQueries})
 GROUP BY discussions.id
-ORDER BY discussions.id DESC;
+ORDER BY discussions.id DESC
+LIMIT ${limit};
 `;
 
 
