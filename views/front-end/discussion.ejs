@@ -70,6 +70,7 @@
                     <div class="tab-content-wrap">
                         <% if(AllPopularDiscussion.length > 0) { %>
                             <% AllPopularDiscussion.forEach((PopularDiscussion)=>{  %>
+                                <% if(PopularDiscussion.total_comments > 0) { %>
                                 <% const ExpireDate = new Date(PopularDiscussion.expired_at); %>
                                 <% const date2 = new Date(); %>
                                 <% const daysDiff = Math.round((ExpireDate - date2)/(1000 * 60 * 60 * 24)) %>
@@ -98,6 +99,7 @@
                                             </div>
                                         </a>
                                     </div>
+                                <% } %>
                                 <% } %>
                             <% }) %>
                         <% } %>
@@ -189,7 +191,7 @@
                     <% AllPopularDiscussion.forEach((PopularDiscussion, index)=>{  %>
                         <% if(PopularDiscussion.total_comments > 0) { %>
                             <% popular_count ++; %>
-                            <% if(popular_count < 5) { %>
+                            <% if(popular_count < 6) { %>
                         <% const ExpireDate = new Date(PopularDiscussion.expired_at); %>
                             <% const date2 = new Date(); %>
                             <% const daysDiff = Math.round((ExpireDate - date2)/(1000 * 60 * 60 * 24)) %>
@@ -234,7 +236,6 @@
                                 </a> 
                                 </div>
                                 <div class="dis-r-panel-item-right">
-                                    <%= LatestDiscussion.total_comments %>
                                 </div>
                             </div>
                         <% } %>
@@ -245,8 +246,11 @@
                 <div class="discussions-right-panel">
                     <h4>Viewed Showcase</h4>
                     <% if(AllViewedDiscussion.length > 0) { %>
+                        <% let view_count = 0; %>
                     <% AllViewedDiscussion.forEach((ViewedDiscussion, index)=>{  %>
-                        <% if(index < 5) { %>
+                        <% if(ViewedDiscussion.total_views > 0) { %>
+                            <% view_count ++ ; %>
+                        <% if(view_count < 6) { %>
                         <% const ExpireDate = new Date(ViewedDiscussion.expired_at); %>
                         <% const date2 = new Date(); %>
                         <% const daysDiff = Math.round((ExpireDate - date2)/(1000 * 60 * 60 * 24)) %>
@@ -265,6 +269,7 @@
                                     <%= ViewedDiscussion.total_views %>
                                 </div>
                             </div>
+                        <% } %>
                         <% } %>
                         <% } %>
                     <% }) %>
