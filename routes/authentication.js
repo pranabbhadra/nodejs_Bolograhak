@@ -2659,7 +2659,7 @@ router.get('/discussionlistingbytopic/:keyword', verifyToken, async (req,res) =>
 })
 
 //get realted discussion listing
-router.get('/getRelatedDiscussionsByTags/:discussion_id',verifyToken, async (req,res) => {
+router.get('/getRelatedDiscussions/:discussion_id',verifyToken, async (req,res) => {
     try{
     const discussion_id = req.params.discussion_id;
     const relatedDiscussions = await comFunction.getRelatedDiscussionsByTags(discussion_id);
@@ -2683,6 +2683,21 @@ router.get('/complaint-category/:companyId',verifyToken, authenController.compla
 
 //Complaint Register
 router.post('/complaint-register',verifyToken, authController.complaintRegister);
+
+//Complaint listing by customer id
+router.get('/complaint-listing/:userId', verifyToken,  authenController.complainListing);
+
+//Complaint details by complaint id
+router.get('/complaint-details/:complaintId', verifyToken,  authenController.complainDetails);
+
+//Complaint user response
+router.post('/complaint-user-response', verifyToken,  authController.userComplaintResponse);
+
+//Complaint user reopen response
+router.post('/complaint-reopen', verifyToken,  authController.userComplaintResponse);
+
+//Complaint user rating
+router.post('/complaint-rating', verifyToken,  authController.userComplaintRating);
 
 // router.get('/discussiondetails/:discussion_id', verifyToken, async (req, res) => {
 //     const discussion_id = req.params.discussion_id;

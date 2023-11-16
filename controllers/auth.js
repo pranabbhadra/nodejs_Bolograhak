@@ -5116,7 +5116,7 @@ exports.companyQuery = async (req, res) => {
 
 //user Complaint Rating
 exports.userComplaintRating = async (req, res) => {
-    //console.log('userComplaintRating',req.body ); 
+    console.log('userComplaintRating',req.body ); 
     //return false;
     const { user_id, complaint_id, rating } = req.body;
     
@@ -5170,7 +5170,7 @@ exports.userComplaintRating = async (req, res) => {
 
 //Insert user Complaint Response  to company
 exports.userComplaintResponse = async (req, res) => {
-    //console.log('userComplaintResponse',req.body ); 
+    console.log('userComplaintResponse',req.body ); 
     //return false;
     const {company_id, user_id, complaint_id, message, complaint_level, complaint_status } = req.body;
     

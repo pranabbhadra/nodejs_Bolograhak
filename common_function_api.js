@@ -2600,8 +2600,8 @@ async function getRelatedDiscussionsByTags(discussion_id) {
     // `;
 
     const relatedDiscussionsQuery = `SELECT discussions.*,
-u.first_name AS discussion_user_first_name, 
-u.last_name AS discussion_user_last_name,
+u.first_name AS first_name, 
+u.last_name AS last_name,
 mu.profile_pic AS user_profile_pic,
 COALESCE(cr.total_comments, 0) AS total_comments,
 COALESCE(vr.total_views, 0) AS total_views,

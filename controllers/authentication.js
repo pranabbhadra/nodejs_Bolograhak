@@ -3892,3 +3892,79 @@ exports.complaintCategorySubcategory = async (req, res) => {
     });
   }
 }
+
+// --Complaint listing by customer id --//
+exports.complainListing = async (req, res) => {
+  //console.log(req.body);
+  const userId = req.params.userId; 
+  const [ getAllComplaintsByUserId] = await Promise.all([
+    comFunction2.getAllComplaintsByUserId(userId),
+  ]);
+
+  const formattedCoplaintData = getAllComplaintsByUserId.map(item => {
+      let responsesArray = [];
+      let comp_query = [];
+      let cus_response = [];
+      if (item.notification_statuses != null) {
+          responsesArray = item.notification_statuses.split(',');
+      }
+      if (item.company_query != null) {
+          comp_query = item.company_query.split(',');
+      }
+      if (item.user_response != null) {
+          cus_response = item.user_response.split(',');
+      }
+      return {
+        ...item,
+        notification_statuses: responsesArray,
+        company_query : comp_query,
+        customer_response:cus_response
+      };
+  });
+
+  try {
+    if (formattedCoplaintData.length > 0) {
+      res.status(200).json({
+        status: 'success',
+        data: formattedCoplaintData,
+        message: formattedCoplaintData.length + ' complaint data recived'
+      });
+      return { status: 'success', data: formattedCoplaintData, message: formattedCoplaintData.length + ' complaint data recived' };
+    } else {
+      res.status(200).json({ status: 'success', data: '', message: 'No complaint data found' });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      status: 'error',
+      message: 'An error occurred while posting the request: ' + error
+    });
+  }
+}
+
+// --Complaint details by complaint id --//
+exports.complainDetails = async (req, res) => {
+  //console.log(req.body);
+  const complaintId = req.params.complaintId; 
+  const [ getComplaintsByComplaintId, updateUserNotificationStatus] = await Promise.all([
+    comFunction2.getAllComplaintsByComplaintId(complaintId),
+    comFunction2.updateUserNotificationStatus(complaintId),
+]);
+
+  try {
+    if (getComplaintsByComplaintId.length > 0) {
+      res.status(200).json({
+        status: 'success',
+        data: getComplaintsByComplaintId[0],
+        message: getComplaintsByComplaintId.length + ' complaint data recived'
+      });
+      return { status: 'success', data: getComplaintsByComplaintId, message: getComplaintsByComplaintId.length + ' complaint data recived' };
+    } else {
+      res.status(200).json({ status: 'success', data: '', message: 'No complaint data found' });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      status: 'error',
+      message: 'An error occurred while posting the request: ' + error
+    });
+  }
+}
