@@ -3895,8 +3895,24 @@ exports.complaintCategorySubcategory = async (req, res) => {
 
 // --Complaint listing by customer id --//
 exports.complainListing = async (req, res) => {
-  //console.log(req.body);
+
   const userId = req.params.userId; 
+  const authenticatedUserId = parseInt(req.user.user_id);
+  const ApiuserId = parseInt(req.params.userId);
+
+  if (isNaN(ApiuserId)) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Invalid user_id provided in the request body.',
+    });
+  }
+  if (ApiuserId !== authenticatedUserId) {
+    return res.status(403).json({
+      status: 'error',
+      message: 'Access denied: You are not authorized to update this user.',
+    });
+  }
+  //console.log(req.body);
   const [ getAllComplaintsByUserId] = await Promise.all([
     comFunction2.getAllComplaintsByUserId(userId),
   ]);
@@ -3944,6 +3960,21 @@ exports.complainListing = async (req, res) => {
 // --Complaint details by complaint id --//
 exports.complainDetails = async (req, res) => {
   //console.log(req.body);
+  const authenticatedUserId = parseInt(req.user.user_id);
+  const ApiuserId = parseInt(req.params.userId);
+
+  if (isNaN(ApiuserId)) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Invalid user_id provided in the request body.',
+    });
+  }
+  if (ApiuserId !== authenticatedUserId) {
+    return res.status(403).json({
+      status: 'error',
+      message: 'Access denied: You are not authorized to update this user.',
+    });
+  }
   const complaintId = req.params.complaintId; 
   const [ getComplaintsByComplaintId, updateUserNotificationStatus] = await Promise.all([
     comFunction2.getAllComplaintsByComplaintId(complaintId),
@@ -3967,4 +3998,134 @@ exports.complainDetails = async (req, res) => {
       message: 'An error occurred while posting the request: ' + error
     });
   }
+}
+
+//Insert user Complaint Response  to company
+exports.userComplaintResponse = async (req, res) => {
+  console.log('userComplaintResponse',req.body ); 
+  //return false;
+  const authenticatedUserId = parseInt(req.user.user_id);
+  const ApiuserId = parseInt(req.body.user_id);
+
+  if (isNaN(ApiuserId)) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Invalid user_id provided in the request body.',
+    });
+  }
+  if (ApiuserId !== authenticatedUserId) {
+    return res.status(403).json({
+      status: 'error',
+      message: 'Access denied: You are not authorized to update this user.',
+    });
+  }
+  const {company_id, user_id, complaint_id, message, complaint_level, complaint_status } = req.body;
+  
+  const currentDate = new Date();
+  const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+
+  
+  if (complaint_status == '0') {
+      const [updateComplaintStatus, complaintCompanyResolvedEmail] = await Promise.all([
+          comFunction2.updateComplaintStatus(complaint_id, '0'),
+           comFunction2.complaintUserReopenEmail(complaint_id)
+      ]);
+  } else {
+      await comFunction2.complaintUserResponseEmail(complaint_id);
+  }
+
+  const data = {
+      user_id:user_id,
+      company_id:company_id,
+      complaint_id :complaint_id,
+      query:'',
+      response : message,
+      created_at:formattedDate,
+      level_id:complaint_level,
+      notification_status:'0',
+      resolve_status:complaint_status
+  }
+   const Query = `INSERT INTO complaint_query_response SET ?  `;
+  db.query(Query, data, (err, result)=>{
+      if (err) {
+          return res.send({
+              status: 'not ok',
+              message: 'Something went wrong  '+err
+          });
+      } else {
+          return res.send({
+              status: 'ok',
+              message: 'Complaint response send successfully !'
+          });
+      }
+  })
+}
+
+//user Complaint Rating
+exports.userComplaintRating = async (req, res) => {
+  console.log('userComplaintRating',req.body ); 
+  //return false;
+  const authenticatedUserId = parseInt(req.user.user_id);
+  const ApiuserId = parseInt(req.body.user_id);
+
+  if (isNaN(ApiuserId)) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Invalid user_id provided in the request body.',
+    });
+  }
+  if (ApiuserId !== authenticatedUserId) {
+    return res.status(403).json({
+      status: 'error',
+      message: 'Access denied: You are not authorized to update this user.',
+    });
+  }
+  const { user_id, complaint_id, rating } = req.body;
+  
+  const data = {
+      user_id:user_id,
+      complaint_id:complaint_id,
+      rating:rating,
+  }
+  const checkQuery = `SELECT id FROM complaint_rating WHERE complaint_id = '${complaint_id}' AND user_id = '${user_id}' `;
+  db.query(checkQuery, (checkErr, checkResult)=>{
+      if(checkErr){
+          return res.send({
+              status: 'not ok',
+              message: 'Something went wrong  '+checkErr
+          });
+      }
+      if (checkResult.length > 0) {
+          const updateQuery = `UPDATE complaint_rating SET rating='${rating}' WHERE complaint_id = '${complaint_id}' AND user_id = '${user_id}' `;
+          db.query(updateQuery, (updateErr, updateResult)=>{
+              if (updateErr) {
+                  return res.send({
+                      status: 'not ok',
+                      message: 'Something went wrong  '+updateErr
+                  });
+              } else {
+                  return res.send({
+                      status: 'ok',
+                      message: 'Complaint rating updated successfully !'
+                  });
+              }
+          })
+      } else {
+          const Query = `INSERT INTO complaint_rating SET ?  `;
+          db.query(Query, data, (err, result)=>{
+              if (err) {
+                  return res.send({
+                      status: 'not ok',
+                      message: 'Something went wrong  '+err
+                  });
+              } else {
+                  return res.send({
+                      status: 'ok',
+                      message: 'Complaint rating submitted successfully !'
+                  });
+              }
+          })
+      }
+  })
+  
 }
