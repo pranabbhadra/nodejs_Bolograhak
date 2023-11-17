@@ -685,8 +685,7 @@ router.get('/company/:slug', checkCookieValue, async (req, res) => {
                     getCompanyReviews,
                     globalPageMeta:globalPageMeta,
                     labeltype,
-                    countInvitationLabels,
-                    CompanySurveyDetails_formatted
+                    countInvitationLabels
                 });
                 // res.json(
                 // {
