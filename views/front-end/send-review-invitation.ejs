@@ -9,6 +9,10 @@
             <%- include('common/premium-company-sidebar') -%>
          </div>
         <div class="send-review-invitation">
+         <div style="margin: 10px; display: flex; justify-content: flex-end">
+            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@fat">Bulk Upload</button>
+         </div>
+            <h4>Send Review Invitation:</h4>
             <form id="form_review_invitation">
                <input type="hidden" name="company_id" id="company_id" value="<%= company.ID  %>" />
                <input type="hidden" name="company_name" id="company_name" value="<%= company.company_name  %>" />
@@ -38,6 +42,42 @@
         </div>
     </div>
 </section>
+
+<!-- Modal -->
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Bulk Emails Invitation</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="bulk_invitation_form" enctype="multipart/form-data">
+         <input type="hidden" name="company_id" id="company_id" value="<%= company.ID  %>" />
+         <input type="hidden" name="company_name" id="company_name" value="<%= company.company_name  %>" />
+         <input type="hidden" name="user_id" id="user_id" value="<%= currentUserData.user_id  %>" />
+         <input type="hidden" name="company_slug" id="company_slug" value="<%= company.slug  %>" />
+         <div class="modal-body">
+            <div class="custom-form">
+               <label><span>Choose a CSV file:</span></label>
+               <input type="file" name="email_file" class="form-control" id="recipient-name">
+               
+            </div>
+            <div class="custom-form">
+               <label><span>Message</span></label>
+               <textarea name="email_body" id="email_body" class="form-control mb-4">Hello Dear,
+                  <%= company.company_name  %> cordially invite you to provide your valuable opinion regarding our company, through the platform of BoloGrahak. 
+               </textarea>
+            </div>
+         </div>
+         <div class="modal-footer">
+         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+         <button type="submit" class="btn btn-warning" id="file_submit_btn">Send</button>
+         </div>
+      </form>
+    </div>
+  </div>
+</div>
 <!-- ================ Section1 End ======================= -->
 
 <%- include('common/footer') -%>
@@ -102,6 +142,47 @@ $(document).ready(function () {
       }
 
       
+   });
+
+   $('form#bulk_invitation_form').submit(function (e) {
+      e.preventDefault();
+      $('.response-message').hide();
+      $('.response-message').text('');
+      $('#file_submit_btn').prop('disabled', true);
+      $('.frm-loading').show(); 
+
+      var formElement = document.getElementById('bulk_invitation_form');
+      var formData = new FormData(formElement);
+      //alert('aaaaaa')
+      //return false;
+      $.ajax({
+         url: '/auth/review_bulk_invitation', // URL for your API endpoint
+         type: 'POST',
+         data: formData,
+         processData: false, // Prevent jQuery from processing the data
+         contentType: false, // Let the browser set the content type
+         success: function (data) {
+            if (data.status == 'ok') {
+               $('.response-message').text(data.message);
+               $('.response-message').show();
+               $('#file_submit_btn').prop('disabled', false);
+               $('.frm-loading').hide();
+               setTimeout(function() {
+                  window.location.reload();
+               }, 2000);
+            } else {
+               $('.response-message').text(data.message);
+               $('.response-message').show();
+               $('#file_submit_btn').prop('disabled', false);
+               $('.frm-loading').hide();
+               console.log('Something went wrong');
+            }
+         },
+         error: function (xhr, status, error) {
+            // Handle any errors that occur during the request
+            console.log(error);
+         }
+      });
    });
 });
 </script>

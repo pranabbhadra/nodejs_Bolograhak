@@ -300,6 +300,9 @@ router.post('/user_polling', authController.userPolling);
 //Review Invitation Email
 router.post('/review_invitation', authController.reviewInvitation);
 
+//Bulk Review Invitation Email
+router.post('/review_bulk_invitation',csvupload.single('email_file'), authController.reviewBulkInvitation);
+
 //Add Review Flag
 router.post('/add-review-flag', authController.addReviewFlag);
 

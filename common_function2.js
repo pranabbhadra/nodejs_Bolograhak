@@ -1410,7 +1410,7 @@ async function getCompanyPollDetails(company_id) {
 
 //Function to insert Invitation data into review_invite_request
 async function insertInvitationDetails(req) {
-  console.log('insertInvitationDetails',req)
+  //console.log('insertInvitationDetails',req)
   const {emails, email_body, user_id, company_id } = req
   const currentDate = new Date();
   const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
@@ -1426,7 +1426,7 @@ async function insertInvitationDetails(req) {
 
 //Function to send Invitation email 
 async function sendInvitationEmail(req) {
-  console.log('sendInvitationEmail',req)
+  //console.log('sendInvitationEmail',req)
   const {emails, email_body, user_id, company_id, company_name ,company_slug} = req;
   if(emails.length > 0){
     await emails.forEach((email)=>{

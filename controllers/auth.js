@@ -4717,6 +4717,86 @@ exports.reviewInvitation = async (req, res) => {
     });
 }
 
+//--- review Bulk Invitation ----//
+exports.reviewBulkInvitation = async (req, res) => {
+    console.log('reviewBulkInvitation',req.body);
+    console.log('reviewBulkInvitation',req.file);
+    const { email_body, user_id, company_id, company_name } = req.body;
+
+    if (!req.file) {
+        return res.send(
+            {
+                status: 'err',
+                data: '',
+                message: 'No file uploaded.'
+            }
+        )        
+    }
+    const csvFilePath = path.join(__dirname, '..', 'company-csv', req.file.filename);
+    try {   
+        const connection = await mysql.createConnection(dbConfig);
+
+        const workbook = new ExcelJS.Workbook();
+        await workbook.csv.readFile(csvFilePath);
+
+        const worksheet = workbook.getWorksheet(1);
+        const emailsArr = await processReviewCSVRows(worksheet);
+        const emails = emailsArr.flat();
+        if (emails.length > 100) {
+            return res.send(
+                {
+                    status: 'err',
+                    message: 'You can not add more than 100 email id`s in your current membership.'
+                }
+            )  
+        } else {
+            req.body.emails = emails;
+            console.log('emails',emails);
+            console.log('req.body',req.body);
+            const [InvitationDetails, sendInvitationEmail] = await Promise.all([
+                comFunction2.insertInvitationDetails(req.body),
+                comFunction2.sendInvitationEmail(req.body)
+            ]);
+
+            return res.send(
+                {
+                    status: 'ok',
+                    message: 'Invitation emails send successfully.'
+                }
+            )
+        }
+          
+        
+    } catch (error) {
+        console.error('Error:', error);
+        return res.send({
+            status: 'err',
+            message: error.message
+        });
+    } finally {
+        // Delete the uploaded CSV file
+        //fs.unlinkSync(csvFilePath);
+    }
+}
+
+// Define a promise-based function for processing review invitation csv
+function processReviewCSVRows(worksheet) {
+    return new Promise(async (resolve, reject) => {
+        const emails = [];
+
+        await worksheet.eachRow(async (row, rowNumber) => {
+            if (rowNumber !== 1) { // Skip the header row
+                
+                emails.push([ row.values[1] ]);
+
+            }
+        });
+
+        // Resolve the promise after all rows have been processed
+        resolve(emails);
+    });
+}
+
 //Add  Review Flag
 exports.addReviewFlag = async (req, res) => {
     //console.log('addReviewFlag',req.body );
@@ -5131,7 +5211,7 @@ exports.companyQuery = async (req, res) => {
 
 //user Complaint Rating
 exports.userComplaintRating = async (req, res) => {
-    console.log('userComplaintRating',req.body ); 
+    //console.log('userComplaintRating',req.body ); 
     //return false;
     const { user_id, complaint_id, rating } = req.body;
     
@@ -5185,7 +5265,7 @@ exports.userComplaintRating = async (req, res) => {
 
 //Insert user Complaint Response  to company
 exports.userComplaintResponse = async (req, res) => {
-    console.log('userComplaintResponse',req.body ); 
+    //console.log('userComplaintResponse',req.body ); 
     //return false;
     const {company_id, user_id, complaint_id, message, complaint_level, complaint_status } = req.body;
     
