@@ -1475,7 +1475,7 @@ router.get('/company-dashboard/:slug', checkClientClaimedCompany, async (req, re
     const comp_res =await comFunction2.getCompanyIdBySlug(slug);
     const userId = currentUserData.user_id;
     const companyId = comp_res.ID;
-    const [globalPageMeta, company, companyReviewNumbers, allRatingTags, allCompanyReviews, allCompanyReviewTags, PremiumCompanyData, reviewTagsCount, TotalReplied  ] = await Promise.all([
+    const [globalPageMeta, company, companyReviewNumbers, allRatingTags, allCompanyReviews, allCompanyReviewTags, PremiumCompanyData, reviewTagsCount, TotalReplied , getCompanyReviewsBetween ] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
         comFunction.getCompany(companyId),
         comFunction.getCompanyReviewNumbers(companyId),
@@ -1484,9 +1484,10 @@ router.get('/company-dashboard/:slug', checkClientClaimedCompany, async (req, re
         comFunction2.getAllReviewTags(),
         comFunction2.getPremiumCompanyData(companyId),
         comFunction.reviewTagsCountByCompanyID(companyId),
-        comFunction2.TotalReplied(userId)
+        comFunction2.TotalReplied(userId),
+        comFunction.getCompanyReviewsBetween(companyId),
     ]);
-    //console.log('TotalReplied:', currentUserData.user_id);
+    //console.log('getCompanyReviewsBetween:', getCompanyReviewsBetween);
 
     let facebook_url = '';
     let twitter_url = '';
@@ -1556,7 +1557,7 @@ router.get('/company-dashboard/:slug', checkClientClaimedCompany, async (req, re
             TotalReplied:TotalReplied
         });
     }else{
-        // res.json( 
+        // res.json(
         // { 
         //     menu_active_id: 'company-dashboard', 
         //     page_title: 'Company Dashboard', 
@@ -1564,6 +1565,7 @@ router.get('/company-dashboard/:slug', checkClientClaimedCompany, async (req, re
         //     globalPageMeta:globalPageMeta,
         //     company,
         //     companyReviewNumbers,
+        //     CompanyReviewsBetween:getCompanyReviewsBetween,
         //     allRatingTags,
         //     finalCompanyallReviews,
         //     reviewReatingChartArray,
@@ -1583,6 +1585,7 @@ router.get('/company-dashboard/:slug', checkClientClaimedCompany, async (req, re
             globalPageMeta:globalPageMeta,
             company,
             companyReviewNumbers,
+            CompanyReviewsBetween:getCompanyReviewsBetween,
             allRatingTags,
             finalCompanyallReviews,
             reviewReatingChartArray,
@@ -1886,6 +1889,23 @@ router.get('/company-dashboard-review-replay/:slug/:reviewID', checkClientClaime
         }
         if(Array.isArray(singleReviewData) && singleReviewData.length>0){
             if(Array.isArray(singleReviewData) && singleReviewData[0].company_owner == currentUserData.user_id && singleReviewData[0].company_id == company.ID){
+                // res.json(
+                // { 
+                //     menu_active_id: 'company-review-listing', 
+                //     page_title: 'Company Review Replay', 
+                //     currentUserData, 
+                //     globalPageMeta:globalPageMeta,
+                //     company,
+                //     companyReviewNumbers,
+                //     allRatingTags,
+                //     finalsingleReviewData,
+                //     singleReviewReplyData,
+                //     facebook_url:facebook_url,
+                //     twitter_url:twitter_url,
+                //     instagram_url:instagram_url,
+                //     linkedin_url:linkedin_url,
+                //     youtube_url:youtube_url
+                // });
                 res.render('front-end/premium-company-review-replay', 
                 { 
                     menu_active_id: 'company-review-listing', 
@@ -1903,23 +1923,6 @@ router.get('/company-dashboard-review-replay/:slug/:reviewID', checkClientClaime
                     linkedin_url:linkedin_url,
                     youtube_url:youtube_url
                 });
-                // res.json( 
-                // { 
-                //     menu_active_id: 'company-review-listing', 
-                //     page_title: 'Company Review Replay', 
-                //     currentUserData, 
-                //     globalPageMeta:globalPageMeta,
-                //     company,
-                //     companyReviewNumbers,
-                //     allRatingTags,
-                //     finalsingleReviewData,
-                //     singleReviewReplyData,
-                //     facebook_url:facebook_url,
-                //     twitter_url:twitter_url,
-                //     instagram_url:instagram_url,
-                //     linkedin_url:linkedin_url,
-                //     youtube_url:youtube_url
-                // });
             }else{
                 res.redirect('/company-review-listing/'+company.slug);
             }
@@ -4099,9 +4102,7 @@ router.get('/profile-dashboard', checkFrontEndLoggedIn, async (req, res) => {
             comFunction2.getPageMetaValues('global'),
             comFunction2.getAllReviewVoting(),
         ]);
-        //console.log(userMeta);
-        // Render the 'edit-user' EJS view and pass the data
-        // res.json({
+        // res.json( {
         //     menu_active_id: 'profile-dashboard',
         //     page_title: 'My Dashboard',
         //     currentUserData,

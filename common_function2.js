@@ -1434,7 +1434,7 @@ async function sendInvitationEmail(req) {
         from: process.env.MAIL_USER,
         //to: 'pranab@scwebtech.com',
         to: email,
-        subject: 'Invitation Email',
+        subject: 'Review Invitation Email',
         html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
         <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
          <tbody>
@@ -1451,7 +1451,7 @@ async function sendInvitationEmail(req) {
                        <tr>
                        <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
                         <td id="header_wrapper" style="padding: 36px 48px; display: block;">
-                           <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Invitation Email</h1>
+                           <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Review Invitation Email</h1>
                         </td>
     
                        </tr>
@@ -3475,7 +3475,7 @@ async function sendSurveyInvitationEmail(req) {
         from: process.env.MAIL_USER,
         //to: 'pranab@scwebtech.com',
         to: email,
-        subject: 'Invitation Email',
+        subject: 'Survey Invitation Email',
         html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
         <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
          <tbody>
@@ -3492,7 +3492,7 @@ async function sendSurveyInvitationEmail(req) {
                        <tr>
                        <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
                         <td id="header_wrapper" style="padding: 36px 48px; display: block;">
-                           <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Invitation Email</h1>
+                           <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Survey Invitation Email</h1>
                         </td>
     
                        </tr>
