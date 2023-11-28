@@ -363,7 +363,10 @@ router.post('/company-create-tags', authController.companyCreateTags);
 router.post('/update-company-tags', authController.updateCompanyTags);
 
 
-//Update company discussion tags
+// company compare-chart-filter
 router.post('/compare-chart-filter', authController.compareChartFilter);
+
+// company compare-chart-filter
+router.post('/historical-chart-filter', authController.historicalChartFilter);
 
 module.exports = router;

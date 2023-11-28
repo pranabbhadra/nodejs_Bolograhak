@@ -5595,12 +5595,12 @@ exports.updateCompanyTags = async (req, res) => {
 
 //Notification Content
 exports.notificationContent = async (req, res) => {
-    console.log('notificationContent',req.body ); 
-    console.log('notificationContent',req.file ); 
+    //console.log('notificationContent',req.body ); 
+    //console.log('notificationContent',req.file ); 
     //return false;
    
 }
-//Notification Content
+//compare Chart Filter
 exports.compareChartFilter = async (req, res) => {
     console.log('compareChartFilter',req.body ); 
     const {company_id,company_name, from, to} = req.body
@@ -5617,6 +5617,52 @@ exports.compareChartFilter = async (req, res) => {
    
 }
 
+//historical Chart Filter
+exports.historicalChartFilter = async (req, res) => {
+    console.log('historicalChartFilter', req.body);
+    const { company_id, company_name, from, to, filter } = req.body;
+  
+    try {
+      const getCompanyHistoricalData = await comFunction2.getCompanyHistoricalReviewBetween(company_id, from, to, filter);
+  
+      console.log('getCompanyHistoricalData', getCompanyHistoricalData);
+  
+      // Find the first entry with a valid date_group
+      const firstValidEntry = getCompanyHistoricalData.find(entry => entry.date_group);
+  
+      if (!firstValidEntry) {
+        return res.send({
+            status: ' not ok',
+            message: 'No valid record found in the data. '
+          })
+      }
+  
+      const year = new Date(2023, 0, firstValidEntry.date_group).getFullYear(); // Assuming 2023 as the default year
+  
+      const formattedData = getCompanyHistoricalData.map(entry => ({
+        x: entry.date_group,
+        y: entry.average_rating
+      }));
+      
+      console.log(formattedData);
+      //return false;
+      return res.send({
+        status: 'ok',
+        data: formattedData,
+        filter:filter,
+        company_name: company_name,
+        message: 'Company Reviews Data fetch successfully '
+      });
+    } catch (error) {
+      console.error('Error in historicalChartFilter:', error);
+      return res.status(500).send({
+        status: 'error',
+        message: 'Internal Server Error'
+      });
+    }
+  };
+  
+  
 
 // Schedule mail for pending complaint
 cron.schedule('0 10 * * *', async () => {

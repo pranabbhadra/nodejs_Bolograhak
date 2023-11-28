@@ -153,6 +153,37 @@
                         
                      </div>
                      <div class="col-lg-6" >
+                        <div id="">
+                           <h4 class="sec_heading mb-0">Filter</h4><br>
+                           <div class="survey-details-with-date">
+                              <div class="survet-update-form">
+                                 <form id="historiaclGraphForm" method="post" action="">
+                                    <div class="all-inputs">
+                                        <div class="custom-form">
+                                            <label><span style="background-color: #ffffff;">From:</span> </label>
+                                            <input type="date" class="form-control" name="from" value="">
+                                        </div>
+                                        <div class="custom-form">
+                                            <label><span style="background-color: #ffffff;">To:</span></label>
+                                            <input type="date" class="form-control" name="to" value="">
+                                        </div>
+                                        <div class="custom-form">
+                                            <label><span style="background-color: #ffffff;">Filter:</span></label>
+                                            <select class="form-select" name="filter">
+                                             <option value="daily" selected >Daily</option>
+                                                <option value="weekly">Weekly</option>
+                                                <option value="monthly" >Monthly</option>
+                                                <!-- <option value="yearly" >Yearly</option> -->
+                                            </select>
+                                        </div>
+                                        <input type="hidden" name="company_id" value="<%= company.ID %>">
+                                        <input type="hidden" name="company_name" value="<%= company.company_name %>">
+                                        <input type="submit" name="update_survey" class="btn-default btn-dark" value="Filter">
+                                    </div>
+                                </form>
+                              </div>
+                           </div>
+                        </div>
                         <div id="historicalchrat" style="height: 300px; width: 100%;"></div>
 
                      </div>
@@ -323,7 +354,7 @@
          </div>
       </section>
       <!-- ============== Section6 End =============== -->
-
+      
       <%- include('common/footer') -%>
          <script src="https://www.amcharts.com/lib/4/core.js"></script>
          <script src="https://www.amcharts.com/lib/4/maps.js"></script>
@@ -770,11 +801,11 @@ function updateChartWithData(totalReviewCount, filterReviewCount, totalReviewAve
 // ============================== Compare chart end =============================== 
 //=============================== Historical chart start =============================
 
-var options = {
+var historicalchrat = {
         exportEnabled: false,
         animationEnabled: true,
         title: {
-          text: "Historical Trends of Performance Rating"
+          text: "Historical Trends of Rating"
         },
         toolTip: {
           shared: true
@@ -785,94 +816,20 @@ var options = {
         },
         data: [{
           type: "spline",
-          name: "Own Company",
+          name: "<%= company.company_name %>",
           showInLegend: true,
-          xValueFormatString: "MMM YYYY",
-          yValueFormatString: "#,##0 Units",
+          xValueFormatString: "DD MMM YY",
+          yValueFormatString: "#,#0.0",
           dataPoints: [
-            { x: new Date(2023, 0, 1), y: 2 },
-            { x: new Date(2023, 1, 1), y: 4 },
-            { x: new Date(2023, 2, 1), y: 8 },
-            { x: new Date(2023, 3, 1), y: 7 },
-            { x: new Date(2023, 4, 1), y: 6 },
-            { x: new Date(2023, 5, 1), y: 5 },
-            { x: new Date(2023, 6, 1), y: 4 },
-            { x: new Date(2023, 7, 1), y: 9 },
-            { x: new Date(2023, 8, 1), y: 8 },
-            { x: new Date(2023, 9, 1), y: 4 },
-            { x: new Date(2023, 10, 1), y: 10 },
-            { x: new Date(2023, 11, 1), y: 5 }
-          ]
-        },
-        {
-          type: "spline",
-          name: "competitor - 1",
-          axisYType: "secondary",
-          showInLegend: true,
-          xValueFormatString: "MMM YYYY",
-          yValueFormatString: "#,##0 Units",
-          dataPoints: [
-            { x: new Date(2023, 0, 1), y: 2 },
-            { x: new Date(2023, 1, 1), y: 5 },
-            { x: new Date(2023, 2, 1), y: 2 },
-            { x: new Date(2023, 3, 1), y: 1 },
-            { x: new Date(2023, 4, 1), y: 7 },
-            { x: new Date(2023, 5, 1), y: 5 },
-            { x: new Date(2023, 6, 1), y: 2 },
-            { x: new Date(2023, 7, 1), y: 4 },
-            { x: new Date(2023, 8, 1), y: 8 },
-            { x: new Date(2023, 9, 1), y: 10 },
-            { x: new Date(2023, 10, 1), y: 7 },
-            { x: new Date(2023, 11, 1), y: 3 }
-          ]
-        },
-        {
-          type: "spline",
-          name: "competitor - 2",
-          axisYType: "secondary",
-          showInLegend: true,
-          xValueFormatString: "MMM YYYY",
-          yValueFormatString: "$#,##0.#",
-          dataPoints: [
-            { x: new Date(2023, 0, 1), y: 7 },
-            { x: new Date(2023, 1, 1), y: 4 },
-            { x: new Date(2023, 2, 1), y: 8 },
-            { x: new Date(2023, 3, 1), y: 2 },
-            { x: new Date(2023, 4, 1), y: 4 },
-            { x: new Date(2023, 5, 1), y: 3 },
-            { x: new Date(2023, 6, 1), y: 2 },
-            { x: new Date(2023, 7, 1), y: 7 },
-            { x: new Date(2023, 8, 1), y: 8 },
-            { x: new Date(2023, 9, 1), y: 2 },
-            { x: new Date(2023, 10, 1), y: 9 },
-            { x: new Date(2023, 11, 1), y: 4 }
-          ]
-        },
-        {
-          type: "spline",
-          name: "competitor - 3",
-          axisYType: "secondary",
-          showInLegend: true,
-          xValueFormatString: "MMM YYYY",
-          yValueFormatString: "$#,##0.#",
-          dataPoints: [
-            { x: new Date(2023, 0, 1), },
-            { x: new Date(2023, 1, 1), },
-            { x: new Date(2023, 2, 1), },
-            { x: new Date(2023, 3, 1), },
-            { x: new Date(2023, 4, 1), },
-            { x: new Date(2023, 5, 1), },
-            { x: new Date(2023, 6, 1), },
-            { x: new Date(2023, 7, 1), },
-            { x: new Date(2023, 8, 1), },
-            { x: new Date(2023, 9, 1), },
-            { x: new Date(2023, 10, 1), },
-            { x: new Date(2023, 11, 1), }
-          ]
+          <% CompanyHistoricalReviewData.forEach((item, index) => { %>
+                        
+                        { x: new Date('<%= item.x %>'), y: <%= item.y %>  },
+                        <% }) %>
+         ],
         }]
 
       };
-      $("#historicalchrat").CanvasJSChart(options);
+      $("#historicalchrat").CanvasJSChart(historicalchrat);
 
       function toggleDataSeries(e) {
         if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
@@ -883,7 +840,58 @@ var options = {
         e.chart.render();
       }
 
-//=============================== Historical chart end =============================
+      $('#historiaclGraphForm').submit(function (event) {
+            event.preventDefault(); // Prevent the form from submitting traditionally
 
+            // Get form data
+            var formData = $(this).serialize();
+            console.log(formData)
+            //return false;
+            // Make an AJAX request to fetch updated data
+            $.ajax({
+                type: 'POST',
+                url: '/auth/historical-chart-filter', // Replace with the actual server endpoint
+                data: formData,
+                success: function (data) {
+
+                  let xValueFormatString;
+                  if (data.filter === 'weekly') {
+                     xValueFormatString = "WW"; // Week number and year
+                  } else if (data.filter === 'monthly') {
+                     xValueFormatString = "MMM "; 
+                     const monthNames = [
+                        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+                     ];
+                     monthNames[data.data.date_group - 1];
+                     let formattedData = data.data.map(entry => ({
+                        x: monthNames[data.data.date_group - 1],
+                        y: entry.y
+                     }));
+                     historicalchrat.data[0].dataPoints = data.data;
+                  } else if (data.filter === 'yearly') {
+                     xValueFormatString = "MMM"; // Month abbreviation and year
+                  } else {
+                     xValueFormatString = "DD MMM YYYY"; // Default format for daily
+                  }
+
+                  // Update chart data with the new data points and xValueFormatString
+                  if (data.filter !== 'monthly') {
+                  historicalchrat.data[0].dataPoints = data.data;
+                  historicalchrat.data[0].xValueFormatString = xValueFormatString;
+                  }
+
+                  // Update the chart
+                  $("#historicalchrat").CanvasJSChart().render();
+                },
+                error: function (error) {
+                    console.error('Error fetching updated data:', error);
+                }
+            });
+      });
+
+      
+//=============================== Historical chart end =============================
+      
    }
 </script>

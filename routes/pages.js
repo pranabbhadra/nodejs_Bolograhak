@@ -1475,7 +1475,7 @@ router.get('/company-dashboard/:slug', checkClientClaimedCompany, async (req, re
     const comp_res =await comFunction2.getCompanyIdBySlug(slug);
     const userId = currentUserData.user_id;
     const companyId = comp_res.ID;
-    const [globalPageMeta, company, companyReviewNumbers, allRatingTags, allCompanyReviews, allCompanyReviewTags, PremiumCompanyData, reviewTagsCount, TotalReplied , getCompanyReviewsBetween ] = await Promise.all([
+    const [globalPageMeta, company, companyReviewNumbers, allRatingTags, allCompanyReviews, allCompanyReviewTags, PremiumCompanyData, reviewTagsCount, TotalReplied , getCompanyReviewsBetween, getCompanyHistoricalReviewBetween ] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
         comFunction.getCompany(companyId),
         comFunction.getCompanyReviewNumbers(companyId),
@@ -1486,8 +1486,17 @@ router.get('/company-dashboard/:slug', checkClientClaimedCompany, async (req, re
         comFunction.reviewTagsCountByCompanyID(companyId),
         comFunction2.TotalReplied(userId),
         comFunction.getCompanyReviewsBetween(companyId),
+        comFunction2.getCompanyHistoricalReviewBetween(companyId),
     ]);
-    //console.log('getCompanyReviewsBetween:', getCompanyReviewsBetween);
+    console.log('getCompanyHistoricalReviewBetween:', getCompanyHistoricalReviewBetween);
+
+    // Transform the fetched data to match the chart's data structure
+    const CompanyHistoricalReviewData = getCompanyHistoricalReviewBetween.map(entry => ({
+        x: new Date(entry.created_at).toISOString().split('T')[0],
+        y: entry.average_rating
+      }));
+
+    console.log('CompanyHistoricalReviewData', CompanyHistoricalReviewData)
 
     let facebook_url = '';
     let twitter_url = '';
@@ -1575,7 +1584,8 @@ router.get('/company-dashboard/:slug', checkClientClaimedCompany, async (req, re
         //     linkedin_url:linkedin_url,
         //     youtube_url:youtube_url,
         //     reviewTagsCount,
-        //     TotalReplied:TotalReplied
+        //     TotalReplied:TotalReplied,
+        //     CompanyHistoricalReviewData:CompanyHistoricalReviewData
         // });
         res.render('front-end/premium-company-profile-dashboard', 
         { 
@@ -1595,7 +1605,8 @@ router.get('/company-dashboard/:slug', checkClientClaimedCompany, async (req, re
             linkedin_url:linkedin_url,
             youtube_url:youtube_url,
             reviewTagsCount,
-            TotalReplied:TotalReplied
+            TotalReplied:TotalReplied,
+            CompanyHistoricalReviewData:CompanyHistoricalReviewData
         });
     }
 });

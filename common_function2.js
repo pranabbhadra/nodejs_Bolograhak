@@ -3845,6 +3845,50 @@ async function discussionQueryAlertEmail(companyId) {
   }
 }
 
+function getDefaultFromDate() {
+  const currentDate = new Date();
+  return currentDate.toISOString().split('T')[0]; // Returns current date in 'YYYY-MM-DD' format
+}
+
+function getDefaultToDate() {
+  const currentDate = new Date();
+  const sevenDaysAgo = new Date(currentDate.getTime() - 8 * 30 * 24 * 60 * 60 * 1000);
+  return sevenDaysAgo.toISOString().split('T')[0]; // Returns date 7 days ago in 'YYYY-MM-DD' format
+}
+
+//Function get historical graph chrat data
+async function getCompanyHistoricalReviewBetween(companyID, from =getDefaultToDate(), to = getDefaultFromDate(), filter = "daily") {
+console.log('to', to);
+
+  let dateGrouping = 'DAY(created_at)'; // Default grouping is daily
+
+  if (filter === 'weekly') {
+    dateGrouping = 'WEEK(created_at)';
+  } else if (filter === 'monthly') {
+    dateGrouping = 'MONTH(created_at)';
+  } else if (filter === 'yearly') {
+    dateGrouping = 'YEAR(created_at)';
+  }
+
+  const get_company_review_query = `
+    SELECT ${dateGrouping} AS date_group, created_at, AVG(rating) AS average_rating
+    FROM reviews
+    WHERE company_id = ? AND review_status = ? 
+    AND created_at BETWEEN ? AND ?
+    GROUP BY date_group`;
+
+  const get_company_review_values = [companyID, '1', from, to ];
+
+  try {
+    const reviewData = await query(get_company_review_query, get_company_review_values);
+    return reviewData;
+  } catch (error) {
+    console.error('Error during query execution:', error);
+    throw error;
+  }
+}
+
+
 module.exports = {
   getFaqPage,
   getFaqCategories,
@@ -3926,5 +3970,6 @@ module.exports = {
   getDiscussionListingByTag,
   getCompanyCreatedTags,
   duscussionQueryAlert,
-  discussionQueryAlertEmail
+  discussionQueryAlertEmail,
+  getCompanyHistoricalReviewBetween
 };
