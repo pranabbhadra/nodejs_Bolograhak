@@ -1488,15 +1488,34 @@ router.get('/company-dashboard/:slug', checkClientClaimedCompany, async (req, re
         comFunction.getCompanyReviewsBetween(companyId),
         comFunction2.getCompanyHistoricalReviewBetween(companyId),
     ]);
-    console.log('getCompanyHistoricalReviewBetween:', getCompanyHistoricalReviewBetween);
-
+    //console.log('getCompanyHistoricalReviewBetween:', getCompanyHistoricalReviewBetween);
+        const productGraphData = allCompanyReviews.map(entry => ({
+            name:entry.review_title.trim() === '' ? 'General' : entry.review_title,
+            new_name:entry.review_title.replace(/\s/g, '').toLowerCase()
+        }))
+        
+        const countMap = productGraphData.reduce((acc, entry) => {
+            const { name, new_name } = entry;
+    
+            if (!acc[new_name]) {
+                acc[new_name] = { name, count: 1 };
+            } else {
+                acc[new_name].count += 1;
+            }
+    
+            return acc;
+        }, {});
+    
+        const productGraphArray = Object.values(countMap);
+    
+    //console.log(productGraphData);
     // Transform the fetched data to match the chart's data structure
     const CompanyHistoricalReviewData = getCompanyHistoricalReviewBetween.map(entry => ({
         x: new Date(entry.created_at).toISOString().split('T')[0],
         y: entry.average_rating
       }));
 
-    console.log('CompanyHistoricalReviewData', CompanyHistoricalReviewData)
+    //console.log('CompanyHistoricalReviewData', CompanyHistoricalReviewData)
 
     let facebook_url = '';
     let twitter_url = '';
@@ -1585,7 +1604,8 @@ router.get('/company-dashboard/:slug', checkClientClaimedCompany, async (req, re
         //     youtube_url:youtube_url,
         //     reviewTagsCount,
         //     TotalReplied:TotalReplied,
-        //     CompanyHistoricalReviewData:CompanyHistoricalReviewData
+        //     CompanyHistoricalReviewData:CompanyHistoricalReviewData,
+        //     productGraphArray:productGraphArray
         // });
         res.render('front-end/premium-company-profile-dashboard', 
         { 
@@ -1606,7 +1626,8 @@ router.get('/company-dashboard/:slug', checkClientClaimedCompany, async (req, re
             youtube_url:youtube_url,
             reviewTagsCount,
             TotalReplied:TotalReplied,
-            CompanyHistoricalReviewData:CompanyHistoricalReviewData
+            CompanyHistoricalReviewData:CompanyHistoricalReviewData,
+            productGraphArray:productGraphArray
         });
     }
 });

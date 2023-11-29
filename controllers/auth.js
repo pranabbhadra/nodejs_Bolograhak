@@ -5619,7 +5619,7 @@ exports.compareChartFilter = async (req, res) => {
 
 //historical Chart Filter
 exports.historicalChartFilter = async (req, res) => {
-    console.log('historicalChartFilter', req.body);
+    //console.log('historicalChartFilter', req.body);
     const { company_id, company_name, from, to, filter } = req.body;
   
     try {
@@ -5644,11 +5644,11 @@ exports.historicalChartFilter = async (req, res) => {
         y: entry.average_rating
       }));
       
-      console.log(formattedData);
+      //console.log(getCompanyHistoricalData);
       //return false;
       return res.send({
         status: 'ok',
-        data: formattedData,
+        data: getCompanyHistoricalData,
         filter:filter,
         company_name: company_name,
         message: 'Company Reviews Data fetch successfully '

@@ -189,7 +189,17 @@
                      </div>
                   </div>
                </div>
-
+               <div class="analytics_data analytics_data_row3">
+                  <div class="row">
+                     <div class="col-lg-6">
+                        <div id="productGraph" style="height: 300px; width: 100%;"></div>
+                     </div>
+                     <div class="col-lg-6" >
+                        
+                        <div id="performanceChart" style="height: 300px; width: 100%;"></div>
+                     </div>
+                  </div>
+               </div>
                <!-- <div class="analytics_data analytics_data_row4">
                   <div class="select_box_and_btn">
                      <div class="select_location">
@@ -772,21 +782,21 @@
             });
       });
 
-function updateChartWithData(totalReviewCount, filterReviewCount, totalReviewAverage, filterReviewAverage) {
-    compareChart.options.data.forEach(function (series) {
-        if (series.name === "Total No of Reviews") {
-            series.dataPoints[0].y = totalReviewCount;
-        } else if (series.name === " Filtered Reviews") {
-            series.dataPoints[0].y = filterReviewCount;
-        } else if (series.name === "Overall Avg Rating") {
-            series.dataPoints[0].y = totalReviewAverage ? parseFloat(totalReviewAverage.toFixed(1)) : 0;
-        } else if (series.name === "Filtered Avg Rating") {
-            series.dataPoints[0].y = filterReviewAverage ? parseFloat(filterReviewAverage.toFixed(1)) : 0;
-        }
-    });
+      function updateChartWithData(totalReviewCount, filterReviewCount, totalReviewAverage, filterReviewAverage) {
+         compareChart.options.data.forEach(function (series) {
+            if (series.name === "Total No of Reviews") {
+                  series.dataPoints[0].y = totalReviewCount;
+            } else if (series.name === " Filtered Reviews") {
+                  series.dataPoints[0].y = filterReviewCount;
+            } else if (series.name === "Overall Avg Rating") {
+                  series.dataPoints[0].y = totalReviewAverage ? parseFloat(totalReviewAverage.toFixed(1)) : 0;
+            } else if (series.name === "Filtered Avg Rating") {
+                  series.dataPoints[0].y = filterReviewAverage ? parseFloat(filterReviewAverage.toFixed(1)) : 0;
+            }
+         });
 
-    compareChart.render();
-}
+         compareChart.render();
+      }
 
     function toggleDataSeries(e) {
       if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
@@ -801,7 +811,7 @@ function updateChartWithData(totalReviewCount, filterReviewCount, totalReviewAve
 // ============================== Compare chart end =============================== 
 //=============================== Historical chart start =============================
 
-var historicalchrat = {
+   var historicalchrat = {
         exportEnabled: false,
         animationEnabled: true,
         title: {
@@ -856,32 +866,48 @@ var historicalchrat = {
 
                   let xValueFormatString;
                   if (data.filter === 'weekly') {
+
                      xValueFormatString = "WW"; // Week number and year
-                  } else if (data.filter === 'monthly') {
-                     xValueFormatString = "MMM "; 
-                     const monthNames = [
-                        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-                     ];
-                     monthNames[data.data.date_group - 1];
-                     let formattedData = data.data.map(entry => ({
-                        x: monthNames[data.data.date_group - 1],
-                        y: entry.y
+                     const weeklyData = data.data.map(entry => ({
+                        x: entry.date_group,
+                        y: entry.average_rating
                      }));
-                     historicalchrat.data[0].dataPoints = data.data;
+                     historicalchrat.data[0].dataPoints = weeklyData;
+                     historicalchrat.data[0].xValueFormatString = xValueFormatString;
+
+                  } else if (data.filter === 'monthly') {
+
+                     xValueFormatString = "MMM "; 
+                     let formattedData = data.data.map(entry => ({
+                        x:new Date(2023,entry.date_group) ,
+                        y: entry.average_rating
+                     }));
+                     historicalchrat.data[0].dataPoints = formattedData;
+                     historicalchrat.data[0].xValueFormatString = xValueFormatString;
+
                   } else if (data.filter === 'yearly') {
+
                      xValueFormatString = "MMM"; // Month abbreviation and year
-                  } else {
-                     xValueFormatString = "DD MMM YYYY"; // Default format for daily
-                  }
-
-                  // Update chart data with the new data points and xValueFormatString
-                  if (data.filter !== 'monthly') {
-                  historicalchrat.data[0].dataPoints = data.data;
+                     let yearlyData = data.data.map(entry => ({
+                        x:new Date(2023,entry.date_group) ,
+                        y: entry.average_rating
+                     }));
+                  historicalchrat.data[0].dataPoints = yearlyData;
                   historicalchrat.data[0].xValueFormatString = xValueFormatString;
+
+                  } else {
+
+                     xValueFormatString = "DD MMM YYYY"; // Default format for daily
+                     const dailyData= data.data.map(entry => ({
+                        x: new Date(entry.created_at),
+                        y: entry.average_rating
+                     }));
+                     console.log(dailyData);
+                     historicalchrat.data[0].dataPoints = dailyData;
+                     historicalchrat.data[0].xValueFormatString = xValueFormatString;
+
                   }
 
-                  // Update the chart
                   $("#historicalchrat").CanvasJSChart().render();
                 },
                 error: function (error) {
@@ -893,5 +919,85 @@ var historicalchrat = {
       
 //=============================== Historical chart end =============================
       
+      //=============================== Product chart Start =============================
+         
+      var productGraph = {
+        exportEnabled: false,
+        animationEnabled: true,
+        title: {
+          text: "Review Comparison by Product"
+        },
+        legend: {
+          horizontalAlign: "right",
+          verticalAlign: "center"
+        },
+        data: [{
+          type: "pie",
+          showInLegend: true,
+          toolTipContent: "<b>{name}</b>: {y} (#percent%)",
+          indexLabel: "{name}",
+          legendText: "{name} (#percent%)",
+          indexLabelPlacement: "inside",
+          dataPoints: [
+          <% productGraphArray.forEach((item, index) => { %>
+                        
+            { y: <%= item.count %>, name: "<%= item.name %>" },
+                        <% }) %>
+          ]
+        }]
+      };
+      $("#productGraph").CanvasJSChart(productGraph);
+      //=============================== Product chart end =============================
+      
+      //=============================== Compare Performance chart Start =============================
+      var newChart = new CanvasJS.Chart("performanceChart", {
+        title: {
+          text: "Compare Own company Performance with Competitors"
+        },
+        axisX: {
+          title: ""
+        },
+        axisY: {
+          title: "",
+        },
+        axisY2: {
+          title: "",
+          lineThickness: 0,
+          tickLength: 5, // Adjust the length of tick marks as needed
+          interval: 0.5,  // Adjust the interval of tick marks as needed
+          valueFormatString: "#0.0", // Adjust formatting as needed
+        },
+        toolTip: {
+          shared: true, // Display values for both series in a single tooltip
+        },
+        data: [{
+          type: "column",
+          name: "Recent Rating",
+          showInLegend: true,
+          dataPoints: [
+            { label: "<%= company.company_name %>", y: <%= CompanyReviewsBetween.filter_review_average ? CompanyReviewsBetween.filter_review_average.toFixed(1) : 0 %> },
+            // { label: "Point 2", y: 2 },
+            // { label: "Point 3", y: 4 },
+            // { label: "Point 4", y: 1.5 },
+            // { label: "Point 5", y: 4.5 },
+          ]
+        },
+        {
+          type: "line",
+          name: "Overall Rating",
+          axisYType: "secondary",
+          showInLegend: true,
+          dataPoints: [
+            { label: "<%= company.company_name %>", y: <%= CompanyReviewsBetween.total_review_average ? CompanyReviewsBetween.total_review_average.toFixed(1) : 0 %>},
+            // { label: "Point 2", y: 2 },
+            // { label: "Point 3", y: 4 },
+            // { label: "Point 4", y: 1.5 },
+            // { label: "Point 5", y: 1 },
+          ]
+        }]
+      });
+
+      newChart.render();
+      //=============================== Compare Performance chart ens =============================
    }
 </script>

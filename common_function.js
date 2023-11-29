@@ -94,7 +94,7 @@ function getStatesByUserID(userId) {
       console.log(result);
       if (err) {
         reject(err);
-      }else if(result[0].country == null){
+      }else if(result[0].country == null || result[0].country == undefined ){
         resolve([]);
       } else {
         //console.log('Result:', result); // Log the result array
@@ -401,7 +401,11 @@ async function getAllReviewsByCompanyID(companyId) {
   `;
   try{
     const all_review_results = await query(all_review_query, companyId);
-    return all_review_results;
+    if (all_review_results.length > 0) {
+      return all_review_results;
+    } else {
+      return [];
+    }
   }
   catch(error){
     console.error('Error during all_review_query:', error);
