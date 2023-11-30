@@ -880,6 +880,7 @@
 
       };
       $("#historicalchrat").CanvasJSChart(historicalchrat);
+      var existingChart = $("#historicalchrat").CanvasJSChart();
 
       function toggleDataSeries(e) {
         if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
@@ -890,100 +891,120 @@
         e.chart.render();
       }
 
-         $('#historiaclGraphForm').submit(function (event) {
-            event.preventDefault(); // Prevent the form from submitting traditionally
+      $('#historiaclGraphForm').submit(function (event) {
+         event.preventDefault(); // Prevent the form from submitting traditionally
 
-            // Get form data
-            var formData = $(this).serialize();
-            console.log(formData)
-            //return false;
-            // Make an AJAX request to fetch updated data
-            $.ajax({
-                type: 'POST',
-                url: '/auth/historical-chart-filter', // Replace with the actual server endpoint
-                data: formData,
-                success: function (data) {
-                  console.log('aaaaaaaa',data.data)
-                  let xValueFormatString;
-                  if (data.filter === 'weekly') {
-                     console.log('weekly==',data.filter);
-                     aa = "WW"; // Week number and year
-                     const weeklyData = data.data.map(entry => ({
-                        x: entry.date_group,
-                        y: entry.average_rating
-                     }));
-                     historicalchrat.data[0].dataPoints = weeklyData;
-                     historicalchrat.data[0].xValueFormatString = "WW";
-                     updateChart(weeklyData, xValueFormatString);
+         // Get form data
+         var formData = $(this).serialize();
+         console.log(formData)
+         //return false;
+         // Make an AJAX request to fetch updated data
+         $.ajax({
+               type: 'POST',
+               url: '/auth/historical-chart-filter', // Replace with the actual server endpoint
+               data: formData,
+               success: function (data) {
+               console.log('aaaaaaaa',data.data)
+               let xValueFormatString;
+               if (data.filter === 'weekly') {
+                  console.log('weekly==',data.filter);
+                  xValueFormatString = "WW"; // Week number and year
+                  const weeklyData = data.data.map(entry => ({
+                     x: entry.date_group,
+                     y: entry.average_rating
+                  }));
+                  historicalchrat.data[0].dataPoints = weeklyData;
+                  historicalchrat.data[0].xValueFormatString = xValueFormatString;
+                  updateChart(weeklyData, xValueFormatString);
 
-                  } else if (data.filter === 'monthly') {
-                     console.log(data.filter);
-                     // axisX:{  
-                     //    valueFormatString: "MMM"
-                     // }
-                     xValueFormatString = "MMM "; 
-                     let formattedData = data.data.map(entry => ({
-                        x:new Date(2023,entry.date_group) ,
-                        y: entry.average_rating
-                     }));
-                     //historicalchrat.options.axisX.valueFormatString = "MMM";
-                     historicalchrat.data[0].dataPoints = formattedData;
-                     historicalchrat.data[0].xValueFormatString = xValueFormatString;
-                     if (!historicalchrat.axisX) {
-                        historicalchrat.axisX = {};
-                     }
-                     historicalchrat.axisX.valueFormatString = xValueFormatString;
-
-                  } else if (data.filter === 'yearly') {
-
-                     xValueFormatString = "YY"; // Month abbreviation and year
-                     let yearlyData = data.data.map(entry => ({
-                        x:new Date(2023,entry.date_group) ,
-                        y: entry.average_rating
-                     }));
-                     historicalchrat.data[0].dataPoints = yearlyData;
-                     historicalchrat.data[0].xValueFormatString = xValueFormatString;
-                     if (!historicalchrat.axisX) {
-                        historicalchrat.axisX = {};
-                     }
-                     historicalchrat.axisX.valueFormatString = xValueFormatString;
-
-                  } else {
-                     console.log(data.filter);
-                     xValueFormatString = "DD MMM YYYY"; // Default format for daily
-                     const dailyData= data.data.map(entry => ({
-                        x: new Date(entry.created_at),
-                        y: entry.average_rating
-                     }));
-                     console.log(dailyData);
-                     historicalchrat.data[0].dataPoints = dailyData;
-                     historicalchrat.data[0].xValueFormatString = xValueFormatString;
-                     if (!historicalchrat.axisX) {
-                        historicalchrat.axisX = {};
-                     }
-                     historicalchrat.axisX.valueFormatString = xValueFormatString;
-
+               } else if (data.filter === 'monthly') {
+                  console.log(data.filter);
+                  // axisX:{  
+                  //    valueFormatString: "MMM"
+                  // }
+                  xValueFormatString = "MMM "; 
+                  let formattedData = data.data.map(entry => ({
+                     x:new Date(2023,entry.date_group) ,
+                     y: entry.average_rating
+                  }));
+                  //historicalchrat.options.axisX.valueFormatString = "MMM";
+                  historicalchrat.data[0].dataPoints = formattedData;
+                  historicalchrat.data[0].xValueFormatString = xValueFormatString;
+                  if (!historicalchrat.axisX) {
+                     historicalchrat.axisX = {};
                   }
-                  //historicalchrat.options.axisX.valueFormatString = xValueFormatString;
-                  $("#historicalchrat").CanvasJSChart().render();
-                },
-                error: function (error) {
-                    console.error('Error fetching updated data:', error);
-                }
-            });
+                  historicalchrat.axisX.valueFormatString = xValueFormatString;
 
-            function updateChart(dataPoints, xValueFormatString) {
-               historicalchrat.data[0].dataPoints = dataPoints;
-               historicalchrat.data[0].xValueFormatString = xValueFormatString;
-               if (!historicalchrat.axisX) {
-                   historicalchrat.axisX = {};
+               } else if (data.filter === 'yearly') {
+
+                  xValueFormatString = "YY"; // Month abbreviation and year
+                  let yearlyData = data.data.map(entry => ({
+                     x:new Date(2023,entry.date_group) ,
+                     y: entry.average_rating
+                  }));
+                  historicalchrat.data[0].dataPoints = yearlyData;
+                  historicalchrat.data[0].xValueFormatString = xValueFormatString;
+                  if (!historicalchrat.axisX) {
+                     historicalchrat.axisX = {};
+                  }
+                  historicalchrat.axisX.valueFormatString = xValueFormatString;
+
+               } else {
+                  console.log(data.filter);
+                  xValueFormatString = "DD MMM YYYY"; // Default format for daily
+                  const dailyData= data.data.map(entry => ({
+                     x: new Date(entry.created_at),
+                     y: entry.average_rating
+                  }));
+                  console.log(dailyData);
+                  historicalchrat.data[0].dataPoints = dailyData;
+                  historicalchrat.data[0].xValueFormatString = xValueFormatString;
+                  if (!historicalchrat.axisX) {
+                     historicalchrat.axisX = {};
+                  }
+                  historicalchrat.axisX.valueFormatString = xValueFormatString;
+
                }
-               console.log('dataPoints', dataPoints);
-           
-               // Render the chart
+               //historicalchrat.options.axisX.valueFormatString = xValueFormatString;
                $("#historicalchrat").CanvasJSChart().render();
-            }
+               },
+               error: function (error) {
+                  console.error('Error fetching updated data:', error);
+               }
          });
+
+         function updateChart(dataPoints, xValueFormatString) {
+            if (existingChart) {
+               existingChart.destroy();
+            }
+            var newChart = new CanvasJS.Chart("historicalchrat", {
+               exportEnabled: false,
+               animationEnabled: true,
+               toolTip: {
+                  shared: true
+               },
+               legend: {
+                  cursor: "pointer",
+                  itemclick: toggleDataSeries
+               },
+               data: [{
+                  type: "spline",
+                  name: "<%= company.company_name %>",
+                  showInLegend: true,
+                  xValueFormatString: "DD MMM YY",
+                  yValueFormatString: "#,#0.0",
+                  dataPoints: [
+                        <% CompanyHistoricalReviewData.forEach((item, index) => { %>
+                           { x: new Date('<%= item.x %>'), y: <%= item.y %> },
+                        <% }) %>
+                  ],
+               }]
+            });
+         
+            // Render the chart
+            newChart.render();
+         }
+      });
 
       
 //=============================== Historical chart end =============================
