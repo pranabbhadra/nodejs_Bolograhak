@@ -909,7 +909,7 @@
                      console.log('weekly==',data.filter);
                      xValueFormatString = "WW"; // Week number and year
                      const weeklyData = data.data.map(entry => ({
-                        x: parseInt(entry.date_group, 10),
+                        x: entry.date_group.toString(),
                         y: entry.average_rating
                      }));
                      historicalchrat.data[0].dataPoints = weeklyData;
