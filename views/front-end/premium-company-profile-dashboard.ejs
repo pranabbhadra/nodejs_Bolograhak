@@ -907,13 +907,13 @@
                   let xValueFormatString;
                   if (data.filter === 'weekly') {
                      console.log('weekly==',data.filter);
-                     xValueFormatString = "WW"; // Week number and year
+                     aa = "WW"; // Week number and year
                      const weeklyData = data.data.map(entry => ({
                         x: entry.date_group,
                         y: entry.average_rating
                      }));
                      historicalchrat.data[0].dataPoints = weeklyData;
-                     historicalchrat.data[0].xValueFormatString = xValueFormatString;
+                     historicalchrat.data[0].xValueFormatString = "WW";
                      updateChart(weeklyData, xValueFormatString);
 
                   } else if (data.filter === 'monthly') {
