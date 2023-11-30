@@ -3875,7 +3875,8 @@ console.log('to', to);
     FROM reviews
     WHERE company_id = ? AND review_status = ? 
     AND created_at BETWEEN ? AND ?
-    GROUP BY date_group`;
+    GROUP BY date_group
+    ORDER BY created_at ASC`;
 
   const get_company_review_values = [companyID, '1', from, to ];
 
