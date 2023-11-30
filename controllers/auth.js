@@ -5623,36 +5623,25 @@ exports.historicalChartFilter = async (req, res) => {
     const { company_id, company_name, from, to, filter } = req.body;
   
     try {
-      const getCompanyHistoricalData = await comFunction2.getCompanyHistoricalReviewBetween(company_id, from, to, filter);
+      let getCompanyHistoricalData = await comFunction2.getCompanyHistoricalReviewBetween(company_id, from, to, filter);
   
       console.log('getCompanyHistoricalData', getCompanyHistoricalData);
   
-      // Find the first entry with a valid date_group
-      const firstValidEntry = getCompanyHistoricalData.find(entry => entry.date_group);
-  
-      if (!firstValidEntry) {
-        return res.send({
-            status: ' not ok',
-            message: 'No valid record found in the data. '
-          })
+      if (getCompanyHistoricalData.length === 0) {
+        getCompanyHistoricalData = [{
+            date_group: 0,
+            created_at: '2023-01-01T03:09:07.000Z',
+            average_rating: 0
+          }]
       }
-  
-      const year = new Date(2023, 0, firstValidEntry.date_group).getFullYear(); // Assuming 2023 as the default year
-  
-      const formattedData = getCompanyHistoricalData.map(entry => ({
-        x: entry.date_group,
-        y: entry.average_rating
-      }));
+        return res.send({
+            status: 'ok',
+            data: getCompanyHistoricalData,
+            filter:filter,
+            company_name: company_name,
+            message: 'Company Reviews Data fetch successfully '
+          });
       
-      //console.log(getCompanyHistoricalData);
-      //return false;
-      return res.send({
-        status: 'ok',
-        data: getCompanyHistoricalData,
-        filter:filter,
-        company_name: company_name,
-        message: 'Company Reviews Data fetch successfully '
-      });
     } catch (error) {
       console.error('Error in historicalChartFilter:', error);
       return res.status(500).send({
@@ -5661,8 +5650,50 @@ exports.historicalChartFilter = async (req, res) => {
       });
     }
   };
+
+//historical Chart Filter
+exports.competitorCompanyChart = async (req, res) => {
+    console.log('competitorCompanyChart', req.body);
+    const { company_id, company_name, competitor } = req.body;
+    let competitorChartData = [];
   
-  
+    try {
+        const ownCompanyData = await comFunction.getCompanyReviewsBetween(company_id);
+        competitorChartData.push(ownCompanyData);
+
+        let otherDataPromises = [];
+
+        if (competitor != '') {
+            if (Array.isArray(competitor)) {
+                competitor.forEach((id) => {
+                    otherDataPromises.push(comFunction.getCompanyReviewsBetween(id));
+                });
+            } else {
+                otherDataPromises.push(comFunction.getCompanyReviewsBetween(competitor));
+            }
+        }
+
+        const otherDataArray = await Promise.all(otherDataPromises);
+
+        competitorChartData.push(...otherDataArray);
+
+        console.log('competitorChartData', competitorChartData);
+
+        return res.send({
+            status: 'ok',
+            data: competitorChartData,
+            company_name: company_name,
+            message: 'Company competitor Chart  Data fetch successfully'
+        });
+    } catch (error) {
+        console.error('Error in competitor Chart Data:', error);
+        return res.status(500).send({
+            status: 'error',
+            message: 'Internal Server Error'
+        });
+    }
+};
+
 
 // Schedule mail for pending complaint
 cron.schedule('0 10 * * *', async () => {

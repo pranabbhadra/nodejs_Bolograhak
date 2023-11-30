@@ -369,4 +369,8 @@ router.post('/compare-chart-filter', authController.compareChartFilter);
 // company compare-chart-filter
 router.post('/historical-chart-filter', authController.historicalChartFilter);
 
+// company compare-chart-filter
+router.post('/competitorCompany-chart', authController.competitorCompanyChart);
+
+
 module.exports = router;

@@ -127,63 +127,81 @@
                   <div class="row">
                      <div class="col-lg-6">
                         <div id="horizontalTab">
-                           <h4 class="sec_heading mb-0">Filter</h4><br>
                            <div class="survey-details-with-date">
                               <div class="survet-update-form">
                                  <form id="filterForm" method="post" action="">
                                     <div class="all-inputs">
-                                        <div class="custom-form">
-                                            <label><span style="background-color: #ffffff;">From:</span> </label>
-                                            <input type="date" class="form-control" name="from" value="">
+                                       <div class="row">
+                                          <div class="col-12">
+                                             <div class="custom-form">
+                                                <label><span style="background-color: #ffffff;">From:</span> </label>
+                                                <input type="date" class="form-control" name="from" value="">
+                                             </div>
+                                          </div>
+                                          <div class="col-12">
+                                             <div class="custom-form">
+                                                <label><span style="background-color: #ffffff;">To:</span></label>
+                                                <input type="date" class="form-control" name="to" value="">
+                                             </div>
+                                          </div>
+                                          <input type="hidden" name="company_id" value="<%= company.ID %>">
+                                          <input type="hidden" name="company_name" value="<%= company.company_name %>">
+                                          
+                                          <div class="col-12 mb-5">
+                                             <input type="submit" name="update_survey" class="btn-default btn-dark" value="Filter">
+                                          </div>
                                         </div>
-                                        <div class="custom-form">
-                                            <label><span style="background-color: #ffffff;">To:</span></label>
-                                            <input type="date" class="form-control" name="to" value="">
-                                        </div>
-                                        <input type="hidden" name="company_id" value="<%= company.ID %>">
-                                        <input type="hidden" name="company_name" value="<%= company.company_name %>">
-                                        <input type="submit" name="update_survey" class="btn-default btn-dark" value="Filter">
                                     </div>
                                 </form>
                               </div>
                            </div>
                         </div>
-                        <h4 class="sec_heading mb-0">Rating chart</h4><br>
+                        <h4 class="sec_heading mb-3">Customer Rating</h4>
                         <div id="comparechrat" style="height: 300px; width: 100%;"></div>
                         
                      </div>
                      <div class="col-lg-6" >
                         <div id="">
-                           <h4 class="sec_heading mb-0">Filter</h4><br>
                            <div class="survey-details-with-date">
                               <div class="survet-update-form">
                                  <form id="historiaclGraphForm" method="post" action="">
                                     <div class="all-inputs">
-                                        <div class="custom-form">
-                                            <label><span style="background-color: #ffffff;">From:</span> </label>
-                                            <input type="date" class="form-control" name="from" value="">
-                                        </div>
-                                        <div class="custom-form">
-                                            <label><span style="background-color: #ffffff;">To:</span></label>
-                                            <input type="date" class="form-control" name="to" value="">
-                                        </div>
-                                        <div class="custom-form">
-                                            <label><span style="background-color: #ffffff;">Filter:</span></label>
-                                            <select class="form-select" name="filter">
-                                             <option value="daily" selected >Daily</option>
-                                                <option value="weekly">Weekly</option>
-                                                <option value="monthly" >Monthly</option>
-                                                <!-- <option value="yearly" >Yearly</option> -->
-                                            </select>
-                                        </div>
-                                        <input type="hidden" name="company_id" value="<%= company.ID %>">
-                                        <input type="hidden" name="company_name" value="<%= company.company_name %>">
-                                        <input type="submit" name="update_survey" class="btn-default btn-dark" value="Filter">
+                                       <div class="row">
+                                          <div class="col-6">
+                                             <div class="custom-form">
+                                                 <label><span style="background-color: #ffffff;">From:</span> </label>
+                                                 <input type="date" class="form-control" name="from" value="">
+                                             </div>
+                                          </div>
+                                          <div class="col-6">
+                                             <div class="custom-form">
+                                                <label><span style="background-color: #ffffff;">To:</span></label>
+                                                <input type="date" class="form-control" name="to" value="">
+                                             </div>
+                                          </div>
+                                          <div class="col-12">
+                                             <div class="custom-form">
+                                                <label><span style="background-color: #ffffff;">Filter:</span></label>
+                                                <select class="form-select" name="filter">
+                                                   <option value="daily" selected >Daily</option>
+                                                      <option value="weekly">Weekly</option>
+                                                      <option value="monthly" >Monthly</option>
+                                                      <!-- <option value="yearly" >Yearly</option> -->
+                                                </select>
+                                             </div>
+                                          </div>
+                                          <input type="hidden" name="company_id" value="<%= company.ID %>">
+                                          <input type="hidden" name="company_name" value="<%= company.company_name %>">
+                                          <div class="col-12 mb-5"> 
+                                             <input type="submit" name="update_survey" class="btn-default btn-dark" value="Filter">
+                                          </div>
+                                       </div>
                                     </div>
                                 </form>
                               </div>
                            </div>
                         </div>
+                        <h4 class="sec_heading mb-3">Historical Trends of Performance Rating</h4>
                         <div id="historicalchrat" style="height: 300px; width: 100%;"></div>
 
                      </div>
@@ -192,10 +210,32 @@
                <div class="analytics_data analytics_data_row3">
                   <div class="row">
                      <div class="col-lg-6">
+                        <h4 class="sec_heading mb-3">Review Comparison by Product</h4>
                         <div id="productGraph" style="height: 300px; width: 100%;"></div>
                      </div>
                      <div class="col-lg-6" >
-                        
+                        <div class="survet-update-form">
+                           <h4 class="sec_heading mb-3">Choose your competitor:</h4>
+                           <form id="CompetitorCompanyForm" method="post" action="">
+                              <div class="all-inputs">
+                                  <div class="custom-form">
+                                      <select class="form-select js-example-basic-multiple" name="competitor" multiple="multiple">
+                                       <% if(getSimilarCompany[0].companiesIdArr.length > 0) { %>
+                                          <% getSimilarCompany[0].companiesIdArr.forEach((id,index)=>{  %>
+                                             <option value="<%= id %>" >Competitor <%= index+1 %> </option>
+                                          <% }) %>
+                                       <% } %>
+                                          <!-- <option value="yearly" >Yearly</option> -->
+                                      </select>
+                                  </div>
+                                  <input type="hidden" name="company_id" value="<%= company.ID %>">
+                                  <input type="hidden" name="company_name" value="<%= company.company_name %>">
+                                  <div class="mb-5">
+                                    <input type="submit" name="update_survey" class="btn-default btn-dark" value="Filter">
+                                 </div>
+                              </div>
+                          </form>
+                        </div>
                         <div id="performanceChart" style="height: 300px; width: 100%;"></div>
                      </div>
                   </div>
@@ -366,12 +406,15 @@
       <!-- ============== Section6 End =============== -->
       
       <%- include('common/footer') -%>
+         <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
          <script src="https://www.amcharts.com/lib/4/core.js"></script>
          <script src="https://www.amcharts.com/lib/4/maps.js"></script>
          <script src="https://www.amcharts.com/lib/4/geodata/india2019High.js"></script>
          <script src="https://www.amcharts.com/lib/4/themes/animated.js"></script>
          <script src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
          <script src="https://cdn.canvasjs.com/jquery.canvasjs.min.js"></script>
+         <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
    window.onload = function () {
 
@@ -814,9 +857,6 @@
    var historicalchrat = {
         exportEnabled: false,
         animationEnabled: true,
-        title: {
-          text: "Historical Trends of Rating"
-        },
         toolTip: {
           shared: true
         },
@@ -850,7 +890,7 @@
         e.chart.render();
       }
 
-      $('#historiaclGraphForm').submit(function (event) {
+         $('#historiaclGraphForm').submit(function (event) {
             event.preventDefault(); // Prevent the form from submitting traditionally
 
             // Get form data
@@ -863,7 +903,7 @@
                 url: '/auth/historical-chart-filter', // Replace with the actual server endpoint
                 data: formData,
                 success: function (data) {
-
+                  console.log('aaaaaaaa',data.data)
                   let xValueFormatString;
                   if (data.filter === 'weekly') {
 
@@ -876,18 +916,27 @@
                      historicalchrat.data[0].xValueFormatString = xValueFormatString;
 
                   } else if (data.filter === 'monthly') {
-
+                     
+                     // axisX:{  
+                     //    valueFormatString: "MMM"
+                     // }
                      xValueFormatString = "MMM "; 
                      let formattedData = data.data.map(entry => ({
                         x:new Date(2023,entry.date_group) ,
                         y: entry.average_rating
                      }));
+                     //historicalchrat.options.axisX.valueFormatString = "MMM";
                      historicalchrat.data[0].dataPoints = formattedData;
                      historicalchrat.data[0].xValueFormatString = xValueFormatString;
+                     if (!historicalchrat.axisX) {
+                        historicalchrat.axisX = {};
+                     }
+                     
+                     historicalchrat.axisX.valueFormatString = xValueFormatString;
 
                   } else if (data.filter === 'yearly') {
 
-                     xValueFormatString = "MMM"; // Month abbreviation and year
+                     xValueFormatString = "YY"; // Month abbreviation and year
                      let yearlyData = data.data.map(entry => ({
                         x:new Date(2023,entry.date_group) ,
                         y: entry.average_rating
@@ -907,14 +956,14 @@
                      historicalchrat.data[0].xValueFormatString = xValueFormatString;
 
                   }
-
+                  //historicalchrat.options.axisX.valueFormatString = xValueFormatString;
                   $("#historicalchrat").CanvasJSChart().render();
                 },
                 error: function (error) {
                     console.error('Error fetching updated data:', error);
                 }
             });
-      });
+         });
 
       
 //=============================== Historical chart end =============================
@@ -924,9 +973,6 @@
       var productGraph = {
         exportEnabled: false,
         animationEnabled: true,
-        title: {
-          text: "Review Comparison by Product"
-        },
         legend: {
           horizontalAlign: "right",
           verticalAlign: "center"
@@ -951,9 +997,6 @@
       
       //=============================== Compare Performance chart Start =============================
       var newChart = new CanvasJS.Chart("performanceChart", {
-        title: {
-          text: "Compare Own company Performance with Competitors"
-        },
         axisX: {
           title: ""
         },
@@ -964,7 +1007,7 @@
           title: "",
           lineThickness: 0,
           tickLength: 5, // Adjust the length of tick marks as needed
-          interval: 0.5,  // Adjust the interval of tick marks as needed
+          interval: 1,  // Adjust the interval of tick marks as needed
           valueFormatString: "#0.0", // Adjust formatting as needed
         },
         toolTip: {
@@ -972,32 +1015,92 @@
         },
         data: [{
           type: "column",
-          name: "Recent Rating",
+          name: " Overall Rating",
           showInLegend: true,
           dataPoints: [
-            { label: "<%= company.company_name %>", y: <%= CompanyReviewsBetween.filter_review_average ? CompanyReviewsBetween.filter_review_average.toFixed(1) : 0 %> },
+            { label: "<%= company.company_name %>", y: <%= CompanyReviewsBetween.total_review_average ? CompanyReviewsBetween.total_review_average.toFixed(1) : 0 %> },
             // { label: "Point 2", y: 2 },
-            // { label: "Point 3", y: 4 },
-            // { label: "Point 4", y: 1.5 },
-            // { label: "Point 5", y: 4.5 },
           ]
         },
         {
           type: "line",
-          name: "Overall Rating",
+          name: "Recent Rating",
           axisYType: "secondary",
           showInLegend: true,
           dataPoints: [
-            { label: "<%= company.company_name %>", y: <%= CompanyReviewsBetween.total_review_average ? CompanyReviewsBetween.total_review_average.toFixed(1) : 0 %>},
+            { label: "<%= company.company_name %>", y: <%= CompanyReviewsBetween.filter_review_average ? CompanyReviewsBetween.filter_review_average.toFixed(1) : 0 %> },
             // { label: "Point 2", y: 2 },
-            // { label: "Point 3", y: 4 },
-            // { label: "Point 4", y: 1.5 },
-            // { label: "Point 5", y: 1 },
           ]
         }]
       });
 
       newChart.render();
+
+         $('#CompetitorCompanyForm').submit(function (event) {
+            event.preventDefault(); // Prevent the form from submitting traditionally
+
+            // Get form data
+            var formData = $(this).serialize();
+            console.log(formData)
+            //return false;
+            // Make an AJAX request to fetch updated data
+            $.ajax({
+               type: 'POST',
+               url: '/auth/competitorCompany-chart',
+               data: formData,
+               success: function (data) {
+                  console.log(data);
+
+                  // Assuming data is an object with company_name and data properties
+                  const companyData = data.data;
+
+                  // Assuming newChart is already defined
+                  if (newChart) {
+                        // Separate own company data
+                        const ownCompany = companyData[0];
+                        const competitors = companyData.slice(1);
+
+                        // Update column data for competitors
+                        const columnDataPoints = competitors.map((item, index) => ({
+                           label: `Competitor ${index + 1}`,
+                           y: item.total_review_average ? parseInt(item.total_review_average.toFixed(1))  : 0
+                        }));
+                        newChart.options.data[0].dataPoints = [
+                           { label: data.company_name, y: ownCompany.total_review_average ? parseInt(ownCompany.total_review_average.toFixed(1))  : 0 },
+                           ...columnDataPoints
+                        ];
+
+                        //console.log(columnDataPoints,'aaaaaaa');
+                        // Update line data for competitors
+                        const lineDataPoints = competitors.map((item, index) => ({
+                           label: `Competitor ${index + 1}`,
+                           y: item.filter_review_average ? parseInt(item.filter_review_average.toFixed(1))  : 0,
+                           //y:12
+                        }));
+                        newChart.options.data[1].dataPoints = [
+                           { 
+                              label: data.company_name, 
+                              y: ownCompany.filter_review_average ? parseInt(ownCompany.filter_review_average.toFixed(1))  : 0 
+                           },
+                           ...lineDataPoints
+                        ];
+
+                        // Render the updated chart
+                        newChart.render();
+                  }
+               },
+               error: function (error) {
+                  console.error('Error fetching updated data:', error);
+               }
+            });
+
+
+         });
+
       //=============================== Compare Performance chart ens =============================
+
+      $(".js-example-basic-multiple").select2({
+         placeholder: "Select Competitor",
+      });
    }
 </script>

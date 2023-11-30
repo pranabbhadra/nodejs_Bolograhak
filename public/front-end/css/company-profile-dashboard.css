@@ -1707,6 +1707,26 @@ a.close-level:hover {
     opacity: 1;
     transition: all ease-in-out 0.3s;
 }
+.delete_company_tags {
+    margin-bottom: 15px;;
+}
+.delete_company_tags .all_added_tags{
+    margin-top:5px;
+}
+
+.delete_company_tags .added_tag {
+    display: inline-block;
+    padding: 8px 10px;
+    position: relative;
+    margin: 8px 3px;
+}
+.delete_company_tags .added_tag .delete-button {
+    position: absolute;
+    top: -12px;
+    right: -7px;
+    display: inline-block;
+    color: red;
+}
 
 /*========================================= responsive ====================================*/
 

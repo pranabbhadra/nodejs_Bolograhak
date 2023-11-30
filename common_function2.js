@@ -3852,7 +3852,7 @@ function getDefaultFromDate() {
 
 function getDefaultToDate() {
   const currentDate = new Date();
-  const sevenDaysAgo = new Date(currentDate.getTime() - 8 * 30 * 24 * 60 * 60 * 1000);
+  const sevenDaysAgo = new Date(currentDate.getTime() - 6 * 30 * 24 * 60 * 60 * 1000);
   return sevenDaysAgo.toISOString().split('T')[0]; // Returns date 7 days ago in 'YYYY-MM-DD' format
 }
 
@@ -3888,6 +3888,31 @@ console.log('to', to);
   }
 }
 
+// Fetch same categories company
+function getSimilarCompany(companyId) {
+  return new Promise((resolve, reject) => {
+    db.query(
+      `SELECT c.ID, c.company_name,c.slug, GROUP_CONCAT(ccr.company_id) AS companiesId
+      FROM company c
+      LEFT JOIN company_cactgory_relation cr ON c.ID = cr.company_id
+      LEFT JOIN company_cactgory_relation ccr ON cr.category_id = ccr.category_id AND ccr.company_id != ${companyId}
+      WHERE c.status != '3' and c.paid_status = 'paid' AND c.ID = ${companyId}
+      GROUP BY c.ID`,
+      async(err, result) => {
+      if (err) {
+        reject(err);
+      } else {
+        if (result.length > 0) {
+          const companiesId = result[0].companiesId ? result[0].companiesId.split(',') : [];
+          result[0].companiesIdArr = companiesId
+          resolve(result);
+        } else {
+          resolve([]);
+        }
+      }
+    });
+  });
+}
 
 module.exports = {
   getFaqPage,
@@ -3971,5 +3996,6 @@ module.exports = {
   getCompanyCreatedTags,
   duscussionQueryAlert,
   discussionQueryAlertEmail,
-  getCompanyHistoricalReviewBetween
+  getCompanyHistoricalReviewBetween,
+  getSimilarCompany
 };

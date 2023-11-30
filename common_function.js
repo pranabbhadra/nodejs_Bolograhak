@@ -852,8 +852,8 @@ function getDefaultFromDate() {
 
 function getDefaultToDate() {
   const currentDate = new Date();
-  const sevenDaysAgo = new Date(currentDate.getTime() - 7 * 24 * 60 * 60 * 1000);
-  return sevenDaysAgo.toISOString().split('T')[0]; // Returns date 7 days ago in 'YYYY-MM-DD' format
+  const sevenDaysAgo = new Date(currentDate.getTime() - 30 * 24 * 60 * 60 * 1000);
+  return sevenDaysAgo.toISOString().split('T')[0]; // Returns date 30 days ago in 'YYYY-MM-DD' format
 }
 
 async function getCompanyReviewsBetween(companyID, from = getDefaultFromDate(), to = getDefaultToDate()){

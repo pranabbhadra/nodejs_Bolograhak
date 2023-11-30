@@ -1475,7 +1475,7 @@ router.get('/company-dashboard/:slug', checkClientClaimedCompany, async (req, re
     const comp_res =await comFunction2.getCompanyIdBySlug(slug);
     const userId = currentUserData.user_id;
     const companyId = comp_res.ID;
-    const [globalPageMeta, company, companyReviewNumbers, allRatingTags, allCompanyReviews, allCompanyReviewTags, PremiumCompanyData, reviewTagsCount, TotalReplied , getCompanyReviewsBetween, getCompanyHistoricalReviewBetween ] = await Promise.all([
+    const [globalPageMeta, company, companyReviewNumbers, allRatingTags, allCompanyReviews, allCompanyReviewTags, PremiumCompanyData, reviewTagsCount, TotalReplied , getCompanyReviewsBetween, getCompanyHistoricalReviewBetween, getSimilarCompany ] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
         comFunction.getCompany(companyId),
         comFunction.getCompanyReviewNumbers(companyId),
@@ -1487,8 +1487,10 @@ router.get('/company-dashboard/:slug', checkClientClaimedCompany, async (req, re
         comFunction2.TotalReplied(userId),
         comFunction.getCompanyReviewsBetween(companyId),
         comFunction2.getCompanyHistoricalReviewBetween(companyId),
+        comFunction2.getSimilarCompany(companyId),
     ]);
-    //console.log('getCompanyHistoricalReviewBetween:', getCompanyHistoricalReviewBetween);
+        console.log('getSimilarCompany:', getSimilarCompany);
+
         const productGraphData = allCompanyReviews.map(entry => ({
             name:entry.review_title.trim() === '' ? 'General' : entry.review_title,
             new_name:entry.review_title.replace(/\s/g, '').toLowerCase()
@@ -1605,7 +1607,8 @@ router.get('/company-dashboard/:slug', checkClientClaimedCompany, async (req, re
         //     reviewTagsCount,
         //     TotalReplied:TotalReplied,
         //     CompanyHistoricalReviewData:CompanyHistoricalReviewData,
-        //     productGraphArray:productGraphArray
+        //     productGraphArray:productGraphArray,
+        //    getSimilarCompany:getSimilarCompany
         // });
         res.render('front-end/premium-company-profile-dashboard', 
         { 
@@ -1627,7 +1630,8 @@ router.get('/company-dashboard/:slug', checkClientClaimedCompany, async (req, re
             reviewTagsCount,
             TotalReplied:TotalReplied,
             CompanyHistoricalReviewData:CompanyHistoricalReviewData,
-            productGraphArray:productGraphArray
+            productGraphArray:productGraphArray,
+            getSimilarCompany:getSimilarCompany
         });
     }
 });
