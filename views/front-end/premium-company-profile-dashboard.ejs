@@ -977,32 +977,29 @@
             if (existingChart) {
                existingChart.destroy();
             }
-            var historicalchrat = {
-               exportEnabled: false,
-               animationEnabled: true,
-               toolTip: {
-                 shared: true
-               },
-               legend: {
-                 cursor: "pointer",
-                 itemclick: toggleDataSeries
-               },
-               data: [{
-                 type: "spline",
-                 name: "<%= company.company_name %>",
-                 showInLegend: true,
-                 xValueFormatString: "DD MMM YY",
-                 yValueFormatString: "#,#0.0",
-                 dataPoints: [
-                 <% CompanyHistoricalReviewData.forEach((item, index) => { %>
-                               
-                               { x: new Date('<%= item.x %>'), y: <%= item.y %>  },
-                               <% }) %>
-                ],
-               }]
-       
-             };
-             $("#historicalchrat").CanvasJSChart(historicalchrat);
+            var newChart = new CanvasJS.Chart("historicalchrat", {
+                  exportEnabled: false,
+                  animationEnabled: true,
+                  toolTip: {
+                     shared: true
+                  },
+                  legend: {
+                     cursor: "pointer",
+                     itemclick: toggleDataSeries
+                  },
+                  data: [{
+                     type: "spline",
+                     name: "<%= company.company_name %>",
+                     showInLegend: true,
+                     xValueFormatString: "DD MMM YY",
+                     yValueFormatString: "#,#0.0",
+                     dataPoints: [
+                        <% CompanyHistoricalReviewData.forEach((item, index) => { %>
+                              { x: new Date('<%= item.x %>'), y: <%= item.y %> },
+                        <% }) %>
+                     ],
+                  }]
+            });
             historicalchrat.data[0].dataPoints = dataPoints;
             historicalchrat.data[0].xValueFormatString = xValueFormatString;
             if (!historicalchrat.axisX) {
@@ -1012,7 +1009,7 @@
             historicalchrat.axisX.valueFormatString = xValueFormatString;
          
             // Render the chart
-            $("#historicalchrat").CanvasJSChart().render();
+            newChart.render();
          }
       });
 
