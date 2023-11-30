@@ -914,6 +914,7 @@
                      }));
                      historicalchrat.data[0].dataPoints = weeklyData;
                      historicalchrat.data[0].xValueFormatString = xValueFormatString;
+                     historicalchrat.axisX.valueFormatString = xValueFormatString;
 
                   } else if (data.filter === 'monthly') {
                      console.log(data.filter);
@@ -940,8 +941,9 @@
                         x:new Date(2023,entry.date_group) ,
                         y: entry.average_rating
                      }));
-                  historicalchrat.data[0].dataPoints = yearlyData;
-                  historicalchrat.data[0].xValueFormatString = xValueFormatString;
+                     historicalchrat.data[0].dataPoints = yearlyData;
+                     historicalchrat.data[0].xValueFormatString = xValueFormatString;
+                     historicalchrat.axisX.valueFormatString = xValueFormatString;
 
                   } else {
 
@@ -953,6 +955,7 @@
                      console.log(dailyData);
                      historicalchrat.data[0].dataPoints = dailyData;
                      historicalchrat.data[0].xValueFormatString = xValueFormatString;
+                     historicalchrat.axisX.valueFormatString = xValueFormatString;
 
                   }
                   //historicalchrat.options.axisX.valueFormatString = xValueFormatString;
