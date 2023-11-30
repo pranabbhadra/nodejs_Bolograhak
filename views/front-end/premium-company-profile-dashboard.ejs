@@ -915,7 +915,7 @@
                      historicalchrat.data[0].dataPoints = weeklyData;
                      historicalchrat.data[0].xValueFormatString = xValueFormatString;
                      updateChart(weeklyData, xValueFormatString);
-                     
+
                   } else if (data.filter === 'monthly') {
                      console.log(data.filter);
                      // axisX:{  
@@ -971,6 +971,18 @@
                     console.error('Error fetching updated data:', error);
                 }
             });
+
+            function updateChart(dataPoints, xValueFormatString) {
+               historicalchrat.data[0].dataPoints = dataPoints;
+               historicalchrat.data[0].xValueFormatString = xValueFormatString;
+               if (!historicalchrat.axisX) {
+                   historicalchrat.axisX = {};
+               }
+               historicalchrat.axisX.valueFormatString = xValueFormatString;
+           
+               // Render the chart
+               $("#historicalchrat").CanvasJSChart().render();
+            }
          });
 
       
