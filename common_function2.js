@@ -1410,7 +1410,7 @@ async function getCompanyPollDetails(company_id) {
 
 //Function to insert Invitation data into review_invite_request
 async function insertInvitationDetails(req) {
-  console.log('insertInvitationDetails',req)
+  //console.log('insertInvitationDetails',req)
   const {emails, email_body, user_id, company_id } = req
   const currentDate = new Date();
   const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
@@ -1426,7 +1426,7 @@ async function insertInvitationDetails(req) {
 
 //Function to send Invitation email 
 async function sendInvitationEmail(req) {
-  console.log('sendInvitationEmail',req)
+  //console.log('sendInvitationEmail',req)
   const {emails, email_body, user_id, company_id, company_name ,company_slug} = req;
   if(emails.length > 0){
     await emails.forEach((email)=>{
@@ -1434,7 +1434,7 @@ async function sendInvitationEmail(req) {
         from: process.env.MAIL_USER,
         //to: 'pranab@scwebtech.com',
         to: email,
-        subject: 'Invitation Email',
+        subject: 'Review Invitation Email',
         html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
         <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
          <tbody>
@@ -1451,7 +1451,7 @@ async function sendInvitationEmail(req) {
                        <tr>
                        <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
                         <td id="header_wrapper" style="padding: 36px 48px; display: block;">
-                           <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Invitation Email</h1>
+                           <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Review Invitation Email</h1>
                         </td>
     
                        </tr>
@@ -3475,7 +3475,7 @@ async function sendSurveyInvitationEmail(req) {
         from: process.env.MAIL_USER,
         //to: 'pranab@scwebtech.com',
         to: email,
-        subject: 'Invitation Email',
+        subject: 'Survey Invitation Email',
         html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
         <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
          <tbody>
@@ -3492,7 +3492,7 @@ async function sendSurveyInvitationEmail(req) {
                        <tr>
                        <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
                         <td id="header_wrapper" style="padding: 36px 48px; display: block;">
-                           <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Invitation Email</h1>
+                           <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Survey Invitation Email</h1>
                         </td>
     
                        </tr>
@@ -3845,6 +3845,75 @@ async function discussionQueryAlertEmail(companyId) {
   }
 }
 
+function getDefaultFromDate() {
+  const currentDate = new Date();
+  return currentDate.toISOString().split('T')[0]; // Returns current date in 'YYYY-MM-DD' format
+}
+
+function getDefaultToDate() {
+  const currentDate = new Date();
+  const sevenDaysAgo = new Date(currentDate.getTime() - 6 * 30 * 24 * 60 * 60 * 1000);
+  return sevenDaysAgo.toISOString().split('T')[0]; // Returns date 7 days ago in 'YYYY-MM-DD' format
+}
+
+//Function get historical graph chrat data
+async function getCompanyHistoricalReviewBetween(companyID, from =getDefaultToDate(), to = getDefaultFromDate(), filter = "daily") {
+console.log('to', to);
+
+  let dateGrouping = 'DAY(created_at)'; // Default grouping is daily
+
+  if (filter === 'weekly') {
+    dateGrouping = 'WEEK(created_at)';
+  } else if (filter === 'monthly') {
+    dateGrouping = 'MONTH(created_at)';
+  } else if (filter === 'yearly') {
+    dateGrouping = 'YEAR(created_at)';
+  }
+
+  const get_company_review_query = `
+    SELECT ${dateGrouping} AS date_group, created_at, AVG(rating) AS average_rating
+    FROM reviews
+    WHERE company_id = ? AND review_status = ? 
+    AND created_at BETWEEN ? AND ?
+    GROUP BY date_group`;
+
+  const get_company_review_values = [companyID, '1', from, to ];
+
+  try {
+    const reviewData = await query(get_company_review_query, get_company_review_values);
+    return reviewData;
+  } catch (error) {
+    console.error('Error during query execution:', error);
+    throw error;
+  }
+}
+
+// Fetch same categories company
+function getSimilarCompany(companyId) {
+  return new Promise((resolve, reject) => {
+    db.query(
+      `SELECT c.ID, c.company_name,c.slug, GROUP_CONCAT(ccr.company_id) AS companiesId
+      FROM company c
+      LEFT JOIN company_cactgory_relation cr ON c.ID = cr.company_id
+      LEFT JOIN company_cactgory_relation ccr ON cr.category_id = ccr.category_id AND ccr.company_id != ${companyId}
+      WHERE c.status != '3' and c.paid_status = 'paid' AND c.ID = ${companyId}
+      GROUP BY c.ID`,
+      async(err, result) => {
+      if (err) {
+        reject(err);
+      } else {
+        if (result.length > 0) {
+          const companiesId = result[0].companiesId ? result[0].companiesId.split(',') : [];
+          result[0].companiesIdArr = companiesId
+          resolve(result);
+        } else {
+          resolve([]);
+        }
+      }
+    });
+  });
+}
+
 module.exports = {
   getFaqPage,
   getFaqCategories,
@@ -3926,5 +3995,7 @@ module.exports = {
   getDiscussionListingByTag,
   getCompanyCreatedTags,
   duscussionQueryAlert,
-  discussionQueryAlertEmail
+  discussionQueryAlertEmail,
+  getCompanyHistoricalReviewBetween,
+  getSimilarCompany
 };

@@ -94,7 +94,7 @@ function getStatesByUserID(userId) {
       console.log(result);
       if (err) {
         reject(err);
-      }else if(result[0].country == null){
+      }else if(result[0].country == null || result[0].country == undefined ){
         resolve([]);
       } else {
         //console.log('Result:', result); // Log the result array
@@ -401,7 +401,11 @@ async function getAllReviewsByCompanyID(companyId) {
   `;
   try{
     const all_review_results = await query(all_review_query, companyId);
-    return all_review_results;
+    if (all_review_results.length > 0) {
+      return all_review_results;
+    } else {
+      return [];
+    }
   }
   catch(error){
     console.error('Error during all_review_query:', error);
@@ -826,7 +830,7 @@ async function getCompanyReviewNumbers(companyID){
   try{
     const get_company_rewiew_count_result = await query(get_company_rewiew_count_query, get_company_rewiew_count_value);
     const get_company_rewiew_rating_count_query = `
-    SELECT rating,count(rating) AS cnt_rat
+    SELECT rating,count(rating) AS cnt_rat, created_at
     FROM reviews
     WHERE company_id = ? AND review_status = '1'
     group by rating ORDER by rating DESC`;
@@ -840,6 +844,45 @@ async function getCompanyReviewNumbers(companyID){
   }catch(error){
     return 'Error during user get_company_rewiew_count_query:'+error;
   }
+}
+function getDefaultFromDate() {
+  const currentDate = new Date();
+  return currentDate.toISOString().split('T')[0]; // Returns current date in 'YYYY-MM-DD' format
+}
+
+function getDefaultToDate() {
+  const currentDate = new Date();
+  const sevenDaysAgo = new Date(currentDate.getTime() - 30 * 24 * 60 * 60 * 1000);
+  return sevenDaysAgo.toISOString().split('T')[0]; // Returns date 30 days ago in 'YYYY-MM-DD' format
+}
+
+async function getCompanyReviewsBetween(companyID, from = getDefaultFromDate(), to = getDefaultToDate()){
+
+  const get_company_total_rewiew_count_query = `
+    SELECT COUNT(*) AS total_review_count, AVG(rating) AS total_review_average
+    FROM reviews
+    WHERE company_id = ? AND review_status = ?`;
+  const get_company_total_rewiew_count_value = [companyID, '1'];
+  const get_company_total_rewiew_rating_result = await query(get_company_total_rewiew_count_query, get_company_total_rewiew_count_value);
+
+  const get_company_rewiew_count_query = `
+    SELECT COUNT(*) AS filter_review_count, AVG(rating) AS filter_review_average
+    FROM reviews
+    WHERE company_id = ? AND review_status = ? 
+    AND created_at BETWEEN ? AND ?`;
+  const get_company_rewiew_count_value = [companyID, '1', from, to];;
+  try{
+    const get_company_rewiew_rating_count_result = await query(get_company_rewiew_count_query, get_company_rewiew_count_value);
+    const mergedResult = {
+      ...get_company_total_rewiew_rating_result[0],
+      ...get_company_rewiew_rating_count_result[0]
+    };
+      //console.log(mergedResult)
+      return mergedResult;
+    }catch(error){
+      return 'Error during user get_company_rewiew_rating_count_query:'+error;
+    }
+  
 }
 
 async function getCompanyReviews(companyID){
@@ -1305,5 +1348,6 @@ module.exports = {
     getCompanySurveyAnswersByID,
     getCompanySurveySubmitionsCount,
     getCompanySurveyDetailsBySurveyID,
-    getCompanyOngoingSurveyDetails
+    getCompanyOngoingSurveyDetails,
+    getCompanyReviewsBetween
 };

@@ -4002,7 +4002,7 @@ exports.complainDetails = async (req, res) => {
 
 //Insert user Complaint Response  to company
 exports.userComplaintResponse = async (req, res) => {
-  console.log('userComplaintResponse',req.body ); 
+  //console.log('userComplaintResponse',req.body ); 
   //return false;
   const authenticatedUserId = parseInt(req.user.user_id);
   const ApiuserId = parseInt(req.body.user_id);
@@ -4063,7 +4063,7 @@ exports.userComplaintResponse = async (req, res) => {
 
 //user Complaint Rating
 exports.userComplaintRating = async (req, res) => {
-  console.log('userComplaintRating',req.body ); 
+  //console.log('userComplaintRating',req.body ); 
   //return false;
   const authenticatedUserId = parseInt(req.user.user_id);
   const ApiuserId = parseInt(req.body.user_id);

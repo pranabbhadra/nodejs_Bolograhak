@@ -300,6 +300,12 @@ router.post('/user_polling', authController.userPolling);
 //Review Invitation Email
 router.post('/review_invitation', authController.reviewInvitation);
 
+//Bulk Review Invitation Email
+router.post('/review_bulk_invitation',csvupload.single('email_file'), authController.reviewBulkInvitation);
+
+//Bulk Survey Invitation Email
+router.post('/survey_bulk_invitation',csvupload.single('email_file'), authController.surveyBulkInvitation);
+
 //Add Review Flag
 router.post('/add-review-flag', authController.addReviewFlag);
 
@@ -355,5 +361,16 @@ router.post('/notification-content',upload.single('image'), authController.notif
 router.post('/company-create-tags', authController.companyCreateTags);
 //Update company discussion tags
 router.post('/update-company-tags', authController.updateCompanyTags);
+
+
+// company compare-chart-filter
+router.post('/compare-chart-filter', authController.compareChartFilter);
+
+// company compare-chart-filter
+router.post('/historical-chart-filter', authController.historicalChartFilter);
+
+// company compare-chart-filter
+router.post('/competitorCompany-chart', authController.competitorCompanyChart);
+
 
 module.exports = router;

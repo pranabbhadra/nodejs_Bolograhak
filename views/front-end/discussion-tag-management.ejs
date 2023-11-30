@@ -10,16 +10,23 @@
          </div>
          <div class="row">
             <div class="col-md-4 ">
-                <div class="send-review-invitation ">
+                <div class="send-review-invitation delete_company_tags">
                     <h4>Your Tags</h4>
-                    <% if( CompanyCreatedTags.length > 0 ){ %>
-                        <% const tags = JSON.parse(CompanyCreatedTags[0].tags) %>
-                        <% if(tags.length > 0 ){ %>
-                           <% tags.forEach((tag)=>{ %>
-                              <button class="btn-default btn-warning dis-details-top-btn" ><%= tag %></button><button company-id="<%= company.ID  %>" tag="<%= tag %>" tagArr="<%= CompanyCreatedTags[0].tags %>" data-bs-toggle="modal" data-bs-target="#surealertmodal" class="delete-button">X</button>
-                           <% }) %>   
-                        <% } %>
-                    <% } %>
+                    <div class="all_added_tags">
+                     <% if( CompanyCreatedTags.length > 0 ){ %>
+                           <% const tags = JSON.parse(CompanyCreatedTags[0].tags) %>
+                           <% if(tags.length > 0 ){ %>
+                              <% tags.forEach((tag)=>{ %>
+                                 <!-- <button class="btn-default btn-warning dis-details-top-btn" ><%= tag %></button>
+                                 <button company-id="<%= company.ID  %>" tag="<%= tag %>" tagArr="<%= CompanyCreatedTags[0].tags %>" data-bs-toggle="modal" data-bs-target="#surealertmodal" class="delete-button">X</button> -->
+                                 <div class="added_tag btn-warning">
+                                    <%= tag %>
+                                    <a title="Delete Tag" company-id="<%= company.ID  %>" tag="<%= tag %>" href="#" tagArr="<%= CompanyCreatedTags[0].tags %>" data-bs-toggle="modal" data-bs-target="#surealertmodal" class="delete-button"><i class="fa-solid fa-circle-xmark"></i></a>
+                                 </div>
+                              <% }) %>   
+                           <% } %>
+                     <% } %>
+                    </div>
                 </div>
             </div>
             <div class="col-md-8">

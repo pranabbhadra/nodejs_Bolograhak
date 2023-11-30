@@ -4164,7 +4164,7 @@ exports.forgotPassword = (req, res) => {
    
 
     //return false;
-    const sql = `SELECT user_id, first_name  FROM users WHERE email = '${email}' `;
+    const sql = `SELECT user_id, first_name, register_from  FROM users WHERE email = '${email}' `;
     db.query(sql, (error, result)=>{
         if(error){
             return res.send(
@@ -4176,110 +4176,120 @@ exports.forgotPassword = (req, res) => {
             )
         }else{
             if (result.length > 0) {
-                
-                const cipher = crypto.createCipher('aes-256-cbc', passphrase);
-                let encrypted = cipher.update(email, 'utf8', 'hex');
-                encrypted += cipher.final('hex');
-                //console.log('Encrypted:', encrypted);
+                if(result[0].register_from == "google"){
+                    return res.send({
+                        status: 'not ok',
+                        message: 'We noticed that you have logged in using your Google account. For enhanced security, please use the password reset option provided by Google to update your password.'
+                    });
+                } else if (result[0].register_from == "facebook"){
+                    return res.send({
+                        status: 'not ok',
+                        message: 'We noticed that you have logged in using your Facebook account. For enhanced security, please use the password reset option provided by Facebook to update your password.'
+                    });
+                } else {
+                    const cipher = crypto.createCipher('aes-256-cbc', passphrase);
+                    let encrypted = cipher.update(email, 'utf8', 'hex');
+                    encrypted += cipher.final('hex');
+                    //console.log('Encrypted:', encrypted);
 
-                const template = `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
-                <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
-                 <tbody>
-                  <tr>
-                   <td align="center" valign="top">
-                     <div id="template_header_image"><p style="margin-top: 0;"></p></div>
-                     <table id="template_container" style="box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; background-color: #fdfdfd; border: 1px solid #dcdcdc; border-radius: 3px !important;" border="0" cellpadding="0" cellspacing="0" width="600">
-                      <tbody>
-                        <tr>
-                         <td align="center" valign="top">
-                           <!-- Header -->
-                           <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
-                             <tbody>
-                               <tr>
-                               <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
-                                <td id="header_wrapper" style="padding: 36px 48px; display: block;">
-                                   <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Forgot Password</h1>
-                                </td>
-          
-                               </tr>
-                             </tbody>
-                           </table>
-                     <!-- End Header -->
-                     </td>
-                        </tr>
-                        <tr>
-                         <td align="center" valign="top">
-                           <!-- Body -->
-                           <table id="template_body" border="0" cellpadding="0" cellspacing="0" width="600">
-                             <tbody>
-                               <tr>
-                                <td id="body_content" style="background-color: #fdfdfd;" valign="top">
-                                  <!-- Content -->
-                                  <table border="0" cellpadding="20" cellspacing="0" width="100%">
-                                   <tbody>
-                                    <tr>
-                                     <td style="padding: 48px;" valign="top">
-                                       <div id="body_content_inner" style="color: #737373; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
-                                        
-                                        <table border="0" cellpadding="4" cellspacing="0" width="90%">
-                                          <tr>
-                                            <td colspan="2">
-                                            <strong>Hello ${result[0].first_name},</strong>
-                                            <p style="font-size:15px; line-height:20px">A request has been received to change the password for your <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a>  account. <a class="btn btn-primary" href="${process.env.MAIN_URL}reset-password/${encrypted}">Click here </a>to reset your password</p>
-                                            </td>
-                                          </tr>
-                                        </table>
-                                        
-                                       </div>
-                                     </td>
-                                    </tr>
-                                   </tbody>
-                                  </table>
-                                <!-- End Content -->
-                                </td>
-                               </tr>
-                             </tbody>
-                           </table>
-                         <!-- End Body -->
-                         </td>
-                        </tr>
-                        <tr>
-                         <td align="center" valign="top">
-                           <!-- Footer -->
-                           <table id="template_footer" border="0" cellpadding="10" cellspacing="0" width="600">
-                            <tbody>
-                             <tr>
-                              <td style="padding: 0; -webkit-border-radius: 6px;" valign="top">
-                               <table border="0" cellpadding="10" cellspacing="0" width="100%">
-                                 <tbody>
-                                   <tr>
-                                    <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
-                                         <p>This email was sent from <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a></p>
+                    const template = `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
+                    <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
+                    <tbody>
+                    <tr>
+                    <td align="center" valign="top">
+                        <div id="template_header_image"><p style="margin-top: 0;"></p></div>
+                        <table id="template_container" style="box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; background-color: #fdfdfd; border: 1px solid #dcdcdc; border-radius: 3px !important;" border="0" cellpadding="0" cellspacing="0" width="600">
+                        <tbody>
+                            <tr>
+                            <td align="center" valign="top">
+                            <!-- Header -->
+                            <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
+                                <tbody>
+                                <tr>
+                                <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
+                                    <td id="header_wrapper" style="padding: 36px 48px; display: block;">
+                                    <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Forgot Password</h1>
                                     </td>
-                                   </tr>
-                                 </tbody>
-                               </table>
-                              </td>
-                             </tr>
-                            </tbody>
-                           </table>
-                         <!-- End Footer -->
-                         </td>
-                        </tr>
-                      </tbody>
-                     </table>
-                   </td>
-                  </tr>
-                 </tbody>
-                </table>
-               </div>`;
-                var mailOptions = {
-                    from: process.env.MAIL_USER,
-                    //to: 'pranab@scwebtech.com',
-                    to: email,
-                    subject: 'Forgot password Email',
-                    html: template
-                  }
+            
+                                </tr>
+                                </tbody>
+                            </table>
+                        <!-- End Header -->
+                        </td>
+                            </tr>
+                            <tr>
+                            <td align="center" valign="top">
+                            <!-- Body -->
+                            <table id="template_body" border="0" cellpadding="0" cellspacing="0" width="600">
+                                <tbody>
+                                <tr>
+                                    <td id="body_content" style="background-color: #fdfdfd;" valign="top">
+                                    <!-- Content -->
+                                    <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                                    <tbody>
+                                        <tr>
+                                        <td style="padding: 48px;" valign="top">
+                                        <div id="body_content_inner" style="color: #737373; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
+                                            
+                                            <table border="0" cellpadding="4" cellspacing="0" width="90%">
+                                            <tr>
+                                                <td colspan="2">
+                                                <strong>Hello ${result[0].first_name},</strong>
+                                                <p style="font-size:15px; line-height:20px">A request has been received to change the password for your <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a>  account. <a class="btn btn-primary" href="${process.env.MAIN_URL}reset-password/${encrypted}">Click here </a>to reset your password</p>
+                                                </td>
+                                            </tr>
+                                            </table>
+                                            
+                                        </div>
+                                        </td>
+                                        </tr>
+                                    </tbody>
+                                    </table>
+                                    <!-- End Content -->
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <!-- End Body -->
+                            </td>
+                            </tr>
+                            <tr>
+                            <td align="center" valign="top">
+                            <!-- Footer -->
+                            <table id="template_footer" border="0" cellpadding="10" cellspacing="0" width="600">
+                                <tbody>
+                                <tr>
+                                <td style="padding: 0; -webkit-border-radius: 6px;" valign="top">
+                                <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                                    <tbody>
+                                    <tr>
+                                        <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
+                                            <p>This email was sent from <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a></p>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <!-- End Footer -->
+                            </td>
+                            </tr>
+                        </tbody>
+                        </table>
+                    </td>
+                    </tr>
+                    </tbody>
+                    </table>
+                </div>`;
+                    var mailOptions = {
+                        from: process.env.MAIL_USER,
+                        //to: 'pranab@scwebtech.com',
+                        to: email,
+                        subject: 'Forgot password Email',
+                        html: template
+                    }
               
                     mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
                       if (err) {
@@ -4299,6 +4309,9 @@ exports.forgotPassword = (req, res) => {
                         )
                       }
                     })
+                }
+                
+                
                 
             } else {
                 return res.send(
@@ -4717,6 +4730,147 @@ exports.reviewInvitation = async (req, res) => {
     });
 }
 
+//--- review Bulk Invitation ----//
+exports.reviewBulkInvitation = async (req, res) => {
+    //console.log('reviewBulkInvitation',req.body);
+    //console.log('reviewBulkInvitation',req.file);
+    const { email_body, user_id, company_id, company_name } = req.body;
+
+    if (!req.file) {
+        return res.send(
+            {
+                status: 'err',
+                data: '',
+                message: 'No file uploaded.'
+            }
+        )        
+    }
+    const csvFilePath = path.join(__dirname, '..', 'company-csv', req.file.filename);
+    try {   
+        const connection = await mysql.createConnection(dbConfig);
+
+        const workbook = new ExcelJS.Workbook();
+        await workbook.csv.readFile(csvFilePath);
+
+        const worksheet = workbook.getWorksheet(1);
+        const emailsArr = await processReviewCSVRows(worksheet);
+        const emails = emailsArr.flat();
+        if (emails.length > 100) {
+            return res.send(
+                {
+                    status: 'err',
+                    message: 'You can not add more than 100 email id`s in your current membership.'
+                }
+            )  
+        } else {
+            req.body.emails = emails;
+            console.log('emails',emails);
+            console.log('req.body',req.body);
+            const [InvitationDetails, sendInvitationEmail] = await Promise.all([
+                comFunction2.insertInvitationDetails(req.body),
+                comFunction2.sendInvitationEmail(req.body)
+            ]);
+
+            return res.send(
+                {
+                    status: 'ok',
+                    message: 'Invitation emails send successfully.'
+                }
+            )
+        }
+          
+        
+    } catch (error) {
+        console.error('Error:', error);
+        return res.send({
+            status: 'err',
+            message: error.message
+        });
+    } finally {
+        // Delete the uploaded CSV file
+        //fs.unlinkSync(csvFilePath);
+    }
+}
+
+// Define a promise-based function for processing review invitation csv
+function processReviewCSVRows(worksheet) {
+    return new Promise(async (resolve, reject) => {
+        const emails = [];
+
+        await worksheet.eachRow(async (row, rowNumber) => {
+            if (rowNumber !== 1) { // Skip the header row
+                
+                emails.push([ row.values[1] ]);
+
+            }
+        });
+
+        // Resolve the promise after all rows have been processed
+        resolve(emails);
+    });
+}
+
+//--- survey Bulk Invitation ----//
+exports.surveyBulkInvitation = async (req, res) => {
+    //console.log('surveyBulkInvitation',req.body);
+    //console.log('surveyBulkInvitation',req.file);
+    //return false;
+    const { email_body, user_id, company_id, company_name, company_slug, survey_id, unique_id  } = req.body;
+
+    if (!req.file) {
+        return res.send(
+            {
+                status: 'err',
+                data: '',
+                message: 'No file uploaded.'
+            }
+        )        
+    }
+    const csvFilePath = path.join(__dirname, '..', 'company-csv', req.file.filename);
+    try {   
+        const connection = await mysql.createConnection(dbConfig);
+
+        const workbook = new ExcelJS.Workbook();
+        await workbook.csv.readFile(csvFilePath);
+
+        const worksheet = workbook.getWorksheet(1);
+        const emailsArr = await processReviewCSVRows(worksheet);
+        const emails = emailsArr.flat();
+        if (emails.length > 100) {
+            return res.send(
+                {
+                    status: 'err',
+                    message: 'You can not add more than 100 email id`s in your current membership.'
+                }
+            )  
+        } else {
+            req.body.emails = emails;
+            console.log('emails',emails);
+            console.log('req.body',req.body);
+            
+                const [ sendSurveyInvitationEmail] = await Promise.all([
+                    comFunction2.sendSurveyInvitationEmail(req.body)
+                ]);
+
+                return res.send({
+                    status: 'ok',
+                    message: 'Survey Invitation emails send successfully'
+                });
+        }
+          
+        
+    } catch (error) {
+        console.error('Error:', error);
+        return res.send({
+            status: 'err',
+            message: error.message
+        });
+    } finally {
+        // Delete the uploaded CSV file
+        //fs.unlinkSync(csvFilePath);
+    }
+}
+
 //Add  Review Flag
 exports.addReviewFlag = async (req, res) => {
     //console.log('addReviewFlag',req.body );
@@ -5131,7 +5285,7 @@ exports.companyQuery = async (req, res) => {
 
 //user Complaint Rating
 exports.userComplaintRating = async (req, res) => {
-    console.log('userComplaintRating',req.body ); 
+    //console.log('userComplaintRating',req.body ); 
     //return false;
     const { user_id, complaint_id, rating } = req.body;
     
@@ -5185,7 +5339,7 @@ exports.userComplaintRating = async (req, res) => {
 
 //Insert user Complaint Response  to company
 exports.userComplaintResponse = async (req, res) => {
-    console.log('userComplaintResponse',req.body ); 
+    //console.log('userComplaintResponse',req.body ); 
     //return false;
     const {company_id, user_id, complaint_id, message, complaint_level, complaint_status } = req.body;
     
@@ -5441,11 +5595,104 @@ exports.updateCompanyTags = async (req, res) => {
 
 //Notification Content
 exports.notificationContent = async (req, res) => {
-    console.log('notificationContent',req.body ); 
-    console.log('notificationContent',req.file ); 
+    //console.log('notificationContent',req.body ); 
+    //console.log('notificationContent',req.file ); 
     //return false;
    
 }
+//compare Chart Filter
+exports.compareChartFilter = async (req, res) => {
+    console.log('compareChartFilter',req.body ); 
+    const {company_id,company_name, from, to} = req.body
+    
+    const getCompanyReviewsBetween = await comFunction.getCompanyReviewsBetween(company_id, from, to)
+    //console.log(getCompanyReviewsBetween)
+    return res.send({
+        status: 'ok',
+        data:getCompanyReviewsBetween,
+        company_name:company_name,
+        message: 'Company Reviews Data fetch successfully '
+    });
+    //return false;
+   
+}
+
+//historical Chart Filter
+exports.historicalChartFilter = async (req, res) => {
+    //console.log('historicalChartFilter', req.body);
+    const { company_id, company_name, from, to, filter } = req.body;
+  
+    try {
+      let getCompanyHistoricalData = await comFunction2.getCompanyHistoricalReviewBetween(company_id, from, to, filter);
+  
+      console.log('getCompanyHistoricalData', getCompanyHistoricalData);
+  
+      if (getCompanyHistoricalData.length === 0) {
+        getCompanyHistoricalData = [{
+            date_group: 0,
+            created_at: '2023-01-01T03:09:07.000Z',
+            average_rating: 0
+          }]
+      }
+        return res.send({
+            status: 'ok',
+            data: getCompanyHistoricalData,
+            filter:filter,
+            company_name: company_name,
+            message: 'Company Reviews Data fetch successfully '
+          });
+      
+    } catch (error) {
+      console.error('Error in historicalChartFilter:', error);
+      return res.status(500).send({
+        status: 'error',
+        message: 'Internal Server Error'
+      });
+    }
+  };
+
+//historical Chart Filter
+exports.competitorCompanyChart = async (req, res) => {
+    console.log('competitorCompanyChart', req.body);
+    const { company_id, company_name, competitor } = req.body;
+    let competitorChartData = [];
+  
+    try {
+        const ownCompanyData = await comFunction.getCompanyReviewsBetween(company_id);
+        competitorChartData.push(ownCompanyData);
+
+        let otherDataPromises = [];
+
+        if (competitor != '') {
+            if (Array.isArray(competitor)) {
+                competitor.forEach((id) => {
+                    otherDataPromises.push(comFunction.getCompanyReviewsBetween(id));
+                });
+            } else {
+                otherDataPromises.push(comFunction.getCompanyReviewsBetween(competitor));
+            }
+        }
+
+        const otherDataArray = await Promise.all(otherDataPromises);
+
+        competitorChartData.push(...otherDataArray);
+
+        console.log('competitorChartData', competitorChartData);
+
+        return res.send({
+            status: 'ok',
+            data: competitorChartData,
+            company_name: company_name,
+            message: 'Company competitor Chart  Data fetch successfully'
+        });
+    } catch (error) {
+        console.error('Error in competitor Chart Data:', error);
+        return res.status(500).send({
+            status: 'error',
+            message: 'Internal Server Error'
+        });
+    }
+};
 
 
 // Schedule mail for pending complaint
