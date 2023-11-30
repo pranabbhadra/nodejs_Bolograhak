@@ -909,7 +909,7 @@
                      console.log(data.filter);
                      xValueFormatString = "WW "; // Week number and year
                      const weeklyData = data.data.map(entry => ({
-                        x: entry.date_group,
+                        x: entry.date_group.toString(),
                         y: entry.average_rating
                      }));
                      historicalchrat.data[0].dataPoints = weeklyData;
@@ -952,7 +952,7 @@
                      historicalchrat.axisX.valueFormatString = xValueFormatString;
 
                   } else {
-
+                     console.log(data.filter);
                      xValueFormatString = "DD MMM YYYY"; // Default format for daily
                      const dailyData= data.data.map(entry => ({
                         x: new Date(entry.created_at),
