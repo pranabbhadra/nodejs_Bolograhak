@@ -906,8 +906,8 @@
                   console.log('aaaaaaaa',data.data)
                   let xValueFormatString;
                   if (data.filter === 'weekly') {
-                     console.log(data.filter);
-                     xValueFormatString = "WW "; // Week number and year
+                     console.log('weekly==',data.filter);
+                     xValueFormatString = "WW"; // Week number and year
                      const weeklyData = data.data.map(entry => ({
                         x: parseInt(entry.date_group, 10),
                         y: entry.average_rating
