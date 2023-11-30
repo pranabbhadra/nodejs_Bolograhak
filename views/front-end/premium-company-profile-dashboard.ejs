@@ -973,7 +973,10 @@
          });
 
          function updateChart(dataPoints, xValueFormatString) {
-            $("#historicalchrat").CanvasJSChart().destroy();
+            var existingChart = $("#historicalchrat").CanvasJSChart();
+            if (existingChart) {
+               existingChart.destroy();
+            }
             var historicalchrat = {
                exportEnabled: false,
                animationEnabled: true,
