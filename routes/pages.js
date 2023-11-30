@@ -1492,8 +1492,8 @@ router.get('/company-dashboard/:slug', checkClientClaimedCompany, async (req, re
         console.log('getSimilarCompany:', getSimilarCompany);
 
         const productGraphData = allCompanyReviews.map(entry => ({
-            name:entry.review_title.trim() === '' ? 'General' : entry.review_title,
-            new_name:entry.review_title.replace(/\s/g, '').toLowerCase()
+            name: (entry.review_title && entry.review_title.trim() !== '') ? entry.review_title : 'General',
+            new_name: (entry.review_title ? entry.review_title.replace(/\s/g, '').toLowerCase() : '')
         }))
         
         const countMap = productGraphData.reduce((acc, entry) => {
