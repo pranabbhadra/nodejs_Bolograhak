@@ -3915,6 +3915,27 @@ function getSimilarCompany(companyId) {
   });
 }
 
+// Fetch company categories 
+function getCompanyCategory(companyId) {
+    db.query('SELECT * FROM complaint_category WHERE company_id = ? AND parent_id = 0 ', [companyId], async (err, results) => {
+        if (err) {
+            return res.send(
+                {
+                    status: 'err',
+                    data: '',
+                    message: 'An error occurred while processing your request' + err
+                }
+            )
+        } else {
+            if (results.length > 0) {
+                return results ;
+            } else {
+                return [] ;
+            }
+        }
+    })
+}
+
 module.exports = {
   getFaqPage,
   getFaqCategories,
@@ -3998,5 +4019,6 @@ module.exports = {
   duscussionQueryAlert,
   discussionQueryAlertEmail,
   getCompanyHistoricalReviewBetween,
-  getSimilarCompany
+  getSimilarCompany,
+  getCompanyCategory
 };

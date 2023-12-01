@@ -54,6 +54,48 @@
                                     <% } %>
                                 </Select>
                             </div>
+                            
+                            <div class="each_box add_products">
+                                <div class="repeter_wrap">
+                                    <div class="all_repeter">
+                                        <div class="each_repeter">
+                                            <div class="row align-items-center">
+                                                <div class="col-12">
+                                                    <div class="custom-form mb-3">
+                                                        <label class="form-label">Products Title<sup>*</sup></label>
+                                                        <input type="text" class="form-control" placeholder="" name="product_title" value="" required>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="custom-form mb-3">
+                                                        <label class="form-label">Products Description<sup>*</sup></label>
+                                                        <textarea class="form-control" placeholder="" rows="3" name="product_desc"></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="custom-form col-sm-10">
+                                                    <label class="form-label">Image</label>
+                                                    
+                                                    <input class="form-control upload_in_repeter product_image" type="file" name="product_image">
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <div class="display_image_box">
+                                                            <img class="promotion_image_review" src="/front-end/images/no-image.png" alt="">
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="text-right">
+                                                        <button data-id="null" company-id = "<%= company.ID %>" data-type="product" type="button" class="btn btn-danger delete_item">Remove</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="add_more_btn">
+                                        
+                                        <button type="button" class="btn btn-primary add_more_product">Add Product</button>
+                                    </div>
+                                </div>
+                            </div>
                             <input type="hidden" name="company_id" value="<%- company.ID -%>">
                             <input type="submit" value="CREATE" class="btn-default btn-warning" id="submit_btn">
                         </form>
@@ -282,5 +324,13 @@
               }
             });
         })
+
+        $('.add_more_product').click(function(e){
+                $(this).parents('.add_products').find('.all_repeter').append('<div class=each_repeter><div class="align-items-center row"><div class=col-12><div class=mb-3><label class=form-label>Title<sup>*</sup></label> <input class=form-control placeholder="" name="product_title" required></div></div><div class=col-12><div class=mb-3><label class=form-label>Description<sup>*</sup></label> <textarea class=form-control placeholder="" name="product_desc" rows=3></textarea></div></div><div class=col-sm-10><label class=form-label>Image</label> <input class="form-control upload_in_repeter product_image"type=file name="product_image" ></div><div class=col-sm-2><div class=display_image_box><img alt=""class=promotion_image_review src=/front-end/images/no-image.png></div></div><div class=col-12><div class=text-right><button data-id="null" class="btn btn-danger delete_item"type=button>Remove</button></div></div></div></div>');
+            });
+            
+            $('body').on('click','.delete_item',function(){
+                $(this).parents('.each_repeter').remove();
+            })
     });
 </script>

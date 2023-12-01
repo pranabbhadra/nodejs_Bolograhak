@@ -78,7 +78,7 @@ exports.states = (req, res) => {
     })
 }
 
-//-- complainCategory --//
+//--Company Category --//
 exports.complainCategory = (req, res) => {
     //console.log('complainCategory',req.body);
     //return false;
