@@ -1,0 +1,228 @@
+<%- include('common/header') -%>
+<link href="/front-end/css/company-profile-dashboard.css" rel="stylesheet" type="text/css">
+<%- include('common/header-banner') -%>
+
+<!-- ================ Section1 Start ======================= -->
+<section class="main-content premium_company_profile">
+    <div class="container">
+        <div class="main_box">
+            <%- include('common/premium-company-sidebar') -%>
+         </div>
+        <div class="send-review-invitation">
+        <h2 class="inner-main-head">Products</h2>
+        <% if(CompanyCategoryProducts.length > 0){ %>
+            <% CompanyCategoryProducts.forEach(product =>{  %>
+                <div class="promotion-slider">
+                    <div class="item">
+                        <div class="product-part">
+                                <a href="#"><img src="/<%= product.product_img %>" alt="img" width="258" height="183"></a>
+                            <div class="product-info">
+                                <h3><a href="#"><%= product.product_title %></a></h3>
+                                <p><a href="#"><%= product.product_desc %></a></p>
+                                <!-- <p><a href="#"><i class="fa-regular fa-angle-right"></i></a></p> -->
+                            </div>
+                        </div>
+                        <a href="" class="btn btn-danger delete-product" data-bs-toggle="modal" data-bs-target="#surealertmodal" data-product-id="<%= product.id %>"   id="" >Delete</a>
+
+                        <a href="" class="btn btn-primary edit-product respond-link"  data-product-id="<%= product.id %>" data-product-title="<%= product.product_title %>" data-product-desc="<%= product.product_desc %>" data-product-img="<%= product.product_img %>" data-bs-toggle="modal" data-bs-target="#editModal"   id="" >Edit</a>
+
+                        <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@fat">Open modal for @fat</button> -->
+
+                    </div>
+                    <div class="submit-loading" style="display: none;">Please wait..</div>
+                    <div class="submit-success" style="width: 100%; text-align: center; display: block; border: 2px solid #fccb06; padding: 6px; margin-top: 20px; border-radius: 5px; display: none;"></div>
+                    <div class="submit-error" style="width: 100%; text-align: center; display: block; border: 2px solid #fccb06; padding: 6px; margin-top: 20px; border-radius: 5px; display: none;"></div>
+                </div>
+            <% }) %>
+        <% } else { %>
+            <h4 class="inner-main-head">No Product Found </h4>
+        <% } %>
+         
+    </div>
+</section>
+
+<!-- The Modal -->
+<div class="modal" id="surealertmodal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+  
+        <!-- Modal Header -->
+        <div class="modal-header border-0">
+          <button type="button" class="btn-close" data-bs-dismiss="modal"><i class="fa-solid fa-circle-xmark"></i></button>
+        </div>
+        <div class="modal-body text-center">
+            <h5 class="mb-4">Want to delete this category ?</h5>
+            <button class="btn-default btn-warning my-1" id="okButton">Yes Delete !</button>
+            <button class="btn-default btn-dark my-1" id="cancelButton">No Cancle !</button>
+        </div>
+  
+      </div>
+    </div>
+  </div>
+<!-- Modal edit -->
+
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Edit Product</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="product_edit_form" enctype="multipart/form-data">
+            <div class="modal-body">
+                <div class="each_repeter">
+                    <div class="row align-items-center">
+                        <div class="col-12">
+                            <div class="custom-form mb-3">
+                                <label class="form-label">Products Title<sup style="color: red;">*</sup></label>
+                                <input type="text" class="form-control" placeholder="" id="product-title" name="product_title" value="" required>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="custom-form mb-3">
+                                <label class="form-label">Products Description</label>
+                                <textarea class="form-control" placeholder="" rows="3" id="product-desc"  name="product_desc"></textarea>
+                            </div>
+                        </div>
+                        <div class="custom-form col-sm-10">
+                            <label class="form-label">Image<sup style="color: red;">*</sup></label>
+                            
+                            <input class="form-control  product_image" type="file" name="product_img" >
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="display_image_box">
+                                    <img class="promotion_image_review" id="product-img" src="" alt="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                <input type="hidden" id="product-id" name="product_Id" value="" />
+                <input type="hidden" id="" name="company_Id" value="<%= company.ID %>" />
+            
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" id="submit_btn" class="btn btn-primary">Update</button>
+                </div>
+        </form>
+      </div>
+      <div class="submit-loading" style="display: none;">Please wait..</div>
+      <div class="submit-success" style="width: 100%; text-align: center; display: block; border: 2px solid #fccb06; padding: 6px; margin-top: 20px; border-radius: 5px; display: none;"></div>
+      <div class="submit-error" style="width: 100%; text-align: center; display: block; border: 2px solid #fccb06; padding: 6px; margin-top: 20px; border-radius: 5px; display: none;"></div>
+    </div>
+  </div>
+<!-- ================ Section1 End ======================= -->
+
+<%- include('common/footer') -%>
+
+<script>
+$(document).ready(function () {
+    $('.respond-link').on('click', function (e) {
+        e.preventDefault();
+        const productId = $(this).data('product-id');
+        const productTitle = $(this).data('product-title');
+        const productDesc = $(this).data('product-desc');
+        const productImg = $(this).data('product-img');
+
+        $('#product-id').val(productId);
+        $('#product-title').val(productTitle);
+        $('#product-desc').val(productDesc);
+        $("#product-img").attr("src","/"+productImg);
+    });
+
+    $('#product_edit_form').submit(function(e){
+            event.preventDefault();
+            $('#submit_btn').prop( "disabled", true );
+            $('.submit-success, .submit-error').hide();
+            $('.submit-loading').show();
+
+            const formData = new FormData($('#product_edit_form')[0])
+
+            $.ajax({
+              url: '/auth/update-company-product',
+              method: 'POST',
+              data: formData,
+              processData: false,
+              contentType: false,
+            //   data: jsonData,
+            //   ContentType: 'application/json',
+              success: function (data) {
+                if (data.status == 'ok') {
+                  $('.submit-loading').hide();
+                  $('#product_edit_form')[0].reset();
+                  $('.submit-success').text(data.message);
+                  $('.submit-success').show();
+                  $('#submit_btn').prop( "disabled", false );
+                  setTimeout( function(){
+                    location.reload(true);
+                  }, 3000 );
+                } else {
+                    $('.submit-loading').hide();
+                  $('.submit-error').text(data.message);
+                  $('.submit-error').show();
+                    $('#submit_btn').prop( "disabled", false );
+                }
+                //console.log(data);
+              },
+              error: function (error) {
+                $('.submit-loading').hide();
+                $('.submit-error').text(error);
+                $('.submit-error').show();
+                $('#submit_btn').prop( "disabled", false );
+              }
+            });
+        })
+
+    $('.delete-product').click(function(e){
+        event.preventDefault();
+        var product_id = $(this).attr('data-product-id');
+        //alert(product_id);
+        $("#okButton").on("click", function(e) {
+            event.preventDefault();
+            // Replace this with your desired action
+            // For example, you can place your code here
+            console.log("User clicked 'Ok'");
+
+            $.ajax({
+                url: '/auth/delete-company-product',
+                method: 'POST',
+                data: {product_id:product_id},
+                ContentType: 'application/json',
+                success: function (data) {
+                    if (data.status == 'ok') {
+                    $('.submit-loading').hide();
+                    $('.submit-success').text(data.message);
+                    $('.submit-success').show();
+                    setTimeout( function(){
+                        location.reload(true);
+                    }, 3000 );
+                    } else {
+                        $('.submit-loading').hide();
+                    $('.submit-error').text(data.message);
+                    $('.submit-error').show();
+                    }
+                    //console.log(data);
+                },
+                error: function (error) {
+                    $('.submit-loading').hide();
+                    $('.submit-error').text(error);
+                    $('.submit-error').show();
+                }
+            });
+            $("#surealertmodal").find('.btn-close').trigger('click');
+        });
+        $("#cancelButton").on("click", function() {
+            event.preventDefault();
+            $('.submit-loading').hide();
+            $('.submit-error').text('Category is not deleted.');
+            $('.submit-error').show();
+            setTimeout(function() { $(".submit-error").hide(); }, 3000);
+            // Close the modal
+            $("#surealertmodal").find('.btn-close').trigger('click');
+        });
+        
+        
+    })
+
+});
+</script>

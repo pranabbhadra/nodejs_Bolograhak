@@ -319,10 +319,20 @@ router.post('/create-discussion', authController.createDiscussion);
 router.post('/add-comment', authController.addComment);
 
 //Create create-company-category
-router.post('/create-company-category', authController.createCompanyCategory);
+router.post('/create-company-category',upload.fields([
+
+    { name: 'product_image', maxCount: 100 },
+
+]), authController.createCompanyCategory);
 
 //Delete company-category
 router.post('/delete-company-category', authController.deleteCompanyCategory);
+
+//Delete company-category
+router.post('/delete-company-product', authController.deleteCompanyProduct);
+
+//update-company-product
+router.post('/update-company-product', upload.single('product_img'), authController.updateCompanyProduct);
 
 //Update company-category
 router.post('/update-company-category', authController.updateCompanyCategory);

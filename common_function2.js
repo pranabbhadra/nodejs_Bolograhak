@@ -3936,6 +3936,51 @@ function getCompanyCategory(companyId) {
     })
 }
 
+// Insert Company product
+function insertCompanyProduct(body,file) {
+
+  console.log('insertCompanyProduct',body); 
+  console.log('insertCompanyProduct',file ); 
+  
+  const {category_name, parent_category, company_id, product_title, product_desc } = body;
+
+  db.query('SELECT * FROM complaint_category WHERE company_id = ? AND parent_id = 0 ', [companyId], async (err, results) => {
+      if (err) {
+          return res.send(
+              {
+                  status: 'err',
+                  data: '',
+                  message: 'An error occurred while processing your request' + err
+              }
+          )
+      } else {
+          if (results.length > 0) {
+              return results ;
+          } else {
+              return [] ;
+          }
+      }
+  })
+}
+
+// Fetch company category Products
+function getCompanyCategoryProducts(cat_id) {
+  return new Promise((resolve, reject) => {
+    const sql = `SELECT company_products.*, cc.category_name FROM company_products 
+                LEFT JOIN complaint_category cc ON cc.id = company_products.category_id 
+                WHERE company_products.category_id = ?  `;
+
+      db.query(sql, [cat_id], (err, results) => {
+          if (err) {
+              reject('An error occurred while processing your request ' + err);
+          } else {
+              //console.log('results', results);
+              resolve(results);
+          }
+      });
+  });
+}
+
 module.exports = {
   getFaqPage,
   getFaqCategories,
@@ -4020,5 +4065,7 @@ module.exports = {
   discussionQueryAlertEmail,
   getCompanyHistoricalReviewBetween,
   getSimilarCompany,
-  getCompanyCategory
+  getCompanyCategory,
+  insertCompanyProduct,
+  getCompanyCategoryProducts
 };

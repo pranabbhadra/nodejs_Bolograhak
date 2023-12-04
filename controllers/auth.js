@@ -4957,8 +4957,12 @@ exports.addComment = async (req, res) => {
 
 //Create company category
 exports.createCompanyCategory = async (req, res) => {
-    //console.log('createCompanyCategory',req.body ); 
-    const {category_name, parent_category, company_id} = req.body;
+    console.log('createCompanyCategory',req.body ); 
+    console.log('createCompanyCategoryFile',req.files ); 
+    //return false;
+    const {category_name, parent_category, company_id, product_title, product_desc } = req.body;
+    const {product_image} = req.files;
+
     const checkQuery = `SELECT id FROM complaint_category WHERE category_name = '${category_name}' AND company_id = '${company_id}' `;
     db.query(checkQuery, (checkErr, checkResult)=>{
         if (checkErr) {
@@ -4973,24 +4977,76 @@ exports.createCompanyCategory = async (req, res) => {
                 message: 'Category name already exist.'
             });
         } else {
-                const sql = `INSERT INTO complaint_category ( company_id, category_name, parent_id) VALUES (?, ?, ?)`;
-                const data = [company_id, category_name, parent_category ];
-                db.query(sql, data, (err, result) => {
-                    if (err) {
-                        return res.send({
-                            status: 'not ok',
-                            message: 'Something went wrong '+err
-                        });
+            const sql = `INSERT INTO complaint_category ( company_id, category_name, parent_id) VALUES (?, ?, ?)`;
+            const data = [company_id, category_name, parent_category ];
+            db.query(sql, data, async (err, result) => {
+                if (err) {
+                    return res.send({
+                        status: 'not ok',
+                        message: 'Something went wrong '+err
+                    });
+                } else {
+                    if (typeof product_title !== 'undefined' ) {
+                        if (typeof product_title == 'string') {
+                            console.log(result.insertId);
+                            //return false;
+                            const productQuery = `INSERT INTO company_products SET ? ` ;
+                            const productData = {
+                                company_id :company_id,
+                                category_id :result.insertId,
+                                parent_id:parent_category,
+                                product_title :product_title,
+                                product_desc :product_desc,
+                                product_img :product_image[0].filename,
+                            }
+                            db.query(productQuery, productData, (productErr, productResult)=>{
+                                if (productErr) {
+                                    return res.send({
+                                        status: 'not ok',
+                                        message: 'Something went wrong '+productErr
+                                    });
+                                } else {
+                                    return res.send({
+                                        status: 'ok',
+                                        message: 'Category added successfully with a product !'
+                                    });
+                                }
+                            });
+                        } else {
+                           await product_title.forEach((product, index)=>{
+                                const productQuery = `INSERT INTO company_products SET ? ` ;
+                                const productData = {
+                                    company_id :company_id,
+                                    category_id :result.insertId,
+                                    parent_id:parent_category,
+                                    product_title :product,
+                                    product_desc :product_desc[index],
+                                    product_img :product_image[index].filename,
+                                }
+                                db.query(productQuery, productData, (productErr, productResult)=>{
+                                    if (productErr) {
+                                        return res.send({
+                                            status: 'not ok',
+                                            message: 'Something went wrong '+productErr
+                                        });
+                                    }
+                                });
+                            })
+                            return res.send({
+                                status: 'ok',
+                                message: 'Category added successfully with products. '
+                            });
+                        }
                     } else {
                         return res.send({
                             status: 'ok',
-                            message: 'Category added successfully !'
+                            message: 'Category added successfully without any product. '
                         });
                     }
-                })
+                }
+            })
         }
     })
-    
 }
 
 //Delete company category
@@ -5029,6 +5085,63 @@ exports.deleteCompanyCategory = async (req, res) => {
                     });
                 }
             })
+        }
+    })
+}
+
+//Delete company product
+exports.deleteCompanyProduct = async (req, res) => {
+    console.log('deleteCompanyProduct',req.body ); 
+    //return false;
+    const delQuery = `DELETE FROM company_products WHERE id = '${req.body.product_id}'`;
+    db.query(delQuery,(err, result)=>{
+        if (err) {
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong 2 '+err
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Product Deleted successfully !'
+            });
+        }
+    })
+}
+
+//update Company Product
+exports.updateCompanyProduct = async (req, res) => {
+    console.log('updateCompanyProduct',req.body ); 
+    console.log('file',req.file ); 
+    const {company_Id, product_Id, product_title, product_desc } = req.body;
+    //const {product_img} = req.file;
+    let data = {}
+    //return false;
+    if (req.file) {
+        data = {
+            product_title:product_title,
+            product_desc:product_desc,
+            product_img:req.file.filename 
+        }
+    } else {
+        data = {
+            product_title:product_title,
+            product_desc:product_desc
+        }
+    }
+    console.log('data', data)
+    const sql = `UPDATE company_products SET ? WHERE id = ${product_Id}` ;
+    db.query(sql, data, (err, result)=>{
+        if (err) {
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong '+err
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Category Product Updated successfully !'
+            });
         }
     })
 }
