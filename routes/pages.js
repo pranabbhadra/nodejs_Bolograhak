@@ -570,7 +570,7 @@ router.get('/company/:slug', checkCookieValue, async (req, res) => {
         // console.log(comp_res);
         // console.log(companyID);
         // countInvitationLabels 1=No Labels,2=Invitation
-        const [allRatingTags, CompanyInfo, companyReviewNumbers, getCompanyReviews, globalPageMeta, PremiumCompanyData, CompanyPollDetails, countInvitationLabels, CompanySurveyDetails, CompanySurveySubmitionsCount] = await Promise.all([
+        const [allRatingTags, CompanyInfo, companyReviewNumbers, getCompanyReviews, globalPageMeta, PremiumCompanyData, CompanyPollDetails, countInvitationLabels, CompanySurveyDetails, CompanySurveySubmitionsCount, getCompanyCategory] = await Promise.all([
             comFunction.getAllRatingTags(),
             comFunction.getCompany(companyID),
             comFunction.getCompanyReviewNumbers(companyID),
@@ -580,7 +580,8 @@ router.get('/company/:slug', checkCookieValue, async (req, res) => {
             comFunction2.getCompanyPollDetails(companyID),
             comFunction2.countInvitationLabels('2', companyID),
             comFunction.getCompanyOngoingSurveyDetails(companyID),
-            comFunction.getCompanySurveySubmitionsCount()
+            comFunction.getCompanySurveySubmitionsCount(),
+            comFunction2.getCompanyCategory(companyID),
         ]);
         
         //console.log(get_company_id.ID)
@@ -643,7 +644,7 @@ router.get('/company/:slug', checkCookieValue, async (req, res) => {
 
                 // res.json(
                 // {
-                //     CompanySurveyDetails_formatted
+                //     CompanyCategory:getCompanyCategory
                 // });
                 res.render('front-end/category-details-premium',
                 {
@@ -670,9 +671,27 @@ router.get('/company/:slug', checkCookieValue, async (req, res) => {
                     PollDetails,
                     labeltype,
                     countInvitationLabels,
-                    CompanySurveyDetails_formatted
+                    CompanySurveyDetails_formatted,
+                    CompanyCategory:getCompanyCategory
                 });
             }else{
+
+                // res.json(
+                // {
+                //     menu_active_id: 'company',
+                //     page_title: 'Organization Details',
+                //     currentUserData,
+                //     allRatingTags,
+                //     company:CompanyInfo,
+                //     CompanyInfo,
+                //     companyReviewNumbers,
+                //     getCompanyReviews,
+                //     globalPageMeta:globalPageMeta,
+                //     labeltype,
+                //     countInvitationLabels,
+                //     CompanyCategory:getCompanyCategory
+                // });
+
                 res.render('front-end/company-details',
                 {
                     menu_active_id: 'company',
@@ -685,20 +704,10 @@ router.get('/company/:slug', checkCookieValue, async (req, res) => {
                     getCompanyReviews,
                     globalPageMeta:globalPageMeta,
                     labeltype,
-                    countInvitationLabels
+                    countInvitationLabels,
+                    CompanyCategory:getCompanyCategory
                 });
-                // res.json(
-                // {
-                //     menu_active_id: 'company',
-                //     page_title: 'Organization Details',
-                //     currentUserData,
-                //     allRatingTags,
-                //     company:CompanyInfo,
-                //     CompanyInfo,
-                //     companyReviewNumbers,
-                //     getCompanyReviews,
-                //     globalPageMeta:globalPageMeta
-                // });
+                
             }
         }else{
             res.render('front-end/404', {
@@ -2649,7 +2658,7 @@ router.get('/view-company-product/:slug/:cat_id', checkClientClaimedCompany, asy
         comFunction.getAllRatingTags(),
         comFunction2.getCompanyCategoryProducts(cat_id),
     ]);
-   console.log('getCompanyCategoryProducts', getCompanyCategoryProducts);
+   //console.log('getCompanyCategoryProducts', getCompanyCategoryProducts);
     try {
         let cover_img = '';
         let facebook_url = '';

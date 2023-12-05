@@ -2523,7 +2523,8 @@ exports.updateHome = async (req, res) => {
 
 exports.submitReview = async (req, res) => {
     const encodedUserData = req.cookies.user;
-    //console.log(currentUserData);
+    console.log('submitReview',req.body);
+    //return false;
     try {
         if (encodedUserData) {
             const currentUserData = JSON.parse(encodedUserData);
@@ -5144,6 +5145,73 @@ exports.updateCompanyProduct = async (req, res) => {
             });
         }
     })
+}
+
+//Add  company product
+exports.addCompanyProduct = async (req, res) => {
+    console.log('addCompanyProduct',req.body ); 
+    console.log('addCompanyProduct',req.files ); 
+    //return false;
+    const {category_id, parent_id, company_id, product_title, product_desc } = req.body;
+    const {product_image} = req.files;
+
+    if (typeof product_title !== 'undefined' ) {
+        if (typeof product_title == 'string') {
+            //console.log(result.insertId);
+            //return false;
+            const productQuery = `INSERT INTO company_products SET ? ` ;
+            const productData = {
+                company_id :company_id,
+                category_id :category_id,
+                parent_id:parent_id,
+                product_title :product_title,
+                product_desc :product_desc,
+                product_img :product_image[0].filename,
+            }
+            db.query(productQuery, productData, (productErr, productResult)=>{
+                if (productErr) {
+                    return res.send({
+                        status: 'not ok',
+                        message: 'Something went wrong '+productErr
+                    });
+                } else {
+                    return res.send({
+                        status: 'ok',
+                        message: 'Product added successfully !'
+                    });
+                }
+            });
+        } else {
+           await product_title.forEach((product, index)=>{
+                const productQuery = `INSERT INTO company_products SET ? ` ;
+                const productData = {
+                    company_id :company_id,
+                    category_id :category_id,
+                    parent_id:parent_id,
+                    product_title :product,
+                    product_desc :product_desc[index],
+                    product_img :product_image[index].filename,
+                }
+                db.query(productQuery, productData, (productErr, productResult)=>{
+                    if (productErr) {
+                        return res.send({
+                            status: 'not ok',
+                            message: 'Something went wrong '+productErr
+                        });
+                    }
+                });
+            })
+            return res.send({
+                status: 'ok',
+                message: 'Products added successfully . '
+            });
+        }
+    } else {
+        return res.send({
+            status: 'ok',
+            message: 'Please add products. '
+        });
+    }
 }
 
 //Update complaint company category

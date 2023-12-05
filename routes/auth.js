@@ -334,6 +334,13 @@ router.post('/delete-company-product', authController.deleteCompanyProduct);
 //update-company-product
 router.post('/update-company-product', upload.single('product_img'), authController.updateCompanyProduct);
 
+//update-company-product
+router.post('/add-company-product', upload.fields([
+
+    { name: 'product_image', maxCount: 100 },
+
+]), authController.addCompanyProduct);
+
 //Update company-category
 router.post('/update-company-category', authController.updateCompanyCategory);
 

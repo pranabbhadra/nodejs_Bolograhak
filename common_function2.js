@@ -3916,24 +3916,16 @@ function getSimilarCompany(companyId) {
 }
 
 // Fetch company categories 
-function getCompanyCategory(companyId) {
+ function getCompanyCategory(companyId) {
+  return new Promise((resolve, reject) => {
     db.query('SELECT * FROM complaint_category WHERE company_id = ? AND parent_id = 0 ', [companyId], async (err, results) => {
-        if (err) {
-            return res.send(
-                {
-                    status: 'err',
-                    data: '',
-                    message: 'An error occurred while processing your request' + err
-                }
-            )
-        } else {
-            if (results.length > 0) {
-                return results ;
-            } else {
-                return [] ;
-            }
-        }
+      if (err) {
+          reject('An error occurred while processing your request ' + err);
+      } else {
+        resolve(results);
+      }
     })
+  });  
 }
 
 // Insert Company product
@@ -3966,9 +3958,10 @@ function insertCompanyProduct(body,file) {
 // Fetch company category Products
 function getCompanyCategoryProducts(cat_id) {
   return new Promise((resolve, reject) => {
-    const sql = `SELECT company_products.*, cc.category_name FROM company_products 
-                LEFT JOIN complaint_category cc ON cc.id = company_products.category_id 
-                WHERE company_products.category_id = ?  `;
+    const sql = `SELECT cc.*, cp.id product_id, cp.product_title, cp.product_desc, cp.product_img  FROM complaint_category cc 
+                LEFT JOIN company_products cp  ON cc.id = cp.category_id 
+                WHERE cc.id = ?  
+                ORDER BY cp.id DESC `;
 
       db.query(sql, [cat_id], (err, results) => {
           if (err) {

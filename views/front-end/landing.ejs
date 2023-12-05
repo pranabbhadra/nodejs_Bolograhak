@@ -551,17 +551,17 @@
                 <div class="col-md-12">
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="custom-form">
+                            <div class="custom-form dynamic_state_field_wrapper ">
                                 <select id="select_category" name="category_id" class="form-select">
-                                    <option value="0" selected>General</option>
+                                    <option value="0" selected>Select Category </option>
                                 </select>
                                 <!-- <input type="text" class="form-control" placeholder="Category Name" name="category"> -->
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="custom-form">
-                                <select id="select_sub_category" name="sub_category_id" class="form-select">
-                                    <option value="0">Select Sub-Category</option>
+                            <div class="custom-form" id="dynamic_sub_category_field_wrapper">
+                                <select id="select_sub_category" name="product_id" class="form-select">
+                                    <option value="0">Select Product</option>
                                 </select>
                                 <!-- <input type="text" class="form-control" placeholder="Sub-category Name" name="sub_category"> -->
                             </div>
@@ -1707,8 +1707,7 @@
           
        });
 
-      });
-
+       
       $("body").on('click', ".autofield-dropdown ul > li", function (e) {
         e.preventDefault();
         var resulttitle = $(this).find('a').attr('data-resulttitle');
@@ -1727,6 +1726,8 @@
       var resulttitle = $(this).find('a').attr('data-resulttitle');
       var address = $(this).find('a').attr('data-companyAddress');
       var pin_code = $(this).find('a').attr('data-companyPin');
+      var companyId= $(this).find('a').attr('data-companyid');
+      //alert(companyId);
 
       $('#search-input-review').val(resulttitle);
       if(address && address!='null'){
@@ -1736,6 +1737,50 @@
         $('#review-address').val('');
         $('#review-address').attr('readonly', false);
       }
+
+      $('#select_category').empty().append($('<option value="0">Select Category</option><option value="0">General</option>'));
+      //$("#select_state").prop('required',false);
+      $('#dynamic_state_field_wrapper').hide();
+      //var company_id = $(this).val();
+      $.ajax({
+         url: '/api/complain_category',
+         method: 'POST',
+         data: {company_id:companyId},
+         ContentType: 'application/json',
+         success: function (data) {
+            if (data.status == 'ok') {
+               $('#dynamic_state_field_wrapper').show();
+               //$("#select_state").prop('required',true);
+               //$('#select_category').empty().append($('<option value="">Select Category</option>'));
+               $.each(data.data, function (i, item) {
+                     $('#select_category').append($('<option>', { 
+                        value: item.id,
+                        text : item.category_name 
+                     }));
+               });                
+            } else {
+               $('#dynamic_state_field_wrapper').hide();
+               $("#select_category").prop('required',false);
+            }
+         },
+         error: function (error) {
+            // Handle any errors
+            Swal.fire({
+               text: error,
+               icon: "error",
+               buttonsStyling: false,
+               confirmButtonText: "Ok, got it!",
+               customClass: {
+                     confirmButton: "btn btn-primary"
+               }
+            });
+            submitButton.disabled = false;
+         }
+         //$(".autofield-dropdown-review").fadeOut();
+      }); 
+
+    
+
       /*
       if(pin_code && pin_code!='null'){
         $('#review-zip').val(pin_code);
@@ -1747,10 +1792,55 @@
       */
       $(".autofield-dropdown-review").fadeOut();
 
-      
-
     });
+
+    $('#select_category').change(function() {
+      $('#select_sub_category').empty().append($('<option value="0">Select Product</option>'));
+      //$("#select_state").prop('required',false);
+      //$('#dynamic_sub_category_field_wrapper').hide();
+      var category_id = $(this).val();
+      //alert(category_id);
+      //return false;
+      //$('#country_name').val(this.options[this.selectedIndex].text);
+      $.ajax({
+         url: '/api/company_product',
+         method: 'POST',
+         data: {category_id:category_id},
+         ContentType: 'application/json',
+         success: function (data) {
+            if (data.status == 'ok') {
+               $('#dynamic_sub_category_field_wrapper').show();
+               //$("#select_state").prop('required',true);
+               $.each(data.data, function (i, item) {
+                     $('#select_sub_category').append($('<option>', { 
+                        value: item.id,
+                        text : item.product_title 
+                     }));
+               });                
+            } else {
+               //$('#dynamic_sub_category_field_wrapper').hide();
+               $("#select_sub_category").prop('required',false);
+            }
+         },
+         error: function (error) {
+            // Handle any errors
+            Swal.fire({
+               text: error,
+               icon: "error",
+               buttonsStyling: false,
+               confirmButtonText: "Ok, got it!",
+               customClass: {
+                     confirmButton: "btn btn-primary"
+               }
+            });
+            submitButton.disabled = false;
+         }
+      });    
+   });
     
+
+  });
+
 
 
         
