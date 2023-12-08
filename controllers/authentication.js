@@ -279,18 +279,6 @@ exports.login = (req, res) => {
             error: metaErr
           })
         }
-        // return res.json({
-        //   status: 'success',
-        //   data: {
-        //     user,
-        //     meta,
-        //     wp_user: wpuserResults[0].ID,
-        //     token: token,
-        //   },
-        //   message: 'Login successful',
-        //   client_ip: clientIp,
-        //   user_agent: userAgent.toString(),
-        // });
 
         delete user.password;
         //-- check last Login Info-----//
@@ -391,6 +379,172 @@ exports.login = (req, res) => {
     });
   })
 }
+
+
+
+exports.socialLogin = async (req, res) => {
+  console.log(req.body);
+  const userAgent = req.headers['user-agent'];
+  const agent = useragent.parse(userAgent);
+  const payload = {};
+
+  const userFirstName = req.body.first_name;
+  const userLastName = req.body.last_name;
+  const userEmail = req.body.email;
+  const userPicture = req.body.profile_pic;
+  const external_registration_id = req.body.external_registration_id;
+  const register_from = req.body.register_from;
+
+  try{
+    const user_exist_query = 'SELECT * FROM users WHERE email = ?';
+    const user_exist_values = [userEmail, register_from];
+    const user_exist_results = await query(user_exist_query, user_exist_values);
+    if (user_exist_results.length > 0) {
+
+      //User Exist get User Details
+      const user = results[0];
+      payload.user_id = user.user_id;
+
+      const token = jwt.sign(payload, secretKey, {
+        expiresIn: '24h',
+      });
+
+      const clientIp = requestIp.getClientIp(req);
+      const userAgent = useragent.parse(req.headers['user-agent']);
+      db.query('SELECT * FROM user_customer_meta WHERE user_id = ?', [user.user_id], (metaErr, metaResults) => {
+        if (metaErr) {
+          console.error("An error occurred:", metaErr);
+          return res.status(500).json({
+            status: 'error',
+            message: 'An error occurred while processing your request ' + metaErr,
+            error: metaErr
+          })
+        }
+  
+        const meta = metaResults[0];
+  
+        //--Fetch WP user Data-------//
+        const { email, device_id, device_token, imei_no, model_name, make_name } = req.body;
+        db.query('SELECT * FROM bg_users WHERE user_login = ?', [email], (wpuserErr, wpuserResults) => {
+          if (wpuserErr) {
+            console.error("An error occurred:", metaErr);
+            return res.status(500).json({
+              status: 'error',
+              message: 'An error occurred while processing your request',
+              error: metaErr
+            })
+          }
+  
+          delete user.password;
+          //-- check last Login Info-----//
+          const device_query = "SELECT * FROM user_device_info WHERE user_id = ?";
+          db.query(device_query, [user.user_id], async (err, device_query_results) => {
+            const currentDate = new Date();
+            const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+  
+            if (device_query_results.length > 0) {
+              // User exist update info
+              const userDeviceMetaUpdateData = {
+                device_id: req.body.device_id || null,
+                device_token: req.body.device_token || null,
+                imei_no: req.body.imei_no || null,
+                model_name: req.body.model_name || null,
+                make_name: req.body.make_name || null,
+                last_logged_in: formattedDate,
+              };
+              const device_update_query = `UPDATE user_device_info SET ? WHERE user_id = ?`;
+              db.query(device_update_query, [userDeviceMetaUpdateData, user.user_id], (err, device_update_query_results) => {
+                if (err) {
+                  return res.json({
+                    status: 'error',
+                    data: {
+                      user,
+                      meta,
+                      wp_user: wpuserResults[0].ID,
+                      token: token,
+                    },
+                    message: err,
+                    client_ip: clientIp,
+                    user_agent: userAgent.toString(),
+                  });
+                } else {
+                  return res.json({
+                    status: 'success',
+                    data: {
+                      user,
+                      meta,
+                      wp_user: wpuserResults[0].ID,
+                      token: token,
+                    },
+                    message: 'Login successful',
+                    client_ip: clientIp,
+                    user_agent: userAgent.toString(),
+                  });
+                }
+              })
+  
+            } else {
+              // User doesnot exist Insert New Row.
+  
+              const userDeviceMetaInsertData = {
+                user_id: user.user_id,
+                device_id: req.body.device_id || null,
+                device_token: req.body.device_token || null,
+                imei_no: req.body.imei_no || null,
+                model_name: req.body.model_name || null,
+                make_name: req.body.make_name || null,
+                last_logged_in: formattedDate,
+                created_date: formattedDate
+              };
+  
+              db.query('INSERT INTO user_device_info SET ?', userDeviceMetaInsertData, async (err, results) => {
+                if (err) {
+                  return res.json({
+                    status: 'error',
+                    data: {
+                      user,
+                      meta,
+                      wp_user: wpuserResults[0].ID,
+                      token: token,
+                    },
+                    message: err,
+                    client_ip: clientIp,
+                    user_agent: userAgent.toString(),
+                  });
+                } else {
+                  return res.json({
+                    status: 'success',
+                    data: {
+                      user,
+                      meta,
+                      wp_user: wpuserResults[0].ID,
+                      token: token,
+                    },
+                    message: 'Login successful',
+                    client_ip: clientIp,
+                    user_agent: userAgent.toString(),
+                  });
+                }
+              })
+  
+            }
+          })
+  
+        });
+      });
+
+
+    }else{
+      //User doesnot exist Create New User
+      
+    }
+  }catch(error){
+      console.error('Error during user_exist_query:', error);
+  }  
+
+}
+
+
 //edit user
 // exports.edituser = (req, res) => {
 //     const authenticatedUserId = parseInt(req.user.user_id);
