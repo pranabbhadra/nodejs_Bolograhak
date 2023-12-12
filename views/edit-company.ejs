@@ -404,7 +404,8 @@
                         </div>
                         <div class="row mb-6">
                             <!--begin::Label-->
-                            <label class="col-lg-4 col-form-label  fw-bold fs-6">Payment Status</label>
+                            <label class="col-lg-4 col-form-label  fw-bold fs-6">MemberShip Type</label>
+                            <input type="hidden"  value="<% if(company.paid_status){ %><%- company.paid_status -%> <% } %>" name="payment_status" id="payment_status">
                             <!--end::Label-->
                             <!--begin::Col-->
                             <div class="col-lg-8 fv-row">
@@ -412,17 +413,25 @@
                                 <div class="d-flex align-items-center mt-3">
                                     <!--begin::Option-->
                                     <label class="form-check form-check-inline form-check-solid me-5">
-                                        <input class="form-check-input mt-1" name="payment_status" type="radio" value="free" <% if(company.paid_status == 'free'){ %>checked <% } %> />
-                                        <span class="fw-bold fs-6 badge badge-light-danger fw-bolder px-4 py-3">Basic</span>
+                                        <input class="form-check-input mt-1" name="membership_type_id" type="radio" value="1" <% if(company.membership_type_id == 1){ %>checked <% } %> />
+                                        <span class="fw-bold fs-6 badge badge-light fw-bolder px-4 py-3">Basic</span>
                                     </label>
-                                    <!--end::Option-->
-                                    <!--begin::Option-->
+
                                     <label class="form-check form-check-inline form-check-solid me-5">
-                                        <input class="form-check-input mt-1" name="payment_status" type="radio" value="paid" <% if(company.paid_status == 'paid'){ %>checked <% } %> />
-                                        <span class="fw-bold fs-6 badge badge-light-success fw-bolder px-4 py-3">Premium</span>
+                                        <input class="form-check-input mt-1" name="membership_type_id" type="radio" value="2" <% if(company.membership_type_id == 2){ %>checked <% } %> />
+                                        <span class="fw-bold fs-6 badge badge-light fw-bolder px-4 py-3">Standard</span>
                                     </label>
-                                    <!--end::Option-->
-                                    <!--end::Option-->
+
+                                    <label class="form-check form-check-inline form-check-solid me-5">
+                                        <input class="form-check-input mt-1" name="membership_type_id" type="radio" value="3" <% if(company.membership_type_id == 3){ %>checked <% } %> />
+                                        <span class="fw-bold fs-6 badge badge-light fw-bolder px-4 py-3">Advanced</span>
+                                    </label>
+
+                                    <label class="form-check form-check-inline form-check-solid me-5">
+                                        <input class="form-check-input mt-1" name="membership_type_id" type="radio" value="4" <% if(company.membership_type_id == 4){ %>checked <% } %> />
+                                        <span class="fw-bold fs-6 badge badge-light fw-bolder px-4 py-3">Premium</span>
+                                    </label>
+                                    
                                 </div>
                                 <!--end::Options-->
                             </div>
@@ -715,9 +724,19 @@ $('#claimed_by').on('change', function (e) {
         var verified_value = '1';
         var payment_status_value = 'free';
         $("input[name=verified][value=" + verified_value + "]").prop('checked', true);
-        $("input[name=payment_status][value=" + payment_status_value + "]").prop('checked', true);
+        //$("input[name=payment_status][value=" + payment_status_value + "]").prop('checked', true);
+        $("input[name=membership_type_id][value=1]").prop('checked', true);
+        $("#payment_status").val(payment_status_value);
     }
 });
+$('input[type=radio][name=membership_type_id]').change(function() {
+    if (this.value == 1) {
+        $("#payment_status").val('free');
+    }else{
+        $("#payment_status").val('paid'); 
+    }
+});
+
 
 $(document).ready(function() {
     // Function to generate a slug from a given string
