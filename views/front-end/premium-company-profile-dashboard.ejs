@@ -78,10 +78,20 @@
 
                <div class="analytics_data analytics_data_row2">
                   <div class="row align-items-center">
-                     <div class="col-lg-5">
-                        <div id="chartContainer" style="height: 250px; width: 100%;"></div>
-                     </div>
-                     <div class="col-lg-7">
+                        <% var chat_y = 0; 
+                           reviewReatingChartArray.forEach((item, index) => { %>
+                           <% if(item.y > 0){
+                              chat_y++;
+                           } %>
+                        <% }) %>
+                        <% if( chat_y > 0 ){ %>
+                        <div class="col-md-5">
+                           <div id="chartContainer" style="height: 250px; width: 100%;"></div>
+                        </div>
+                        <div class="col-md-7">
+                        <% }else{ %>
+                        <div class="col-md-12">
+                        <% } %>
                         <div class="display_tags">
                            <p>Tags you got</p>
                            <div class="all_tags">

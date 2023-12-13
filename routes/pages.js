@@ -673,6 +673,21 @@ router.get('/company/:slug', checkCookieValue, async (req, res) => {
                     CompanySurveyDetails_formatted
                 });
             }else{
+                // res.json(
+                // {
+                //     menu_active_id: 'company',
+                //     page_title: 'Organization Details',
+                //     currentUserData,
+                //     allRatingTags,
+                //     company:CompanyInfo,
+                //     CompanyInfo,
+                //     companyReviewNumbers,
+                //     getCompanyReviews,
+                //     globalPageMeta:globalPageMeta,
+                //     labeltype,
+                //     countInvitationLabels,
+                //     gallery_img:gallery_img
+                // });
                 res.render('front-end/company-details',
                 {
                     menu_active_id: 'company',
@@ -685,20 +700,9 @@ router.get('/company/:slug', checkCookieValue, async (req, res) => {
                     getCompanyReviews,
                     globalPageMeta:globalPageMeta,
                     labeltype,
-                    countInvitationLabels
+                    countInvitationLabels,
+                    gallery_img:gallery_img
                 });
-                // res.json(
-                // {
-                //     menu_active_id: 'company',
-                //     page_title: 'Organization Details',
-                //     currentUserData,
-                //     allRatingTags,
-                //     company:CompanyInfo,
-                //     CompanyInfo,
-                //     companyReviewNumbers,
-                //     getCompanyReviews,
-                //     globalPageMeta:globalPageMeta
-                // });
             }
         }else{
             res.render('front-end/404', {
@@ -1656,6 +1660,11 @@ router.get('/company-profile-management/:slug', checkClientClaimedCompany, async
 
     const companyPaidStatus = company.paid_status;
     if(companyPaidStatus=='free'){
+        let gallery_img = [];
+        if(typeof PremiumCompanyData !== 'undefined' ){
+            gallery_img = JSON.parse(PremiumCompanyData.gallery_img);
+       }
+        
         res.render('front-end/basic-company-profile-management', 
         { 
             menu_active_id: 'company-profile-management', 
@@ -1665,7 +1674,8 @@ router.get('/company-profile-management/:slug', checkClientClaimedCompany, async
             company:company,
             companyReviewNumbers,
             getCompanyReviews,
-            allRatingTags
+            allRatingTags,
+            gallery_img:gallery_img
         }); 
     }else{
         let cover_img = '';
