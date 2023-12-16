@@ -388,13 +388,14 @@ async function getAllReviews() {
 
 async function getAllReviewsByCompanyID(companyId) {
   const all_review_query = `
-  SELECT r.*, c.company_name, c.slug, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic, count(rr.ID) as reply_count
+  SELECT r.*, c.company_name, c.slug, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic, count(rr.ID) as reply_count, cp.product_title 
   FROM reviews r
   JOIN company c ON r.company_id = c.ID
   JOIN company_location cl ON r.company_location_id = cl.ID
   JOIN users u ON r.customer_id = u.user_id
   LEFT JOIN user_customer_meta ucm ON u.user_id = ucm.user_id
   LEFT JOIN review_reply rr ON r.id = rr.review_id
+  LEFT JOIN company_products cp ON r.product_id = cp.id 
   WHERE r.company_id = ? AND r.review_status = '1' AND (r.flag_status != '0' OR r.flag_status IS NULL)
   GROUP BY r.id
   ORDER BY r.created_at DESC;
@@ -414,7 +415,7 @@ async function getAllReviewsByCompanyID(companyId) {
 
 async function getCustomerReviewData(review_Id){
   const select_review_query = `
-    SELECT r.*, c.company_name, c.slug, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic,rr.ID as reply_id, rr.status as reply_status, rr.reason as reply_rejecting_reason, rr.comment as reply_content, rrCompany.comment as company_reply_content   
+    SELECT r.*, c.company_name, c.slug, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic,rr.ID as reply_id, rr.status as reply_status, rr.reason as reply_rejecting_reason, rr.comment as reply_content, rrCompany.comment as company_reply_content, cc.category_name, cp.product_title  
       FROM reviews r
       JOIN company c ON r.company_id = c.ID
       JOIN company_location cl ON r.company_location_id = cl.ID
@@ -422,6 +423,8 @@ async function getCustomerReviewData(review_Id){
       LEFT JOIN user_customer_meta ucm ON u.user_id = ucm.user_id
       LEFT JOIN review_reply rr ON rr.review_id = r.id AND rr.reply_by = r.customer_id
       LEFT JOIN review_reply rrCompany ON rrCompany.review_id = r.id AND rrCompany.reply_by != r.customer_id
+      LEFT JOIN complaint_category cc ON r.category_id = cc.id 
+      LEFT JOIN company_products cp ON r.product_id = cp.id 
       WHERE r.id = ?;
   `;
   const select_review_value = [review_Id];

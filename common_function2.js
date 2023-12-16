@@ -167,10 +167,11 @@ function getReviewedCompanies(userId) {
 function getAllCompaniesReviews(userId) {
   return new Promise((resolve, reject) => {
     const reviewed_companies_query = `
-            SELECT r.*, c.company_name as company_name, c.logo as logo, c.slug, COUNT(review_reply.id) as review_reply_count
+            SELECT r.*, c.company_name as company_name, c.logo as logo, c.slug, COUNT(review_reply.id) as review_reply_count, cp.product_title  
             FROM  reviews r
             JOIN company c ON r.company_id = c.ID
             LEFT JOIN review_reply ON review_reply.review_id = r.id
+            LEFT JOIN company_products cp ON r.product_id = cp.id 
             WHERE r.customer_id = ? AND r.review_status = '1'
             GROUP BY r.id
             ORDER BY updated_at DESC
@@ -208,13 +209,15 @@ function getAllReviewTags() {
 async function getlatestReviews(reviewCount){
   const get_latest_review_query = `
     SELECT r.*, c.company_name, c.logo, c.slug, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, 
-    u.last_name, u.user_id, u.user_status, ucm.profile_pic, COUNT(review_reply.id) as review_reply_count
+    u.last_name, u.user_id, u.user_status, ucm.profile_pic, COUNT(review_reply.id) as review_reply_count, cc.category_name, cp.product_title 
       FROM reviews r
       LEFT JOIN company c ON r.company_id = c.ID 
       LEFT JOIN company_location cl ON r.company_location_id = cl.ID 
       LEFT JOIN users u ON r.customer_id = u.user_id 
       LEFT JOIN user_customer_meta ucm ON ucm.user_id = u.user_id 
       LEFT JOIN review_reply ON review_reply.review_id = r.id
+      LEFT JOIN complaint_category cc ON r.category_id = cc.id 
+      LEFT JOIN company_products cp ON r.product_id = cp.id 
       WHERE r.review_status = "1" AND c.status = "1" AND (r.flag_status != '0' OR r.flag_status IS NULL)
       GROUP BY r.id
       ORDER BY r.created_at DESC
@@ -238,13 +241,15 @@ async function getlatestReviews(reviewCount){
 async function getAllTrendingReviews(){
   const get_latest_review_query = `
     SELECT r.*, c.company_name, c.logo, c.slug, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, 
-    u.last_name, u.user_id, u.user_status, ucm.profile_pic, COUNT(review_reply.id) as review_reply_count
+    u.last_name, u.user_id, u.user_status, ucm.profile_pic, COUNT(review_reply.id) as review_reply_count, cc.category_name, cp.product_title
       FROM reviews r
       LEFT JOIN company c ON r.company_id = c.ID 
       LEFT JOIN company_location cl ON r.company_location_id = cl.ID 
       LEFT JOIN users u ON r.customer_id = u.user_id 
       LEFT JOIN user_customer_meta ucm ON ucm.user_id = u.user_id 
       LEFT JOIN review_reply ON review_reply.review_id = r.id
+      LEFT JOIN complaint_category cc ON r.category_id = cc.id 
+      LEFT JOIN company_products cp ON r.product_id = cp.id 
       WHERE r.review_status = "1" AND c.status = "1" AND c.trending = "1" AND (r.flag_status != '0' OR r.flag_status IS NULL)
       GROUP BY r.id
       ORDER BY r.created_at DESC
@@ -267,13 +272,15 @@ async function getAllTrendingReviews(){
 async function getAllReviews(){
   const get_latest_review_query = `
     SELECT r.*, c.company_name, c.logo, c.slug, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, 
-    u.last_name, u.user_id, u.user_status, ucm.profile_pic, COUNT(review_reply.id) as review_reply_count
+    u.last_name, u.user_id, u.user_status, ucm.profile_pic, COUNT(review_reply.id) as review_reply_count, cc.category_name, cp.product_title
       FROM reviews r
       LEFT JOIN company c ON r.company_id = c.ID 
       LEFT JOIN company_location cl ON r.company_location_id = cl.ID 
       LEFT JOIN users u ON r.customer_id = u.user_id 
       LEFT JOIN user_customer_meta ucm ON ucm.user_id = u.user_id 
       LEFT JOIN review_reply ON review_reply.review_id = r.id
+      LEFT JOIN complaint_category cc ON r.category_id = cc.id 
+      LEFT JOIN company_products cp ON r.product_id = cp.id 
       WHERE r.review_status = "1" AND c.status = "1" AND (r.flag_status != '0' OR r.flag_status IS NULL)
       GROUP BY r.id
       ORDER BY r.created_at DESC
@@ -1055,19 +1062,22 @@ async function TotalReplied(Id){
 
   //Function to fetch User review data by Id from the  review table
 async function reviewDataById(reviewId,userId){
-  const sql = `SELECT r.* , c.company_name
+  const sql = `SELECT r.* , c.company_name, cc.category_name, cp.product_title
               FROM reviews r
               JOIN company c ON r.company_id = c.ID 
+              LEFT JOIN complaint_category cc ON r.category_id = cc.id 
+              LEFT JOIN company_products cp ON r.product_id = cp.id 
               WHERE r.id = '${reviewId}' AND r.customer_id = '${userId}' `;
 
   const reviewData = await query(sql);
-  //console.log(noOfReplied[0])
+  //console.log(noOfReplied[0]) 
   return reviewData;
  }
 
 //Function to Update User review data by Id from the  review table
  async function updateReview(reviewIfo){
-  // console.log('Review Info', reviewIfo);
+   //console.log('Review Info', reviewIfo);
+   //return false;
   // console.log('Company Info', comInfo);
   // reviewIfo['tags[]'].forEach((tag) => {
   //   console.log(tag);
@@ -1080,8 +1090,8 @@ async function reviewDataById(reviewId,userId){
   // Format the date in 'YYYY-MM-DD HH:mm:ss' format (adjust the format as needed)
   const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
 
-  const updateQuery = 'UPDATE reviews SET review_title = ?, rating = ?, review_content = ?, user_privacy = ?, user_contact = ?, updated_at = ?, review_status = ? WHERE id = ?';
-  const updateData = [ reviewIfo.review_title, reviewIfo.rating, reviewIfo.review_content, reviewIfo.user_privacy, reviewIfo.user_contact, formattedDate, '2' , reviewIfo.review_id]
+  const updateQuery = 'UPDATE reviews SET review_title = ?, rating = ?, review_content = ?, user_privacy = ?, user_contact = ?, updated_at = ?, review_status = ?, category_id = ?, product_id = ? WHERE id = ?';
+  const updateData = [ reviewIfo.review_title, reviewIfo.rating, reviewIfo.review_content, reviewIfo.user_privacy, reviewIfo.user_contact, formattedDate, '2' ,reviewIfo.category_id, reviewIfo.product_id, reviewIfo.review_id]
               
   try {
     const create_review_results = await query(updateQuery, updateData);
@@ -3928,6 +3938,24 @@ function getSimilarCompany(companyId) {
   });  
 }
 
+// Fetch company categories by review id
+function getCompanyCategoryByReviewId(reviewId) {
+  return new Promise((resolve, reject) => {
+    const sql = `SELECT cc.* FROM 
+    reviews r
+    LEFT JOIN complaint_category cc ON cc.company_id = r.company_id 
+    WHERE r.id = ? AND cc.parent_id = 0 ` ;
+
+    db.query(sql, [reviewId], async (err, results) => {
+      if (err) {
+          reject('An error occurred while processing your request ' + err);
+      } else {
+        resolve(results);
+      }
+    })
+  });  
+}
+
 // Insert Company product
 function insertCompanyProduct(body,file) {
 
@@ -4060,5 +4088,6 @@ module.exports = {
   getSimilarCompany,
   getCompanyCategory,
   insertCompanyProduct,
-  getCompanyCategoryProducts
+  getCompanyCategoryProducts,
+  getCompanyCategoryByReviewId
 };

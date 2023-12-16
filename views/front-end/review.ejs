@@ -52,14 +52,24 @@
                               <%= latestReview.company_location %> 
                            </p>
                         </div>
-                        <% if(latestReview && latestReview.review_title) { %>
-                        <div class="user-info-panel">
-                           <span><i class="fa-solid fa-box"></i></span>
-                           <p class="m-0">
-                              <strong>Product/division</strong><br>
-                              <%= latestReview.review_title %>
-                           </p>
-                        </div>
+                        <% if(latestReview && latestReview.product_title){ %>
+                          <div class="user-info-panel">
+                            <span><i class="fa-solid fa-box"></i></span>
+                            <p class="m-0">
+                               <strong>Product/division</strong><br>
+                               <%= latestReview.product_title %>
+                            </p>
+                         </div>
+                        <% }else { %>
+                            <% if(latestReview && latestReview.review_title) { %>
+                            <div class="user-info-panel">
+                               <span><i class="fa-solid fa-box"></i></span>
+                               <p class="m-0">
+                                  <strong>Product/division</strong><br>
+                                  <%= latestReview.review_title %>
+                               </p>
+                            </div>
+                            <% } %>
                         <% } %>
                         <div class="user-review-text">
                            <% AllReviewTags.forEach( (tag,index)=> {%>
@@ -171,15 +181,25 @@
                               <%= TrendingReview.company_location %> 
                            </p>
                         </div>
-                        <% if(TrendingReview && TrendingReview.review_title) { %>
-                           <div class="user-info-panel">
-                              <span><i class="fa-solid fa-box"></i></span>
-                              <p class="m-0">
-                                 <strong>Product/division</strong><br>
-                                 <%= TrendingReview.review_title %>
-                              </p>
-                           </div>
-                           <% } %>
+                        <% if(TrendingReview && TrendingReview.product_title){ %>
+                          <div class="user-info-panel">
+                            <span><i class="fa-solid fa-box"></i></span>
+                            <p class="m-0">
+                               <strong>Product/division</strong><br>
+                               <%= TrendingReview.product_title %>
+                            </p>
+                         </div>
+                        <% }else { %>
+                          <% if(TrendingReview && TrendingReview.review_title) { %>
+                             <div class="user-info-panel">
+                                <span><i class="fa-solid fa-box"></i></span>
+                                <p class="m-0">
+                                   <strong>Product/division</strong><br>
+                                   <%= TrendingReview.review_title %>
+                                </p>
+                             </div>
+                            <% } %>
+                        <% }  %>
                         <div class="user-review-text">
                            <% AllReviewTags.forEach( (tag,index)=> {%>
                               <% if(tag.review_id == TrendingReview.id) { %>
@@ -291,14 +311,24 @@
                               <%= allReview.company_location %>
                            </p>
                         </div>
-                        <% if(allReview && allReview.review_title) { %>
-                        <div class="user-info-panel">
-                           <span><i class="fa-solid fa-box"></i></span>
-                           <p class="m-0">
-                              <strong>Product/division</strong><br>
-                              <%= allReview.review_title %>
-                           </p>
-                        </div>
+                        <% if(allReview && allReview.product_title){ %>
+                          <div class="user-info-panel">
+                            <span><i class="fa-solid fa-box"></i></span>
+                            <p class="m-0">
+                               <strong>Product/division</strong><br>
+                               <%= allReview.product_title %>
+                            </p>
+                         </div>
+                        <% }else { %>
+                          <% if(allReview && allReview.review_title) { %>
+                          <div class="user-info-panel">
+                             <span><i class="fa-solid fa-box"></i></span>
+                             <p class="m-0">
+                                <strong>Product/division</strong><br>
+                                <%= allReview.review_title %>
+                             </p>
+                          </div>
+                          <% } %>
                         <% } %>
                         <div class="user-review-text">
                            <% AllReviewTags.forEach( (tag,index)=> {%>
@@ -473,12 +503,12 @@
                  <input type="text" class="form-control" placeholder="Pin Code" id="review-zip" name="zip" required>
                </div>
              </div>
-             #%>
              <div class="col-md-12">
                <div class="custom-form">
                  <input type="text" class="form-control" placeholder="Product/Division Name" name="review_title">
                </div>
              </div>
+             #%>
              <div class="row">
                <div class="col-md-12">
                    <div class="row">
@@ -912,7 +942,7 @@
     });
 
     $('#select_category').change(function() {
-      $('#select_sub_category').empty().append($('<option value="0">Select Product</option>'));
+      $('#select_sub_category').empty().append($('<option value="0">Select Product</option><option value="0">General</option>'));
       //$("#select_state").prop('required',false);
       //$('#dynamic_sub_category_field_wrapper').hide();
       var category_id = $(this).val();

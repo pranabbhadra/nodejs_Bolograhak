@@ -4377,11 +4377,12 @@ router.get('/edit-user-review/:reviewId', checkFrontEndLoggedIn, async (req, res
         const reviewId = req.params.reviewId;
         //console.log('editUserID: ', currentUserData);
        
-        const [allRatingTags,  reviewDataById, AllReviewTags, globalPageMeta ] = await Promise.all([
+        const [allRatingTags,  reviewDataById, AllReviewTags, globalPageMeta, getCompanyCategoryByReviewId ] = await Promise.all([
             comFunction.getAllRatingTags(),
             comFunction2.reviewDataById(reviewId, userId),
             comFunction2.getAllReviewTags(),
             comFunction2.getPageMetaValues('global'),
+            comFunction2.getCompanyCategoryByReviewId(reviewId),
         ]);
 
         // Create a mapping of review_id to tags
@@ -4407,13 +4408,14 @@ router.get('/edit-user-review/:reviewId', checkFrontEndLoggedIn, async (req, res
         //console.log(reviewDataWithTags)
         // Render the 'edit-user' EJS view and pass the data
         
-        //  res.json({
+        // res.json({
         //      menu_active_id: 'edit-review',
         //     page_title: 'Edit Review',
         //     currentUserData,
         //     allRatingTags:allRatingTags,
         //     globalPageMeta:globalPageMeta,
-        //     reviewDataById:reviewDataWithTags[0]
+        //     reviewDataById:reviewDataWithTags[0],
+        //     CompanyCategory:getCompanyCategoryByReviewId
         //  });
         if( reviewDataById.length>0 ){
             res.render('front-end/edit-user-review', {
@@ -4422,7 +4424,8 @@ router.get('/edit-user-review/:reviewId', checkFrontEndLoggedIn, async (req, res
                 currentUserData,
                 allRatingTags:allRatingTags,
                 globalPageMeta:globalPageMeta,
-                reviewDataById:reviewDataWithTags[0]
+                reviewDataById:reviewDataWithTags[0],
+                CompanyCategory:getCompanyCategoryByReviewId
              });
         }else{
             res.redirect('/profile-dashboard');
