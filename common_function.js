@@ -756,6 +756,8 @@ async function editCustomerReview(req){
     req.review_rejecting_comment || null,
     formattedDate,
     req.user_contact,
+    req.category_id,
+    req.product_id,
     req.review_id,
   ];
   const update_review_query =
@@ -769,7 +771,9 @@ async function editCustomerReview(req){
     'review_status = ?, ' +
     'rejecting_reason = ?, ' +
     'updated_at = ?, ' +
-    'user_contact = ? ' +
+    'user_contact = ?, ' +
+    'category_id = ?, ' +
+    'product_id = ? ' +
     'WHERE id = ?';
 
   console.log(update_review_query);

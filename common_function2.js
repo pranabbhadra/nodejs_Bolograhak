@@ -3956,6 +3956,25 @@ function getCompanyCategoryByReviewId(reviewId) {
   });  
 }
 
+// Fetch company categories product by review id
+function getCompanyProductByReviewId(reviewId) {
+  return new Promise((resolve, reject) => {
+    const sql = `SELECT cp.* FROM 
+    reviews r
+    LEFT JOIN company_products cp ON cp.company_id = r.company_id 
+    WHERE r.id = ? ` ;
+
+    db.query(sql, [reviewId], async (err, results) => {
+      //console.log(results);
+      if (err) {
+          reject('An error occurred while processing your request ' + err);
+      } else {
+        resolve(results);
+      }
+    })
+  });  
+}
+
 // Insert Company product
 function insertCompanyProduct(body,file) {
 
@@ -4089,5 +4108,6 @@ module.exports = {
   getCompanyCategory,
   insertCompanyProduct,
   getCompanyCategoryProducts,
-  getCompanyCategoryByReviewId
+  getCompanyCategoryByReviewId,
+  getCompanyProductByReviewId
 };

@@ -3553,10 +3553,12 @@ router.get('/edit-review/:id', checkLoggedIn, async (req, res) => {
         const review_Id = req.params.id;
 
         // Fetch all the required data asynchronously
-        const [reviewData, reviewTagData, allcompany] = await Promise.all([
+        const [reviewData, reviewTagData, allcompany, getCompanyCategoryByReviewId, getCompanyProductByReviewId] = await Promise.all([
             comFunction.getCustomerReviewData(review_Id),
             comFunction.getCustomerReviewTagRelationData(review_Id),
-            comFunction.getAllCompany()
+            comFunction.getAllCompany(),
+            comFunction2.getCompanyCategoryByReviewId(review_Id),
+            comFunction2.getCompanyProductByReviewId(review_Id),
         ]);
         //console.log(reviewData);
        // Render the 'edit-user' EJS view and pass the data
@@ -3566,13 +3568,15 @@ router.get('/edit-review/:id', checkLoggedIn, async (req, res) => {
         //     allcompany      
         // });
         if(reviewData){
-            // res.json({
+            // res.json( {
             //     menu_active_id: 'review',
             //     page_title: 'Edit Review',
             //     currentUserData,
             //     reviewData,
             //     reviewTagData: reviewTagData,
-            //     allcompany            
+            //     allcompany,
+            //     CompanyCategory:getCompanyCategoryByReviewId,
+            //     Companyproduct:getCompanyProductByReviewId             
             // });
             res.render('edit-review', {
                 menu_active_id: 'review',
@@ -3580,7 +3584,9 @@ router.get('/edit-review/:id', checkLoggedIn, async (req, res) => {
                 currentUserData,
                 reviewData,
                 reviewTagData: reviewTagData,
-                allcompany            
+                allcompany,
+                CompanyCategory:getCompanyCategoryByReviewId,
+                Companyproduct:getCompanyProductByReviewId             
             });
         }else{
             res.render('front-end/404', {

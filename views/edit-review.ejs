@@ -198,10 +198,18 @@
                             <!--end::Label-->
                             <!--begin::Col-->
                             <div class="col-lg-8 fv-row">
-                                <input type="text" name="company_category" class="form-control form-control-lg form-control-solid" placeholder="Category Name" value="<% if(reviewData && reviewData.category_name){ %><%= reviewData.category_name %><% } %>" readonly  />
+                                <select name="category_id" id="select_category" class="form-select form-control form-control-lg form-control-solid" readonly>
+                                    <option value="0" <% if(reviewData.category_id == '0'){ %>selected <% } %>>General</option>
+                                    <% if(reviewData.category_id && reviewData.category_id != 0) { %>
+                                        <% CompanyCategory.forEach(category =>{ %> 
+                                            <option value="<%= category.id %>" <% if(reviewData.category_id == category.id ){ %>selected <% } %>><%= category.category_name %></option>
+                                        <% }) %>
+                                    <% } %>
+                                </select>
                             </div>
-                            <!--end::Col-->
                         </div>
+                        
+                        
                         <div class="row mb-6">
                             <!--begin::Label-->
                             <label class="col-lg-4 col-form-label fw-bold fs-6">
@@ -209,10 +217,14 @@
                             </label>
                             <!--end::Label-->
                             <!--begin::Col-->
-                            <div class="col-lg-8 fv-row">
-                                <input type="text" name="company_product" class="form-control form-control-lg form-control-solid" placeholder="Product Name" value="<% if(reviewData && reviewData.product_title){ %><%= reviewData.product_title %><% } %>" readonly  />
+                            <div class="col-lg-8 fv-row" id="dynamic_sub_category_field_wrapper">
+                                <select name="product_id" id="select_sub_category" class="form-select form-control form-control-lg form-control-solid" readonly>
+                                    <option value="0" <% if(reviewData.product_id == '0' ){ %>selected <% } %>>General</option>
+                                    <% if(reviewData.product_id && reviewData.product_id != 0) { %>
+                                            <option value="<%= reviewData.product_id %>" selected ><%= reviewData.product_title %></option>
+                                    <% } %>
+                                </select>
                             </div>
-                            <!--end::Col-->
                         </div>
                         <div class="row mb-6">
                             <!--begin::Label-->
@@ -698,6 +710,50 @@ $(document).ready(function() {
         var selectedCompanyAddress = $(this).find('option:selected').data('address');
         
         $('#company_location').val(selectedCompanyAddress);
+    });
+
+    $('#select_category').change(function() {
+      $('#select_sub_category').empty().append($('<option value="0">Select Product</option><option value="0">General</option>'));
+      //$("#select_state").prop('required',false);
+      //$('#dynamic_sub_category_field_wrapper').hide();
+      var category_id = $(this).val();
+      //alert(category_id);
+      //return false;
+      //$('#country_name').val(this.options[this.selectedIndex].text);
+      $.ajax({
+         url: '/api/company_product',
+         method: 'POST',
+         data: {category_id:category_id},
+         ContentType: 'application/json',
+         success: function (data) {
+            if (data.status == 'ok') {
+               $('#dynamic_sub_category_field_wrapper').show();
+               //$("#select_state").prop('required',true);
+               $.each(data.data, function (i, item) {
+                     $('#select_sub_category').append($('<option>', { 
+                        value: item.id,
+                        text : item.product_title 
+                     }));
+               });                
+            } else {
+               //$('#dynamic_sub_category_field_wrapper').hide();
+               $("#select_sub_category").prop('required',false);
+            }
+         },
+         error: function (error) {
+            // Handle any errors
+            Swal.fire({
+               text: error,
+               icon: "error",
+               buttonsStyling: false,
+               confirmButtonText: "Ok, got it!",
+               customClass: {
+                     confirmButton: "btn btn-primary"
+               }
+            });
+            submitButton.disabled = false;
+         }
+        });    
     });
 
   });
