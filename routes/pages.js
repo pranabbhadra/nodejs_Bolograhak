@@ -238,6 +238,12 @@ router.get('', checkCookieValue, async (req, res) => {
                         PositiveReviewsCompany,
                         NegativeReviewsCompany,
                         PopularCategories,
+                        ReviewCount,
+                        UserCount,
+                        PositiveReviewsCompany,
+                        NegativeReviewsCompany,
+                        HomeMeta,
+                        VisitorCheck,
                         AllLatestDiscussion: getAllLatestDiscussion,
                         AllPopularDiscussion: getAllPopularDiscussion,
                         AllDiscussions: getAllDiscussions,
@@ -675,7 +681,6 @@ router.get('/company/:slug', checkCookieValue, async (req, res) => {
                     CompanyCategory:getCompanyCategory
                 });
             }else{
-
                 // res.json(
                 // {
                 //     menu_active_id: 'company',
@@ -689,9 +694,8 @@ router.get('/company/:slug', checkCookieValue, async (req, res) => {
                 //     globalPageMeta:globalPageMeta,
                 //     labeltype,
                 //     countInvitationLabels,
-                //     CompanyCategory:getCompanyCategory
+                //     gallery_img:gallery_img
                 // });
-
                 res.render('front-end/company-details',
                 {
                     menu_active_id: 'company',
@@ -705,9 +709,9 @@ router.get('/company/:slug', checkCookieValue, async (req, res) => {
                     globalPageMeta:globalPageMeta,
                     labeltype,
                     countInvitationLabels,
+                    gallery_img:gallery_img,
                     CompanyCategory:getCompanyCategory
                 });
-                
             }
         }else{
             res.render('front-end/404', {
@@ -1665,6 +1669,11 @@ router.get('/company-profile-management/:slug', checkClientClaimedCompany, async
 
     const companyPaidStatus = company.paid_status;
     if(companyPaidStatus=='free'){
+        let gallery_img = [];
+        if(typeof PremiumCompanyData !== 'undefined' ){
+            gallery_img = JSON.parse(PremiumCompanyData.gallery_img);
+       }
+        
         res.render('front-end/basic-company-profile-management', 
         { 
             menu_active_id: 'company-profile-management', 
@@ -1674,7 +1683,8 @@ router.get('/company-profile-management/:slug', checkClientClaimedCompany, async
             company:company,
             companyReviewNumbers,
             getCompanyReviews,
-            allRatingTags
+            allRatingTags,
+            gallery_img:gallery_img
         }); 
     }else{
         let cover_img = '';
@@ -2202,8 +2212,8 @@ router.get('/send-review-invitation/:slug', checkClientClaimedCompany, async (re
              youtube_url = PremiumCompanyData.youtube_url;
         }
         // res.json( {
-        //     menu_active_id: 'company-poll-listing',
-        //     page_title: 'Company Name',
+        //     menu_active_id: 'send-review-invitation',
+        //     page_title: 'Send Review Invitation',
         //     currentUserData,
         //     globalPageMeta:globalPageMeta,
         //     company,
@@ -2212,7 +2222,8 @@ router.get('/send-review-invitation/:slug', checkClientClaimedCompany, async (re
         //     twitter_url:twitter_url,
         //     instagram_url:instagram_url,
         //     linkedin_url:linkedin_url,
-        //     youtube_url:youtube_url
+        //     youtube_url:youtube_url,
+        //     allRatingTags
         // });
         res.render('front-end/send-review-invitation', {
             menu_active_id: 'send-review-invitation',

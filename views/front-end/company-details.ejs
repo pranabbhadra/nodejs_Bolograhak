@@ -1,5 +1,6 @@
 <%- include('common/header') -%>
 <link href="/front-end/css/category-profile-style.css" rel="stylesheet" type="text/css">
+<link href="/front-end/css/category-profile-premium-style.css" rel="stylesheet" type="text/css">
 <%- include('common/header-banner') -%>
 <!-- ============== Section1 Start =============== -->
 <section class="main-content bottom-main-content category-free">
@@ -106,6 +107,28 @@
       <p><%= CompanyInfo.about_company %></p>
     </div>
     <% } %>
+    <section class="main-content pt-0">
+      <div class="container">
+        <% if(gallery_img != "") {%>
+          <div class="gallery-content">
+              <div class="gallery-head d-flex justify-content-between align-items-center">
+                  <h2 class="inner-main-head m-0">Gallery</h2>
+                  <!-- <a href="#" class="view-more mt-0"><span class="position-relative"><i class="fa-solid fa-angle-right"></i>View More</span></a> -->
+              </div>
+              <div class="gallery-wrapper">
+                  <% gallery_img.forEach( (image,index)=> {%>
+                      <div class="gallery-img">
+                          <a  href="/<%= image.gallery_images %>" data-fancybox="gallery">
+                              <img src="/<%= image.gallery_images %>" alt="img" loading="lazy" width="262" height="392">
+                          </a>
+                      </div>
+                  <% }) %>
+              </div>
+          </div>
+        <% } %>
+      </div>
+    </section> 
+    
     <div class="rating-add-content">
       <div class="row">
         <div class="col-md-7">

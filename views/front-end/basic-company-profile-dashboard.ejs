@@ -51,10 +51,20 @@
          </div>
          <div class="analytics_data analytics_data_row2">
             <div class="row align-items-center">
+               <% var chat_y = 0; 
+                  reviewReatingChartArray.forEach((item, index) => { %>
+                  <% if(item.y > 0){
+                     chat_y++;
+                  } %>
+               <% }) %>
+               <% if( chat_y > 0 ){ %>
                <div class="col-md-5">
                   <div id="chartContainer" style="height: 250px; width: 100%;"></div>
                </div>
                <div class="col-md-7">
+               <% }else{ %>
+               <div class="col-md-12">
+               <% } %>
                   <div class="display_tags">
                      <p>Tags you got</p>
                      <div class="all_tags">
@@ -78,6 +88,7 @@
                </div>
             </div>
          </div>
+         <% if( chat_y > 0 ){ %>
          <div class="analytics_data analytics_data_row3">
             <div class="row">
                <div class="col-md-6">
@@ -89,13 +100,14 @@
                   </div>
                </div>
                <div class="col-md-6">
-                  <div class="d-flex align-items-center justify-content-start mb-3">
+                  <!--<div class="d-flex align-items-center justify-content-start mb-3">
                      <h4 class="sec_heading mb-0">Visited by age category</h4><img style="margin-left: 5px;" src="/front-end/images/coming-soon.png" alt="image" />
-                  </div>
+                  </div>-->
                   <div id="ageChartContainer" style="width: 100%; height: 360px"></div>
                </div>
             </div>
          </div>
+         <% } %>
          <!-- <div class="analytics_data analytics_data_row4">
             <div class="select_box_and_btn">
                <div class="select_location">

@@ -12,13 +12,24 @@
          <div style="margin: 10px; display: flex; justify-content: flex-end">
             <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@fat">Bulk Upload</button>
          </div>
-            <h4>Send Review Invitation:</h4>
+            <h4>Send Review Invitation: 
+               <% if(company && company.membership_type_id==2 ){ %>
+                  <% var email_limite = 100; %>
+                  <span style="font-size: 16px; vertical-align: middle;">(Allow upto <%- email_limite %>)</span>
+               <% }else if( company && company.membership_type_id==3 ){%>
+                  <% var email_limite = 1000; %>
+                  <span style="font-size: 16px; vertical-align: middle;">(Allow upto <%- email_limite %>)</span>
+               <% }else if( company && company.membership_type_id==4 ){ %>
+                  <% var email_limite = 1000; %>
+                  <span style="font-size: 16px; vertical-align: middle;">(Allow upto <%- email_limite %>)</span>
+               <% } %>
+            </h4>
             <form id="form_review_invitation">
                <input type="hidden" name="company_id" id="company_id" value="<%= company.ID  %>" />
                <input type="hidden" name="company_name" id="company_name" value="<%= company.company_name  %>" />
                <input type="hidden" name="user_id" id="user_id" value="<%= currentUserData.user_id  %>" />
                <input type="hidden" name="company_slug" id="company_slug" value="<%= company.slug  %>" />
-               <div id="sendreviewtags">
+               <div id="sendreviewtags" style="min-height: 60px;">
                   <input type="text" name="emails" placeholder="Add an email" />
                </div>
                <div class="custom-form">
@@ -110,11 +121,11 @@ $(document).ready(function () {
       transformedResponse['company_id'] = $('#company_id').val();
       transformedResponse['company_name'] = $('#company_name').val();
       transformedResponse['company_slug'] = $('#company_slug').val();
-      if (allEmails.length > 100) {
-         $('.response-message').text('You can not add more than 100 email id`s in your current membership. ');
-         $('.response-message').show();
-         $('#invitation_email').prop('disabled', false);
-      } else {
+      //if (allEmails.length > 100) {
+         //$('.response-message').text('You can not add more than 100 email id`s in your current membership. ');
+         //$('.response-message').show();
+         //$('#invitation_email').prop('disabled', false);
+      //} else {
             $.ajax({
             url: '/auth/review_invitation', // URL for your API endpoint
             method: 'POST',
@@ -145,7 +156,7 @@ $(document).ready(function () {
                console.log(error);
             }
          });
-      }
+      //}
 
       
    });
@@ -190,5 +201,49 @@ $(document).ready(function () {
          }
       });
    });
+
+/*=========================== Send Review request tags start =================*/
+const maxEmails = <% if(email_limite){ %><%- email_limite %><% }else{ %>1000000000<% } %>; // Set the maximum number of tags allowed
+
+$("#sendreviewtags input").on({
+  focusout: function () {
+    var txt = this.value.trim(); // Trim whitespace from the input
+
+    // Check if the maximum limit is not reached
+    if ($("#sendreviewtags span").length < maxEmails && isValidEmail(txt)) {
+      $("<span/>", { text: txt.toLowerCase(), insertBefore: this });
+      this.value = "";
+      if($("#sendreviewtags span").length == maxEmails){
+         $(this).hide();
+      }
+    } else {
+      // Either the maximum limit is reached or the email is invalid, clear the input
+      if($("#sendreviewtags span").length == maxEmails){
+         $(this).hide();
+      }
+      this.value = "";
+    }
+  },
+  keyup: function (ev) {
+    // if: comma|enter (delimit more keyCodes with | pipe)
+    if (/[,;]/.test(String.fromCharCode(ev.which))) $(this).focusout();
+  },
+});
+
+// Function to check if a string is a valid email
+function isValidEmail(email) {
+  // Use a regular expression for basic email validation
+  var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+
+ $('#sendreviewtags').on('click', 'span', function() {
+   if(confirm("Remove "+ $(this).text() +"?")) $(this).remove(); 
+   var Emaillength = $('#sendreviewtags').find("span").length;
+   if(Emaillength<maxEmails){
+      $("#sendreviewtags input").show();
+   }
+ });
+ /*=========================== Send Review request tags End =================*/
 });
 </script>

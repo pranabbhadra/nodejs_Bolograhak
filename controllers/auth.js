@@ -1469,7 +1469,7 @@ exports.editCompany = (req, res) => {
             });
         } else {
                 // Update company details in the company table
-            const updateQuery = 'UPDATE company SET company_name = ?, heading = ?, logo = ?, about_company = ?, comp_phone = ?, comp_email = ?, comp_registration_id = ?, status = ?, trending = ?, updated_date = ?, tollfree_number = ?, main_address = ?, main_address_pin_code = ?, address_map_url = ?, main_address_country = ?, main_address_state = ?, main_address_city = ?, verified = ?, paid_status = ?, slug  = ? WHERE ID = ?';
+            const updateQuery = 'UPDATE company SET company_name = ?, heading = ?, logo = ?, about_company = ?, comp_phone = ?, comp_email = ?, comp_registration_id = ?, status = ?, trending = ?, updated_date = ?, tollfree_number = ?, main_address = ?, main_address_pin_code = ?, address_map_url = ?, main_address_country = ?, main_address_state = ?, main_address_city = ?, verified = ?, paid_status = ?, slug = ?, membership_type_id = ? WHERE ID = ?';
             const updateValues = [
                                     req.body.company_name,
                                     req.body.heading,
@@ -1491,6 +1491,7 @@ exports.editCompany = (req, res) => {
                                     req.body.verified,
                                     req.body.payment_status,
                                     req.body.company_slug,
+                                    req.body.membership_type_id,
                                     companyID
                                 ];
 
@@ -3675,6 +3676,7 @@ exports.updateBasicCompany = (req, res) => {
     //console.log('updateBasicCompany File:',req.file);
     //return false;
     const companyID = req.body.company_id;
+    const companySlug = req.body.company_slug;
     const currentDate = new Date();
 
     const year = currentDate.getFullYear();
@@ -3685,6 +3687,14 @@ exports.updateBasicCompany = (req, res) => {
     const seconds = String(currentDate.getSeconds()).padStart(2, '0');
 
     const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+    const { gallery_images } = req.files;
+    let galleryImages = [];
+    if(gallery_images){
+         galleryImages = gallery_images.map((title, index) => ({
+            gallery_images:req.files.gallery_images[index].filename
+        }));
+    }
 
     // Update company details in the company table
     const updateQuery = 'UPDATE company SET  heading = ?, logo = ?, about_company = ?, comp_phone = ?, comp_email = ?, updated_date = ?, tollfree_number = ?, main_address = ?, operating_hours = ?  WHERE ID = ?';
@@ -3725,13 +3735,78 @@ exports.updateBasicCompany = (req, res) => {
                 message: 'An error occurred while updating the company details: ' + err
             });
         }else{
-            return res.send(
-                {
-                    status: 'ok',
-                    data: companyID,
-                    message: 'Successfully Updated'
+            const check_sql = `SELECT * FROM premium_company_data WHERE company_id = ? `;
+            const check_data = [companyID];
+            db.query(check_sql, check_data, (check_err, check_result) => {
+                if (check_err) {
+                    return res.send(
+                        {
+                            status: 'err',
+                            data: '',
+                            message: 'An error occurred while processing your request'
+                        }
+                    )
+                }else{
+                    if (check_result.length > 0) {
+                        //console.log(check_result[0]);
+                        //return false;
+                        const gallery_img = JSON.parse(check_result[0].gallery_img);
+                        
+                        if(galleryImages.length > 0){
+                            galleryImages.forEach(function(img, index, arr) {
+                                gallery_img.push(img);
+                            })
+                        }
+                        
+                        const galleryimg = JSON.stringify(gallery_img);
+
+                        //return false;
+                        const update_query = `UPDATE premium_company_data SET gallery_img = ? WHERE company_id = ?`;
+                        const update_data = [galleryimg, companyID];
+                        db.query(update_query, update_data, (update_err,update_result)=>{
+                            if (update_err) {
+                                // Handle the error
+                                return res.send({
+                                    status: 'err',
+                                    data: '',
+                                    message: 'An error occurred while updating the company details: ' + update_err
+                                });
+                            } else {
+                                return res.send(
+                                    {
+                                        status: 'ok',
+                                        data: companySlug,
+                                        message: 'Successfully Updated'
+                                    }
+                                )
+                            }
+                        })                        
+                    }else{
+                        const galleryimg = JSON.stringify(galleryImages);
+
+                        const premium_query = `INSERT INTO premium_company_data ( company_id, gallery_img ) VALUES (?, ?)`;
+                        const premium_data = [companyID, galleryimg];
+                        db.query(premium_query, premium_data, (premium_err, premium_result)=>{
+                            if (premium_err) {
+                                // Handle the error
+                                return res.send({
+                                    status: 'err',
+                                    data: '',
+                                    message: 'An error occurred while updating the company details: ' + premium_err
+                                });
+                            } else {
+                                return res.send(
+                                    {
+                                        status: 'ok',
+                                        data: companySlug,
+                                        message: 'Successfully Updated'
+                                    }
+                                )
+                            }
+                        })
+                    }
                 }
-            )
+            });
         }
 
         
