@@ -2366,7 +2366,7 @@ router.get('/complaint-level-management/:slug', checkClientClaimedCompany, async
         }
         res.render('front-end/premium-complain-management',
         {
-            menu_active_id: 'settings',
+            menu_active_id: 'complaint',
             page_title: 'Complaint Management',
             currentUserData,
             globalPageMeta:globalPageMeta,

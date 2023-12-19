@@ -362,6 +362,9 @@ router.post('/user-complaint-rating', authController.userComplaintRating);
 // user-complaint-response
 router.post('/user_complaint_response', authController.userComplaintResponse);
 
+// user-complaint-response
+router.post('/escalate-next-level', authController.escalateNextLevel);
+
 //Create Survey
 router.post('/create-survey', authController.createSurvey);
 router.post('/update-survey', authController.updateSurvey);

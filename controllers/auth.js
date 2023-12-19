@@ -5366,10 +5366,10 @@ exports.complaintRegister =  (req, res) => {
 
     const {company_id, user_id, category_id, sub_category_id, model_no, allTags, transaction_date, location, message } = req.body;
     //return false;
-    const uuid = uuidv4();  
-    const currentDate = new Date();
+    //const uuid = uuidv4();  
     const randomNo = Math.floor(Math.random() * (100 - 0 + 1)) + 0 ;
     const ticket_no = randomNo + currentDate.getTime();
+    const currentDate = new Date();
     const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
     const data = {
         user_id:user_id,
@@ -5384,7 +5384,8 @@ exports.complaintRegister =  (req, res) => {
         tags:JSON.stringify(allTags),
         level_id:'1',
         status:'2',
-        created_at:formattedDate
+        created_at:formattedDate,
+        level_update_at:formattedDate
     }
 
     
@@ -5874,6 +5875,40 @@ exports.competitorCompanyChart = async (req, res) => {
         });
     }
 };
+
+//escalate to Next Level
+exports.escalateNextLevel = async (req, res) => {
+    console.log('escalateNextLevel', req.body);
+    //return false;
+    const { complaintId, customerId, levelId } = req.body;
+    
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+  
+    try {
+      
+        const sql = `UPDATE complaint SET level_id= '${levelId + 1}', level_update_at ='${formattedDate}'  WHERE id = '${complaintId}' `;
+        db.query(sql, (err, resut)=>{
+            if (err) {
+                return res.send({
+                    status: 'not ok',
+                    message: 'Something went wrong '+err
+                });
+            } else {
+                return res.send({
+                    status: 'ok',
+                    message: 'Complaint level escalate to next level '
+                  });
+            }
+        })
+    } catch (error) {
+      console.error('Error in escalateNextLevel:', error);
+      return res.status(500).send({
+        status: 'error',
+        message: 'Internal Server Error'
+      });
+    }
+  };
 
 
 // Schedule mail for pending complaint
