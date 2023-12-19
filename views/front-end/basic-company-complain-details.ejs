@@ -91,9 +91,9 @@
                </div>
                <div class="custom-text-box">
                   <% if(ComplaintsByComplaintId.status == '1') { %>
-                     <strong>Complain Manegement Level 1</strong> <small class="badge bg-success"> Resolved </small>
+                     <strong>Ongoing Complaint Management Level <%= ComplaintsByComplaintId.level_id %></strong> <small class="badge bg-success"> Resolved </small>
                   <% }else { %>
-                        <strong>Complain Manegement Level 1</strong> <small class="badge bg-danger"><%= ComplaintsByComplaintId.eta_days - daysDiff %>  days Left</small>
+                        <strong>Ongoing Complaint Management Level <%= ComplaintsByComplaintId.level_id %></strong> <small class="badge bg-danger"><%= ComplaintsByComplaintId.eta_days - daysDiff %>  days Left</small>
                   <% } %>
                </div>
                <% if(ComplaintsByComplaintId.queryResponseData.length > 0 ) { %>

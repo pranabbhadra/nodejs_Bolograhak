@@ -388,13 +388,14 @@ async function getAllReviews() {
 
 async function getAllReviewsByCompanyID(companyId) {
   const all_review_query = `
-  SELECT r.*, c.company_name, c.slug, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic, count(rr.ID) as reply_count
+  SELECT r.*, c.company_name, c.slug, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic, count(rr.ID) as reply_count, cp.product_title 
   FROM reviews r
   JOIN company c ON r.company_id = c.ID
   JOIN company_location cl ON r.company_location_id = cl.ID
   JOIN users u ON r.customer_id = u.user_id
   LEFT JOIN user_customer_meta ucm ON u.user_id = ucm.user_id
   LEFT JOIN review_reply rr ON r.id = rr.review_id
+  LEFT JOIN company_products cp ON r.product_id = cp.id 
   WHERE r.company_id = ? AND r.review_status = '1' AND (r.flag_status != '0' OR r.flag_status IS NULL)
   GROUP BY r.id
   ORDER BY r.created_at DESC;
@@ -414,7 +415,7 @@ async function getAllReviewsByCompanyID(companyId) {
 
 async function getCustomerReviewData(review_Id){
   const select_review_query = `
-    SELECT r.*, c.company_name, c.slug, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic,rr.ID as reply_id, rr.status as reply_status, rr.reason as reply_rejecting_reason, rr.comment as reply_content, rrCompany.comment as company_reply_content   
+    SELECT r.*, c.company_name, c.slug, c.logo, c.status as company_status, c.verified as verified_status, cl.address, cl.country, cl.state, cl.city, cl.zip, u.first_name, u.last_name, ucm.profile_pic,rr.ID as reply_id, rr.status as reply_status, rr.reason as reply_rejecting_reason, rr.comment as reply_content, rrCompany.comment as company_reply_content, cc.category_name, cp.product_title  
       FROM reviews r
       JOIN company c ON r.company_id = c.ID
       JOIN company_location cl ON r.company_location_id = cl.ID
@@ -422,6 +423,8 @@ async function getCustomerReviewData(review_Id){
       LEFT JOIN user_customer_meta ucm ON u.user_id = ucm.user_id
       LEFT JOIN review_reply rr ON rr.review_id = r.id AND rr.reply_by = r.customer_id
       LEFT JOIN review_reply rrCompany ON rrCompany.review_id = r.id AND rrCompany.reply_by != r.customer_id
+      LEFT JOIN complaint_category cc ON r.category_id = cc.id 
+      LEFT JOIN company_products cp ON r.product_id = cp.id 
       WHERE r.id = ?;
   `;
   const select_review_value = [review_Id];
@@ -665,8 +668,8 @@ async function createReview(reviewIfo, userId, comInfo){
   // Format the date in 'YYYY-MM-DD HH:mm:ss' format (adjust the format as needed)
   const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
 
-  const create_review_query = 'INSERT INTO reviews (company_id, customer_id, company_location, company_location_id, review_title, rating, review_content, user_privacy, review_status, created_at, updated_at, labels, user_contact) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-  const create_review_values = [comInfo.companyID, userId, reviewIfo.address, comInfo.companyLocationID, reviewIfo.review_title, reviewIfo.rating, reviewIfo.review_content, reviewIfo.user_privacy, '2', formattedDate, formattedDate, reviewIfo.review_lable, reviewIfo.user_contact ];
+  const create_review_query = 'INSERT INTO reviews (company_id, customer_id, company_location, company_location_id, review_title, rating, review_content, user_privacy, review_status, created_at, updated_at, labels, user_contact, category_id, product_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+  const create_review_values = [comInfo.companyID, userId, reviewIfo.address, comInfo.companyLocationID, reviewIfo.review_title, reviewIfo.rating, reviewIfo.review_content, reviewIfo.user_privacy, '2', formattedDate, formattedDate, reviewIfo.review_lable, reviewIfo.user_contact, reviewIfo.category_id, reviewIfo.product_id  ];
               
   try {
     const create_review_results = await query(create_review_query, create_review_values);
@@ -753,6 +756,8 @@ async function editCustomerReview(req){
     req.review_rejecting_comment || null,
     formattedDate,
     req.user_contact,
+    req.category_id,
+    req.product_id,
     req.review_id,
   ];
   const update_review_query =
@@ -766,7 +771,9 @@ async function editCustomerReview(req){
     'review_status = ?, ' +
     'rejecting_reason = ?, ' +
     'updated_at = ?, ' +
-    'user_contact = ? ' +
+    'user_contact = ?, ' +
+    'category_id = ?, ' +
+    'product_id = ? ' +
     'WHERE id = ?';
 
   console.log(update_review_query);

@@ -310,14 +310,24 @@
                               </p>
                            </div>
                            <% } %>
-                           <% if(review.review_title){ %>
-                           <div class="user-info-panel">
-                              <span><i class="fa-solid fa-box"></i></span>
-                              <p class="m-0">
-                                 <strong>Product/division</strong><br>
-                                 <%- review.review_title -%> 
-                              </p>
-                           </div>
+                           <% if(review && review.product_title){ %>
+                             <div class="user-info-panel">
+                               <span><i class="fa-solid fa-box"></i></span>
+                               <p class="m-0">
+                                  <strong>Product/division</strong><br>
+                                  <%= review.product_title %>
+                               </p>
+                            </div>
+                           <% } else { %>
+                              <% if(review.review_title){ %>
+                              <div class="user-info-panel">
+                                 <span><i class="fa-solid fa-box"></i></span>
+                                 <p class="m-0">
+                                    <strong>Product/division</strong><br>
+                                    <%- review.review_title -%> 
+                                 </p>
+                              </div>
+                              <% } %>
                            <% } %>
                            <div class="user-review-text">
                               <% review.Tags.forEach(tag => { %>

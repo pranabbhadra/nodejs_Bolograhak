@@ -143,39 +143,39 @@ $(document).ready(function () {
       //return false;
       //$('#country_name').val(this.options[this.selectedIndex].text);
       $.ajax({
-            url: '/api/complain_category',
-            method: 'POST',
-            data: {company_id:company_id},
-            ContentType: 'application/json',
-            success: function (data) {
-               if (data.status == 'ok') {
-                  $('#dynamic_state_field_wrapper').show();
-                  //$("#select_state").prop('required',true);
-                  //$('#select_category').empty().append($('<option value="">Select Category</option>'));
-                  $.each(data.data, function (i, item) {
-                        $('#select_category').append($('<option>', { 
-                           value: item.id,
-                           text : item.category_name 
-                        }));
-                  });                
-               } else {
-                  $('#dynamic_state_field_wrapper').hide();
-                  $("#select_category").prop('required',false);
-               }
-            },
-            error: function (error) {
-               // Handle any errors
-               Swal.fire({
-                  text: error,
-                  icon: "error",
-                  buttonsStyling: false,
-                  confirmButtonText: "Ok, got it!",
-                  customClass: {
-                        confirmButton: "btn btn-primary"
-                  }
-               });
-               submitButton.disabled = false;
+         url: '/api/complain_category',
+         method: 'POST',
+         data: {company_id:company_id},
+         ContentType: 'application/json',
+         success: function (data) {
+            if (data.status == 'ok') {
+               $('#dynamic_state_field_wrapper').show();
+               //$("#select_state").prop('required',true);
+               //$('#select_category').empty().append($('<option value="">Select Category</option>'));
+               $.each(data.data, function (i, item) {
+                     $('#select_category').append($('<option>', { 
+                        value: item.id,
+                        text : item.category_name 
+                     }));
+               });                
+            } else {
+               $('#dynamic_state_field_wrapper').hide();
+               $("#select_category").prop('required',false);
             }
+         },
+         error: function (error) {
+            // Handle any errors
+            Swal.fire({
+               text: error,
+               icon: "error",
+               buttonsStyling: false,
+               confirmButtonText: "Ok, got it!",
+               customClass: {
+                     confirmButton: "btn btn-primary"
+               }
+            });
+            submitButton.disabled = false;
+         }
       });    
    });
 
@@ -188,38 +188,38 @@ $(document).ready(function () {
       //return false;
       //$('#country_name').val(this.options[this.selectedIndex].text);
       $.ajax({
-            url: '/api/complain_sub_category',
-            method: 'POST',
-            data: {category_id:category_id},
-            ContentType: 'application/json',
-            success: function (data) {
-               if (data.status == 'ok') {
-                  $('#dynamic_sub_category_field_wrapper').show();
-                  //$("#select_state").prop('required',true);
-                  $.each(data.data, function (i, item) {
-                        $('#select_sub_category').append($('<option>', { 
-                           value: item.id,
-                           text : item.category_name 
-                        }));
-                  });                
-               } else {
-                  $('#dynamic_sub_category_field_wrapper').hide();
-                  $("#select_sub_category").prop('required',false);
-               }
-            },
-            error: function (error) {
-               // Handle any errors
-               Swal.fire({
-                  text: error,
-                  icon: "error",
-                  buttonsStyling: false,
-                  confirmButtonText: "Ok, got it!",
-                  customClass: {
-                        confirmButton: "btn btn-primary"
-                  }
-               });
-               submitButton.disabled = false;
+         url: '/api/complain_sub_category',
+         method: 'POST',
+         data: {category_id:category_id},
+         ContentType: 'application/json',
+         success: function (data) {
+            if (data.status == 'ok') {
+               $('#dynamic_sub_category_field_wrapper').show();
+               //$("#select_state").prop('required',true);
+               $.each(data.data, function (i, item) {
+                     $('#select_sub_category').append($('<option>', { 
+                        value: item.id,
+                        text : item.category_name 
+                     }));
+               });                
+            } else {
+               $('#dynamic_sub_category_field_wrapper').hide();
+               $("#select_sub_category").prop('required',false);
             }
+         },
+         error: function (error) {
+            // Handle any errors
+            Swal.fire({
+               text: error,
+               icon: "error",
+               buttonsStyling: false,
+               confirmButtonText: "Ok, got it!",
+               customClass: {
+                     confirmButton: "btn btn-primary"
+               }
+            });
+            submitButton.disabled = false;
+         }
       });    
    });
 

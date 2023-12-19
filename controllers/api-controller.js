@@ -78,7 +78,7 @@ exports.states = (req, res) => {
     })
 }
 
-//-- complainCategory --//
+//--Company Category --//
 exports.complainCategory = (req, res) => {
     //console.log('complainCategory',req.body);
     //return false;
@@ -115,7 +115,7 @@ exports.complainCategory = (req, res) => {
 
 //-- complainSubCategory --//
 exports.complainSubCategory = (req, res) => {
-    console.log('complainSubCategory',req.body);
+    //console.log('complainSubCategory',req.body);
     //return false;
     if (req.body.category_id == 0) {
         return res.send(
@@ -151,6 +151,52 @@ exports.complainSubCategory = (req, res) => {
                         status: 'err',
                         data: '',
                         message: 'Sub Category is not avilable for this company id'
+                    }
+                )
+            }
+        }
+    })
+}
+
+//-- company product --//
+exports.companyProduct = (req, res) => {
+    console.log('companyProduct',req.body);
+    if (req.body.category_id == 0) {
+        return res.send(
+            {
+                status: 'err',
+                data: '',
+                message: 'Productis not avilable on this category'
+            }
+        )
+    }
+    //return false;
+    db.query(`SELECT * FROM company_products WHERE category_id = ? OR  parent_id = ? `, [req.body.category_id, req.body.category_id], async (err, results) => {
+        if (err) {
+            return res.send(
+                {
+                    status: 'err',
+                    data: '',
+                    message: 'An error occurred while processing your request' + err
+                }
+            )
+        } else {
+            console.log(results);
+            if (results.length > 0) {
+            
+                return res.send(
+                    {
+                        status: 'ok',
+                        data: results,
+                        message: 'All product recived'
+                    }
+                )
+            } else {
+                return res.send(
+                    {
+                        status: 'err',
+                        data: '',
+                        message: 'Productis not avilable on this category'
                     }
                 )
             }

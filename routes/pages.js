@@ -570,7 +570,7 @@ router.get('/company/:slug', checkCookieValue, async (req, res) => {
         // console.log(comp_res);
         // console.log(companyID);
         // countInvitationLabels 1=No Labels,2=Invitation
-        const [allRatingTags, CompanyInfo, companyReviewNumbers, getCompanyReviews, globalPageMeta, PremiumCompanyData, CompanyPollDetails, countInvitationLabels, CompanySurveyDetails, CompanySurveySubmitionsCount] = await Promise.all([
+        const [allRatingTags, CompanyInfo, companyReviewNumbers, getCompanyReviews, globalPageMeta, PremiumCompanyData, CompanyPollDetails, countInvitationLabels, CompanySurveyDetails, CompanySurveySubmitionsCount, getCompanyCategory] = await Promise.all([
             comFunction.getAllRatingTags(),
             comFunction.getCompany(companyID),
             comFunction.getCompanyReviewNumbers(companyID),
@@ -580,7 +580,8 @@ router.get('/company/:slug', checkCookieValue, async (req, res) => {
             comFunction2.getCompanyPollDetails(companyID),
             comFunction2.countInvitationLabels('2', companyID),
             comFunction.getCompanyOngoingSurveyDetails(companyID),
-            comFunction.getCompanySurveySubmitionsCount()
+            comFunction.getCompanySurveySubmitionsCount(),
+            comFunction2.getCompanyCategory(companyID),
         ]);
         
         //console.log(get_company_id.ID)
@@ -643,7 +644,7 @@ router.get('/company/:slug', checkCookieValue, async (req, res) => {
 
                 // res.json(
                 // {
-                //     CompanySurveyDetails_formatted
+                //     CompanyCategory:getCompanyCategory
                 // });
                 res.render('front-end/category-details-premium',
                 {
@@ -670,9 +671,27 @@ router.get('/company/:slug', checkCookieValue, async (req, res) => {
                     PollDetails,
                     labeltype,
                     countInvitationLabels,
-                    CompanySurveyDetails_formatted
+                    CompanySurveyDetails_formatted,
+                    CompanyCategory:getCompanyCategory
                 });
             }else{
+
+                // res.json(
+                // {
+                //     menu_active_id: 'company',
+                //     page_title: 'Organization Details',
+                //     currentUserData,
+                //     allRatingTags,
+                //     company:CompanyInfo,
+                //     CompanyInfo,
+                //     companyReviewNumbers,
+                //     getCompanyReviews,
+                //     globalPageMeta:globalPageMeta,
+                //     labeltype,
+                //     countInvitationLabels,
+                //     CompanyCategory:getCompanyCategory
+                // });
+
                 res.render('front-end/company-details',
                 {
                     menu_active_id: 'company',
@@ -685,20 +704,10 @@ router.get('/company/:slug', checkCookieValue, async (req, res) => {
                     getCompanyReviews,
                     globalPageMeta:globalPageMeta,
                     labeltype,
-                    countInvitationLabels
+                    countInvitationLabels,
+                    CompanyCategory:getCompanyCategory
                 });
-                // res.json(
-                // {
-                //     menu_active_id: 'company',
-                //     page_title: 'Organization Details',
-                //     currentUserData,
-                //     allRatingTags,
-                //     company:CompanyInfo,
-                //     CompanyInfo,
-                //     companyReviewNumbers,
-                //     getCompanyReviews,
-                //     globalPageMeta:globalPageMeta
-                // });
+                
             }
         }else{
             res.render('front-end/404', {
@@ -2357,7 +2366,7 @@ router.get('/complaint-level-management/:slug', checkClientClaimedCompany, async
         }
         res.render('front-end/premium-complain-management',
         {
-            menu_active_id: 'settings',
+            menu_active_id: 'complaint',
             page_title: 'Complaint Management',
             currentUserData,
             globalPageMeta:globalPageMeta,
@@ -2631,6 +2640,84 @@ router.get('/send-survey-invitation/:slug', checkClientClaimedCompany, async (re
     /////////////////////////////////////////////////
   
 });
+
+//View company product
+router.get('/view-company-product/:slug/:cat_id', checkClientClaimedCompany, async (req, res) => {
+
+    const encodedUserData = req.cookies.user;
+    const currentUserData = JSON.parse(encodedUserData);
+    const slug = req.params.slug;
+    const cat_id = req.params.cat_id;
+    const comp_res =await comFunction2.getCompanyIdBySlug(slug);
+    const companyId = comp_res.ID;
+    const [globalPageMeta, company, PremiumCompanyData, companyReviewNumbers, allRatingTags, getCompanyCategoryProducts ] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+        comFunction.getCompany(companyId),
+        comFunction2.getPremiumCompanyData(companyId),
+        comFunction.getCompanyReviewNumbers(companyId),
+        comFunction.getAllRatingTags(),
+        comFunction2.getCompanyCategoryProducts(cat_id),
+    ]);
+   //console.log('getCompanyCategoryProducts', getCompanyCategoryProducts);
+    try {
+        let cover_img = '';
+        let facebook_url = '';
+        let twitter_url = '';
+        let instagram_url = '';
+        let linkedin_url = '';
+        let youtube_url = '';
+    
+        if(typeof PremiumCompanyData !== 'undefined' ){
+             cover_img = PremiumCompanyData.cover_img;
+             facebook_url = PremiumCompanyData.facebook_url;
+             twitter_url = PremiumCompanyData.twitter_url;
+             instagram_url = PremiumCompanyData.instagram_url;
+             linkedin_url = PremiumCompanyData.linkedin_url;
+             youtube_url = PremiumCompanyData.youtube_url;
+        }
+        // res.json( {
+        //     menu_active_id: 'survey',
+        //     page_title: 'Company Product Listing',
+        //     currentUserData,
+        //     globalPageMeta:globalPageMeta,
+        //     company,
+        //     companyReviewNumbers,
+        //     facebook_url:facebook_url,
+        //     twitter_url:twitter_url,
+        //     instagram_url:instagram_url,
+        //     linkedin_url:linkedin_url,
+        //     youtube_url:youtube_url,
+        //     allRatingTags,
+        //     CompanyCategoryProducts:getCompanyCategoryProducts
+        // });
+        res.render('front-end/company-product-listing', {
+            menu_active_id: 'survey',
+            page_title: 'Company Product Listing',
+            currentUserData,
+            globalPageMeta:globalPageMeta,
+            company,
+            companyReviewNumbers,
+            facebook_url:facebook_url,
+            twitter_url:twitter_url,
+            instagram_url:instagram_url,
+            linkedin_url:linkedin_url,
+            youtube_url:youtube_url,
+            allRatingTags,
+            CompanyCategoryProducts:getCompanyCategoryProducts
+        });
+    } catch (err) {
+        console.error(err);
+        res.render('front-end/404', {
+            menu_active_id: '404',
+            page_title: '404',
+            currentUserData,
+            globalPageMeta:globalPageMeta
+        });
+    }
+    /////////////////////////////////////////////////
+  
+});
+
 
 //send review invitation page
 router.get('/discussion-tag-management/:slug', checkClientClaimedCompany, async (req, res) => {
@@ -3466,10 +3553,12 @@ router.get('/edit-review/:id', checkLoggedIn, async (req, res) => {
         const review_Id = req.params.id;
 
         // Fetch all the required data asynchronously
-        const [reviewData, reviewTagData, allcompany] = await Promise.all([
+        const [reviewData, reviewTagData, allcompany, getCompanyCategoryByReviewId, getCompanyProductByReviewId] = await Promise.all([
             comFunction.getCustomerReviewData(review_Id),
             comFunction.getCustomerReviewTagRelationData(review_Id),
-            comFunction.getAllCompany()
+            comFunction.getAllCompany(),
+            comFunction2.getCompanyCategoryByReviewId(review_Id),
+            comFunction2.getCompanyProductByReviewId(review_Id),
         ]);
         //console.log(reviewData);
        // Render the 'edit-user' EJS view and pass the data
@@ -3479,13 +3568,15 @@ router.get('/edit-review/:id', checkLoggedIn, async (req, res) => {
         //     allcompany      
         // });
         if(reviewData){
-            // res.json({
+            // res.json( {
             //     menu_active_id: 'review',
             //     page_title: 'Edit Review',
             //     currentUserData,
             //     reviewData,
             //     reviewTagData: reviewTagData,
-            //     allcompany            
+            //     allcompany,
+            //     CompanyCategory:getCompanyCategoryByReviewId,
+            //     Companyproduct:getCompanyProductByReviewId             
             // });
             res.render('edit-review', {
                 menu_active_id: 'review',
@@ -3493,7 +3584,9 @@ router.get('/edit-review/:id', checkLoggedIn, async (req, res) => {
                 currentUserData,
                 reviewData,
                 reviewTagData: reviewTagData,
-                allcompany            
+                allcompany,
+                CompanyCategory:getCompanyCategoryByReviewId,
+                Companyproduct:getCompanyProductByReviewId             
             });
         }else{
             res.render('front-end/404', {
@@ -4290,11 +4383,12 @@ router.get('/edit-user-review/:reviewId', checkFrontEndLoggedIn, async (req, res
         const reviewId = req.params.reviewId;
         //console.log('editUserID: ', currentUserData);
        
-        const [allRatingTags,  reviewDataById, AllReviewTags, globalPageMeta ] = await Promise.all([
+        const [allRatingTags,  reviewDataById, AllReviewTags, globalPageMeta, getCompanyCategoryByReviewId ] = await Promise.all([
             comFunction.getAllRatingTags(),
             comFunction2.reviewDataById(reviewId, userId),
             comFunction2.getAllReviewTags(),
             comFunction2.getPageMetaValues('global'),
+            comFunction2.getCompanyCategoryByReviewId(reviewId),
         ]);
 
         // Create a mapping of review_id to tags
@@ -4320,13 +4414,14 @@ router.get('/edit-user-review/:reviewId', checkFrontEndLoggedIn, async (req, res
         //console.log(reviewDataWithTags)
         // Render the 'edit-user' EJS view and pass the data
         
-        //  res.json({
+        // res.json({
         //      menu_active_id: 'edit-review',
         //     page_title: 'Edit Review',
         //     currentUserData,
         //     allRatingTags:allRatingTags,
         //     globalPageMeta:globalPageMeta,
-        //     reviewDataById:reviewDataWithTags[0]
+        //     reviewDataById:reviewDataWithTags[0],
+        //     CompanyCategory:getCompanyCategoryByReviewId
         //  });
         if( reviewDataById.length>0 ){
             res.render('front-end/edit-user-review', {
@@ -4335,7 +4430,8 @@ router.get('/edit-user-review/:reviewId', checkFrontEndLoggedIn, async (req, res
                 currentUserData,
                 allRatingTags:allRatingTags,
                 globalPageMeta:globalPageMeta,
-                reviewDataById:reviewDataWithTags[0]
+                reviewDataById:reviewDataWithTags[0],
+                CompanyCategory:getCompanyCategoryByReviewId
              });
         }else{
             res.redirect('/profile-dashboard');

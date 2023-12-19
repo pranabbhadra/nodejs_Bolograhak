@@ -86,13 +86,18 @@
                                                 data-complaint-id="<%= compnaint.id %>" data-level-id="<%= compnaint.level_id %>" data-customer-id="<%= compnaint.user_id %>"
                                                 data-bs-target="#customerquerymodal" class="respond-link">Respond
                                                 to customer with query</a></li>
-                                          <!-- <li><a href="#" data-complaint-id="<%= compnaint.id %>" class="respond-link">Respond to customer with query</a></li> -->
 
-                                          <li><a href="#" data-bs-toggle="modal"
+                                          <li>
+                                             <a href="#" data-bs-toggle="modal"
                                                 data-complaint-id="<%= compnaint.id %>" data-level-id="<%= compnaint.level_id %>"  data-customer-id="<%= compnaint.user_id %>"
                                                 data-bs-target="#respondcustomermodal"
-                                                class="respond-link">Respond to customer & Close</a></li>
-                                          <!-- <li><a href="">Escalate to next level</a></li> -->
+                                                class="respond-link">Respond to customer & Close</a>
+                                          </li>
+                                          <% if(compnaint.level_id == 1){ %> 
+                                             <li>
+                                                <a href="#" class="escalate_next_level" data-complaint-id="<%= compnaint.id %>" data-level-id="<%= compnaint.level_id %>" data-customer-id="<%= compnaint.user_id %>" >Escalate to next level</a>
+                                             </li>
+                                          <% } %>
                                        </ul>
                                     </div>
                                  </span>
@@ -183,6 +188,29 @@
             </div>
          </div>
       </div>
+
+      <!--Escalate Modal -->
+      <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+         <div class="modal-dialog" role="document">
+           <div class="modal-content">
+             <div class="modal-header">
+               <h5 class="modal-title" id="successModalLabel">Success</h5>
+               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                 <span aria-hidden="true">&times;</span>
+               </button>
+             </div>
+             <div class="modal-body" style=" width: 100%; text-align: center; display: block; border: 2px solid #fccb06; padding: 6px; margin-top: 20px; border-radius: 5px; ">
+               <!-- Display your success message here -->
+               <p id="successMessage"></p>
+             </div>
+             <div class="modal-footer">
+               <button type="button" class="btn-default btn-warning" data-dismiss="modal">Close</button>
+             </div>
+           </div>
+         </div>
+       </div>
+
+       
       <!-- ============== Section1 end =============== -->
       <style>
          .complaint-status {
@@ -292,6 +320,38 @@
                   });
 
                });
+
+               $('.escalate_next_level').on('click', function (e) {
+                  const complaintId = $(this).data('complaint-id');
+                  const customerId = $(this).data('customer-id');
+                  const levelId = $(this).data('level-id');
+                  //console.log(complaintId, customerId, levelId)
+                  //alert('aaaaaaaa');
+                  $.ajax({
+                     url:'/auth/escalate-next-level',
+                     method:'POST',
+                     data:JSON.stringify({complaintId:complaintId, customerId:customerId, levelId:levelId }),
+                     contentType:'application/json',
+                     processData:false,
+                     success: function (data){
+                        // $('.response-message').text(data.message);
+                        // $('.response-message').show();
+
+                        // Display success message in the modal
+                        $('#successMessage').text(data.message);
+                        // Open the modal
+                        $('#successModal').modal('show');
+                        setTimeout(function() {
+                           location.reload(true);
+                        }, 3000);
+                     },
+                     error: function(error){
+                        console.log(error);
+                     }
+                  })
+                  //return false;
+               });
+
             });
 
          </script>
