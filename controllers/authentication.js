@@ -4065,3 +4065,68 @@ exports.userComplaintRating = async (req, res) => {
   })
   
 }
+
+//Complaint Register
+exports.complaintRegister =  (req, res) => {
+  //console.log('complaintRegister',req.body ); 
+  const authenticatedUserId = parseInt(req.user.user_id);
+  const ApiuserId = parseInt(req.body.user_id);
+  if (isNaN(ApiuserId)) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Invalid user_id provided in the request body.',
+      });
+    }
+  if (ApiuserId !== authenticatedUserId) {
+  return res.status(403).json({
+      status: 'error',
+      message: 'Access denied: You are not authorized to update this user.',
+  });
+  }
+
+  const {company_id, user_id, category_id, sub_category_id, model_no, allTags, transaction_date, location, message } = req.body;
+  //return false;
+  //const uuid = uuidv4();  
+  const randomNo = Math.floor(Math.random() * (100 - 0 + 1)) + 0 ;
+  const ticket_no = randomNo + currentDate.getTime();
+  const currentDate = new Date();
+  const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+  const data = {
+      user_id:user_id,
+      company_id:company_id,
+      ticket_id:ticket_no,
+      category_id:category_id,
+      sub_cat_id : sub_category_id && sub_category_id !== undefined  ? sub_category_id : 0,
+      model_desc:model_no,
+      purchase_date:transaction_date,
+      purchase_place:location,
+      message:message,
+      tags:JSON.stringify(allTags),
+      level_id:'1',
+      status:'2',
+      created_at:formattedDate,
+      level_update_at:formattedDate
+  }
+
+  
+ // console.log(complaintEmailToCompany);
+  const Query = `INSERT INTO complaint SET ?  `;
+  db.query(Query, data, async (err, result)=>{
+      if (err) {
+          return res.send({
+              status: 'not ok',
+              message: 'Something went wrong  '+err
+          });
+      } else {
+          console.log(company_id[0],user_id[0], uuid, result.insertId)
+          const [complaintEmailToCompany,complaintSuccessEmailToUser] = await Promise.all([
+              comFunction2.complaintEmailToCompany(company_id[0], ticket_no, result.insertId),
+              comFunction2.complaintSuccessEmailToUser(user_id[0], ticket_no, result.insertId)
+          ]);
+          return res.send({
+              status: 'ok',
+              message: 'Complaint Registered  successfully !'
+          });
+      }
+  })
+}

@@ -2685,7 +2685,7 @@ router.get('/search-premium-company/:keyword',verifyToken, authenController.sear
 router.get('/complaint-category/:companyId',verifyToken, authenController.complaintCategorySubcategory);
 
 //Complaint Register
-router.post('/complaint-register',verifyToken, authController.complaintRegister);
+router.post('/complaint-register',verifyToken, authenController.complaintRegister);
 
 //Complaint listing by customer id
 router.get('/complaint-listing/:userId', verifyToken,  authenController.complainListing);

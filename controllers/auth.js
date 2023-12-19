@@ -5424,20 +5424,20 @@ exports.deleteCompanyComplaintLevel = async (req, res) => {
 //Complaint Register
 exports.complaintRegister =  (req, res) => {
     //console.log('complaintRegister',req.body ); 
-    const authenticatedUserId = parseInt(req.user.user_id);
-    const ApiuserId = parseInt(req.body.user_id);
-    if (isNaN(ApiuserId)) {
-        return res.status(400).json({
-          status: 'error',
-          message: 'Invalid user_id provided in the request body.',
-        });
-      }
-    if (ApiuserId !== authenticatedUserId) {
-    return res.status(403).json({
-        status: 'error',
-        message: 'Access denied: You are not authorized to update this user.',
-    });
-    }
+    // const authenticatedUserId = parseInt(req.user.user_id);
+    // const ApiuserId = parseInt(req.body.user_id);
+    // if (isNaN(ApiuserId)) {
+    //     return res.status(400).json({
+    //       status: 'error',
+    //       message: 'Invalid user_id provided in the request body.',
+    //     });
+    //   }
+    // if (ApiuserId !== authenticatedUserId) {
+    // return res.status(403).json({
+    //     status: 'error',
+    //     message: 'Access denied: You are not authorized to update this user.',
+    // });
+    // }
 
     const {company_id, user_id, category_id, sub_category_id, model_no, allTags, transaction_date, location, message } = req.body;
     //return false;
