@@ -1410,7 +1410,7 @@ async function getCompanyPollDetails(company_id) {
 
 //Function to insert Invitation data into review_invite_request
 async function insertInvitationDetails(req) {
-  console.log('insertInvitationDetails',req)
+  //console.log('insertInvitationDetails',req)
   const {emails, email_body, user_id, company_id } = req
   const currentDate = new Date();
   const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
@@ -1426,7 +1426,7 @@ async function insertInvitationDetails(req) {
 
 //Function to send Invitation email 
 async function sendInvitationEmail(req) {
-  console.log('sendInvitationEmail',req)
+  //console.log('sendInvitationEmail',req)
   const {emails, email_body, user_id, company_id, company_name ,company_slug} = req;
   if(emails.length > 0){
     await emails.forEach((email)=>{
@@ -1434,7 +1434,7 @@ async function sendInvitationEmail(req) {
         from: process.env.MAIL_USER,
         //to: 'pranab@scwebtech.com',
         to: email,
-        subject: 'Invitation Email',
+        subject: 'Review Invitation Email',
         html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
         <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
          <tbody>
@@ -1451,7 +1451,7 @@ async function sendInvitationEmail(req) {
                        <tr>
                        <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
                         <td id="header_wrapper" style="padding: 36px 48px; display: block;">
-                           <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Invitation Email</h1>
+                           <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Review Invitation Email</h1>
                         </td>
     
                        </tr>
@@ -3475,7 +3475,7 @@ async function sendSurveyInvitationEmail(req) {
         from: process.env.MAIL_USER,
         //to: 'pranab@scwebtech.com',
         to: email,
-        subject: 'Invitation Email',
+        subject: 'Survey Invitation Email',
         html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
         <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
          <tbody>
@@ -3492,7 +3492,7 @@ async function sendSurveyInvitationEmail(req) {
                        <tr>
                        <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
                         <td id="header_wrapper" style="padding: 36px 48px; display: block;">
-                           <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Invitation Email</h1>
+                           <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Survey Invitation Email</h1>
                         </td>
     
                        </tr>
@@ -3683,6 +3683,238 @@ async function getCompanyCreatedTags(company_id) {
  
 }
 
+//Notification Content
+async function duscussionQueryAlert () {
+  const sql = `SELECT tags FROM discussions WHERE query_alert_status = '0' `;
+  const results =await query(sql);
+  //console.log(results);
+  if (results.length > 0) {
+    results.forEach(async (result)=>{
+      const discussionTags = JSON.parse(result.tags);
+      //console.log(discussionTags)
+      if (discussionTags.length > 0 ) {
+        const companyTags = `SELECT tags, company_id FROM duscussions_company_tags `;
+        const companyResult =await query(companyTags);
+        //console.log(companyResult);
+        if (companyResult.length > 0 ) {
+          companyResult.forEach((companyTag)=>{
+            const companyTagsArr = JSON.parse(companyTag.tags);
+            //console.log('companyTagsArr',companyTagsArr);
+            const hasMatch = discussionTags.some(element => companyTagsArr.includes(element));
+            if (hasMatch) {
+              discussionQueryAlertEmail(companyTag.company_id);
+            }
+          })
+        }
+      }
+    })
+    const updateQuery = `UPDATE discussions SET query_alert_status='1' WHERE query_alert_status = '0' `;
+    await query(updateQuery);
+  }
+}
+
+//Function send Email to company for customer query alert
+async function discussionQueryAlertEmail(companyId) {
+  const sql = `
+  SELECT users.email, users.first_name, c.slug
+  FROM users 
+  LEFT JOIN company_claim_request ccr ON ccr.claimed_by = users.user_id 
+  LEFT JOIN company c ON c.ID = ccr.company_id
+  WHERE c.ID = '${companyId}'
+
+  `;
+  try{
+    const results = await query(sql);
+    if (results.length > 0) {
+      var mailOptions = {
+        from: process.env.MAIL_USER,
+        //to: 'pranab@scwebtech.com',
+        to: results[0].email,
+        subject: `Customer query alert email`,
+        html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
+        <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
+         <tbody>
+          <tr>
+           <td align="center" valign="top">
+             <div id="template_header_image"><p style="margin-top: 0;"></p></div>
+             <table id="template_container" style="box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; background-color: #fdfdfd; border: 1px solid #dcdcdc; border-radius: 3px !important;" border="0" cellpadding="0" cellspacing="0" width="600">
+              <tbody>
+                <tr>
+                 <td align="center" valign="top">
+                   <!-- Header -->
+                   <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
+                     <tbody>
+                       <tr>
+                       <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
+                        <td id="header_wrapper" style="padding: 36px 48px; display: block;">
+                           <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Customer query alert email </h1>
+                        </td>
+    
+                       </tr>
+                     </tbody>
+                   </table>
+             <!-- End Header -->
+             </td>
+                </tr>
+                <tr>
+                 <td align="center" valign="top">
+                   <!-- Body -->
+                   <table id="template_body" border="0" cellpadding="0" cellspacing="0" width="600">
+                     <tbody>
+                       <tr>
+                        <td id="body_content" style="background-color: #fdfdfd;" valign="top">
+                          <!-- Content -->
+                          <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                           <tbody>
+                            <tr>
+                             <td style="padding: 48px;" valign="top">
+                               <div id="body_content_inner" style="color: #737373; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
+                                
+                                <table border="0" cellpadding="4" cellspacing="0" width="90%">
+                                  <tr>
+                                    <td colspan="2">
+                                    <strong>Hello ${results[0].first_name},</strong>
+                                    <p style="font-size:15px; line-height:20px">A customer has created your registered tags related discussion. 
+                                    </p>
+                                    </td>
+                                  </tr>
+                                </table>
+                                
+                               </div>
+                             </td>
+                            </tr>
+                           </tbody>
+                          </table>
+                        <!-- End Content -->
+                        </td>
+                       </tr>
+                     </tbody>
+                   </table>
+                 <!-- End Body -->
+                 </td>
+                </tr>
+                <tr>
+                 <td align="center" valign="top">
+                   <!-- Footer -->
+                   <table id="template_footer" border="0" cellpadding="10" cellspacing="0" width="600">
+                    <tbody>
+                     <tr>
+                      <td style="padding: 0; -webkit-border-radius: 6px;" valign="top">
+                       <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                         <tbody>
+                           <tr>
+                            <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
+                                 <p>This email was sent from <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a></p>
+                            </td>
+                           </tr>
+                         </tbody>
+                       </table>
+                      </td>
+                     </tr>
+                    </tbody>
+                   </table>
+                 <!-- End Footer -->
+                 </td>
+                </tr>
+              </tbody>
+             </table>
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>`
+      }
+     mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
+          if (err) {
+              console.log(err);
+              return res.send({
+                  status: 'not ok',
+                  message: 'Something went wrong'
+              });
+          } else {
+              console.log('Mail Send: ', info.response);
+              
+          }
+      })
+    } else {
+      return false;
+    }
+  }
+  catch(error){
+    console.error('Error during fetch All Latest Discussion:', error);
+  }
+}
+
+function getDefaultFromDate() {
+  const currentDate = new Date();
+  return currentDate.toISOString().split('T')[0]; // Returns current date in 'YYYY-MM-DD' format
+}
+
+function getDefaultToDate() {
+  const currentDate = new Date();
+  const sevenDaysAgo = new Date(currentDate.getTime() - 6 * 30 * 24 * 60 * 60 * 1000);
+  return sevenDaysAgo.toISOString().split('T')[0]; // Returns date 7 days ago in 'YYYY-MM-DD' format
+}
+
+//Function get historical graph chrat data
+async function getCompanyHistoricalReviewBetween(companyID, from =getDefaultToDate(), to = getDefaultFromDate(), filter = "daily") {
+console.log('to', to);
+
+  let dateGrouping = 'DAY(created_at)'; // Default grouping is daily
+
+  if (filter === 'weekly') {
+    dateGrouping = 'WEEK(created_at)';
+  } else if (filter === 'monthly') {
+    dateGrouping = 'MONTH(created_at)';
+  } else if (filter === 'yearly') {
+    dateGrouping = 'YEAR(created_at)';
+  }
+
+  const get_company_review_query = `
+    SELECT ${dateGrouping} AS date_group, created_at, AVG(rating) AS average_rating
+    FROM reviews
+    WHERE company_id = ? AND review_status = ? 
+    AND created_at BETWEEN ? AND ?
+    GROUP BY date_group
+    ORDER BY created_at ASC`;
+
+  const get_company_review_values = [companyID, '1', from, to ];
+
+  try {
+    const reviewData = await query(get_company_review_query, get_company_review_values);
+    return reviewData;
+  } catch (error) {
+    console.error('Error during query execution:', error);
+    throw error;
+  }
+}
+
+// Fetch same categories company
+function getSimilarCompany(companyId) {
+  return new Promise((resolve, reject) => {
+    db.query(
+      `SELECT c.ID, c.company_name,c.slug, GROUP_CONCAT(ccr.company_id) AS companiesId
+      FROM company c
+      LEFT JOIN company_cactgory_relation cr ON c.ID = cr.company_id
+      LEFT JOIN company_cactgory_relation ccr ON cr.category_id = ccr.category_id AND ccr.company_id != ${companyId}
+      WHERE c.status != '3' and c.paid_status = 'paid' AND c.ID = ${companyId}
+      GROUP BY c.ID`,
+      async(err, result) => {
+      if (err) {
+        reject(err);
+      } else {
+        if (result.length > 0) {
+          const companiesId = result[0].companiesId ? result[0].companiesId.split(',') : [];
+          result[0].companiesIdArr = companiesId
+          resolve(result);
+        } else {
+          resolve([]);
+        }
+      }
+    });
+  });
+}
+
 module.exports = {
   getFaqPage,
   getFaqCategories,
@@ -3762,5 +3994,9 @@ module.exports = {
   sendSurveyInvitationEmail,
   getPopularTags,
   getDiscussionListingByTag,
-  getCompanyCreatedTags
+  getCompanyCreatedTags,
+  duscussionQueryAlert,
+  discussionQueryAlertEmail,
+  getCompanyHistoricalReviewBetween,
+  getSimilarCompany
 };

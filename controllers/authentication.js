@@ -3784,3 +3784,348 @@ exports.addDiscussionComment = async (req, res) => {
   })
   
 }
+
+// --search Premium Company --//
+exports.searchPremiumCompany = async (req, res) => {
+  //console.log(req.body);
+  const keyword = req.params.keyword; //Approved Company
+  const get_company_query = `
+  SELECT c.ID, c.company_name
+  FROM company c
+  WHERE c.company_name LIKE '%${keyword}%' AND status="1" AND c.paid_status = "paid"
+  GROUP BY c.ID, c.company_name
+  ORDER BY c.created_date DESC  
+`;
+
+  try {
+    const get_company_results = await query(get_company_query);
+    if (get_company_results.length > 0) {
+      res.status(200).json({
+        status: 'success',
+        data: get_company_results,
+        message: get_company_results.length + ' company data recived'
+      });
+      return { status: 'success', data: get_company_results, message: get_company_results.length + ' company data recived' };
+    } else {
+      res.status(200).json({ status: 'success', data: '', message: 'No company data found' });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      status: 'error',
+      message: 'An error occurred while posting the request: ' + error
+    });
+  }
+}
+
+// --Complaint Companies Category Subcategory --//
+exports.complaintCategorySubcategory = async (req, res) => {
+  //console.log(req.body);
+  const companyId = req.params.companyId; //Approved Company
+  const get_company_query = `
+  SELECT 
+    parent.id AS parent_id,
+    parent.category_name AS parent_name,
+    child.id AS sub_category_id,
+    child.category_name AS sub_category_name
+    FROM 
+        complaint_category parent
+    LEFT JOIN 
+        complaint_category child ON parent.id = child.parent_id
+    WHERE 
+        parent.parent_id = 0
+        AND parent.company_id = ${companyId}; 
+ 
+`;
+
+  try {
+    const get_company_results = await query(get_company_query);
+    if (get_company_results.length > 0) {
+
+      //const companyId = 1; // replace with the actual company id
+      const companies = [];
+
+      // Assuming 'rows' contains the result of the SQL query
+      // You can replace this with the result object from your database library
+
+      // Group data by parent category
+      const groupedData = {};
+      get_company_results.forEach(row => {
+          if (!groupedData[row.parent_id]) {
+              groupedData[row.parent_id] = {
+                  id: row.parent_id,
+                  name: row.parent_name,
+                  subCategories: [],
+              };
+          }
+
+          if (row.sub_category_id) {
+              groupedData[row.parent_id].subCategories.push({
+                  id: row.sub_category_id,
+                  name: row.sub_category_name,
+              });
+          }
+      });
+
+      // Organize data into the desired structure
+      for (const key in groupedData) {
+          if (groupedData.hasOwnProperty(key)) {
+              companies.push(groupedData[key]);
+          }
+      }
+
+      //console.log(companies);
+
+
+      res.status(200).json({
+        status: 'success',
+        data: companies,
+        message: get_company_results.length + ' company data recived'
+      });
+      return { status: 'success', data: get_company_results, message: get_company_results.length + ' company data recived' };
+    } else {
+      res.status(200).json({ status: 'success', data: '', message: 'No company data found' });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      status: 'error',
+      message: 'An error occurred while posting the request: ' + error
+    });
+  }
+}
+
+// --Complaint listing by customer id --//
+exports.complainListing = async (req, res) => {
+
+  const userId = req.params.userId; 
+  const authenticatedUserId = parseInt(req.user.user_id);
+  const ApiuserId = parseInt(req.params.userId);
+
+  if (isNaN(ApiuserId)) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Invalid user_id provided in the request body.',
+    });
+  }
+  if (ApiuserId !== authenticatedUserId) {
+    return res.status(403).json({
+      status: 'error',
+      message: 'Access denied: You are not authorized to update this user.',
+    });
+  }
+  //console.log(req.body);
+  const [ getAllComplaintsByUserId] = await Promise.all([
+    comFunction2.getAllComplaintsByUserId(userId),
+  ]);
+
+  const formattedCoplaintData = getAllComplaintsByUserId.map(item => {
+      let responsesArray = [];
+      let comp_query = [];
+      let cus_response = [];
+      if (item.notification_statuses != null) {
+          responsesArray = item.notification_statuses.split(',');
+      }
+      if (item.company_query != null) {
+          comp_query = item.company_query.split(',');
+      }
+      if (item.user_response != null) {
+          cus_response = item.user_response.split(',');
+      }
+      return {
+        ...item,
+        notification_statuses: responsesArray,
+        company_query : comp_query,
+        customer_response:cus_response
+      };
+  });
+
+  try {
+    if (formattedCoplaintData.length > 0) {
+      res.status(200).json({
+        status: 'success',
+        data: formattedCoplaintData,
+        message: formattedCoplaintData.length + ' complaint data recived'
+      });
+      return { status: 'success', data: formattedCoplaintData, message: formattedCoplaintData.length + ' complaint data recived' };
+    } else {
+      res.status(200).json({ status: 'success', data: '', message: 'No complaint data found' });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      status: 'error',
+      message: 'An error occurred while posting the request: ' + error
+    });
+  }
+}
+
+// --Complaint details by complaint id --//
+exports.complainDetails = async (req, res) => {
+  //console.log(req.body);
+  const authenticatedUserId = parseInt(req.user.user_id);
+  const ApiuserId = parseInt(req.params.userId);
+
+  if (isNaN(ApiuserId)) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Invalid user_id provided in the request body.',
+    });
+  }
+  if (ApiuserId !== authenticatedUserId) {
+    return res.status(403).json({
+      status: 'error',
+      message: 'Access denied: You are not authorized to update this user.',
+    });
+  }
+  const complaintId = req.params.complaintId; 
+  const [ getComplaintsByComplaintId, updateUserNotificationStatus] = await Promise.all([
+    comFunction2.getAllComplaintsByComplaintId(complaintId),
+    comFunction2.updateUserNotificationStatus(complaintId),
+]);
+
+  try {
+    if (getComplaintsByComplaintId.length > 0) {
+      res.status(200).json({
+        status: 'success',
+        data: getComplaintsByComplaintId[0],
+        message: getComplaintsByComplaintId.length + ' complaint data recived'
+      });
+      return { status: 'success', data: getComplaintsByComplaintId, message: getComplaintsByComplaintId.length + ' complaint data recived' };
+    } else {
+      res.status(200).json({ status: 'success', data: '', message: 'No complaint data found' });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      status: 'error',
+      message: 'An error occurred while posting the request: ' + error
+    });
+  }
+}
+
+//Insert user Complaint Response  to company
+exports.userComplaintResponse = async (req, res) => {
+  //console.log('userComplaintResponse',req.body ); 
+  //return false;
+  const authenticatedUserId = parseInt(req.user.user_id);
+  const ApiuserId = parseInt(req.body.user_id);
+
+  if (isNaN(ApiuserId)) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Invalid user_id provided in the request body.',
+    });
+  }
+  if (ApiuserId !== authenticatedUserId) {
+    return res.status(403).json({
+      status: 'error',
+      message: 'Access denied: You are not authorized to update this user.',
+    });
+  }
+  const {company_id, user_id, complaint_id, message, complaint_level, complaint_status } = req.body;
+  
+  const currentDate = new Date();
+  const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+
+  
+  if (complaint_status == '0') {
+      const [updateComplaintStatus, complaintCompanyResolvedEmail] = await Promise.all([
+          comFunction2.updateComplaintStatus(complaint_id, '0'),
+           comFunction2.complaintUserReopenEmail(complaint_id)
+      ]);
+  } else {
+      await comFunction2.complaintUserResponseEmail(complaint_id);
+  }
+
+  const data = {
+      user_id:user_id,
+      company_id:company_id,
+      complaint_id :complaint_id,
+      query:'',
+      response : message,
+      created_at:formattedDate,
+      level_id:complaint_level,
+      notification_status:'0',
+      resolve_status:complaint_status
+  }
+   const Query = `INSERT INTO complaint_query_response SET ?  `;
+  db.query(Query, data, (err, result)=>{
+      if (err) {
+          return res.send({
+              status: 'not ok',
+              message: 'Something went wrong  '+err
+          });
+      } else {
+          return res.send({
+              status: 'ok',
+              message: 'Complaint response send successfully !'
+          });
+      }
+  })
+}
+
+//user Complaint Rating
+exports.userComplaintRating = async (req, res) => {
+  //console.log('userComplaintRating',req.body ); 
+  //return false;
+  const authenticatedUserId = parseInt(req.user.user_id);
+  const ApiuserId = parseInt(req.body.user_id);
+
+  if (isNaN(ApiuserId)) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Invalid user_id provided in the request body.',
+    });
+  }
+  if (ApiuserId !== authenticatedUserId) {
+    return res.status(403).json({
+      status: 'error',
+      message: 'Access denied: You are not authorized to update this user.',
+    });
+  }
+  const { user_id, complaint_id, rating } = req.body;
+  
+  const data = {
+      user_id:user_id,
+      complaint_id:complaint_id,
+      rating:rating,
+  }
+  const checkQuery = `SELECT id FROM complaint_rating WHERE complaint_id = '${complaint_id}' AND user_id = '${user_id}' `;
+  db.query(checkQuery, (checkErr, checkResult)=>{
+      if(checkErr){
+          return res.send({
+              status: 'not ok',
+              message: 'Something went wrong  '+checkErr
+          });
+      }
+      if (checkResult.length > 0) {
+          const updateQuery = `UPDATE complaint_rating SET rating='${rating}' WHERE complaint_id = '${complaint_id}' AND user_id = '${user_id}' `;
+          db.query(updateQuery, (updateErr, updateResult)=>{
+              if (updateErr) {
+                  return res.send({
+                      status: 'not ok',
+                      message: 'Something went wrong  '+updateErr
+                  });
+              } else {
+                  return res.send({
+                      status: 'ok',
+                      message: 'Complaint rating updated successfully !'
+                  });
+              }
+          })
+      } else {
+          const Query = `INSERT INTO complaint_rating SET ?  `;
+          db.query(Query, data, (err, result)=>{
+              if (err) {
+                  return res.send({
+                      status: 'not ok',
+                      message: 'Something went wrong  '+err
+                  });
+              } else {
+                  return res.send({
+                      status: 'ok',
+                      message: 'Complaint rating submitted successfully !'
+                  });
+              }
+          })
+      }
+  })
+  
+}

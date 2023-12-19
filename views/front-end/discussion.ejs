@@ -70,6 +70,7 @@
                     <div class="tab-content-wrap">
                         <% if(AllPopularDiscussion.length > 0) { %>
                             <% AllPopularDiscussion.forEach((PopularDiscussion)=>{  %>
+                                <% if(PopularDiscussion.total_comments > 0) { %>
                                 <% const ExpireDate = new Date(PopularDiscussion.expired_at); %>
                                 <% const date2 = new Date(); %>
                                 <% const daysDiff = Math.round((ExpireDate - date2)/(1000 * 60 * 60 * 24)) %>
@@ -98,6 +99,7 @@
                                             </div>
                                         </a>
                                     </div>
+                                <% } %>
                                 <% } %>
                             <% }) %>
                         <% } %>
@@ -185,7 +187,11 @@
                 <div class="discussions-right-panel">
                     <h4>Popular Discussions</h4>
                     <% if(AllPopularDiscussion.length > 0) { %>
-                    <% AllPopularDiscussion.forEach((PopularDiscussion)=>{  %>
+                        <% let popular_count = 0; %>
+                    <% AllPopularDiscussion.forEach((PopularDiscussion, index)=>{  %>
+                        <% if(PopularDiscussion.total_comments > 0) { %>
+                            <% popular_count ++; %>
+                            <% if(popular_count < 6) { %>
                         <% const ExpireDate = new Date(PopularDiscussion.expired_at); %>
                             <% const date2 = new Date(); %>
                             <% const daysDiff = Math.round((ExpireDate - date2)/(1000 * 60 * 60 * 24)) %>
@@ -205,13 +211,16 @@
                                     </div>
                                 </div>
                             <% } %>
+                        <% } %>
+                        <% } %>
                     <% }) %>
                     <% } %>
                 </div>
                 <div class="discussions-right-panel">
                     <h4>Newest Showcase</h4>
                     <% if(AllLatestDiscussion.length > 0) { %>
-                    <% AllLatestDiscussion.forEach((LatestDiscussion)=>{  %>
+                    <% AllLatestDiscussion.forEach((LatestDiscussion, index)=>{  %>
+                        <% if(index < 5) { %>
                         <% const ExpireDate = new Date(LatestDiscussion.expired_at); %>
                         <% const date2 = new Date(); %>
                         <% const daysDiff = Math.round((ExpireDate - date2)/(1000 * 60 * 60 * 24)) %>
@@ -227,9 +236,9 @@
                                 </a> 
                                 </div>
                                 <div class="dis-r-panel-item-right">
-                                    <%= LatestDiscussion.total_comments %>
                                 </div>
                             </div>
+                        <% } %>
                         <% } %>
                     <% }) %>
                     <% } %>
@@ -237,7 +246,11 @@
                 <div class="discussions-right-panel">
                     <h4>Viewed Showcase</h4>
                     <% if(AllViewedDiscussion.length > 0) { %>
-                    <% AllViewedDiscussion.forEach((ViewedDiscussion)=>{  %>
+                        <% let view_count = 0; %>
+                    <% AllViewedDiscussion.forEach((ViewedDiscussion, index)=>{  %>
+                        <% if(ViewedDiscussion.total_views > 0) { %>
+                            <% view_count ++ ; %>
+                        <% if(view_count < 6) { %>
                         <% const ExpireDate = new Date(ViewedDiscussion.expired_at); %>
                         <% const date2 = new Date(); %>
                         <% const daysDiff = Math.round((ExpireDate - date2)/(1000 * 60 * 60 * 24)) %>
@@ -256,6 +269,8 @@
                                     <%= ViewedDiscussion.total_views %>
                                 </div>
                             </div>
+                        <% } %>
+                        <% } %>
                         <% } %>
                     <% }) %>
                     <% } %>

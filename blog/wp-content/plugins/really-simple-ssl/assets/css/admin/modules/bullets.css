@@ -1,0 +1,53 @@
+.rsssl .rsssl-bullet {
+  height: 13px;
+  width: 13px;
+  flex: 0 0 13px;
+  border-radius: 50%;
+  display: inline-block;
+  background-color: var(--rsp-grey-300);
+}
+.rsssl .rsssl-bullet.rsp-yellow {
+  background-color: var(--rsp-yellow);
+}
+.rsssl .rsssl-bullet.rsp-blue {
+  background-color: var(--rsp-blue);
+}
+.rsssl .rsssl-bullet.rsp-pink {
+  background-color: var(--rsp-pink);
+}
+.rsssl .rsssl-bullet.rsp-red, .rsssl .rsssl-bullet.rsssl-bullet-error {
+  background-color: var(--rsp-red);
+}
+.rsssl .rsssl-bullet.rsp-green, .rsssl .rsssl-bullet.rsssl-bullet-success {
+  background-color: var(--rsp-green);
+}
+.rsssl .rsssl-bullet.rsp-blue-yellow {
+  background: var(--rsp-blue);
+  background: linear-gradient(77deg, rgb(0, 159, 255) 0%, rgb(0, 159, 255) 30%, rgb(244, 191, 62) 70%, rgb(244, 191, 62) 100%);
+  animation: gradient 2s ease infinite;
+  background-size: 200% 200%;
+}
+.rsssl .rsssl-legend {
+  display: flex;
+  width: -moz-max-content;
+  width: max-content;
+  color: var(--rsp-text-color-light);
+  align-items: center;
+  min-width: 0;
+  gap: var(--rsp-spacing-xxs);
+  text-decoration: none;
+}
+.rsssl .rsssl-legend:first-of-type {
+  margin-left: auto;
+}
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}/*# sourceMappingURL=bullets.css.map */

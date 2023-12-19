@@ -10,16 +10,23 @@
          </div>
          <div class="row">
             <div class="col-md-4 ">
-                <div class="send-review-invitation ">
+                <div class="send-review-invitation delete_company_tags">
                     <h4>Your Tags</h4>
-                    <% if( CompanyCreatedTags.length > 0 ){ %>
-                        <% const tags = JSON.parse(CompanyCreatedTags[0].tags) %>
-                        <% if(tags.length > 0 ){ %>
-                           <% tags.forEach((tag)=>{ %>
-                              <button class="btn-default btn-warning dis-details-top-btn" ><%= tag %></button><button company-id="<%= company.ID  %>" tag="<%= tag %>" tagArr="<%= CompanyCreatedTags[0].tags %>" data-bs-toggle="modal" data-bs-target="#surealertmodal" class="delete-button">X</button>
-                           <% }) %>   
-                        <% } %>
-                    <% } %>
+                    <div class="all_added_tags">
+                     <% if( CompanyCreatedTags.length > 0 ){ %>
+                           <% const tags = JSON.parse(CompanyCreatedTags[0].tags) %>
+                           <% if(tags.length > 0 ){ %>
+                              <% tags.forEach((tag)=>{ %>
+                                 <!-- <button class="btn-default btn-warning dis-details-top-btn" ><%= tag %></button>
+                                 <button company-id="<%= company.ID  %>" tag="<%= tag %>" tagArr="<%= CompanyCreatedTags[0].tags %>" data-bs-toggle="modal" data-bs-target="#surealertmodal" class="delete-button">X</button> -->
+                                 <div class="added_tag btn-warning">
+                                    <%= tag %>
+                                    <a title="Delete Tag" company-id="<%= company.ID  %>" tag="<%= tag %>" href="#" tagArr="<%= CompanyCreatedTags[0].tags %>" data-bs-toggle="modal" data-bs-target="#surealertmodal" class="delete-button"><i class="fa-solid fa-circle-xmark"></i></a>
+                                 </div>
+                              <% }) %>   
+                           <% } %>
+                     <% } %>
+                    </div>
                 </div>
             </div>
             <div class="col-md-8">
@@ -58,7 +65,7 @@
          <button type="button" class="btn-close" data-bs-dismiss="modal"><i class="fa-solid fa-circle-xmark"></i></button>
        </div>
        <div class="modal-body text-center">
-           <h5 class="mb-4">Want to delete this category ?</h5>
+           <h5 class="mb-4">Want to delete this tag ?</h5>
            <button class="btn-default btn-warning my-1" id="okButton">Yes Delete !</button>
            <button class="btn-default btn-dark my-1" id="cancelButton">No Cancle !</button>
        </div>
@@ -173,7 +180,7 @@ $(document).ready(function () {
       $("#cancelButton").on("click", function() {
             event.preventDefault();
             $('.frm-loading').hide();
-            $('.submit-error').text('Category is not deleted.');
+            $('.submit-error').text('Tag is not deleted.');
             $('.submit-error').show();
             setTimeout(function() { $(".submit-error").hide(); }, 3000);
             // Close the modal

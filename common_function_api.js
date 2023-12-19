@@ -2388,7 +2388,7 @@ async function getAllRelatedDiscussion() {
 
 
 //new
-async function getRelatedDiscussionsByTags(discussion_id) {
+async function getRelatedDiscussionsByTags(discussion_id, limit = 15) {
   const discussionTagsQuery = `
     SELECT tags
     FROM discussions
@@ -2600,8 +2600,8 @@ async function getRelatedDiscussionsByTags(discussion_id) {
     // `;
 
     const relatedDiscussionsQuery = `SELECT discussions.*,
-u.first_name AS discussion_user_first_name, 
-u.last_name AS discussion_user_last_name,
+u.first_name AS first_name, 
+u.last_name AS last_name,
 mu.profile_pic AS user_profile_pic,
 COALESCE(cr.total_comments, 0) AS total_comments,
 COALESCE(vr.total_views, 0) AS total_views,
@@ -2627,7 +2627,8 @@ GROUP BY discussion_id
 WHERE discussions.id <> ${discussion_id} 
 AND (${tagQueries})
 GROUP BY discussions.id
-ORDER BY discussions.id DESC;
+ORDER BY discussions.id DESC
+LIMIT ${limit};
 `;
 
 
