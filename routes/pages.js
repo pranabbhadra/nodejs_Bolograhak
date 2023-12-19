@@ -2209,8 +2209,8 @@ router.get('/send-review-invitation/:slug', checkClientClaimedCompany, async (re
              youtube_url = PremiumCompanyData.youtube_url;
         }
         // res.json( {
-        //     menu_active_id: 'company-poll-listing',
-        //     page_title: 'Company Name',
+        //     menu_active_id: 'send-review-invitation',
+        //     page_title: 'Send Review Invitation',
         //     currentUserData,
         //     globalPageMeta:globalPageMeta,
         //     company,
@@ -2219,7 +2219,8 @@ router.get('/send-review-invitation/:slug', checkClientClaimedCompany, async (re
         //     twitter_url:twitter_url,
         //     instagram_url:instagram_url,
         //     linkedin_url:linkedin_url,
-        //     youtube_url:youtube_url
+        //     youtube_url:youtube_url,
+        //     allRatingTags
         // });
         res.render('front-end/send-review-invitation', {
             menu_active_id: 'send-review-invitation',

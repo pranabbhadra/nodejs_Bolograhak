@@ -1149,22 +1149,7 @@ $(".create-poll-btn .btn-default").click(function(e){
 
 /*=========================== Remove multiple answer function End =================*/
 
-/*=========================== Send Review request tags start =================*/
-$("#sendreviewtags input").on({
-  focusout : function() {
-    var txt = this.value.replace(/[^a-z0-9\+\-\.\@]/ig,''); // allowed characters
-    if(txt) $("<span/>", {text:txt.toLowerCase(), insertBefore:this});
-    this.value = "";
-  },
-  keyup : function(ev) {
-    // if: comma|enter (delimit more keyCodes with | pipe)
-    if(/(188|13)/.test(ev.which)) $(this).focusout(); 
-  }
-});
-$('#sendreviewtags').on('click', 'span', function() {
-  if(confirm("Remove "+ $(this).text() +"?")) $(this).remove(); 
-});
-/*=========================== Send Review request tags End =================*/
+
 
 /*=========================== Create survey add question add option Start =================*/
 // $('.form-check-input').click(function() {
