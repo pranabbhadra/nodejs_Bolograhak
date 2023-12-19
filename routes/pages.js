@@ -2192,7 +2192,7 @@ router.get('/send-review-invitation/:slug', checkClientClaimedCompany, async (re
         comFunction.getCompany(companyId),
         comFunction2.getPremiumCompanyData(companyId),
         comFunction.getCompanyReviewNumbers(companyId),
-        comFunction.getAllRatingTags(),
+        comFunction.getAllRatingTags()
     ]);
    
     try {
@@ -2211,7 +2211,7 @@ router.get('/send-review-invitation/:slug', checkClientClaimedCompany, async (re
              linkedin_url = PremiumCompanyData.linkedin_url;
              youtube_url = PremiumCompanyData.youtube_url;
         }
-        // res.json( {
+        // res.json({
         //     menu_active_id: 'send-review-invitation',
         //     page_title: 'Send Review Invitation',
         //     currentUserData,

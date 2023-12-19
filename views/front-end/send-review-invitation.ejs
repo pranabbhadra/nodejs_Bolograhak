@@ -14,7 +14,7 @@
          </div>
             <h4>Send Review Invitation: 
                <% if(company && company.membership_type_id==2 ){ %>
-                  <% var email_limite = 100; %>
+                  <% var email_limite = 3; %>
                   <span style="font-size: 16px; vertical-align: middle;">(Allow upto <%- email_limite %>)</span>
                <% }else if( company && company.membership_type_id==3 ){%>
                   <% var email_limite = 1000; %>
@@ -29,7 +29,7 @@
                <input type="hidden" name="company_name" id="company_name" value="<%= company.company_name  %>" />
                <input type="hidden" name="user_id" id="user_id" value="<%= currentUserData.user_id  %>" />
                <input type="hidden" name="company_slug" id="company_slug" value="<%= company.slug  %>" />
-               <div id="sendreviewtags" style="min-height: 60px;">
+               <div id="sendreviewtags_invitation" style="min-height: 60px;">
                   <input type="text" name="emails" placeholder="Add an email" />
                </div>
                <div class="custom-form">
@@ -96,7 +96,34 @@
   </div>
 </div>
 <!-- ================ Section1 End ======================= -->
-
+<style>
+#sendreviewtags_invitation {
+   border: 2px solid #fccb06;
+   padding: 5px 9px;
+   border-radius: 6px;
+   margin-bottom: 32px;
+}   
+#sendreviewtags_invitation > input {
+   background: #f2f2f2;
+   border: 0;
+   margin: 4px;
+   padding: 7px;
+   width: auto;
+   border-radius: 4px;
+   outline: none;
+}
+#sendreviewtags_invitation > span {
+   cursor: pointer;
+   display: block;
+   float: left;
+   color: #fff;
+   background: #fccb06;
+   padding: 7px;
+   padding-right: 25px;
+   margin: 4px;
+   border-radius: 4px;
+}
+</style>
 <%- include('common/footer') -%>
 
 <script>
@@ -109,7 +136,7 @@ $(document).ready(function () {
       $('#invitation_email').prop('disabled', true);
       $('.frm-loading').show(); 
       //alert('aaaaaa')
-      $(this).find('#sendreviewtags').find('span').each(function(){
+      $(this).find('#sendreviewtags_invitation').find('span').each(function(){
          var enteredEmail = $(this).text();
          allEmails.push(enteredEmail);
       });
@@ -205,20 +232,20 @@ $(document).ready(function () {
 /*=========================== Send Review request tags start =================*/
 const maxEmails = <% if(email_limite){ %><%- email_limite %><% }else{ %>1000000000<% } %>; // Set the maximum number of tags allowed
 
-$("#sendreviewtags input").on({
+$("#sendreviewtags_invitation input").on({
   focusout: function () {
     var txt = this.value.trim(); // Trim whitespace from the input
 
     // Check if the maximum limit is not reached
-    if ($("#sendreviewtags span").length < maxEmails && isValidEmail(txt)) {
+    if ($("#sendreviewtags_invitation span").length < maxEmails && isValidEmail(txt)) {
       $("<span/>", { text: txt.toLowerCase(), insertBefore: this });
       this.value = "";
-      if($("#sendreviewtags span").length == maxEmails){
+      if($("#sendreviewtags_invitation span").length == maxEmails){
          $(this).hide();
       }
     } else {
       // Either the maximum limit is reached or the email is invalid, clear the input
-      if($("#sendreviewtags span").length == maxEmails){
+      if($("#sendreviewtags_invitation span").length == maxEmails){
          $(this).hide();
       }
       this.value = "";
@@ -237,11 +264,11 @@ function isValidEmail(email) {
   return emailRegex.test(email);
 }
 
- $('#sendreviewtags').on('click', 'span', function() {
+ $('#sendreviewtags_invitation').on('click', 'span', function() {
    if(confirm("Remove "+ $(this).text() +"?")) $(this).remove(); 
-   var Emaillength = $('#sendreviewtags').find("span").length;
+   var Emaillength = $('#sendreviewtags_invitation').find("span").length;
    if(Emaillength<maxEmails){
-      $("#sendreviewtags input").show();
+      $("#sendreviewtags_invitation input").show();
    }
  });
  /*=========================== Send Review request tags End =================*/
