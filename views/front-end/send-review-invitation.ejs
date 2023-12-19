@@ -9,12 +9,15 @@
             <%- include('common/premium-company-sidebar') -%>
          </div>
         <div class="send-review-invitation">
+         <% if( companyReviewInvitationNumbers && companyReviewInvitationNumbers.thismonth_invitation == 1 ){ %>
+         <% }else{ %>
          <div style="margin: 10px; display: flex; justify-content: flex-end">
             <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@fat">Bulk Upload</button>
          </div>
+         <% } %>
             <h4>Send Review Invitation: 
                <% if(company && company.membership_type_id==2 ){ %>
-                  <% var email_limite = 3; %>
+                  <% var email_limite = 100; %>
                   <span style="font-size: 16px; vertical-align: middle;">(Allow upto <%- email_limite %>)</span>
                <% }else if( company && company.membership_type_id==3 ){%>
                   <% var email_limite = 1000; %>
@@ -24,6 +27,11 @@
                   <span style="font-size: 16px; vertical-align: middle;">(Allow upto <%- email_limite %>)</span>
                <% } %>
             </h4>
+            <% if( companyReviewInvitationNumbers && companyReviewInvitationNumbers.thismonth_invitation == 1 ){ %>
+               <% const dateString = companyReviewInvitationNumbers.thismonth_invitation_data[0].share_date; %>
+               <% const date = new Date(dateString); %>
+               You have already send invitation on <%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %>. You cannot send the invitation before 30 days.
+            <% }else{ %>
             <form id="form_review_invitation">
                <input type="hidden" name="company_id" id="company_id" value="<%= company.ID  %>" />
                <input type="hidden" name="company_name" id="company_name" value="<%= company.company_name  %>" />
@@ -43,7 +51,8 @@
                   <input type="file" class="form-control"> 
                </div> -->
                <input type="submit" name="" id="invitation_email" class="btn-default btn-warning" value="Send">
-         </form>
+            </form>
+            <% } %>
          <div class="register-now frm-loading" style="display: none;">
             <span class="indicator-progress">Please wait...
                <span class="spinner-border spinner-border-sm align-middle ms-2"></span>

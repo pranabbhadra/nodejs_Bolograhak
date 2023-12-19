@@ -1305,6 +1305,26 @@ async function getCompanySurveyAnswersByID(survey_submission_id){
   }
 }
 
+async function getCompanyReviewInvitationNumbers(companyId){
+  const get_company_review_invite_request_query = `
+  SELECT *
+  FROM review_invite_request
+  WHERE company_id = ${companyId}
+  AND DATEDIFF(CURDATE(), share_date) < 30
+  ORDER BY id DESC LIMIT 1
+  `;
+  try{
+    const get_company_review_invite_request_result = await query(get_company_review_invite_request_query);
+    if(get_company_review_invite_request_result.length > 0){
+      return {'thismonth_invitation': 1, 'thismonth_invitation_data':get_company_review_invite_request_result};
+    }else{
+      return {'thismonth_invitation': 0, 'thismonth_invitation_data':[]};
+    }
+  }catch(error){
+    return 'Error during user get_company_review_invite_request_query:'+error;
+  }
+}
+
 module.exports = {
     getUser,
     getUserMeta,
@@ -1356,5 +1376,6 @@ module.exports = {
     getCompanySurveySubmitionsCount,
     getCompanySurveyDetailsBySurveyID,
     getCompanyOngoingSurveyDetails,
-    getCompanyReviewsBetween
+    getCompanyReviewsBetween,
+    getCompanyReviewInvitationNumbers
 };

@@ -2187,12 +2187,13 @@ router.get('/send-review-invitation/:slug', checkClientClaimedCompany, async (re
     const slug = req.params.slug;
     const comp_res =await comFunction2.getCompanyIdBySlug(slug);
     const companyId = comp_res.ID;
-    const [globalPageMeta, company, PremiumCompanyData, companyReviewNumbers, allRatingTags ] = await Promise.all([
+    const [globalPageMeta, company, PremiumCompanyData, companyReviewNumbers, allRatingTags, companyReviewInvitationNumbers ] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
         comFunction.getCompany(companyId),
         comFunction2.getPremiumCompanyData(companyId),
         comFunction.getCompanyReviewNumbers(companyId),
-        comFunction.getAllRatingTags()
+        comFunction.getAllRatingTags(),
+        comFunction.getCompanyReviewInvitationNumbers(companyId)
     ]);
    
     try {
@@ -2223,7 +2224,8 @@ router.get('/send-review-invitation/:slug', checkClientClaimedCompany, async (re
         //     instagram_url:instagram_url,
         //     linkedin_url:linkedin_url,
         //     youtube_url:youtube_url,
-        //     allRatingTags
+        //     allRatingTags,
+        //     companyReviewInvitationNumbers
         // });
         res.render('front-end/send-review-invitation', {
             menu_active_id: 'send-review-invitation',
@@ -2237,7 +2239,8 @@ router.get('/send-review-invitation/:slug', checkClientClaimedCompany, async (re
             instagram_url:instagram_url,
             linkedin_url:linkedin_url,
             youtube_url:youtube_url,
-            allRatingTags
+            allRatingTags,
+            companyReviewInvitationNumbers
         });
     } catch (err) {
         console.error(err);
