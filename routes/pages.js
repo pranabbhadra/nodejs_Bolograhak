@@ -2409,7 +2409,7 @@ router.get('/company-complaint-listing/:slug', checkClientClaimedCompany, async 
         comFunction.getCompanyReviewNumbers(companyId),
         comFunction.getAllRatingTags(),
         comFunction2.getPremiumCompanyData(companyId),
-        comFunction2.getAllComplaintsByCompanyId(companyId)
+        comFunction2.getAllComplaintsByCompanyId(companyId),
     ]);
         const formattedCoplaintData = getAllComplaintsByCompanyId.map(item => {
             let responsesArray = [];

@@ -5959,11 +5959,130 @@ exports.escalateNextLevel = async (req, res) => {
     
     const currentDate = new Date();
     const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+
+    const sql = `SELECT c.*, clm.eta_days, clm.emails, u.first_name, u.email, comp.slug FROM 
+    complaint c
+    LEFT JOIN complaint_level_management clm ON clm.company_id = c.company_id AND clm.level = '${levelId + 1}'
+    LEFT JOIN users u ON u.user_id = c.user_id 
+    LEFT JOIN company comp ON comp.ID = c.company_id 
+    WHERE c.id = '${complaintId}' `;
+    const results = await query(sql);
+    const emails = JSON.parse(results[0].emails);
+    var mailOptions = {
+        from: process.env.MAIL_USER,
+        //to: 'pranab@scwebtech.com',
+        to: results[0].email,
+        cc:emails,
+        subject: 'Escalate to next level email',
+        html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
+        <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
+          <tbody>
+          <tr>
+            <td align="center" valign="top">
+              <div id="template_header_image"><p style="margin-top: 0;"></p></div>
+              <table id="template_container" style="box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; background-color: #fdfdfd; border: 1px solid #dcdcdc; border-radius: 3px !important;" border="0" cellpadding="0" cellspacing="0" width="600">
+              <tbody>
+                <tr>
+                  <td align="center" valign="top">
+                    <!-- Header -->
+                    <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
+                      <tbody>
+                        <tr>
+                        <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
+                        <td id="header_wrapper" style="padding: 36px 48px; display: block;">
+                            <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Escalate to next level email</h1>
+                        </td>
+    
+                        </tr>
+                      </tbody>
+                    </table>
+              <!-- End Header -->
+              </td>
+                </tr>
+                <tr>
+                  <td align="center" valign="top">
+                    <!-- Body -->
+                    <table id="template_body" border="0" cellpadding="0" cellspacing="0" width="600">
+                      <tbody>
+                        <tr>
+                        <td id="body_content" style="background-color: #fdfdfd;" valign="top">
+                          <!-- Content -->
+                          <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                            <tbody>
+                            <tr>
+                              <td style="padding: 48px;" valign="top">
+                                <div id="body_content_inner" style="color: #737373; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
+                                
+                                <table border="0" cellpadding="4" cellspacing="0" width="90%">
+                                <tr>
+                                  <td colspan="2">
+                                    <strong>Hello Dear,</strong>
+                                    <p style="font-size:15px; line-height:20px">Please review the complaint details and initiate the necessary steps to resolve the issue at the earliest. Your prompt attention to this matter is highly appreciated. Pending complaint ticket id: <a  href="${process.env.MAIN_URL}company-compnaint-details/${results[0].slug}/${results[0].id}">${results[0].ticket_id}</a>. 
+                                    </p>
+                                  </td>
+                                </tr>
+                                  <tr>
+                                  </tr>
+                                </table>
+                                
+                                </div>
+                              </td>
+                            </tr>
+                            </tbody>
+                          </table>
+                        <!-- End Content -->
+                        </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  <!-- End Body -->
+                  </td>
+                </tr>
+                <tr>
+                  <td align="center" valign="top">
+                    <!-- Footer -->
+                    <table id="template_footer" border="0" cellpadding="10" cellspacing="0" width="600">
+                    <tbody>
+                      <tr>
+                      <td style="padding: 0; -webkit-border-radius: 6px;" valign="top">
+                        <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                          <tbody>
+                            <tr>
+                            <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
+                                  <p>This email was sent from <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a></p>
+                            </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </td>
+                      </tr>
+                    </tbody>
+                    </table>
+                  <!-- End Footer -->
+                  </td>
+                </tr>
+              </tbody>
+              </table>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+        </div>`
+      }
+    await  mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
+          if (err) {
+              console.log(err);
+              return false;
+          } else {
+              console.log('Mail Send: ', info.response);
+              
+          }
+      })
   
     try {
       
-        const sql = `UPDATE complaint SET level_id= '${levelId + 1}', level_update_at ='${formattedDate}'  WHERE id = '${complaintId}' `;
-        db.query(sql, (err, resut)=>{
+        const updateQuery = `UPDATE complaint SET level_id= '${levelId + 1}', level_update_at ='${formattedDate}'  WHERE id = '${complaintId}' `;
+        db.query(updateQuery, (err, resut)=>{
             if (err) {
                 return res.send({
                     status: 'not ok',
@@ -6018,4 +6137,5 @@ cron.schedule('0 10 * * *', async () => {
 //Discussion customer query alert
 cron.schedule('0 5 * * *', async () => {
     await comFunction2.duscussionQueryAlert();
+    await comFunction2.complaintLevelUpdate();
 })
