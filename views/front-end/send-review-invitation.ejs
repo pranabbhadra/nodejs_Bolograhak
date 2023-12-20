@@ -19,12 +19,16 @@
                <% if(company && company.membership_type_id==2 ){ %>
                   <% var email_limite = 100; %>
                   <span style="font-size: 16px; vertical-align: middle;">(Allow upto <%- email_limite %>)</span>
-               <% }else if( company && company.membership_type_id==3 ){%>
+               <% }else if( company && company.membership_type_id==3 ){ %>
                   <% var email_limite = 1000; %>
                   <span style="font-size: 16px; vertical-align: middle;">(Allow upto <%- email_limite %>)</span>
                <% }else if( company && company.membership_type_id==4 ){ %>
-                  <% var email_limite = 1000; %>
+                  <% var email_limite = 10000; %>
                   <span style="font-size: 16px; vertical-align: middle;">(Allow upto <%- email_limite %>)</span>
+               <% }else if( company && company.membership_type_id==5 ){ %>
+                  <% var email_limite = 1000000000; %>
+               <% }else{ %>
+                  <% var email_limite = 0; %>
                <% } %>
             </h4>
             <% if( companyReviewInvitationNumbers && companyReviewInvitationNumbers.thismonth_invitation == 1 ){ %>
@@ -42,9 +46,10 @@
                </div>
                <div class="custom-form">
                   <label><span>Message</span></label>
-                  <textarea name="email_body" id="email_body" class="form-control mb-4">Hello Dear,
-                     <%= company.company_name  %> cordially invite you to provide your valuable opinion regarding our company, through the platform of BoloGrahak. 
-                  </textarea>
+<textarea name="email_body" id="email_body" class="form-control mb-4">
+Hello Dear,
+<%= company.company_name  %> cordially invite you to provide your valuable opinion regarding our company, through the platform of BoloGrahak. 
+</textarea>
                </div>
                <!-- <div class="bulk-upload mb-4">
                   <label for="">Bulk Upload</label>
@@ -77,6 +82,7 @@
          <input type="hidden" name="company_name" id="company_name" value="<%= company.company_name  %>" />
          <input type="hidden" name="user_id" id="user_id" value="<%= currentUserData.user_id  %>" />
          <input type="hidden" name="company_slug" id="company_slug" value="<%= company.slug  %>" />
+         <input type="hidden" name="email_limite" id="email_limite" value="<%- email_limite %>" />
          <div class="modal-body">
             <div class="custom-form">
                <label><span>Choose a CSV file:</span></label>
@@ -85,9 +91,9 @@
             </div>
             <div class="custom-form">
                <label><span>Message</span></label>
-               <textarea name="email_body" id="email_body" class="form-control mb-4">Hello Dear,
-                  <%= company.company_name  %> cordially invite you to provide your valuable opinion regarding our company, through the platform of BoloGrahak. 
-               </textarea>
+<textarea name="email_body" id="email_body" class="form-control mb-4">Hello Dear,
+<%= company.company_name  %> cordially invite you to provide your valuable opinion regarding our company, through the platform of BoloGrahak. 
+</textarea>
             </div>
          </div>
          <div class="modal-footer">
@@ -131,6 +137,14 @@
    padding-right: 25px;
    margin: 4px;
    border-radius: 4px;
+}
+#sendreviewtags_invitation > span:after {
+   position: absolute;
+   content: "×";
+   border: 1px solid;
+   padding: 2px 5px;
+   margin-left: 3px;
+   font-size: 11px;
 }
 </style>
 <%- include('common/footer') -%>

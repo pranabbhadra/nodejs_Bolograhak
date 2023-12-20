@@ -147,12 +147,14 @@
             <li><a href="/company-complaint-listing/<%= company.slug  %>">Complaint Listing</a></li>
          </ul>
      </li>
-     <li <% if( menu_active_id == 'survey') { %> class="active" <% } %> >
+      <% if(company && company.membership_type_id>=3 ){ %>
+      <li <% if( menu_active_id == 'survey') { %> class="active" <% } %> >
          <a href="/create-survey/<%= company.slug  %>"><i class="fa-solid fa-clipboard-question"></i> Survey</a>
          <ul>
 				<li <% if( menu_active_id == 'survey') { %>  class="active" <% } %>><a href="/send-survey-invitation/<%= company.slug  %>">Send Survey Invitation</a></li>
 			</ul>
       </li>
+      <% } %>
      <li <% if( menu_active_id == 'settings') { %> class="active" <% } %> ><a href="#"><i class="fas fa-cog"></i> Settings</a>
       <ul>
          <li><a href="/discussion-tag-management/<%= company.slug  %>">Discussion tag management</a></li>

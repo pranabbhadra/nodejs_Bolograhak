@@ -1056,6 +1056,10 @@ router.get('/:slug/survey/:id', checkCookieValue, async (req, res) => {
         ]);        
         if(companySurveyQuestions.length>0){
             // res.json({
+            //     menu_active_id: 'survey',
+            //     page_title: 'Survey',
+            //     currentUserData,
+            //     globalPageMeta:globalPageMeta,
             //     company:company,
             //     companySurveyQuestions,
             //     AllRatingTags,
@@ -1165,7 +1169,7 @@ router.get('/create-survey/:slug', checkClientClaimedCompany, async (req, res) =
         // res.json( 
         // { 
         //     CompanySurveyDetails,
-        //     mergedArray
+        //     CompanySurveyDetails_formatted
         // });
 
         res.render('front-end/premium-company-create-survey', 

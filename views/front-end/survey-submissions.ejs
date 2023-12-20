@@ -12,6 +12,7 @@
                 <div id="horizontalTab">
                     <div class="survey-details-with-date">
                         <h2><%- CompanySurveyDetails[0].title %></h2>
+                        <% if(company && company.membership_type_id>=3 ){ %>
                         <div class="survet-update-form">
                             <%
                                 var created_at = CompanySurveyDetails[0].created_at;
@@ -38,6 +39,7 @@
                             </form>
                             <p class="survey-update-message" style="display: none;"></p>
                         </div>
+                        <% } %>
                     </div>
                     <div class="submissions-result-wrapper">
                         <p>Total submissions: <%- companySurveySubmissions.length %></p>
