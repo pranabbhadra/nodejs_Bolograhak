@@ -164,8 +164,10 @@ function getAllTrashedCompany() {
 
 function getCompany(companyId) {
   return new Promise((resolve, reject) => {
-    const sql = `SELECT company.*, ccr.claimed_by FROM company 
+    const sql = `SELECT company.*, ccr.claimed_by, mp.plan_name as membership_plan_name
+              FROM company 
               LEFT JOIN company_claim_request ccr ON company.ID = ccr.company_id
+              LEFT JOIN membership_plans mp ON company.membership_type_id = mp.id
               WHERE company.ID = ?`
     db.query(sql, [companyId], (err, result) => {
       if (err) {

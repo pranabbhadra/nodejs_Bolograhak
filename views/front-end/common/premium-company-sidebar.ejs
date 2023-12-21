@@ -111,7 +111,7 @@
                 
              </div>
              <div class="membership_info">
-                <p>Membership Plan: <b>Premium</b></p>
+                <p>Membership Plan: <b><% if(company && company.membership_plan_name!='' ){ %><%- company.membership_plan_name %><% }else{%>Basic<% }%></b></p>
              </div>
           </div>
        </div>
@@ -156,9 +156,11 @@
       </li>
       <% } %>
      <li <% if( menu_active_id == 'settings') { %> class="active" <% } %> ><a href="#"><i class="fas fa-cog"></i> Settings</a>
+      <% if(company && company.membership_type_id>=4 ){ %>
       <ul>
          <li><a href="/discussion-tag-management/<%= company.slug  %>">Discussion tag management</a></li>
       </ul>
+      <% } %>
    </li>
 	</ul>
  </div>

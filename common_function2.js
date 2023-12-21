@@ -3695,36 +3695,42 @@ async function getCompanyCreatedTags(company_id) {
 
 //Notification Content
 async function duscussionQueryAlert () {
-  const sql = `SELECT tags FROM discussions WHERE query_alert_status = '0' `;
+  const sql = `SELECT id, tags, topic FROM discussions WHERE query_alert_status = '0' `;
   const results =await query(sql);
   //console.log(results);
   if (results.length > 0) {
-    results.forEach(async (result)=>{
-      const discussionTags = JSON.parse(result.tags);
-      //console.log(discussionTags)
-      if (discussionTags.length > 0 ) {
-        const companyTags = `SELECT tags, company_id FROM duscussions_company_tags `;
-        const companyResult =await query(companyTags);
-        //console.log(companyResult);
-        if (companyResult.length > 0 ) {
-          companyResult.forEach((companyTag)=>{
-            const companyTagsArr = JSON.parse(companyTag.tags);
-            //console.log('companyTagsArr',companyTagsArr);
-            const hasMatch = discussionTags.some(element => companyTagsArr.includes(element));
-            if (hasMatch) {
-              discussionQueryAlertEmail(companyTag.company_id);
-            }
-          })
-        }
-      }
-    })
-    const updateQuery = `UPDATE discussions SET query_alert_status='1' WHERE query_alert_status = '0' `;
-    await query(updateQuery);
+      results.forEach(async (result)=>{
+          const discussionTags = JSON.parse(result.tags);
+          const discussionTopic_original = result.topic;
+          const discussionTopic = result.topic.toLowerCase();
+          const discussionTopic_id = result.id;
+          //console.log(discussionTags)
+          if (discussionTags.length > 0 ) {
+              const companyTags = `SELECT tags, company_id FROM duscussions_company_tags LEFT JOIN company ON duscussions_company_tags.company_id = company.ID WHERE company.membership_type_id >=4 `;
+              const companyResult =await query(companyTags);
+              console.log('company Tag Results:',companyResult);
+              if (companyResult.length > 0 ) {
+                  companyResult.forEach((companyTag)=>{
+                      const companyTagsArr = JSON.parse(companyTag.tags);
+                      //console.log('companyTagsArr',companyTagsArr);
+                      const hasMatch = discussionTags.some(element => companyTagsArr.includes(element));
+                      const hasTagInDiscussion = companyTagsArr.some(tag => discussionTopic.includes(tag));
+                      const matchedTags = companyTagsArr.filter(tag => discussionTopic.includes(tag));
+                      if (hasMatch || hasTagInDiscussion) {
+                          comFunction2.discussionQueryAlertEmail(companyTag.company_id, discussionTopic_original, discussionTopic_id);
+                          //console.log('Match:', matchedTags);
+                      }
+                  })
+              }
+          }
+      })
+      const updateQuery = `UPDATE discussions SET query_alert_status='1' WHERE query_alert_status = '0' `;
+      await query(updateQuery);
   }
 }
 
 //Function send Email to company for customer query alert
-async function discussionQueryAlertEmail(companyId) {
+async function discussionQueryAlertEmail(companyId, TopicHeading, TopicID) {
   const sql = `
   SELECT users.email, users.first_name, c.slug
   FROM users 
@@ -3786,6 +3792,7 @@ async function discussionQueryAlertEmail(companyId) {
                                     <strong>Hello ${results[0].first_name},</strong>
                                     <p style="font-size:15px; line-height:20px">A customer has created your registered tags related discussion. 
                                     </p>
+                                    <p style="font-size:15px; line-height:20px"><a href="${process.env.MAIN_URL}discussion-details/${TopicID}">${TopicHeading}</a></p>
                                     </td>
                                   </tr>
                                 </table>
