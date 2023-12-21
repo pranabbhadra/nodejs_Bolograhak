@@ -591,7 +591,7 @@
                       <% const tag_items=rev_tag.rating_tags.split('|'); %>
                         <% tag_items.forEach(function(tag) { %>
                           <div class="form-check custom-check position-relative">
-                            <input class="form-check-input" type="checkbox" name="tags" value="<%= tag %>" id="">
+                            <input class="form-check-input" type="checkbox" name="tags" value="<%= tag %>">
                             <label class="form-check-label" for="flexCheckDefault">
                               <%= tag %>
                             </label>
@@ -1645,6 +1645,7 @@
         $("body").on('click', ".autofield-dropdown ul > li", function (e) {
           e.preventDefault();
           var resulttitle = $(this).find('a').attr('data-resulttitle');
+          var resultexcerpt = $(this).find('a').attr('data-resultexcerpt');
           var resultpermalink = $(this).find('a').attr('data-resultpermalink');
           $('#dynamic-search-title').text(resulttitle);
           $('#dynamic-search-content').text(resultexcerpt);
