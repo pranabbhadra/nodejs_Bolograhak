@@ -4180,6 +4180,58 @@ async function complaintLevelUpdate() {
   }
 }
 
+// Fetch membership plan
+function getmembershipPlans() {
+  return new Promise((resolve, reject) => {
+    db.query(
+      `SELECT *
+      FROM membership_plans 
+      WHERE 1`,
+      async(err, result) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
+
+// Fetch one Payment details
+function getAllPayments() {
+  return new Promise((resolve, reject) => {
+    db.query(
+      `SELECT p.*, c.company_name , c.logo , c.comp_email , mp.plan_name
+      FROM payments p
+      LEFT JOIN company c ON c.ID = p.company_id  AND c.status != '3'
+      LEFT JOIN membership_plans mp ON p.membership_plan_id = mp.id  
+      ORDER BY p.id DESC`,
+      async(err, result) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
+
+// Fetch a payment details
+function getpaymentDetailsById(paymentId) {
+  return new Promise((resolve, reject) => {
+    db.query(
+      `SELECT *
+      FROM payments 
+      WHERE id = ${paymentId}`,
+      async(err, result) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
 
 module.exports = {
   getFaqPage,
@@ -4270,5 +4322,8 @@ module.exports = {
   getCompanyCategoryProducts,
   getCompanyCategoryByReviewId,
   getCompanyProductByReviewId,
-  complaintLevelUpdate
+  complaintLevelUpdate,
+  getmembershipPlans,
+  getAllPayments,
+  getpaymentDetailsById
 };

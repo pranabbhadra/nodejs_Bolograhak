@@ -79,6 +79,8 @@ router.post('/restore-company', authController.restoreCompany);
 // Add FAQ
 router.post('/create-faq', authController.createFAQ);
 
+router.post('/delete-payment', authController.deletePayment);
+
 // Update FAQ
 router.put('/update-faq', authController.updateFAQ);
 
@@ -399,5 +401,7 @@ router.post('/historical-chart-filter', authController.historicalChartFilter);
 // company compare-chart-filter
 router.post('/competitorCompany-chart', authController.competitorCompanyChart);
 
+// add payment details
+router.post('/add-payment', authController.addPayment);
 
 module.exports = router;

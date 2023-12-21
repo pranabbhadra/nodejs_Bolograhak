@@ -4163,6 +4163,88 @@ router.get('/push-notification', checkLoggedIn, (req, res) => {
         res.status(500).send('An error occurred');
     }
 });
+
+//---Add Payment--//
+router.get('/add-payment', checkLoggedIn, async (req, res) => {
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+
+        // Fetch all the required data asynchronously
+        const [companies, getmembershipPlans] = await Promise.all([
+            comFunction.getAllCompany(),
+            comFunction2.getmembershipPlans()
+        ]);
+        //console.log(getmembershipPlans);
+        // Render the 'edit-user' EJS view and pass the data
+        res.render('add-payment', {
+            menu_active_id: 'company',
+            page_title: 'Add Payment',
+            currentUserData,
+            companies:companies,
+            membershipPlans:getmembershipPlans
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+
+//---Payments--//
+router.get('/payments', checkLoggedIn, async (req, res) => {
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+
+        // Fetch all the required data asynchronously
+        const [getAllPayments] = await Promise.all([
+            comFunction2.getAllPayments(),
+        ]);
+        console.log(getAllPayments);
+        // Render the 'edit-user' EJS view and pass the data
+        // res.json({
+        //     allcompany: allcompany
+        // });
+        res.render('payments', {
+            menu_active_id: 'company',
+            page_title: 'Payments',
+            currentUserData,
+            allPayments: getAllPayments
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+
+//---Edit Payment--//
+router.get('/edit-payment/:paymentId', checkLoggedIn, async (req, res) => {
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+        const paymentId = req.params.paymentId;
+
+        // Fetch all the required data asynchronously
+        const [companies, getmembershipPlans, getpaymentDetailsById] = await Promise.all([
+            comFunction.getAllCompany(),
+            comFunction2.getmembershipPlans(),
+            comFunction2.getpaymentDetailsById(paymentId)
+        ]);
+        console.log(getpaymentDetailsById);
+        // Render the 'edit-user' EJS view and pass the data
+        res.render('edit-payment', {
+            menu_active_id: 'company',
+            page_title: 'Edit Payment',
+            currentUserData,
+            companies:companies,
+            membershipPlans:getmembershipPlans,
+            paymentDetails:getpaymentDetailsById[0]
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
 //-----------------------------------------------------------------//
 
 

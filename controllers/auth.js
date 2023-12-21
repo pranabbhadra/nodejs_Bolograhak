@@ -1908,6 +1908,28 @@ exports.deleteCompany = (req, res) => {
 
 }
 
+//--- Delete Company ----//
+exports.deletePayment = (req, res) => {
+    //console.log(req.body.companyid);
+    sql = `DELETE FROM payments WHERE id = ?`;
+    const data = [req.body.paymentId];
+    db.query(sql, data, (err, result) => {
+        if (err) {
+            return res.send({
+                status: 'error',
+                message: 'Something went wrong'
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Payment details successfully deleted'
+            });
+        }
+
+    })
+
+}
+
 //--- Trash Company ----//
 exports.trashCompany = (req, res) => {
     //console.log(req.body.companyid);
@@ -6103,6 +6125,47 @@ exports.escalateNextLevel = async (req, res) => {
       });
     }
   };
+
+//add payment details
+exports.addPayment =  (req, res) => {
+    //console.log('addPayment',req.body);
+    //return false;
+    const {company_id, transaction_id, payment_mode, amount, transaction_date, membership_plan, remarks, subscription_mode, start_date, expire_date } = req.body;
+    //return false;
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+    const data = {
+        transaction_id:transaction_id || null,
+        company_id :company_id,
+        mode_of_payment:payment_mode,
+        amount:amount,
+        transaction_date : transaction_date,
+        membership_plan_id:membership_plan,
+        remarks:remarks,
+        subscription_mode:subscription_mode,
+        start_date:start_date,
+        expire_date:expire_date,
+        created_at:formattedDate,
+        updated_at:formattedDate,
+    }
+
+    
+   // console.log(complaintEmailToCompany);
+    const Query = `INSERT INTO payments SET ?  `;
+    db.query(Query, data, async (err, result)=>{
+        if (err) {
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong  '+err
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Payment details registered  successfully !'
+            });
+        }
+    })
+}
 
 
 // Schedule mail for pending complaint
