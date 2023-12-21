@@ -145,6 +145,13 @@
                                     </div>
                                     <!--end::Col-->
                                 </div>
+                                <%
+                                    const Transactiondate = new Date(paymentDetails.transaction_date);
+                                    const Transactionyear = Transactiondate.getFullYear();
+                                    const Transactionmonth = String(Transactiondate.getMonth() + 1).padStart(2, '0');
+                                    const Transactionday = String(Transactiondate.getDate()).padStart(2, '0');
+                                    const formattedTransactionDate = `${Transactionyear}-${Transactionmonth}-${Transactionday}`;
+                                %>
                                 <div class="row mb-6">
                                     <!--begin::Label-->
                                     <label class="col-lg-4 col-form-label fw-bold fs-6">
@@ -152,7 +159,7 @@
                                     </label>
                                     
                                     <div class="col-lg-8 fv-row">
-                                        <input type="date" name="transaction_date" class="form-control form-control-lg form-control-solid" placeholder="" value="" />
+                                        <input type="date" name="transaction_date" class="form-control form-control-lg form-control-solid" placeholder="" value="<%= formattedTransactionDate %>" />
                                     </div>
                                     <!--end::Col-->
                                 </div>
@@ -214,14 +221,15 @@
                                     </div>
                                 </div>
                                 <%
-                                    const date = new Date();
+
+                                    const date = new Date(paymentDetails.start_date);
                                     const year = date.getFullYear();
                                     const month = String(date.getMonth() + 1).padStart(2, '0');
                                     const day = String(date.getDate()).padStart(2, '0');
                                     const formattedDate = `${year}-${month}-${day}`;
 
                                     // Calculate the next month's date
-                                    const nextMonthDate = new Date(date.getFullYear(), date.getMonth() + 1, date.getDate());
+                                    const nextMonthDate = new Date(paymentDetails.expire_date);
 
                                     const nextMonthYear = nextMonthDate.getFullYear();
                                     const nextMonthMonth = String(nextMonthDate.getMonth() + 1).padStart(2, '0');
