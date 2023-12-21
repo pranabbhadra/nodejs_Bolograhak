@@ -1645,6 +1645,7 @@
         $("body").on('click', ".autofield-dropdown ul > li", function (e) {
           e.preventDefault();
           var resulttitle = $(this).find('a').attr('data-resulttitle');
+          var resultexcerpt = $(this).find('a').attr('data-resultexcerpt');
           var resultpermalink = $(this).find('a').attr('data-resultpermalink');
           $('#dynamic-search-title').text(resulttitle);
           $('#dynamic-search-content').text(resultexcerpt);
