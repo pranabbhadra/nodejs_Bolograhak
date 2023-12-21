@@ -3836,8 +3836,8 @@ exports.updateBasicCompany = (req, res) => {
 }
 
 //--Front end- Update Basic Company profile --//
-exports.updatePremiumCompany =async (req, res) => {
-    //console.log('PremiumCompany:',req.body);
+exports.updatePremiumCompany = async (req, res) => {
+    console.log('PremiumCompany:',req.body);
     //console.log('PremiumCompany File:',req.files);
 
     const companyID = req.body.company_id;
@@ -4019,7 +4019,8 @@ exports.updatePremiumCompany =async (req, res) => {
                         if(promotionSQL.length > 0){
                             promotionSQL.forEach(function(promotionImg, index, arr) {
                                 if(promotionImg.promotion_image != null) {
-                                    if(promotion_image[index] == ''){
+                                    //console.log('promotion_image',promotionImg.promotion_image);
+                                    if(promotion_image && promotion_image[index] == ''){
                                         
                                         PromotionalData[index].promotion_image = promotionSQL[index].promotion_image;
                                     }
@@ -4030,7 +4031,7 @@ exports.updatePremiumCompany =async (req, res) => {
                         if(productSQL.length > 0){
                             productSQL.forEach(function(productImg, index, arr) {
                                 if(productImg.product_image != null) {
-                                    if(product_image[index]== ''){
+                                    if(product_image && product_image[index]== ''){
                                         ProductData[index].product_image = productSQL[index].product_image;
                                     }
                                 }
@@ -4853,11 +4854,11 @@ exports.reviewBulkInvitation = async (req, res) => {
         const worksheet = workbook.getWorksheet(1);
         const emailsArr = await processReviewCSVRows(worksheet);
         const emails = emailsArr.flat();
-        if (emails.length > 100) {
+        if (emails.length > req.body.email_limite) {
             return res.send(
                 {
                     status: 'err',
-                    message: 'You can not add more than 100 email id`s in your current membership.'
+                    message: 'You can not add more than '+req.body.email_limite+' email id`s in your current membership.'
                 }
             )  
         } else {

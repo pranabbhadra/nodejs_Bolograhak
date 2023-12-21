@@ -195,6 +195,8 @@
                             </div>
                         </div>
                     </div>
+
+                    <% if(company && company.membership_type_id>=4 ){ %>
                     <div class="each_box update_youtuve_videos">
                         <h2 class="mb-3">Upload Youtube video(iframe)</h2>
                         <div class="row">
@@ -206,53 +208,68 @@
                             </div>
                         </div>
                     </div>
-                    <div class="each_box add_promotions">
-                        <h2 class="mb-3">Promotions</h2>
+                    <% } %>
+                        
+                    <% if(company && company.membership_type_id==3 ){ %>
+                        <% var promotions_limite = 5; %>
+                     <% }else if( company && company.membership_type_id==4 ){%>
+                        <% var promotions_limite = 50; %>
+                     <% }else if( company && company.membership_type_id>4 ){ %>
+                        <% var promotions_limite = 1000; %>
+                     <% }else{ %>  
+                        <% var promotions_limite = 0; %>
+                     <% } %> 
+
+                    <% if( promotions_limite > 0 ){ %>
+                    <div class="each_box add_promotions">                       
+                        <h2 class="mb-3">Promotions
+                            <span style="font-size: 16px; vertical-align: middle;">(Allow upto <%- promotions_limite %>)</span> 
+                        </h2>                        
                         <div class="repeter_wrap">
                             <div class="all_repeter">
                                 <% if(promotions.length > 0 && promotions[0].promotion_title){ %>
-                                <% promotions.forEach( (promotion,index)=> {%>
-                                <div class="each_repeter">
-                                    <div class="row align-items-center">
-                                        <div class="col-12">
-                                            <div class="mb-3">
-                                                <label class="form-label">Title<sup>*</sup></label>
-                                                <input type="text" class="form-control" placeholder="" name="promotion_title" value="<%= promotion.promotion_title %>" required>
+                                    <% promotions.forEach( (promotion,index)=> {%>
+                                    <div class="each_repeter">
+                                        <div class="row align-items-center">
+                                            <div class="col-12">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Title<sup>*</sup></label>
+                                                    <input type="text" class="form-control" placeholder="" name="promotion_title" value="<%= promotion.promotion_title %>" required>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="mb-3">
-                                                <label class="form-label">Description<sup>*</sup></label>
-                                                <textarea class="form-control" placeholder="" rows="3" name="promotion_desc" ><%= promotion.promotion_desc %></textarea>
+                                            <div class="col-12">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Description<sup>*</sup></label>
+                                                    <textarea class="form-control" placeholder="" rows="3" name="promotion_desc" ><%= promotion.promotion_desc %></textarea>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="mb-3">
-                                                <label class="form-label">Discount</label>
-                                                <input type="text" class="form-control" placeholder="In percentage (ex: 70%)" name="promotion_discount" value="<%= promotion.promotion_discount %>">
+                                            <div class="col-12">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Discount</label>
+                                                    <input type="text" class="form-control" placeholder="In percentage (ex: 70%)" name="promotion_discount" value="<%= promotion.promotion_discount %>">
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="col-sm-10">
-                                            <label class="form-label">Image</label>
-                                            <input class="form-control upload_in_repeter promotion_image" type="file" name="promotion_image">
-                                        </div>
-                                        <div class="col-sm-2">
-                                            <div class="display_image_box">
-                                                <% if(promotion.promotion_image != null) {%>
-                                                    <img class="promotion_image_review" src="/<%= promotion.promotion_image %>" alt="">
-                                                <% } else {%>
-                                                    <img class="promotion_image_review" src="/front-end/images/no-image.png" alt="">
-                                                    <% } %>
+                                            <div class="col-sm-10">
+                                                <label class="form-label">Image</label>
+                                                <input class="form-control upload_in_repeter promotion_image" type="file" name="promotion_image">
                                             </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="text-right">
-                                                <button data-id="<%= index %>" company-id = "<%= company.ID %>" data-type="promotion" type="button" class="btn btn-danger delete_item">Remove</button>
+                                            <div class="col-sm-2">
+                                                <div class="display_image_box">
+                                                    <% if(promotion.promotion_image != null) {%>
+                                                        <img class="promotion_image_review" src="/<%= promotion.promotion_image %>" alt="">
+                                                    <% } else {%>
+                                                        <img class="promotion_image_review" src="/front-end/images/no-image.png" alt="">
+                                                        <% } %>
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="text-right">
+                                                    <button data-id="<%= index %>" company-id = "<%= company.ID %>" data-type="promotion" type="button" class="btn btn-danger delete_item">Remove</button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <% }) %>
+                                    <% }) %>
                                 <% } else { %>
                                     <div class="each_repeter">
                                         <div class="row align-items-center">
@@ -290,13 +307,15 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <% } %>
+                                <% } %>
                             </div>
-                            <div class="add_more_btn">
+                            <div class="add_more_btn" <% if(promotions.length >= promotions_limite){ %>style="display:none;"<% } %> >
                                 <button type="button" class="btn btn-primary add_more_promotion">Add Promotion</button>
                             </div>
                         </div>
                     </div>
+                    <% } %> 
+
                     <div class="each_box add_products">
                         <h2 class="mb-3">Products</h2>
                         <div class="repeter_wrap">
@@ -550,15 +569,20 @@
             });
 
             $('.add_more_promotion').click(function(e){
-                $(this).parents('.add_promotions').find('.all_repeter').append('<div class=each_repeter><div class="align-items-center row"><div class=col-12><div class=mb-3><label class=form-label>Title<sup>*</sup></label> <input class=form-control placeholder="" name="promotion_title" required></div></div><div class=col-12><div class=mb-3><label class=form-label>Description<sup>*</sup></label> <textarea class=form-control placeholder="" name="promotion_desc" rows=3></textarea></div></div><div class=col-12><div class=mb-3><label class=form-label>Discount</label> <input class=form-control placeholder="In percentage (ex: 70%)" name="promotion_discount" ></div></div><div class=col-sm-10><label class=form-label>Image</label> <input class="form-control upload_in_repeter promotion_image"type=file name="promotion_image"></div><div class=col-sm-2><div class=display_image_box><img alt=""class=promotion_image_review src=/front-end/images/no-image.png></div></div><div class=col-12><div class=text-right><button data-id="null" class="btn btn-danger delete_item"type=button>Remove</button></div></div></div></div>');
+                $(this).parents('.add_promotions').find('.all_repeter').append('<div class=each_repeter><div class="align-items-center row"><div class=col-12><div class=mb-3><label class=form-label>Title<sup>*</sup></label> <input class=form-control placeholder="" name="promotion_title" required></div></div><div class=col-12><div class=mb-3><label class=form-label>Description<sup>*</sup></label> <textarea class=form-control placeholder="" name="promotion_desc" rows=3></textarea></div></div><div class=col-12><div class=mb-3><label class=form-label>Discount</label> <input class=form-control placeholder="In percentage (ex: 70%)" name="promotion_discount" ></div></div><div class=col-sm-10><label class=form-label>Image</label> <input class="form-control upload_in_repeter promotion_image"type=file name="promotion_image"></div><div class=col-sm-2><div class=display_image_box><img alt=""class=promotion_image_review src=/front-end/images/no-image.png></div></div><div class=col-12><div class=text-right><button data-id="null" data-type="promotion" class="btn btn-danger delete_item"type=button>Remove</button></div></div></div></div>');
+                
+                var promotion_limit = <%- promotions_limite %>;
+                var promotion_count = $(this).parents('.add_promotions').find('.all_repeter .each_repeter').length;
+                if(promotion_count == promotion_limit){
+                    $(this).parent('.add_more_btn').hide();
+                }
             });
 
             $('.add_more_product').click(function(e){
-                $(this).parents('.add_products').find('.all_repeter').append('<div class=each_repeter><div class="align-items-center row"><div class=col-12><div class=mb-3><label class=form-label>Title<sup>*</sup></label> <input class=form-control placeholder="" name="product_title" required></div></div><div class=col-12><div class=mb-3><label class=form-label>Description<sup>*</sup></label> <textarea class=form-control placeholder="" name="product_desc" rows=3></textarea></div></div><div class=col-sm-10><label class=form-label>Image</label> <input class="form-control upload_in_repeter product_image"type=file name="product_image" ></div><div class=col-sm-2><div class=display_image_box><img alt=""class=promotion_image_review src=/front-end/images/no-image.png></div></div><div class=col-12><div class=text-right><button data-id="null" class="btn btn-danger delete_item"type=button>Remove</button></div></div></div></div>');
+                $(this).parents('.add_products').find('.all_repeter').append('<div class=each_repeter><div class="align-items-center row"><div class=col-12><div class=mb-3><label class=form-label>Title<sup>*</sup></label> <input class=form-control placeholder="" name="product_title" required></div></div><div class=col-12><div class=mb-3><label class=form-label>Description<sup>*</sup></label> <textarea class=form-control placeholder="" name="product_desc" rows=3></textarea></div></div><div class=col-sm-10><label class=form-label>Image</label> <input class="form-control upload_in_repeter product_image"type=file name="product_image" ></div><div class=col-sm-2><div class=display_image_box><img alt=""class=promotion_image_review src=/front-end/images/no-image.png></div></div><div class=col-12><div class=text-right><button data-id="null" data-type="product" class="btn btn-danger delete_item"type=button>Remove</button></div></div></div></div>');
             });
 
             $('body').on('click','.delete_item',function(){
-
                 var dataIndex = $(this).attr('data-id');
                 var companyId = $(this).attr('company-id');
                 var dataType = $(this).attr('data-type');
@@ -602,6 +626,14 @@
                     }
                 }else{
                     $(this).parents('.each_repeter').remove();
+                    //alert(dataType);
+                    if(dataType == 'promotion'){
+                        var promotion_limit = <%- promotions_limite %>;
+                        var promotion_count = $('.add_promotions').find('.all_repeter .each_repeter').length;
+                        if(promotion_count<promotion_limit){
+                             $('.add_promotions').find('.add_more_btn').show();
+                        }
+                    }
                 }
                 
             });
