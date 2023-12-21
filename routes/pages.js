@@ -3845,10 +3845,9 @@ router.get('/add-featured-company', checkLoggedIn, async (req, res) => {
     try {
         const encodedUserData = req.cookies.user;
         const currentUserData = JSON.parse(encodedUserData);
-        const sql = `SELECT * FROM company where 1 `;
+        const sql = `SELECT * FROM company where membership_type_id > 3 AND verified = '1'`;
         db.query(sql, (err, companies, fields) => {
             // Render the 'edit-user' EJS view and pass the data
-            //console.log(companies);
             res.render('pages/add-featured-company', {
                 menu_active_id: 'company',
                 page_title: 'Add Featured Company',
