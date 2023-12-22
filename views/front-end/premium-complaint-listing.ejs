@@ -8,6 +8,7 @@
             <div class="main_box">
                <%- include('common/premium-company-sidebar') -%>
             </div>
+            <% if(company && company.membership_type_id>=3 ){ %>
             <div class="each_box update_basic_information all_review_listing_for_company">
                <div class="table-responsive">
                   <table class="table table-hover custom-table">
@@ -93,7 +94,7 @@
                                                 data-bs-target="#respondcustomermodal"
                                                 class="respond-link">Respond to customer & Close</a>
                                           </li>
-                                          <% if(compnaint.level_id == 1){ %> 
+                                          <% if(compnaint.level_id == 1 && company && company.membership_type_id==4 ){ %> 
                                              <li>
                                                 <a href="#" class="escalate_next_level" data-complaint-id="<%= compnaint.id %>" data-level-id="<%= compnaint.level_id %>" data-customer-id="<%= compnaint.user_id %>" >Escalate to next level</a>
                                              </li>
@@ -109,6 +110,13 @@
                   </table>
                </div>
             </div>
+            <% }else{ %>
+               <div class="container">
+                  <div class="each_box update_basic_information all_review_listing_for_company">
+                     <h5>You have no permission to access survey features</h5>
+                  </div>
+               </div>
+            <% } %>
          </div>
       </section>
 

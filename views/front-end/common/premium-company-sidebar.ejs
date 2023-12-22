@@ -111,7 +111,7 @@
                 
              </div>
              <div class="membership_info">
-                <p>Membership Plan: <b><% if(company && company.membership_plan_name!='' ){ %><%- company.membership_plan_name %><% }else{%>Basic<% }%></b></p>
+                <p>Membership Plan: <b><% if(company && company.membership_plan_name ){ %><%- company.membership_plan_name %><% }else{%>Free<% }%></b></p>
              </div>
           </div>
        </div>
@@ -140,13 +140,16 @@
       <li <% if( menu_active_id == 'company-poll-listing') { %> class="active" <% } %>>
          <a href="/company-poll-listing/<%= company.slug  %>"><i class="fas fa-poll"></i> Polls</a>
       </li>
+
+      <% if(company && company.membership_type_id>=3 ){ %>
       <li <% if( menu_active_id == 'complaint') { %> class="active" <% } %>><a href="/company-complaint-listing/<%= company.slug  %>"><i class="fa-solid fa-comment-exclamation"></i> Complaint</a>
          <ul>
             <li><a href="/complaint-level-management/<%= company.slug  %>">Level Management</a></li>
-            <li><a href="/create-category/<%= company.slug  %>">Create Category</a></li>
             <li><a href="/company-complaint-listing/<%= company.slug  %>">Complaint Listing</a></li>
          </ul>
      </li>
+     <% } %>
+
       <% if(company && company.membership_type_id>=3 ){ %>
       <li <% if( menu_active_id == 'survey') { %> class="active" <% } %> >
          <a href="/create-survey/<%= company.slug  %>"><i class="fa-solid fa-clipboard-question"></i> Survey</a>
@@ -156,11 +159,13 @@
       </li>
       <% } %>
      <li <% if( menu_active_id == 'settings') { %> class="active" <% } %> ><a href="#"><i class="fas fa-cog"></i> Settings</a>
-      <% if(company && company.membership_type_id>=4 ){ %>
       <ul>
+         <% if(company && company.membership_type_id>=4 ){ %>
          <li><a href="/discussion-tag-management/<%= company.slug  %>">Discussion tag management</a></li>
+         <% } %>
+         <li><a href="/create-category/<%= company.slug  %>">Create Category</a></li>
       </ul>
-      <% } %>
+      
    </li>
 	</ul>
  </div>

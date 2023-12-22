@@ -1296,10 +1296,30 @@ exports.deleteUser = (req, res) => {
                                 message: 'Something went wrong' + WPerr
                             });
                         } else {
-                            return res.send({
-                                status: 'ok',
-                                message: 'User permanently deleted .'
-                            });
+                            const delQuery_device_info = `DELETE FROM user_device_info WHERE user_id = '${req.body.userid}'`;
+                            db.query(delQuery_device_info, (device_infoerr,device_inforesult)=>{
+                                if (device_infoerr) {
+                                    return res.send({
+                                        status: 'error',
+                                        message: 'Something went wrong' + device_infoerr
+                                    });
+                                }else {
+                                    const delQuery_code_verify = `DELETE FROM user_code_verify WHERE user_id = '${req.body.userid}'`;
+                                    db.query(delQuery_code_verify, (code_verifyerr,code_verifyresult)=>{
+                                        if (code_verifyerr) {
+                                            return res.send({
+                                                status: 'error',
+                                                message: 'Something went wrong' + code_verifyerr
+                                            });
+                                        }else {
+                                            return res.send({
+                                                status: 'ok',
+                                                message: 'User permanently deleted .'
+                                            });
+                                        }
+                                    })
+                                }
+                            })
                         }
                     })
                 }

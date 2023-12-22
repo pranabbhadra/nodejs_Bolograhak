@@ -1677,7 +1677,18 @@ router.get('/company-profile-management/:slug', checkClientClaimedCompany, async
         if(typeof PremiumCompanyData !== 'undefined' ){
             gallery_img = JSON.parse(PremiumCompanyData.gallery_img);
        }
-        
+    //    res.json( 
+    //    { 
+    //        menu_active_id: 'company-profile-management', 
+    //        page_title: 'Profile Management', 
+    //        currentUserData, 
+    //        globalPageMeta:globalPageMeta,
+    //        company:company,
+    //        companyReviewNumbers,
+    //        getCompanyReviews,
+    //        allRatingTags,
+    //        gallery_img:gallery_img
+    //    });     
         res.render('front-end/basic-company-profile-management', 
         { 
             menu_active_id: 'company-profile-management', 

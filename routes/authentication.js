@@ -331,94 +331,6 @@ router.get('/getUserDetails/:user_id', verifyToken, async (req, res) => {
     }
 });
 
-//getComapniesDetails by ID
-// router.get('/getComapniesDetails/:ID', verifyToken, async (req, res) => {
-//     const user_ID = req.user.user_id;
-//     console.log("user_id", user_ID)
-//     const companyId = req.params.ID;
-//     console.log("companyId from request:", companyId);
-//     const claimed_by = comFunction.getClaimedByForCompany(companyId);
-//     console.log(claimed_by)
-//     try {
-//         const [company, companyreviews, allCompanyReviewTags, userReview, copmanyratings, PremiumCompanyData, Totalreplies, TotalReviewsAndCounts, reviewReplies, getReviewRepliescompany, getpolldetails, usercompanyreply] = await Promise.all([
-//             comFunction.getCompany(companyId),
-//             comFunction.getCompanyReviews(companyId),
-//             comFunction2.getAllReviewTags(),
-//             comFunction.getUserReview(),
-//             comFunction.getCompanyRatings(companyId),
-//             comFunction2.getPremiumCompanyData(companyId),
-//             //comFunction2.TotalReplied(companyId),
-//             comFunction.getTotalreplies(companyId),
-//             comFunction.getTotalReviewsAndCounts(companyId),
-//             comFunction.getReviewReplies(user_ID),
-//             comFunction.getReviewRepliescompany(companyId),
-//             comFunction.getpolldetails(companyId),
-//             comFunction.usercompanyreply()
-//         ]);
-
-//         if (company) {
-//             const reviewTagsMap = {};
-//             allCompanyReviewTags.forEach(tag => {
-//                 if (!reviewTagsMap[tag.review_id]) {
-//                     reviewTagsMap[tag.review_id] = [];
-//                 }
-//                 reviewTagsMap[tag.review_id].push({ review_id: tag.review_id, tag_name: tag.tag_name });
-//             });
-//             //const reviewReplies = await getReviewReplies(user_ID);
-//             // const finalCompanyallReviews = companyreviews.map(review => {
-//             //     // const hasReplyToUser = reviewReplies.some((reply) => reply.review_id === review.id && reply.reply_by === user_ID);
-//             //     const userReplyStatus = reviewReplies.some((reply) => reply.review_id == review.id && reply.reply_by == user_ID);
-//             //     const companyReplyStatus = getReviewRepliescompany.some((reply) => reply.review_id == review.id && reply.company_id == companyId);
-//             //     console.log(`Review ID: ${review.id}`);
-//             //     console.log(`userReplyStatus: ${userReplyStatus}`);
-//             //     console.log(`companyReplyStatus: ${companyReplyStatus}`);
-//             //     return {
-//             //         ...review,
-//             //         user_reply_status: userReplyStatus ? 1 : 0,
-//             //         company_reply_status: companyReplyStatus ? 1 : 0,
-//             //         Tags: reviewTagsMap[review.id] || []
-//             //     };
-//             // });
-//             const finalCompanyallReviews = companyreviews.map(review => {
-//                 // const userReplyStatus = usercompanyreply.some((reply) => reply.review_id == review.id && reply.reply_by == user_ID);
-//                 // const companyReplyStatus = usercompanyreply.some((reply) => reply.review_id == review.id && reply.company_id == companyId);
-
-//                 return {
-//                     ...review,
-//                     user_reply_status: review.reply_by === user_ID ? 1 : 0,
-//                     company_reply_status: review.reply_by === claimed_by ? 1 : 0,
-//                     // user_reply_status: userReplyStatus ? 1 : 0,
-//                     // company_reply_status: companyReplyStatus ? 1 : 0,
-//                     Tags: reviewTagsMap[review.id] || []
-//                 };
-//             });
-//             return res.status(200).json({
-//                 status: 'success',
-//                 data: {
-//                     company,
-//                     companyreviews: finalCompanyallReviews,
-//                     copmanyratings,
-//                     PremiumCompanyData,
-//                     Totalreplies,
-//                     TotalReviewsAndCounts,
-//                     getpolldetails,
-//                     usercompanyreply
-//                     //allCompanyReviewTags
-//                 },
-//                 message: 'company data successfully received'
-//             });
-//         } else {
-//             return res.status(404).json({
-//                 status: 'error',
-//                 data: '',
-//                 message: 'Company not found'
-//             });
-//         }
-//     } catch (error) {
-//         console.error("An error occurred:", error);
-//     }
-// });
-
 router.get('/getComapniesDetails/:ID', verifyToken, async (req, res) => {
     const user_ID = req.user.user_id;
     console.log("user_id", user_ID)
@@ -478,20 +390,6 @@ router.get('/getComapniesDetails/:ID', verifyToken, async (req, res) => {
             let linkedin_url = '';
             let youtube_url = '';
             let support_data = {};
-            //     if(typeof PremiumCompanyData !== 'undefined' ){
-            //         cover_img = PremiumCompanyData.cover_img;
-            //         youtube_iframe = PremiumCompanyData.youtube_iframe;
-            //         gallery_img = JSON.parse(PremiumCompanyData.gallery_img);
-            //         products = JSON.parse(PremiumCompanyData.products);
-            //         promotions = JSON.parse(PremiumCompanyData.promotions);
-            //         facebook_url = PremiumCompanyData.facebook_url;
-            //         twitter_url = PremiumCompanyData.twitter_url;
-            //         instagram_url = PremiumCompanyData.instagram_url;
-            //         linkedin_url = PremiumCompanyData.linkedin_url;
-            //         youtube_url = PremiumCompanyData.youtube_url;
-            //         support_data = {support_email:PremiumCompanyData.support_email,	escalation_one:PremiumCompanyData.escalation_one, escalation_two:PremiumCompanyData.escalation_two, escalation_three:PremiumCompanyData.escalation_three}
-
-            //    }
 
             if (typeof PremiumCompanyData !== 'undefined') {
                 if (PremiumCompanyData.cover_img) {

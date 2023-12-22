@@ -397,10 +397,11 @@ exports.socialLogin = async (req, res) => {
     const user_exist_query = 'SELECT * FROM users WHERE email = ?';
     const user_exist_values = [userEmail];
     const user_exist_results = await query(user_exist_query, user_exist_values);
+    //console.log('register_from', user_exist_results[0].register_from);
     if (user_exist_results.length > 0) {
 
       //--If user login from FB and Google
-      if( req.body.register_from == 'facebook' || req.body.register_from == 'google'){
+      if( user_exist_results[0].register_from == 'facebook' || user_exist_results[0].register_from == 'google'){
         //User Exist get User Details
         const user = user_exist_results[0];
         payload.user_id = user.user_id;
@@ -536,7 +537,7 @@ exports.socialLogin = async (req, res) => {
         //User Exist but already Registered from Web
         return res.status(500).json({
           status: 'error',
-          message: 'This email already registered from web, please login with your email and password',
+          message: 'You are already registered with this email, please login with your email and password',
           error: ''
         })
       }
@@ -836,7 +837,7 @@ exports.socialLogin = async (req, res) => {
                                     //User Exist but already Registered from Web
                                     return res.status(500).json({
                                       status: 'error',
-                                      message: 'This email already registered from web, please login with your email and password',
+                                      message: 'You are already registered with this email, please login with your email and password',
                                       error: ''
                                     })
                                   }
