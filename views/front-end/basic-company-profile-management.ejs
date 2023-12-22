@@ -83,7 +83,7 @@
                         </div>
                     </div>
                 </div>
-
+                <% if(company && company.membership_type_id>0 ){ %>
                 <div class="each_box update_gallery_images">
                     <h2 class="mb-3">Upload gallery images</h2>
                     <div class="row">
@@ -106,7 +106,7 @@
                         </div>
                     </div>
                 </div>
-                
+                <% } %>
                 <div class="submit_button text-end custom-form m-0" >
                     <button type="submit" class="btn btn-warning ">Update</button>
                 </div>

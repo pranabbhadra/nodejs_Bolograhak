@@ -8,6 +8,7 @@
        <div class="main_box">
          <%- include('common/premium-company-sidebar') -%>
        </div>
+       <% if(company && company.membership_type_id>=3 ){ %>
        <div class="company-user-complain-wrapper">
          <div class="c-u-top-head">
             <div class="c-u-top-head-part">
@@ -256,6 +257,13 @@
          <% } %>
            
        </div>
+       <% }else{ %>
+          <div class="container">
+             <div class="each_box update_basic_information all_review_listing_for_company">
+                <h5>You have no permission to access survey features</h5>
+             </div>
+          </div>
+       <% } %>
     </div>
 </section>
 <!-- Modal -->

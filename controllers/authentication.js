@@ -397,10 +397,11 @@ exports.socialLogin = async (req, res) => {
     const user_exist_query = 'SELECT * FROM users WHERE email = ?';
     const user_exist_values = [userEmail];
     const user_exist_results = await query(user_exist_query, user_exist_values);
+    //console.log('register_from', user_exist_results[0].register_from);
     if (user_exist_results.length > 0) {
 
       //--If user login from FB and Google
-      if( req.body.register_from == 'facebook' || req.body.register_from == 'google'){
+      if( user_exist_results[0].register_from == 'facebook' || user_exist_results[0].register_from == 'google'){
         //User Exist get User Details
         const user = user_exist_results[0];
         payload.user_id = user.user_id;
@@ -536,7 +537,7 @@ exports.socialLogin = async (req, res) => {
         //User Exist but already Registered from Web
         return res.status(500).json({
           status: 'error',
-          message: 'This email already registered from web, please login with your email and password',
+          message: 'You are already registered with this email, please login with your email and password',
           error: ''
         })
       }
@@ -836,7 +837,7 @@ exports.socialLogin = async (req, res) => {
                                     //User Exist but already Registered from Web
                                     return res.status(500).json({
                                       status: 'error',
-                                      message: 'This email already registered from web, please login with your email and password',
+                                      message: 'You are already registered with this email, please login with your email and password',
                                       error: ''
                                     })
                                   }
@@ -4064,4 +4065,69 @@ exports.userComplaintRating = async (req, res) => {
       }
   })
   
+}
+
+//Complaint Register
+exports.complaintRegister =  (req, res) => {
+  //console.log('complaintRegister',req.body ); 
+  const authenticatedUserId = parseInt(req.user.user_id);
+  const ApiuserId = parseInt(req.body.user_id);
+  if (isNaN(ApiuserId)) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Invalid user_id provided in the request body.',
+      });
+    }
+  if (ApiuserId !== authenticatedUserId) {
+  return res.status(403).json({
+      status: 'error',
+      message: 'Access denied: You are not authorized to update this user.',
+  });
+  }
+
+  const {company_id, user_id, category_id, sub_category_id, model_no, allTags, transaction_date, location, message } = req.body;
+  //return false;
+  //const uuid = uuidv4();  
+  const randomNo = Math.floor(Math.random() * (100 - 0 + 1)) + 0 ;
+  const ticket_no = randomNo + currentDate.getTime();
+  const currentDate = new Date();
+  const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+  const data = {
+      user_id:user_id,
+      company_id:company_id,
+      ticket_id:ticket_no,
+      category_id:category_id,
+      sub_cat_id : sub_category_id && sub_category_id !== undefined  ? sub_category_id : 0,
+      model_desc:model_no,
+      purchase_date:transaction_date,
+      purchase_place:location,
+      message:message,
+      tags:JSON.stringify(allTags),
+      level_id:'1',
+      status:'2',
+      created_at:formattedDate,
+      level_update_at:formattedDate
+  }
+
+  
+ // console.log(complaintEmailToCompany);
+  const Query = `INSERT INTO complaint SET ?  `;
+  db.query(Query, data, async (err, result)=>{
+      if (err) {
+          return res.send({
+              status: 'not ok',
+              message: 'Something went wrong  '+err
+          });
+      } else {
+          console.log(company_id[0],user_id[0], uuid, result.insertId)
+          const [complaintEmailToCompany,complaintSuccessEmailToUser] = await Promise.all([
+              comFunction2.complaintEmailToCompany(company_id[0], ticket_no, result.insertId),
+              comFunction2.complaintSuccessEmailToUser(user_id[0], ticket_no, result.insertId)
+          ]);
+          return res.send({
+              status: 'ok',
+              message: 'Complaint Registered  successfully !'
+          });
+      }
+  })
 }

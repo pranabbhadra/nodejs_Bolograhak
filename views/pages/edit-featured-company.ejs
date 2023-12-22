@@ -100,20 +100,6 @@
                                 <div class="row mb-6">
                                     <!--begin::Label-->
                                     <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                        <span class="required">URL</span>
-                                    </label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-8 fv-row">
-                                        <input type="text" name="comp_url"
-                                            class="form-control form-control-lg form-control-solid"
-                                            placeholder="Company URL" value="<%= f_company.link %>" />
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <div class="row mb-6">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-4 col-form-label fw-bold fs-6">
                                         <span class="required">Status</span>
                                     </label>
                                     <!--end::Label-->
@@ -207,13 +193,6 @@
                                         validators: {
                                             notEmpty: {
                                                 message: 'Company short description is required'
-                                            }
-                                        }
-                                    },
-                                    comp_url: {
-                                        validators: {
-                                            notEmpty: {
-                                                message: 'Company URL is required'
                                             }
                                         }
                                     },
