@@ -1601,7 +1601,8 @@ router.get('/company-dashboard/:slug', checkClientClaimedCompany, async (req, re
             finalCompanyallReviews,
             reviewReatingChartArray,
             reviewTagsCount,
-            TotalReplied:TotalReplied
+            TotalReplied:TotalReplied,
+            productGraphArray:productGraphArray,
         });
     }else{
         // res.json(

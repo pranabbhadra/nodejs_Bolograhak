@@ -142,7 +142,7 @@
                                         <div class="row">
                                             <!--begin::Col-->
                                             <div class="col-lg-12 fv-row">
-                                                <input type="number" name="amount" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0" placeholder="10000" value="" />
+                                                <input type="text" name="amount" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0" placeholder="10000" value="" />
                                             </div>
                                             <!--end::Col-->
                                         </div>
@@ -358,6 +358,16 @@
                                                 message: 'Company name is required'
                                             }
                                         }
+                                    },
+                                    amount: {
+                                        validators: {
+                                            numeric: {
+                                                message: 'The value is not a number',
+                                                // The default separators
+                                                thousandsSeparator: '',
+                                                decimalSeparator: '.',
+                                            },
+                                        },
                                     },
                                 },
                                 plugins: {
