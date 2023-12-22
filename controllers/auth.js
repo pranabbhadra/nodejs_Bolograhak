@@ -1296,10 +1296,30 @@ exports.deleteUser = (req, res) => {
                                 message: 'Something went wrong' + WPerr
                             });
                         } else {
-                            return res.send({
-                                status: 'ok',
-                                message: 'User permanently deleted .'
-                            });
+                            const delQuery_device_info = `DELETE FROM user_device_info WHERE user_id = '${req.body.userid}'`;
+                            db.query(delQuery_device_info, (device_infoerr,device_inforesult)=>{
+                                if (device_infoerr) {
+                                    return res.send({
+                                        status: 'error',
+                                        message: 'Something went wrong' + device_infoerr
+                                    });
+                                }else {
+                                    const delQuery_code_verify = `DELETE FROM user_code_verify WHERE user_id = '${req.body.userid}'`;
+                                    db.query(delQuery_code_verify, (code_verifyerr,code_verifyresult)=>{
+                                        if (code_verifyerr) {
+                                            return res.send({
+                                                status: 'error',
+                                                message: 'Something went wrong' + code_verifyerr
+                                            });
+                                        }else {
+                                            return res.send({
+                                                status: 'ok',
+                                                message: 'User permanently deleted .'
+                                            });
+                                        }
+                                    })
+                                }
+                            })
                         }
                     })
                 }
@@ -1901,6 +1921,28 @@ exports.deleteCompany = (req, res) => {
             return res.send({
                 status: 'ok',
                 message: 'Company successfully deleted'
+            });
+        }
+
+    })
+
+}
+
+//--- Delete Company ----//
+exports.deletePayment = (req, res) => {
+    //console.log(req.body.companyid);
+    sql = `DELETE FROM payments WHERE id = ?`;
+    const data = [req.body.paymentId];
+    db.query(sql, data, (err, result) => {
+        if (err) {
+            return res.send({
+                status: 'error',
+                message: 'Something went wrong'
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Payment details successfully deleted'
             });
         }
 
@@ -3814,8 +3856,8 @@ exports.updateBasicCompany = (req, res) => {
 }
 
 //--Front end- Update Basic Company profile --//
-exports.updatePremiumCompany =async (req, res) => {
-    //console.log('PremiumCompany:',req.body);
+exports.updatePremiumCompany = async (req, res) => {
+    console.log('PremiumCompany:',req.body);
     //console.log('PremiumCompany File:',req.files);
 
     const companyID = req.body.company_id;
@@ -3997,7 +4039,8 @@ exports.updatePremiumCompany =async (req, res) => {
                         if(promotionSQL.length > 0){
                             promotionSQL.forEach(function(promotionImg, index, arr) {
                                 if(promotionImg.promotion_image != null) {
-                                    if(promotion_image[index] == ''){
+                                    //console.log('promotion_image',promotionImg.promotion_image);
+                                    if(promotion_image && promotion_image[index] == ''){
                                         
                                         PromotionalData[index].promotion_image = promotionSQL[index].promotion_image;
                                     }
@@ -4008,7 +4051,7 @@ exports.updatePremiumCompany =async (req, res) => {
                         if(productSQL.length > 0){
                             productSQL.forEach(function(productImg, index, arr) {
                                 if(productImg.product_image != null) {
-                                    if(product_image[index]== ''){
+                                    if(product_image && product_image[index]== ''){
                                         ProductData[index].product_image = productSQL[index].product_image;
                                     }
                                 }
@@ -4831,11 +4874,11 @@ exports.reviewBulkInvitation = async (req, res) => {
         const worksheet = workbook.getWorksheet(1);
         const emailsArr = await processReviewCSVRows(worksheet);
         const emails = emailsArr.flat();
-        if (emails.length > 100) {
+        if (emails.length > req.body.email_limite) {
             return res.send(
                 {
                     status: 'err',
-                    message: 'You can not add more than 100 email id`s in your current membership.'
+                    message: 'You can not add more than '+req.body.email_limite+' email id`s in your current membership.'
                 }
             )  
         } else {
@@ -5424,27 +5467,27 @@ exports.deleteCompanyComplaintLevel = async (req, res) => {
 //Complaint Register
 exports.complaintRegister =  (req, res) => {
     //console.log('complaintRegister',req.body ); 
-    const authenticatedUserId = parseInt(req.user.user_id);
-    const ApiuserId = parseInt(req.body.user_id);
-    if (isNaN(ApiuserId)) {
-        return res.status(400).json({
-          status: 'error',
-          message: 'Invalid user_id provided in the request body.',
-        });
-      }
-    if (ApiuserId !== authenticatedUserId) {
-    return res.status(403).json({
-        status: 'error',
-        message: 'Access denied: You are not authorized to update this user.',
-    });
-    }
+    // const authenticatedUserId = parseInt(req.user.user_id);
+    // const ApiuserId = parseInt(req.body.user_id);
+    // if (isNaN(ApiuserId)) {
+    //     return res.status(400).json({
+    //       status: 'error',
+    //       message: 'Invalid user_id provided in the request body.',
+    //     });
+    //   }
+    // if (ApiuserId !== authenticatedUserId) {
+    // return res.status(403).json({
+    //     status: 'error',
+    //     message: 'Access denied: You are not authorized to update this user.',
+    // });
+    // }
 
     const {company_id, user_id, category_id, sub_category_id, model_no, allTags, transaction_date, location, message } = req.body;
     //return false;
     //const uuid = uuidv4();  
     const randomNo = Math.floor(Math.random() * (100 - 0 + 1)) + 0 ;
-    const ticket_no = randomNo + currentDate.getTime();
     const currentDate = new Date();
+    const ticket_no = randomNo + currentDate.getTime();
     const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
     const data = {
         user_id:user_id,
@@ -5473,7 +5516,7 @@ exports.complaintRegister =  (req, res) => {
                 message: 'Something went wrong  '+err
             });
         } else {
-            console.log(company_id[0],user_id[0], uuid, result.insertId)
+            //console.log(company_id[0],user_id[0], uuid, result.insertId)
             const [complaintEmailToCompany,complaintSuccessEmailToUser] = await Promise.all([
                 comFunction2.complaintEmailToCompany(company_id[0], ticket_no, result.insertId),
                 comFunction2.complaintSuccessEmailToUser(user_id[0], ticket_no, result.insertId)
@@ -5959,11 +6002,130 @@ exports.escalateNextLevel = async (req, res) => {
     
     const currentDate = new Date();
     const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+
+    const sql = `SELECT c.*, clm.eta_days, clm.emails, u.first_name, u.email, comp.slug FROM 
+    complaint c
+    LEFT JOIN complaint_level_management clm ON clm.company_id = c.company_id AND clm.level = '${levelId + 1}'
+    LEFT JOIN users u ON u.user_id = c.user_id 
+    LEFT JOIN company comp ON comp.ID = c.company_id 
+    WHERE c.id = '${complaintId}' `;
+    const results = await query(sql);
+    const emails = JSON.parse(results[0].emails);
+    var mailOptions = {
+        from: process.env.MAIL_USER,
+        //to: 'pranab@scwebtech.com',
+        to: results[0].email,
+        cc:emails,
+        subject: 'Escalate to next level email',
+        html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
+        <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
+          <tbody>
+          <tr>
+            <td align="center" valign="top">
+              <div id="template_header_image"><p style="margin-top: 0;"></p></div>
+              <table id="template_container" style="box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; background-color: #fdfdfd; border: 1px solid #dcdcdc; border-radius: 3px !important;" border="0" cellpadding="0" cellspacing="0" width="600">
+              <tbody>
+                <tr>
+                  <td align="center" valign="top">
+                    <!-- Header -->
+                    <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
+                      <tbody>
+                        <tr>
+                        <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
+                        <td id="header_wrapper" style="padding: 36px 48px; display: block;">
+                            <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Escalate to next level email</h1>
+                        </td>
+    
+                        </tr>
+                      </tbody>
+                    </table>
+              <!-- End Header -->
+              </td>
+                </tr>
+                <tr>
+                  <td align="center" valign="top">
+                    <!-- Body -->
+                    <table id="template_body" border="0" cellpadding="0" cellspacing="0" width="600">
+                      <tbody>
+                        <tr>
+                        <td id="body_content" style="background-color: #fdfdfd;" valign="top">
+                          <!-- Content -->
+                          <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                            <tbody>
+                            <tr>
+                              <td style="padding: 48px;" valign="top">
+                                <div id="body_content_inner" style="color: #737373; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
+                                
+                                <table border="0" cellpadding="4" cellspacing="0" width="90%">
+                                <tr>
+                                  <td colspan="2">
+                                    <strong>Hello Dear,</strong>
+                                    <p style="font-size:15px; line-height:20px">Please review the complaint details and initiate the necessary steps to resolve the issue at the earliest. Your prompt attention to this matter is highly appreciated. Pending complaint ticket id: <a  href="${process.env.MAIN_URL}company-compnaint-details/${results[0].slug}/${results[0].id}">${results[0].ticket_id}</a>. 
+                                    </p>
+                                  </td>
+                                </tr>
+                                  <tr>
+                                  </tr>
+                                </table>
+                                
+                                </div>
+                              </td>
+                            </tr>
+                            </tbody>
+                          </table>
+                        <!-- End Content -->
+                        </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  <!-- End Body -->
+                  </td>
+                </tr>
+                <tr>
+                  <td align="center" valign="top">
+                    <!-- Footer -->
+                    <table id="template_footer" border="0" cellpadding="10" cellspacing="0" width="600">
+                    <tbody>
+                      <tr>
+                      <td style="padding: 0; -webkit-border-radius: 6px;" valign="top">
+                        <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                          <tbody>
+                            <tr>
+                            <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
+                                  <p>This email was sent from <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a></p>
+                            </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </td>
+                      </tr>
+                    </tbody>
+                    </table>
+                  <!-- End Footer -->
+                  </td>
+                </tr>
+              </tbody>
+              </table>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+        </div>`
+      }
+    await  mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
+          if (err) {
+              console.log(err);
+              return false;
+          } else {
+              console.log('Mail Send: ', info.response);
+              
+          }
+      })
   
     try {
       
-        const sql = `UPDATE complaint SET level_id= '${levelId + 1}', level_update_at ='${formattedDate}'  WHERE id = '${complaintId}' `;
-        db.query(sql, (err, resut)=>{
+        const updateQuery = `UPDATE complaint SET level_id= '${levelId + 1}', level_update_at ='${formattedDate}'  WHERE id = '${complaintId}' `;
+        db.query(updateQuery, (err, resut)=>{
             if (err) {
                 return res.send({
                     status: 'not ok',
@@ -5984,6 +6146,87 @@ exports.escalateNextLevel = async (req, res) => {
       });
     }
   };
+
+//add payment details
+exports.addPayment =  (req, res) => {
+    //console.log('addPayment',req.body);
+    //return false;
+    const {company_id, transaction_id, payment_mode, amount, transaction_date, membership_plan, remarks, subscription_mode, start_date, expire_date } = req.body;
+    //return false;
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+    const data = {
+        transaction_id:transaction_id || null,
+        company_id :company_id,
+        mode_of_payment:payment_mode,
+        amount:amount,
+        transaction_date : transaction_date,
+        membership_plan_id:membership_plan,
+        remarks:remarks,
+        subscription_mode:subscription_mode,
+        start_date:start_date,
+        expire_date:expire_date,
+        created_at:formattedDate,
+        updated_at:formattedDate,
+    }
+
+    
+   // console.log(complaintEmailToCompany);
+    const Query = `INSERT INTO payments SET ?  `;
+    db.query(Query, data, async (err, result)=>{
+        if (err) {
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong  '+err
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Payment details registered  successfully !'
+            });
+        }
+    })
+}
+
+//Edit payment details
+exports.editPayment =  (req, res) => {
+    //console.log('editPayment',req.body);
+    //return false;
+    const {company_id, transaction_id, payment_mode, amount, transaction_date, membership_plan, remarks, subscription_mode, start_date, expire_date, payment_id } = req.body;
+    //return false;
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+    const data = {
+        transaction_id:transaction_id || null,
+        company_id :company_id,
+        mode_of_payment:payment_mode,
+        amount:amount,
+        transaction_date : transaction_date,
+        membership_plan_id:membership_plan,
+        remarks:remarks,
+        subscription_mode:subscription_mode,
+        start_date:start_date,
+        expire_date:expire_date,
+        updated_at:formattedDate,
+    }
+
+    
+   // console.log(complaintEmailToCompany);
+    const Query = `UPDATE payments  SET ? WHERE id = ${payment_id} `;
+    db.query(Query, data, async (err, result)=>{
+        if (err) {
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong  '+err
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Payment details updated  successfully !'
+            });
+        }
+    })
+}
 
 
 // Schedule mail for pending complaint
@@ -6018,4 +6261,5 @@ cron.schedule('0 10 * * *', async () => {
 //Discussion customer query alert
 cron.schedule('0 5 * * *', async () => {
     await comFunction2.duscussionQueryAlert();
+    await comFunction2.complaintLevelUpdate();
 })

@@ -220,6 +220,7 @@
                <div class="analytics_data analytics_data_row3">
                   <div class="row">
                      <div class="col-lg-6">
+                        <!-- <button id="generatePdfButton">Generate PDF</button> -->
                         <h4 class="sec_heading mb-3">Review Comparison by Product</h4>
                         <div id="productGraph" style="height: 300px; width: 100%;"></div>
                      </div>
@@ -435,6 +436,10 @@
          <script src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
          <script src="https://cdn.canvasjs.com/jquery.canvasjs.min.js"></script>
          <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+         <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+         <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+
 <script>
    window.onload = function () {
 
@@ -1024,7 +1029,38 @@
           ]
         }]
       };
+
+      
+      // function generatePdf() {
+      //    // Your existing chart configuration
+      //    var chart = new CanvasJS.Chart("productGraph", productGraph);
+
+      //    // chart.renderCompleted = function () {
+      //    //    alert('aaaaaaaaaa')
+      //       // Generate PDF using html2pdf.js
+      //       html2pdf(chart.container, {
+      //          margin: 10,
+      //          filename: 'product_chart.pdf',
+      //          image: { type: 'jpeg', quality: 0.98 },
+      //          html2canvas: { scale: 2 },
+      //          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      //       }).then(function (pdf) {
+      //          // Save the PDF using FileSaver.js
+      //          pdf.output('blob').then(function (blob) {
+      //                saveAs(blob, 'product_chart.pdf');
+      //          });
+      //       });
+      //    //}
+      //    // Render the chart
+      //    chart.render();
+      // }
+
       $("#productGraph").CanvasJSChart(productGraph);
+
+      // Handle button click
+      // $("#generatePdfButton").on("click", function () {
+      //    generatePdf();
+      // });
       //=============================== Product chart end =============================
       
       //=============================== Compare Performance chart Start =============================

@@ -153,7 +153,7 @@ function getAllCompany() {
 
 function getCompany(companyId) {
   return new Promise((resolve, reject) => {
-    db.query('SELECT * FROM company WHERE ID = ?', [companyId], (err, result) => {
+    db.query('SELECT company.*, ccr.claimed_by, mp.plan_name as membership_plan_name FROM company LEFT JOIN company_claim_request ccr ON company.ID = ccr.company_id LEFT JOIN membership_plans mp ON company.membership_type_id = mp.id WHERE company.ID = ?', [companyId], (err, result) => {
       if (err) {
         reject(err);
       } else {
