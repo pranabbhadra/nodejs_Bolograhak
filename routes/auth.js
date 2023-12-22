@@ -404,4 +404,7 @@ router.post('/competitorCompany-chart', authController.competitorCompanyChart);
 // add payment details
 router.post('/add-payment', authController.addPayment);
 
+// add payment details
+router.post('/edit-payment', authController.editPayment);
+
 module.exports = router;

@@ -264,12 +264,16 @@
                             </div>
                             <!--end::Card body-->
                             <!--begin::Actions-->
+                            <input type="hidden" name="payment_id" value="<%= paymentDetails.id %>" />
+                            
+                            <% if(currentUserData.user_type_id != 3 ) { %>
                             <div class="card-footer d-flex justify-content-end py-6 px-9">
                                 <button type="reset"
                                     class="btn btn-light btn-active-light-primary me-2">Discard</button>
                                 <button type="submit" class="btn btn-primary"
                                     id="kt_account_profile_details_submit">Save Changes</button>
                             </div>
+                            <% } %>
                             <!--end::Actions-->
                         </form>
                         <!--end::Form-->
@@ -288,50 +292,6 @@
     <%- include('common/footer') -%>
 
         <script>
-            $('#select_country').change(function () {
-                $('#select_state').empty();
-                $("#select_state").prop('required', false);
-                $('#dynamic_state_field_wrapper').hide();
-                var country_id = $(this).val();
-                $('#country_name').val(this.options[this.selectedIndex].text);
-                $.ajax({
-                    url: '/api/states',
-                    method: 'POST',
-                    data: { country_id: country_id },
-                    ContentType: 'application/json',
-                    success: function (data) {
-                        if (data.status == 'ok') {
-                            $('#dynamic_state_field_wrapper').show();
-                            $("#select_state").prop('required', true);
-                            $.each(data.data, function (i, item) {
-                                $('#select_state').append($('<option>', {
-                                    value: item.id,
-                                    text: item.name
-                                }));
-                            });
-                        } else {
-                            $('#dynamic_state_field_wrapper').hide();
-                            $("#select_state").prop('required', false);
-                        }
-                    },
-                    error: function (error) {
-                        // Handle any errors
-                        Swal.fire({
-                            text: error,
-                            icon: "error",
-                            buttonsStyling: false,
-                            confirmButtonText: "Ok, got it!",
-                            customClass: {
-                                confirmButton: "btn btn-primary"
-                            }
-                        });
-                        submitButton.disabled = false;
-                    }
-                });
-            });
-            $('#select_state').change(function () {
-                $('#state_name').val(this.options[this.selectedIndex].text);
-            });
 /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
                 var __webpack_exports__ = {};
@@ -393,7 +353,7 @@
 
                                     //console.log(transformedResponse);
                                     $.ajax({
-                                        url: '/auth/add-payment', // URL for your API endpoint
+                                        url: '/auth/edit-payment', // URL for your API endpoint
                                         method: 'POST',
                                         data: JSON.stringify(transformedResponse),
                                         contentType: 'application/json',

@@ -6168,6 +6168,46 @@ exports.addPayment =  (req, res) => {
     })
 }
 
+//Edit payment details
+exports.editPayment =  (req, res) => {
+    //console.log('editPayment',req.body);
+    //return false;
+    const {company_id, transaction_id, payment_mode, amount, transaction_date, membership_plan, remarks, subscription_mode, start_date, expire_date, payment_id } = req.body;
+    //return false;
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+    const data = {
+        transaction_id:transaction_id || null,
+        company_id :company_id,
+        mode_of_payment:payment_mode,
+        amount:amount,
+        transaction_date : transaction_date,
+        membership_plan_id:membership_plan,
+        remarks:remarks,
+        subscription_mode:subscription_mode,
+        start_date:start_date,
+        expire_date:expire_date,
+        updated_at:formattedDate,
+    }
+
+    
+   // console.log(complaintEmailToCompany);
+    const Query = `UPDATE payments  SET ? WHERE id = ${payment_id} `;
+    db.query(Query, data, async (err, result)=>{
+        if (err) {
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong  '+err
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Payment details updated  successfully !'
+            });
+        }
+    })
+}
+
 
 // Schedule mail for pending complaint
 cron.schedule('0 10 * * *', async () => {

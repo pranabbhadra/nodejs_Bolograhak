@@ -4236,7 +4236,7 @@ router.get('/edit-payment/:paymentId', checkLoggedIn, async (req, res) => {
             comFunction2.getmembershipPlans(),
             comFunction2.getpaymentDetailsById(paymentId)
         ]);
-        console.log(getpaymentDetailsById);
+        //console.log(getpaymentDetailsById);
         // Render the 'edit-user' EJS view and pass the data
         res.render('edit-payment', {
             menu_active_id: 'company',
