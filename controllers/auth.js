@@ -1271,45 +1271,45 @@ exports.editUserData = (req, res) => {
 //--- Delete User ----//
 exports.deleteUser = (req, res) => {
     console.log(req.body);
-    const sql = `DELETE FROM users WHERE user_id = ?`;
+    const delQuery_code_verify = `DELETE FROM user_code_verify WHERE user_id = '${req.body.userid}'`;
     const data = [req.body.userid];
-     db.query(sql, data, (err, result) => {
-        if (err) {
+     db.query(delQuery_code_verify, data, (code_verifyerr,code_verifyresult) => {
+        if (code_verifyerr) {
             return res.send({
                 status: 'error',
-                message: 'Something went wrong' +err
+                message: 'Something went wrong' +code_verifyerr
             });
         } else {
-            const metaSql = `DELETE FROM user_customer_meta WHERE user_id = ${req.body.userid}`;
-            db.query(metaSql,  (metaErr, metaResult) => {
-                if (metaErr) {
+            const sql = `DELETE FROM users WHERE user_id = ?`;
+            db.query(sql, (err, result)=>{
+                if (err) {
                     return res.send({
                         status: 'error',
-                        message: 'Something went wrong' + metaErr
+                        message: 'Something went wrong' + err
                     });
-                }else{
-                    const delWPQuery = `DELETE FROM bg_users WHERE user_login = '${req.body.userEmail}'`;
-                     db.query(delWPQuery, (WPerr,WPresult)=>{
-                        if (WPerr) {
+                }else {
+                    const metaSql = `DELETE FROM user_customer_meta WHERE user_id = ${req.body.userid}`;
+                    db.query(metaSql,  (metaErr, metaResult) => {
+                        if (metaErr) {
                             return res.send({
                                 status: 'error',
-                                message: 'Something went wrong' + WPerr
+                                message: 'Something went wrong' + metaErr
                             });
-                        } else {
-                            const delQuery_device_info = `DELETE FROM user_device_info WHERE user_id = '${req.body.userid}'`;
-                            db.query(delQuery_device_info, (device_infoerr,device_inforesult)=>{
-                                if (device_infoerr) {
+                        }else{
+                            const delWPQuery = `DELETE FROM bg_users WHERE user_login = '${req.body.userEmail}'`;
+                             db.query(delWPQuery, (WPerr,WPresult)=>{
+                                if (WPerr) {
                                     return res.send({
                                         status: 'error',
-                                        message: 'Something went wrong' + device_infoerr
+                                        message: 'Something went wrong' + WPerr
                                     });
-                                }else {
-                                    const delQuery_code_verify = `DELETE FROM user_code_verify WHERE user_id = '${req.body.userid}'`;
-                                    db.query(delQuery_code_verify, (code_verifyerr,code_verifyresult)=>{
-                                        if (code_verifyerr) {
+                                } else {
+                                    const delQuery_device_info = `DELETE FROM user_device_info WHERE user_id = '${req.body.userid}'`;
+                                    db.query(delQuery_device_info, (device_infoerr,device_inforesult)=>{
+                                        if (device_infoerr) {
                                             return res.send({
                                                 status: 'error',
-                                                message: 'Something went wrong' + code_verifyerr
+                                                message: 'Something went wrong' + device_infoerr
                                             });
                                         }else {
                                             return res.send({
