@@ -1280,7 +1280,7 @@ exports.deleteUser = (req, res) => {
                 message: 'Something went wrong' +code_verifyerr
             });
         } else {
-            const sql = `DELETE FROM users WHERE user_id = ?`;
+            const sql = `DELETE FROM users WHERE user_id = '${req.body.userid}'`;
             db.query(sql, (err, result)=>{
                 if (err) {
                     return res.send({
