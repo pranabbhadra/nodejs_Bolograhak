@@ -3468,7 +3468,7 @@ function getAllPremiumCompany() {
       FROM company c
       LEFT JOIN company_cactgory_relation cr ON c.ID = cr.company_id
       LEFT JOIN category cat ON cr.category_id = cat.ID
-      WHERE c.status != '3' and c.paid_status = 'paid'
+      WHERE c.status != '3' AND c.membership_type_id >=3
       GROUP BY c.ID`,
       async(err, result) => {
       if (err) {

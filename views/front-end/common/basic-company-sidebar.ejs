@@ -39,7 +39,7 @@
 		<div class="col-md-3">
 			<div class="overall_score">
 				<div class="button_group">
-					<a class="free" href="#">Membership Plan: <b>Basic</b></a>
+					<a class="free" href="#">Membership Plan: <b><% if(company && company.membership_plan_name ){ %><%- company.membership_plan_name %><% }else{%>Free<% }%></b></a>
 					<!-- <a class="switch_to_premium" href="/contact-us">switch to premium</a> -->
 				</div>
 				<div class="score_info">
