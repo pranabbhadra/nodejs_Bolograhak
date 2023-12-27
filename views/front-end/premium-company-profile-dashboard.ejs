@@ -808,7 +808,7 @@
           axisYType: "secondary",
           showInLegend: true,
           dataPoints: [
-            { y: <%= CompanyReviewsBetween.total_review_average ? CompanyReviewsBetween.total_review_average.toFixed(1) : 0 %> },
+            { y: <%= CompanyReviewsBetween.total_review_average ? CompanyReviewsBetween.total_review_average.toFixed(1) : 0 %>,  indexLabel: "<%= CompanyReviewsBetween.total_review_average ? CompanyReviewsBetween.total_review_average.toFixed(1) : 0 %>" },
           ]
         },
         {
@@ -819,7 +819,7 @@
           showInLegend: true,
           dataPoints: [
             {
-               y: <%= CompanyReviewsBetween.filter_review_average ? CompanyReviewsBetween.filter_review_average.toFixed(1) : 0 %>,
+               y: <%= CompanyReviewsBetween.filter_review_average ? CompanyReviewsBetween.filter_review_average.toFixed(1) : 0 %>,  indexLabel: "<%= CompanyReviewsBetween.filter_review_average ? CompanyReviewsBetween.filter_review_average.toFixed(1) : 0 %>"
             }
           ]
         },
@@ -857,12 +857,16 @@
          compareChart.options.data.forEach(function (series) {
             if (series.name === "Total No of Reviews") {
                   series.dataPoints[0].y = totalReviewCount;
+                  series.dataPoints[0].indexLabel= `${totalReviewCount}`;
             } else if (series.name === " Filtered Reviews") {
                   series.dataPoints[0].y = filterReviewCount;
+                  series.dataPoints[0].indexLabel= `${filterReviewCount}`;
             } else if (series.name === "Overall Avg Rating") {
                   series.dataPoints[0].y = totalReviewAverage ? parseFloat(totalReviewAverage.toFixed(1)) : 0;
+                  series.dataPoints[0].indexLabel= `${totalReviewAverage ? parseFloat(totalReviewAverage.toFixed(1)) : 0}`;
             } else if (series.name === "Filtered Avg Rating") {
                   series.dataPoints[0].y = filterReviewAverage ? parseFloat(filterReviewAverage.toFixed(1)) : 0;
+                  series.dataPoints[0].indexLabel= `${filterReviewAverage ? parseFloat(filterReviewAverage.toFixed(1)) : 0}`;
             }
          });
 
