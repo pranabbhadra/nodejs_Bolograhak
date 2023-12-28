@@ -404,7 +404,7 @@ router.get('/getComapniesDetails/:ID', verifyToken, async (req, res) => {
                     } catch (error) {
                         console.error('Error while parsing JSON:', error);
                     }
-                }else{
+                } else {
                     PremiumCompanyData.gallery_img = "[]";
                 }
 
@@ -419,25 +419,25 @@ router.get('/getComapniesDetails/:ID', verifyToken, async (req, res) => {
                     // } catch (error) {
                     //     console.error('Error while parsing JSON:', error);
                     // }
-                    if(JSON.parse(PremiumCompanyData.products)[0].product_title){
+                    if (JSON.parse(PremiumCompanyData.products)[0].product_title) {
                         //
-                    }else{
+                    } else {
                         PremiumCompanyData.products = "[]";
                     }
-                }else{
+                } else {
                     PremiumCompanyData.products = "[]";
                 }
-                
+
                 if (PremiumCompanyData.promotions) {
-                    if(JSON.parse(PremiumCompanyData.promotions)[0].promotion_title){
+                    if (JSON.parse(PremiumCompanyData.promotions)[0].promotion_title) {
                         //
-                    }else{
+                    } else {
                         PremiumCompanyData.promotions = "[]";
                     }
-                }else{
+                } else {
                     PremiumCompanyData.promotions = "[]";
                 }
- 
+
 
                 if (PremiumCompanyData.facebook_url) {
                     facebook_url = PremiumCompanyData.facebook_url;
@@ -836,7 +836,6 @@ router.get('/getuserreviewlisting/:user_id', verifyToken, (req, res) => {
         r.review_content,
         r.review_status,
         r.rejecting_reason,
-        r.parent_review_id,
         r.company_location_id,
         MAX(r.created_at) AS latest_review_date,
         r.created_at AS review_created_at,
@@ -905,7 +904,7 @@ router.get('/getuserreviewlisting/:user_id', verifyToken, (req, res) => {
                         user_privacy: review.user_privacy,
                         review_status: review.review_status,
                         rejecting_reason: review.rejecting_reason,
-                        parent_review_id: review.parent_review_id,
+                        // parent_review_id: review.parent_review_id,
                         latest_review_date: review.latest_review_date,
                         tags: review.tag_ids
                             ? review.tag_ids.split(',').map((tagId, index) => ({
@@ -2437,7 +2436,7 @@ router.get('/discussionlisting', verifyToken, async (req, res) => {
     try {
         const limit = req.query.limit;
         const offset = req.query.offset;
-        const discussionType = req.query.type; 
+        const discussionType = req.query.type;
 
         const parsedLimit = parseInt(limit);
         const parsedOffset = parseInt(offset);
@@ -2462,7 +2461,7 @@ router.get('/discussionlisting', verifyToken, async (req, res) => {
 
         const getPopularTags = await comFunction.getPopularTags();
 
-        res.json({ discussions,getPopularTags });
+        res.json({ discussions, getPopularTags });
     } catch (error) {
         console.error(error);
         res.status(500).send('An error occurred during discussion listing');
@@ -2480,10 +2479,10 @@ router.post('/discussiondetails', verifyToken, async (req, res) => {
     const offset = req.query.offset;
     const ip_address = req.body.ip_address;
     //console.log("ipaddress",ip_address);
-    
+
     const parsedLimit = parseInt(limit);
     const parsedOffset = parseInt(offset);
-    
+
     if (!ip_address) {
         return res.status(400).json({ error: 'ip_address is required in the request body' });
     }
@@ -2495,7 +2494,7 @@ router.post('/discussiondetails', verifyToken, async (req, res) => {
     //const limit = req.body.limit;
     const [insertDiscussionResponse, getAllCommentByDiscusId, getRelatedDiscussionsByTags] = await Promise.all([
         comFunction.insertDiscussionResponse(discussion_id, ip_address, user_id),
-        comFunction.getAllCommentByDiscusId(discussion_id,parsedLimit,parsedOffset),
+        comFunction.getAllCommentByDiscusId(discussion_id, parsedLimit, parsedOffset),
         //comFunction.getRelatedDiscussionsByTags(discussion_id),
         //comFunction.getAllRelatedDiscussion()
     ]);
@@ -2515,8 +2514,8 @@ router.post('/discussiondetails', verifyToken, async (req, res) => {
 });
 
 //discussionlisting by tags name
-router.get('/discussionlistingbytag', verifyToken, async(req,res) => {
-    try{
+router.get('/discussionlistingbytag', verifyToken, async (req, res) => {
+    try {
         const limit = req.query.limit;
         const offset = req.query.offset;
         const tag = req.query.tag;
@@ -2528,48 +2527,48 @@ router.get('/discussionlistingbytag', verifyToken, async(req,res) => {
             res.status(400).json({ error: 'Invalid limit or offset' });
             return;
         }
-    
-            //  console.log("limit",limit);
-            //  console.log("offset",offset);
-            //  console.log("tag",tag)
 
-             const getDiscussionListingByTag = await comFunction.getDiscussionListingByTag(tag,parsedLimit,parsedOffset);
-             //console.log(getDiscussionListingByTag);
-             res.json({
-                getDiscussionListingByTag: getDiscussionListingByTag
-             });
-         }
-         catch (error) {
-             console.error(error);
-             res.status(500).send('An error occurred during discussion listing');
-         }
+        //  console.log("limit",limit);
+        //  console.log("offset",offset);
+        //  console.log("tag",tag)
+
+        const getDiscussionListingByTag = await comFunction.getDiscussionListingByTag(tag, parsedLimit, parsedOffset);
+        //console.log(getDiscussionListingByTag);
+        res.json({
+            getDiscussionListingByTag: getDiscussionListingByTag
+        });
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send('An error occurred during discussion listing');
+    }
 })
 
-router.get('/discussionlistingbytopic/:keyword', verifyToken, async (req,res) => {
-    try{
+router.get('/discussionlistingbytopic/:keyword', verifyToken, async (req, res) => {
+    try {
         const keyword = req.params.keyword;
         const discussions = await comFunction.searchDiscussion(keyword);
         res.json({
             discussions: discussions
-         });
-    } catch(error){
+        });
+    } catch (error) {
         console.error(error);
         res.status(500).send('An error occurred during fetching discussion');
     }
-   
+
 })
 
 //get realted discussion listing
-router.get('/getRelatedDiscussions/:discussion_id',verifyToken,async (req,res) => {
-    try{
-    const discussion_id = req.params.discussion_id;
-    const relatedDiscussions = await comFunction.getRelatedDiscussionsByTags(discussion_id);
+router.get('/getRelatedDiscussions/:discussion_id', verifyToken, async (req, res) => {
+    try {
+        const discussion_id = req.params.discussion_id;
+        const relatedDiscussions = await comFunction.getRelatedDiscussionsByTags(discussion_id);
 
-    res.json({
-        relatedDiscussions: relatedDiscussions
-     });
+        res.json({
+            relatedDiscussions: relatedDiscussions
+        });
 
-    }catch(error){
+    } catch (error) {
         console.error(error);
         res.status(500).send('An error occurred during fetching related discussion');
     }
@@ -2577,28 +2576,28 @@ router.get('/getRelatedDiscussions/:discussion_id',verifyToken,async (req,res) =
 
 
 //Search Premium Company By Keyword
-router.get('/search-premium-company/:keyword',verifyToken, authenController.searchPremiumCompany);
+router.get('/search-premium-company/:keyword', verifyToken, authenController.searchPremiumCompany);
 
 //Search Category subCategry By companyID
-router.get('/complaint-category/:companyId',verifyToken, authenController.complaintCategorySubcategory);
+router.get('/complaint-category/:companyId', verifyToken, authenController.complaintCategorySubcategory);
 
 //Complaint Register
-router.post('/complaint-register',verifyToken, authenController.complaintRegister);
+router.post('/complaint-register', verifyToken, authenController.complaintRegister);
 
 //Complaint listing by customer id
-router.get('/complaint-listing/:userId', verifyToken,  authenController.complainListing);
+router.get('/complaint-listing/:userId', verifyToken, authenController.complainListing);
 
 //Complaint details by complaint id
-router.get('/complaint-details/:complaintId/:userId', verifyToken,  authenController.complainDetails);
+router.get('/complaint-details/:complaintId/:userId', verifyToken, authenController.complainDetails);
 
 //Complaint user response
-router.post('/complaint-user-response', verifyToken,  authenController.userComplaintResponse);
+router.post('/complaint-user-response', verifyToken, authenController.userComplaintResponse);
 
 //Complaint user reopen response
-router.post('/complaint-reopen', verifyToken,  authenController.userComplaintResponse);
+router.post('/complaint-reopen', verifyToken, authenController.userComplaintResponse);
 
 //Complaint user rating
-router.post('/complaint-rating', verifyToken,  authenController.userComplaintRating);
+router.post('/complaint-rating', verifyToken, authenController.userComplaintRating);
 
 // router.get('/discussiondetails/:discussion_id', verifyToken, async (req, res) => {
 //     const discussion_id = req.params.discussion_id;
@@ -2772,21 +2771,66 @@ router.post('/complaint-rating', verifyToken,  authenController.userComplaintRat
 
 
 
-
 function verifyToken(req, res, next) {
     let token = req.headers['authorization'];
     if (token) {
         token = token.split(' ')[1];
         console.log("Received token:", token);
-        jwt.verify(token, jwtsecretKey, (err, valid) => {
-            if (err) {
-                console.error("Token verification error:", err);
-                return res.status(401).json({
-                    status: 'error',
-                    message: 'Invalid token',
+
+        // Wrap jwt.verify in a Promise to use await
+        const verifyTokenPromise = new Promise((resolve, reject) => {
+            jwt.verify(token, jwtsecretKey, (err, valid) => {
+                if (err) {
+                    //console.error("Token verification error:", err);
+
+                    // if (err.name === 'TokenExpiredError') {
+                    //     return res.status(401).json({
+                    //         status: 'error',
+                    //         message: 'Token has expired',
+                    //     });
+                    // }
+
+                    return res.status(401).json({
+                        status: 'error',
+                        message: 'Invalid token',
+                    });
+                } else {
+                    resolve(valid);
+                }
+            });
+        });
+
+        // Use async function to use await
+        (async () => {
+            try {
+                const valid = await verifyTokenPromise;
+
+                //const userId = req.body.user_id;
+                const userId = valid.user_id;
+                //console.log("userId",userId)
+
+                // Wrap db.query in a Promise to use await
+                const queryPromise = new Promise((resolve, reject) => {
+                    db.query('SELECT * FROM users WHERE user_id = ?', [userId], (err, result) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve(result);
+                        }
+                    });
                 });
-            } else {
-                const userId = req.body.user_id;
+
+                const rows = await queryPromise;
+
+
+                if (!rows || rows.length === 0) {
+                    return res.status(403).json({
+                        status: 'error',
+                        message: 'Invalid token or User does not exist',
+                    });
+                }
+
+                //console.log("rows", rows);
 
                 // Define the function to generate a refresh token
                 const generateRefreshToken = (userId) => {
@@ -2803,13 +2847,11 @@ function verifyToken(req, res, next) {
 
                         return refreshToken;
                     } catch (error) {
-                        // Handle token generation error (e.g., log, throw, or return null)
                         console.error('Error generating refresh token:', error);
                         return null;
                     }
                 };
 
-                // Use the refreshToken function to generate a new refresh token
                 const refreshToken = generateRefreshToken(userId);
 
                 if (!refreshToken) {
@@ -2819,15 +2861,21 @@ function verifyToken(req, res, next) {
                     });
                 }
 
-                //res.setHeader('x-refresh-token', refreshToken);
+                // res.setHeader('x-refresh-token', refreshToken);
 
                 // Store user data in req.user
                 req.user = valid;
 
                 // Continue to the next middleware or route
                 next();
+            } catch (error) {
+                console.error('Error:', error);
+                return res.status(500).json({
+                    status: 'error',
+                    message: 'Internal server error',
+                });
             }
-        });
+        })();
     } else {
         return res.status(403).json({
             status: 'error',
@@ -2835,6 +2883,7 @@ function verifyToken(req, res, next) {
         });
     }
 }
+
 
 
 

@@ -1271,62 +1271,62 @@ exports.editUserData = (req, res) => {
 //--- Delete User ----//
 exports.deleteUser = (req, res) => {
     console.log(req.body);
-    const delQuery_code_verify = `DELETE FROM user_code_verify WHERE user_id = '${req.body.userid}'`;
-    const data = [req.body.userid];
-     db.query(delQuery_code_verify, data, (code_verifyerr,code_verifyresult) => {
-        if (code_verifyerr) {
-            return res.send({
-                status: 'error',
-                message: 'Something went wrong' +code_verifyerr
-            });
-        } else {
-            const sql = `DELETE FROM users WHERE user_id = '${req.body.userid}'`;
-            db.query(sql, (err, result)=>{
+
+    const userId = req.body.userid;
+    const deleteQueries = [
+        `DELETE FROM user_code_verify WHERE user_id = '${userId}'`,
+        `DELETE FROM users WHERE user_id = '${userId}'`,
+        `DELETE FROM user_customer_meta WHERE user_id = ${userId}`,
+        `DELETE FROM user_device_info WHERE user_id = '${userId}'`,
+        `DELETE discussions, discussions_user_response
+        FROM discussions
+        LEFT JOIN discussions_user_response ON discussions.id = discussions_user_response.discussion_id
+        WHERE discussions.user_id = '${userId}';
+        `,
+        `DELETE complaint, complaint_rating,complaint_query_response
+        FROM complaint
+        LEFT JOIN complaint_rating ON complaint.id = complaint_rating.complaint_id
+        LEFT JOIN complaint_query_response ON complaint.id = complaint_query_response.complaint_id                               
+        WHERE complaint.user_id = '${userId}';
+        `,
+        `DELETE FROM poll_voting WHERE user_id = '${userId}'`,
+        `DELETE reviews,review_reply,review_voting
+        FROM reviews
+        LEFT JOIN review_reply ON reviews.id = review_reply.review_id 
+        LEFT JOIN review_voting ON reviews.id = review_voting.review_id                           
+        WHERE reviews.customer_id = '${userId}';
+        `,
+        `DELETE FROM survey_customer_answers WHERE customer_id = '${userId}'`,
+        `DELETE FROM company_claim_request WHERE claimed_by = '${userId}'`,
+    ];
+
+    const executeDeleteQuery = (index) => {
+        if (index < deleteQueries.length) {
+            const query = deleteQueries[index];
+            db.query(query, (err, result) => {
                 if (err) {
+                    console.error('Query error:', err);
+
                     return res.send({
                         status: 'error',
-                        message: 'Something went wrong' + err
+                        message: `Failed to execute query: ${query}`,
                     });
-                }else {
-                    const metaSql = `DELETE FROM user_customer_meta WHERE user_id = ${req.body.userid}`;
-                    db.query(metaSql,  (metaErr, metaResult) => {
-                        if (metaErr) {
-                            return res.send({
-                                status: 'error',
-                                message: 'Something went wrong' + metaErr
-                            });
-                        }else{
-                            const delWPQuery = `DELETE FROM bg_users WHERE user_login = '${req.body.userEmail}'`;
-                             db.query(delWPQuery, (WPerr,WPresult)=>{
-                                if (WPerr) {
-                                    return res.send({
-                                        status: 'error',
-                                        message: 'Something went wrong' + WPerr
-                                    });
-                                } else {
-                                    const delQuery_device_info = `DELETE FROM user_device_info WHERE user_id = '${req.body.userid}'`;
-                                    db.query(delQuery_device_info, (device_infoerr,device_inforesult)=>{
-                                        if (device_infoerr) {
-                                            return res.send({
-                                                status: 'error',
-                                                message: 'Something went wrong' + device_infoerr
-                                            });
-                                        }else {
-                                            return res.send({
-                                                status: 'ok',
-                                                message: 'User permanently deleted .'
-                                            });
-                                        }
-                                    })
-                                }
-                            })
-                        }
-                    })
                 }
-            })
+
+                // Continue with the next query
+                executeDeleteQuery(index + 1);
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'User permanently deleted.',
+            });
         }
-    })
-}
+    };
+
+    executeDeleteQuery(0);
+};
+
 
 //--- Trash User ----//
 exports.trashUser = (req, res) => {
