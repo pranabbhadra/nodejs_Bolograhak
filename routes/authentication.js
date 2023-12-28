@@ -836,7 +836,6 @@ router.get('/getuserreviewlisting/:user_id', verifyToken, (req, res) => {
         r.review_content,
         r.review_status,
         r.rejecting_reason,
-        r.parent_review_id,
         r.company_location_id,
         MAX(r.created_at) AS latest_review_date,
         r.created_at AS review_created_at,
@@ -905,7 +904,7 @@ router.get('/getuserreviewlisting/:user_id', verifyToken, (req, res) => {
                         user_privacy: review.user_privacy,
                         review_status: review.review_status,
                         rejecting_reason: review.rejecting_reason,
-                        parent_review_id: review.parent_review_id,
+                        // parent_review_id: review.parent_review_id,
                         latest_review_date: review.latest_review_date,
                         tags: review.tag_ids
                             ? review.tag_ids.split(',').map((tagId, index) => ({
@@ -2806,7 +2805,9 @@ function verifyToken(req, res, next) {
             try {
                 const valid = await verifyTokenPromise;
 
-                const userId = req.body.user_id;
+                //const userId = req.body.user_id;
+                const userId = valid.user_id;
+                //console.log("userId",userId)
 
                 // Wrap db.query in a Promise to use await
                 const queryPromise = new Promise((resolve, reject) => {
@@ -2825,7 +2826,7 @@ function verifyToken(req, res, next) {
                 if (!rows || rows.length === 0) {
                     return res.status(403).json({
                         status: 'error',
-                        message: 'User does not exist',
+                        message: 'Invalid token or User does not exist',
                     });
                 }
 
@@ -2846,13 +2847,11 @@ function verifyToken(req, res, next) {
 
                         return refreshToken;
                     } catch (error) {
-                        // Handle token generation error (e.g., log, throw, or return null)
                         console.error('Error generating refresh token:', error);
                         return null;
                     }
                 };
 
-                // Use the refreshToken function to generate a new refresh token
                 const refreshToken = generateRefreshToken(userId);
 
                 if (!refreshToken) {

@@ -241,6 +241,13 @@ exports.login = (req, res) => {
     payload.user_id = user.user_id;
     const isPasswordMatch = await bcrypt.compare(password, user.password);
 
+    if ( user.register_from=='google' || user.register_from=='facebook' ) {
+      return res.status(401).json({
+        status: 'error',
+        message: 'We noticed that you have sign up using your '+user.register_from+' account. Please log in through your '+user.register_from+' account.',
+      });
+    }
+
     if (!isPasswordMatch) {
       return res.status(401).json({
         status: 'error',
@@ -1807,7 +1814,7 @@ exports.changePassword = async (req, res) => {
 
   const { email, current_password, new_password } = req.body;
   try {
-    const query = `SELECT password FROM users WHERE email = '${email}'`;
+    const query = `SELECT password,register_from FROM users WHERE email = '${email}'`;
     db.query(query, async (err, result) => {
       if (err) {
         return res.send({
@@ -1818,33 +1825,41 @@ exports.changePassword = async (req, res) => {
 
         //addToInvalidTokenList(oldToken);
         if (result.length > 0) {
-          const userPassword = result[0].password;
-          const isPasswordMatch = await bcrypt.compare(current_password, userPassword);
+          const registerFrom = result[0].register_from;
+          if (registerFrom === 'web' || registerFrom === 'app') {
+            const userPassword = result[0].password;
+            const isPasswordMatch = await bcrypt.compare(current_password, userPassword);
 
-          if (isPasswordMatch) {
-            const hashedNewPassword = await bcrypt.hash(new_password, 8);
+            if (isPasswordMatch) {
+              const hashedNewPassword = await bcrypt.hash(new_password, 8);
 
-            const updateQuery = 'UPDATE users SET password = ? WHERE email = ?';
-            const data = [hashedNewPassword, email];
+              const updateQuery = 'UPDATE users SET password = ? WHERE email = ?';
+              const data = [hashedNewPassword, email];
 
-            db.query(updateQuery, data, (err, result) => {
-              if (err) {
-                return res.send({
-                  status: 'error',
-                  message: 'Something went wrong' + err,
-                });
-              } else {
-                return res.send({
-                  status: 'success',
-                  data: data,
-                  message: 'Password updated successfully',
-                });
-              }
-            });
+              db.query(updateQuery, data, (err, result) => {
+                if (err) {
+                  return res.send({
+                    status: 'error',
+                    message: 'Something went wrong' + err,
+                  });
+                } else {
+                  return res.send({
+                    status: 'success',
+                    //data: data,
+                    message: 'Password updated successfully',
+                  });
+                }
+              });
+            } else {
+              return res.send({
+                status: 'error',
+                message: 'Current password does not match',
+              });
+            }
           } else {
-            return res.send({
+            return res.json({
               status: 'error',
-              message: 'Current password does not match',
+              message: 'OTP cannot be sent. You are logged in through a social account.'
             });
           }
         } else {
@@ -2049,78 +2064,78 @@ exports.forgotPassword = (req, res) => {
 
         if (registerFrom === 'web' || registerFrom === 'app') {
 
-        if (typeof passphrase !== 'string') {
-          console.error('Passphrase is not a string:', passphrase);
-          // Handle the error or set a default passphrase value if needed.
-        } 
-        else {
-          const userId = result[0].user_id;
-          //console.log("userId", userId)
+          if (typeof passphrase !== 'string') {
+            console.error('Passphrase is not a string:', passphrase);
+            // Handle the error or set a default passphrase value if needed.
+          }
+          else {
+            const userId = result[0].user_id;
+            //console.log("userId", userId)
 
 
-          // Insert the OTP and expiration timestamp into the user_code_verify table
-          const insertOtpQuery = `
+            // Insert the OTP and expiration timestamp into the user_code_verify table
+            const insertOtpQuery = `
             INSERT INTO user_code_verify (user_id, phone, otp, email, created_at, otp_expiration)
             VALUES (?, ?, ?, ?, ?, ?)
           `;
 
-          db.query(
-            insertOtpQuery,
-            [userId, null, otp.otp, email, currentTime, new Date(otp.expirationTimestamp)],
-            (insertError) => {
-              if (insertError) {
-                console.error(insertError);
-                return res.status(500).json({
-                  status: 'error',
-                  message: 'Failed to store OTP in the database.',
-                });
-              }
-
-              const transporter = nodemailer.createTransport({
-                host: process.env.MAIL_HOST,
-                port: process.env.MAIL_PORT,
-                secure: false,
-                requireTLS: true,
-                auth: {
-                  user: process.env.MAIL_USER,
-                  pass: process.env.MAIL_PASSWORD,
-                },
-              });
-
-              var mailOptions = {
-                from: process.env.MAIL_USER,
-                to: email,
-                subject: 'Forgot password Email',
-                text: `Your OTP for forgot password is: ${otp.otp}. Please use it within 5 minutes.`,
-              };
-
-              transporter.sendMail(mailOptions, function (err, info) {
-                if (err) {
-                  console.log(err);
-                  return res.json({
-                    status: 'not ok',
-                    message: 'Something went wrong',
-                    err,
-                  });
-                } else {
-                  console.log('Mail Send: ', info.response);
-                  return res.json({
-                    status: 'ok',
-                    data: '',
-                    message:
-                      'Password reset OTP sent to your email. Please check your email.',
+            db.query(
+              insertOtpQuery,
+              [userId, null, otp.otp, email, currentTime, new Date(otp.expirationTimestamp)],
+              (insertError) => {
+                if (insertError) {
+                  console.error(insertError);
+                  return res.status(500).json({
+                    status: 'error',
+                    message: 'Failed to store OTP in the database.',
                   });
                 }
-              });
-            }
-          );
+
+                const transporter = nodemailer.createTransport({
+                  host: process.env.MAIL_HOST,
+                  port: process.env.MAIL_PORT,
+                  secure: false,
+                  requireTLS: true,
+                  auth: {
+                    user: process.env.MAIL_USER,
+                    pass: process.env.MAIL_PASSWORD,
+                  },
+                });
+
+                var mailOptions = {
+                  from: process.env.MAIL_USER,
+                  to: email,
+                  subject: 'Forgot password Email',
+                  text: `Your OTP for forgot password is: ${otp.otp}. Please use it within 5 minutes.`,
+                };
+
+                transporter.sendMail(mailOptions, function (err, info) {
+                  if (err) {
+                    console.log(err);
+                    return res.json({
+                      status: 'not ok',
+                      message: 'Something went wrong',
+                      err,
+                    });
+                  } else {
+                    console.log('Mail Send: ', info.response);
+                    return res.json({
+                      status: 'ok',
+                      data: '',
+                      message:
+                        'Password reset OTP sent to your email. Please check your email.',
+                    });
+                  }
+                });
+              }
+            );
+          }
+        } else {
+          return res.json({
+            status: 'error',
+            message: 'OTP cannot be sent. You are logged in through a social account.'
+          });
         }
-      } else {
-        return res.json({
-          status: 'error',
-          message: 'OTP cannot be sent. You are logged in through a social account.'
-        });
-      }
       } else {
         return res.json({
           status: 'not found',
