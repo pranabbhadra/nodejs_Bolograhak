@@ -2921,6 +2921,7 @@ async function searchDiscussion(keyword){
 
 
 
+
 //Function to get popular discussion from discussions table
 // async function getAllPopularDiscussion() {
 //   const sql = `
@@ -3055,5 +3056,5 @@ module.exports = {
   getRelatedDiscussionsByTags,
   getPopularTags,
   getDiscussionListingByTag,
-  searchDiscussion
+  searchDiscussion,
 };

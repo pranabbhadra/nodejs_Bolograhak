@@ -546,29 +546,32 @@
                   <input type="text" class="form-control" placeholder="Product/Division Name" name="review_title">
                 </div>
               </div>
+              
               #%>
-              <div class="row">
+              <div class="col-md-6">
+                <div class="custom-form dynamic_state_field_wrapper ">
+                    <select id="select_category" name="category_id" class="form-select">
+                        <option value="0" selected>Select Category </option>
+                    </select>
+                    <!-- <input type="text" class="form-control" placeholder="Category Name" name="category"> -->
+                </div>
+            </div>
+            <div class="col-md-6">
+              <div class="custom-form" id="dynamic_sub_category_field_wrapper">
+                  <select id="select_sub_category" name="product_id" class="form-select">
+                      <option value="0">Select Product</option>
+                  </select>
+                  <!-- <input type="text" class="form-control" placeholder="Sub-category Name" name="sub_category"> -->
+              </div>
+          </div>
+              <!-- <div class="row">
                 <div class="col-md-12">
                     <div class="row">
-                        <div class="col-md-6">
-                            <div class="custom-form dynamic_state_field_wrapper ">
-                                <select id="select_category" name="category_id" class="form-select">
-                                    <option value="0" selected>Select Category </option>
-                                </select>
-                                <!-- <input type="text" class="form-control" placeholder="Category Name" name="category"> -->
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="custom-form" id="dynamic_sub_category_field_wrapper">
-                                <select id="select_sub_category" name="product_id" class="form-select">
-                                    <option value="0">Select Product</option>
-                                </select>
-                                <!-- <input type="text" class="form-control" placeholder="Sub-category Name" name="sub_category"> -->
-                            </div>
-                        </div>
+                       
+                     
                     </div>
                 </div>
-              </div>
+              </div> -->
             
               <div class="col-md-12">
                 <div class="rating-slider">
@@ -637,16 +640,17 @@
               </div>
               <div class="col-md-12">
                 <div class="review-submit d-flex justify-content-between align-items-center">
-                  <% if(currentUserData){ %>
-                    <input type="submit" class="btn-default btn-warning" value="Submit">
-                  <% } else { %>
-                    <a href="#" class="btn-default btn-outline-warning login">Submit</a>
-                  <% } %>
+              <% if(currentUserData){ %>
+                <input type="submit" class="btn-default btn-warning" value="Submit">
+              <% } else { %>
+                <a href="#" class="btn-default btn-outline-warning login">Submit</a>
+              <% } %>
+
                   <a href="/review" class="view-more mt-0" id="all-review-hidden-btn" style="display: none;">
                     <span class="position-relative"><i class="fa-solid fa-angle-right"></i>View All Reviews</span>
                   </a>
-                  <div class="submit-message"></div>
                 </div>
+                <div class="submit-message"></div>
               </div>
           </div>
           </form>

@@ -241,6 +241,13 @@ exports.login = (req, res) => {
     payload.user_id = user.user_id;
     const isPasswordMatch = await bcrypt.compare(password, user.password);
 
+    if ( user.register_from=='google' || user.register_from=='facebook' ) {
+      return res.status(401).json({
+        status: 'error',
+        message: 'We noticed that you have sign up using your '+user.register_from+' account. Please log in through your '+user.register_from+' account.',
+      });
+    }
+
     if (!isPasswordMatch) {
       return res.status(401).json({
         status: 'error',
@@ -393,7 +400,7 @@ exports.socialLogin = async (req, res) => {
   const external_registration_id = req.body.external_registration_id;
   const register_from = req.body.register_from;
 
-  try{
+  try {
     const user_exist_query = 'SELECT * FROM users WHERE email = ?';
     const user_exist_values = [userEmail];
     const user_exist_results = await query(user_exist_query, user_exist_values);
@@ -401,7 +408,7 @@ exports.socialLogin = async (req, res) => {
     if (user_exist_results.length > 0) {
 
       //--If user login from FB and Google
-      if( user_exist_results[0].register_from == 'facebook' || user_exist_results[0].register_from == 'google'){
+      if (user_exist_results[0].register_from == 'facebook' || user_exist_results[0].register_from == 'google') {
         //User Exist get User Details
         const user = user_exist_results[0];
         payload.user_id = user.user_id;
@@ -421,9 +428,9 @@ exports.socialLogin = async (req, res) => {
               error: metaErr
             })
           }
-    
+
           const meta = metaResults[0];
-    
+
           //--Fetch WP user Data-------//
           const { email, device_id, device_token, imei_no, model_name, make_name } = req.body;
           db.query('SELECT * FROM bg_users WHERE user_login = ?', [email], (wpuserErr, wpuserResults) => {
@@ -435,14 +442,14 @@ exports.socialLogin = async (req, res) => {
                 error: metaErr
               })
             }
-    
+
             delete user.password;
             //-- check last Login Info-----//
             const device_query = "SELECT * FROM user_device_info WHERE user_id = ?";
             db.query(device_query, [user.user_id], async (err, device_query_results) => {
               const currentDate = new Date();
               const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
-    
+
               if (device_query_results.length > 0) {
                 // User exist update info
                 const userDeviceMetaUpdateData = {
@@ -483,10 +490,10 @@ exports.socialLogin = async (req, res) => {
                     });
                   }
                 })
-    
+
               } else {
                 // User doesnot exist Insert New Row.
-    
+
                 const userDeviceMetaInsertData = {
                   user_id: user.user_id,
                   device_id: req.body.device_id || null,
@@ -497,7 +504,7 @@ exports.socialLogin = async (req, res) => {
                   last_logged_in: formattedDate,
                   created_date: formattedDate
                 };
-    
+
                 db.query('INSERT INTO user_device_info SET ?', userDeviceMetaInsertData, async (err, results) => {
                   if (err) {
                     return res.json({
@@ -527,13 +534,13 @@ exports.socialLogin = async (req, res) => {
                     });
                   }
                 })
-    
+
               }
             })
-    
+
           });
         });
-      }else{
+      } else {
         //User Exist but already Registered from Web
         return res.status(500).json({
           status: 'error',
@@ -543,29 +550,29 @@ exports.socialLogin = async (req, res) => {
       }
 
 
-    }else{
+    } else {
       //User doesnot exist Create New User
       const currentDate = new Date();
       const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
       let hasPassword = await bcrypt.hash(userEmail, 8);
-      
+
       const user_insert_query = 'INSERT INTO users (first_name, last_name, email, password, register_from, external_registration_id, user_registered, user_status, user_type_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
       const user_insert_values = [userFirstName, userLastName, userEmail, hasPassword, register_from, external_registration_id, formattedDate, 1, 2];
-      try{
-          const user_insert_results = await query(user_insert_query, user_insert_values);
-          if (user_insert_results.insertId) {
-              const newuserID = user_insert_results.insertId;
-              const user_meta_insert_query = 'INSERT INTO user_customer_meta (user_id, review_count, profile_pic) VALUES (?, ?, ?)';
-              const user_meta_insert_values = [newuserID, 0, userPicture];
-              try{
-                  const user_meta_insert_results = await query(user_meta_insert_query, user_meta_insert_values);
-                  //**Send Welcome Email to User**/
-                  var mailOptions = {
-                      from: process.env.MAIL_USER,
-                      //to: 'pranab@scwebtech.com',
-                      to: userEmail,
-                      subject: 'Welcome Email',
-                      html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
+      try {
+        const user_insert_results = await query(user_insert_query, user_insert_values);
+        if (user_insert_results.insertId) {
+          const newuserID = user_insert_results.insertId;
+          const user_meta_insert_query = 'INSERT INTO user_customer_meta (user_id, review_count, profile_pic) VALUES (?, ?, ?)';
+          const user_meta_insert_values = [newuserID, 0, userPicture];
+          try {
+            const user_meta_insert_results = await query(user_meta_insert_query, user_meta_insert_values);
+            //**Send Welcome Email to User**/
+            var mailOptions = {
+              from: process.env.MAIL_USER,
+              //to: 'pranab@scwebtech.com',
+              to: userEmail,
+              subject: 'Welcome Email',
+              html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
                       <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
                       <tbody>
                       <tr>
@@ -660,240 +667,240 @@ exports.socialLogin = async (req, res) => {
                       </tbody>
                       </table>
                   </div>`
-                  }
-                  await mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
-                      if (err) {
-                          console.log(err);
-                          // return res.send({
-                          //     status: 'not ok',
-                          //     message: 'Something went wrong'
-                          // });
-                      } else {
-                          console.log('Mail Send: ', info.response);
-                          // return res.send({
-                          //     status: 'ok',
-                          //     message: ''
-                          // });
-                      }
-                  })
-                  //--- WP User Register-------//
-                  //console.log(process.env.BLOG_API_ENDPOINT);
-                  const wpUserRegistrationData = {
-                    username: userEmail,
-                    email: userEmail,
-                    password: userEmail,
-                    first_name: userFirstName,
-                    last_name: userLastName,
-                  };
-                  axios.post(process.env.BLOG_API_ENDPOINT + '/register', wpUserRegistrationData)
-                    .then((response) => {
-                      (async () => {
-                        //---- Login to Wordpress Blog-----//
-                        //let wp_user_data;
-                        try {
-                          if (response.data.user_id) {
-                            //After Register -- User Login Code
-      
-                              try{
-                                const user_exist_query = 'SELECT * FROM users WHERE email = ?';
-                                const user_exist_values = [userEmail];
-                                const user_exist_results = await query(user_exist_query, user_exist_values);
-                                if (user_exist_results.length > 0) {
-      
-                                  //--If user login from FB and Google
-                                  if( req.body.register_from == 'facebook' || req.body.register_from == 'google'){
-                                    //User Exist get User Details
-                                    const user = user_exist_results[0];
-                                    payload.user_id = user.user_id;
-      
-                                    const token = jwt.sign(payload, secretKey, {
-                                      expiresIn: '24h',
-                                    });
-      
-                                    const clientIp = requestIp.getClientIp(req);
-                                    const userAgent = useragent.parse(req.headers['user-agent']);
-                                    db.query('SELECT * FROM user_customer_meta WHERE user_id = ?', [user.user_id], (metaErr, metaResults) => {
-                                      if (metaErr) {
-                                        console.error("An error occurred:", metaErr);
-                                        return res.status(500).json({
-                                          status: 'error',
-                                          message: 'An error occurred while processing your request ' + metaErr,
-                                          error: metaErr
-                                        })
-                                      }
-                                
-                                      const meta = metaResults[0];
-                                
-                                      //--Fetch WP user Data-------//
-                                      const { email, device_id, device_token, imei_no, model_name, make_name } = req.body;
-                                      db.query('SELECT * FROM bg_users WHERE user_login = ?', [email], (wpuserErr, wpuserResults) => {
-                                        if (wpuserErr) {
-                                          console.error("An error occurred:", metaErr);
-                                          return res.status(500).json({
-                                            status: 'error',
-                                            message: 'An error occurred while processing your request',
-                                            error: metaErr
-                                          })
-                                        }
-                                
-                                        delete user.password;
-                                        //-- check last Login Info-----//
-                                        const device_query = "SELECT * FROM user_device_info WHERE user_id = ?";
-                                        db.query(device_query, [user.user_id], async (err, device_query_results) => {
-                                          const currentDate = new Date();
-                                          const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
-                                
-                                          if (device_query_results.length > 0) {
-                                            // User exist update info
-                                            const userDeviceMetaUpdateData = {
-                                              device_id: req.body.device_id || null,
-                                              device_token: req.body.device_token || null,
-                                              imei_no: req.body.imei_no || null,
-                                              model_name: req.body.model_name || null,
-                                              make_name: req.body.make_name || null,
-                                              last_logged_in: formattedDate,
-                                            };
-                                            const device_update_query = `UPDATE user_device_info SET ? WHERE user_id = ?`;
-                                            db.query(device_update_query, [userDeviceMetaUpdateData, user.user_id], (err, device_update_query_results) => {
-                                              if (err) {
-                                                return res.json({
-                                                  status: 'error',
-                                                  data: {
-                                                    user,
-                                                    meta,
-                                                    wp_user: wpuserResults[0].ID,
-                                                    token: token,
-                                                  },
-                                                  message: err,
-                                                  client_ip: clientIp,
-                                                  user_agent: userAgent.toString(),
-                                                });
-                                              } else {
-                                                return res.json({
-                                                  status: 'success',
-                                                  data: {
-                                                    user,
-                                                    meta,
-                                                    wp_user: wpuserResults[0].ID,
-                                                    token: token,
-                                                  },
-                                                  message: 'Login successful',
-                                                  client_ip: clientIp,
-                                                  user_agent: userAgent.toString(),
-                                                });
-                                              }
-                                            })
-                                
-                                          } else {
-                                            // User doesnot exist Insert New Row.
-                                
-                                            const userDeviceMetaInsertData = {
-                                              user_id: user.user_id,
-                                              device_id: req.body.device_id || null,
-                                              device_token: req.body.device_token || null,
-                                              imei_no: req.body.imei_no || null,
-                                              model_name: req.body.model_name || null,
-                                              make_name: req.body.make_name || null,
-                                              last_logged_in: formattedDate,
-                                              created_date: formattedDate
-                                            };
-                                
-                                            db.query('INSERT INTO user_device_info SET ?', userDeviceMetaInsertData, async (err, results) => {
-                                              if (err) {
-                                                return res.json({
-                                                  status: 'error',
-                                                  data: {
-                                                    user,
-                                                    meta,
-                                                    wp_user: wpuserResults[0].ID,
-                                                    token: token,
-                                                  },
-                                                  message: err,
-                                                  client_ip: clientIp,
-                                                  user_agent: userAgent.toString(),
-                                                });
-                                              } else {
-                                                return res.json({
-                                                  status: 'success',
-                                                  data: {
-                                                    user,
-                                                    meta,
-                                                    wp_user: wpuserResults[0].ID,
-                                                    token: token,
-                                                  },
-                                                  message: 'Login successful',
-                                                  client_ip: clientIp,
-                                                  user_agent: userAgent.toString(),
-                                                });
-                                              }
-                                            })
-                                
-                                          }
-                                        })
-                                
-                                      });
-                                    });
-                                  }else{
-                                    //User Exist but already Registered from Web
-                                    return res.status(500).json({
-                                      status: 'error',
-                                      message: 'You are already registered with this email, please login with your email and password',
-                                      error: ''
-                                    })
-                                  }
-      
-      
+            }
+            await mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
+              if (err) {
+                console.log(err);
+                // return res.send({
+                //     status: 'not ok',
+                //     message: 'Something went wrong'
+                // });
+              } else {
+                console.log('Mail Send: ', info.response);
+                // return res.send({
+                //     status: 'ok',
+                //     message: ''
+                // });
+              }
+            })
+            //--- WP User Register-------//
+            //console.log(process.env.BLOG_API_ENDPOINT);
+            const wpUserRegistrationData = {
+              username: userEmail,
+              email: userEmail,
+              password: userEmail,
+              first_name: userFirstName,
+              last_name: userLastName,
+            };
+            axios.post(process.env.BLOG_API_ENDPOINT + '/register', wpUserRegistrationData)
+              .then((response) => {
+                (async () => {
+                  //---- Login to Wordpress Blog-----//
+                  //let wp_user_data;
+                  try {
+                    if (response.data.user_id) {
+                      //After Register -- User Login Code
+
+                      try {
+                        const user_exist_query = 'SELECT * FROM users WHERE email = ?';
+                        const user_exist_values = [userEmail];
+                        const user_exist_results = await query(user_exist_query, user_exist_values);
+                        if (user_exist_results.length > 0) {
+
+                          //--If user login from FB and Google
+                          if (req.body.register_from == 'facebook' || req.body.register_from == 'google') {
+                            //User Exist get User Details
+                            const user = user_exist_results[0];
+                            payload.user_id = user.user_id;
+
+                            const token = jwt.sign(payload, secretKey, {
+                              expiresIn: '24h',
+                            });
+
+                            const clientIp = requestIp.getClientIp(req);
+                            const userAgent = useragent.parse(req.headers['user-agent']);
+                            db.query('SELECT * FROM user_customer_meta WHERE user_id = ?', [user.user_id], (metaErr, metaResults) => {
+                              if (metaErr) {
+                                console.error("An error occurred:", metaErr);
+                                return res.status(500).json({
+                                  status: 'error',
+                                  message: 'An error occurred while processing your request ' + metaErr,
+                                  error: metaErr
+                                })
+                              }
+
+                              const meta = metaResults[0];
+
+                              //--Fetch WP user Data-------//
+                              const { email, device_id, device_token, imei_no, model_name, make_name } = req.body;
+                              db.query('SELECT * FROM bg_users WHERE user_login = ?', [email], (wpuserErr, wpuserResults) => {
+                                if (wpuserErr) {
+                                  console.error("An error occurred:", metaErr);
+                                  return res.status(500).json({
+                                    status: 'error',
+                                    message: 'An error occurred while processing your request',
+                                    error: metaErr
+                                  })
                                 }
-                              }catch(error){
-                                  console.error('Error during user_exist_query:', error);
-                              }
-      
-      
-      
+
+                                delete user.password;
+                                //-- check last Login Info-----//
+                                const device_query = "SELECT * FROM user_device_info WHERE user_id = ?";
+                                db.query(device_query, [user.user_id], async (err, device_query_results) => {
+                                  const currentDate = new Date();
+                                  const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+
+                                  if (device_query_results.length > 0) {
+                                    // User exist update info
+                                    const userDeviceMetaUpdateData = {
+                                      device_id: req.body.device_id || null,
+                                      device_token: req.body.device_token || null,
+                                      imei_no: req.body.imei_no || null,
+                                      model_name: req.body.model_name || null,
+                                      make_name: req.body.make_name || null,
+                                      last_logged_in: formattedDate,
+                                    };
+                                    const device_update_query = `UPDATE user_device_info SET ? WHERE user_id = ?`;
+                                    db.query(device_update_query, [userDeviceMetaUpdateData, user.user_id], (err, device_update_query_results) => {
+                                      if (err) {
+                                        return res.json({
+                                          status: 'error',
+                                          data: {
+                                            user,
+                                            meta,
+                                            wp_user: wpuserResults[0].ID,
+                                            token: token,
+                                          },
+                                          message: err,
+                                          client_ip: clientIp,
+                                          user_agent: userAgent.toString(),
+                                        });
+                                      } else {
+                                        return res.json({
+                                          status: 'success',
+                                          data: {
+                                            user,
+                                            meta,
+                                            wp_user: wpuserResults[0].ID,
+                                            token: token,
+                                          },
+                                          message: 'Login successful',
+                                          client_ip: clientIp,
+                                          user_agent: userAgent.toString(),
+                                        });
+                                      }
+                                    })
+
+                                  } else {
+                                    // User doesnot exist Insert New Row.
+
+                                    const userDeviceMetaInsertData = {
+                                      user_id: user.user_id,
+                                      device_id: req.body.device_id || null,
+                                      device_token: req.body.device_token || null,
+                                      imei_no: req.body.imei_no || null,
+                                      model_name: req.body.model_name || null,
+                                      make_name: req.body.make_name || null,
+                                      last_logged_in: formattedDate,
+                                      created_date: formattedDate
+                                    };
+
+                                    db.query('INSERT INTO user_device_info SET ?', userDeviceMetaInsertData, async (err, results) => {
+                                      if (err) {
+                                        return res.json({
+                                          status: 'error',
+                                          data: {
+                                            user,
+                                            meta,
+                                            wp_user: wpuserResults[0].ID,
+                                            token: token,
+                                          },
+                                          message: err,
+                                          client_ip: clientIp,
+                                          user_agent: userAgent.toString(),
+                                        });
+                                      } else {
+                                        return res.json({
+                                          status: 'success',
+                                          data: {
+                                            user,
+                                            meta,
+                                            wp_user: wpuserResults[0].ID,
+                                            token: token,
+                                          },
+                                          message: 'Login successful',
+                                          client_ip: clientIp,
+                                          user_agent: userAgent.toString(),
+                                        });
+                                      }
+                                    })
+
+                                  }
+                                })
+
+                              });
+                            });
                           } else {
-                            return res.send(
-                              {
-                                status: 'err',
-                                data: '',
-                                message: 'Successfully registerd in node but not in wordpress site'
-                              }
-                            )
+                            //User Exist but already Registered from Web
+                            return res.status(500).json({
+                              status: 'error',
+                              message: 'You are already registered with this email, please login with your email and password',
+                              error: ''
+                            })
                           }
-                        } catch (error) {
-                          console.error('User login failed. Error:', error);
-                          if (error.response && error.response.data) {
-                            console.log('Error response data:', error.response.data);
-                          }
+
+
                         }
-                      })();
-                    })
-                    .catch((error) => {
-                      //console.error('User registration failed:', );
+                      } catch (error) {
+                        console.error('Error during user_exist_query:', error);
+                      }
+
+
+
+                    } else {
                       return res.send(
                         {
                           status: 'err',
                           data: '',
-                          message: 'Wordpress register issue: ' + error.response.data
+                          message: 'Successfully registerd in node but not in wordpress site'
                         }
                       )
-                    });
-      
-      
-              //return {first_name:userFullNameArray[0], last_name:userFullNameArray[1], user_id: newuserID, status: 0};
-              }catch(error){
-                  res.json(error);
-                  //console.error('Error during user_meta_insert_query:', error);
-              }
+                    }
+                  } catch (error) {
+                    console.error('User login failed. Error:', error);
+                    if (error.response && error.response.data) {
+                      console.log('Error response data:', error.response.data);
+                    }
+                  }
+                })();
+              })
+              .catch((error) => {
+                //console.error('User registration failed:', );
+                return res.send(
+                  {
+                    status: 'err',
+                    data: '',
+                    message: 'Wordpress register issue: ' + error.response.data
+                  }
+                )
+              });
+
+
+            //return {first_name:userFullNameArray[0], last_name:userFullNameArray[1], user_id: newuserID, status: 0};
+          } catch (error) {
+            res.json(error);
+            //console.error('Error during user_meta_insert_query:', error);
           }
-      }catch(error){
-          res.json(error);
-          //console.error('Error during user_insert_query:', error);
-      } 
-      
+        }
+      } catch (error) {
+        res.json(error);
+        //console.error('Error during user_insert_query:', error);
+      }
+
     }
-  }catch(error){
-      console.error('Error during user_exist_query:', error);
-  }  
+  } catch (error) {
+    console.error('Error during user_exist_query:', error);
+  }
 
 }
 
@@ -1807,7 +1814,7 @@ exports.changePassword = async (req, res) => {
 
   const { email, current_password, new_password } = req.body;
   try {
-    const query = `SELECT password FROM users WHERE email = '${email}'`;
+    const query = `SELECT password,register_from FROM users WHERE email = '${email}'`;
     db.query(query, async (err, result) => {
       if (err) {
         return res.send({
@@ -1818,33 +1825,41 @@ exports.changePassword = async (req, res) => {
 
         //addToInvalidTokenList(oldToken);
         if (result.length > 0) {
-          const userPassword = result[0].password;
-          const isPasswordMatch = await bcrypt.compare(current_password, userPassword);
+          const registerFrom = result[0].register_from;
+          if (registerFrom === 'web' || registerFrom === 'app') {
+            const userPassword = result[0].password;
+            const isPasswordMatch = await bcrypt.compare(current_password, userPassword);
 
-          if (isPasswordMatch) {
-            const hashedNewPassword = await bcrypt.hash(new_password, 8);
+            if (isPasswordMatch) {
+              const hashedNewPassword = await bcrypt.hash(new_password, 8);
 
-            const updateQuery = 'UPDATE users SET password = ? WHERE email = ?';
-            const data = [hashedNewPassword, email];
+              const updateQuery = 'UPDATE users SET password = ? WHERE email = ?';
+              const data = [hashedNewPassword, email];
 
-            db.query(updateQuery, data, (err, result) => {
-              if (err) {
-                return res.send({
-                  status: 'error',
-                  message: 'Something went wrong' + err,
-                });
-              } else {
-                return res.send({
-                  status: 'success',
-                  data: data,
-                  message: 'Password updated successfully',
-                });
-              }
-            });
+              db.query(updateQuery, data, (err, result) => {
+                if (err) {
+                  return res.send({
+                    status: 'error',
+                    message: 'Something went wrong' + err,
+                  });
+                } else {
+                  return res.send({
+                    status: 'success',
+                    //data: data,
+                    message: 'Password updated successfully',
+                  });
+                }
+              });
+            } else {
+              return res.send({
+                status: 'error',
+                message: 'Current password does not match',
+              });
+            }
           } else {
-            return res.send({
+            return res.json({
               status: 'error',
-              message: 'Current password does not match',
+              message: 'OTP cannot be sent. You are logged in through a social account.'
             });
           }
         } else {
@@ -2028,13 +2043,13 @@ function generateOTP(length) {
 exports.forgotPassword = (req, res) => {
   const { email } = req.body;
   const passphrase = process.env.ENCRYPT_DECRYPT_SECRET;
-  console.log('Passphrase:', passphrase);
+  //console.log('Passphrase:', passphrase);
   const otp = generateOTP(6);
   const expirationTimestamp = Date.now() + 5 * 60 * 1000; // 5 minutes validity
   const currentTime = new Date();
-  console.log(otp);
+  //console.log(otp);
 
-  const sql = `SELECT user_id, first_name FROM users WHERE email = '${email}' `;
+  const sql = `SELECT user_id, first_name,register_from FROM users WHERE email = '${email}' `;
 
   db.query(sql, (error, result) => {
     if (error) {
@@ -2044,70 +2059,82 @@ exports.forgotPassword = (req, res) => {
       });
     } else {
       if (result.length > 0) {
-        if (typeof passphrase !== 'string') {
-          console.error('Passphrase is not a string:', passphrase);
-          // Handle the error or set a default passphrase value if needed.
-        } else {
-          const userId = result[0].user_id;
+        const registerFrom = result[0].register_from;
+        //console.log("registerFrom",registerFrom);
+
+        if (registerFrom === 'web' || registerFrom === 'app') {
+
+          if (typeof passphrase !== 'string') {
+            console.error('Passphrase is not a string:', passphrase);
+            // Handle the error or set a default passphrase value if needed.
+          }
+          else {
+            const userId = result[0].user_id;
+            //console.log("userId", userId)
 
 
-
-          // Insert the OTP and expiration timestamp into the user_code_verify table
-          const insertOtpQuery = `
+            // Insert the OTP and expiration timestamp into the user_code_verify table
+            const insertOtpQuery = `
             INSERT INTO user_code_verify (user_id, phone, otp, email, created_at, otp_expiration)
             VALUES (?, ?, ?, ?, ?, ?)
           `;
 
-          db.query(
-            insertOtpQuery,
-            [userId, null, otp.otp, email, currentTime, new Date(otp.expirationTimestamp)],
-            (insertError) => {
-              if (insertError) {
-                console.error(insertError);
-                return res.status(500).json({
-                  status: 'error',
-                  message: 'Failed to store OTP in the database.',
-                });
-              }
-
-              const transporter = nodemailer.createTransport({
-                host: process.env.MAIL_HOST,
-                port: process.env.MAIL_PORT,
-                secure: false,
-                requireTLS: true,
-                auth: {
-                  user: process.env.MAIL_USER,
-                  pass: process.env.MAIL_PASSWORD,
-                },
-              });
-
-              var mailOptions = {
-                from: process.env.MAIL_USER,
-                to: email,
-                subject: 'Forgot password Email',
-                text: `Your OTP for forgot password is: ${otp.otp}. Please use it within 5 minutes.`,
-              };
-
-              transporter.sendMail(mailOptions, function (err, info) {
-                if (err) {
-                  console.log(err);
-                  return res.json({
-                    status: 'not ok',
-                    message: 'Something went wrong',
-                    err,
-                  });
-                } else {
-                  console.log('Mail Send: ', info.response);
-                  return res.json({
-                    status: 'ok',
-                    data: '',
-                    message:
-                      'Password reset OTP sent to your email. Please check your email.',
+            db.query(
+              insertOtpQuery,
+              [userId, null, otp.otp, email, currentTime, new Date(otp.expirationTimestamp)],
+              (insertError) => {
+                if (insertError) {
+                  console.error(insertError);
+                  return res.status(500).json({
+                    status: 'error',
+                    message: 'Failed to store OTP in the database.',
                   });
                 }
-              });
-            }
-          );
+
+                const transporter = nodemailer.createTransport({
+                  host: process.env.MAIL_HOST,
+                  port: process.env.MAIL_PORT,
+                  secure: false,
+                  requireTLS: true,
+                  auth: {
+                    user: process.env.MAIL_USER,
+                    pass: process.env.MAIL_PASSWORD,
+                  },
+                });
+
+                var mailOptions = {
+                  from: process.env.MAIL_USER,
+                  to: email,
+                  subject: 'Forgot password Email',
+                  text: `Your OTP for forgot password is: ${otp.otp}. Please use it within 5 minutes.`,
+                };
+
+                transporter.sendMail(mailOptions, function (err, info) {
+                  if (err) {
+                    console.log(err);
+                    return res.json({
+                      status: 'not ok',
+                      message: 'Something went wrong',
+                      err,
+                    });
+                  } else {
+                    console.log('Mail Send: ', info.response);
+                    return res.json({
+                      status: 'ok',
+                      data: '',
+                      message:
+                        'Password reset OTP sent to your email. Please check your email.',
+                    });
+                  }
+                });
+              }
+            );
+          }
+        } else {
+          return res.json({
+            status: 'error',
+            message: 'OTP cannot be sent. You are logged in through a social account.'
+          });
         }
       } else {
         return res.json({
@@ -2119,103 +2146,6 @@ exports.forgotPassword = (req, res) => {
     }
   });
 };
-
-// exports.forgotPassword = (req, res) => {
-//   const { email } = req.body;
-//   const passphrase = process.env.ENCRYPT_DECRYPT_SECRET;
-//   console.log('Passphrase:', passphrase);
-//   const otp = generateOTP(6);
-//   //const expirationTimestamp = Date.now() + 1 * 60 * 1000; // 5 minutes validity
-//   const currentTime = new Date();
-//   console.log(otp);
-
-//   const sql = `SELECT user_id, first_name FROM users WHERE email = '${email}' `;
-
-//   db.query(sql, (error, result) => {
-//     if (error) {
-//       return res.status(500).json({
-//         status: 'error',
-//         message: 'An error occurred while processing your request.',
-//       });
-//     } else {
-//       if (result.length > 0) {
-//         if (typeof passphrase !== 'string') {
-//           console.error('Passphrase is not a string:', passphrase);
-//           // Handle the error or set a default passphrase value if needed.
-//         } else {
-//           const userId = result[0].user_id;
-
-
-
-//           // Insert the OTP and expiration timestamp into the user_code_verify table
-
-//           const insertOtpQuery = `
-//           INSERT INTO user_code_verify (user_id, phone, otp, email, created_at, otp_expiration, used)
-//           VALUES (?, ?, ?, ?, ?, ?, ?) 
-//         `;
-//         const usedValue = false;
-//         db.query(
-//           insertOtpQuery,
-//           [userId, null, otp.otp, email, currentTime, new Date(otp.expirationTimestamp), usedValue],
-//           (insertError) => {
-//             if (insertError) {
-//               console.error(insertError);
-//               return res.status(500).json({
-//                 status: 'error',
-//                 message: 'Failed to store OTP in the database.',
-//               })
-//             }
-
-//               const transporter = nodemailer.createTransport({
-//                 host: process.env.MAIL_HOST,
-//                 port: process.env.MAIL_PORT,
-//                 secure: false,
-//                 requireTLS: true,
-//                 auth: {
-//                   user: process.env.MAIL_USER,
-//                   pass: process.env.MAIL_PASSWORD,
-//                 },
-//               });
-
-//               var mailOptions = {
-//                 from: process.env.MAIL_USER,
-//                 to: email,
-//                 subject: 'Forgot password Email',
-//                 text: `Your OTP for forgot password is: ${otp.otp}. Please use it within 5 minutes.`,
-//               };
-
-//               transporter.sendMail(mailOptions, function (err, info) {
-//                 if (err) {
-//                   console.log(err);
-//                   return res.json({
-//                     status: 'not ok',
-//                     message: 'Something went wrong',
-//                     err,
-//                   });
-//                 } else {
-//                   console.log('Mail Send: ', info.response);
-//                   return res.json({
-//                     status: 'ok',
-//                     data: '',
-//                     message:
-//                       'Password reset OTP sent to your email. Please check your email.',
-//                   });
-//                 }
-//               });
-//             }
-//           );
-//         }
-//       } else {
-//         return res.json({
-//           status: 'not found',
-//           data: '',
-//           message: 'Your Email did not match with our record',
-//         });
-//       }
-//     }
-//   });
-// };
-
 
 
 //actual
@@ -2229,19 +2159,6 @@ exports.resetPassword = async (req, res) => {
     });
   }
 
-  const currentTimestamp = Date.now();
-  const currentDate = new Date(currentTimestamp);
-
-  const year = currentDate.getFullYear();
-  const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-  const day = String(currentDate.getDate()).padStart(2, '0');
-  const hours = String(currentDate.getHours()).padStart(2, '0');
-  const minutes = String(currentDate.getMinutes()).padStart(2, '0');
-  const seconds = String(currentDate.getSeconds()).padStart(2, '0');
-
-  const formattedDateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-
-  console.log(formattedDateTime);
 
   // Retrieve stored OTP and its expiration timestamp
   const selectOtpQuery = `
@@ -2260,28 +2177,32 @@ exports.resetPassword = async (req, res) => {
 
     if (result.length > 0) {
       const { user_id, otp: storedOTP, otp_expiration, email } = result[0];
-      console.log('OTP Expiration Time:', otp_expiration);
+      //console.log('OTP Expiration Time:', otp_expiration);
 
-      if (formattedDateTime > otp_expiration) {
+
+      const currentTimestamp = Date.now();
+      //console.log("currentTimestamp", currentTimestamp);
+
+      const expirationTimestamp = new Date(otp_expiration).getTime();
+      //console.log("expirationTimestamp", expirationTimestamp)
+
+      if (currentTimestamp > expirationTimestamp) {
         console.log('OTP Expired');
-
-        // Set the OTP column to null when the OTP has expired
-
-        db.query(updateOtpQuery, [otp], (updateError) => {
-          if (updateError) {
-            console.error(updateError);
+        const deleteOtpQuery = `
+        DELETE FROM user_code_verify
+        WHERE otp = ?
+      `;
+        db.query(deleteOtpQuery, [otp], (deleteError) => {
+          if (deleteError) {
+            console.error(deleteError);
           }
         });
-
-        // Return an error message when the OTP has expired
-        return res.status(400).json({ message: 'OTP expired' });
+        return res.status(400).json({ message: 'OTP has expired' });
       }
 
       if (otp === storedOTP) {
-        // Hash the new password here (you may use a library like bcrypt)
         const hashedPassword = bcrypt.hashSync(newPassword, 8);
 
-        // OTP is valid, reset the user's password
         const updatePasswordQuery = `
           UPDATE users
           SET password = ?
@@ -2297,33 +2218,22 @@ exports.resetPassword = async (req, res) => {
               message: 'Failed to reset the password.',
             });
           }
-          const deleteOtpQuery = `
-            DELETE FROM user_code_verify
-            WHERE otp = ?
-          `;
-
-          db.query(deleteOtpQuery, [otp], (deleteError) => {
-            if (deleteError) {
-              console.error(deleteError);
-            }
-
-            return res.json({
-              status: 'ok',
-              message: 'Password reset successfully'
-            });
+          return res.json({
+            status: 'ok',
+            message: 'Password reset successfully'
           });
         })
       } else {
-        // OTP is invalid
         console.log('Invalid OTP');
         return res.status(400).json({ message: 'Invalid OTP' });
       }
     } else {
-      console.log('OTP Not Found or Expired');
+      //console.log('OTP Not Found or Expired');
       return res.status(400).json({ message: 'Invalid OTP' });
     }
-  })
+  });
 }
+
 
 //renew token
 // const renewToken = (userId) => {
@@ -2485,20 +2395,20 @@ exports.submitReviewReply = async (req, res) => {
     }
     const currentTimestamp = Date.now();
     const currentDate = new Date();
-  
+
     const year = currentDate.getFullYear();
     const month = String(currentDate.getMonth() + 1).padStart(2, '0');
     const day = String(currentDate.getDate()).padStart(2, '0');
     const hours = String(currentDate.getHours()).padStart(2, '0');
     const minutes = String(currentDate.getMinutes()).padStart(2, '0');
     const seconds = String(currentDate.getSeconds()).padStart(2, '0');
-  
+
     const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-  
+
     // console.log(formattedDateTime);
     // const currentDate = new Date();
     //const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
-    console.log("aaa",formattedDate);
+    console.log("aaa", formattedDate);
     const replyData = {
       review_id: review_id,
       company_id: company_id,
@@ -3131,12 +3041,12 @@ exports.submitSurvey = async (req, res) => {
             message: 'An error occurred while processing your request' + err,
           });
         } else {
-          if(results.length>0){
+          if (results.length > 0) {
             return res.status(500).json({
               status: 'error',
               message: 'You have already submitted this survey form',
             });
-          }else{
+          } else {
             const authenticatedUserId = parseInt(req.user.user_id);
             console.log('authenticatedUserId: ', authenticatedUserId);
             const ApiuserId = parseInt(req.body.user_id);
@@ -3148,20 +3058,20 @@ exports.submitSurvey = async (req, res) => {
             }
             console.log('req.body.user_id: ', parseInt(req.body.user_id));
             console.log('Survey', req.body);
-        
+
             if (ApiuserId !== authenticatedUserId) {
               return res.status(403).json({
                 status: 'error',
                 message: 'Access denied: You are not authorized to update this user.',
               });
             }
-        
+
             const currentDate = new Date();
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth() + 1; // Months are zero-based (0 = January, 11 = December), so add 1
             const day = currentDate.getDate();
             const formattedDate = `${year}-${month < 10 ? '0' : ''}${month}-${day < 10 ? '0' : ''}${day}`;
-            
+
             const surveyAnswerInsertData = [
               req.body.company_id,
               req.body.survey_unique_id,
@@ -3170,7 +3080,7 @@ exports.submitSurvey = async (req, res) => {
               formattedDate
             ];
             const sql = "INSERT INTO survey_customer_answers (company_id, survey_unique_id, customer_id, answer, created_at) VALUES (?, ?, ?, ?, ?)";
-        
+
             db.query(sql, surveyAnswerInsertData, async (err, result) => {
               if (err) {
                 return res.send({
@@ -3496,9 +3406,9 @@ exports.userPoll = async (req, res) => {
       if (results.length > 0) {
         const userSelectedAnswerId = results[0].answer_id;
 
-       
-  // If the user has voted, query for vote counts for all answers
-  const queryVoteCountsForAllAnswers = `
+
+        // If the user has voted, query for vote counts for all answers
+        const queryVoteCountsForAllAnswers = `
   SELECT
   pa.id AS answer_id,
   pa.answer AS answer_text,
@@ -3509,14 +3419,14 @@ WHERE pa.poll_id = ?
 GROUP BY pa.id, pa.answer;
   `;
 
-  db.query(queryVoteCountsForAllAnswers, [poll_id, poll_id], (err, voteCounts) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({
-        status: 'error',
-        message: 'An error occurred while fetching vote counts for other answers.',
-      });
-    }
+        db.query(queryVoteCountsForAllAnswers, [poll_id, poll_id], (err, voteCounts) => {
+          if (err) {
+            console.error(err);
+            return res.status(500).json({
+              status: 'error',
+              message: 'An error occurred while fetching vote counts for other answers.',
+            });
+          }
 
           const pollData = {
             poll_id: results[0].poll_id,
@@ -3529,7 +3439,7 @@ GROUP BY pa.id, pa.answer;
             //   submittedVotes: result.vote_count,
             //   userSelected: result.answer_id !== null,
             // })),
-            data: [], 
+            data: [],
             Answers: voteCounts.map((voteCount) => ({
               id: voteCount.answer_id,
               answer: voteCount.answer_text,
@@ -3643,10 +3553,10 @@ exports.createDiscussion = async (req, res) => {
   // !topicData
 
   const sql = `INSERT INTO discussions (user_id, topic, tags, created_at, expired_at) VALUES (?, ?, ?, ?, ?)`;
-  const data = [user_id, topic, JSON.stringify(tagsArray), formattedDate, expiration_date]; 
+  const data = [user_id, topic, JSON.stringify(tagsArray), formattedDate, expiration_date];
 
   db.query(sql, data, (err, result) => {
-    // console.log("tags",data);
+    console.log("tags", data);
     if (err) {
       return res.send({
         status: 'not ok',
@@ -3655,11 +3565,11 @@ exports.createDiscussion = async (req, res) => {
     } else {
       return res.send({
         status: 'ok',
-        data:data,
+        data: data,
         message: 'Your Discussion Topic Added Successfully',
       });
     }
-    
+
   });
 }
 
@@ -3669,7 +3579,7 @@ exports.createDiscussion = async (req, res) => {
 //Add comment on discussion
 exports.addDiscussionComment = async (req, res) => {
   //console.log('addDiscussionComment',req.body ); 
-  const {discussion_id,  comment} = req.body;
+  const { discussion_id, comment } = req.body;
 
   const authenticatedUserId = parseInt(req.user.user_id);
   //console.log('authenticatedUserId: ', authenticatedUserId);
@@ -3697,29 +3607,29 @@ exports.addDiscussionComment = async (req, res) => {
   //const clientIp = req.clientIp;
 
   const Insertdata = {
-      discussion_id : discussion_id,
-      comment:comment,
-      user_id:user_id,
-      ip_address: requestIp.getClientIp(req),
-      //ip_address : clientIp,
-      created_at: formattedDate,
-    };
+    discussion_id: discussion_id,
+    comment: comment,
+    user_id: user_id,
+    ip_address: requestIp.getClientIp(req),
+    //ip_address : clientIp,
+    created_at: formattedDate,
+  };
   const insertQuery = 'INSERT INTO discussions_user_response SET ?';
-  db.query(insertQuery, Insertdata, (insertErr, insertResult)=>{
-      if (insertErr) {
-          return res.send({
-              status: 'not ok',
-              message: 'Something went wrong 3'+insertErr
-          });
-      } else {
-          return res.send({
-              status: 'ok',
-              Insertdata:Insertdata,
-              message: 'Your Comment Added Successfully'
-          });
-      }
+  db.query(insertQuery, Insertdata, (insertErr, insertResult) => {
+    if (insertErr) {
+      return res.send({
+        status: 'not ok',
+        message: 'Something went wrong 3' + insertErr
+      });
+    } else {
+      return res.send({
+        status: 'ok',
+        Insertdata: Insertdata,
+        message: 'Your Comment Added Successfully'
+      });
+    }
   })
-  
+
 }
 
 // --search Premium Company --//
@@ -3787,27 +3697,27 @@ exports.complaintCategorySubcategory = async (req, res) => {
       // Group data by parent category
       const groupedData = {};
       get_company_results.forEach(row => {
-          if (!groupedData[row.parent_id]) {
-              groupedData[row.parent_id] = {
-                  id: row.parent_id,
-                  name: row.parent_name,
-                  subCategories: [],
-              };
-          }
+        if (!groupedData[row.parent_id]) {
+          groupedData[row.parent_id] = {
+            id: row.parent_id,
+            name: row.parent_name,
+            subCategories: [],
+          };
+        }
 
-          if (row.sub_category_id) {
-              groupedData[row.parent_id].subCategories.push({
-                  id: row.sub_category_id,
-                  name: row.sub_category_name,
-              });
-          }
+        if (row.sub_category_id) {
+          groupedData[row.parent_id].subCategories.push({
+            id: row.sub_category_id,
+            name: row.sub_category_name,
+          });
+        }
       });
 
       // Organize data into the desired structure
       for (const key in groupedData) {
-          if (groupedData.hasOwnProperty(key)) {
-              companies.push(groupedData[key]);
-          }
+        if (groupedData.hasOwnProperty(key)) {
+          companies.push(groupedData[key]);
+        }
       }
 
       //console.log(companies);
@@ -3833,7 +3743,7 @@ exports.complaintCategorySubcategory = async (req, res) => {
 // --Complaint listing by customer id --//
 exports.complainListing = async (req, res) => {
 
-  const userId = req.params.userId; 
+  const userId = req.params.userId;
   const authenticatedUserId = parseInt(req.user.user_id);
   const ApiuserId = parseInt(req.params.userId);
 
@@ -3850,29 +3760,29 @@ exports.complainListing = async (req, res) => {
     });
   }
   //console.log(req.body);
-  const [ getAllComplaintsByUserId] = await Promise.all([
+  const [getAllComplaintsByUserId] = await Promise.all([
     comFunction2.getAllComplaintsByUserId(userId),
   ]);
 
   const formattedCoplaintData = getAllComplaintsByUserId.map(item => {
-      let responsesArray = [];
-      let comp_query = [];
-      let cus_response = [];
-      if (item.notification_statuses != null) {
-          responsesArray = item.notification_statuses.split(',');
-      }
-      if (item.company_query != null) {
-          comp_query = item.company_query.split(',');
-      }
-      if (item.user_response != null) {
-          cus_response = item.user_response.split(',');
-      }
-      return {
-        ...item,
-        notification_statuses: responsesArray,
-        company_query : comp_query,
-        customer_response:cus_response
-      };
+    let responsesArray = [];
+    let comp_query = [];
+    let cus_response = [];
+    if (item.notification_statuses != null) {
+      responsesArray = item.notification_statuses.split(',');
+    }
+    if (item.company_query != null) {
+      comp_query = item.company_query.split(',');
+    }
+    if (item.user_response != null) {
+      cus_response = item.user_response.split(',');
+    }
+    return {
+      ...item,
+      notification_statuses: responsesArray,
+      company_query: comp_query,
+      customer_response: cus_response
+    };
   });
 
   try {
@@ -3912,11 +3822,11 @@ exports.complainDetails = async (req, res) => {
       message: 'Access denied: You are not authorized to update this user.',
     });
   }
-  const complaintId = req.params.complaintId; 
-  const [ getComplaintsByComplaintId, updateUserNotificationStatus] = await Promise.all([
+  const complaintId = req.params.complaintId;
+  const [getComplaintsByComplaintId, updateUserNotificationStatus] = await Promise.all([
     comFunction2.getAllComplaintsByComplaintId(complaintId),
     comFunction2.updateUserNotificationStatus(complaintId),
-]);
+  ]);
 
   try {
     if (getComplaintsByComplaintId.length > 0) {
@@ -3956,45 +3866,45 @@ exports.userComplaintResponse = async (req, res) => {
       message: 'Access denied: You are not authorized to update this user.',
     });
   }
-  const {company_id, user_id, complaint_id, message, complaint_level, complaint_status } = req.body;
-  
+  const { company_id, user_id, complaint_id, message, complaint_level, complaint_status } = req.body;
+
   const currentDate = new Date();
   const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
 
-  
+
   if (complaint_status == '0') {
-      const [updateComplaintStatus, complaintCompanyResolvedEmail] = await Promise.all([
-          comFunction2.updateComplaintStatus(complaint_id, '0'),
-           comFunction2.complaintUserReopenEmail(complaint_id)
-      ]);
+    const [updateComplaintStatus, complaintCompanyResolvedEmail] = await Promise.all([
+      comFunction2.updateComplaintStatus(complaint_id, '0'),
+      comFunction2.complaintUserReopenEmail(complaint_id)
+    ]);
   } else {
-      await comFunction2.complaintUserResponseEmail(complaint_id);
+    await comFunction2.complaintUserResponseEmail(complaint_id);
   }
 
   const data = {
-      user_id:user_id,
-      company_id:company_id,
-      complaint_id :complaint_id,
-      query:'',
-      response : message,
-      created_at:formattedDate,
-      level_id:complaint_level,
-      notification_status:'0',
-      resolve_status:complaint_status
+    user_id: user_id,
+    company_id: company_id,
+    complaint_id: complaint_id,
+    query: '',
+    response: message,
+    created_at: formattedDate,
+    level_id: complaint_level,
+    notification_status: '0',
+    resolve_status: complaint_status
   }
-   const Query = `INSERT INTO complaint_query_response SET ?  `;
-  db.query(Query, data, (err, result)=>{
-      if (err) {
-          return res.send({
-              status: 'not ok',
-              message: 'Something went wrong  '+err
-          });
-      } else {
-          return res.send({
-              status: 'ok',
-              message: 'Complaint response send successfully !'
-          });
-      }
+  const Query = `INSERT INTO complaint_query_response SET ?  `;
+  db.query(Query, data, (err, result) => {
+    if (err) {
+      return res.send({
+        status: 'not ok',
+        message: 'Something went wrong  ' + err
+      });
+    } else {
+      return res.send({
+        status: 'ok',
+        message: 'Complaint response send successfully !'
+      });
+    }
   })
 }
 
@@ -4018,116 +3928,116 @@ exports.userComplaintRating = async (req, res) => {
     });
   }
   const { user_id, complaint_id, rating } = req.body;
-  
+
   const data = {
-      user_id:user_id,
-      complaint_id:complaint_id,
-      rating:rating,
+    user_id: user_id,
+    complaint_id: complaint_id,
+    rating: rating,
   }
   const checkQuery = `SELECT id FROM complaint_rating WHERE complaint_id = '${complaint_id}' AND user_id = '${user_id}' `;
-  db.query(checkQuery, (checkErr, checkResult)=>{
-      if(checkErr){
+  db.query(checkQuery, (checkErr, checkResult) => {
+    if (checkErr) {
+      return res.send({
+        status: 'not ok',
+        message: 'Something went wrong  ' + checkErr
+      });
+    }
+    if (checkResult.length > 0) {
+      const updateQuery = `UPDATE complaint_rating SET rating='${rating}' WHERE complaint_id = '${complaint_id}' AND user_id = '${user_id}' `;
+      db.query(updateQuery, (updateErr, updateResult) => {
+        if (updateErr) {
           return res.send({
-              status: 'not ok',
-              message: 'Something went wrong  '+checkErr
+            status: 'not ok',
+            message: 'Something went wrong  ' + updateErr
           });
-      }
-      if (checkResult.length > 0) {
-          const updateQuery = `UPDATE complaint_rating SET rating='${rating}' WHERE complaint_id = '${complaint_id}' AND user_id = '${user_id}' `;
-          db.query(updateQuery, (updateErr, updateResult)=>{
-              if (updateErr) {
-                  return res.send({
-                      status: 'not ok',
-                      message: 'Something went wrong  '+updateErr
-                  });
-              } else {
-                  return res.send({
-                      status: 'ok',
-                      message: 'Complaint rating updated successfully !'
-                  });
-              }
-          })
-      } else {
-          const Query = `INSERT INTO complaint_rating SET ?  `;
-          db.query(Query, data, (err, result)=>{
-              if (err) {
-                  return res.send({
-                      status: 'not ok',
-                      message: 'Something went wrong  '+err
-                  });
-              } else {
-                  return res.send({
-                      status: 'ok',
-                      message: 'Complaint rating submitted successfully !'
-                  });
-              }
-          })
-      }
+        } else {
+          return res.send({
+            status: 'ok',
+            message: 'Complaint rating updated successfully !'
+          });
+        }
+      })
+    } else {
+      const Query = `INSERT INTO complaint_rating SET ?  `;
+      db.query(Query, data, (err, result) => {
+        if (err) {
+          return res.send({
+            status: 'not ok',
+            message: 'Something went wrong  ' + err
+          });
+        } else {
+          return res.send({
+            status: 'ok',
+            message: 'Complaint rating submitted successfully !'
+          });
+        }
+      })
+    }
   })
-  
+
 }
 
 //Complaint Register
-exports.complaintRegister =  (req, res) => {
+exports.complaintRegister = (req, res) => {
   //console.log('complaintRegister',req.body ); 
   const authenticatedUserId = parseInt(req.user.user_id);
   const ApiuserId = parseInt(req.body.user_id);
   if (isNaN(ApiuserId)) {
-      return res.status(400).json({
-        status: 'error',
-        message: 'Invalid user_id provided in the request body.',
-      });
-    }
+    return res.status(400).json({
+      status: 'error',
+      message: 'Invalid user_id provided in the request body.',
+    });
+  }
   if (ApiuserId !== authenticatedUserId) {
-  return res.status(403).json({
+    return res.status(403).json({
       status: 'error',
       message: 'Access denied: You are not authorized to update this user.',
-  });
+    });
   }
 
-  const {company_id, user_id, category_id, sub_category_id, model_no, allTags, transaction_date, location, message } = req.body;
+  const { company_id, user_id, category_id, sub_category_id, model_no, allTags, transaction_date, location, message } = req.body;
   //return false;
   //const uuid = uuidv4();  
-  const randomNo = Math.floor(Math.random() * (100 - 0 + 1)) + 0 ;
+  const randomNo = Math.floor(Math.random() * (100 - 0 + 1)) + 0;
   const ticket_no = randomNo + currentDate.getTime();
   const currentDate = new Date();
   const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
   const data = {
-      user_id:user_id,
-      company_id:company_id,
-      ticket_id:ticket_no,
-      category_id:category_id,
-      sub_cat_id : sub_category_id && sub_category_id !== undefined  ? sub_category_id : 0,
-      model_desc:model_no,
-      purchase_date:transaction_date,
-      purchase_place:location,
-      message:message,
-      tags:JSON.stringify(allTags),
-      level_id:'1',
-      status:'2',
-      created_at:formattedDate,
-      level_update_at:formattedDate
+    user_id: user_id,
+    company_id: company_id,
+    ticket_id: ticket_no,
+    category_id: category_id,
+    sub_cat_id: sub_category_id && sub_category_id !== undefined ? sub_category_id : 0,
+    model_desc: model_no,
+    purchase_date: transaction_date,
+    purchase_place: location,
+    message: message,
+    tags: JSON.stringify(allTags),
+    level_id: '1',
+    status: '2',
+    created_at: formattedDate,
+    level_update_at: formattedDate
   }
 
-  
- // console.log(complaintEmailToCompany);
+
+  // console.log(complaintEmailToCompany);
   const Query = `INSERT INTO complaint SET ?  `;
-  db.query(Query, data, async (err, result)=>{
-      if (err) {
-          return res.send({
-              status: 'not ok',
-              message: 'Something went wrong  '+err
-          });
-      } else {
-          console.log(company_id[0],user_id[0], uuid, result.insertId)
-          const [complaintEmailToCompany,complaintSuccessEmailToUser] = await Promise.all([
-              comFunction2.complaintEmailToCompany(company_id[0], ticket_no, result.insertId),
-              comFunction2.complaintSuccessEmailToUser(user_id[0], ticket_no, result.insertId)
-          ]);
-          return res.send({
-              status: 'ok',
-              message: 'Complaint Registered  successfully !'
-          });
-      }
+  db.query(Query, data, async (err, result) => {
+    if (err) {
+      return res.send({
+        status: 'not ok',
+        message: 'Something went wrong  ' + err
+      });
+    } else {
+      console.log(company_id[0], user_id[0], uuid, result.insertId)
+      const [complaintEmailToCompany, complaintSuccessEmailToUser] = await Promise.all([
+        comFunction2.complaintEmailToCompany(company_id[0], ticket_no, result.insertId),
+        comFunction2.complaintSuccessEmailToUser(user_id[0], ticket_no, result.insertId)
+      ]);
+      return res.send({
+        status: 'ok',
+        message: 'Complaint Registered  successfully !'
+      });
+    }
   })
 }
