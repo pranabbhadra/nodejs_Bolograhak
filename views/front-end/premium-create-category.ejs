@@ -82,24 +82,25 @@
                                                 <div class="custom-form">
                                                     <label class="form-label"><span>Image<sup style="color: red;">*</sup></span></label>
                                                     
-                                                    <input class="form-control upload_in_repeter product_image" type="file" name="product_image" required>
+                                                    <input class="form-control upload_in_repeter product_image" id="upload-company-coverimage" type="file" name="product_image" required>
                                                 </div>
                                                 </div>
                                                 <div class="col-sm-2">
                                                     <div class="display_image_box" style="margin-bottom: 30px;">
-                                                            <img class="promotion_image_review" src="/front-end/images/no-image.png" alt="">
+                                                            <img class="promotion_image_review" id="company_cover_image_preview" src="/front-end/images/no-image.png" alt="">
                                                     </div>
                                                 </div>
-                                                <div class="d-flex gap-2 mb-3">
-                                                    <div class="text-right">
+                                                <div class="d-flex gap-2">
+                                                    <div class="text-right mt-3">
                                                         <button data-id="null" company-id = "<%= company.ID %>" data-type="product" type="button" class="btn btn-danger delete_item">Remove</button>
-                                                    </div>
-                                                    <div class="add_more_btn">
-                                                        <button type="button" class="btn btn-primary add_more_product">Add Product</button>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
+                                        
+                                    </div>
+                                    <div class="add_more_btn">
+                                        <button type="button" class="btn btn-primary add_more_product">Add Product</button>
                                     </div>
                                     
                                 </div>
@@ -349,10 +350,30 @@
 
         $('.add_more_product').click(function(e){
             $(this).parents('.add_products').find('.all_repeter').append('<div class=each_repeter><div class="align-items-center row"><div class=col-12><div class=mb-3><label class=form-label>Title<sup style="color: red;">*</sup></label> <input class=form-control placeholder="" name="product_title" required></div></div><div class=col-12><div class=mb-3><label class=form-label>Description</label> <textarea class=form-control placeholder="" name="product_desc" rows=3></textarea></div></div><div class=col-sm-10><label class=form-label>Image<sup style="color: red;">*</sup></label> <input class="form-control upload_in_repeter product_image"type=file name="product_image" required ></div><div class=col-sm-2><div class=display_image_box><img alt=""class=promotion_image_review src=/front-end/images/no-image.png></div></div><div class=col-12><div class=text-right><button data-id="null" class="btn btn-danger delete_item"type=button>Remove</button></div></div></div></div>');
+            
+        });
+
+        $('body').on('change','.upload_in_repeter',function (event) {
+            var tmppath = URL.createObjectURL(event.target.files[0]);
+            $(this).parents('.each_repeter').find('.promotion_image_review').attr('src',tmppath);
         });
             
         $('body').on('click','.delete_item',function(){
             $(this).parents('.each_repeter').remove();
         })
+
+
+        $('#upload-company-coverimage').change(function () {
+                const file = this.files[0];
+                console.log(file);
+                if (file) {
+                    let reader = new FileReader();
+                    reader.onload = function (event) {
+                        console.log(event.target.result);
+                        $('#company_cover_image_preview').attr('src', event.target.result);
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
     });
 </script>
