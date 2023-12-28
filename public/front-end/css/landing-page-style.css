@@ -451,6 +451,10 @@ span#selected-range-emojis {
     margin-top: 3px;
 }
 
+.review-right .review-submit {
+    gap: 20px;
+}
+
 /*=============== Review Content End ==============*/
 
 /*=============== About Start ==============*/
