@@ -9,7 +9,7 @@
             <%- include('common/premium-company-sidebar') -%>
          </div>
         <div class="send-review-invitation product_div">
-            <h2 class="inner-main-head">Products</h2>
+            <h2 class="inner-main-head">Category: <%= CompanyCategoryProducts[0].category_name %></h2>
 
             <a href="/" class="btn btn-primary" id="add_product" >Add more product</a><br>
 
@@ -43,6 +43,7 @@
             
         </div>
         <div class="d-none send-review-invitation" id="add-product-div">
+            <h2 class="inner-main-head">Category: <%= CompanyCategoryProducts[0].category_name %></h2>
             <form id="create_category_form" enctype="multipart/form-data">
                 <div class="each_box add_products">
                     <div class="repeter_wrap">

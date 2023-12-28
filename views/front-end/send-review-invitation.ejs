@@ -8,8 +8,19 @@
         <div class="main_box">
             <%- include('common/premium-company-sidebar') -%>
          </div>
+         <% if(company && company.membership_type_id==2 ){ %>
+            <% var email_limite = 100; %>
+         <% }else if( company && company.membership_type_id==3 ){ %>
+            <% var email_limite = 1000; %>
+         <% }else if( company && company.membership_type_id==4 ){ %>
+            <% var email_limite = 10000; %>
+         <% }else if( company && company.membership_type_id==5 ){ %>
+            <% var email_limite = 1000000000; %>
+         <% }else{ %>
+            <% var email_limite = 0; %>
+         <% } %>
         <div class="send-review-invitation">
-         <% if( companyReviewInvitationNumbers && companyReviewInvitationNumbers.thismonth_invitation == 1 ){ %>
+         <% if( companyReviewInvitationNumbers && companyReviewInvitationNumbers.thismonth_invitation_count >= email_limite ){ %>
          <% }else{ %>
          <div style="margin: 10px; display: flex; justify-content: flex-end">
             <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@fat">Bulk Upload</button>
@@ -18,23 +29,23 @@
             <h4>Send Review Invitation: 
                <% if(company && company.membership_type_id==2 ){ %>
                   <% var email_limite = 100; %>
-                  <span style="font-size: 16px; vertical-align: middle;">(Allow upto <%- email_limite %>)</span>
+                  <span style="font-size: 16px; vertical-align: middle;">(Allow upto <%- email_limite  - companyReviewInvitationNumbers.thismonth_invitation_count %> of <%- email_limite %>)</span>
                <% }else if( company && company.membership_type_id==3 ){ %>
                   <% var email_limite = 1000; %>
-                  <span style="font-size: 16px; vertical-align: middle;">(Allow upto <%- email_limite %>)</span>
+                  <span style="font-size: 16px; vertical-align: middle;">(Allow upto <%- email_limite - companyReviewInvitationNumbers.thismonth_invitation_count %> of <%- email_limite %> )</span>
                <% }else if( company && company.membership_type_id==4 ){ %>
                   <% var email_limite = 10000; %>
-                  <span style="font-size: 16px; vertical-align: middle;">(Allow upto <%- email_limite %>)</span>
+                  <span style="font-size: 16px; vertical-align: middle;">(Allow upto <%- email_limite - companyReviewInvitationNumbers.thismonth_invitation_count %> of <%- email_limite %>)</span>
                <% }else if( company && company.membership_type_id==5 ){ %>
                   <% var email_limite = 1000000000; %>
                <% }else{ %>
                   <% var email_limite = 0; %>
                <% } %>
             </h4>
-            <% if( companyReviewInvitationNumbers && companyReviewInvitationNumbers.thismonth_invitation == 1 ){ %>
+            <% if( companyReviewInvitationNumbers && companyReviewInvitationNumbers.thismonth_invitation_count >= email_limite ){ %>
                <% const dateString = companyReviewInvitationNumbers.thismonth_invitation_data[0].share_date; %>
                <% const date = new Date(dateString); %>
-               You have already send invitation on <%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %>. You cannot send the invitation before 30 days.
+               You have already sent invitation on <%= date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) %>. You cannot send the invitation before 30 days.
             <% }else{ %>
             <form id="form_review_invitation">
                <input type="hidden" name="company_id" id="company_id" value="<%= company.ID  %>" />
@@ -46,10 +57,10 @@
                </div>
                <div class="custom-form">
                   <label><span>Message</span></label>
-<textarea name="email_body" id="email_body" class="form-control mb-4">
-Hello Dear,
-<%= company.company_name  %> cordially invite you to provide your valuable opinion regarding our company, through the platform of BoloGrahak. 
-</textarea>
+                  <textarea name="email_body" id="email_body" class="form-control mb-4">
+                  Hello Dear,
+                  <%= company.company_name  %> cordially invite you to provide your valuable opinion regarding our company, through the platform of BoloGrahak. 
+                  </textarea>
                </div>
                <!-- <div class="bulk-upload mb-4">
                   <label for="">Bulk Upload</label>
@@ -91,9 +102,9 @@ Hello Dear,
             </div>
             <div class="custom-form">
                <label><span>Message</span></label>
-<textarea name="email_body" id="email_body" class="form-control mb-4">Hello Dear,
-<%= company.company_name  %> cordially invite you to provide your valuable opinion regarding our company, through the platform of BoloGrahak. 
-</textarea>
+               <textarea name="email_body" id="email_body" class="form-control mb-4">Hello Dear,
+               <%= company.company_name  %> cordially invite you to provide your valuable opinion regarding our company, through the platform of BoloGrahak. 
+               </textarea>
             </div>
          </div>
          <div class="modal-footer">
@@ -253,7 +264,7 @@ $(document).ready(function () {
    });
 
 /*=========================== Send Review request tags start =================*/
-const maxEmails = <% if(email_limite){ %><%- email_limite %><% }else{ %>1000000000<% } %>; // Set the maximum number of tags allowed
+const maxEmails = <% if(email_limite >= companyReviewInvitationNumbers.thismonth_invitation_count ){ %><%- email_limite - companyReviewInvitationNumbers.thismonth_invitation_count %><% }else{ %>1000000000<% } %>; // Set the maximum number of tags allowed
 
 $("#sendreviewtags_invitation input").on({
   focusout: function () {

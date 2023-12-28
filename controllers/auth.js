@@ -4874,11 +4874,31 @@ exports.reviewBulkInvitation = async (req, res) => {
         const worksheet = workbook.getWorksheet(1);
         const emailsArr = await processReviewCSVRows(worksheet);
         const emails = emailsArr.flat();
-        if (emails.length > req.body.email_limite) {
+
+        const currentYear = new Date().getFullYear();
+        const currentMonth = new Date().getMonth() + 1;
+      
+        const get_company_review_invite_request_query = `
+            SELECT *
+            FROM review_invite_request
+            WHERE company_id = ${company_id}
+            AND YEAR(share_date) = ${currentYear}
+            AND MONTH(share_date) = ${currentMonth}
+            ORDER BY id DESC 
+            `;
+            
+        const get_company_review_invite_request_result = await query(get_company_review_invite_request_query);
+        let total_count = 0;
+        if(get_company_review_invite_request_result.length > 0){
+            get_company_review_invite_request_result.forEach(count=>{
+              total_count = total_count + count.count;
+            })
+          }
+        if (emails.length + total_count > req.body.email_limite) {
             return res.send(
                 {
                     status: 'err',
-                    message: 'You can not add more than '+req.body.email_limite+' email id`s in your current membership.'
+                    message: 'You have reached your maximum limit of emails allowed on your current membership for this month.'
                 }
             )  
         } else {
