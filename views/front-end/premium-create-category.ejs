@@ -19,16 +19,18 @@
                                     <ul class="ps-0">
                                         <li><i class="fa-solid fa-hand-point-right"></i> <%= category.category_name %>
                                             <span>
-                                                <a class="" href="/view-company-product/<%= company.slug %>/<%= category.id %>" data-cat-id="<%= category.id %>" title="view and add product"><i class="fa-solid fa-eye"></i></a>
-                                                <a class="edit_cat" data-cat-id="<%= category.id %>" data-cat-name="<%= category.category_name %>" data-parent-id="<%= category.parent_id %>" title="edit category" href="#"></i><i class="fa-solid fa-pen"></i></a> 
-                                                <a class="delete_cat" href="#" data-bs-toggle="modal" data-bs-target="#surealertmodal" data-cat-id="<%= category.id %>"  title="delete category"><i class="fa-solid fa-trash"></i></a></span>
+
+                                           
+                                                <a class="" data-bs-toggle="tooltip" data-bs-placement="top" href="/view-company-product/<%= company.slug %>/<%= category.id %>" data-cat-id="<%= category.id %>" title="view and add product"><i class="fa-solid fa-eye"></i></a>
+                                                <a class="edit_cat" data-bs-toggle="tooltip" data-bs-placement="top" data-cat-id="<%= category.id %>" data-cat-name="<%= category.category_name %>" data-parent-id="<%= category.parent_id %>" title="edit category" href="#"></i><i class="fa-solid fa-pen"></i></a> 
+                                                <a class="delete_cat" data-bs-toggle="tooltip" data-bs-placement="top" href="#" data-bs-toggle="modal" data-bs-target="#surealertmodal" data-cat-id="<%= category.id %>"  title="delete category"><i class="fa-solid fa-trash"></i></a></span>
                                             <ul>
                                                 <% CompanyCategories.forEach((subCategory)=>{ %>
                                                     <% if(subCategory.parent_id == category.id ) { %>
                                                     <li><%= subCategory.category_name %> <span>
-                                                        <a class="" href="/view-company-product/<%= company.slug %>/<%= subCategory.id %>" data-cat-id="<%= category.id %>" title="view and add product"><i class="fa-solid fa-eye"></i></a>
-                                                        <a class="edit_cat" data-cat-id="<%= subCategory.id %>" data-cat-name="<%= subCategory.category_name %>" data-parent-id="<%= subCategory.parent_id %>" title="edit category"  href="#"><i class="fa-solid fa-pen"></i></a> 
-                                                        <a class="delete_cat" href="#" data-bs-toggle="modal" data-bs-target="#surealertmodal" data-cat-id="<%= subCategory.id %>" title="delete category"><i class="fa-solid fa-trash"></i></a></span></li>
+                                                        <a class="" data-bs-toggle="tooltip" data-bs-placement="top" href="/view-company-product/<%= company.slug %>/<%= subCategory.id %>" data-cat-id="<%= category.id %>" title="view and add product"><i class="fa-solid fa-eye"></i></a>
+                                                        <a class="edit_cat" data-bs-toggle="tooltip" data-bs-placement="top" data-cat-id="<%= subCategory.id %>" data-cat-name="<%= subCategory.category_name %>" data-parent-id="<%= subCategory.parent_id %>" title="edit category"  href="#"><i class="fa-solid fa-pen"></i></a> 
+                                                        <a class="delete_cat" data-bs-toggle="tooltip" data-bs-placement="top" href="#" data-bs-toggle="modal" data-bs-target="#surealertmodal" data-cat-id="<%= subCategory.id %>" title="delete category"><i class="fa-solid fa-trash"></i></a></span></li>
                                                     <% } %>
                                                 <% }) %>
                                             </ul>
