@@ -4013,8 +4013,8 @@ exports.complaintRegister = (req, res) => {
   //return false;
   //const uuid = uuidv4();  
   const randomNo = Math.floor(Math.random() * (100 - 0 + 1)) + 0;
-  const ticket_no = randomNo + currentDate.getTime();
   const currentDate = new Date();
+  const ticket_no = randomNo + currentDate.getTime();
   const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
   const data = {
     user_id: user_id,
@@ -4043,7 +4043,6 @@ exports.complaintRegister = (req, res) => {
         message: 'Something went wrong  ' + err
       });
     } else {
-      console.log(company_id[0], user_id[0], uuid, result.insertId)
       const [complaintEmailToCompany, complaintSuccessEmailToUser] = await Promise.all([
         comFunction2.complaintEmailToCompany(company_id[0], ticket_no, result.insertId),
         comFunction2.complaintSuccessEmailToUser(user_id[0], ticket_no, result.insertId)
