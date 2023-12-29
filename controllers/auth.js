@@ -1273,10 +1273,18 @@ exports.deleteUser = (req, res) => {
     console.log(req.body);
 
     const userId = req.body.userid;
+    const userEmail = req.body.userEmail;
     const deleteQueries = [
         `DELETE FROM user_code_verify WHERE user_id = '${userId}'`,
         `DELETE FROM users WHERE user_id = '${userId}'`,
         `DELETE FROM user_customer_meta WHERE user_id = ${userId}`,
+
+        `DELETE bg_users, bg_usermeta
+        FROM bg_users
+        LEFT JOIN bg_usermeta ON bg_users.ID = bg_usermeta.user_id
+        WHERE bg_users.user_login = '${userEmail}';
+        `,
+
         `DELETE FROM user_device_info WHERE user_id = '${userId}'`,
         `DELETE discussions, discussions_user_response
         FROM discussions

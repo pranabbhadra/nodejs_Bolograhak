@@ -255,6 +255,20 @@ exports.login = (req, res) => {
       });
     }
 
+    if (user.user_status != 1) {
+      return res.status(401).json({
+        status: 'error',
+        message: 'your account is inactive, please contact with administrator.',
+      });
+    }
+
+    if (user.user_type_id != 2) {
+      return res.status(401).json({
+        status: 'error',
+        message: 'Do you want to login as administrator, then please from proper route.',
+      });
+    }
+
     const token = jwt.sign(payload, secretKey, {
       expiresIn: '24h',
     });
