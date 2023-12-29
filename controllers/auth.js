@@ -6154,7 +6154,7 @@ exports.escalateNextLevel = async (req, res) => {
             } else {
                 return res.send({
                     status: 'ok',
-                    message: 'Complaint level escalate to next level '
+                    message: 'Complaint level escalate to next level successfully.'
                   });
             }
         })
