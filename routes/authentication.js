@@ -37,8 +37,6 @@ router.post('/login', authenController.login);
 router.put('/edituser', verifyToken, upload.single('profile_pic'), authenController.edituser);
 router.post('/social-login', authenController.socialLogin);
 
-router.post('/social-login', authenController.socialLogin);
-
 
 router.post('/createcategories', verifyToken, upload.single('c_image'), authenController.createcategories);
 router.post('/createcompany', verifyToken, upload.single('logo'), authenController.createcompany);
