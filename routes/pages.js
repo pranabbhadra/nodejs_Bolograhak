@@ -1605,29 +1605,29 @@ router.get('/company-dashboard/:slug', checkClientClaimedCompany, async (req, re
             productGraphArray:productGraphArray,
         });
     }else{
-        res.json(
-        { 
-            menu_active_id: 'company-dashboard', 
-            page_title: 'Company Dashboard', 
-            currentUserData, 
-            globalPageMeta:globalPageMeta,
-            company,
-            companyReviewNumbers,
-            CompanyReviewsBetween:getCompanyReviewsBetween,
-            allRatingTags,
-            finalCompanyallReviews,
-            reviewReatingChartArray,
-            facebook_url:facebook_url,
-            twitter_url:twitter_url,
-            instagram_url:instagram_url,
-            linkedin_url:linkedin_url,
-            youtube_url:youtube_url,
-            reviewTagsCount,
-            TotalReplied:TotalReplied,
-            CompanyHistoricalReviewData:CompanyHistoricalReviewData,
-            productGraphArray:productGraphArray,
-           getSimilarCompany:getSimilarCompany
-        });
+        // res.json(
+        // { 
+        //     menu_active_id: 'company-dashboard', 
+        //     page_title: 'Company Dashboard', 
+        //     currentUserData, 
+        //     globalPageMeta:globalPageMeta,
+        //     company,
+        //     companyReviewNumbers,
+        //     CompanyReviewsBetween:getCompanyReviewsBetween,
+        //     allRatingTags,
+        //     finalCompanyallReviews,
+        //     reviewReatingChartArray,
+        //     facebook_url:facebook_url,
+        //     twitter_url:twitter_url,
+        //     instagram_url:instagram_url,
+        //     linkedin_url:linkedin_url,
+        //     youtube_url:youtube_url,
+        //     reviewTagsCount,
+        //     TotalReplied:TotalReplied,
+        //     CompanyHistoricalReviewData:CompanyHistoricalReviewData,
+        //     productGraphArray:productGraphArray,
+        //    getSimilarCompany:getSimilarCompany
+        // });
         res.render('front-end/premium-company-profile-dashboard', 
         { 
             menu_active_id: 'company-dashboard', 
