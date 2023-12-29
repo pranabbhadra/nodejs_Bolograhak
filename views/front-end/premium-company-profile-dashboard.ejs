@@ -232,7 +232,7 @@
                               <div class="all-inputs">
                                   <div class="custom-form">
                                       <select class="form-select js-example-basic-multiple" name="competitor" multiple="multiple">
-                                       <% if(getSimilarCompany[0].companiesIdArr.length > 0) { %>
+                                       <% if(getSimilarCompany[0] && getSimilarCompany[0].companiesIdArr.length > 0) { %>
                                           <% getSimilarCompany[0].companiesIdArr.forEach((id,index)=>{  %>
                                              <option value="<%= id %>" >Competitor <%= index+1 %> </option>
                                           <% }) %>
@@ -295,7 +295,7 @@
                      </div>
                   </div>
                </div> -->
-               <% if (finalCompanyallReviews.length > 0) { %>
+               <% if (finalCompanyallReviews && finalCompanyallReviews.length > 0) { %>
                <div class="company_dashboard_all_reviews_slider">
                   <div class="review-slider">   
                      <% finalCompanyallReviews.forEach( review => { %>
