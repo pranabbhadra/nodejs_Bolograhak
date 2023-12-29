@@ -2811,7 +2811,7 @@ function verifyToken(req, res, next) {
 
                 // Wrap db.query in a Promise to use await
                 const queryPromise = new Promise((resolve, reject) => {
-                    db.query('SELECT * FROM users WHERE user_id = ?', [userId], (err, result) => {
+                    db.query('SELECT * FROM users WHERE user_id = ? AND user_status = 1', [userId], (err, result) => {
                         if (err) {
                             reject(err);
                         } else {
