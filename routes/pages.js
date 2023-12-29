@@ -1506,7 +1506,7 @@ router.get('/company-dashboard/:slug', checkClientClaimedCompany, async (req, re
         comFunction2.getCompanyHistoricalReviewBetween(companyId),
         comFunction2.getSimilarCompany(companyId),
     ]);
-        console.log('getSimilarCompany:', getSimilarCompany);
+        //console.log('getSimilarCompany:', getSimilarCompany);
 
         const productGraphData = allCompanyReviews.map(entry => ({
             name: (entry.review_title && entry.review_title.trim() !== '') ? entry.review_title : 'General',
@@ -1605,29 +1605,29 @@ router.get('/company-dashboard/:slug', checkClientClaimedCompany, async (req, re
             productGraphArray:productGraphArray,
         });
     }else{
-        // res.json(
-        // { 
-        //     menu_active_id: 'company-dashboard', 
-        //     page_title: 'Company Dashboard', 
-        //     currentUserData, 
-        //     globalPageMeta:globalPageMeta,
-        //     company,
-        //     companyReviewNumbers,
-        //     CompanyReviewsBetween:getCompanyReviewsBetween,
-        //     allRatingTags,
-        //     finalCompanyallReviews,
-        //     reviewReatingChartArray,
-        //     facebook_url:facebook_url,
-        //     twitter_url:twitter_url,
-        //     instagram_url:instagram_url,
-        //     linkedin_url:linkedin_url,
-        //     youtube_url:youtube_url,
-        //     reviewTagsCount,
-        //     TotalReplied:TotalReplied,
-        //     CompanyHistoricalReviewData:CompanyHistoricalReviewData,
-        //     productGraphArray:productGraphArray,
-        //    getSimilarCompany:getSimilarCompany
-        // });
+        res.json(
+        { 
+            menu_active_id: 'company-dashboard', 
+            page_title: 'Company Dashboard', 
+            currentUserData, 
+            globalPageMeta:globalPageMeta,
+            company,
+            companyReviewNumbers,
+            CompanyReviewsBetween:getCompanyReviewsBetween,
+            allRatingTags,
+            finalCompanyallReviews,
+            reviewReatingChartArray,
+            facebook_url:facebook_url,
+            twitter_url:twitter_url,
+            instagram_url:instagram_url,
+            linkedin_url:linkedin_url,
+            youtube_url:youtube_url,
+            reviewTagsCount,
+            TotalReplied:TotalReplied,
+            CompanyHistoricalReviewData:CompanyHistoricalReviewData,
+            productGraphArray:productGraphArray,
+           getSimilarCompany:getSimilarCompany
+        });
         res.render('front-end/premium-company-profile-dashboard', 
         { 
             menu_active_id: 'company-dashboard', 
