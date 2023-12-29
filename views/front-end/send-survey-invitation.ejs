@@ -69,15 +69,15 @@ Hello Dear,
 </section>
 
 <!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal  fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
    <div class="modal-dialog">
      <div class="modal-content">
-       <div class="modal-header">
+       <div class="modal-header mb-0">
          <h1 class="modal-title fs-5" id="exampleModalLabel">Bulk Emails Invitation</h1>
          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
        </div>
        <form id="bulk_invitation_form" enctype="multipart/form-data">
-          <div class="modal-body">
+          <div class="modal-body bulk_modals">
              
              <input type="hidden" name="company_id" id="company_id" value="<%= company.ID  %>" />
                <input type="hidden" name="company_name" id="company_name" value="<%= company.company_name  %>" />
@@ -110,6 +110,8 @@ Hello Dear,
           <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
           <button type="submit" class="btn btn-warning" id="file_submit_btn">Send</button>
+          <div style=" width: 100%; text-align: center; display: block; border: 2px solid #fccb06; padding: 6px; margin-top: 20px; border-radius: 5px; display: none;" class="response-message"></div>
+          <div style=" width: 100%; text-align: center; display: block; border: 2px solid #fc0606; padding: 6px; margin-top: 20px; border-radius: 5px; display: none;" class="error-message"></div>
           </div>
        </form>
        <div class="register-now frm-loading" style="display: none;">
@@ -117,8 +119,7 @@ Hello Dear,
             <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
          </span>
       </div>
-      <div style=" width: 100%; text-align: center; display: block; border: 2px solid #fccb06; padding: 6px; margin-top: 20px; border-radius: 5px; display: none;" class="response-message"></div>
-      <div style=" width: 100%; text-align: center; display: block; border: 2px solid #fc0606; padding: 6px; margin-top: 20px; border-radius: 5px; display: none;" class="error-message"></div>
+   
      </div>
    </div>
  </div>

@@ -2724,7 +2724,7 @@ h4 {
     font-weight: 600;
     padding: 12px 23px;
     min-width: 140px;
-    display: block;
+    display: inline-block;
     text-align: center;
 }
 
@@ -2791,6 +2791,7 @@ h2.main-head small {
 h2.inner-main-head {
     font-size: 32px;
     font-weight: 700;
+    margin-bottom: 25px;
 }
 
 h2.inner-main-head small {
@@ -3112,20 +3113,12 @@ h2.inner-main-head small {
 }
 
 
-.modal-dialog .response-message {
-    background-color: rgb(252, 203, 6);
-    color: #000;
-    padding: 12px 0px !important;
-    border-radius: 0px 0px 5px 5px !important;
-    margin-top: 0px !important;
-}
-
 .modal-body .custom-form:last-child{
     padding-bottom: 0;
     margin-bottom: 0;
 }
 
-.modal-dialog .modal-body {
+.bulk_modals {
     padding: 35px 20px 10px !important;
     margin: 0 !important;
 }
@@ -3740,7 +3733,7 @@ h2.resp-tab-title:last-child {
 }
 
 button.btn.btn-danger.delete_item{
-    margin-top: 15px;
+    margin-top: 0px;
 }
 
 #product_edit_form .custom-form label {
@@ -3778,8 +3771,49 @@ button.btn.btn-danger.delete_item{
     padding: 18px 0px 0px;
 }
 
-.display_image_box .promotion_image_review{
-        height: 100px !important;
-        width: 100px;
-        object-fit: cover;
+.display_image_box .promotion_image_review {
+    height: 100px !important;
+    width: 100px;
+    object-fit: cover;
+    border-radius: 10px;
 }
+
+.modal-header {
+    margin-bottom: 20px;
+}
+
+.btn_flex_items{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.product-info h3 {
+    font-size: 22px;
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+.each_repeter {
+    margin-top: 55px;
+}
+.each_repeter1{
+    margin-top: 0px;
+}
+
+.button_flex{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.add_btn_new{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.add_btn_new .btn-warning{
+        padding: 5px 23px;
+}
+
