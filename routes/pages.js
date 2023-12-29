@@ -2292,7 +2292,7 @@ router.get('/create-category/:slug', checkClientClaimedCompany, async (req, res)
     if(companyPaidStatus=='free'){
         res.render('front-end/basic-create-category',
         {
-            menu_active_id: 'complaint',
+            menu_active_id: 'settings',
             page_title: 'Create Category',
             currentUserData,
             globalPageMeta:globalPageMeta,
@@ -2332,7 +2332,7 @@ router.get('/create-category/:slug', checkClientClaimedCompany, async (req, res)
         // });
         res.render('front-end/premium-create-category',
         {
-            menu_active_id: 'complaint',
+            menu_active_id: 'settings',
             page_title: 'Create Category',
             currentUserData,
             globalPageMeta:globalPageMeta,
@@ -2721,7 +2721,7 @@ router.get('/view-company-product/:slug/:cat_id', checkClientClaimedCompany, asy
         //     CompanyCategoryProducts:getCompanyCategoryProducts
         // });
         res.render('front-end/company-product-listing', {
-            menu_active_id: 'survey',
+            menu_active_id: 'settings',
             page_title: 'Company Product Listing',
             currentUserData,
             globalPageMeta:globalPageMeta,
