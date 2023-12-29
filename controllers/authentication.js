@@ -421,6 +421,13 @@ exports.socialLogin = async (req, res) => {
     //console.log('register_from', user_exist_results[0].register_from);
     if (user_exist_results.length > 0) {
 
+      if (user_exist_results[0].user_status != 1) {
+        return res.status(401).json({
+          status: 'error',
+          message: 'your account is inactive, please contact with administrator.',
+        });
+      }
+
       //--If user login from FB and Google
       if (user_exist_results[0].register_from == 'facebook' || user_exist_results[0].register_from == 'google') {
         //User Exist get User Details
