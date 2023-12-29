@@ -3925,13 +3925,18 @@ function getSimilarCompany(companyId) {
       if (err) {
         reject(err);
       } else {
-        if (result.length > 0) {
-          const companiesId = result[0].companiesId ? result[0].companiesId.split(',') : [];
+
+        const companiesId = result[0].companiesId ? result[0].companiesId.split(',') : [];
           result[0].companiesIdArr = companiesId
           resolve(result);
-        } else {
-          resolve([]);
-        }
+
+        // if (result.length > 0) {
+        //   const companiesId = result[0].companiesId ? result[0].companiesId.split(',') : [];
+        //   result[0].companiesIdArr = companiesId
+        //   resolve(result);
+        // } else {
+        //   resolve([]);
+        // }
       }
     });
   });

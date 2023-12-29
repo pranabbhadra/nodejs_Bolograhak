@@ -198,21 +198,21 @@
       </div>
 
       <!--Escalate Modal -->
-      <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+      <div class="modal modal_body_edit fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
          <div class="modal-dialog" role="document">
            <div class="modal-content">
              <div class="modal-header" style="border-bottom: none;">
                <h5 class="modal-title" id="successModalLabel">Success</h5>
-               <button type="button" class="btn-close" data-bs-dismiss="modal"><i
+               <button type="button" class="btn-close btn_close_all" data-bs-dismiss="modal"><i
                   class="fa-solid fa-circle-xmark"></i></button>
 
              </div>
-             <div class="modal-body" style=" width: 100%; text-align: center; display: block;  border: 1px solid #fccb06; padding: 6px; margin-top: 20px; border-radius: 5px; ">
+             <div class="modal-body">
                <!-- Display your success message here -->
                <p id="successMessage"></p>
              </div>
              <div class="modal-footer" style="border-top: none;">
-               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+               <button type="button" class="btn btn-secondary btn_close_all" data-bs-dismiss="modal">Close</button>
                </div>
            </div>
          </div>
@@ -247,6 +247,22 @@
             height: 15px;
             top: -11px;
          }
+
+         .modal_body_edit #successMessage {
+    border: 1px solid #fccb06;
+    padding: 15px 10px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.modal_body_edit .modal-header{
+   margin-bottom: 0px;
+}
+
+.modal_body_edit .modal-body{
+    border: none !important;
+    margin: 0px !important;
+}
          </style>
 
       <%- include('common/footer') -%>
@@ -329,6 +345,10 @@
 
                });
 
+               $('.btn_close_all').on('click', function(e){
+                  location.reload(true);
+               })
+
                $('.escalate_next_level').on('click', function (e) {
                   const complaintId = $(this).data('complaint-id');
                   const customerId = $(this).data('customer-id');
@@ -349,9 +369,9 @@
                         $('#successMessage').text(data.message);
                         // Open the modal
                         $('#successModal').modal('show');
-                        // setTimeout(function() {
-                        //    location.reload(true);
-                        // }, 3000);
+                        setTimeout(function() {
+                           location.reload(true);
+                        }, 3000);
                      },
                      error: function(error){
                         console.log(error);

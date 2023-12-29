@@ -19,16 +19,16 @@
                                     <ul class="ps-0">
                                         <li><i class="fa-solid fa-hand-point-right"></i> <%= category.category_name %>
                                             <span>
-                                                <a class="" href="/view-company-product/<%= company.slug %>/<%= category.id %>" data-cat-id="<%= category.id %>"><i class="fa-solid fa-eye"></i></a>
-                                                <a class="edit_cat" data-cat-id="<%= category.id %>" data-cat-name="<%= category.category_name %>" data-parent-id="<%= category.parent_id %>" href="#"></i><i class="fa-solid fa-pen"></i></a> 
-                                                <a class="delete_cat" href="#" data-bs-toggle="modal" data-bs-target="#surealertmodal" data-cat-id="<%= category.id %>"><i class="fa-solid fa-trash"></i></a></span>
+                                                <a class="" href="/view-company-product/<%= company.slug %>/<%= category.id %>" data-cat-id="<%= category.id %>" title="view and add product"><i class="fa-solid fa-eye"></i></a>
+                                                <a class="edit_cat" data-cat-id="<%= category.id %>" data-cat-name="<%= category.category_name %>" data-parent-id="<%= category.parent_id %>" title="edit category" href="#"></i><i class="fa-solid fa-pen"></i></a> 
+                                                <a class="delete_cat" href="#" data-bs-toggle="modal" data-bs-target="#surealertmodal" data-cat-id="<%= category.id %>"  title="delete category"><i class="fa-solid fa-trash"></i></a></span>
                                             <ul>
                                                 <% CompanyCategories.forEach((subCategory)=>{ %>
                                                     <% if(subCategory.parent_id == category.id ) { %>
                                                     <li><%= subCategory.category_name %> <span>
-                                                        <a class="" href="/view-company-product/<%= company.slug %>/<%= subCategory.id %>" data-cat-id="<%= category.id %>"><i class="fa-solid fa-eye"></i></a>
-                                                        <a class="edit_cat" data-cat-id="<%= subCategory.id %>" data-cat-name="<%= subCategory.category_name %>" data-parent-id="<%= subCategory.parent_id %>" href="#"><i class="fa-solid fa-pen"></i></a> 
-                                                        <a class="delete_cat" href="#" data-bs-toggle="modal" data-bs-target="#surealertmodal" data-cat-id="<%= subCategory.id %>"><i class="fa-solid fa-trash"></i></a></span></li>
+                                                        <a class="" href="/view-company-product/<%= company.slug %>/<%= subCategory.id %>" data-cat-id="<%= category.id %>" title="view and add product"><i class="fa-solid fa-eye"></i></a>
+                                                        <a class="edit_cat" data-cat-id="<%= subCategory.id %>" data-cat-name="<%= subCategory.category_name %>" data-parent-id="<%= subCategory.parent_id %>" title="edit category"  href="#"><i class="fa-solid fa-pen"></i></a> 
+                                                        <a class="delete_cat" href="#" data-bs-toggle="modal" data-bs-target="#surealertmodal" data-cat-id="<%= subCategory.id %>" title="delete category"><i class="fa-solid fa-trash"></i></a></span></li>
                                                     <% } %>
                                                 <% }) %>
                                             </ul>
@@ -43,6 +43,7 @@
                     <div class="add-category-content ps-lg-5">
                         <h4>ADD CATEGORY</h4>
                         <form id="create_category_form" enctype="multipart/form-data">
+                            <input type="hidden" name="company_id" value="<%- company.ID -%>">
                             <div class="custom-form">
                                 <label><span>Category Name<span style="color: red;">*</span></span></label>
                                 <input type="text" class="form-control" name="category_name" required>
@@ -61,7 +62,7 @@
                                 </Select>
                             </div>
                             
-                            <div class="each_box add_products">
+                            <!-- <div class="each_box add_products">
                                 <div class="repeter_wrap">
                                     <div class="all_repeter">
                                         <div class="each_repeter">
@@ -90,22 +91,23 @@
                                                             <img class="promotion_image_review" id="company_cover_image_preview" src="/front-end/images/no-image.png" alt="">
                                                     </div>
                                                 </div>
-                                                <div class="d-flex gap-2">
-                                                    <div class="text-right mt-3">
-                                                        <button data-id="null" company-id = "<%= company.ID %>" data-type="product" type="button" class="btn btn-danger delete_item">Remove</button>
-                                                    </div>
-                                                </div>
                                             </div>
                                         </div>
+                                            <div class="text-right">
+                                                <button data-id="null" company-id = "<%= company.ID %>" data-type="product" type="button" class="btn btn-danger delete_item">Remove</button>
+                                            </div>
                                         
                                     </div>
                                     <div class="add_more_btn">
                                         <button type="button" class="btn btn-primary add_more_product">Add Product</button>
                                     </div>
+                                    <div class="">
+
+                                    </div>
                                     
                                 </div>
-                            </div>
-                            <input type="hidden" name="company_id" value="<%- company.ID -%>">
+                            </div> -->
+                            
                             <input type="submit" value="CREATE" class="btn-default btn-warning" id="submit_btn">
                         </form>
                         <div class="submit-loading" style="display: none;">Please wait..</div>

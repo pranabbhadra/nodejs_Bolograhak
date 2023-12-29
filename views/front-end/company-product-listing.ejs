@@ -28,8 +28,11 @@
                                         <p><%= product.product_desc %></p>
                                         <!-- <p><a href="#"><i class="fa-regular fa-angle-right"></i></a></p> -->
                                     </div>
-                                    <a href="" class="btn btn-danger delete-product" data-bs-toggle="modal" data-bs-target="#surealertmodal" data-product-id="<%= product.product_id %>"   id="" >Delete</a>
-                                    <a href="" class="btn btn-primary edit-product respond-link"  data-product-id="<%= product.product_id %>" data-product-title="<%= product.product_title %>" data-product-desc="<%= product.product_desc %>" data-product-img="<%= product.product_img %>" data-bs-toggle="modal" data-bs-target="#editModal"   id="" >Edit</a>
+                                    <div class="button_flex">
+                                        <a href="" class="btn btn-danger delete-product" data-bs-toggle="modal" data-bs-target="#surealertmodal" data-product-id="<%= product.product_id %>"   id="" >Delete</a>
+                                        <a href="" class="btn btn-primary edit-product respond-link"  data-product-id="<%= product.product_id %>" data-product-title="<%= product.product_title %>" data-product-desc="<%= product.product_desc %>" data-product-img="<%= product.product_img %>" data-bs-toggle="modal" data-bs-target="#editModal"   id="" >Edit</a>
+
+                                    </div>
                                 </div>
                             </div>
                             <% }) %>
@@ -46,6 +49,9 @@
         <div class="d-none send-review-invitation" id="add-product-div">
             <h2 class="inner-main-head">Category: <%= CompanyCategoryProducts[0].category_name %></h2>
             <form id="create_category_form" enctype="multipart/form-data">
+                <input type="hidden" name="company_id" value="<%- company.ID -%>">
+                <input type="hidden" name="category_id" value="<%- CompanyCategoryProducts[0].id -%>">
+                <input type="hidden" name="parent_id" value="<%- CompanyCategoryProducts[0].parent_id -%>">
                 <div class="each_box add_products">
                     <div class="repeter_wrap">
                         <div class="all_repeter">
@@ -83,16 +89,19 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="add_more_btn">
-                            <button type="button" class="btn btn-primary add_more_product">Add Product</button>
+                        <div class="add_btn_new">
+                            <div class="add_more_btn">
+                                <button type="button" class="btn btn-primary add_more_product">Add Product</button>
+                            </div>
+                            <input type="submit" value="Submit" class="btn-default btn-warning" id="submit_btn">
+
                         </div>
+                       
                        
                     </div>
                 </div>
-                <input type="hidden" name="company_id" value="<%- company.ID -%>">
-                <input type="hidden" name="category_id" value="<%- CompanyCategoryProducts[0].id -%>">
-                <input type="hidden" name="parent_id" value="<%- CompanyCategoryProducts[0].parent_id -%>">
-                <input type="submit" value="Submit" class="btn-default btn-warning mt-3" id="submit_btn">
+            
+               
             </form>
             
             <div class="submit-loading" style="display: none;">Please wait..</div>
@@ -134,7 +143,7 @@
         </div>
         <form id="product_edit_form" enctype="multipart/form-data">
             <div class="modal-body">
-                <div class="each_repeter">
+                <div class="each_repeter each_repeter1">
                     <div class="row align-items-center">
                         <div class="col-12">
                             <div class="custom-form mb-3">
@@ -148,12 +157,12 @@
                                 <textarea class="form-control" placeholder="" rows="3" id="product-desc"  name="product_desc"></textarea>
                             </div>
                         </div>
-                        <div class="custom-form col-sm-10">
+                        <div class="custom-form col-sm-9">
                             <label class="form-label">Image<sup style="color: red;">*</sup></label>
                             
                             <input class="form-control  product_image" type="file" name="product_img" >
                         </div>
-                        <div class="col-sm-2">
+                        <div class="col-sm-3">
                             <div class="display_image_box">
                                     <img class="promotion_image_review" id="product-img" src="" alt="">
                             </div>
@@ -167,12 +176,13 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="submit" id="submit_btn" class="btn btn-primary">Update</button>
+                    <div class="submit-loading" style="display: none;">Please wait..</div>
+                    <div class="submit-success" style="width: 100%; text-align: center; display: block; border: 2px solid #fccb06; padding: 6px; margin-top: 20px; border-radius: 5px; display: none;"></div>
+                    <div class="submit-error" style="width: 100%; text-align: center; display: block; border: 2px solid #fccb06; padding: 6px; margin-top: 20px; border-radius: 5px; display: none;"></div>
                 </div>
         </form>
       </div>
-      <div class="submit-loading" style="display: none;">Please wait..</div>
-      <div class="submit-success" style="width: 100%; text-align: center; display: block; border: 2px solid #fccb06; padding: 6px; margin-top: 20px; border-radius: 5px; display: none;"></div>
-      <div class="submit-error" style="width: 100%; text-align: center; display: block; border: 2px solid #fccb06; padding: 6px; margin-top: 20px; border-radius: 5px; display: none;"></div>
+    
     </div>
   </div>
 <!-- ================ Section1 End ======================= -->
@@ -246,7 +256,7 @@ $(document).ready(function () {
         })
 
     $('.add_more_product').click(function(e){
-        $(this).parents('.add_products').find('.all_repeter').append('<div class=each_repeter><div class="align-items-center row"><div class=col-12><div class=mb-3><label class=form-label>Title<sup style="color: red;">*</sup></label> <input class=form-control placeholder="" name="product_title" required></div></div><div class=col-12><div class=mb-3><label class=form-label>Description</label> <textarea class=form-control placeholder="" name="product_desc" rows=3></textarea></div></div><div class=col-sm-10><label class=form-label>Image<sup style="color: red;">*</sup></label> <input class="form-control upload_in_repeter product_image"type=file name="product_image" required ></div><div class=col-sm-2><div class=display_image_box><img alt=""class=promotion_image_review src=/front-end/images/no-image.png></div></div><div class=col-12><div class=text-right><button data-id="null" class="btn btn-danger delete_item"type=button>Remove</button></div></div></div></div>');
+        $(this).parents('.add_products').find('.all_repeter').append('<div class=each_repeter><div class="align-items-center row"><div class=col-12><div class=custom-form mb-3><label class=form-label>Title<sup style="color: red;">*</sup></label> <input class=form-control placeholder="" name="product_title" required></div></div><div class=col-12><div class=custom-form mb-3><label class=form-label>Description</label> <textarea class=form-control placeholder="" name="product_desc" rows=3></textarea></div></div><div class="custom-form mb-0 col-sm-10"><label class=form-label>Image<sup style="color: red;">*</sup></label> <input class="form-control upload_in_repeter product_image"type=file name="product_image" required ></div><div class=col-sm-2><div class=display_image_box><img alt=""class=promotion_image_review src=/front-end/images/no-image.png></div></div><div class=col-12><div class=text-right><button data-id="null" class="btn btn-danger delete_item"type=button>Remove</button></div></div></div></div>');
     });
 
     $('body').on('change','.upload_in_repeter',function (event) {

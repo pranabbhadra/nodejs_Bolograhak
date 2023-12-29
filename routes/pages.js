@@ -1506,7 +1506,7 @@ router.get('/company-dashboard/:slug', checkClientClaimedCompany, async (req, re
         comFunction2.getCompanyHistoricalReviewBetween(companyId),
         comFunction2.getSimilarCompany(companyId),
     ]);
-        console.log('getSimilarCompany:', getSimilarCompany);
+        //console.log('getSimilarCompany:', getSimilarCompany);
 
         const productGraphData = allCompanyReviews.map(entry => ({
             name: (entry.review_title && entry.review_title.trim() !== '') ? entry.review_title : 'General',

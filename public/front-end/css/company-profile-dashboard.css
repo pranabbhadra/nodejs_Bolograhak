@@ -1531,6 +1531,22 @@ a.close-level:hover {
     color: #FCCB06;
 }
 
+.sub-category-list ul li span a i {
+    background-color: #FCCB06;
+    width: 35px;
+    height: 35px;
+    border-radius: 5px;
+    color: #000;
+    padding: 11px;
+    transition: all 0.6s;
+    border: 1px solid #FCCB06;;
+}
+.sub-category-list ul li span a i:hover{
+    background-color: transparent;
+color: #FCCB06;
+}
+
+
 .sub-category-list ul li ul li {
     font-size: 16px;
     margin-top: 20px;
@@ -1727,6 +1743,11 @@ a.close-level:hover {
     display: inline-block;
     color: red;
 }
+
+.send-review-invitation h4 {
+    margin-bottom: 20px;
+}
+
 
 /*========================================= responsive ====================================*/
 
