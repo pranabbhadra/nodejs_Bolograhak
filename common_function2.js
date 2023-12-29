@@ -3919,7 +3919,7 @@ function getSimilarCompany(companyId) {
       FROM company c
       LEFT JOIN company_cactgory_relation cr ON c.ID = cr.company_id
       LEFT JOIN company_cactgory_relation ccr ON cr.category_id = ccr.category_id AND ccr.company_id != ${companyId}
-      WHERE c.status != '3' and c.paid_status = 'paid' AND c.ID = ${companyId}
+      WHERE c.status != '3'  AND c.ID = ${companyId}
       GROUP BY c.ID`,
       async(err, result) => {
       if (err) {
