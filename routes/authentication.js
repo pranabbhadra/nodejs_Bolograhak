@@ -2824,7 +2824,7 @@ function verifyToken(req, res, next) {
                 if (!rows || rows.length === 0) {
                     return res.status(403).json({
                         status: 'error',
-                        message: 'Invalid token or User does not exist',
+                        message: 'User account is inactive, please contact with administrator.',
                     });
                 }
 

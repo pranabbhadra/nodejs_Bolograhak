@@ -256,9 +256,9 @@ exports.login = (req, res) => {
     }
 
     if (user.user_status != 1) {
-      return res.status(401).json({
+      return res.status(403).json({
         status: 'error',
-        message: 'your account is inactive, please contact with administrator.',
+        message: 'Your account is inactive, please contact with administrator.',
       });
     }
 
@@ -422,7 +422,7 @@ exports.socialLogin = async (req, res) => {
     if (user_exist_results.length > 0) {
 
       if (user_exist_results[0].user_status != 1) {
-        return res.status(401).json({
+        return res.status(403).json({
           status: 'error',
           message: 'your account is inactive, please contact with administrator.',
         });
