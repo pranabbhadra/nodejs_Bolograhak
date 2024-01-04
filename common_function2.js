@@ -4245,6 +4245,39 @@ function getpaymentDetailsById(paymentId) {
   });
 }
 
+//Function to get latest discussion from discussions table
+async function getAllPolls() {
+  
+  return new Promise((resolve, reject) => {
+    const sql = `
+    SELECT
+    poll_company.*, c.company_name , c.logo , c.comp_email
+    FROM poll_company
+    LEFT JOIN company c ON c.ID = poll_company.company_id  AND c.status != '3'
+    ORDER BY poll_company.id DESC
+    `;
+    try{
+      db.query(sql,(err,results)=>{
+        if (err) {
+          reject(err);
+        }
+        //console.log(results);
+        if (results.length>0) {
+          
+        resolve (results);
+        } else {
+          resolve ([]);
+        }
+      });
+      
+    }
+    catch(error){
+      console.error('Error during fetch All Latest Discussion:', error);
+    }
+  });
+
+}
+
 module.exports = {
   getFaqPage,
   getFaqCategories,
@@ -4337,5 +4370,6 @@ module.exports = {
   complaintLevelUpdate,
   getmembershipPlans,
   getAllPayments,
-  getpaymentDetailsById
+  getpaymentDetailsById,
+  getAllPolls
 };

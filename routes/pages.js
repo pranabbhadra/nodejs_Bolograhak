@@ -3443,6 +3443,35 @@ router.get('/discussion-listing', checkLoggedIn, async (req, res) => {
     }
 });
 
+router.get('/poll-listing', checkLoggedIn, async (req, res) => {
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+
+        // Fetch all the required data asynchronously
+        const [ getAllPolls] = await Promise.all([
+            comFunction2.getAllPolls(),
+        ]);
+        //console.log('getAllPolls',getAllPolls)
+        // Render the 'edit-user' EJS view and pass the data
+        // res.json( {
+        //     menu_active_id: 'pages',
+        //     page_title: 'Discussion Listing',
+        //     currentUserData,
+        //     AllDiscussions: AllDiscussions
+        // });
+        res.render('poll-listing', {
+            menu_active_id: 'pages',
+            page_title: 'Poll Listing',
+            currentUserData,
+            AllPolls: getAllPolls
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+
 //---Review Rating Tag--//
 router.get('/add-rating-tag', checkLoggedInAdministrator, async (req, res) => {
     try {

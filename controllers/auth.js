@@ -5841,6 +5841,31 @@ exports.deleteDiscussion = async (req, res) => {
     })
 }
 
+//Delete Poll 
+exports.deletePoll = async (req, res) => {
+    //console.log('deleteDiscussion',req.body ); 
+    //return false;
+    const delQuery = `DELETE poll_company, poll_answer, poll_voting
+    FROM poll_company
+    LEFT JOIN poll_answer ON poll_company.id = poll_answer.poll_id
+    LEFT JOIN poll_voting ON poll_company.id = poll_voting.poll_id
+    WHERE poll_company.id = '${req.body.pollId}'`;
+
+    db.query(delQuery,(err, result)=>{
+        if (err) {
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong  '+err
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Poll Deleted successfully !'
+            });
+        }
+    })
+}
+
 //discussion company create tags
 exports.companyCreateTags = async (req, res) => {
     console.log('createDiscussion',req.body ); 

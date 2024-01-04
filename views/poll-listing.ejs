@@ -204,24 +204,24 @@
                                         <input class="form-check-input" type="checkbox" data-kt-check="true" data-kt-check-target="#kt_table_users .form-check-input" value="1" />
                                     </div>
                                 </th>
-                                <th class="min-w-125px">Topic</th>
-                                <th class="min-w-125px">Tag(s)</th>
-                                <th class="min-w-125px">Creator</th>
-                                <th class="min-w-125px">Comments</th>
-                                <th class="min-w-125px">Views</th>
+                                <th class="min-w-125px">Company Name</th>
+                                <th class="min-w-125px">Question</th>
                                 <th class="min-w-125px">Created Date</th>
+                                <th class="min-w-125px">Expire Date</th>
                             </tr>
                         </thead>
                         <!--end::Table head-->
                         <!--begin::Table body-->
                         <tbody class="text-gray-600 fw-bold">
-                        <% AllDiscussions.forEach( discussion => { %>
+                        <% AllPolls.forEach( poll => { %>
                             <tr>
                                 <!--begin::Action=-->
                                 <td class="text-end">
                                     <% if(currentUserData.user_type_id != 3 ) { %>
-                                        <a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-companyid="<%= discussion.id %>" data-kt-users-table-filter="delete_row">Delete</a>
-                                        
+
+                                        <a href="#" class="btn btn-light btn-active-light-primary btn-m" data-companyid="<%= poll.id %>" data-kt-users-table-filter="delete_row">Delete
+                                            
+                                        </a>
                                     <% } %>
                                 </td>
                                 <!--end::Action=-->
@@ -230,35 +230,43 @@
                                         <input class="form-check-input" type="checkbox" value="1" />
                                     </div>
                                 </td>
+                                <td class="d-flex align-items-center">
+                                    <!--begin:: Avatar -->
+                                    <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
+                                        <a href="#">
+                                            <div class="symbol-label">
+                                                <% if(poll.logo){ %>
+                                                    <img src="/<%= poll.logo %>"
+                                                        alt="<%= poll.company_name %>" class="w-100" />
+                                                    <% } else { %>
+                                                        <img src="/assets/media/no-image/no-photo.png"
+                                                            alt="<%= poll.company_name %>" class="w-100" />
+                                                        <% } %>
+                                            </div>
+                                        </a>
+                                    </div>
+                                    <!--end::Avatar-->
+                                    <!--begin::User details-->
+                                    <div class="d-flex flex-column">
+                                        <a href="#" class="text-gray-800 text-hover-primary mb-1">
+                                            <%= poll.company_name %>
+                                        </a>
+                                    </div>
+                                    <!--begin::User details-->
+                                </td>
                                 <td>
-                                    <%= discussion.topic %>
+                                    <%= poll.question %>
                                 </td>
                                 <!--end::Role=-->
-                                <!--begin::Last login=-->
-                                <td>
-                                    <%
-                                        let tags = []
-                                        if(discussion.tags != ''){
-                                            tags = JSON.parse(discussion.tags)
-                                        }
-                                    %>
-                                    <% tags.forEach((tag) =>{ %> 
-                                        <span class="badge badge-light-info fw-bolder px-4 py-3"><%= tag %></span>
-                                    <% }) %>
-                                </td>
-                                <td>
-                                    <%= discussion.first_name %> <%= discussion.last_name %>
-                                </td>
-                                <td>
-                                    <%= discussion.total_comments %>
-                                </td>
-                                <td>
-                                    <%= discussion.total_views %>
-                                </td>
-                                <% const dateString = discussion.created_at; %>
+                                <% const dateString = poll.created_at; %>
                                 <% const date = new Date(dateString); %>
                                 <td>
                                     <%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %>
+                                </td>
+                                <% const ExpireDate = poll.expired_at; %>
+                                <% const Edate = new Date(ExpireDate); %>
+                                <td>
+                                    <%= Edate.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %>
                                 </td>
                                 <!--begin::Joined-->
                                 
@@ -431,9 +439,9 @@ var KTUsersList = function () {
             // Delete button on click
             d.addEventListener('click', function (e) {
                 e.preventDefault();
-                var discussionid = $(this).attr("data-companyid");
-                console.log(discussionid);
-                //alert(discussionid);
+                var pollId = $(this).attr("data-companyid");
+                console.log(pollId);
+                //alert(pollId);
                 // Select parent row
                 const parent = e.target.closest('tr');
 
@@ -456,9 +464,9 @@ var KTUsersList = function () {
                     if (result.value) {
                         $.ajax({
                             //url: '/auth/delete-company', 
-                            url: '/auth/delete-discussion', 
+                            url: '/auth/delete-poll', 
                             method: 'POST',
-                            data: {discussionid:discussionid},
+                            data: {pollId:pollId},
                             ContentType: 'application/json',
                             success: function (data) {
                                 if (data.status == 'ok') {
@@ -494,7 +502,7 @@ var KTUsersList = function () {
                         });
                     } else if (result.dismiss === 'cancel') {
                         Swal.fire({
-                            text:  " Discussion is not deleted.",
+                            text:  " Poll is not deleted.",
                             icon: "error",
                             buttonsStyling: false,
                             confirmButtonText: "Ok, got it!",

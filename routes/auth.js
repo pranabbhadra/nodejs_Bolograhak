@@ -383,6 +383,8 @@ router.post('/survey_invitation', authController.surveyInvitation);
 
 router.post('/delete-discussion', authController.deleteDiscussion);
 
+router.post('/delete-poll', authController.deletePoll);
+
 //Notification Content
 router.post('/notification-content',upload.single('image'), authController.notificationContent);
 
