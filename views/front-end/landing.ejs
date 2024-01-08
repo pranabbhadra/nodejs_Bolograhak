@@ -691,7 +691,7 @@
 
 <section class="main-content discussion-content">
   <div class="container">
-    <h2 class="text-center main-head"><small>View Our</small> <br> Discussions</h2>
+    <h2 class="text-center main-head"><small>View Our</small> <br> Queries</h2>
     <div class="row">
       <% if(AllLatestDiscussion.length > 0) { %>
       <div class="col-md-8">
@@ -836,13 +836,13 @@
         <div class="discussions-right mt-md-0 mt-4">
           <div class="start-a-discussion-btn text-center">
             <% if(currentUserData){ %>
-              <a href="#" class="btn-default btn-dark" data-bs-toggle="modal" data-bs-target="#creatediscussion"><i class="fa-solid fa-pen-to-square"></i> Start A Discussion</a>
+              <a href="#" class="btn-default btn-dark" data-bs-toggle="modal" data-bs-target="#creatediscussion"><i class="fa-solid fa-pen-to-square"></i> Raise A Query</a>
             <% } else { %>
-              <a href="#" class="btn-default btn-dark mt-3 login">Start A Discussion</a>
+              <a href="#" class="btn-default btn-dark mt-3 login">Raise A Query</a>
             <% } %>
           </div>
           <div class="discussions-right-panel">
-            <h4>Popular Discussions</h4>
+            <h4>Popular Query</h4>
             <% if(AllPopularDiscussion.length > 0) { %>
             <% AllPopularDiscussion.forEach((PopularDiscussion, index)=>{  %>
               <% const ExpireDate = new Date(PopularDiscussion.expired_at); %>
@@ -870,7 +870,7 @@
             <% } %>
         </div>
         <div class="discussions-right-panel">
-          <h4>Newest Showcase</h4>
+          <h4>Newest Query</h4>
           <% if(AllLatestDiscussion.length > 0) { %>
           <% AllLatestDiscussion.forEach((LatestDiscussion, index)=>{  %>
             <% const ExpireDate = new Date(LatestDiscussion.expired_at); %>
@@ -903,9 +903,9 @@
         <div class="col-md-12">
           <div class="start-a-discussion-btn text-center">
             <% if(currentUserData){ %>
-              <a href="#" class="btn-default btn-dark" data-bs-toggle="modal" data-bs-target="#creatediscussion"><i class="fa-solid fa-pen-to-square"></i> Start A Discussion</a>
+              <a href="#" class="btn-default btn-dark" data-bs-toggle="modal" data-bs-target="#creatediscussion"><i class="fa-solid fa-pen-to-square"></i> Raise A Query</a>
             <% } else { %>
-              <a href="#" class="btn-default btn-dark mt-3 login">Start A Discussion</a>
+              <a href="#" class="btn-default btn-dark mt-3 login">Raise A Query</a>
             <% } %>
           </div>
         </div>
@@ -920,7 +920,7 @@
       <div class="modal-content">
         <!-- Modal Header -->
         <div class="modal-header">
-            <h2>Create Discussion</h2>
+            <h2>Create Query</h2>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <!-- Modal body -->
@@ -964,7 +964,7 @@
                 </div>
             </div>
             <% if(currentUserData){ %>
-            <div class="custom-form mb-sm-0">
+            <div class="custom-form mb-sm-0" style="margin-top: 22px;">
                 <input type="hidden" name="user_id" value="<%= currentUserData.user_id %>" />
                 <input type="submit" class="btn-default btn-warning" value="Submit">
             </div>

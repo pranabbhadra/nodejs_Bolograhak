@@ -20,13 +20,15 @@
             <div class="contribute-discussion">
                <a href="#" class="discussionscrollbtn"><i class="fa-solid fa-messages"></i> Contribute to this discussion?</a>
             </div>
+            <%
+               let comments = []
+               if(AllCommentByDiscusId[0].commentData != ''){
+                  comments = JSON.parse(AllCommentByDiscusId[0].commentData)
+               }
+               %>
+            <% if(comments.length>0){ %>
+            <h4>Comments are listed below</h4>
             <div class="discussion-details-panel">
-               <%
-                  let comments = []
-                  if(AllCommentByDiscusId[0].commentData != ''){
-                     comments = JSON.parse(AllCommentByDiscusId[0].commentData)
-                  }
-                  %>
               <div class="user-comment-control-wrapper">
                 <% comments.forEach((comment) =>{ %> 
                 <% if(comment.comment) { %>
@@ -81,6 +83,7 @@
                   border-radius: 5px; display: none;"></div>
                </div>
             </div>
+            <% } %>
             <div class="discussion-similar-thread">
                
                
@@ -135,6 +138,11 @@
 <!-- ============== Section1 End =============== -->
 
 <%- include('common/footer') -%>   
+<style>
+a.btn-default.btn-warning.dis-details-top-btn.my-1 {
+    cursor: default;
+}
+</style>
 <script>
    jQuery(function ($) {
 

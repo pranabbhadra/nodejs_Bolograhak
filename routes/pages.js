@@ -958,7 +958,7 @@ router.get('/discussion', checkCookieValue, async (req, res) => {
         // });
         res.render('front-end/discussion', {
             menu_active_id: 'discussion',
-            page_title: 'Discussions',
+            page_title: 'Queries',
             currentUserData,
             globalPageMeta:globalPageMeta,
             AllLatestDiscussion: getAllLatestDiscussion,
@@ -996,7 +996,7 @@ router.get('/discussion-details/:discussion_id', checkCookieValue, async (req, r
         // });
         res.render('front-end/discussion-details', {
             menu_active_id: 'discussion-details',
-            page_title: 'Comments',
+            page_title: 'Queries',
             currentUserData,
             globalPageMeta:globalPageMeta,
             commentID:insertDiscussionResponse,
