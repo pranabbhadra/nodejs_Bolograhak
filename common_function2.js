@@ -3468,7 +3468,7 @@ function getAllPremiumCompany() {
       FROM company c
       LEFT JOIN company_cactgory_relation cr ON c.ID = cr.company_id
       LEFT JOIN category cat ON cr.category_id = cat.ID
-      WHERE c.status != '3' AND c.membership_type_id >=3
+      WHERE c.status != '3' AND c.membership_type_id >=3 AND c.complaint_status = '1'
       GROUP BY c.ID`,
       async(err, result) => {
       if (err) {
@@ -4245,7 +4245,7 @@ function getpaymentDetailsById(paymentId) {
   });
 }
 
-//Function to get latest discussion from discussions table
+//Function to get all polls from poll_company table
 async function getAllPolls() {
   
   return new Promise((resolve, reject) => {
@@ -4263,6 +4263,72 @@ async function getAllPolls() {
         }
         //console.log(results);
         if (results.length>0) {
+          
+        resolve (results);
+        } else {
+          resolve ([]);
+        }
+      });
+      
+    }
+    catch(error){
+      console.error('Error during fetch All Latest Discussion:', error);
+    }
+  });
+
+}
+
+//Function to get all complaints from poll_company table
+async function getAllComplaints() {
+  
+  return new Promise((resolve, reject) => {
+    const sql = `
+    SELECT
+    complaint.*, c.company_name , c.logo , c.comp_email
+    FROM complaint
+    LEFT JOIN company c ON c.ID = complaint.company_id  AND c.status != '3'
+    ORDER BY complaint.id DESC
+    `;
+    try{
+      db.query(sql, (err,results)=>{
+        if (err) {
+          reject(err);
+        }
+        //console.log(results);
+        if (results.length > 0) {
+          
+        resolve (results);
+        } else {
+          resolve ([]);
+        }
+      });
+      
+    }
+    catch(error){
+      console.error('Error during fetch All Latest Discussion:', error);
+    }
+  });
+
+}
+
+//Function to get all survey from poll_company table
+async function getAllSurveys() {
+  
+  return new Promise((resolve, reject) => {
+    const sql = `
+    SELECT
+    survey.*, c.company_name , c.logo , c.comp_email
+    FROM survey
+    LEFT JOIN company c ON c.ID = survey.company_id  AND c.status != '3'
+    ORDER BY survey.id DESC
+    `;
+    try{
+      db.query(sql, (err,results)=>{
+        if (err) {
+          reject(err);
+        }
+        //console.log(results);
+        if (results.length > 0) {
           
         resolve (results);
         } else {
@@ -4371,5 +4437,7 @@ module.exports = {
   getmembershipPlans,
   getAllPayments,
   getpaymentDetailsById,
-  getAllPolls
+  getAllPolls,
+  getAllComplaints,
+  getAllSurveys
 };

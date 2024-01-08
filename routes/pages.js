@@ -2394,6 +2394,24 @@ router.get('/complaint-level-management/:slug', checkClientClaimedCompany, async
              linkedin_url = PremiumCompanyData.linkedin_url;
              youtube_url = PremiumCompanyData.youtube_url;
         }
+
+        // res.json(
+        // {
+        //     menu_active_id: 'complaint',
+        //     page_title: 'Complaint Management',
+        //     currentUserData,
+        //     globalPageMeta:globalPageMeta,
+        //     company:company,
+        //     companyReviewNumbers,
+        //     allRatingTags,
+        //     facebook_url:facebook_url,
+        //     twitter_url:twitter_url,
+        //     instagram_url:instagram_url,
+        //     linkedin_url:linkedin_url,
+        //     youtube_url:youtube_url,
+        //     ComplaintLevelDetails:getComplaintLevelDetails,
+        // });
+
         res.render('front-end/premium-complain-management',
         {
             menu_active_id: 'complaint',
@@ -3452,14 +3470,6 @@ router.get('/poll-listing', checkLoggedIn, async (req, res) => {
         const [ getAllPolls] = await Promise.all([
             comFunction2.getAllPolls(),
         ]);
-        //console.log('getAllPolls',getAllPolls)
-        // Render the 'edit-user' EJS view and pass the data
-        // res.json( {
-        //     menu_active_id: 'pages',
-        //     page_title: 'Discussion Listing',
-        //     currentUserData,
-        //     AllDiscussions: AllDiscussions
-        // });
         res.render('poll-listing', {
             menu_active_id: 'pages',
             page_title: 'Poll Listing',
@@ -3472,6 +3482,56 @@ router.get('/poll-listing', checkLoggedIn, async (req, res) => {
     }
 });
 
+router.get('/complaint-listing', checkLoggedIn, async (req, res) => {
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+
+        // Fetch all the required data asynchronously
+        const [  getAllComplaints ] = await Promise.all([
+            comFunction2.getAllComplaints(),
+        ]);
+        //console.log('getAllComplaints',getAllComplaints)
+        // Render the 'edit-user' EJS view and pass the data
+        // res.json( {
+        //     menu_active_id: 'pages',
+        //     page_title: 'Discussion Listing',
+        //     currentUserData,
+        //     AllDiscussions: AllDiscussions
+        // });
+        res.render('complaint-listing', {
+            menu_active_id: 'pages',
+            page_title: 'Complaint Listing',
+            currentUserData,
+            AllComplaints: getAllComplaints
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+
+router.get('/survey-listing', checkLoggedIn, async (req, res) => {
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+
+        // Fetch all the required data asynchronously
+        const [ getAllSurveys ] = await Promise.all([
+            comFunction2.getAllSurveys(),
+        ]);
+        //console.log('getAllSurveys',getAllSurveys)
+        res.render('survey-listing', {
+            menu_active_id: 'pages',
+            page_title: 'Survey Listing',
+            currentUserData,
+            AllSurveys: getAllSurveys
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
 //---Review Rating Tag--//
 router.get('/add-rating-tag', checkLoggedInAdministrator, async (req, res) => {
     try {

@@ -1236,10 +1236,20 @@ $("body").on('click' , '.edit-save-btn' , function (e){
 /*=========================== Edit email End =================*/
 
 /*=========================== email repeater Start =================*/
-$("body").on('click' , '.add-email-btn' , function (e) {
+$("body").on('click' , '.add-email-btn-1' , function (e) {
   e.preventDefault();
-  $(this).parents(".email_clone_div").append('<div class="add-email-field mb-2"> <input type="email" name="emails" id="" class="form-control"><a href="#" class="close-email-field"><i class="fa-solid fa-circle-xmark"></i></a> </div>');
-  });
+  $(this).parents(".email_clone_div").append('<div class="add-email-field-1 add-email-field mb-2"> <input type="email" name="emails_1" id="" class="form-control"><a href="#" class="close-email-field"><i class="fa-solid fa-circle-xmark"></i></a> </div>');
+});
+
+$("body").on('click' , '.add-email-btn-2' , function (e) {
+  e.preventDefault();
+  $(this).parents(".email_clone_div").append('<div class="add-email-field-2 add-email-field mb-2"> <input type="email" name="emails_2" id="" class="form-control"><a href="#" class="close-email-field"><i class="fa-solid fa-circle-xmark"></i></a> </div>');
+});
+
+$("body").on('click' , '.add-email-btn-3' , function (e) {
+  e.preventDefault();
+  $(this).parents(".email_clone_div").append('<div class="add-email-field-3 add-email-field mb-2"> <input type="email" name="emails_3" id="" class="form-control"><a href="#" class="close-email-field"><i class="fa-solid fa-circle-xmark"></i></a> </div>');
+});
 
 /*=========================== email repeater End =================*/
 

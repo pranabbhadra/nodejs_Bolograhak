@@ -1364,6 +1364,7 @@ a.add-new-hops:hover {
 
 .premium-complain-m-content-body {
     border-bottom: 1px #9A9A9A dashed;
+    padding-bottom: 20px;
 }
 
 .premium-complain-m-content-body .premium-complain-m-content-part {
@@ -1374,6 +1375,14 @@ a.add-new-hops:hover {
     text-align: center;
 }
 
+.premium-complain-m-content-body .premium-complain-m-content-part:nth-child(2) {
+    display: none;
+}
+
+.premium-complain-m-content-body .premium-complain-m-content-part.count_number {
+    margin-bottom: 15px;
+}
+
 .premium-complain-m-content-body .btn-default {
     padding: 7px 10px;
 }
@@ -1381,7 +1390,7 @@ a.add-new-hops:hover {
 .edit-email {
     max-width: 400px;
     margin: 0 auto;
-    display: none;
+    display: block;
 }
 
 .edit-email .form-control {

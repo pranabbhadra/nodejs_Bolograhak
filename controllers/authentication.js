@@ -3660,7 +3660,7 @@ exports.searchPremiumCompany = async (req, res) => {
   const get_company_query = `
   SELECT c.ID, c.company_name
   FROM company c
-  WHERE c.company_name LIKE '%${keyword}%' AND status="1" AND c.membership_type_id >=3
+  WHERE c.company_name LIKE '%${keyword}%' AND status="1" AND c.membership_type_id >=3 AND c.complaint_status = '1'
   GROUP BY c.ID, c.company_name
   ORDER BY c.created_date DESC  
 `;

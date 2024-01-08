@@ -385,6 +385,10 @@ router.post('/delete-discussion', authController.deleteDiscussion);
 
 router.post('/delete-poll', authController.deletePoll);
 
+router.post('/delete-complaint', authController.deleteComplaint);
+
+router.post('/delete-survey', authController.deleteSurvey);
+
 //Notification Content
 router.post('/notification-content',upload.single('image'), authController.notificationContent);
 

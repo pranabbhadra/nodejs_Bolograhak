@@ -442,6 +442,33 @@
                             </div>
                             <!--end::Col-->
                         </div>
+                        
+                        <div class="row mb-6">
+                            <!--begin::Label-->
+                            <label class="col-lg-4 col-form-label fw-bold fs-6">Complaint Status</label>
+                            <!--end::Label-->
+                            <!--begin::Col-->
+                            <div class="col-lg-8 fv-row">
+                                <!--begin::Options-->
+                                <div class="d-flex align-items-center mt-3">
+                                    <!--begin::Option-->
+                                    <label class="form-check form-check-inline form-check-solid me-5">
+                                        <input class="form-check-input mt-1" name="complaint_status" type="radio" value="0" <% if(company.complaint_status != '1' || company.complaint_status == ''){ %>checked <% } %>/>
+                                        <span class="fw-bold fs-6 badge badge-light-danger fw-bolder px-4 py-3">Inactive</span>
+                                    </label>
+                                    <!--end::Option-->
+                                    <!--begin::Option-->
+                                    <label class="form-check form-check-inline form-check-solid me-5">
+                                        <input class="form-check-input mt-1" name="complaint_status" type="radio" value="1" <% if(company.complaint_status == '1'){ %>checked <% } %>/>
+                                        <span class="fw-bold fs-6 badge badge-light-success fw-bolder px-4 py-3">Active</span>
+                                    </label>
+                                    <!--end::Option-->
+                                    <!--end::Option-->
+                                </div>
+                                <!--end::Options-->
+                            </div>
+                            <!--end::Col-->
+                        </div>
                         <!--end::Input group-->
                     </div>
                     <!--end::Card body-->
