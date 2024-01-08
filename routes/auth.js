@@ -79,6 +79,8 @@ router.post('/restore-company', authController.restoreCompany);
 // Add FAQ
 router.post('/create-faq', authController.createFAQ);
 
+router.post('/delete-payment', authController.deletePayment);
+
 // Update FAQ
 router.put('/update-faq', authController.updateFAQ);
 
@@ -250,7 +252,14 @@ router.post('/update-myprofile',upload.single('profile_pic'), authController.upd
 router.post('/update-global-content', authController.updateGlobalContent);
 
 //Update basic-company-profile-management 
-router.post('/basic_company_profile_update', upload.single('logo'), authController.updateBasicCompany);
+//router.post('/basic_company_profile_update', upload.single('logo'), authController.updateBasicCompany);
+router.post('/basic_company_profile_update',upload.fields([
+    
+    { name: 'logo', maxCount: 1 },
+
+    { name: 'gallery_images', maxCount: 100 },
+
+]), authController.updateBasicCompany);
 
 //Update basic-company-profile-management 
 router.post('/premium_company_profile_update',  upload.fields([
@@ -319,10 +328,27 @@ router.post('/create-discussion', authController.createDiscussion);
 router.post('/add-comment', authController.addComment);
 
 //Create create-company-category
-router.post('/create-company-category', authController.createCompanyCategory);
+router.post('/create-company-category',upload.fields([
+
+    { name: 'product_image', maxCount: 100 },
+
+]), authController.createCompanyCategory);
 
 //Delete company-category
 router.post('/delete-company-category', authController.deleteCompanyCategory);
+
+//Delete company-category
+router.post('/delete-company-product', authController.deleteCompanyProduct);
+
+//update-company-product
+router.post('/update-company-product', upload.single('product_img'), authController.updateCompanyProduct);
+
+//update-company-product
+router.post('/add-company-product', upload.fields([
+
+    { name: 'product_image', maxCount: 100 },
+
+]), authController.addCompanyProduct);
 
 //Update company-category
 router.post('/update-company-category', authController.updateCompanyCategory);
@@ -344,6 +370,9 @@ router.post('/user-complaint-rating', authController.userComplaintRating);
 
 // user-complaint-response
 router.post('/user_complaint_response', authController.userComplaintResponse);
+
+// user-complaint-response
+router.post('/escalate-next-level', authController.escalateNextLevel);
 
 //Create Survey
 router.post('/create-survey', authController.createSurvey);
@@ -372,5 +401,10 @@ router.post('/historical-chart-filter', authController.historicalChartFilter);
 // company compare-chart-filter
 router.post('/competitorCompany-chart', authController.competitorCompanyChart);
 
+// add payment details
+router.post('/add-payment', authController.addPayment);
+
+// add payment details
+router.post('/edit-payment', authController.editPayment);
 
 module.exports = router;

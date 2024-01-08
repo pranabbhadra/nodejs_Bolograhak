@@ -202,12 +202,25 @@
     background-color: #ffffff;
 }
 
-.survey-ex-date .custom-form small {
+/* .survey-ex-date .custom-form small {
     font-weight: 400;
     font-size: 13px;
     position: absolute;
     top: -12px;
     left: 19px;
+} */
+
+.survey-ex-date .custom-form small {
+    font-weight: 400;
+    font-size: 13px;
+    position: absolute;
+    top: -7px;
+    left: 12px;
+    text-transform: capitalize;
+    background-color: #fff;
+    line-height: 0;
+    padding: 8px 7px;
+    border-radius: 4px 4px 0px 0px;
 }
 
 .remove-ans, .remove-question {

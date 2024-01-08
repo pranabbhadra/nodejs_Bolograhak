@@ -5,6 +5,7 @@
 <section class="main-content bottom-main-content">
     <div class="survey-content">
        <div class="container">
+         
           <h2 class="inner-main-head"><%- companySurveyQuestions[0].title %></h2>
           <% var questionJsonObject = JSON.parse(companySurveyQuestions[0].questions)
              var jsonString = JSON.stringify(questionJsonObject, null, 2);
@@ -145,10 +146,14 @@
                   <% } %>
                </div>
                <% }); %>
+               <% if(company && company.membership_type_id>=3 ){ %>
                <input type="hidden" name="company_id" value="<%- company.ID %>">
                <input type="hidden" name="survey_unique_id" value="<%- companySurveyQuestions[0].unique_id %>">
                <input type="hidden" name="customer_id" value="<%- currentUserData.user_id %>">
                <div class="text-center mt-5 mb-3"><input type="submit" class="btn-default btn-warning btn-survey-default" value="Submit"></div>
+               <% }else{ %>
+                  <p style="text-align: center; margin-top: 25px; font-weight: 700; font-size: 19px; color: #fb4040;">You cannot submit any survey form for this company, due to membership permission</p>
+               <% } %>
             </form>
             <div class="register-now frm-loading" style="display: none;">
                <span class="indicator-progress">Please wait...

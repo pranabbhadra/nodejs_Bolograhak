@@ -8,6 +8,7 @@
             <div class="main_box">
                <%- include('common/premium-company-sidebar') -%>
             </div>
+            <% if(company && company.membership_type_id>=3 ){ %>
             <div class="each_box update_basic_information all_review_listing_for_company">
                <div class="table-responsive">
                   <table class="table table-hover custom-table">
@@ -86,13 +87,18 @@
                                                 data-complaint-id="<%= compnaint.id %>" data-level-id="<%= compnaint.level_id %>" data-customer-id="<%= compnaint.user_id %>"
                                                 data-bs-target="#customerquerymodal" class="respond-link">Respond
                                                 to customer with query</a></li>
-                                          <!-- <li><a href="#" data-complaint-id="<%= compnaint.id %>" class="respond-link">Respond to customer with query</a></li> -->
 
-                                          <li><a href="#" data-bs-toggle="modal"
+                                          <li>
+                                             <a href="#" data-bs-toggle="modal"
                                                 data-complaint-id="<%= compnaint.id %>" data-level-id="<%= compnaint.level_id %>"  data-customer-id="<%= compnaint.user_id %>"
                                                 data-bs-target="#respondcustomermodal"
-                                                class="respond-link">Respond to customer & Close</a></li>
-                                          <!-- <li><a href="">Escalate to next level</a></li> -->
+                                                class="respond-link">Respond to customer & Close</a>
+                                          </li>
+                                          <% if(compnaint.level_id == 1 && company && company.membership_type_id==4 ){ %> 
+                                             <li>
+                                                <a href="#" class="escalate_next_level" data-complaint-id="<%= compnaint.id %>" data-level-id="<%= compnaint.level_id %>" data-customer-id="<%= compnaint.user_id %>" >Escalate to next level</a>
+                                             </li>
+                                          <% } %>
                                        </ul>
                                     </div>
                                  </span>
@@ -104,6 +110,13 @@
                   </table>
                </div>
             </div>
+            <% }else{ %>
+               <div class="container">
+                  <div class="each_box update_basic_information all_review_listing_for_company">
+                     <h5>You have no permission to access survey features</h5>
+                  </div>
+               </div>
+            <% } %>
          </div>
       </section>
 
@@ -183,6 +196,29 @@
             </div>
          </div>
       </div>
+
+      <!--Escalate Modal -->
+      <div class="modal modal_body_edit fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+         <div class="modal-dialog" role="document">
+           <div class="modal-content">
+             <div class="modal-header" style="border-bottom: none;">
+               <h5 class="modal-title" id="successModalLabel">Success</h5>
+               <button type="button" class="btn-close btn_close_all" data-bs-dismiss="modal"><i
+                  class="fa-solid fa-circle-xmark"></i></button>
+
+             </div>
+             <div class="modal-body">
+               <!-- Display your success message here -->
+               <p id="successMessage"></p>
+             </div>
+             <div class="modal-footer" style="border-top: none;">
+               <button type="button" class="btn btn-secondary btn_close_all" data-bs-dismiss="modal">Close</button>
+               </div>
+           </div>
+         </div>
+       </div>
+
+       
       <!-- ============== Section1 end =============== -->
       <style>
          .complaint-status {
@@ -211,6 +247,22 @@
             height: 15px;
             top: -11px;
          }
+
+         .modal_body_edit #successMessage {
+    border: 1px solid #fccb06;
+    padding: 15px 10px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.modal_body_edit .modal-header{
+   margin-bottom: 0px;
+}
+
+.modal_body_edit .modal-body{
+    border: none !important;
+    margin: 0px !important;
+}
          </style>
 
       <%- include('common/footer') -%>
@@ -292,6 +344,42 @@
                   });
 
                });
+
+               $('.btn_close_all').on('click', function(e){
+                  location.reload(true);
+               })
+
+               $('.escalate_next_level').on('click', function (e) {
+                  const complaintId = $(this).data('complaint-id');
+                  const customerId = $(this).data('customer-id');
+                  const levelId = $(this).data('level-id');
+                  //console.log(complaintId, customerId, levelId)
+                  //alert('aaaaaaaa');
+                  $.ajax({
+                     url:'/auth/escalate-next-level',
+                     method:'POST',
+                     data:JSON.stringify({complaintId:complaintId, customerId:customerId, levelId:levelId }),
+                     contentType:'application/json',
+                     processData:false,
+                     success: function (data){
+                        // $('.response-message').text(data.message);
+                        // $('.response-message').show();
+
+                        // Display success message in the modal
+                        $('#successMessage').text(data.message);
+                        // Open the modal
+                        $('#successModal').modal('show');
+                        setTimeout(function() {
+                           location.reload(true);
+                        }, 3000);
+                     },
+                     error: function(error){
+                        console.log(error);
+                     }
+                  })
+                  //return false;
+               });
+
             });
 
          </script>

@@ -28,4 +28,6 @@ router.post('/complain_category', apiController.complainCategory);
 
 router.post('/complain_sub_category', apiController.complainSubCategory);
 
+router.post('/company_product', apiController.companyProduct);
+
 module.exports = router;

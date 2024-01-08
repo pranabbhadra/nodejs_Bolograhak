@@ -78,10 +78,20 @@
 
                <div class="analytics_data analytics_data_row2">
                   <div class="row align-items-center">
-                     <div class="col-lg-5">
-                        <div id="chartContainer" style="height: 250px; width: 100%;"></div>
-                     </div>
-                     <div class="col-lg-7">
+                        <% var chat_y = 0; 
+                           reviewReatingChartArray.forEach((item, index) => { %>
+                           <% if(item.y > 0){
+                              chat_y++;
+                           } %>
+                        <% }) %>
+                        <% if( chat_y > 0 ){ %>
+                        <div class="col-md-5">
+                           <div id="chartContainer" style="height: 250px; width: 100%;"></div>
+                        </div>
+                        <div class="col-md-7">
+                        <% }else{ %>
+                        <div class="col-md-12">
+                        <% } %>
                         <div class="display_tags">
                            <p>Tags you got</p>
                            <div class="all_tags">
@@ -210,6 +220,8 @@
                <div class="analytics_data analytics_data_row3">
                   <div class="row">
                      <div class="col-lg-6">
+                        <!-- <button id="generatePdfButton">Generate PDF</button> -->
+                        <!-- <button id="exportButton">Export Chart</button> -->
                         <h4 class="sec_heading mb-3">Review Comparison by Product</h4>
                         <div id="productGraph" style="height: 300px; width: 100%;"></div>
                      </div>
@@ -220,7 +232,7 @@
                               <div class="all-inputs">
                                   <div class="custom-form">
                                       <select class="form-select js-example-basic-multiple" name="competitor" multiple="multiple">
-                                       <% if(getSimilarCompany[0].companiesIdArr.length > 0) { %>
+                                       <% if(getSimilarCompany[0] && getSimilarCompany[0].companiesIdArr.length > 0) { %>
                                           <% getSimilarCompany[0].companiesIdArr.forEach((id,index)=>{  %>
                                              <option value="<%= id %>" >Competitor <%= index+1 %> </option>
                                           <% }) %>
@@ -283,7 +295,7 @@
                      </div>
                   </div>
                </div> -->
-               <% if (finalCompanyallReviews.length > 0) { %>
+               <% if (finalCompanyallReviews && finalCompanyallReviews.length > 0) { %>
                <div class="company_dashboard_all_reviews_slider">
                   <div class="review-slider">   
                      <% finalCompanyallReviews.forEach( review => { %>
@@ -310,14 +322,24 @@
                               </p>
                            </div>
                            <% } %>
-                           <% if(review.review_title){ %>
-                           <div class="user-info-panel">
-                              <span><i class="fa-solid fa-box"></i></span>
-                              <p class="m-0">
-                                 <strong>Product/division</strong><br>
-                                 <%- review.review_title -%> 
-                              </p>
-                           </div>
+                           <% if(review && review.product_title){ %>
+                             <div class="user-info-panel">
+                               <span><i class="fa-solid fa-box"></i></span>
+                               <p class="m-0">
+                                  <strong>Product/division</strong><br>
+                                  <%= review.product_title %>
+                               </p>
+                            </div>
+                           <% } else { %>
+                              <% if(review.review_title){ %>
+                              <div class="user-info-panel">
+                                 <span><i class="fa-solid fa-box"></i></span>
+                                 <p class="m-0">
+                                    <strong>Product/division</strong><br>
+                                    <%- review.review_title -%> 
+                                 </p>
+                              </div>
+                              <% } %>
                            <% } %>
                            <div class="user-review-text">
                               <% review.Tags.forEach(tag => { %>
@@ -415,6 +437,10 @@
          <script src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
          <script src="https://cdn.canvasjs.com/jquery.canvasjs.min.js"></script>
          <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+         <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+         <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+
 <script>
    window.onload = function () {
 
@@ -436,7 +462,7 @@
                });
 
                var chart = new CanvasJS.Chart("chartContainer", {
-                  exportEnabled: false,
+                  exportEnabled: true,
                   animationEnabled: true,
                   legend :{ 
                      verticalAlign: "center", 
@@ -463,7 +489,7 @@
 
                var columnChart = new CanvasJS.Chart("columnChart", {
                   animationEnabled: true,
-                  //exportEnabled: true,
+                  exportEnabled: true,
                   theme: "light1", // "light1", "light2", "dark1", "dark2"
                   title: {
                      //text: "Simple Column Chart with Index Labels"
@@ -519,6 +545,7 @@
 
                var chartByDevice = new CanvasJS.Chart("chartContainerByDevice", {
                   animationEnabled: true,
+                  exportEnabled: false,
                   data: [{
                      type: "pyramid",
                      indexLabelFontSize: 18,
@@ -725,6 +752,7 @@
 
     var compareChart = new CanvasJS.Chart("comparechrat", {
       animationEnabled: true,
+      exportEnabled: true,
       title:{
         text: ""
       },  
@@ -757,7 +785,7 @@
           legendText: "No of Reviews",
           showInLegend: true, 
           dataPoints:[
-            { label: "<%= company.company_name %>" , y: <%= CompanyReviewsBetween.total_review_count %> } 
+            { label: "<%= company.company_name %>" , y: <%= CompanyReviewsBetween.total_review_count %>,  indexLabel: "<%= CompanyReviewsBetween.total_review_count %>"  } 
           ]
         },
         {
@@ -769,7 +797,7 @@
           dataPoints:[
             {
                label: "<%= company.company_name %>",
-               y: <%= CompanyReviewsBetween.filter_review_count %>,
+               y: <%= CompanyReviewsBetween.filter_review_count %>,  indexLabel: "<%= CompanyReviewsBetween.filter_review_count %>"
             }
           ]
         },
@@ -780,7 +808,7 @@
           axisYType: "secondary",
           showInLegend: true,
           dataPoints: [
-            { y: <%= CompanyReviewsBetween.total_review_average ? CompanyReviewsBetween.total_review_average.toFixed(1) : 0 %> },
+            { y: <%= CompanyReviewsBetween.total_review_average ? CompanyReviewsBetween.total_review_average.toFixed(1) : 0 %>,  indexLabel: "<%= CompanyReviewsBetween.total_review_average ? CompanyReviewsBetween.total_review_average.toFixed(1) : 0 %>" },
           ]
         },
         {
@@ -791,7 +819,7 @@
           showInLegend: true,
           dataPoints: [
             {
-               y: <%= CompanyReviewsBetween.filter_review_average ? CompanyReviewsBetween.filter_review_average.toFixed(1) : 0 %>,
+               y: <%= CompanyReviewsBetween.filter_review_average ? CompanyReviewsBetween.filter_review_average.toFixed(1) : 0 %>,  indexLabel: "<%= CompanyReviewsBetween.filter_review_average ? CompanyReviewsBetween.filter_review_average.toFixed(1) : 0 %>"
             }
           ]
         },
@@ -829,12 +857,16 @@
          compareChart.options.data.forEach(function (series) {
             if (series.name === "Total No of Reviews") {
                   series.dataPoints[0].y = totalReviewCount;
+                  series.dataPoints[0].indexLabel= `${totalReviewCount}`;
             } else if (series.name === " Filtered Reviews") {
                   series.dataPoints[0].y = filterReviewCount;
+                  series.dataPoints[0].indexLabel= `${filterReviewCount}`;
             } else if (series.name === "Overall Avg Rating") {
                   series.dataPoints[0].y = totalReviewAverage ? parseFloat(totalReviewAverage.toFixed(1)) : 0;
+                  series.dataPoints[0].indexLabel= `${totalReviewAverage ? parseFloat(totalReviewAverage.toFixed(1)) : 0}`;
             } else if (series.name === "Filtered Avg Rating") {
                   series.dataPoints[0].y = filterReviewAverage ? parseFloat(filterReviewAverage.toFixed(1)) : 0;
+                  series.dataPoints[0].indexLabel= `${filterReviewAverage ? parseFloat(filterReviewAverage.toFixed(1)) : 0}`;
             }
          });
 
@@ -855,7 +887,7 @@
 //=============================== Historical chart start =============================
 
    var historicalchrat = {
-        exportEnabled: false,
+        exportEnabled: true,
         animationEnabled: true,
         toolTip: {
           shared: true
@@ -873,7 +905,7 @@
           dataPoints: [
           <% CompanyHistoricalReviewData.forEach((item, index) => { %>
                         
-                        { x: new Date('<%= item.x %>'), y: <%= item.y %>  },
+                        { x: new Date('<%= item.x %>'), y: <%= item.y %>,  indexLabel: "<%= item.y %>"  },
                         <% }) %>
          ],
         }]
@@ -910,7 +942,8 @@
                      xValueFormatString = "#,#0"; // Week number and year
                      const weeklyData = data.data.map(entry => ({
                         x: entry.date_group,
-                        y: entry.average_rating
+                        y: entry.average_rating,  
+                        indexLabel: `${entry.average_rating}`
                      }));
                      historicalchrat.data[0].dataPoints = weeklyData;
                      historicalchrat.data[0].xValueFormatString = xValueFormatString;
@@ -927,7 +960,8 @@
                      xValueFormatString = "MMM "; 
                      let formattedData = data.data.map(entry => ({
                         x:new Date(2023,entry.date_group) ,
-                        y: entry.average_rating
+                        y: entry.average_rating,  
+                        indexLabel: `${entry.average_rating}`
                      }));
                      //historicalchrat.options.axisX.valueFormatString = "MMM";
                      historicalchrat.data[0].dataPoints = formattedData;
@@ -942,7 +976,8 @@
                      xValueFormatString = "YY"; // Month abbreviation and year
                      let yearlyData = data.data.map(entry => ({
                         x:new Date(2023,entry.date_group) ,
-                        y: entry.average_rating
+                        y: entry.average_rating,  
+                        indexLabel: `${entry.average_rating}`
                      }));
                      historicalchrat.data[0].dataPoints = yearlyData;
                      historicalchrat.data[0].xValueFormatString = xValueFormatString;
@@ -956,7 +991,8 @@
                      xValueFormatString = "DD MMM YYYY"; // Default format for daily
                      const dailyData= data.data.map(entry => ({
                         x: new Date(entry.created_at),
-                        y: entry.average_rating
+                        y: entry.average_rating,  
+                        indexLabel: `${entry.average_rating}`
                      }));
                      console.log(dailyData);
                      historicalchrat.data[0].dataPoints = dailyData;
@@ -983,7 +1019,7 @@
       //=============================== Product chart Start =============================
          
       var productGraph = {
-        exportEnabled: false,
+        exportEnabled: true,
         animationEnabled: true,
         legend: {
           horizontalAlign: "right",
@@ -1004,11 +1040,49 @@
           ]
         }]
       };
+
+      
+      function generatePdf() {
+         // Your existing chart configuration
+         var chart = new CanvasJS.Chart("productGraph", productGraph);
+
+         // chart.renderCompleted = function () {
+         //    alert('aaaaaaaaaa')
+            // Generate PDF using html2pdf.js
+            html2pdf(chart.container, {
+               margin: 10,
+               filename: 'product_chart.pdf',
+               image: { type: 'jpeg', quality: 0.98 },
+               html2canvas: { scale: 2 },
+               jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            }).then(function (pdf) {
+               // Save the PDF using FileSaver.js
+               pdf.output('blob').then(function (blob) {
+                     saveAs(blob, 'product_chart.pdf');
+               });
+            });
+         //}
+         // Render the chart
+         chart.render();
+      }
+
       $("#productGraph").CanvasJSChart(productGraph);
+
+      // Handle button click
+      // $("#generatePdfButton").on("click", function () {
+      //    generatePdf();
+      // });
+      // Export button click event
+   //  $("#exportButton").on("click", function () {
+   //      // Trigger chart export
+   //      $("#productGraph").CanvasJSChart().exportChart({ format: "pdf" }); // You can change the format to "png" or "jpeg"
+   //  });
       //=============================== Product chart end =============================
       
       //=============================== Compare Performance chart Start =============================
       var newChart = new CanvasJS.Chart("performanceChart", {
+        exportEnabled: true, // Enable export
+        animationEnabled: true,
         axisX: {
           title: ""
         },
@@ -1030,7 +1104,7 @@
           name: " Overall Rating",
           showInLegend: true,
           dataPoints: [
-            { label: "<%= company.company_name %>", y: <%= CompanyReviewsBetween.total_review_average ? CompanyReviewsBetween.total_review_average.toFixed(1) : 0 %> },
+            { label: "<%= company.company_name %>", y: <%= CompanyReviewsBetween.total_review_average ? CompanyReviewsBetween.total_review_average.toFixed(1) : 0 %>,  indexLabel: "<%= CompanyReviewsBetween.total_review_average ? CompanyReviewsBetween.total_review_average.toFixed(1) : 0 %>"  },
             // { label: "Point 2", y: 2 },
           ]
         },
@@ -1040,7 +1114,7 @@
           axisYType: "secondary",
           showInLegend: true,
           dataPoints: [
-            { label: "<%= company.company_name %>", y: <%= CompanyReviewsBetween.filter_review_average ? CompanyReviewsBetween.filter_review_average.toFixed(1) : 0 %> },
+            { label: "<%= company.company_name %>", y: <%= CompanyReviewsBetween.filter_review_average ? CompanyReviewsBetween.filter_review_average.toFixed(1) : 0 %>,  indexLabel: "<%= CompanyReviewsBetween.filter_review_average ? CompanyReviewsBetween.filter_review_average.toFixed(1) : 0 %>" },
             // { label: "Point 2", y: 2 },
           ]
         }]
@@ -1075,10 +1149,10 @@
                         // Update column data for competitors
                         const columnDataPoints = competitors.map((item, index) => ({
                            label: `Competitor ${index + 1}`,
-                           y: item.total_review_average ? parseInt(item.total_review_average.toFixed(1))  : 0
+                           y: item.total_review_average ? parseInt(item.total_review_average.toFixed(1))  : 0,  indexLabel: `${item.total_review_average ? parseInt(item.total_review_average.toFixed(1))  : 0}`
                         }));
                         newChart.options.data[0].dataPoints = [
-                           { label: data.company_name, y: ownCompany.total_review_average ? parseInt(ownCompany.total_review_average.toFixed(1))  : 0 },
+                           { label: data.company_name, y: ownCompany.total_review_average ? parseInt(ownCompany.total_review_average.toFixed(1))  : 0,  indexLabel: `${ownCompany.total_review_average ? parseInt(ownCompany.total_review_average.toFixed(1))  : 0}` },
                            ...columnDataPoints
                         ];
 
@@ -1086,13 +1160,13 @@
                         // Update line data for competitors
                         const lineDataPoints = competitors.map((item, index) => ({
                            label: `Competitor ${index + 1}`,
-                           y: item.filter_review_average ? parseInt(item.filter_review_average.toFixed(1))  : 0,
+                           y: item.filter_review_average ? parseInt(item.filter_review_average.toFixed(1))  : 0,  indexLabel: `${item.filter_review_average ? parseInt(item.filter_review_average.toFixed(1))  : 0}`
                            //y:12
                         }));
                         newChart.options.data[1].dataPoints = [
                            { 
                               label: data.company_name, 
-                              y: ownCompany.filter_review_average ? parseInt(ownCompany.filter_review_average.toFixed(1))  : 0 
+                              y: ownCompany.filter_review_average ? parseInt(ownCompany.filter_review_average.toFixed(1))  : 0 ,  indexLabel: `${ownCompany.filter_review_average ? parseInt(ownCompany.filter_review_average.toFixed(1))  : 0}`
                            },
                            ...lineDataPoints
                         ];
