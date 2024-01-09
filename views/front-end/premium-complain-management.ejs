@@ -14,526 +14,539 @@
           </div>
           <!-- ========================================================= -->
           <% if(company && company.membership_type_id == 3 ){ %>
-            <div class="premium-complain-m-wrap">
-               <div class="premium-complain-m-content-body">
-                  <form class="level_form">
-                     <input type="hidden" value="1" name="label_count" class="label_count">
-                     <input type="hidden" name="company_id" value="<%= company.ID %>" class="">
-                     <div class="row g-2 align-items-center justify-content-arround mb-2">
-                        <div class="col-sm-6">
-                           <label for="" class="col-form-label"><strong>Complaint Status</strong></label>
-                        </div>
-                        <div class="col-sm-6">
-                           <div class="custom-form mb-0 text-end">
-                              <div class="form-check form-check-inline">
-                                 <input class="form-check-input inactive-level" type="radio" name="complaint_status"  id="inlineRadio1" value="0" checked ><label class="form-check-label" for="inlineRadio1">Inactive</label>
-                              </div>
-                              <div class="form-check form-check-inline">
-                                 <input class="form-check-input active-level form-check-inline" type="radio" name="complaint_status"  id="inlineRadio2" value="1" ><label class="form-check-label" for="inlineRadio2">Active</label>
-                              </div>
+            <% if(ComplaintLevelDetails.length > 0 ){ %>
+               <div class="premium-complain-m-wrap">
+                  <div class="premium-complain-m-content-body">
+                     <form class="level_form">
+                        <input type="hidden" value="1" name="label_count" class="label_count">
+                        <input type="hidden" name="company_id" value="<%= company.ID %>" class="">
+                        <div class="row g-2 align-items-center justify-content-arround mb-2">
+                           <div class="col-sm-6">
+                              <label for="" class="col-form-label"><strong>Complaint Status</strong></label>
                            </div>
-                        </div>
-                     </div>
-                     <div class="toggle-emails">
-                        <!-- head section start -->
-                        <div class="premium-complain-m-content-head">
-                           <div class="premium-complain-m-content-part">
-                              Level
-                           </div>
-                           <!-- <div class="premium-complain-m-content-part">
-                              Action
-                           </div> -->
-                        </div>
-                        <!-- head section end -->
-                        <div class="premium-complain-m-content-repeat">
-                           <div class="premium-complain-m-content-part count_number">
-                              1
-                           </div>
-                           <!-- <div class="premium-complain-m-content-part">
-                              <a href="#" class="btn-default btn-warning edit-save-btn">Edit</a>
-                           </div> -->
-                        </div>
-                        <!-- edit email slide down start -->
-                        <div class="edit-email" style="display: block;">
-                           <!-- <div class="row g-2 align-items-center justify-content-around mb-2">
-                              <div class="col-sm-6">
-                              <label for="" class="col-form-label"><strong>Level</strong></label>
-                              </div>
-                              <div class="col-sm-6">
-                              <input type="number" name="label_count" id="" class="form-control" value="1" >
-                              </div>
-                           </div> -->
-                           <div class="row g-2 align-items-center justify-content-around mb-2">
-                              <div class="col-sm-6">
-                                 <label for="" class="col-form-label"><strong>ETA Days</strong></label>
-                              </div>
-                              <div class="col-sm-6">
-                                 <input type="number" name="eta_days_1" id="" class="form-control required" required>
-                              </div>
-                           </div>
-                           <div class="row g-2 justify-content-around mb-2">
-                              <div class="col-sm-6 email_field_label">
-                                 <label for="" class="col-form-label"><strong>Enter Your E-Mail Address</strong></label>
-                              </div>
-                              <div class="col-sm-6 email_clone_div">
-                                 <div class="add-email-field-1 add-email-field ff mb-2">
-                                    <input type="email" name="emails_1" id="" class="form-control required" required>
+                           <div class="col-sm-6">
+                              <div class="custom-form mb-0 text-end">
+                                 <div class="form-check form-check-inline">
+                                    <input class="form-check-input inactive-level" type="radio" name="complaint_status"  id="inlineRadio1" value="0" <% if(company && company.complaint_status != '1') { %> checked <% } %> ><label class="form-check-label" for="inlineRadio1">Inactive</label>
                                  </div>
-                              <a href="#" class="add-email-btn-1 add-email-btn"><i class="fa-solid fa-circle-plus"></i></a>
-                              </div>
-                           </div>
-                        </div>
-                     </div>
-                     <div class="d-flex justify-content-end align-items-center">
-                        <button type="submit" class="btn-default btn-warning each_form_submut" >Save</button>
-                     </div>
-                  </form>
-                  <!-- edit email slide down end -->
-               </div>
-            </div>
-         <% } else if(company && company.membership_type_id == 5) { %>
-            <div class="premium-complain-m-wrap">
-               <div class="premium-complain-m-content-body">
-                  <form class="level_form">
-                     <input type="hidden" value="2" name="label_count" class="label_count">
-                     <input type="hidden" name="company_id" value="<%= company.ID %>" class="">
-                     <div class="row g-2 align-items-center justify-content-arround mb-2">
-                        <div class="col-sm-6">
-                           <label for="" class="col-form-label"><strong>Complaint Status</strong></label>
-                        </div>
-                        <div class="col-sm-6">
-                           <div class="custom-form mb-0 text-end">
-                              <div class="form-check form-check-inline">
-                                 <input class="form-check-input inactive-level" type="radio" name="complaint_status"  id="inlineRadio1" value="0" ><label class="form-check-label" for="inlineRadio1">Inactive</label>
-                              </div>
-                              <div class="form-check form-check-inline">
-                                 <input class="form-check-input active-level form-check-inline" type="radio" name="complaint_status"  id="inlineRadio2" value="1" ><label class="form-check-label" for="inlineRadio2">Active</label>
-                              </div>
-                           </div>
-                        </div>
-                     </div>
-                     <!-- head section start -->
-
-                     <div class="toggle-emails">
-                        <div class="premium-complain-m-content-head">
-                           <div class="premium-complain-m-content-part">
-                              Level
-                           </div>
-                           <!-- <div class="premium-complain-m-content-part">
-                              Action
-                           </div> -->
-                        </div>
-                        <!-- head section end -->
-                        <div class="premium-complain-m-content-repeat">
-                           <div class="premium-complain-m-content-part count_number">
-                              1
-                           </div>
-                           <!-- <div class="premium-complain-m-content-part">
-                              <a href="#" class="btn-default btn-warning edit-save-btn">Edit</a>
-                           </div> -->
-                        </div>
-                        <!-- edit email slide down start -->
-                        <div class="edit-email">
-                           <!-- <div class="row g-2 align-items-center justify-content-around mb-2">
-                              <div class="col-sm-6">
-                              <label for="" class="col-form-label"><strong>Level</strong></label>
-                              </div>
-                              <div class="col-sm-6">
-                              <input type="number" name="label_count" id="" class="form-control" value="1" >
-                              </div>
-                           </div> -->
-                           <div class="row g-2 align-items-center justify-content-around mb-2">
-                              <div class="col-sm-6">
-                                 <label for="" class="col-form-label"><strong>ETA Days</strong></label>
-                              </div>
-                              <div class="col-sm-6">
-                                 <input type="number" name="eta_days_1" id="" class="form-control required">
-                              </div>
-                           </div>
-                           <div class="row g-2 justify-content-around mb-2">
-                              <div class="col-sm-6 email_field_label">
-                                 <label for="" class="col-form-label"><strong>Enter Your E-Mail Address</strong></label>
-                              </div>
-                              <div class="col-sm-6 email_clone_div">
-                                 <div class="add-email-field add-email-field-1 ff mb-2">
-                                    <input type="email" name="emails_1" id="" class="form-control required">
+                                 <div class="form-check form-check-inline">
+                                    <input class="form-check-input active-level form-check-inline" type="radio" name="complaint_status"  id="inlineRadio2" value="1" <% if(company && company.complaint_status == '1') { %> checked <% } %> ><label class="form-check-label" for="inlineRadio2">Active</label>
                                  </div>
-                              <a href="#" class="add-email-btn add-email-btn-1"><i class="fa-solid fa-circle-plus"></i></a>
                               </div>
                            </div>
                         </div>
-                        <!-- 2nd level -->
-                        <div class="premium-complain-m-content-repeat">
-                           <div class="premium-complain-m-content-part count_number">
-                              2
+                        <div class="toggle-emails">
+                           <!-- head section start -->
+                           <div class="premium-complain-m-content-head">
+                              <div class="premium-complain-m-content-part">
+                                 Level
+                              </div>
+                              <!-- <div class="premium-complain-m-content-part">
+                                 Action
+                              </div> -->
                            </div>
-                           <div class="premium-complain-m-content-part">
-                              <!-- <a href="#" class="btn-default btn-warning edit-save-btn">Edit</a> -->
+                           <!-- head section end -->
+                           <div class="premium-complain-m-content-repeat">
+                              <div class="premium-complain-m-content-part count_number">
+                                 1
+                              </div>
+                              <!-- <div class="premium-complain-m-content-part">
+                                 <a href="#" class="btn-default btn-warning edit-save-btn">Edit</a>
+                              </div> -->
                            </div>
-                        </div>
-                        <!-- edit email slide down start -->
-                        <div class="edit-email">
-                           <!-- <div class="row g-2 align-items-center justify-content-around mb-2">
-                              <div class="col-sm-6">
-                              <label for="" class="col-form-label"><strong>Level</strong></label>
-                              </div>
-                              <div class="col-sm-6">
-                              <input type="number" name="label_count" id="" class="form-control" value="1" >
-                              </div>
-                           </div> -->
-                           <div class="row g-2 align-items-center justify-content-around mb-2">
-                              <div class="col-sm-6">
-                                 <label for="" class="col-form-label"><strong>ETA Days</strong></label>
-                              </div>
-                              <div class="col-sm-6">
-                                 <input type="number" name="eta_days_2" id="" class="form-control required">
-                              </div>
-                           </div>
-                           <div class="row g-2 justify-content-around mb-2">
-                              <div class="col-sm-6 email_field_label">
-                                 <label for="" class="col-form-label"><strong>Enter Your E-Mail Address</strong></label>
-                              </div>
-                              <div class="col-sm-6 email_clone_div">
-                                 <div class="add-email-field add-email-field-2 ff mb-2">
-                                    <input type="email" name="emails_2" id="" class="form-control required">
+                           <!-- edit email slide down start -->
+                           <div class="edit-email" style="display: block;">
+                              <!-- <div class="row g-2 align-items-center justify-content-around mb-2">
+                                 <div class="col-sm-6">
+                                 <label for="" class="col-form-label"><strong>Level</strong></label>
                                  </div>
-                              <a href="#" class="add-email-btn add-email-btn-2"><i class="fa-solid fa-circle-plus"></i></a>
-                              </div>
-                           </div>
-                        </div>
-                        
-                     </div>
-
-                     <div class="d-flex justify-content-end align-items-center">
-                        <button type="submit" class="btn-default btn-warning each_form_submut" >Save</button>
-                     </div>
-                  </form>
-                  <!-- edit email slide down end -->
-               </div>
-            </div>
-         <% } else if(company && company.membership_type_id == 4) { %>
-            <div class="premium-complain-m-wrap">
-               <div class="premium-complain-m-content-body">
-                  <form class="level_form">
-                     <input type="hidden" value="3" name="label_count" class="label_count">
-                     <input type="hidden" name="company_id" value="<%= company.ID %>" class="">
-                     <div class="row g-2 align-items-center justify-content-around mb-2">
-                        <div class="col-sm-6">
-                           <label for="" class="col-form-label"><strong>Complaint Status</strong></label>
-                        </div>
-                        <div class="col-sm-6">
-                           <input class="form-check-input" type="radio" name="complaint_status"  id="inlineRadio1" value="0" >
-                           <label class="form-check-label" for="inlineRadio1">Inactive</label>
-                           <input class="form-check-input" type="radio" name="complaint_status"  id="inlineRadio2" value="1" >
-                           <label class="form-check-label" for="inlineRadio2">Active</label>
-                        </div>
-                     </div>
-                     <div class="toggle-emails">
-                        
-                        <!-- head section start -->
-                        <div class="premium-complain-m-content-head">
-                           <div class="premium-complain-m-content-part">
-                              Level
-                           </div>
-                           <div class="premium-complain-m-content-part">
-                              Action
-                           </div>
-                        </div>
-                        <!-- head section end -->
-                        <div class="premium-complain-m-content-repeat">
-                           <div class="premium-complain-m-content-part count_number">
-                              1
-                           </div>
-                           <div class="premium-complain-m-content-part">
-                              <a href="#" class="btn-default btn-warning edit-save-btn">Edit</a>
-                           </div>
-                        </div>
-                        <!-- edit email slide down start -->
-                        <div class="edit-email">
-                           <!-- <div class="row g-2 align-items-center justify-content-around mb-2">
-                              <div class="col-sm-6">
-                              <label for="" class="col-form-label"><strong>Level</strong></label>
-                              </div>
-                              <div class="col-sm-6">
-                              <input type="number" name="label_count" id="" class="form-control" value="1" >
-                              </div>
-                           </div> -->
-                           <div class="row g-2 align-items-center justify-content-around mb-2">
-                              <div class="col-sm-6">
-                                 <label for="" class="col-form-label"><strong>ETA Days</strong></label>
-                              </div>
-                              <div class="col-sm-6">
-                                 <input type="number" name="eta_days_1" id="" class="form-control required">
-                              </div>
-                           </div>
-                           <div class="row g-2 justify-content-around mb-2">
-                              <div class="col-sm-6 email_field_label">
-                                 <label for="" class="col-form-label"><strong>Enter Your E-Mail Address</strong></label>
-                              </div>
-                              <div class="col-sm-6 email_clone_div">
-                                 <div class="add-email-field add-email-field-1 ff mb-2">
-                                    <input type="email" name="emails_1" id="" class="form-control required">
+                                 <div class="col-sm-6">
+                                 <input type="number" name="label_count" id="" class="form-control" value="1" >
                                  </div>
-                              <a href="#" class="add-email-btn add-email-btn-1"><i class="fa-solid fa-circle-plus"></i></a>
-                              </div>
-                           </div>
-                        </div>
-                        <!-- 2nd level -->
-                        <div class="premium-complain-m-content-repeat">
-                           <div class="premium-complain-m-content-part count_number">
-                              2
-                           </div>
-                           <div class="premium-complain-m-content-part">
-                              <!-- <a href="#" class="btn-default btn-warning edit-save-btn">Edit</a> -->
-                           </div>
-                        </div>
-                        <!-- edit email slide down start -->
-                        <div class="edit-email">
-                           <!-- <div class="row g-2 align-items-center justify-content-around mb-2">
-                              <div class="col-sm-6">
-                              <label for="" class="col-form-label"><strong>Level</strong></label>
-                              </div>
-                              <div class="col-sm-6">
-                              <input type="number" name="label_count" id="" class="form-control" value="1" >
-                              </div>
-                           </div> -->
-                           <div class="row g-2 align-items-center justify-content-around mb-2">
-                              <div class="col-sm-6">
-                                 <label for="" class="col-form-label"><strong>ETA Days</strong></label>
-                              </div>
-                              <div class="col-sm-6">
-                                 <input type="number" name="eta_days_2" id="" class="form-control required">
-                              </div>
-                           </div>
-                           <div class="row g-2 justify-content-around mb-2">
-                              <div class="col-sm-6 email_field_label">
-                                 <label for="" class="col-form-label"><strong>Enter Your E-Mail Address</strong></label>
-                              </div>
-                              <div class="col-sm-6 email_clone_div">
-                                 <div class="add-email-field add-email-field-2 ff mb-2">
-                                    <input type="email" name="emails_2" id="" class="form-control required">
+                              </div> -->
+                              <div class="row g-2 align-items-center justify-content-around mb-2">
+                                 <div class="col-sm-6">
+                                    <label for="" class="col-form-label"><strong>ETA Days</strong></label>
                                  </div>
-                              <a href="#" class="add-email-btn add-email-btn-2"><i class="fa-solid fa-circle-plus"></i></a>
-                              </div>
-                           </div>
-                           <!-- <div class="d-flex justify-content-end align-items-center">
-                              <button type="submit" class="btn-default btn-warning each_form_submut" >Save</button>
-                           </div> -->
-                        </div>
-                        <!-- 2nd level -->
-                        <div class="premium-complain-m-content-repeat">
-                           <div class="premium-complain-m-content-part count_number">
-                              3
-                           </div>
-                           <div class="premium-complain-m-content-part">
-                              <!-- <a href="#" class="btn-default btn-warning edit-save-btn">Edit</a> -->
-                           </div>
-                        </div>
-                        <!-- edit email slide down start -->
-                        <div class="edit-email">
-                           <!-- <div class="row g-2 align-items-center justify-content-around mb-2">
-                              <div class="col-sm-6">
-                              <label for="" class="col-form-label"><strong>Level</strong></label>
-                              </div>
-                              <div class="col-sm-6">
-                              <input type="number" name="label_count" id="" class="form-control" value="1" >
-                              </div>
-                           </div> -->
-                           <div class="row g-2 align-items-center justify-content-around mb-2">
-                              <div class="col-sm-6">
-                                 <label for="" class="col-form-label"><strong>ETA Days</strong></label>
-                              </div>
-                              <div class="col-sm-6">
-                                 <input type="number" name="eta_days_3" id="" class="form-control required">
-                              </div>
-                           </div>
-                           <div class="row g-2 justify-content-around mb-2">
-                              <div class="col-sm-6 email_field_label">
-                                 <label for="" class="col-form-label"><strong>Enter Your E-Mail Address</strong></label>
-                              </div>
-                              <div class="col-sm-6 email_clone_div">
-                                 <div class="add-email-field add-email-field-3 ff mb-2">
-                                    <input type="email" name="emails_3" id="" class="form-control required">
+                                 <div class="col-sm-6">
+                                    <input type="number" name="eta_days_1" id="" class="form-control required" value="<%= ComplaintLevelDetails[0].eta_days %>" required>
                                  </div>
-                              <a href="#" class="add-email-btn add-email-btn-3"><i class="fa-solid fa-circle-plus"></i></a>
                               </div>
-                           </div>
-                        </div>
-                     </div>
-                     <div class="d-flex justify-content-end align-items-center">
-                        <button type="submit" class="btn-default btn-warning each_form_submut" >Save</button>
-                     </div>
-                  </form>
-                  <!-- edit email slide down end -->
-               </div>
-            </div>
-          <% }else{ %>
-            <div class="container">
-               <div class="each_box update_basic_information all_review_listing_for_company">
-                  <h5>You have no permission to access survey features</h5>
-               </div>
-            </div>
-         <% } %>
-<!-- ================================================================= -->
-          
-          <% if(company && company.membership_type_id >= 3 ){ %>
-          <div class="premium-complain-m-wrap">
-            <!-- head section start -->
-             <div class="premium-complain-m-content-head">
-                <div class="premium-complain-m-content-part">
-                   Level
-                </div>
-                <div class="premium-complain-m-content-part">
-                   Action
-                </div>
-             </div>
-             <!-- head section end -->
-             
-               <div class="premium-complain-clone">
-                  <% if(ComplaintLevelDetails.length > 0 ){ %>
-                     <% var exitLoop = false; %>
-                     <% ComplaintLevelDetails.sort((a, b) => a.level - b.level).forEach((level, index) => { %>
-                        <% if( company && company.membership_type_id == 3 && index >= 1){ %>
-                           <% exitLoop = true; %>
-                        <% } %>
-                        <% if (!exitLoop) { %>
-                           <div class="premium-complain-m-content-body">
-                              <form class="level_form">
-                                 <input type="hidden" value="<%= level.level %>" name="label_count" class="label_count">
-                                 <input type="hidden" name="company_id" value="<%= company.ID %>" class="">
-                                 <div class="row g-2 align-items-center justify-content-around mb-2">
-                                    <div class="col-sm-6">
-                                       <label for="" class="col-form-label"><strong>Complaint Status</strong></label>
+                              <div class="row g-2 justify-content-around mb-2">
+                                 <div class="col-sm-6 email_field_label">
+                                    <label for="" class="col-form-label"><strong>Enter Your E-Mail Address</strong></label>
+                                 </div>
+                                 <!-- <div class="col-sm-6 email_clone_div">
+                                    <div class="add-email-field-1 add-email-field ff mb-2">
+                                       <input type="email" name="emails_1" id="" class="form-control required" required>
                                     </div>
-                                    <div class="col-sm-6">
-                                       <input class="form-check-input" type="radio" name="complaint_status"  id="inlineRadio1" value="0" >
-                                       <label class="form-check-label" for="inlineRadio1">Inactive</label>
-                                       <input class="form-check-input" type="radio" name="complaint_status"  id="inlineRadio2" value="1" >
-                                       <label class="form-check-label" for="inlineRadio2">Active</label>
-                                    </div>
-                                 </div>
-                                 <div class="premium-complain-m-content-repeat">
-                                    <div class="premium-complain-m-content-part count_number">
-                                    <%= level.level %>
-                                    </div>
-                                    <div class="premium-complain-m-content-part">
-                                    <a href="#" class="btn-default btn-warning edit-save-btn">Edit</a>
-                                    </div>
-                                 </div>
-                                 <!-- edit email slide down start -->
-                                 <div class="edit-email">
-                                    <div class="row g-2 align-items-center justify-content-around mb-2">
-                                       <div class="col-sm-6">
-                                          <label for="" class="col-form-label"><strong>ETA Days</strong></label>
-                                       </div>
-                                       <div class="col-sm-6">
-                                          <input type="number" name="eta_days" id="" class="form-control" value="<%= level.eta_days %>" >
-                                       </div>
-                                    </div>
-                                    <div class="row g-2 justify-content-around mb-2">
-                                    <div class="col-sm-6 email_field_label">
-                                       <label for="" class="col-form-label"><strong>Enter Your E-Mail Address</strong></label>
-                                    </div>
-                                    <% const emails = JSON.parse(level.emails) %>
+                                    <a href="#" class="add-email-btn-1 add-email-btn"><i class="fa-solid fa-circle-plus"></i></a>
+                                 </div> -->
+                                 <% const emails = JSON.parse(ComplaintLevelDetails[0].emails) %>
                                     <% if (emails.length > 0) { %>
                                        <div class="col-sm-6 email_clone_div">
                                        <% emails.forEach((email,key) => { %>
                                           <% if(key == 0) { %>
-                                             <div class="add-email-field ff mb-2">
-                                                <input type="email" name="emails" value="<%= email %>" id="" class="form-control">
-                                                <a href="#" class="add-email-btn"><i class="fa-solid fa-circle-plus"></i></a>
+                                             <div class="add-email-field add-email-field-1 ff mb-2">
+                                                <input type="email" name="emails_1" value="<%= email %>" id="" class="form-control">
+                                                <a href="#" class="add-email-btn add-email-btn-1"><i class="fa-solid fa-circle-plus"></i></a>
                                              </div>
                                              
                                              
                                           <% } else { %>
                                                 <div class="add-email-field ff mb-2">
-                                                   <input type="email" name="emails" value="<%= email %>" id="" class="form-control">
-                                                   <a href="#" class="close-email-field"><i class="fa-solid fa-circle-xmark"></i></a>
+                                                   <input type="email" name="emails_1" value="<%= email %>" id="" class="form-control">
+                                                   <a href="#" class="close-email-field add-email-btn-1"><i class="fa-solid fa-circle-xmark"></i></a>
                                                 </div>
-                                                
-                                                
+                                                                                                
                                           <% } %>
                                        <% }) %>
-                                       
-                                       </div>
-                                    <% } else { %>
-                                       <div class="col-sm-6 email_clone_div">
-                                          <div class="add-email-field ff mb-2">
-                                          <input type="email" name="emails" id="" class="form-control">
-                                          </div>
-                                          <a href="#" class="add-email-btn"><i class="fa-solid fa-circle-plus"></i></a>
-                                       </div>
                                     <% } %>
-                                    </div>
-                                    <div class="d-flex justify-content-end align-items-center">
-                                    <button type="submit" class="btn-default btn-warning each_form_submut">Save</button>
-                                    </div>
                                  </div>
-                              </form>
-                              <% if(index > 1 && ComplaintLevelDetails.length == index+1) { %>
-                              <a class="close-level delete-level" data-level-id="<%= level.id%>"  data-company-id="<%= company.ID %>" data-bs-toggle="modal" data-bs-target="#surealertmodal" href=#><i class="fa-solid fa-circle-xmark"></i></a>
-                              <% } %>
-                              <!-- edit email slide down end -->
+                              </div>
                            </div>
-                        <% } %>
-                     <% }) %>
-                     <% if( ComplaintLevelDetails.length == 1 && company && company.membership_type_id==4 ){ %> 
-                        <div class="premium-complain-m-content-body">
-                           <form class="level_form">
-                              <input type="hidden" value="2" name="label_count" class="label_count">
-                              <input type="hidden" name="company_id" value="<%= company.ID %>" class="">
+                        </div>
+                        <div class="d-flex justify-content-end align-items-center">
+                           <button type="submit" class="btn-default btn-warning each_form_submut" >Save</button>
+                        </div>
+                     </form>
+                     <!-- edit email slide down end -->
+                  </div>
+               </div>
+            <% } else { %> 
+               <div class="premium-complain-m-wrap">
+                  <div class="premium-complain-m-content-body">
+                     <form class="level_form">
+                        <input type="hidden" value="1" name="label_count" class="label_count">
+                        <input type="hidden" name="company_id" value="<%= company.ID %>" class="">
+                        <div class="row g-2 align-items-center justify-content-arround mb-2">
+                           <div class="col-sm-6">
+                              <label for="" class="col-form-label"><strong>Complaint Status</strong></label>
+                           </div>
+                           <div class="col-sm-6">
+                              <div class="custom-form mb-0 text-end">
+                                 <div class="form-check form-check-inline">
+                                    <input class="form-check-input inactive-level" type="radio" name="complaint_status"  id="inlineRadio1" value="0" <% if(company && company.complaint_status != '1') { %> checked <% } %> ><label class="form-check-label" for="inlineRadio1">Inactive</label>
+                                 </div>
+                                 <div class="form-check form-check-inline">
+                                    <input class="form-check-input active-level form-check-inline" type="radio" name="complaint_status"  id="inlineRadio2" value="1" <% if(company && company.complaint_status == '1') { %> checked <% } %> ><label class="form-check-label" for="inlineRadio2">Active</label>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="toggle-emails">
+                           <!-- head section start -->
+                           <div class="premium-complain-m-content-head">
+                              <div class="premium-complain-m-content-part">
+                                 Level
+                              </div>
+                              <!-- <div class="premium-complain-m-content-part">
+                                 Action
+                              </div> -->
+                           </div>
+                           <!-- head section end -->
+                           <div class="premium-complain-m-content-repeat">
+                              <div class="premium-complain-m-content-part count_number">
+                                 1
+                              </div>
+                              <!-- <div class="premium-complain-m-content-part">
+                                 <a href="#" class="btn-default btn-warning edit-save-btn">Edit</a>
+                              </div> -->
+                           </div>
+                           <!-- edit email slide down start -->
+                           <div class="edit-email" style="display: block;">
+                              <!-- <div class="row g-2 align-items-center justify-content-around mb-2">
+                                 <div class="col-sm-6">
+                                 <label for="" class="col-form-label"><strong>Level</strong></label>
+                                 </div>
+                                 <div class="col-sm-6">
+                                 <input type="number" name="label_count" id="" class="form-control" value="1" >
+                                 </div>
+                              </div> -->
                               <div class="row g-2 align-items-center justify-content-around mb-2">
                                  <div class="col-sm-6">
-                                    <label for="" class="col-form-label"><strong>Complaint Status</strong></label>
+                                    <label for="" class="col-form-label"><strong>ETA Days</strong></label>
                                  </div>
                                  <div class="col-sm-6">
-                                    <input class="form-check-input" type="radio" name="complaint_status"  id="inlineRadio1" value="0" >
-                                    <label class="form-check-label" for="inlineRadio1">Inactive</label>
-                                    <input class="form-check-input" type="radio" name="complaint_status"  id="inlineRadio2" value="1" >
-                                    <label class="form-check-label" for="inlineRadio2">Active</label>
+                                    <input type="number" name="eta_days_1" id="" class="form-control required" required>
                                  </div>
                               </div>
-                              <div class="premium-complain-m-content-repeat">
-                                 <div class="premium-complain-m-content-part count_number">
-                                    2
+                              <div class="row g-2 justify-content-around mb-2">
+                                 <div class="col-sm-6 email_field_label">
+                                    <label for="" class="col-form-label"><strong>Enter Your E-Mail Address</strong></label>
                                  </div>
-                                 <div class="premium-complain-m-content-part">
-                                    <a href="#" class="btn-default btn-warning edit-save-btn">Edit</a>
+                                 <div class="col-sm-6 email_clone_div">
+                                    <div class="add-email-field-1 add-email-field ff mb-2">
+                                       <input type="email" name="emails_1" id="" class="form-control required" required>
+                                    </div>
+                                 <a href="#" class="add-email-btn-1 add-email-btn"><i class="fa-solid fa-circle-plus"></i></a>
                                  </div>
                               </div>
-                              <div class="edit-email">
-                                 <div class="row g-2 align-items-center justify-content-around mb-2">
-                                    <div class="col-sm-6">
-                                       <label for="" class="col-form-label"><strong>ETA Days</strong></label>
-                                    </div>
-                                    <div class="col-sm-6">
-                                       <input type="number" name="eta_days" id="" class="form-control">
-                                    </div>
-                                 </div>
-                                 <div class="row g-2 justify-content-around mb-2">
-                                    <div class="col-sm-6 email_field_label">
-                                       <label for="" class="col-form-label"><strong>Enter Your E-Mail Address</strong></label>
-                                    </div>
-                                    <div class="col-sm-6 email_clone_div">
-                                       <div class="add-email-field mb-2">
-                                          <input type="email" name="emails" id="" class="form-control">
-                                       </div>
-                                       <a href="#" class="add-email-btn"><i class="fa-solid fa-circle-plus"></i></a>
-                                    </div>
-                                 </div>
-                                 <div class="d-flex justify-content-end align-items-center">
-                                    <button type="submit" class="btn-default btn-warning each_form_submut" >Save</button>
-                                 </div>
-                              </div>
-                           </form>
+                           </div>
                         </div>
-                     <% } %>
-                      
-                  <% } else { %>
-                     <div class="premium-complain-m-content-body">
-                        <form class="level_form">
-                           <input type="hidden" value="1" name="label_count" class="label_count">
-                           <input type="hidden" name="company_id" value="<%= company.ID %>" class="">
+                        <div class="d-flex justify-content-end align-items-center">
+                           <button type="submit" class="btn-default btn-warning each_form_submut" >Save</button>
+                        </div>
+                     </form>
+                     <!-- edit email slide down end -->
+                  </div>
+               </div>
+            <% } %>
+            
+         <% } else if(company && company.membership_type_id == 4) { %>
+            <% if(ComplaintLevelDetails.length > 0 ){ %>
+               <div class="premium-complain-m-wrap">
+                  <div class="premium-complain-m-content-body">
+                     <form class="level_form">
+                        <input type="hidden" value="2" name="label_count" class="label_count">
+                        <input type="hidden" name="company_id" value="<%= company.ID %>" class="">
+                        <div class="row g-2 align-items-center justify-content-arround mb-2">
+                           <div class="col-sm-6">
+                              <label for="" class="col-form-label"><strong>Complaint Status</strong></label>
+                           </div>
+                           <div class="col-sm-6">
+                              <div class="custom-form mb-0 text-end">
+                                 <div class="form-check form-check-inline">
+                                    <input class="form-check-input inactive-level" type="radio" name="complaint_status"  id="inlineRadio1" value="0" <% if(company && company.complaint_status != '1') { %> checked <% } %> ><label class="form-check-label" for="inlineRadio1">Inactive</label>
+                                 </div>
+                                 <div class="form-check form-check-inline">
+                                    <input class="form-check-input active-level form-check-inline" type="radio" name="complaint_status"  id="inlineRadio2" value="1" <% if(company && company.complaint_status == '1') { %> checked <% } %> ><label class="form-check-label" for="inlineRadio2">Active</label>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                        <!-- head section start -->
+   
+                        <div class="toggle-emails">
+                           <div class="premium-complain-m-content-head">
+                              <div class="premium-complain-m-content-part">
+                                 Level
+                              </div>
+                              <!-- <div class="premium-complain-m-content-part">
+                                 Action
+                              </div> -->
+                           </div>
+                           <!-- head section end -->
+                           <div class="premium-complain-m-content-repeat">
+                              <div class="premium-complain-m-content-part count_number">
+                                 1
+                              </div>
+                              <!-- <div class="premium-complain-m-content-part">
+                                 <a href="#" class="btn-default btn-warning edit-save-btn">Edit</a>
+                              </div> -->
+                           </div>
+                           <!-- edit email slide down start -->
+                           <div class="edit-email">
+                              <!-- <div class="row g-2 align-items-center justify-content-around mb-2">
+                                 <div class="col-sm-6">
+                                 <label for="" class="col-form-label"><strong>Level</strong></label>
+                                 </div>
+                                 <div class="col-sm-6">
+                                 <input type="number" name="label_count" id="" class="form-control" value="1" >
+                                 </div>
+                              </div> -->
+                              <div class="row g-2 align-items-center justify-content-around mb-2">
+                                 <div class="col-sm-6">
+                                    <label for="" class="col-form-label"><strong>ETA Days</strong></label>
+                                 </div>
+                                 <div class="col-sm-6">
+                                    <input type="number" name="eta_days_1" id="" class="form-control required" value="<%= ComplaintLevelDetails[0].eta_days %>" >
+                                 </div>
+                              </div>
+                              <div class="row g-2 justify-content-around mb-2">
+                                 <div class="col-sm-6 email_field_label">
+                                    <label for="" class="col-form-label"><strong>Enter Your E-Mail Address</strong></label>
+                                 </div>
+                                 <!-- <div class="col-sm-6 email_clone_div">
+                                    <div class="add-email-field add-email-field-1 ff mb-2">
+                                       <input type="email" name="emails_1" id="" class="form-control required">
+                                    </div>
+                                 <a href="#" class="add-email-btn add-email-btn-1"><i class="fa-solid fa-circle-plus"></i></a>
+                                 </div> -->
+                                 <% const emails = JSON.parse(ComplaintLevelDetails[0].emails) %>
+                                 <% if (emails.length > 0) { %>
+                                    <div class="col-sm-6 email_clone_div">
+                                    <% emails.forEach((email,key) => { %>
+                                       <% if(key == 0) { %>
+                                          <div class="add-email-field add-email-field-1 ff mb-2">
+                                             <input type="email" name="emails_1" value="<%= email %>" id="" class="form-control">
+                                             <a href="#" class="add-email-btn add-email-btn-1"><i class="fa-solid fa-circle-plus"></i></a>
+                                          </div>
+                                          
+                                          
+                                       <% } else { %>
+                                             <div class="add-email-field ff mb-2">
+                                                <input type="email" name="emails_1" value="<%= email %>" id="" class="form-control">
+                                                <a href="#" class="close-email-field add-email-btn-1"><i class="fa-solid fa-circle-xmark"></i></a>
+                                             </div>
+                                                                                             
+                                       <% } %>
+                                    <% }) %>
+                                 <% } %>
+                              </div>
+                              </div>
+                              <% if(ComplaintLevelDetails.length > 1 ) { %>
+                                 <!-- 2nd level -->
+                                 <div class="premium-complain-m-content-repeat">
+                                    <div class="premium-complain-m-content-part count_number">
+                                       2
+                                    </div>
+                                    <div class="premium-complain-m-content-part">
+                                       <!-- <a href="#" class="btn-default btn-warning edit-save-btn">Edit</a> -->
+                                    </div>
+                                 </div>
+                                 <!-- edit email slide down start -->
+                                 <div class="edit-email">
+                                    <!-- <div class="row g-2 align-items-center justify-content-around mb-2">
+                                       <div class="col-sm-6">
+                                       <label for="" class="col-form-label"><strong>Level</strong></label>
+                                       </div>
+                                       <div class="col-sm-6">
+                                       <input type="number" name="label_count" id="" class="form-control" value="1" >
+                                       </div>
+                                    </div> -->
+                                    <div class="row g-2 align-items-center justify-content-around mb-2">
+                                       <div class="col-sm-6">
+                                          <label for="" class="col-form-label"><strong>ETA Days</strong></label>
+                                       </div>
+                                       <div class="col-sm-6">
+                                          <input type="number" name="eta_days_2" id="" class="form-control required" value="<%= ComplaintLevelDetails[1].eta_days %>">
+                                       </div>
+                                    </div>
+                                    <div class="row g-2 justify-content-around mb-2">
+                                       <div class="col-sm-6 email_field_label">
+                                          <label for="" class="col-form-label"><strong>Enter Your E-Mail Address</strong></label>
+                                       </div>
+                                       <% const emails_2 = JSON.parse(ComplaintLevelDetails[1].emails) %>
+                                       <% if (emails_2.length > 0) { %>
+                                          <div class="col-sm-6 email_clone_div">
+                                             
+                                          <% emails_2.forEach((email,key) => { %>
+                                             <% if(key == 0) { %>
+                                                <div class="add-email-field add-email-field-2 ff mb-2">
+                                                   <input type="email" name="emails_2" id="" class="form-control required" value="<%= email %>">
+                                                </div>
+                                                <a href="#" class="add-email-btn add-email-btn-2"><i class="fa-solid fa-circle-plus"></i></a>
+                                             <% } else { %>
+                                                <div class="add-email-field add-email-field-2 ff mb-2">
+                                                   <input type="email" name="emails_2" id="" class="form-control " value="<%= email %>" >
+                                                   <a href="#" class="close-email-field "><i class="fa-solid fa-circle-xmark"></i></a>
+                                                </div>
+                                             <% } %>
+                                          <% }) %>
+                                          </div>
+                                       <% } else { %>
+                                          <div class="col-sm-6 email_clone_div">
+                                             <div class="add-email-field add-email-field-2 ff mb-2">
+                                                <input type="email" name="emails_2" id="" class="form-control required">
+                                             </div>
+                                             <a href="#" class="add-email-btn add-email-btn-2"><i class="fa-solid fa-circle-plus"></i></a>
+                                          </div>
+                                       <% } %>
+                                    </div>
+                                 </div>
+                              <% } else { %> 
+                                 <!-- 2nd level -->
+                                 <div class="premium-complain-m-content-repeat">
+                                    <div class="premium-complain-m-content-part count_number">
+                                       2
+                                    </div>
+                                    <div class="premium-complain-m-content-part">
+                                       <!-- <a href="#" class="btn-default btn-warning edit-save-btn">Edit</a> -->
+                                    </div>
+                                 </div>
+                                 <!-- edit email slide down start -->
+                                 <div class="edit-email">
+                                    <!-- <div class="row g-2 align-items-center justify-content-around mb-2">
+                                       <div class="col-sm-6">
+                                       <label for="" class="col-form-label"><strong>Level</strong></label>
+                                       </div>
+                                       <div class="col-sm-6">
+                                       <input type="number" name="label_count" id="" class="form-control" value="1" >
+                                       </div>
+                                    </div> -->
+                                    <div class="row g-2 align-items-center justify-content-around mb-2">
+                                       <div class="col-sm-6">
+                                          <label for="" class="col-form-label"><strong>ETA Days</strong></label>
+                                       </div>
+                                       <div class="col-sm-6">
+                                          <input type="number" name="eta_days_2" id="" class="form-control required" value="">
+                                       </div>
+                                    </div>
+                                    <div class="row g-2 justify-content-around mb-2">
+                                       <div class="col-sm-6 email_field_label">
+                                          <label for="" class="col-form-label"><strong>Enter Your E-Mail Address</strong></label>
+                                       </div>
+                                       <div class="col-sm-6 email_clone_div">
+                                          <div class="add-email-field add-email-field-2 ff mb-2">
+                                             <input type="email" name="emails_2" id="" class="form-control required">
+                                          </div>
+                                       <a href="#" class="add-email-btn add-email-btn-2"><i class="fa-solid fa-circle-plus"></i></a>
+                                       </div>
+                                    </div>
+                                 </div>
+                              <% } %>
+                           </div>
+                        </div>
+   
+                        <div class="d-flex justify-content-end align-items-center">
+                           <button type="submit" class="btn-default btn-warning each_form_submut" >Save</button>
+                        </div>
+                     </form>
+                     <!-- edit email slide down end -->
+                  </div>
+               </div>
+            <% } else { %> 
+               <div class="premium-complain-m-wrap">
+                  <div class="premium-complain-m-content-body">
+                     <form class="level_form">
+                        <input type="hidden" value="2" name="label_count" class="label_count">
+                        <input type="hidden" name="company_id" value="<%= company.ID %>" class="">
+                        <div class="row g-2 align-items-center justify-content-arround mb-2">
+                           <div class="col-sm-6">
+                              <label for="" class="col-form-label"><strong>Complaint Status</strong></label>
+                           </div>
+                           <div class="col-sm-6">
+                              <div class="custom-form mb-0 text-end">
+                                 <div class="form-check form-check-inline">
+                                    <input class="form-check-input inactive-level" type="radio" name="complaint_status"  id="inlineRadio1" value="0" <% if(company && company.complaint_status != '1') { %> checked <% } %> ><label class="form-check-label" for="inlineRadio1">Inactive</label>
+                                 </div>
+                                 <div class="form-check form-check-inline">
+                                    <input class="form-check-input active-level form-check-inline" type="radio" name="complaint_status"  id="inlineRadio2" value="1" <% if(company && company.complaint_status == '1') { %> checked <% } %> ><label class="form-check-label" for="inlineRadio2">Active</label>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                        <!-- head section start -->
+   
+                        <div class="toggle-emails">
+                           <div class="premium-complain-m-content-head">
+                              <div class="premium-complain-m-content-part">
+                                 Level
+                              </div>
+                              <!-- <div class="premium-complain-m-content-part">
+                                 Action
+                              </div> -->
+                           </div>
+                           <!-- head section end -->
+                           <div class="premium-complain-m-content-repeat">
+                              <div class="premium-complain-m-content-part count_number">
+                                 1
+                              </div>
+                              <!-- <div class="premium-complain-m-content-part">
+                                 <a href="#" class="btn-default btn-warning edit-save-btn">Edit</a>
+                              </div> -->
+                           </div>
+                           <!-- edit email slide down start -->
+                           <div class="edit-email">
+                              <!-- <div class="row g-2 align-items-center justify-content-around mb-2">
+                                 <div class="col-sm-6">
+                                 <label for="" class="col-form-label"><strong>Level</strong></label>
+                                 </div>
+                                 <div class="col-sm-6">
+                                 <input type="number" name="label_count" id="" class="form-control" value="1" >
+                                 </div>
+                              </div> -->
+                              <div class="row g-2 align-items-center justify-content-around mb-2">
+                                 <div class="col-sm-6">
+                                    <label for="" class="col-form-label"><strong>ETA Days</strong></label>
+                                 </div>
+                                 <div class="col-sm-6">
+                                    <input type="number" name="eta_days_1" id="" class="form-control required">
+                                 </div>
+                              </div>
+                              <div class="row g-2 justify-content-around mb-2">
+                                 <div class="col-sm-6 email_field_label">
+                                    <label for="" class="col-form-label"><strong>Enter Your E-Mail Address</strong></label>
+                                 </div>
+                                 <div class="col-sm-6 email_clone_div">
+                                    <div class="add-email-field add-email-field-1 ff mb-2">
+                                       <input type="email" name="emails_1" id="" class="form-control required">
+                                    </div>
+                                 <a href="#" class="add-email-btn add-email-btn-1"><i class="fa-solid fa-circle-plus"></i></a>
+                                 </div>
+                              </div>
+                           </div>
+                           <!-- 2nd level -->
+                           <div class="premium-complain-m-content-repeat">
+                              <div class="premium-complain-m-content-part count_number">
+                                 2
+                              </div>
+                              <div class="premium-complain-m-content-part">
+                                 <!-- <a href="#" class="btn-default btn-warning edit-save-btn">Edit</a> -->
+                              </div>
+                           </div>
+                           <!-- edit email slide down start -->
+                           <div class="edit-email">
+                              <!-- <div class="row g-2 align-items-center justify-content-around mb-2">
+                                 <div class="col-sm-6">
+                                 <label for="" class="col-form-label"><strong>Level</strong></label>
+                                 </div>
+                                 <div class="col-sm-6">
+                                 <input type="number" name="label_count" id="" class="form-control" value="1" >
+                                 </div>
+                              </div> -->
+                              <div class="row g-2 align-items-center justify-content-around mb-2">
+                                 <div class="col-sm-6">
+                                    <label for="" class="col-form-label"><strong>ETA Days</strong></label>
+                                 </div>
+                                 <div class="col-sm-6">
+                                    <input type="number" name="eta_days_2" id="" class="form-control required">
+                                 </div>
+                              </div>
+                              <div class="row g-2 justify-content-around mb-2">
+                                 <div class="col-sm-6 email_field_label">
+                                    <label for="" class="col-form-label"><strong>Enter Your E-Mail Address</strong></label>
+                                 </div>
+                                 <div class="col-sm-6 email_clone_div">
+                                    <div class="add-email-field add-email-field-2 ff mb-2">
+                                       <input type="email" name="emails_2" id="" class="form-control required">
+                                    </div>
+                                 <a href="#" class="add-email-btn add-email-btn-2"><i class="fa-solid fa-circle-plus"></i></a>
+                                 </div>
+                              </div>
+                           </div>
+                           
+                        </div>
+   
+                        <div class="d-flex justify-content-end align-items-center">
+                           <button type="submit" class="btn-default btn-warning each_form_submut" >Save</button>
+                        </div>
+                     </form>
+                     <!-- edit email slide down end -->
+                  </div>
+               </div>
+            <% } %>
+         <% } else if(company && company.membership_type_id == 5) { %>
+            <% if(ComplaintLevelDetails.length > 0 ){ %>
+               <div class="premium-complain-m-wrap">
+                  <div class="premium-complain-m-content-body">
+                     <form class="level_form">
+                        <input type="hidden" value="3" name="label_count" class="label_count">
+                        <input type="hidden" name="company_id" value="<%= company.ID %>" class="">
+                        <div class="row g-2 align-items-center justify-content-around mb-2">
+                           <div class="col-sm-6">
+                              <label for="" class="col-form-label"><strong>Complaint Status</strong></label>
+                           </div>
+                           <div class="col-sm-6">
+                              <input class="form-check-input" type="radio" name="complaint_status"  id="inlineRadio1" value="0" <% if(company && company.complaint_status != '1') { %> checked <% } %> >
+                              <label class="form-check-label" for="inlineRadio1">Inactive</label>
+                              <input class="form-check-input" type="radio" name="complaint_status"  id="inlineRadio2" value="1" <% if(company && company.complaint_status == '1') { %> checked <% } %> >
+                              <label class="form-check-label" for="inlineRadio2">Active</label>
+                           </div>
+                        </div>
+                        <div class="toggle-emails">
+                           
+                           <!-- head section start -->
+                           <div class="premium-complain-m-content-head">
+                              <div class="premium-complain-m-content-part">
+                                 Level
+                              </div>
+                              <div class="premium-complain-m-content-part">
+                                 Action
+                              </div>
+                           </div>
+                           <!-- head section end -->
                            <div class="premium-complain-m-content-repeat">
                               <div class="premium-complain-m-content-part count_number">
                                  1
@@ -546,10 +559,10 @@
                            <div class="edit-email">
                               <!-- <div class="row g-2 align-items-center justify-content-around mb-2">
                                  <div class="col-sm-6">
-                                   <label for="" class="col-form-label"><strong>Level</strong></label>
+                                 <label for="" class="col-form-label"><strong>Level</strong></label>
                                  </div>
                                  <div class="col-sm-6">
-                                   <input type="number" name="label_count" id="" class="form-control" value="1" >
+                                 <input type="number" name="label_count" id="" class="form-control" value="1" >
                                  </div>
                               </div> -->
                               <div class="row g-2 align-items-center justify-content-around mb-2">
@@ -557,7 +570,290 @@
                                     <label for="" class="col-form-label"><strong>ETA Days</strong></label>
                                  </div>
                                  <div class="col-sm-6">
-                                    <input type="number" name="eta_days" id="" class="form-control">
+                                    <input type="number" name="eta_days_1" id="" class="form-control required" value="<%= ComplaintLevelDetails[0].eta_days %>" >
+                                 </div>
+                              </div>
+                              <div class="row g-2 justify-content-around mb-2">
+                                 <div class="col-sm-6 email_field_label">
+                                    <label for="" class="col-form-label"><strong>Enter Your E-Mail Address</strong></label>
+                                 </div>
+                                 <% const emails = JSON.parse(ComplaintLevelDetails[0].emails) %>
+                                    <% if (emails.length > 0) { %>
+                                       <div class="col-sm-6 email_clone_div">
+                                          
+                                       <% emails.forEach((email,key) => { %>
+                                          <% if(key == 0) { %>
+                                             <div class="add-email-field add-email-field-1 ff mb-2">
+                                                <input type="email" name="emails_1" id="" class="form-control required" value="<%= email %>">
+                                             </div>
+                                             <a href="#" class="add-email-btn add-email-btn-1"><i class="fa-solid fa-circle-plus"></i></a>
+                                          <% } else { %> 
+                                             <div class="add-email-field add-email-field-1 ff mb-2">
+                                                <input type="email" name="emails_1" id="" class="form-control " value="<%= email %>">
+                                                <a href="#" class="close-email-field add-email-btn-1"><i class="fa-solid fa-circle-xmark"></i></a>
+                                             </div>
+                                          <% } %>
+                                       <% }) %>
+                                       </div>
+                                    <% } %>
+                              </div>
+                           </div>
+                           <% if(ComplaintLevelDetails.length > 1 ){ %>
+                              <!-- 2nd level -->
+                              <div class="premium-complain-m-content-repeat">
+                                 <div class="premium-complain-m-content-part count_number">
+                                    2
+                                 </div>
+                                 <div class="premium-complain-m-content-part">
+                                    <!-- <a href="#" class="btn-default btn-warning edit-save-btn">Edit</a> -->
+                                 </div>
+                              </div>
+                              <!-- edit email slide down start -->
+                              <div class="edit-email">
+                                 <!-- <div class="row g-2 align-items-center justify-content-around mb-2">
+                                    <div class="col-sm-6">
+                                    <label for="" class="col-form-label"><strong>Level</strong></label>
+                                    </div>
+                                    <div class="col-sm-6">
+                                    <input type="number" name="label_count" id="" class="form-control" value="1" >
+                                    </div>
+                                 </div> -->
+                                 <div class="row g-2 align-items-center justify-content-around mb-2">
+                                    <div class="col-sm-6">
+                                       <label for="" class="col-form-label"><strong>ETA Days</strong></label>
+                                    </div>
+                                    <div class="col-sm-6">
+                                       <input type="number" name="eta_days_2" id="" class="form-control required" value="<%= ComplaintLevelDetails[1].eta_days %>">
+                                    </div>
+                                 </div>
+                                 <div class="row g-2 justify-content-around mb-2">
+                                    <div class="col-sm-6 email_field_label">
+                                       <label for="" class="col-form-label"><strong>Enter Your E-Mail Address</strong></label>
+                                    </div>
+                                    
+                                    <% const emails_2 = JSON.parse(ComplaintLevelDetails[1].emails) %>
+                                    <% if (emails_2.length > 0) { %>
+                                       <div class="col-sm-6 email_clone_div">
+                                          <% emails_2.forEach((email,key) => { %>
+                                             <% if(key == 0) { %>
+                                                <div class="add-email-field add-email-field-2 ff mb-2">
+                                                   <input type="email" name="emails_2" id="" class="form-control required" value="<%= email %>">
+                                                </div>
+                                                <a href="#" class="add-email-btn add-email-btn-2"><i class="fa-solid fa-circle-plus"></i></a>
+                                             <% } else { %> 
+                                                <div class="add-email-field add-email-field-2 ff mb-2">
+                                                   <input type="email" name="emails_2" id="" class="form-control " value="<%= email %>">
+                                                   <a href="#" class="close-email-field "><i class="fa-solid fa-circle-xmark"></i></a>
+                                                </div>
+                                                
+                                             <% } %>
+                                          <% }) %>
+                                       </div>
+                                    <% } %>
+                                 </div>
+                                 <!-- <div class="d-flex justify-content-end align-items-center">
+                                    <button type="submit" class="btn-default btn-warning each_form_submut" >Save</button>
+                                 </div> -->
+                              </div>
+                           <% } else { %> 
+                              
+                              <!-- 2nd level -->
+                              <div class="premium-complain-m-content-repeat">
+                                 <div class="premium-complain-m-content-part count_number">
+                                    2
+                                 </div>
+                                 <div class="premium-complain-m-content-part">
+                                    <!-- <a href="#" class="btn-default btn-warning edit-save-btn">Edit</a> -->
+                                 </div>
+                              </div>
+                              <!-- edit email slide down start -->
+                              <div class="edit-email">
+                                 <!-- <div class="row g-2 align-items-center justify-content-around mb-2">
+                                    <div class="col-sm-6">
+                                    <label for="" class="col-form-label"><strong>Level</strong></label>
+                                    </div>
+                                    <div class="col-sm-6">
+                                    <input type="number" name="label_count" id="" class="form-control" value="1" >
+                                    </div>
+                                 </div> -->
+                                 <div class="row g-2 align-items-center justify-content-around mb-2">
+                                    <div class="col-sm-6">
+                                       <label for="" class="col-form-label"><strong>ETA Days</strong></label>
+                                    </div>
+                                    <div class="col-sm-6">
+                                       <input type="number" name="eta_days_2" id="" class="form-control required">
+                                    </div>
+                                 </div>
+                                 <div class="row g-2 justify-content-around mb-2">
+                                    <div class="col-sm-6 email_field_label">
+                                       <label for="" class="col-form-label"><strong>Enter Your E-Mail Address</strong></label>
+                                    </div>
+                                    <div class="col-sm-6 email_clone_div">
+                                       <div class="add-email-field add-email-field-2 ff mb-2">
+                                          <input type="email" name="emails_2" id="" class="form-control required">
+                                       </div>
+                                    <a href="#" class="add-email-btn add-email-btn-2"><i class="fa-solid fa-circle-plus"></i></a>
+                                    </div>
+                                 </div>
+                                 <!-- <div class="d-flex justify-content-end align-items-center">
+                                    <button type="submit" class="btn-default btn-warning each_form_submut" >Save</button>
+                                 </div> -->
+                              </div>
+                           <% } %>
+                           <% if(ComplaintLevelDetails.length > 2 ){ %>
+                              <!-- 3nd level -->
+                              <div class="premium-complain-m-content-repeat">
+                                 <div class="premium-complain-m-content-part count_number">
+                                    3
+                                 </div>
+                                 <div class="premium-complain-m-content-part">
+                                    <!-- <a href="#" class="btn-default btn-warning edit-save-btn">Edit</a> -->
+                                 </div>
+                              </div>
+                              <!-- edit email slide down start -->
+                              <div class="edit-email">
+                                 <!-- <div class="row g-2 align-items-center justify-content-around mb-2">
+                                    <div class="col-sm-6">
+                                    <label for="" class="col-form-label"><strong>Level</strong></label>
+                                    </div>
+                                    <div class="col-sm-6">
+                                    <input type="number" name="label_count" id="" class="form-control" value="1" >
+                                    </div>
+                                 </div> -->
+                                 <div class="row g-2 align-items-center justify-content-around mb-2">
+                                    <div class="col-sm-6">
+                                       <label for="" class="col-form-label"><strong>ETA Days</strong></label>
+                                    </div>
+                                    <div class="col-sm-6">
+                                       <input type="number" name="eta_days_3" id="" class="form-control required" value="<%= ComplaintLevelDetails[2].eta_days %>">
+                                    </div>
+                                 </div>
+                                 <div class="row g-2 justify-content-around mb-2">
+                                    <div class="col-sm-6 email_field_label">
+                                       <label for="" class="col-form-label"><strong>Enter Your E-Mail Address</strong></label>
+                                    </div>
+                                    <% const emails_3 = JSON.parse(ComplaintLevelDetails[2].emails) %>
+                                    <% if (emails_3.length > 0) { %>
+                                       <div class="col-sm-6 email_clone_div">
+                                          <% emails_3.forEach((email,key) => { %>
+                                             <% if(key == 0) { %>
+                                                <div class="add-email-field add-email-field-3 ff mb-2">
+                                                   <input type="email" name="emails_3" id="" class="form-control" value="<%= email %>">
+                                                </div>
+                                             <a href="#" class="add-email-btn add-email-btn-3"><i class="fa-solid fa-circle-plus"></i></a>
+                                             <% } else { %>
+                                                <div class="add-email-field add-email-field-3 ff mb-2">
+                                                   <input type="email" name="emails_3" id="" class="form-control " value="<%= email %>">
+                                                   <a href="#" class="close-email-field"><i class="fa-solid fa-circle-xmark"></i></a>
+                                                </div>
+                                             <% } %>
+                                          <% }) %>
+                                       </div>
+                                    <% } %>
+                                 </div>
+                              </div>
+                           <% } else { %>
+                              <!-- 3nd level -->
+                              <div class="premium-complain-m-content-repeat">
+                                 <div class="premium-complain-m-content-part count_number">
+                                    3
+                                 </div>
+                                 <div class="premium-complain-m-content-part">
+                                    <!-- <a href="#" class="btn-default btn-warning edit-save-btn">Edit</a> -->
+                                 </div>
+                              </div>
+                              <!-- edit email slide down start -->
+                              <div class="edit-email">
+                                 <!-- <div class="row g-2 align-items-center justify-content-around mb-2">
+                                    <div class="col-sm-6">
+                                    <label for="" class="col-form-label"><strong>Level</strong></label>
+                                    </div>
+                                    <div class="col-sm-6">
+                                    <input type="number" name="label_count" id="" class="form-control" value="1" >
+                                    </div>
+                                 </div> -->
+                                 <div class="row g-2 align-items-center justify-content-around mb-2">
+                                    <div class="col-sm-6">
+                                       <label for="" class="col-form-label"><strong>ETA Days</strong></label>
+                                    </div>
+                                    <div class="col-sm-6">
+                                       <input type="number" name="eta_days_3" id="" class="form-control required">
+                                    </div>
+                                 </div>
+                                 <div class="row g-2 justify-content-around mb-2">
+                                    <div class="col-sm-6 email_field_label">
+                                       <label for="" class="col-form-label"><strong>Enter Your E-Mail Address</strong></label>
+                                    </div>
+                                    <div class="col-sm-6 email_clone_div">
+                                       <div class="add-email-field add-email-field-3 ff mb-2">
+                                          <input type="email" name="emails_3" id="" class="form-control required">
+                                       </div>
+                                    <a href="#" class="add-email-btn add-email-btn-3"><i class="fa-solid fa-circle-plus"></i></a>
+                                    </div>
+                                 </div>
+                              </div>
+                           <% } %>
+                        </div>
+                        <div class="d-flex justify-content-end align-items-center">
+                           <button type="submit" class="btn-default btn-warning each_form_submut" >Save</button>
+                        </div>
+                     </form>
+                     <!-- edit email slide down end -->
+                  </div>
+               </div>
+            <% } else { %> 
+               <div class="premium-complain-m-wrap">
+                  <div class="premium-complain-m-content-body">
+                     <form class="level_form">
+                        <input type="hidden" value="3" name="label_count" class="label_count">
+                        <input type="hidden" name="company_id" value="<%= company.ID %>" class="">
+                        <div class="row g-2 align-items-center justify-content-around mb-2">
+                           <div class="col-sm-6">
+                              <label for="" class="col-form-label"><strong>Complaint Status</strong></label>
+                           </div>
+                           <div class="col-sm-6">
+                              <input class="form-check-input" type="radio" name="complaint_status"  id="inlineRadio1" value="0" <% if(company && company.complaint_status != '1') { %> checked <% } %> >
+                              <label class="form-check-label" for="inlineRadio1">Inactive</label>
+                              <input class="form-check-input" type="radio" name="complaint_status"  id="inlineRadio2" value="1" <% if(company && company.complaint_status == '1') { %> checked <% } %> >
+                              <label class="form-check-label" for="inlineRadio2">Active</label>
+                           </div>
+                        </div>
+                        <div class="toggle-emails">
+                           
+                           <!-- head section start -->
+                           <div class="premium-complain-m-content-head">
+                              <div class="premium-complain-m-content-part">
+                                 Level
+                              </div>
+                              <div class="premium-complain-m-content-part">
+                                 Action
+                              </div>
+                           </div>
+                           <!-- head section end -->
+                           <div class="premium-complain-m-content-repeat">
+                              <div class="premium-complain-m-content-part count_number">
+                                 1
+                              </div>
+                              <div class="premium-complain-m-content-part">
+                                 <a href="#" class="btn-default btn-warning edit-save-btn">Edit</a>
+                              </div>
+                           </div>
+                           <!-- edit email slide down start -->
+                           <div class="edit-email">
+                              <!-- <div class="row g-2 align-items-center justify-content-around mb-2">
+                                 <div class="col-sm-6">
+                                 <label for="" class="col-form-label"><strong>Level</strong></label>
+                                 </div>
+                                 <div class="col-sm-6">
+                                 <input type="number" name="label_count" id="" class="form-control" value="1" >
+                                 </div>
+                              </div> -->
+                              <div class="row g-2 align-items-center justify-content-around mb-2">
+                                 <div class="col-sm-6">
+                                    <label for="" class="col-form-label"><strong>ETA Days</strong></label>
+                                 </div>
+                                 <div class="col-sm-6">
+                                    <input type="number" name="eta_days_1" id="" class="form-control required">
                                  </div>
                               </div>
                               <div class="row g-2 justify-content-around mb-2">
@@ -565,35 +861,115 @@
                                     <label for="" class="col-form-label"><strong>Enter Your E-Mail Address</strong></label>
                                  </div>
                                  <div class="col-sm-6 email_clone_div">
-                                    <div class="add-email-field ff mb-2">
-                                       <input type="email" name="emails" id="" class="form-control">
+                                    <div class="add-email-field add-email-field-1 ff mb-2">
+                                       <input type="email" name="emails_1" id="" class="form-control required">
                                     </div>
-                                 <a href="#" class="add-email-btn"><i class="fa-solid fa-circle-plus"></i></a>
+                                 <a href="#" class="add-email-btn add-email-btn-1"><i class="fa-solid fa-circle-plus"></i></a>
                                  </div>
                               </div>
-                              <div class="d-flex justify-content-end align-items-center">
-                                 <button type="submit" class="btn-default btn-warning each_form_submut" >Save</button>
+                           </div>
+                           <!-- 2nd level -->
+                           <div class="premium-complain-m-content-repeat">
+                              <div class="premium-complain-m-content-part count_number">
+                                 2
+                              </div>
+                              <div class="premium-complain-m-content-part">
+                                 <!-- <a href="#" class="btn-default btn-warning edit-save-btn">Edit</a> -->
                               </div>
                            </div>
-                        </form>
-                        <!-- edit email slide down end -->
-                     </div>
-                  <% } %>
-                  
+                           <!-- edit email slide down start -->
+                           <div class="edit-email">
+                              <!-- <div class="row g-2 align-items-center justify-content-around mb-2">
+                                 <div class="col-sm-6">
+                                 <label for="" class="col-form-label"><strong>Level</strong></label>
+                                 </div>
+                                 <div class="col-sm-6">
+                                 <input type="number" name="label_count" id="" class="form-control" value="1" >
+                                 </div>
+                              </div> -->
+                              <div class="row g-2 align-items-center justify-content-around mb-2">
+                                 <div class="col-sm-6">
+                                    <label for="" class="col-form-label"><strong>ETA Days</strong></label>
+                                 </div>
+                                 <div class="col-sm-6">
+                                    <input type="number" name="eta_days_2" id="" class="form-control required">
+                                 </div>
+                              </div>
+                              <div class="row g-2 justify-content-around mb-2">
+                                 <div class="col-sm-6 email_field_label">
+                                    <label for="" class="col-form-label"><strong>Enter Your E-Mail Address</strong></label>
+                                 </div>
+                                 <div class="col-sm-6 email_clone_div">
+                                    <div class="add-email-field add-email-field-2 ff mb-2">
+                                       <input type="email" name="emails_2" id="" class="form-control required">
+                                    </div>
+                                 <a href="#" class="add-email-btn add-email-btn-2"><i class="fa-solid fa-circle-plus"></i></a>
+                                 </div>
+                              </div>
+                              <!-- <div class="d-flex justify-content-end align-items-center">
+                                 <button type="submit" class="btn-default btn-warning each_form_submut" >Save</button>
+                              </div> -->
+                           </div>
+                           <!-- 2nd level -->
+                           <div class="premium-complain-m-content-repeat">
+                              <div class="premium-complain-m-content-part count_number">
+                                 3
+                              </div>
+                              <div class="premium-complain-m-content-part">
+                                 <!-- <a href="#" class="btn-default btn-warning edit-save-btn">Edit</a> -->
+                              </div>
+                           </div>
+                           <!-- edit email slide down start -->
+                           <div class="edit-email">
+                              <!-- <div class="row g-2 align-items-center justify-content-around mb-2">
+                                 <div class="col-sm-6">
+                                 <label for="" class="col-form-label"><strong>Level</strong></label>
+                                 </div>
+                                 <div class="col-sm-6">
+                                 <input type="number" name="label_count" id="" class="form-control" value="1" >
+                                 </div>
+                              </div> -->
+                              <div class="row g-2 align-items-center justify-content-around mb-2">
+                                 <div class="col-sm-6">
+                                    <label for="" class="col-form-label"><strong>ETA Days</strong></label>
+                                 </div>
+                                 <div class="col-sm-6">
+                                    <input type="number" name="eta_days_3" id="" class="form-control required">
+                                 </div>
+                              </div>
+                              <div class="row g-2 justify-content-around mb-2">
+                                 <div class="col-sm-6 email_field_label">
+                                    <label for="" class="col-form-label"><strong>Enter Your E-Mail Address</strong></label>
+                                 </div>
+                                 <div class="col-sm-6 email_clone_div">
+                                    <div class="add-email-field add-email-field-3 ff mb-2">
+                                       <input type="email" name="emails_3" id="" class="form-control required">
+                                    </div>
+                                 <a href="#" class="add-email-btn add-email-btn-3"><i class="fa-solid fa-circle-plus"></i></a>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="d-flex justify-content-end align-items-center">
+                           <button type="submit" class="btn-default btn-warning each_form_submut" >Save</button>
+                        </div>
+                     </form>
+                     <!-- edit email slide down end -->
+                  </div>
                </div>
+            <% } %>
             
-            <!-- <div class="text-center mt-4"><a href="#" class="add-new-hops">Add New Hops</a></div> -->
+         <% }else{ %>
+            <div class="container">
+               <div class="each_box update_basic_information all_review_listing_for_company">
+                  <h5>You have no permission to access survey features</h5>
+               </div>
+            </div>
+         <% } %>
+<!-- ================================================================= -->
             <div class="submit-loading" style="display: none;">Please wait..</div>
             <div class="submit-success" style="width: 100%; text-align: center; display: block; border: 2px solid #fccb06; padding: 6px; margin-top: 20px; border-radius: 5px; display: none;"></div>
             <div class="submit-error" style="width: 100%; text-align: center; display: block; border: 2px solid #fccb06; padding: 6px; margin-top: 20px; border-radius: 5px; display: none;"></div>
-         </div>
-          <% }else{ %>
-         <div class="container">
-            <div class="each_box update_basic_information all_review_listing_for_company">
-               <h5>You have no permission to access survey features</h5>
-            </div>
-         </div>
-          <% } %>
           <!-- =========================================== -->
        </div>
     </div>
@@ -666,6 +1042,7 @@ jQuery(function ($) {
                // Set another timeout to hide the message after 3 seconds
                setTimeout(function() {
                   $('.submit-success').hide();
+                  location.reload();
                }, 3000);
                }, 0);
             } else {
@@ -773,6 +1150,9 @@ jQuery(function ($) {
    if ($('input[name="complaint_status"]:checked').val() == '0') {
       $('.toggle-emails').hide();
       $('.required').prop('required', false);
+   } else {
+
+      $('.required').prop('required', true);
    }
 
 })

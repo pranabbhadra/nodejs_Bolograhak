@@ -5475,92 +5475,294 @@ exports.updateCompanyCategory = async (req, res) => {
 
 
 //createCompanyLevel
+// exports.createCompanyLevel = async (req, res) => {
+//     console.log('createCompanyLevel',req.body ); 
+//     const {company_id, label_count, complaint_status} = req.body;
+//     let emailsArr = [];
+//     let emails;    
+//     const currentDate = new Date();
+//     const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+//     let completedCount = 0;
+//     if (complaint_status == '1') {
+//         for (let index = 1; index <= label_count; index++) {
+//             let emailsKey = 'emails_' + index;
+//             emails = req.body[emailsKey];
+
+//             let eta_days_Key = 'eta_days_'+index;
+//             let eta_days = req.body[eta_days_Key];
+
+//             if (typeof emails == 'string') {
+//                 emailsArr.push(emails);
+//             } else {
+//                 emailsArr = [...emails];
+//             }
+//             let strEmails = JSON.stringify(emailsArr.filter(item => item !== ""));
+//             //console.log(emails, emailsArr, strEmails);
+
+//             const checkQuery = `SELECT id FROM complaint_level_management WHERE company_id  = ? AND level = ? `;
+//             const checkData = [company_id, index ];
+//             db.query(checkQuery, checkData, (checkErr, checkResult)=>{
+//                 if (checkErr) {
+//                     return res.send({
+//                         status: 'not ok',
+//                         message: 'Something went wrong '+checkErr
+//                     });
+//                 }
+//                 if (checkResult.length > 0) {
+//                     const updateQuery = `UPDATE complaint_level_management SET ? WHERE company_id  = '${company_id}' AND level = '${index}' `;
+//                     const updateData = {
+//                         level: index || null,
+//                         emails: strEmails || [],
+//                         eta_days: eta_days || null,
+//                         created_at: formattedDate || null,
+//                     };
+
+//                     db.query(updateQuery, updateData, (updateErr, updateRes)=>{
+//                         if (updateErr) {
+//                             return res.send({
+//                                 status: 'not ok',
+//                                 message: 'Something went wrong '+updateErr
+//                             });
+//                         } else {
+//                             const updateQuery = `UPDATE company SET complaint_status='1' WHERE ID = '${company_id}' `;
+//                             db.query(updateQuery, (updateErr,updateRes)=>{
+//                                 if (updateErr) {
+//                                     return res.send({
+//                                         status: 'not ok',
+//                                         message: 'Something went wrong '+updateErr
+//                                     });
+//                                 } else {
+//                                     completedCount++;
+
+//                                     // Check if all iterations are complete
+//                                     if (completedCount === label_count) {
+//                                         // Send the response here after completing the loop
+//                                         return res.send({
+//                                             status: 'ok',
+//                                             message: 'All iterations completed successfully!'
+//                                         });
+//                                     }
+//                                 }
+//                             })
+//                         }
+//                     } )
+                    
+//                 } else {
+//                     const insertQuery = `INSERT INTO complaint_level_management SET ?`;
+//                     const insertData = {
+//                         company_id:company_id,
+//                         level: index || null,
+//                         emails: strEmails || [],
+//                         eta_days: eta_days || null,
+//                         created_at: formattedDate || null,
+//                     }
+//                     db.query(insertQuery, insertData, (insertErr, insertRes)=>{
+//                         if (insertErr) {
+//                             return res.send({
+//                                 status: 'not ok',
+//                                 message: 'Something went wrong '+insertErr
+//                             });
+//                         } else {
+//                             const updateQuery = `UPDATE company SET complaint_status='1' WHERE ID = '${company_id}' `;
+//                             db.query(updateQuery, (updateErr,updateRes)=>{
+//                                 if (updateErr) {
+//                                     return res.send({
+//                                         status: 'not ok',
+//                                         message: 'Something went wrong '+updateErr
+//                                     });
+//                                 } else {
+//                                     completedCount++;
+
+//                                     // Check if all iterations are complete
+//                                     if (completedCount === label_count) {
+//                                         // Send the response here after completing the loop
+//                                         return res.send({
+//                                             status: 'ok',
+//                                             message: 'All iterations completed successfully!'
+//                                         });
+//                                     }
+//                                 }
+//                             })
+//                         }
+//                     } )
+//                 }
+//             } )
+                    
+//         }
+//     } else {
+//         const delQuery = `DELETE FROM complaint_level_management WHERE company_id = '${company_id}' `;
+//         db.query(delQuery, (delErr, delRes)=>{
+//             if (delErr) {
+//                 return res.send({
+//                     status: 'not ok',
+//                     message: 'Something went wrong '+delErr
+//                 });
+//             } else {
+//                 const updateQuery = `UPDATE company SET complaint_status='0' WHERE ID = '${company_id}' `;
+//                 db.query(updateQuery, (updateErr,updateRes)=>{
+//                     if (updateErr) {
+//                         return res.send({
+//                             status: 'not ok',
+//                             message: 'Something went wrong '+updateErr
+//                         });
+//                     } else {
+//                         return res.send({
+//                             status: 'ok',
+//                             message: 'Complaint status updated successfully !'
+//                         });
+//                     }
+//                 })
+                
+//             }
+//         } )
+//     }
+    
+//     //const filteredArray = emailsArr.filter(item => item !== "");
+
+// }
+
 exports.createCompanyLevel = async (req, res) => {
-    console.log('createCompanyLevel',req.body ); 
-    const {company_id, label_count, complaint_status} = req.body;
+    //console.log('createCompanyLevel', req.body);
+    const { company_id, label_count, complaint_status } = req.body;
     let emailsArr = [];
-    let emails;    
+    let emails;
     const currentDate = new Date();
     const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+    let completedCount = 0;
 
     if (complaint_status == '1') {
         for (let index = 1; index <= label_count; index++) {
             let emailsKey = 'emails_' + index;
             emails = req.body[emailsKey];
 
-            let eta_days_Key = 'eta_days_'+index;
+            let eta_days_Key = 'eta_days_' + index;
             let eta_days = req.body[eta_days_Key];
+
             if (typeof emails == 'string') {
                 emailsArr.push(emails);
             } else {
                 emailsArr = [...emails];
             }
             let strEmails = JSON.stringify(emailsArr.filter(item => item !== ""));
-            console.log(emails, emailsArr, strEmails);
 
             const checkQuery = `SELECT id FROM complaint_level_management WHERE company_id  = ? AND level = ? `;
-            const checkData = [company_id, index ];
-            db.query(checkQuery, checkData, (checkErr, checkResult)=>{
-                if (checkErr) {
-                    return res.send({
-                        status: 'not ok',
-                        message: 'Something went wrong '+checkErr
-                    });
-                }
-                if (checkResult.length > 0) {
-                    const updateQuery = `UPDATE complaint_level_management SET ? WHERE company_id  = '${company_id}' AND level = '${index}' `;
-                    const updateData = {
-                        level: index || null,
-                        emails: strEmails || [],
-                        eta_days: eta_days || null,
-                        created_at: formattedDate || null,
-                    };
+            const checkData = [company_id, index];
 
-                    db.query(updateQuery, updateData, (updateErr, updateRes)=>{
-                        if (updateErr) {
-                            return res.send({
-                                status: 'not ok',
-                                message: 'Something went wrong '+updateErr
-                            });
-                        } else {
-                            return res.send({
-                                status: 'ok',
-                                message: 'Level data Updated successfully !'
-                            });
-                        }
-                    } )
-                    
-                } else {
-                    const insertQuery = `INSERT INTO complaint_level_management SET ?`;
-                    const insertData = {
-                        company_id:company_id,
-                        level: label_count || null,
-                        emails: strEmails || [],
-                        eta_days: eta_days || null,
-                        created_at: formattedDate || null,
+            await new Promise((resolve) => {
+                db.query(checkQuery, checkData, async (checkErr, checkResult) => {
+                    if (checkErr) {
+                        res.send({
+                            status: 'not ok',
+                            message: 'Something went wrong ' + checkErr
+                        });
+                        return resolve();
                     }
-                    db.query(insertQuery, insertData, (insertErr, insertRes)=>{
-                        if (insertErr) {
-                            return res.send({
-                                status: 'not ok',
-                                message: 'Something went wrong '+insertErr
-                            });
-                        } else {
-                            return res.send({
-                                status: 'ok',
-                                message: 'Level data added successfully !'
-                            });
-                        }
-                    } )
-                }
-            } )
-                    
-        }
-    }
-    
-    //const filteredArray = emailsArr.filter(item => item !== "");
 
+                    if (checkResult.length > 0) {
+                        const updateQuery = `UPDATE complaint_level_management SET ? WHERE company_id  = '${company_id}' AND level = '${index}' `;
+                        const updateData = {
+                            level: index || null,
+                            emails: strEmails || [],
+                            eta_days: eta_days || null,
+                            created_at: formattedDate || null,
+                        };
+
+                        await new Promise((resolveUpdate) => {
+                            db.query(updateQuery, updateData, (updateErr, updateRes) => {
+                                if (updateErr) {
+                                    res.send({
+                                        status: 'not ok',
+                                        message: 'Something went wrong ' + updateErr
+                                    });
+                                } else {
+                                    const updateQuery = `UPDATE company SET complaint_status='1' WHERE ID = '${company_id}' `;
+                                    db.query(updateQuery, (updateErr, updateRes) => {
+                                        if (updateErr) {
+                                            res.send({
+                                                status: 'not ok',
+                                                message: 'Something went wrong ' + updateErr
+                                            });
+                                        } else {
+                                            completedCount++;
+                                            resolveUpdate();
+                                        }
+                                    });
+                                }
+                            });
+                        });
+
+                    } else {
+                        const insertQuery = `INSERT INTO complaint_level_management SET ?`;
+                        const insertData = {
+                            company_id: company_id,
+                            level: index || null,
+                            emails: strEmails || [],
+                            eta_days: eta_days || null,
+                            created_at: formattedDate || null,
+                        };
+
+                        await new Promise((resolveInsert) => {
+                            db.query(insertQuery, insertData, (insertErr, insertRes) => {
+                                if (insertErr) {
+                                    res.send({
+                                        status: 'not ok',
+                                        message: 'Something went wrong ' + insertErr
+                                    });
+                                } else {
+                                    const updateQuery = `UPDATE company SET complaint_status='1' WHERE ID = '${company_id}' `;
+                                    db.query(updateQuery, (updateErr, updateRes) => {
+                                        if (updateErr) {
+                                            res.send({
+                                                status: 'not ok',
+                                                message: 'Something went wrong ' + updateErr
+                                            });
+                                        } else {
+                                            completedCount++;
+                                            resolveInsert();
+                                        }
+                                    });
+                                }
+                            });
+                        });
+                    }
+                    resolve();
+                });
+            });
+        }
+
+        // Send the response after all iterations are complete
+        res.send({
+            status: 'ok',
+            message: 'All iterations completed successfully!'
+        });
+    } else {
+        const delQuery = `DELETE FROM complaint_level_management WHERE company_id = '${company_id}' `;
+        db.query(delQuery, (delErr, delRes) => {
+            if (delErr) {
+                res.send({
+                    status: 'not ok',
+                    message: 'Something went wrong ' + delErr
+                });
+            } else {
+                const updateQuery = `UPDATE company SET complaint_status='0' WHERE ID = '${company_id}' `;
+                db.query(updateQuery, (updateErr, updateRes) => {
+                    if (updateErr) {
+                        res.send({
+                            status: 'not ok',
+                            message: 'Something went wrong ' + updateErr
+                        });
+                    } else {
+                        res.send({
+                            status: 'ok',
+                            message: 'Complaint status updated successfully !'
+                        });
+                    }
+                });
+            }
+        });
+    }
 }
+
 
 //Delete company Complaint Level
 exports.deleteCompanyComplaintLevel = async (req, res) => {
