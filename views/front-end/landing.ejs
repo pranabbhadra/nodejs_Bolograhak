@@ -541,12 +541,38 @@
                   <input type="text" class="form-control" placeholder="Pin Code" id="review-zip" name="zip" required>
                 </div>
               </div>
-              #%>
               <div class="col-md-12">
                 <div class="custom-form">
                   <input type="text" class="form-control" placeholder="Product/Division Name" name="review_title">
                 </div>
               </div>
+              
+              #%>
+              <div class="col-md-6">
+                <div class="custom-form dynamic_state_field_wrapper ">
+                    <select id="select_category" name="category_id" class="form-select">
+                        <option value="0" selected>Select Category </option>
+                    </select>
+                    <!-- <input type="text" class="form-control" placeholder="Category Name" name="category"> -->
+                </div>
+            </div>
+            <div class="col-md-6">
+              <div class="custom-form" id="dynamic_sub_category_field_wrapper">
+                  <select id="select_sub_category" name="product_id" class="form-select">
+                      <option value="0">Select Product</option>
+                  </select>
+                  <!-- <input type="text" class="form-control" placeholder="Sub-category Name" name="sub_category"> -->
+              </div>
+          </div>
+              <!-- <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                       
+                     
+                    </div>
+                </div>
+              </div> -->
+            
               <div class="col-md-12">
                 <div class="rating-slider">
                   <span class="emojisss"><img style="width:50px;" src="" id="selected-range-emojis" /></span>
@@ -568,7 +594,7 @@
                       <% const tag_items=rev_tag.rating_tags.split('|'); %>
                         <% tag_items.forEach(function(tag) { %>
                           <div class="form-check custom-check position-relative">
-                            <input class="form-check-input" type="checkbox" name="tags" value="<%= tag %>" id="">
+                            <input class="form-check-input" type="checkbox" name="tags" value="<%= tag %>">
                             <label class="form-check-label" for="flexCheckDefault">
                               <%= tag %>
                             </label>
@@ -614,16 +640,17 @@
               </div>
               <div class="col-md-12">
                 <div class="review-submit d-flex justify-content-between align-items-center">
-                  <% if(currentUserData){ %>
-                    <input type="submit" class="btn-default btn-warning" value="Submit">
-                  <% } else { %>
-                    <a href="#" class="btn-default btn-outline-warning login">Submit</a>
-                  <% } %>
+              <% if(currentUserData){ %>
+                <input type="submit" class="btn-default btn-warning" value="Submit">
+              <% } else { %>
+                <a href="#" class="btn-default btn-outline-warning login">Submit</a>
+              <% } %>
+
                   <a href="/review" class="view-more mt-0" id="all-review-hidden-btn" style="display: none;">
                     <span class="position-relative"><i class="fa-solid fa-angle-right"></i>View All Reviews</span>
                   </a>
-                  <div class="submit-message"></div>
                 </div>
+                <div class="submit-message"></div>
               </div>
           </div>
           </form>
@@ -664,7 +691,7 @@
 
 <section class="main-content discussion-content">
   <div class="container">
-    <h2 class="text-center main-head"><small>View Our</small> <br> Discussions</h2>
+    <h2 class="text-center main-head"><small>View Our</small> <br> Queries</h2>
     <div class="row">
       <% if(AllLatestDiscussion.length > 0) { %>
       <div class="col-md-8">
@@ -809,13 +836,13 @@
         <div class="discussions-right mt-md-0 mt-4">
           <div class="start-a-discussion-btn text-center">
             <% if(currentUserData){ %>
-              <a href="#" class="btn-default btn-dark" data-bs-toggle="modal" data-bs-target="#creatediscussion"><i class="fa-solid fa-pen-to-square"></i> Start A Discussion</a>
+              <a href="#" class="btn-default btn-dark" data-bs-toggle="modal" data-bs-target="#creatediscussion"><i class="fa-solid fa-pen-to-square"></i> Raise A Query</a>
             <% } else { %>
-              <a href="#" class="btn-default btn-dark mt-3 login">Start A Discussion</a>
+              <a href="#" class="btn-default btn-dark mt-3 login">Raise A Query</a>
             <% } %>
           </div>
           <div class="discussions-right-panel">
-            <h4>Popular Discussions</h4>
+            <h4>Popular Query</h4>
             <% if(AllPopularDiscussion.length > 0) { %>
             <% AllPopularDiscussion.forEach((PopularDiscussion, index)=>{  %>
               <% const ExpireDate = new Date(PopularDiscussion.expired_at); %>
@@ -843,7 +870,7 @@
             <% } %>
         </div>
         <div class="discussions-right-panel">
-          <h4>Newest Showcase</h4>
+          <h4>Newest Query</h4>
           <% if(AllLatestDiscussion.length > 0) { %>
           <% AllLatestDiscussion.forEach((LatestDiscussion, index)=>{  %>
             <% const ExpireDate = new Date(LatestDiscussion.expired_at); %>
@@ -876,9 +903,9 @@
         <div class="col-md-12">
           <div class="start-a-discussion-btn text-center">
             <% if(currentUserData){ %>
-              <a href="#" class="btn-default btn-dark" data-bs-toggle="modal" data-bs-target="#creatediscussion"><i class="fa-solid fa-pen-to-square"></i> Start A Discussion</a>
+              <a href="#" class="btn-default btn-dark" data-bs-toggle="modal" data-bs-target="#creatediscussion"><i class="fa-solid fa-pen-to-square"></i> Raise A Query</a>
             <% } else { %>
-              <a href="#" class="btn-default btn-dark mt-3 login">Start A Discussion</a>
+              <a href="#" class="btn-default btn-dark mt-3 login">Raise A Query</a>
             <% } %>
           </div>
         </div>
@@ -893,13 +920,13 @@
       <div class="modal-content">
         <!-- Modal Header -->
         <div class="modal-header">
-            <h2>Create Discussion</h2>
+            <h2>Create Query</h2>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <!-- Modal body -->
         <div class="modal-body">
           <form id="create_discussion_form">
-            <div id="sendreviewtags" class="custom-form">
+            <div id="sendreviewtags_discussion" class="custom-form">
                 <label style="background-color: #ffffff;">Tags</label>
                 <input type="text" name="tags" placeholder="Add tag" data-gtm-form-interact-field-id="0">
              </div>
@@ -937,7 +964,7 @@
                 </div>
             </div>
             <% if(currentUserData){ %>
-            <div class="custom-form mb-sm-0">
+            <div class="custom-form mb-sm-0" style="margin-top: 22px;">
                 <input type="hidden" name="user_id" value="<%= currentUserData.user_id %>" />
                 <input type="submit" class="btn-default btn-warning" value="Submit">
             </div>
@@ -1452,8 +1479,58 @@
         src="/front-end/images/emoji-gif.gif" alt="img" width="77" height="77"></a>
   </div>
   <%- include('common/footer') -%>
+  <style>
+    #sendreviewtags_discussion {
+       border: 2px solid #fccb06;
+       padding: 5px 9px;
+       border-radius: 6px;
+       margin-bottom: 32px;
+    }
+    #sendreviewtags_discussion > span {
+       cursor: pointer;
+       display: block;
+       float: left;
+       color: #fff;
+       background: #fccb06;
+       padding: 7px;
+       padding-right: 25px;
+       margin: 4px;
+       border-radius: 4px;
+   }
+   #sendreviewtags_discussion > span:after {
+    position: absolute;
+    content: "×";
+    border: 1px solid;
+    padding: 2px 5px;
+    margin-left: 3px;
+    font-size: 11px;
+ }
+ #sendreviewtags_discussion > input {
+    background: #f2f2f2;
+    border: 0;
+    margin: 4px;
+    padding: 7px;
+    width: auto;
+    border-radius: 4px;
+    outline: none;
+ }
+ </style>
 <script>
       jQuery(document).ready(function ($) {
+        $("#sendreviewtags_discussion input").on({
+          focusout : function() {
+             var txt = this.value.replace(/[^a-z0-9+\-.\@ ]/ig, ''); // allowed characters
+             if (txt) $("<span/>", { text: txt.toLowerCase().replace(/\s/g, ' '), insertBefore: this });
+             this.value = "";
+          },
+          keyup : function(ev) {
+            // if: comma|enter (delimit more keyCodes with | pipe)
+            if (/^(188|13)$/.test(ev.which)) $(this).focusout();
+          }
+        });
+        $('#sendreviewtags_discussion').on('click', 'span', function() {
+          if(confirm("Remove "+ $(this).text() +"?")) $(this).remove(); 
+        });        
         // /////////////////////////////////////// Auto Field Dropdown Start
         var timer;
         $("#search-input").keyup(function () {
@@ -1622,6 +1699,7 @@
         $("body").on('click', ".autofield-dropdown ul > li", function (e) {
           e.preventDefault();
           var resulttitle = $(this).find('a').attr('data-resulttitle');
+          var resultexcerpt = $(this).find('a').attr('data-resultexcerpt');
           var resultpermalink = $(this).find('a').attr('data-resultpermalink');
           $('#dynamic-search-title').text(resulttitle);
           $('#dynamic-search-content').text(resultexcerpt);
@@ -1640,7 +1718,7 @@
           $('#invitation_email').prop('disabled', true);
           $('.frm-loading').show(); 
           //alert('aaaaaa')
-          $(this).find('#sendreviewtags').find('span').each(function(){
+          $(this).find('#sendreviewtags_discussion').find('span').each(function(){
              var enteredTag= $(this).text();
              allTags.push(enteredTag);
           });
@@ -1684,8 +1762,7 @@
           
        });
 
-      });
-
+       
       $("body").on('click', ".autofield-dropdown ul > li", function (e) {
         e.preventDefault();
         var resulttitle = $(this).find('a').attr('data-resulttitle');
@@ -1704,6 +1781,8 @@
       var resulttitle = $(this).find('a').attr('data-resulttitle');
       var address = $(this).find('a').attr('data-companyAddress');
       var pin_code = $(this).find('a').attr('data-companyPin');
+      var companyId= $(this).find('a').attr('data-companyid');
+      //alert(companyId);
 
       $('#search-input-review').val(resulttitle);
       if(address && address!='null'){
@@ -1713,6 +1792,50 @@
         $('#review-address').val('');
         $('#review-address').attr('readonly', false);
       }
+
+      $('#select_category').empty().append($('<option value="0">Select Category</option><option value="0">General</option>'));
+      //$("#select_state").prop('required',false);
+      $('#dynamic_state_field_wrapper').hide();
+      //var company_id = $(this).val();
+      $.ajax({
+         url: '/api/complain_category',
+         method: 'POST',
+         data: {company_id:companyId},
+         ContentType: 'application/json',
+         success: function (data) {
+            if (data.status == 'ok') {
+               $('#dynamic_state_field_wrapper').show();
+               //$("#select_state").prop('required',true);
+               //$('#select_category').empty().append($('<option value="">Select Category</option>'));
+               $.each(data.data, function (i, item) {
+                     $('#select_category').append($('<option>', { 
+                        value: item.id,
+                        text : item.category_name 
+                     }));
+               });                
+            } else {
+               $('#dynamic_state_field_wrapper').hide();
+               $("#select_category").prop('required',false);
+            }
+         },
+         error: function (error) {
+            // Handle any errors
+            Swal.fire({
+               text: error,
+               icon: "error",
+               buttonsStyling: false,
+               confirmButtonText: "Ok, got it!",
+               customClass: {
+                     confirmButton: "btn btn-primary"
+               }
+            });
+            submitButton.disabled = false;
+         }
+         //$(".autofield-dropdown-review").fadeOut();
+      }); 
+
+    
+
       /*
       if(pin_code && pin_code!='null'){
         $('#review-zip').val(pin_code);
@@ -1724,10 +1847,55 @@
       */
       $(".autofield-dropdown-review").fadeOut();
 
-      
-
     });
+
+    $('#select_category').change(function() {
+      $('#select_sub_category').empty().append($('<option value="0">Select Product</option><option value="0">General</option>'));
+      //$("#select_state").prop('required',false);
+      //$('#dynamic_sub_category_field_wrapper').hide();
+      var category_id = $(this).val();
+      //alert(category_id);
+      //return false;
+      //$('#country_name').val(this.options[this.selectedIndex].text);
+      $.ajax({
+         url: '/api/company_product',
+         method: 'POST',
+         data: {category_id:category_id},
+         ContentType: 'application/json',
+         success: function (data) {
+            if (data.status == 'ok') {
+               $('#dynamic_sub_category_field_wrapper').show();
+               //$("#select_state").prop('required',true);
+               $.each(data.data, function (i, item) {
+                     $('#select_sub_category').append($('<option>', { 
+                        value: item.id,
+                        text : item.product_title 
+                     }));
+               });                
+            } else {
+               //$('#dynamic_sub_category_field_wrapper').hide();
+               $("#select_sub_category").prop('required',false);
+            }
+         },
+         error: function (error) {
+            // Handle any errors
+            Swal.fire({
+               text: error,
+               icon: "error",
+               buttonsStyling: false,
+               confirmButtonText: "Ok, got it!",
+               customClass: {
+                     confirmButton: "btn btn-primary"
+               }
+            });
+            submitButton.disabled = false;
+         }
+      });    
+   });
     
+
+  });
+
 
 
         

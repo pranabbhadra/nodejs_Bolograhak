@@ -20,43 +20,46 @@
             <div class="contribute-discussion">
                <a href="#" class="discussionscrollbtn"><i class="fa-solid fa-messages"></i> Contribute to this discussion?</a>
             </div>
+            <%
+               let comments = []
+               if(AllCommentByDiscusId[0].commentData != ''){
+                  comments = JSON.parse(AllCommentByDiscusId[0].commentData)
+               }
+               %>
+            <% if(comments.length>0){ %>
+            <h4>Comments are listed below</h4>
+            <% } %>
             <div class="discussion-details-panel">
-               <%
-                  let comments = []
-                  if(AllCommentByDiscusId[0].commentData != ''){
-                     comments = JSON.parse(AllCommentByDiscusId[0].commentData)
-                  }
-                  %>
               <div class="user-comment-control-wrapper">
                 <% comments.forEach((comment) =>{ %> 
-                <% if(comment.comment) { %>
-                  <div class="user-repeat-main">
-                    <div class="user-comment-repeat">
-                      <% if(comment.profile_pic){ %>
-                        <div  class="discussion-user-img" title="<%= comment && comment.comment_first_name ? comment.comment_first_name : '' %> <%= comment && comment.comment_first_name ? comment.comment_last_name : '' %>">
-                          <img src="/<%= comment.profile_pic %>" alt="img" width="60" height="60">
-                      </div>
-                      <% } else{ %>
+                  <% if(comment.comment) { %>
+                    <div class="user-repeat-main">
+                      <div class="user-comment-repeat">
+                        <% if(comment.profile_pic){ %>
                           <div  class="discussion-user-img" title="<%= comment && comment.comment_first_name ? comment.comment_first_name : '' %> <%= comment && comment.comment_first_name ? comment.comment_last_name : '' %>">
-                            <!-- <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60"> -->
-                            <h4><%= comment && comment.comment_first_name ? comment.comment_first_name.charAt(0).toUpperCase() : '' %></h4>
+                            <img src="/<%= comment.profile_pic %>" alt="img" width="60" height="60">
                         </div>
-                      <% } %>
-                      
-                      <% const date = new Date(comment.created_at); %>
-                      <div class="discussion-details-user-info">
-                          <h4><small class="m-0" style="display: inline-block; vertical-align: middle;">
-                            
-                          </small><%= comment && comment.comment_first_name ? comment.comment_first_name : '' %> <%= comment && comment.comment_first_name ? comment.comment_last_name : '' %> <small><%= date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) %> </small>
-                          <% if(AllCommentByDiscusId[0].user_id == comment.user_id ) { %>
-                            <small class="badge bg-warning text-dark">Author</small>
-                            <% } %>
-                        </h4>
+                        <% } else{ %>
+                            <div  class="discussion-user-img" title="<%= comment && comment.comment_first_name ? comment.comment_first_name : '' %> <%= comment && comment.comment_first_name ? comment.comment_last_name : '' %>">
+                              <!-- <img src="../front-end/images/user-img.jpg" alt="img" width="60" height="60"> -->
+                              <h4><%= comment && comment.comment_first_name ? comment.comment_first_name.charAt(0).toUpperCase() : '' %></h4>
+                          </div>
+                        <% } %>
+                        
+                        <% const date = new Date(comment.created_at); %>
+                        <div class="discussion-details-user-info">
+                            <h4><small class="m-0" style="display: inline-block; vertical-align: middle;">
+                              
+                            </small><%= comment && comment.comment_first_name ? comment.comment_first_name : '' %> <%= comment && comment.comment_first_name ? comment.comment_last_name : '' %> <small><%= date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) %> </small>
+                            <% if(AllCommentByDiscusId[0].user_id == comment.user_id ) { %>
+                              <small class="badge bg-warning text-dark">Author</small>
+                              <% } %>
+                          </h4>
+                        </div>
                       </div>
+                      <p><%= comment.comment %></p>
                     </div>
-                    <p><%= comment.comment %></p>
-                  </div>
-                <% } %>
+                  <% } %>
                 <% }) %>
               </div>
                <div class="write-discussion-field">
@@ -81,6 +84,7 @@
                   border-radius: 5px; display: none;"></div>
                </div>
             </div>
+            
             <div class="discussion-similar-thread">
                
                
@@ -135,6 +139,11 @@
 <!-- ============== Section1 End =============== -->
 
 <%- include('common/footer') -%>   
+<style>
+a.btn-default.btn-warning.dis-details-top-btn.my-1 {
+    cursor: default;
+}
+</style>
 <script>
    jQuery(function ($) {
 

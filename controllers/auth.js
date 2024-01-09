@@ -1271,42 +1271,70 @@ exports.editUserData = (req, res) => {
 //--- Delete User ----//
 exports.deleteUser = (req, res) => {
     console.log(req.body);
-    const sql = `DELETE FROM users WHERE user_id = ?`;
-    const data = [req.body.userid];
-     db.query(sql, data, (err, result) => {
-        if (err) {
-            return res.send({
-                status: 'error',
-                message: 'Something went wrong' +err
-            });
-        } else {
-            const metaSql = `DELETE FROM user_customer_meta WHERE user_id = ${req.body.userid}`;
-            db.query(metaSql,  (metaErr, metaResult) => {
-                if (metaErr) {
+
+    const userId = req.body.userid;
+    const userEmail = req.body.userEmail;
+    const deleteQueries = [
+        `DELETE FROM user_code_verify WHERE user_id = '${userId}'`,
+        `DELETE FROM users WHERE user_id = '${userId}'`,
+        `DELETE FROM user_customer_meta WHERE user_id = ${userId}`,
+
+        `DELETE bg_users, bg_usermeta
+        FROM bg_users
+        LEFT JOIN bg_usermeta ON bg_users.ID = bg_usermeta.user_id
+        WHERE bg_users.user_login = '${userEmail}';
+        `,
+
+        `DELETE FROM user_device_info WHERE user_id = '${userId}'`,
+        `DELETE discussions, discussions_user_response
+        FROM discussions
+        LEFT JOIN discussions_user_response ON discussions.id = discussions_user_response.discussion_id
+        WHERE discussions.user_id = '${userId}';
+        `,
+        `DELETE complaint, complaint_rating,complaint_query_response
+        FROM complaint
+        LEFT JOIN complaint_rating ON complaint.id = complaint_rating.complaint_id
+        LEFT JOIN complaint_query_response ON complaint.id = complaint_query_response.complaint_id                               
+        WHERE complaint.user_id = '${userId}';
+        `,
+        `DELETE FROM poll_voting WHERE user_id = '${userId}'`,
+        `DELETE reviews,review_reply,review_voting
+        FROM reviews
+        LEFT JOIN review_reply ON reviews.id = review_reply.review_id 
+        LEFT JOIN review_voting ON reviews.id = review_voting.review_id                           
+        WHERE reviews.customer_id = '${userId}';
+        `,
+        `DELETE FROM survey_customer_answers WHERE customer_id = '${userId}'`,
+        `DELETE FROM company_claim_request WHERE claimed_by = '${userId}'`,
+    ];
+
+    const executeDeleteQuery = (index) => {
+        if (index < deleteQueries.length) {
+            const query = deleteQueries[index];
+            db.query(query, (err, result) => {
+                if (err) {
+                    console.error('Query error:', err);
+
                     return res.send({
                         status: 'error',
-                        message: 'Something went wrong' + metaErr
+                        message: `Failed to execute query: ${query}`,
                     });
-                }else{
-                    const delWPQuery = `DELETE FROM bg_users WHERE user_login = '${req.body.userEmail}'`;
-                     db.query(delWPQuery, (WPerr,WPresult)=>{
-                        if (WPerr) {
-                            return res.send({
-                                status: 'error',
-                                message: 'Something went wrong' + WPerr
-                            });
-                        } else {
-                            return res.send({
-                                status: 'ok',
-                                message: 'User permanently deleted .'
-                            });
-                        }
-                    })
                 }
-            })
+
+                // Continue with the next query
+                executeDeleteQuery(index + 1);
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'User permanently deleted.',
+            });
         }
-    })
-}
+    };
+
+    executeDeleteQuery(0);
+};
+
 
 //--- Trash User ----//
 exports.trashUser = (req, res) => {
@@ -1469,7 +1497,7 @@ exports.editCompany = (req, res) => {
             });
         } else {
                 // Update company details in the company table
-            const updateQuery = 'UPDATE company SET company_name = ?, heading = ?, logo = ?, about_company = ?, comp_phone = ?, comp_email = ?, comp_registration_id = ?, status = ?, trending = ?, updated_date = ?, tollfree_number = ?, main_address = ?, main_address_pin_code = ?, address_map_url = ?, main_address_country = ?, main_address_state = ?, main_address_city = ?, verified = ?, paid_status = ?, slug  = ? WHERE ID = ?';
+            const updateQuery = 'UPDATE company SET company_name = ?, heading = ?, logo = ?, about_company = ?, comp_phone = ?, comp_email = ?, comp_registration_id = ?, status = ?, trending = ?, updated_date = ?, tollfree_number = ?, main_address = ?, main_address_pin_code = ?, address_map_url = ?, main_address_country = ?, main_address_state = ?, main_address_city = ?, verified = ?, paid_status = ?, slug = ?, membership_type_id = ? WHERE ID = ?';
             const updateValues = [
                                     req.body.company_name,
                                     req.body.heading,
@@ -1491,6 +1519,7 @@ exports.editCompany = (req, res) => {
                                     req.body.verified,
                                     req.body.payment_status,
                                     req.body.company_slug,
+                                    req.body.membership_type_id,
                                     companyID
                                 ];
 
@@ -1900,6 +1929,28 @@ exports.deleteCompany = (req, res) => {
             return res.send({
                 status: 'ok',
                 message: 'Company successfully deleted'
+            });
+        }
+
+    })
+
+}
+
+//--- Delete Company ----//
+exports.deletePayment = (req, res) => {
+    //console.log(req.body.companyid);
+    sql = `DELETE FROM payments WHERE id = ?`;
+    const data = [req.body.paymentId];
+    db.query(sql, data, (err, result) => {
+        if (err) {
+            return res.send({
+                status: 'error',
+                message: 'Something went wrong'
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Payment details successfully deleted'
             });
         }
 
@@ -2523,7 +2574,8 @@ exports.updateHome = async (req, res) => {
 
 exports.submitReview = async (req, res) => {
     const encodedUserData = req.cookies.user;
-    //console.log(currentUserData);
+    console.log('submitReview',req.body);
+    //return false;
     try {
         if (encodedUserData) {
             const currentUserData = JSON.parse(encodedUserData);
@@ -3674,6 +3726,7 @@ exports.updateBasicCompany = (req, res) => {
     //console.log('updateBasicCompany File:',req.file);
     //return false;
     const companyID = req.body.company_id;
+    const companySlug = req.body.company_slug;
     const currentDate = new Date();
 
     const year = currentDate.getFullYear();
@@ -3684,6 +3737,14 @@ exports.updateBasicCompany = (req, res) => {
     const seconds = String(currentDate.getSeconds()).padStart(2, '0');
 
     const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+    const { gallery_images } = req.files;
+    let galleryImages = [];
+    if(gallery_images){
+         galleryImages = gallery_images.map((title, index) => ({
+            gallery_images:req.files.gallery_images[index].filename
+        }));
+    }
 
     // Update company details in the company table
     const updateQuery = 'UPDATE company SET  heading = ?, logo = ?, about_company = ?, comp_phone = ?, comp_email = ?, updated_date = ?, tollfree_number = ?, main_address = ?, operating_hours = ?  WHERE ID = ?';
@@ -3724,13 +3785,78 @@ exports.updateBasicCompany = (req, res) => {
                 message: 'An error occurred while updating the company details: ' + err
             });
         }else{
-            return res.send(
-                {
-                    status: 'ok',
-                    data: companyID,
-                    message: 'Successfully Updated'
+            const check_sql = `SELECT * FROM premium_company_data WHERE company_id = ? `;
+            const check_data = [companyID];
+            db.query(check_sql, check_data, (check_err, check_result) => {
+                if (check_err) {
+                    return res.send(
+                        {
+                            status: 'err',
+                            data: '',
+                            message: 'An error occurred while processing your request'
+                        }
+                    )
+                }else{
+                    if (check_result.length > 0) {
+                        //console.log(check_result[0]);
+                        //return false;
+                        const gallery_img = JSON.parse(check_result[0].gallery_img);
+                        
+                        if(galleryImages.length > 0){
+                            galleryImages.forEach(function(img, index, arr) {
+                                gallery_img.push(img);
+                            })
+                        }
+                        
+                        const galleryimg = JSON.stringify(gallery_img);
+
+                        //return false;
+                        const update_query = `UPDATE premium_company_data SET gallery_img = ? WHERE company_id = ?`;
+                        const update_data = [galleryimg, companyID];
+                        db.query(update_query, update_data, (update_err,update_result)=>{
+                            if (update_err) {
+                                // Handle the error
+                                return res.send({
+                                    status: 'err',
+                                    data: '',
+                                    message: 'An error occurred while updating the company details: ' + update_err
+                                });
+                            } else {
+                                return res.send(
+                                    {
+                                        status: 'ok',
+                                        data: companySlug,
+                                        message: 'Successfully Updated'
+                                    }
+                                )
+                            }
+                        })                        
+                    }else{
+                        const galleryimg = JSON.stringify(galleryImages);
+
+                        const premium_query = `INSERT INTO premium_company_data ( company_id, gallery_img ) VALUES (?, ?)`;
+                        const premium_data = [companyID, galleryimg];
+                        db.query(premium_query, premium_data, (premium_err, premium_result)=>{
+                            if (premium_err) {
+                                // Handle the error
+                                return res.send({
+                                    status: 'err',
+                                    data: '',
+                                    message: 'An error occurred while updating the company details: ' + premium_err
+                                });
+                            } else {
+                                return res.send(
+                                    {
+                                        status: 'ok',
+                                        data: companySlug,
+                                        message: 'Successfully Updated'
+                                    }
+                                )
+                            }
+                        })
+                    }
                 }
-            )
+            });
         }
 
         
@@ -3738,8 +3864,8 @@ exports.updateBasicCompany = (req, res) => {
 }
 
 //--Front end- Update Basic Company profile --//
-exports.updatePremiumCompany =async (req, res) => {
-    //console.log('PremiumCompany:',req.body);
+exports.updatePremiumCompany = async (req, res) => {
+    console.log('PremiumCompany:',req.body);
     //console.log('PremiumCompany File:',req.files);
 
     const companyID = req.body.company_id;
@@ -3921,7 +4047,8 @@ exports.updatePremiumCompany =async (req, res) => {
                         if(promotionSQL.length > 0){
                             promotionSQL.forEach(function(promotionImg, index, arr) {
                                 if(promotionImg.promotion_image != null) {
-                                    if(promotion_image[index] == ''){
+                                    //console.log('promotion_image',promotionImg.promotion_image);
+                                    if(promotion_image && promotion_image[index] == ''){
                                         
                                         PromotionalData[index].promotion_image = promotionSQL[index].promotion_image;
                                     }
@@ -3932,7 +4059,7 @@ exports.updatePremiumCompany =async (req, res) => {
                         if(productSQL.length > 0){
                             productSQL.forEach(function(productImg, index, arr) {
                                 if(productImg.product_image != null) {
-                                    if(product_image[index]== ''){
+                                    if(product_image && product_image[index]== ''){
                                         ProductData[index].product_image = productSQL[index].product_image;
                                     }
                                 }
@@ -4755,11 +4882,31 @@ exports.reviewBulkInvitation = async (req, res) => {
         const worksheet = workbook.getWorksheet(1);
         const emailsArr = await processReviewCSVRows(worksheet);
         const emails = emailsArr.flat();
-        if (emails.length > 100) {
+
+        const currentYear = new Date().getFullYear();
+        const currentMonth = new Date().getMonth() + 1;
+      
+        const get_company_review_invite_request_query = `
+            SELECT *
+            FROM review_invite_request
+            WHERE company_id = ${company_id}
+            AND YEAR(share_date) = ${currentYear}
+            AND MONTH(share_date) = ${currentMonth}
+            ORDER BY id DESC 
+            `;
+            
+        const get_company_review_invite_request_result = await query(get_company_review_invite_request_query);
+        let total_count = 0;
+        if(get_company_review_invite_request_result.length > 0){
+            get_company_review_invite_request_result.forEach(count=>{
+              total_count = total_count + count.count;
+            })
+          }
+        if (emails.length + total_count > req.body.email_limite) {
             return res.send(
                 {
                     status: 'err',
-                    message: 'You can not add more than 100 email id`s in your current membership.'
+                    message: 'You have reached your maximum limit of emails allowed on your current membership for this month.'
                 }
             )  
         } else {
@@ -4957,8 +5104,12 @@ exports.addComment = async (req, res) => {
 
 //Create company category
 exports.createCompanyCategory = async (req, res) => {
-    //console.log('createCompanyCategory',req.body ); 
-    const {category_name, parent_category, company_id} = req.body;
+    console.log('createCompanyCategory',req.body ); 
+    console.log('createCompanyCategoryFile',req.files ); 
+    //return false;
+    const {category_name, parent_category, company_id, product_title, product_desc } = req.body;
+    const {product_image} = req.files;
+
     const checkQuery = `SELECT id FROM complaint_category WHERE category_name = '${category_name}' AND company_id = '${company_id}' `;
     db.query(checkQuery, (checkErr, checkResult)=>{
         if (checkErr) {
@@ -4973,24 +5124,76 @@ exports.createCompanyCategory = async (req, res) => {
                 message: 'Category name already exist.'
             });
         } else {
-                const sql = `INSERT INTO complaint_category ( company_id, category_name, parent_id) VALUES (?, ?, ?)`;
-                const data = [company_id, category_name, parent_category ];
-                db.query(sql, data, (err, result) => {
-                    if (err) {
-                        return res.send({
-                            status: 'not ok',
-                            message: 'Something went wrong '+err
-                        });
+            const sql = `INSERT INTO complaint_category ( company_id, category_name, parent_id) VALUES (?, ?, ?)`;
+            const data = [company_id, category_name, parent_category ];
+            db.query(sql, data, async (err, result) => {
+                if (err) {
+                    return res.send({
+                        status: 'not ok',
+                        message: 'Something went wrong '+err
+                    });
+                } else {
+                    if (typeof product_title !== 'undefined' ) {
+                        if (typeof product_title == 'string') {
+                            console.log(result.insertId);
+                            //return false;
+                            const productQuery = `INSERT INTO company_products SET ? ` ;
+                            const productData = {
+                                company_id :company_id,
+                                category_id :result.insertId,
+                                parent_id:parent_category,
+                                product_title :product_title,
+                                product_desc :product_desc,
+                                product_img :product_image[0].filename,
+                            }
+                            db.query(productQuery, productData, (productErr, productResult)=>{
+                                if (productErr) {
+                                    return res.send({
+                                        status: 'not ok',
+                                        message: 'Something went wrong '+productErr
+                                    });
+                                } else {
+                                    return res.send({
+                                        status: 'ok',
+                                        message: 'Category added successfully with a product !'
+                                    });
+                                }
+                            });
+                        } else {
+                           await product_title.forEach((product, index)=>{
+                                const productQuery = `INSERT INTO company_products SET ? ` ;
+                                const productData = {
+                                    company_id :company_id,
+                                    category_id :result.insertId,
+                                    parent_id:parent_category,
+                                    product_title :product,
+                                    product_desc :product_desc[index],
+                                    product_img :product_image[index].filename,
+                                }
+                                db.query(productQuery, productData, (productErr, productResult)=>{
+                                    if (productErr) {
+                                        return res.send({
+                                            status: 'not ok',
+                                            message: 'Something went wrong '+productErr
+                                        });
+                                    }
+                                });
+                            })
+                            return res.send({
+                                status: 'ok',
+                                message: 'Category added successfully with products. '
+                            });
+                        }
                     } else {
                         return res.send({
                             status: 'ok',
-                            message: 'Category added successfully !'
+                            message: 'Category added successfully without any product. '
                         });
                     }
-                })
+                }
+            })
         }
     })
-    
 }
 
 //Delete company category
@@ -5031,6 +5234,130 @@ exports.deleteCompanyCategory = async (req, res) => {
             })
         }
     })
+}
+
+//Delete company product
+exports.deleteCompanyProduct = async (req, res) => {
+    console.log('deleteCompanyProduct',req.body ); 
+    //return false;
+    const delQuery = `DELETE FROM company_products WHERE id = '${req.body.product_id}'`;
+    db.query(delQuery,(err, result)=>{
+        if (err) {
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong 2 '+err
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Product Deleted successfully !'
+            });
+        }
+    })
+}
+
+//update Company Product
+exports.updateCompanyProduct = async (req, res) => {
+    console.log('updateCompanyProduct',req.body ); 
+    console.log('file',req.file ); 
+    const {company_Id, product_Id, product_title, product_desc } = req.body;
+    //const {product_img} = req.file;
+    let data = {}
+    //return false;
+    if (req.file) {
+        data = {
+            product_title:product_title,
+            product_desc:product_desc,
+            product_img:req.file.filename 
+        }
+    } else {
+        data = {
+            product_title:product_title,
+            product_desc:product_desc
+        }
+    }
+    console.log('data', data)
+    const sql = `UPDATE company_products SET ? WHERE id = ${product_Id}` ;
+    db.query(sql, data, (err, result)=>{
+        if (err) {
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong '+err
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Category Product Updated successfully !'
+            });
+        }
+    })
+}
+
+//Add  company product
+exports.addCompanyProduct = async (req, res) => {
+    console.log('addCompanyProduct',req.body ); 
+    console.log('addCompanyProduct',req.files ); 
+    //return false;
+    const {category_id, parent_id, company_id, product_title, product_desc } = req.body;
+    const {product_image} = req.files;
+
+    if (typeof product_title !== 'undefined' ) {
+        if (typeof product_title == 'string') {
+            //console.log(result.insertId);
+            //return false;
+            const productQuery = `INSERT INTO company_products SET ? ` ;
+            const productData = {
+                company_id :company_id,
+                category_id :category_id,
+                parent_id:parent_id,
+                product_title :product_title,
+                product_desc :product_desc,
+                product_img :product_image[0].filename,
+            }
+            db.query(productQuery, productData, (productErr, productResult)=>{
+                if (productErr) {
+                    return res.send({
+                        status: 'not ok',
+                        message: 'Something went wrong '+productErr
+                    });
+                } else {
+                    return res.send({
+                        status: 'ok',
+                        message: 'Product added successfully !'
+                    });
+                }
+            });
+        } else {
+           await product_title.forEach((product, index)=>{
+                const productQuery = `INSERT INTO company_products SET ? ` ;
+                const productData = {
+                    company_id :company_id,
+                    category_id :category_id,
+                    parent_id:parent_id,
+                    product_title :product,
+                    product_desc :product_desc[index],
+                    product_img :product_image[index].filename,
+                }
+                db.query(productQuery, productData, (productErr, productResult)=>{
+                    if (productErr) {
+                        return res.send({
+                            status: 'not ok',
+                            message: 'Something went wrong '+productErr
+                        });
+                    }
+                });
+            })
+            return res.send({
+                status: 'ok',
+                message: 'Products added successfully . '
+            });
+        }
+    } else {
+        return res.send({
+            status: 'ok',
+            message: 'Please add products. '
+        });
+    }
 }
 
 //Update complaint company category
@@ -5168,26 +5495,26 @@ exports.deleteCompanyComplaintLevel = async (req, res) => {
 //Complaint Register
 exports.complaintRegister =  (req, res) => {
     //console.log('complaintRegister',req.body ); 
-    const authenticatedUserId = parseInt(req.user.user_id);
-    const ApiuserId = parseInt(req.body.user_id);
-    if (isNaN(ApiuserId)) {
-        return res.status(400).json({
-          status: 'error',
-          message: 'Invalid user_id provided in the request body.',
-        });
-      }
-    if (ApiuserId !== authenticatedUserId) {
-    return res.status(403).json({
-        status: 'error',
-        message: 'Access denied: You are not authorized to update this user.',
-    });
-    }
+    // const authenticatedUserId = parseInt(req.user.user_id);
+    // const ApiuserId = parseInt(req.body.user_id);
+    // if (isNaN(ApiuserId)) {
+    //     return res.status(400).json({
+    //       status: 'error',
+    //       message: 'Invalid user_id provided in the request body.',
+    //     });
+    //   }
+    // if (ApiuserId !== authenticatedUserId) {
+    // return res.status(403).json({
+    //     status: 'error',
+    //     message: 'Access denied: You are not authorized to update this user.',
+    // });
+    // }
 
     const {company_id, user_id, category_id, sub_category_id, model_no, allTags, transaction_date, location, message } = req.body;
     //return false;
-    const uuid = uuidv4();  
-    const currentDate = new Date();
+    //const uuid = uuidv4();  
     const randomNo = Math.floor(Math.random() * (100 - 0 + 1)) + 0 ;
+    const currentDate = new Date();
     const ticket_no = randomNo + currentDate.getTime();
     const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
     const data = {
@@ -5203,7 +5530,8 @@ exports.complaintRegister =  (req, res) => {
         tags:JSON.stringify(allTags),
         level_id:'1',
         status:'2',
-        created_at:formattedDate
+        created_at:formattedDate,
+        level_update_at:formattedDate
     }
 
     
@@ -5216,7 +5544,7 @@ exports.complaintRegister =  (req, res) => {
                 message: 'Something went wrong  '+err
             });
         } else {
-            console.log(company_id[0],user_id[0], uuid, result.insertId)
+            //console.log(company_id[0],user_id[0], uuid, result.insertId)
             const [complaintEmailToCompany,complaintSuccessEmailToUser] = await Promise.all([
                 comFunction2.complaintEmailToCompany(company_id[0], ticket_no, result.insertId),
                 comFunction2.complaintSuccessEmailToUser(user_id[0], ticket_no, result.insertId)
@@ -5694,6 +6022,240 @@ exports.competitorCompanyChart = async (req, res) => {
     }
 };
 
+//escalate to Next Level
+exports.escalateNextLevel = async (req, res) => {
+    console.log('escalateNextLevel', req.body);
+    //return false;
+    const { complaintId, customerId, levelId } = req.body;
+    
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+
+    const sql = `SELECT c.*, clm.eta_days, clm.emails, u.first_name, u.email, comp.slug FROM 
+    complaint c
+    LEFT JOIN complaint_level_management clm ON clm.company_id = c.company_id AND clm.level = '${levelId + 1}'
+    LEFT JOIN users u ON u.user_id = c.user_id 
+    LEFT JOIN company comp ON comp.ID = c.company_id 
+    WHERE c.id = '${complaintId}' `;
+    const results = await query(sql);
+    const emails = JSON.parse(results[0].emails);
+    var mailOptions = {
+        from: process.env.MAIL_USER,
+        //to: 'pranab@scwebtech.com',
+        to: results[0].email,
+        cc:emails,
+        subject: 'Escalate to next level email',
+        html: `<div id="wrapper" dir="ltr" style="background-color: #f5f5f5; margin: 0; padding: 70px 0 70px 0; -webkit-text-size-adjust: none !important; width: 100%;">
+        <table height="100%" border="0" cellpadding="0" cellspacing="0" width="100%">
+          <tbody>
+          <tr>
+            <td align="center" valign="top">
+              <div id="template_header_image"><p style="margin-top: 0;"></p></div>
+              <table id="template_container" style="box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; background-color: #fdfdfd; border: 1px solid #dcdcdc; border-radius: 3px !important;" border="0" cellpadding="0" cellspacing="0" width="600">
+              <tbody>
+                <tr>
+                  <td align="center" valign="top">
+                    <!-- Header -->
+                    <table id="template_header" style="background-color: #000; border-radius: 3px 3px 0 0 !important; color: #ffffff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif;" border="0" cellpadding="0" cellspacing="0" width="600">
+                      <tbody>
+                        <tr>
+                        <td><img alt="Logo" src="${process.env.MAIN_URL}assets/media/logos/email-template-logo.png"  style="padding: 30px 40px; display: block;  width: 70px;" /></td>
+                        <td id="header_wrapper" style="padding: 36px 48px; display: block;">
+                            <h1 style="color: #FCCB06; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: bold; line-height: 150%; margin: 0; text-align: left;">Escalate to next level email</h1>
+                        </td>
+    
+                        </tr>
+                      </tbody>
+                    </table>
+              <!-- End Header -->
+              </td>
+                </tr>
+                <tr>
+                  <td align="center" valign="top">
+                    <!-- Body -->
+                    <table id="template_body" border="0" cellpadding="0" cellspacing="0" width="600">
+                      <tbody>
+                        <tr>
+                        <td id="body_content" style="background-color: #fdfdfd;" valign="top">
+                          <!-- Content -->
+                          <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                            <tbody>
+                            <tr>
+                              <td style="padding: 48px;" valign="top">
+                                <div id="body_content_inner" style="color: #737373; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
+                                
+                                <table border="0" cellpadding="4" cellspacing="0" width="90%">
+                                <tr>
+                                  <td colspan="2">
+                                    <strong>Hello Dear,</strong>
+                                    <p style="font-size:15px; line-height:20px">Please review the complaint details and initiate the necessary steps to resolve the issue at the earliest. Your prompt attention to this matter is highly appreciated. Pending complaint ticket id: <a  href="${process.env.MAIN_URL}company-compnaint-details/${results[0].slug}/${results[0].id}">${results[0].ticket_id}</a>. 
+                                    </p>
+                                  </td>
+                                </tr>
+                                  <tr>
+                                  </tr>
+                                </table>
+                                
+                                </div>
+                              </td>
+                            </tr>
+                            </tbody>
+                          </table>
+                        <!-- End Content -->
+                        </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  <!-- End Body -->
+                  </td>
+                </tr>
+                <tr>
+                  <td align="center" valign="top">
+                    <!-- Footer -->
+                    <table id="template_footer" border="0" cellpadding="10" cellspacing="0" width="600">
+                    <tbody>
+                      <tr>
+                      <td style="padding: 0; -webkit-border-radius: 6px;" valign="top">
+                        <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                          <tbody>
+                            <tr>
+                            <td colspan="2" id="credit" style="padding: 20px 10px 20px 10px; -webkit-border-radius: 0px; border: 0; color: #fff; font-family: Arial; font-size: 12px; line-height: 125%; text-align: center; background:#000" valign="middle">
+                                  <p>This email was sent from <a style="color:#FCCB06" href="${process.env.MAIN_URL}">BoloGrahak</a></p>
+                            </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </td>
+                      </tr>
+                    </tbody>
+                    </table>
+                  <!-- End Footer -->
+                  </td>
+                </tr>
+              </tbody>
+              </table>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+        </div>`
+      }
+    await  mdlconfig.transporter.sendMail(mailOptions, function (err, info) {
+          if (err) {
+              console.log(err);
+              return false;
+          } else {
+              console.log('Mail Send: ', info.response);
+              
+          }
+      })
+  
+    try {
+      
+        const updateQuery = `UPDATE complaint SET level_id= '${levelId + 1}', level_update_at ='${formattedDate}'  WHERE id = '${complaintId}' `;
+        db.query(updateQuery, (err, resut)=>{
+            if (err) {
+                return res.send({
+                    status: 'not ok',
+                    message: 'Something went wrong '+err
+                });
+            } else {
+                return res.send({
+                    status: 'ok',
+                    message: 'Complaint level escalate to next level successfully.'
+                  });
+            }
+        })
+    } catch (error) {
+      console.error('Error in escalateNextLevel:', error);
+      return res.status(500).send({
+        status: 'error',
+        message: 'Internal Server Error'
+      });
+    }
+  };
+
+//add payment details
+exports.addPayment =  (req, res) => {
+    //console.log('addPayment',req.body);
+    //return false;
+    const {company_id, transaction_id, payment_mode, amount, transaction_date, membership_plan, remarks, subscription_mode, start_date, expire_date } = req.body;
+    //return false;
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+    const data = {
+        transaction_id:transaction_id || null,
+        company_id :company_id,
+        mode_of_payment:payment_mode,
+        amount:amount,
+        transaction_date : transaction_date,
+        membership_plan_id:membership_plan,
+        remarks:remarks,
+        subscription_mode:subscription_mode,
+        start_date:start_date,
+        expire_date:expire_date,
+        created_at:formattedDate,
+        updated_at:formattedDate,
+    }
+
+    
+   // console.log(complaintEmailToCompany);
+    const Query = `INSERT INTO payments SET ?  `;
+    db.query(Query, data, async (err, result)=>{
+        if (err) {
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong  '+err
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Payment details registered  successfully !'
+            });
+        }
+    })
+}
+
+//Edit payment details
+exports.editPayment =  (req, res) => {
+    //console.log('editPayment',req.body);
+    //return false;
+    const {company_id, transaction_id, payment_mode, amount, transaction_date, membership_plan, remarks, subscription_mode, start_date, expire_date, payment_id } = req.body;
+    //return false;
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+    const data = {
+        transaction_id:transaction_id || null,
+        company_id :company_id,
+        mode_of_payment:payment_mode,
+        amount:amount,
+        transaction_date : transaction_date,
+        membership_plan_id:membership_plan,
+        remarks:remarks,
+        subscription_mode:subscription_mode,
+        start_date:start_date,
+        expire_date:expire_date,
+        updated_at:formattedDate,
+    }
+
+    
+   // console.log(complaintEmailToCompany);
+    const Query = `UPDATE payments  SET ? WHERE id = ${payment_id} `;
+    db.query(Query, data, async (err, result)=>{
+        if (err) {
+            return res.send({
+                status: 'not ok',
+                message: 'Something went wrong  '+err
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Payment details updated  successfully !'
+            });
+        }
+    })
+}
+
 
 // Schedule mail for pending complaint
 cron.schedule('0 10 * * *', async () => {
@@ -5727,4 +6289,5 @@ cron.schedule('0 10 * * *', async () => {
 //Discussion customer query alert
 cron.schedule('0 5 * * *', async () => {
     await comFunction2.duscussionQueryAlert();
+    await comFunction2.complaintLevelUpdate();
 })
