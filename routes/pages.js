@@ -1166,9 +1166,25 @@ router.get('/create-survey/:slug', checkClientClaimedCompany, async (req, res) =
           ...detail,
           ...(submitionsCountMap[detail.unique_id] || {}) // Add submitionsCount if it exists
         }));
-        // res.json( 
+        // res.json(
         // { 
-        //     CompanySurveyDetails,
+        //     menu_active_id: 'survey',
+        //     page_title: 'Create Survey',
+        //     currentUserData,
+        //     globalPageMeta:globalPageMeta,
+        //     company,
+        //     allRatingTags,
+        //     formattedDate,
+        //     companyReviewNumbers,
+        //     finalCompanyallReviews,
+        //     reviewReatingChartArray,
+        //     reviewTagsCount,
+        //     reviewReatingChartArray,
+        //     facebook_url:facebook_url,
+        //     twitter_url:twitter_url,
+        //     instagram_url:instagram_url,
+        //     linkedin_url:linkedin_url,
+        //     youtube_url:youtube_url,
         //     CompanySurveyDetails_formatted
         // });
 

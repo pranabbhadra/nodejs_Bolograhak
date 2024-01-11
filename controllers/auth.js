@@ -6006,9 +6006,12 @@ exports.userComplaintResponse = async (req, res) => {
 // Create Survey
 exports.createSurvey = async (req, res) => {
     console.log( 'Survey Response', req.body );
-    const jsonString = Object.keys(req.body)[0];
-    const surveyResponse = JSON.parse(jsonString);
-    //console.log(surveyResponse[0].questions);
+    console.log( 'Survey Response', req.file );
+    //return false;
+    const {created_at, expire_at, title, invitation_type, email_body, company_id, questions } = req.body ;
+    // const jsonString = Object.keys(req.body)[0];
+    // const surveyResponse = JSON.parse(jsonString);
+    // console.log(surveyResponse[0].questions);
 
     const currentDate = new Date();
     const year = currentDate.getFullYear();
@@ -6016,16 +6019,20 @@ exports.createSurvey = async (req, res) => {
     const day = currentDate.getDate();
     const formattedDate = `${year}-${month < 10 ? '0' : ''}${month}-${day < 10 ? '0' : ''}${day}`;
     const uniqueNumber = Date.now().toString().replace(/\D/g, "");
+    // if (invitation_type[0] = '') {
+        
+    // }
 
     const surveyInsertData = [
         uniqueNumber,
-        surveyResponse[0].company_id,
+        company_id[0],
         formattedDate,
-        surveyResponse[0].expire_at,
-        surveyResponse[0].title,
-        JSON.stringify(surveyResponse[0].questions)
+        expire_at[0],
+        title[0],
+        questions,
+        invitation_type[0],
     ];
-    const sql = "INSERT INTO survey (unique_id, company_id, created_at, expire_at, title, questions) VALUES (?, ?, ?, ?, ?, ?)";
+    const sql = "INSERT INTO survey (unique_id, company_id, created_at, expire_at, title, questions, invitation_type) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
     db.query(sql, surveyInsertData, async (err, result) => {
         if(err){

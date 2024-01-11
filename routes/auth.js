@@ -375,7 +375,7 @@ router.post('/user_complaint_response', authController.userComplaintResponse);
 router.post('/escalate-next-level', authController.escalateNextLevel);
 
 //Create Survey
-router.post('/create-survey', authController.createSurvey);
+router.post('/create-survey', upload.single('email_file'), authController.createSurvey);
 router.post('/update-survey', authController.updateSurvey);
 router.post('/create-survey-answer', authController.createSurveyAnswer);
 //survey Invitation Email
