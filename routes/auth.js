@@ -312,8 +312,6 @@ router.post('/review_invitation', authController.reviewInvitation);
 //Bulk Review Invitation Email
 router.post('/review_bulk_invitation',csvupload.single('email_file'), authController.reviewBulkInvitation);
 
-//Bulk Survey Invitation Email
-router.post('/survey_bulk_invitation',csvupload.single('email_file'), authController.surveyBulkInvitation);
 
 //Add Review Flag
 router.post('/add-review-flag', authController.addReviewFlag);
@@ -375,11 +373,15 @@ router.post('/user_complaint_response', authController.userComplaintResponse);
 router.post('/escalate-next-level', authController.escalateNextLevel);
 
 //Create Survey
-router.post('/create-survey', upload.single('email_file'), authController.createSurvey);
+router.post('/create-survey', csvupload.single('email_file'), authController.createSurvey);
 router.post('/update-survey', authController.updateSurvey);
 router.post('/create-survey-answer', authController.createSurveyAnswer);
+
 //survey Invitation Email
 router.post('/survey_invitation', authController.surveyInvitation);
+
+//Bulk Survey Invitation Email
+router.post('/survey_bulk_invitation',csvupload.single('email_file'), authController.surveyBulkInvitation);
 
 router.post('/delete-discussion', authController.deleteDiscussion);
 

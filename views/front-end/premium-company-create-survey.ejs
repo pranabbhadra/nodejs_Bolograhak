@@ -117,7 +117,7 @@
                                  <h4>Send Survey Invitation:</h4>
                                  <div id="sendreviewtags_invitation" class="custom-form">
                                     <label>Add Emails</label>
-                                    <input type="text" name="emails" placeholder="Add an email" class="form-control mb-4" />
+                                    <input type="text" name="email" placeholder="Add an email" class="form-control mb-4" />
                                  </div>
                                  <div class="custom-form d-none" id="csv-field">
                                     <label><span>Choose a CSV file:</span></label>
@@ -133,6 +133,8 @@
                               </div>
                               
                               <input type="hidden" name="company_id" value="<%- company.ID %>">
+                              <input type="hidden" name="company_slug" value="<%- company.slug %>">
+                              <input type="hidden" name="user_id" id="user_id" value="<%= currentUserData.user_id  %>" />
                               <input type="submit" class="btn-survey-default btn-dark my-1" value="Submit">
                            </div>
                         </form>
@@ -533,7 +535,7 @@ $('#survey-form-submit').submit( function( event ) {
          // formData.append('emails[]', enteredEmail);
       var enteredEmail = $(this).text().trim();
       if (enteredEmail !== "") {
-         formData.append('emails[]', enteredEmail);
+         formData.append('email[]', enteredEmail);
       }
    });
  

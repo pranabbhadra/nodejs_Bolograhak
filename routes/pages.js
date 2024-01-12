@@ -1088,6 +1088,72 @@ router.get('/:slug/survey/:id', checkCookieValue, async (req, res) => {
     }
 });
 
+//Invited Survey page
+router.get('/:slug/survey/:id/:email', async (req, res) => {
+    //let currentUserData = JSON.parse(req.userData);
+    res.locals.globalData = {
+        BLOG_URL: process.env.BLOG_URL,
+        MAIN_URL: process.env.MAIN_URL,
+        // Add other variables as needed
+    }; 
+    
+    const slug = req.params.slug;
+    const comp_res =await comFunction2.getCompanyIdBySlug(slug);
+    const companyId = comp_res.ID;
+    const survey_uniqueid = req.params.id;
+    const encryptEmail = req.params.email; 
+
+    const [globalPageMeta, company, companySurveyQuestions, AllRatingTags,getSurveyInvitedEmail ] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+        comFunction.getCompany(companyId),
+        comFunction.getCompanySurveyQuestions(survey_uniqueid, companyId),
+        comFunction.getAllRatingTags(),
+        comFunction2.getSurveyInvitedEmail(encryptEmail),
+        comFunction.getCompanySurveyAnswersByUser(survey_uniqueid, currentUserData.user_id),
+    ]);
+    console.log('getSurveyInvitedEmail', getSurveyInvitedEmail);
+
+    try {
+                
+        if(companySurveyQuestions.length>0){
+            // res.json({
+            //     menu_active_id: 'survey',
+            //     page_title: 'Survey',
+            //     currentUserData,
+            //     globalPageMeta:globalPageMeta,
+            //     company:company,
+            //     companySurveyQuestions,
+            //     AllRatingTags,
+            //     companySurveyAnswersByUser
+            // });
+            res.render('front-end/survey-invitation', {
+                menu_active_id: 'survey',
+                page_title: 'Invited Survey',
+                currentUserData,
+                globalPageMeta:globalPageMeta,
+                company:company,
+                companySurveyQuestions,
+                AllRatingTags,
+                companySurveyAnswersByUser
+            });
+        }else{
+            res.render('front-end/404', {
+                menu_active_id: '404',
+                page_title: '404',
+                currentUserData: {} ,
+                globalPageMeta:globalPageMeta
+            });
+        }
+    } catch (err) {
+         res.render('front-end/404', {
+            menu_active_id: '404',
+            page_title: '404',
+            currentUserData :  {} ,
+            globalPageMeta:globalPageMeta
+        });
+    }
+});
+
 //Create Survey page
 router.get('/create-survey/:slug', checkClientClaimedCompany, async (req, res) => {
     const encodedUserData = req.cookies.user;
