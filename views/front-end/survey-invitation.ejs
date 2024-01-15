@@ -11,87 +11,22 @@
              var jsonString = JSON.stringify(questionJsonObject, null, 2);
           %>
           <%- //jsonString %>
-          <% if(companySurveyAnswersByUser.length > 0 ){ %>
-            
-            <% var answerJsonObject = JSON.parse(companySurveyAnswersByUser[0].answer)
-               var jsonAnswerString = JSON.stringify(answerJsonObject, null, 2);
-            %>
-            <%- //jsonAnswerString %>
+          <% if(SurveyInvitedEmail[0].status == '1' ){ %> 
+            <div class="survey-head " style="text-align: center;" ><strong>Thank You for Participating in Our Survey!</strong> </div>
+          <% } else { %>
             
             <form method="post" name="survey_form" id="survey_form">
                <% questionJsonObject.forEach(function(item, index) { %>
                <div class="survey-wrapper">
-                  <div class="survey-head"><strong><%- index+1 %>.</strong> <%- item.question %></div>
-                  <% if(item.type=='type_textarea'){ %>
-                  <div class="survey-body">
-                     <div class="custom-form">
-                        <textarea type="text" placeholder="Express your views" rows="5" class="form-control" name="question_<%- index+1 %>" readonly><%- answerJsonObject['question_' + (index + 1)] %></textarea>
+                  <div class="survey-head"><strong></strong> Enter your Name *</div>
+                  <div class="survey-body rows" style="display: flex;">
+                     <div class="custom-form col-6" >
+                        <input type="text"  class="form-control" placeholder="First Name" name="first_name" required />
                      </div>
-                  </div>
-                  <% }else if(item.type=='type_radio'){ %>
-                     <div class="survey-body">
-                        <div class="custom-form">
-                           <% item.options.forEach(function(option, index_inner) { %>
-                           <div class="form-check">
-                              <input type="radio" class="form-check-input" id="<%- item.name %><%- index_inner+1 %>" name="question_<%- index+1 %>" value="<%- option %>"
-                              <% if( answerJsonObject['question_' + (index + 1)] == option ){ %>
-                                 checked
-                              <% } %>
-                              >
-                              <label class="form-check-label" for="<%- item.name %><%- index_inner+1 %>"><%- option %></label>
-                           </div>
-                           <% }); %>
-                        </div>
+                     <div class="custom-form col-6" style="margin-left: 10px;">
+                        <input type="text"  class="form-control" placeholder="Last Name" name="last_name" required />
                      </div>
-                  <% }else if(item.type=='type_checkbox'){ %>
-                     <div class="survey-body">
-                        <div class="custom-form">
-                           <% item.options.forEach(function(option, index_inner) { %>
-                           <div class="form-check">
-                              <input type="checkbox" class="form-check-input" id="<%- item.name %><%- index_inner+1 %>" name="question_<%- index+1 %>_<%- index_inner+1 %>" value="<%- option %>"
-                              <% if( answerJsonObject['question_' + (index + 1) + '_' + (index_inner+1) ] == option ){ %>
-                                 checked
-                              <% } %>
-                              >
-                              <label class="form-check-label" for="<%- item.name %><%- index_inner+1 %>"><%- option %></label>
-                           </div>
-                           <% }); %>
-                        </div>
-                     </div>
-                  <% }else if(item.type=='type_ratings'){ %>
-                     <div class="survey-body">
-                        <div class="survey-rating">
-                           <div class="survey-rating-part">
-                              Disappointing
-                           </div>
-                           <div class="survey-rating-part text-center">
-                                 <% AllRatingTags.forEach(function(rating, index_inner) { %>
-                                       <div class="rating_each_option form-check position-relative custom-check">
-                                          <span><%- rating.review_rating_value %></span>
-                                          <input type="radio" class="form-check-input" id="<%- item.type %>_<%- index+1 %>_<%- index_inner+1 %>" name="question_<%- index+1 %>" value="<%- rating.review_rating_value %>"
-                                          <% if( answerJsonObject['question_' + (index + 1)] == rating.review_rating_value ){ %>
-                                             checked
-                                          <% } %>
-                                          >
-                                          <label class="form-check-label" for="<%- item.type %>_<%- index+1 %>_<%- index_inner+1 %>"><img src="/<%- rating.rating_image %>" alt="<%- rating.review_rating_name %>"></label>
-                                       </div>
-                                 <% }); %>
-                           </div>
-                           <div class="survey-rating-part">
-                              Excellent
-                           </div>
-                        </div>
-                     </div>
-                  <% }else{ %>
-                     <p>Answer type not define</p>
-                  <% } %>
-               </div>
-               <% }); %>
-            </form>
-          <% }else{ %>
-            <form method="post" name="survey_form" id="survey_form">
-               <% questionJsonObject.forEach(function(item, index) { %>
-               <div class="survey-wrapper">
+                  </div><br>
                   <div class="survey-head"><strong><%- index+1 %>.</strong> <%- item.question %></div>
                   <% if(item.type=='type_textarea'){ %>
                   <div class="survey-body">
@@ -149,7 +84,8 @@
                <% if(company && company.membership_type_id>=3 ){ %>
                <input type="hidden" name="company_id" value="<%- company.ID %>">
                <input type="hidden" name="survey_unique_id" value="<%- companySurveyQuestions[0].unique_id %>">
-               <input type="hidden" name="customer_id" value="<%- currentUserData.user_id %>">
+               <input type="hidden" name="customer_id" value="0">
+               <input type="hidden" name="encrypted_email" value="<%- SurveyInvitedEmail[0].encrypted_email %>">
                <div class="text-center mt-5 mb-3"><input type="submit" class="btn-default btn-warning btn-survey-default" value="Submit"></div>
                <% }else{ %>
                   <p style="text-align: center; margin-top: 25px; font-weight: 700; font-size: 19px; color: #fb4040;">You cannot submit any survey form for this company, due to membership permission</p>
@@ -161,6 +97,7 @@
                </span>
             </div>
             <div style="width: 85%; text-align: center; display: block; border: 2px solid #fccb06; padding: 6px; margin: 0 auto; border-radius: 5px; display: none;" class="poll-create-message"></div>
+          
           <% } %>
           
        </div>
@@ -183,7 +120,7 @@ $('#survey_form').submit( function( event ) {
       const answers = {};
   
       for (const item of serializedArray) {
-         if (item.name === 'company_id' || item.name === 'survey_unique_id' || item.name === 'customer_id') {
+         if (item.name === 'company_id' || item.name === 'survey_unique_id' || item.name == 'customer_id' || item.name == 'first_name' || item.name == 'last_name' || item.name == 'encrypted_email' ) {
             transformedData[item.name] = item.value;
          } else {
             answers[item.name] = item.value;
@@ -199,7 +136,7 @@ $('#survey_form').submit( function( event ) {
    console.log(JSON.stringify(transformedData, null, 3));
    //----Submit Survey Ajax-------------//
    $.ajax({
-      url: '/auth/create-survey-answer',
+      url: '/auth/create-invited-survey-answer',
       method: 'POST',
       data: JSON.stringify(transformedData),
       processData: false,
@@ -212,7 +149,9 @@ $('#survey_form').submit( function( event ) {
             $('.btn-survey-default').prop("disabled", false);
             var company_url = '/company/<%- company.slug %>';
             setTimeout( function() {
-               window.location.href = company_url;
+               //window.location.href = company_url;
+               //location.reload();
+               window.location.href = '/';
             }, 3000);
          } else {
             $('.frm-loading').hide();

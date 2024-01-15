@@ -202,10 +202,53 @@
                                     </div>
                                  </div>
                               </div>
-                              <!-- repeater1 end -->
                               
-                              <a href="#" class="btn-default btn-warning add-question my-1">Add Question</a>
+                              <a href="#" class="btn-default btn-warning add-question my-1">Add Question</a><br><br>
+                              <!-- repeater1 end -->
+
+                              <div id="invitation_type">
+                                 <div class="custom-form">
+                                    <span class="fw-bold d-inline-block me-2">Invitation Type:</span>
+                                    <div class="form-check form-check-inline">
+                                       <input class="form-check-input" type="radio" name="invitation_type" id="invitationRadio1" value="Profile" checked required>
+                                       <label class="form-check-label" for="invitationRadio1">Only Profiles</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                       <input class="form-check-input select-radio" type="radio" name="invitation_type" id="invitationRadio2" value="Email" required>
+                                       <label class="form-check-label" for="invitationRadio2">Only Email</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                       <input class="form-check-input" type="radio" name="invitation_type" id="invitationRadio3" value="Both" required>
+                                       <label class="form-check-label" for="invitationRadio3">Both</label>
+                                    </div>
+                                 </div>
+                              </div>
+
+                              <div id="invitation_fields" class="send-review-invitation" >
+                                 <div style="margin: 10px; display: flex; justify-content: flex-end">
+                                    <button type="button" class="btn btn-warning" id="bulk-upload" data-bs-whatever="@fat">Bulk Upload</button>
+                                 </div>
+                                 <h4>Send Survey Invitation:</h4>
+                                 <div id="sendreviewtags_invitation" class="custom-form">
+                                    <label>Add Emails</label>
+                                    <input type="text" name="email" placeholder="Add an email" class="form-control mb-4" />
+                                 </div>
+                                 <div class="custom-form d-none" id="csv-field">
+                                    <label><span>Choose a CSV file:</span></label>
+                                    <input type="file" name="email_file" class="form-control" id="recipient-name">
+                                 </div>
+                                 <div class="custom-form">
+                                    <label><span>Message</span></label>
+                                    <textarea name="email_body" id="email_body" class="form-control mb-4">
+                                    Hello Dear,
+                                    <%= company.company_name  %> cordially invite you to participate our company survey, through the platform of BoloGrahak. 
+                                    </textarea>
+                                 </div>
+                              </div>
+                              
                               <input type="hidden" name="company_id" value="<%- company.ID %>">
+                              <input type="hidden" name="company_slug" value="<%- company.slug %>">
+                              <input type="hidden" name="user_id" id="user_id" value="<%= currentUserData.user_id  %>" />
                               <input type="submit" class="btn-survey-default btn-dark my-1" value="Submit">
                            </div>
                         </form>

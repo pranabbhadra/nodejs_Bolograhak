@@ -9,6 +9,7 @@ const axios = require('axios');
 const mdlconfig = require('./config-module');
 const slugify = require('slugify');
 const { emit } = require('process');
+const base64url = require('base64url');
 
 dotenv.config({ path: './.env' });
 const query = util.promisify(db.query).bind(db);
@@ -3616,7 +3617,8 @@ async function SurveyInvitationFile(req) {
   if(emails.length > 0){
      emails.forEach(async (email)=>{
       
-      const hashedEmail = await bcrypt.hash(email, 8);
+      const encryptEmail = await bcrypt.hash(email, 8);
+      const hashedEmail = base64url(encryptEmail);
       console.log(hashedEmail);
 
       const sql = `INSERT INTO suvey_invitation_details ( company_id, user_id, emails, encrypted_email, share_date, unique_id) VALUES (?, ?, ?, ?, ?, ?)`;
@@ -3767,7 +3769,8 @@ async function SurveyInvitationByArray(req) {
   if(email.length > 1 ){
      email.forEach(async (email)=>{
       if (email != '' ) {
-          const hashedEmail = await bcrypt.hash(email, 8);
+          const encrypetdEmail = await bcrypt.hashSync(email, 8);
+          const hashedEmail = base64url(encrypetdEmail);
           console.log(hashedEmail);
     
           const sql = `INSERT INTO suvey_invitation_details ( company_id, user_id, emails, encrypted_email, share_date, unique_id) VALUES (?, ?, ?, ?, ?, ?)`;

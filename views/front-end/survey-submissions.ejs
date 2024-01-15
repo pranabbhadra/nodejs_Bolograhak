@@ -134,11 +134,25 @@
                                             }
 
                                         %>
-                                        <div class="discussion-user-img" style="padding: 5px 15px; border-radius: 100%; font-size: 28px; background-color: <%- color %>;">
-                                           <%- submission.first_name[0] %>
-                                        </div>
+                                        <% if(submission.customer_id == '0') { %>
+                                            <div class="discussion-user-img" style="padding: 5px 15px; border-radius: 100%; font-size: 28px; background-color: <%- color %>;">
+                                                <%- submission.invited_first_name[0] %>
+                                            </div>
+                                        <% } else { %>
+                                            <div class="discussion-user-img" style="padding: 5px 15px; border-radius: 100%; font-size: 28px; background-color: <%- color %>;">
+                                                <%- submission.first_name[0] %>
+                                            </div>
+                                        <% } %>
+                                        
                                         <div class="discussion-user-info">
-                                            <a href="/survey-submission-details/<%- company.slug %>/<%- submission.survey_unique_id %>/<%- submission.ID %>"><h4><%- submission.first_name +' '+ submission.last_name %></h4></a>
+                                            <% if(submission.customer_id == '0') { %>
+                                                <a href="/survey-submission-details/<%- company.slug %>/<%- submission.survey_unique_id %>/<%- submission.ID %>"><h4><%- submission.invited_first_name +' '+ submission.invited_last_name %></h4></a>
+                                            
+                                            <% } else { %>
+                                                <a href="/survey-submission-details/<%- company.slug %>/<%- submission.survey_unique_id %>/<%- submission.ID %>"><h4><%- submission.first_name +' '+ submission.last_name %></h4></a>
+                                            
+                                            <% } %>
+                                            <!-- <a href="/survey-submission-details/<%- company.slug %>/<%- submission.survey_unique_id %>/<%- submission.ID %>"><h4><%- submission.first_name +' '+ submission.last_name %></h4></a> -->
                                             <p>Submitted at <%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></p>
                                         </div>
                                     </div>

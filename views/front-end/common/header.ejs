@@ -302,7 +302,7 @@
       </div>
     </header>
     <!-- ============== Header End =============== -->
-    <% if(!currentUserData && (menu_active_id != 'reset-password')){ %>
+    <% if( !currentUserData && (menu_active_id != 'reset-password' && menu_active_id != 'survey-invitation') ){ %>
     <!-- ============== Login Modal Start =============== -->
     <div class="login-modal">
       <div class="modal-logo text-center">
@@ -473,6 +473,8 @@
       <div class="login-overlay2"><img src="/front-end/images/login-overlay2.png" alt="img" width="164" height="314"></div>
     </div>
     <!-- ============== Quick Login Modal Start =============== -->
+
+    <% if(menu_active_id != 'survey-invitation'){ %>
       <div class="modal fade pe-0" tabindex="-1" id="quickloginmodal">
         <div class="modal-dialog">
           <div class="modal-content">
@@ -497,6 +499,7 @@
           </div>
         </div>
     </div>
+    <% } %>
   <!-- =================== Forgot Password Modal Start ==========================-->
    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">

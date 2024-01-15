@@ -1211,7 +1211,7 @@ async function getCompanyOngoingSurveyDetails(companyID) {
   const get_company_survey_details_query = `
   SELECT survey.*
   FROM survey
-  WHERE survey.company_id = ${companyID} AND CURDATE() <= expire_at
+  WHERE survey.company_id = ${companyID} AND CURDATE() <= expire_at AND invitation_type != 'Email'
   ORDER BY survey.id DESC;
   `;
   try{
@@ -1252,9 +1252,9 @@ async function getCompanySurveySubmitionsCount() {
 
 async function getCompanySurveySubmissions(companyID, survey_unique_id) {
   const get_company_survey_submissions_query = `
-  SELECT survey_customer_answers.*, users.first_name, users.last_name
+  SELECT survey_customer_answers.*, survey_customer_answers.first_name invited_first_name, survey_customer_answers.last_name invited_last_name, users.first_name, users.last_name
   FROM survey_customer_answers
-  JOIN users ON survey_customer_answers.customer_id = users.user_id
+  LEFT JOIN users ON survey_customer_answers.customer_id = users.user_id
   WHERE company_id = ${companyID} AND survey_unique_id = ${survey_unique_id}
   ORDER BY ID DESC;
   `;

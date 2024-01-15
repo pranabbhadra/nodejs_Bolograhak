@@ -18,6 +18,7 @@ const path = require('path');
 const crypto = require('crypto');
 const { v4: uuidv4 } = require('uuid');
 var cron = require('node-cron');
+const base64url = require('base64url');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -6093,6 +6094,57 @@ exports.createSurveyAnswer = async (req, res) => {
                 status: 'ok',
                 message: 'Your survey answers successfully submitted'
             });
+        }
+    })
+}
+
+// Create Survey Answer
+exports.createInvitedSurveyAnswer = async (req, res) => {
+    console.log( 'createInvitedSurveyAnswer', req.body );
+    //return false;
+    const jsonString = Object.keys(req.body)[0];
+    const surveyAnswerResponse = JSON.parse(jsonString);
+    console.log(surveyAnswerResponse);
+
+    
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth() + 1; // Months are zero-based (0 = January, 11 = December), so add 1
+    const day = currentDate.getDate();
+    const formattedDate = `${year}-${month < 10 ? '0' : ''}${month}-${day < 10 ? '0' : ''}${day}`;
+
+    const surveyAnswerInsertData = [
+        surveyAnswerResponse[0].company_id,
+        surveyAnswerResponse[0].survey_unique_id,
+        surveyAnswerResponse[0].customer_id,
+        JSON.stringify(surveyAnswerResponse[0].answers),
+        formattedDate,
+        surveyAnswerResponse[0].first_name,
+        surveyAnswerResponse[0].last_name,
+    ];
+    const sql = "INSERT INTO survey_customer_answers (company_id, survey_unique_id, customer_id, answer, created_at, first_name, last_name	) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+    db.query(sql, surveyAnswerInsertData, async (err, result) => {
+        if(err){
+            return res.send({
+                status: 'error',
+                message: err
+            });
+        } else {
+            const updateQuery = `UPDATE suvey_invitation_details SET status = '1'  WHERE encrypted_email = '${surveyAnswerResponse[0].encrypted_email}' `;
+            db.query(updateQuery, (updateErr, updateRes)=>{
+                if(updateErr){
+                    return res.send({
+                        status: 'error',
+                        message: updateErr
+                    });
+                } else {    
+                    return res.send({
+                    status: 'ok',
+                    message: 'Thank You for Participating in Our Survey!'
+                    });
+                }
+            })
         }
     })
 }

@@ -650,6 +650,30 @@ router.get('/company/:slug', checkCookieValue, async (req, res) => {
 
                 // res.json(
                 // {
+                //     menu_active_id: 'company',
+                //     page_title: 'Organization Details',
+                //     currentUserData,
+                //     allRatingTags,
+                //     company:CompanyInfo,
+                //     CompanyInfo,
+                //     companyReviewNumbers,
+                //     getCompanyReviews,
+                //     globalPageMeta:globalPageMeta,
+                //     cover_img:cover_img,
+                //     gallery_img:gallery_img,
+                //     youtube_iframe:youtube_iframe,
+                //     products:products,
+                //     promotions:promotions,
+                //     facebook_url:facebook_url,
+                //     twitter_url:twitter_url,
+                //     instagram_url:instagram_url,
+                //     linkedin_url:linkedin_url,
+                //     youtube_url:youtube_url,
+                //     support_data:support_data,
+                //     PollDetails,
+                //     labeltype,
+                //     countInvitationLabels,
+                //     CompanySurveyDetails_formatted,
                 //     CompanyCategory:getCompanyCategory
                 // });
                 res.render('front-end/category-details-premium',
@@ -1039,58 +1063,58 @@ router.get('/similar-discussions/:tag', checkCookieValue, async (req, res) => {
 });
 
 //Survey page
-router.get('/:slug/survey/:id', checkCookieValue, async (req, res) => {
-    let currentUserData = JSON.parse(req.userData);
-    const slug = req.params.slug;
-    const comp_res =await comFunction2.getCompanyIdBySlug(slug);
-    const companyId = comp_res.ID;
-    const survey_uniqueid = req.params.id;
-
-    try {
-        const [globalPageMeta, company, companySurveyQuestions, AllRatingTags, companySurveyAnswersByUser ] = await Promise.all([
-            comFunction2.getPageMetaValues('global'),
-            comFunction.getCompany(companyId),
-            comFunction.getCompanySurveyQuestions(survey_uniqueid, companyId),
-            comFunction.getAllRatingTags(),
-            comFunction.getCompanySurveyAnswersByUser(survey_uniqueid, currentUserData.user_id),
-        ]);        
-        if(companySurveyQuestions.length>0){
-            // res.json({
-            //     menu_active_id: 'survey',
-            //     page_title: 'Survey',
-            //     currentUserData,
-            //     globalPageMeta:globalPageMeta,
-            //     company:company,
-            //     companySurveyQuestions,
-            //     AllRatingTags,
-            //     companySurveyAnswersByUser
-            // });
-            res.render('front-end/survey', {
-                menu_active_id: 'survey',
-                page_title: 'Survey',
-                currentUserData,
-                globalPageMeta:globalPageMeta,
-                company:company,
-                companySurveyQuestions,
-                AllRatingTags,
-                companySurveyAnswersByUser
-            });
-        }else{
-            res.render('front-end/404', {
-                menu_active_id: '404',
-                page_title: '404',
-                currentUserData,
-                globalPageMeta:globalPageMeta
-            });
-        }
-    } catch (err) {
-        res.redirect('/');
-    }
-});
+// router.get('/:slug/survey/:id', checkCookieValue, async (req, res) => {
+//     let currentUserData = JSON.parse(req.userData);
+//     const slug = req.params.slug;
+//     const comp_res =await comFunction2.getCompanyIdBySlug(slug);
+//     const companyId = comp_res.ID;
+//     const survey_uniqueid = req.params.id;
+//     //console.log('aaaaaaaaaaaaa')
+//     try {
+//         const [globalPageMeta, company, companySurveyQuestions, AllRatingTags, companySurveyAnswersByUser ] = await Promise.all([
+//             comFunction2.getPageMetaValues('global'),
+//             comFunction.getCompany(companyId),
+//             comFunction.getCompanySurveyQuestions(survey_uniqueid, companyId),
+//             comFunction.getAllRatingTags(),
+//             comFunction.getCompanySurveyAnswersByUser(survey_uniqueid, currentUserData.user_id),
+//         ]);        
+//         if(companySurveyQuestions.length>0){
+//             // res.json({
+//             //     menu_active_id: 'survey',
+//             //     page_title: 'Survey',
+//             //     currentUserData,
+//             //     globalPageMeta:globalPageMeta,
+//             //     company:company,
+//             //     companySurveyQuestions,
+//             //     AllRatingTags,
+//             //     companySurveyAnswersByUser
+//             // });
+//             res.render('front-end/survey', {
+//                 menu_active_id: 'survey',
+//                 page_title: 'Survey',
+//                 currentUserData,
+//                 globalPageMeta:globalPageMeta,
+//                 company:company,
+//                 companySurveyQuestions,
+//                 AllRatingTags,
+//                 companySurveyAnswersByUser
+//             });
+//         }else{
+//             res.render('front-end/404', {
+//                 menu_active_id: '404',
+//                 page_title: '404',
+//                 currentUserData,
+//                 globalPageMeta:globalPageMeta
+//             });
+//         }
+//     } catch (err) {
+//         res.redirect('/');
+//     }
+// });
 
 //Invited Survey page
-router.get('/:slug/survey/:id/:email', async (req, res) => {
-    //let currentUserData = JSON.parse(req.userData);
+router.get('/:slug/survey/:id/:email', checkCookieValue, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
     res.locals.globalData = {
         BLOG_URL: process.env.BLOG_URL,
         MAIN_URL: process.env.MAIN_URL,
@@ -1103,19 +1127,20 @@ router.get('/:slug/survey/:id/:email', async (req, res) => {
     const survey_uniqueid = req.params.id;
     const encryptEmail = req.params.email; 
 
-    const [globalPageMeta, company, companySurveyQuestions, AllRatingTags,getSurveyInvitedEmail ] = await Promise.all([
+    const [globalPageMeta, company, companySurveyQuestions, AllRatingTags, getSurveyInvitedEmail ] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
         comFunction.getCompany(companyId),
         comFunction.getCompanySurveyQuestions(survey_uniqueid, companyId),
         comFunction.getAllRatingTags(),
         comFunction2.getSurveyInvitedEmail(encryptEmail),
-        comFunction.getCompanySurveyAnswersByUser(survey_uniqueid, currentUserData.user_id),
     ]);
-    console.log('getSurveyInvitedEmail', getSurveyInvitedEmail);
+    //console.log('/:slug/survey/:id/:email')
 
     try {
                 
-        if(companySurveyQuestions.length>0){
+    console.log('getSurveyInvitedEmail', getSurveyInvitedEmail,companySurveyQuestions);
+        if(companySurveyQuestions.length>0 && getSurveyInvitedEmail.length > 0){
+
             // res.json({
             //     menu_active_id: 'survey',
             //     page_title: 'Survey',
@@ -1126,21 +1151,23 @@ router.get('/:slug/survey/:id/:email', async (req, res) => {
             //     AllRatingTags,
             //     companySurveyAnswersByUser
             // });
+
             res.render('front-end/survey-invitation', {
-                menu_active_id: 'survey',
+                menu_active_id: 'survey-invitation',
                 page_title: 'Invited Survey',
                 currentUserData,
                 globalPageMeta:globalPageMeta,
                 company:company,
                 companySurveyQuestions,
                 AllRatingTags,
-                companySurveyAnswersByUser
+                SurveyInvitedEmail : getSurveyInvitedEmail
             });
         }else{
+            //console.log('catch AAAAAAAAAAAAA')
             res.render('front-end/404', {
                 menu_active_id: '404',
                 page_title: '404',
-                currentUserData: {} ,
+                currentUserData,
                 globalPageMeta:globalPageMeta
             });
         }
@@ -1148,7 +1175,7 @@ router.get('/:slug/survey/:id/:email', async (req, res) => {
          res.render('front-end/404', {
             menu_active_id: '404',
             page_title: '404',
-            currentUserData :  {} ,
+            currentUserData ,
             globalPageMeta:globalPageMeta
         });
     }
@@ -1307,11 +1334,15 @@ router.get('/survey-submissions/:slug/:survey_id', checkClientClaimedCompany, as
     if(companyPaidStatus=='free'){
         res.redirect('/');
     }else{
-        // res.json({
+        // res.json( {
+        //     menu_active_id: 'survey-submissions',
+        //     page_title: 'Survey Submissions',
+        //     currentUserData,
         //     company,
+        //     AllRatingTags,
         //     CompanySurveyDetails,
         //     companySurveySubmissions,
-        //     AllRatingTags
+        //     globalPageMeta:globalPageMeta
         // });
         res.render('front-end/survey-submissions', {
             menu_active_id: 'survey-submissions',
@@ -5065,6 +5096,7 @@ router.get('*',checkCookieValue, async (req, res) => {
     const [globalPageMeta] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
     ]);
+    console.log('404')
     try {
         res.render('front-end/404', {
             menu_active_id: '404',
