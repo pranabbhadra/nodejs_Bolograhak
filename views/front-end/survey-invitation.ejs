@@ -10,23 +10,34 @@
           <% var questionJsonObject = JSON.parse(companySurveyQuestions[0].questions)
              var jsonString = JSON.stringify(questionJsonObject, null, 2);
           %>
-          <%- //jsonString %>
+         <% const dateString = companySurveyQuestions[0].expire_at; %>
+         <% const date = new Date(dateString); 
+            const date2 = new Date(); 
+            date2.setHours(0, 0, 0, 0);
+            const daysDiff = Math.round((date - date2)/(1000 * 60 * 60 * 24));
+         %>
+          <%- //daysDiff %>
           <% if(SurveyInvitedEmail[0].status == '1' ){ %> 
             <div class="survey-head " style="text-align: center;" ><strong>Thank You for Participating in Our Survey!</strong> </div>
+          <% } else if (daysDiff < 0) { %>
+               <div class="survey-head " style="text-align: center;" ><strong>Sorry, this survey has already expired.</strong> </div>
           <% } else { %>
             
             <form method="post" name="survey_form" id="survey_form">
                <% questionJsonObject.forEach(function(item, index) { %>
                <div class="survey-wrapper">
-                  <div class="survey-head"><strong></strong> Enter your Name *</div>
-                  <div class="survey-body rows" style="display: flex;">
-                     <div class="custom-form col-6" >
-                        <input type="text"  class="form-control" placeholder="First Name" name="first_name" required />
-                     </div>
-                     <div class="custom-form col-6" style="margin-left: 10px;">
-                        <input type="text"  class="form-control" placeholder="Last Name" name="last_name" required />
-                     </div>
-                  </div><br>
+                  <% if(index == 0) { %>
+                     <div class="survey-head"><strong></strong> Enter your Name *</div>
+                     <div class="survey-body rows" style="display: flex;">
+                        <div class="custom-form col-6" >
+                           <input type="text"  class="form-control" placeholder="First Name" name="first_name" required />
+                        </div>
+                        <div class="custom-form col-6" style="margin-left: 10px;">
+                           <input type="text"  class="form-control" placeholder="Last Name" name="last_name" required />
+                        </div>
+                     </div><br>
+                  <% } %>
+                  
                   <div class="survey-head"><strong><%- index+1 %>.</strong> <%- item.question %></div>
                   <% if(item.type=='type_textarea'){ %>
                   <div class="survey-body">
@@ -84,6 +95,7 @@
                <% if(company && company.membership_type_id>=3 ){ %>
                <input type="hidden" name="company_id" value="<%- company.ID %>">
                <input type="hidden" name="survey_unique_id" value="<%- companySurveyQuestions[0].unique_id %>">
+               <!-- <input type="hidden" name="customer_id" value="<%- currentUserData && currentUserData.user_id ? currentUserData.user_id : 0 %>"> -->
                <input type="hidden" name="customer_id" value="0">
                <input type="hidden" name="encrypted_email" value="<%- SurveyInvitedEmail[0].encrypted_email %>">
                <div class="text-center mt-5 mb-3"><input type="submit" class="btn-default btn-warning btn-survey-default" value="Submit"></div>

@@ -5996,7 +5996,7 @@ exports.createSurvey = async (req, res) => {
             }
         } else {
 
-            if (email.length > 1) {
+            if (email.length > 2) {
                 // console.log('emails',emails);
                 // console.log('req.body',req.body);
                 
@@ -6296,20 +6296,65 @@ exports.deleteSurvey = async (req, res) => {
     LEFT JOIN survey_customer_answers ON survey.unique_id = survey_customer_answers.survey_unique_id
     WHERE survey.id = '${req.body.surveyId}'`;
 
+    const surveyInvitationDetailsDeleteQuery = `
+    DELETE FROM survey_invitation_details
+    WHERE unique_id IN (
+        SELECT unique_id
+        FROM survey
+        WHERE id = '${req.body.surveyId}'
+    )
+`;
+
     db.query(delQuery,(err, result)=>{
         if (err) {
+            console.log(err);
             return res.send({
                 status: 'not ok',
                 message: 'Something went wrong  '+err
             });
         } else {
-            return res.send({
-                status: 'ok',
-                message: 'Survey Deleted successfully !'
-            });
+            db.query(surveyInvitationDetailsDeleteQuery, (invitationErr,invitationRes)=>{
+                if (err) {
+                    console.log(err);
+                    return res.send({
+                        status: 'not ok',
+                        message: 'Something went wrong  '+err
+                    });
+                } else {
+                    return res.send({
+                        status: 'ok',
+                        message: 'Survey Deleted successfully !'
+                    });
+                }
+            })
         }
     })
 }
+
+// exports.deleteSurvey = async (req, res) => {
+//     const delQuery = `
+//         DELETE survey, survey_customer_answers, survey_invitation_details
+//         FROM survey
+//         LEFT JOIN survey_customer_answers ON survey.unique_id = survey_customer_answers.survey_unique_id
+//         LEFT JOIN survey_invitation_details ON survey.unique_id = survey_invitation_details.unique_id
+//         WHERE survey.id = '${req.body.surveyId}'
+//     `;
+
+//     db.query(delQuery, (err, result) => {
+//         if (err) {
+//             return res.send({
+//                 status: 'not ok',
+//                 message: 'Something went wrong ' + err
+//             });
+//         } else {
+//             return res.send({
+//                 status: 'ok',
+//                 message: 'Survey Deleted successfully!'
+//             });
+//         }
+//     });
+// }
+
 
 //discussion company create tags
 exports.companyCreateTags = async (req, res) => {

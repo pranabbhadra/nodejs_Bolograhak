@@ -1063,54 +1063,54 @@ router.get('/similar-discussions/:tag', checkCookieValue, async (req, res) => {
 });
 
 //Survey page
-// router.get('/:slug/survey/:id', checkCookieValue, async (req, res) => {
-//     let currentUserData = JSON.parse(req.userData);
-//     const slug = req.params.slug;
-//     const comp_res =await comFunction2.getCompanyIdBySlug(slug);
-//     const companyId = comp_res.ID;
-//     const survey_uniqueid = req.params.id;
-//     //console.log('aaaaaaaaaaaaa')
-//     try {
-//         const [globalPageMeta, company, companySurveyQuestions, AllRatingTags, companySurveyAnswersByUser ] = await Promise.all([
-//             comFunction2.getPageMetaValues('global'),
-//             comFunction.getCompany(companyId),
-//             comFunction.getCompanySurveyQuestions(survey_uniqueid, companyId),
-//             comFunction.getAllRatingTags(),
-//             comFunction.getCompanySurveyAnswersByUser(survey_uniqueid, currentUserData.user_id),
-//         ]);        
-//         if(companySurveyQuestions.length>0){
-//             // res.json({
-//             //     menu_active_id: 'survey',
-//             //     page_title: 'Survey',
-//             //     currentUserData,
-//             //     globalPageMeta:globalPageMeta,
-//             //     company:company,
-//             //     companySurveyQuestions,
-//             //     AllRatingTags,
-//             //     companySurveyAnswersByUser
-//             // });
-//             res.render('front-end/survey', {
-//                 menu_active_id: 'survey',
-//                 page_title: 'Survey',
-//                 currentUserData,
-//                 globalPageMeta:globalPageMeta,
-//                 company:company,
-//                 companySurveyQuestions,
-//                 AllRatingTags,
-//                 companySurveyAnswersByUser
-//             });
-//         }else{
-//             res.render('front-end/404', {
-//                 menu_active_id: '404',
-//                 page_title: '404',
-//                 currentUserData,
-//                 globalPageMeta:globalPageMeta
-//             });
-//         }
-//     } catch (err) {
-//         res.redirect('/');
-//     }
-// });
+router.get('/:slug/survey/:id', checkCookieValue, async (req, res) => {
+    let currentUserData = JSON.parse(req.userData);
+    const slug = req.params.slug;
+    const comp_res =await comFunction2.getCompanyIdBySlug(slug);
+    const companyId = comp_res.ID;
+    const survey_uniqueid = req.params.id;
+    //console.log('aaaaaaaaaaaaa')
+    try {
+        const [globalPageMeta, company, companySurveyQuestions, AllRatingTags, companySurveyAnswersByUser ] = await Promise.all([
+            comFunction2.getPageMetaValues('global'),
+            comFunction.getCompany(companyId),
+            comFunction.getCompanySurveyQuestions(survey_uniqueid, companyId),
+            comFunction.getAllRatingTags(),
+            comFunction.getCompanySurveyAnswersByUser(survey_uniqueid, currentUserData.user_id),
+        ]);        
+        if(companySurveyQuestions.length>0){
+            // res.json({
+            //     menu_active_id: 'survey',
+            //     page_title: 'Survey',
+            //     currentUserData,
+            //     globalPageMeta:globalPageMeta,
+            //     company:company,
+            //     companySurveyQuestions,
+            //     AllRatingTags,
+            //     companySurveyAnswersByUser
+            // });
+            res.render('front-end/survey', {
+                menu_active_id: 'survey',
+                page_title: 'Survey',
+                currentUserData,
+                globalPageMeta:globalPageMeta,
+                company:company,
+                companySurveyQuestions,
+                AllRatingTags,
+                companySurveyAnswersByUser
+            });
+        }else{
+            res.render('front-end/404', {
+                menu_active_id: '404',
+                page_title: '404',
+                currentUserData,
+                globalPageMeta:globalPageMeta
+            });
+        }
+    } catch (err) {
+        res.redirect('/');
+    }
+});
 
 //Invited Survey page
 router.get('/:slug/survey/:id/:email', checkCookieValue, async (req, res) => {
@@ -1138,18 +1138,18 @@ router.get('/:slug/survey/:id/:email', checkCookieValue, async (req, res) => {
 
     try {
                 
-    console.log('getSurveyInvitedEmail', getSurveyInvitedEmail,companySurveyQuestions);
+    //console.log('getSurveyInvitedEmail', getSurveyInvitedEmail,companySurveyQuestions);
         if(companySurveyQuestions.length>0 && getSurveyInvitedEmail.length > 0){
 
-            // res.json({
-            //     menu_active_id: 'survey',
-            //     page_title: 'Survey',
+            // res.json( {
+            //     menu_active_id: 'survey-invitation',
+            //     page_title: 'Invited Survey',
             //     currentUserData,
             //     globalPageMeta:globalPageMeta,
             //     company:company,
             //     companySurveyQuestions,
             //     AllRatingTags,
-            //     companySurveyAnswersByUser
+            //     SurveyInvitedEmail : getSurveyInvitedEmail
             // });
 
             res.render('front-end/survey-invitation', {
@@ -3563,7 +3563,7 @@ router.get('/discussion-listing', checkLoggedIn, async (req, res) => {
         //     AllDiscussions: AllDiscussions
         // });
         res.render('discussion-listing', {
-            menu_active_id: 'pages',
+            menu_active_id: 'miscellaneous',
             page_title: 'Discussion Listing',
             currentUserData,
             AllDiscussions: AllDiscussions
@@ -3584,7 +3584,7 @@ router.get('/poll-listing', checkLoggedIn, async (req, res) => {
             comFunction2.getAllPolls(),
         ]);
         res.render('poll-listing', {
-            menu_active_id: 'pages',
+            menu_active_id: 'miscellaneous',
             page_title: 'Poll Listing',
             currentUserData,
             AllPolls: getAllPolls
@@ -3613,7 +3613,7 @@ router.get('/complaint-listing', checkLoggedIn, async (req, res) => {
         //     AllDiscussions: AllDiscussions
         // });
         res.render('complaint-listing', {
-            menu_active_id: 'pages',
+            menu_active_id: 'miscellaneous',
             page_title: 'Complaint Listing',
             currentUserData,
             AllComplaints: getAllComplaints
@@ -3635,7 +3635,7 @@ router.get('/survey-listing', checkLoggedIn, async (req, res) => {
         ]);
         //console.log('getAllSurveys',getAllSurveys)
         res.render('survey-listing', {
-            menu_active_id: 'pages',
+            menu_active_id: 'miscellaneous',
             page_title: 'Survey Listing',
             currentUserData,
             AllSurveys: getAllSurveys
@@ -5096,7 +5096,6 @@ router.get('*',checkCookieValue, async (req, res) => {
     const [globalPageMeta] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
     ]);
-    console.log('404')
     try {
         res.render('front-end/404', {
             menu_active_id: '404',
