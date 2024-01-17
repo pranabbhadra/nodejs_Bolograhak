@@ -3072,7 +3072,12 @@ exports.updateBusiness = async (req, res) => {
     //return false;
     const { business_id, title, meta_title, meta_desc, meta_keyword, bannner_content, features_title,
         feature_content,feature_icon, advantage_title, advantage_content, dont_forget_title,
-        dont_forget_content_1, dont_forget_content_2, did_you_know_title, did_you_know_content_1, did_you_know_content_2, upcoming_features_title, upcoming_features_content, bottom_content, app_bannner_content_title, app_bannner_content_1, app_bannner_content_2, app_advantage_point, app_dont_forget_content_1_title,app_dont_forget_content_1, app_dont_forget_content_2_title, app_dont_forget_content_2 } = req.body;
+        dont_forget_content_1, dont_forget_content_2, did_you_know_title, did_you_know_content_1, 
+        did_you_know_content_2, upcoming_features_title, upcoming_features_content, bottom_content, 
+        app_bannner_content_title, app_bannner_content_1, app_bannner_content_2, app_advantage_point, 
+        app_dont_forget_content_1_title,app_dont_forget_content_1, app_dont_forget_content_2_title, 
+        app_dont_forget_content_2, basic_plan_content, standard_plan_content, advanced_plan_content, 
+        premium_plan_content, enterprice_plan_content } = req.body;
 
     const { banner_img_1, banner_img_2, banner_img_3, banner_img_4, banner_img_5, banner_img_6,banner_img_7, banner_img_8,  advantage_img_1, advantage_img_2, advantage_img_3, advantage_img_4, advantage_img_5, advantage_img_6, advantage_img_7, advantage_img_8, did_you_know_img, app_banner_img_1, app_banner_img_2 } = req.files;
 
@@ -3086,10 +3091,18 @@ exports.updateBusiness = async (req, res) => {
     const app_advantage_points = JSON.stringify(advantage_point); 
 
     const meta_value = [bannner_content, features_title, advantage_title, advantage_content, dont_forget_title,
-        dont_forget_content_1, dont_forget_content_2, did_you_know_title, did_you_know_content_1, did_you_know_content_2, upcoming_features_title, bottom_content, app_bannner_content_title, app_bannner_content_1, app_bannner_content_2, app_dont_forget_content_1_title,app_dont_forget_content_1, app_dont_forget_content_2_title, app_dont_forget_content_2,app_advantage_points];
+        dont_forget_content_1, dont_forget_content_2, did_you_know_title, did_you_know_content_1, did_you_know_content_2,
+         upcoming_features_title, bottom_content, app_bannner_content_title, app_bannner_content_1, app_bannner_content_2,
+          app_dont_forget_content_1_title,app_dont_forget_content_1, app_dont_forget_content_2_title, app_dont_forget_content_2,
+          app_advantage_points, basic_plan_content, standard_plan_content, advanced_plan_content, 
+          premium_plan_content, enterprice_plan_content];
 
     const meta_key = ['bannner_content', 'features_title', 'advantage_title', 'advantage_content', 'dont_forget_title',
-        'dont_forget_content_1', 'dont_forget_content_2', 'did_you_know_title', 'did_you_know_content_1', 'did_you_know_content_2', 'upcoming_features_title', 'bottom_content', 'app_bannner_content_title', 'app_bannner_content_1', 'app_bannner_content_2', 'app_dont_forget_content_1_title','app_dont_forget_content_1', 'app_dont_forget_content_2_title', 'app_dont_forget_content_2','app_advantage_points'];
+        'dont_forget_content_1', 'dont_forget_content_2', 'did_you_know_title', 'did_you_know_content_1', 'did_you_know_content_2', 
+        'upcoming_features_title', 'bottom_content', 'app_bannner_content_title', 'app_bannner_content_1', 'app_bannner_content_2', 
+        'app_dont_forget_content_1_title','app_dont_forget_content_1', 'app_dont_forget_content_2_title', 'app_dont_forget_content_2',
+        'app_advantage_points', 'basic_plan_content', 'standard_plan_content', 'advanced_plan_content', 
+        'premium_plan_content', 'enterprice_plan_content'];
 
     await meta_value.forEach((element, index) => {
         //console.log(element, index);

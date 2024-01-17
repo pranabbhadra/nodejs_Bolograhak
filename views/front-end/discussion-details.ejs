@@ -47,7 +47,7 @@
                       <div class="discussion-details-user-info">
                           <h4><small class="m-0" style="display: inline-block; vertical-align: middle;">
                             
-                          </small><%= comment && comment.comment_first_name ? comment.comment_first_name : '' %> <%= comment && comment.comment_first_name ? comment.comment_last_name : '' %> <small><%= date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) %> </small>
+                          </small><%= comment && comment.comment_first_name ? comment.comment_first_name.charAt(0).toUpperCase() : '' %> <%= comment && comment.comment_first_name ? comment.comment_last_name.charAt(0).toUpperCase() : '' %> <small><%= date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) %> </small>
                           <% if(AllCommentByDiscusId[0].user_id == comment.user_id ) { %>
                             <small class="badge bg-warning text-dark">Author</small>
                             <% } %>
