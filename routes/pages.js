@@ -1153,7 +1153,7 @@ router.get('/create-survey/:slug', checkClientClaimedCompany, async (req, res) =
         return { x: xValue, y: yValue, color: '#F8A401' };
     });
 
-    const companyPaidStatus = company.paid_status;
+    const companyPaidStatus = company.paid_status.trim();;
     if(companyPaidStatus=='free'){
         res.redirect('/');
     }else{
@@ -1221,7 +1221,7 @@ router.get('/survey-submissions/:slug/:survey_id', checkClientClaimedCompany, as
         item.answer = JSON.parse(item.answer);
     });
 
-    const companyPaidStatus = company.paid_status;
+    const companyPaidStatus = company.paid_status.trim();;
     if(companyPaidStatus=='free'){
         res.redirect('/');
     }else{
@@ -1572,9 +1572,9 @@ router.get('/company-dashboard/:slug', checkClientClaimedCompany, async (req, re
         return { x: xValue, y: yValue, color: '#F8A401' };
     });
 
-    const companyPaidStatus = company.paid_status;
+    const companyPaidStatus = company.paid_status.trim();
     //console.log(companyPaidStatus);
-    if(companyPaidStatus=='free'){
+    if(companyPaidStatus == 'free'){
         // res.json(
         // { 
         //     menu_active_id: 'company-dashboard', 
@@ -1604,7 +1604,7 @@ router.get('/company-dashboard/:slug', checkClientClaimedCompany, async (req, re
             TotalReplied:TotalReplied,
             productGraphArray:productGraphArray,
         });
-    }else{
+    } else {
         // res.json(
         // { 
         //     menu_active_id: 'company-dashboard', 
@@ -1672,7 +1672,7 @@ router.get('/company-profile-management/:slug', checkClientClaimedCompany, async
         comFunction.getAllRatingTags(),
     ]);
 
-    const companyPaidStatus = company.paid_status;
+    const companyPaidStatus = company.paid_status.trim();;
     if(companyPaidStatus=='free'){
         let gallery_img = [];
         if(typeof PremiumCompanyData !== 'undefined' ){
@@ -1787,7 +1787,7 @@ router.get('/company-review-listing/:slug', checkClientClaimedCompany, async (re
             Tags: reviewTagsMap[review.id] || []
         };
     });
-    const companyPaidStatus = company.paid_status;
+    const companyPaidStatus = company.paid_status.trim();;
     if(companyPaidStatus=='free'){
         res.render('front-end/basic-company-dashboard-review-listing',
         {
@@ -1899,7 +1899,7 @@ router.get('/company-dashboard-review-replay/:slug/:reviewID', checkClientClaime
         };
     });
 
-    const companyPaidStatus = company.paid_status;
+    const companyPaidStatus = company.paid_status.trim();;
     //console.log(companyPaidStatus);
     if(companyPaidStatus=='free'){
         if(Array.isArray(singleReviewData) && singleReviewData.length>0){
@@ -2041,7 +2041,7 @@ router.get('/company-dashboard-review-flag/:slug/:reviewID', checkClientClaimedC
         };
     });
 
-    const companyPaidStatus = company.paid_status;
+    const companyPaidStatus = company.paid_status.trim();;
     //console.log(companyPaidStatus);
         let cover_img = '';
         let youtube_iframe = '';
@@ -2288,7 +2288,7 @@ router.get('/create-category/:slug', checkClientClaimedCompany, async (req, res)
         comFunction.getAllRatingTags(),
     ]);
     
-    const companyPaidStatus = company.paid_status;
+    const companyPaidStatus = company.paid_status.trim();;
     if(companyPaidStatus=='free'){
         res.render('front-end/basic-create-category',
         {
@@ -2367,7 +2367,7 @@ router.get('/complaint-level-management/:slug', checkClientClaimedCompany, async
         comFunction2.getComplaintLevelDetails(companyId),
     ]);
     
-    const companyPaidStatus = company.paid_status;
+    const companyPaidStatus = company.paid_status.trim();;
     if(companyPaidStatus=='free'){
         res.render('front-end/basic-complain-management',
         {
@@ -2451,7 +2451,7 @@ router.get('/company-complaint-listing/:slug', checkClientClaimedCompany, async 
             };
         });
    
-    const companyPaidStatus = company.paid_status;
+    const companyPaidStatus = company.paid_status.trim();;
     if(companyPaidStatus=='free'){
         res.render('front-end/basic-complaint-listing',
         {
@@ -2533,7 +2533,7 @@ router.get('/company-compnaint-details/:slug/:complaintId', checkClientClaimedCo
     ]);
     
    
-    const companyPaidStatus = company.paid_status;
+    const companyPaidStatus = company.paid_status.trim();;
     if(companyPaidStatus=='free'){
         res.render('front-end/basic-company-complain-details',
         {
@@ -4886,6 +4886,29 @@ router.get('/fill_database_with_category_slug', (req,res)=>{
         }
     })
 })
+
+// auto fill database with category slug 
+router.get('/fill_database_with_company_status', (req, res) => {
+    console.log('/fill_database_with_company_status');
+    const sql = `UPDATE company SET paid_status = 'free', membership_type_id = '0' WHERE membership_type_id IS NULL`;
+    db.query(sql, (err, results) => {
+        if (err) {
+            console.log('Err: ', err);
+            res.status(500).json({ error: 'Internal Server Error' });
+        } else {
+            const updateQuery = `UPDATE company SET complaint_status = '0' WHERE complaint_status IS NULL`;
+            db.query(updateQuery, (updateErr,updateRes)=>{
+                if (updateErr) {
+                    console.log('Err: ', updateErr);
+                    res.status(500).json({ error: 'Internal Server Error' });
+                } else {
+                    res.json('Company paid status, membership id and complaint status updated');
+                }
+            })
+        }
+    });
+});
+
 
 
 //-- 404---//
