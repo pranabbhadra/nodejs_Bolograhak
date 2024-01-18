@@ -261,69 +261,6 @@
                      </div>
                   <% } %>
 
-
-                  <% if(CompanySurveyDetails_formatted.length>0 && CompanySurveyDetails_formatted[0].id != null) {%>
-                  <div class="each_box update_basic_information all_review_listing_for_company">
-                     <div class="table-responsive">
-                        <table class="table table-hover custom-table">
-                           <thead>
-                                 <tr>
-                                    <th scope="col" style="width: 450px;">Survey</th>
-                                    <th scope="col">Submission</th>
-                                    <th scope="col">Expire</th>
-                                    <th scope="col">Status</th>
-                                    <th scope="col" style="text-align: center;">Acticon</th>
-                                 </tr>
-                           </thead>
-                           <tbody>
-                           <% CompanySurveyDetails_formatted.forEach((survey)=>{  %>
-                              <% const dateString = survey.expire_at; %>
-                              <% const date = new Date(dateString); %>
-                              <%
-                                 const year = date.getFullYear();
-                                 const month = String(date.getMonth() + 1).padStart(2, '0');
-                                 const day = String(date.getDate()).padStart(2, '0');
-                                 const formattedDate = `${year}-${month}-${day}`;
-                              %>
-                              <% const date2 = new Date(); 
-                                 date2.setHours(0, 0, 0, 0) %>
-                              <% const daysDiff = Math.round((date - date2)/(1000 * 60 * 60 * 24)) %>                           
-                                 <tr>
-                                    <td>
-                                       <%= survey.title %>
-                                    </td>
-                                    <td>
-                                       <% if(survey.total_submission){ %>
-                                          <%= survey.total_submission %>
-                                       <% }else{ %>
-                                          0
-                                       <% }%>
-                                    </td>
-                                    <td>
-                                       <%= date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %>
-                                       <!-- ,<br>
-                                       <small><%= date.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true }) %></small> -->
-                                    </td>
-                                    <td>
-                                       <% if(daysDiff >= 0){ %>
-                                          <span class="badge badge-square badge-success">ongoing</span>
-                                       <% } else { %>
-                                          <span class="badge badge-square badge-dark">Past </span>
-                                       <% } %>
-                                    </td>
-                                    <td>
-                                       <div class="side_btn">
-                                             <a class="rply_btn" href="/survey-submissions/<%- company.slug -%>/<%- survey.unique_id -%>">View</a>
-                                             <a class="rply_btn" href="/update-survey/<%- company.slug -%>/<%- survey.unique_id -%>">Update</a>
-                                       </div>
-                                    </td>
-                                 </tr>
-                           <% }) %>
-                           </tbody>
-                        </table>
-                     </div>
-                  </div>
-                  <% } %>
             <% }else{ %>
                <div class="survey-content">
                   <div class="container">

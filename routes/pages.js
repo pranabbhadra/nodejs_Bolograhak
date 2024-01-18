@@ -1246,7 +1246,7 @@ router.get('/create-survey/:slug', checkClientClaimedCompany, async (req, res) =
         return { x: xValue, y: yValue, color: '#F8A401' };
     });
 
-    const companyPaidStatus = company.paid_status;
+    const companyPaidStatus = company.paid_status.trim();
     if(companyPaidStatus=='free'){
         res.redirect('/');
     }else{
@@ -1285,6 +1285,130 @@ router.get('/create-survey/:slug', checkClientClaimedCompany, async (req, res) =
         { 
             menu_active_id: 'survey',
             page_title: 'Create Survey',
+            currentUserData,
+            globalPageMeta:globalPageMeta,
+            company,
+            allRatingTags,
+            formattedDate,
+            companyReviewNumbers,
+            finalCompanyallReviews,
+            reviewReatingChartArray,
+            reviewTagsCount,
+            reviewReatingChartArray,
+            facebook_url:facebook_url,
+            twitter_url:twitter_url,
+            instagram_url:instagram_url,
+            linkedin_url:linkedin_url,
+            youtube_url:youtube_url,
+            CompanySurveyDetails_formatted
+        });
+    }
+});
+
+//Create Survey page
+router.get('/update-survey/:slug/:survey_id', checkClientClaimedCompany, async (req, res) => {
+    const encodedUserData = req.cookies.user;
+    const currentUserData = JSON.parse(encodedUserData);
+    const slug = req.params.slug;
+    const comp_res =await comFunction2.getCompanyIdBySlug(slug);
+    const companyId = comp_res.ID;
+
+    const currentDate = new Date();
+    // Get the day, month, and year components
+    const day = currentDate.getDate();
+    const month = currentDate.getMonth() + 1; // Note: Months are zero-based
+    const year = currentDate.getFullYear();
+    const formattedDate = `${day < 10 ? '0' : ''}${day}/${month < 10 ? '0' : ''}${month}/${year}`;
+
+
+    const [globalPageMeta, company, allRatingTags, companyReviewNumbers, allCompanyReviews, allCompanyReviewTags, PremiumCompanyData, reviewTagsCount, CompanySurveyDetails, CompanySurveySubmitionsCount ] = await Promise.all([
+        comFunction2.getPageMetaValues('global'),
+        comFunction.getCompany(companyId),
+        comFunction.getAllRatingTags(),
+        comFunction.getCompanyReviewNumbers(companyId),
+        comFunction.getAllReviewsByCompanyID(companyId),
+        comFunction2.getAllReviewTags(),
+        comFunction2.getPremiumCompanyData(companyId),
+        comFunction.reviewTagsCountByCompanyID(companyId),
+        comFunction.getCompanySurveyDetails(companyId),
+        comFunction.getCompanySurveySubmitionsCount()
+    ]);
+
+    let facebook_url = '';
+    let twitter_url = '';
+    let instagram_url = '';
+    let linkedin_url = '';
+    let youtube_url = '';
+
+    if(typeof PremiumCompanyData !== 'undefined' ){
+            facebook_url = PremiumCompanyData.facebook_url;
+            twitter_url = PremiumCompanyData.twitter_url;
+            instagram_url = PremiumCompanyData.instagram_url;
+            linkedin_url = PremiumCompanyData.linkedin_url;
+            youtube_url = PremiumCompanyData.youtube_url;
+    }
+
+    const reviewTagsMap = {};
+    allCompanyReviewTags.forEach(tag => {
+        if (!reviewTagsMap[tag.review_id]) {
+            reviewTagsMap[tag.review_id] = [];
+        }
+        reviewTagsMap[tag.review_id].push({ review_id: tag.review_id, tag_name: tag.tag_name });
+    });
+    // Merge allReviews with their associated tags
+    const finalCompanyallReviews = allCompanyReviews.map(review => {
+        return {
+            ...review,
+            Tags: reviewTagsMap[review.id] || []
+        };
+    }); 
+
+    const xValues = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
+    const reviewReatingChartArray = xValues.map(xValue => {
+        const matchingItem = companyReviewNumbers.rewiew_rating_count.find(item => item.rating === xValue);
+        const yValue = matchingItem ? matchingItem.cnt_rat : 0;
+        return { x: xValue, y: yValue, color: '#F8A401' };
+    });
+
+    const companyPaidStatus = company.paid_status.trim();
+    if(companyPaidStatus=='free'){
+        res.redirect('/');
+    }else{
+        const submitionsCountMap = CompanySurveySubmitionsCount.reduce((map, item) => {
+            map[item.survey_unique_id] = item;
+            return map;
+        }, {});
+
+        const CompanySurveyDetails_formatted = CompanySurveyDetails.map(detail => ({
+          ...detail,
+          ...(submitionsCountMap[detail.unique_id] || {}) // Add submitionsCount if it exists
+        }));
+        // res.json(
+        // { 
+        //     menu_active_id: 'survey',
+        //     page_title: 'Create Survey',
+        //     currentUserData,
+        //     globalPageMeta:globalPageMeta,
+        //     company,
+        //     allRatingTags,
+        //     formattedDate,
+        //     companyReviewNumbers,
+        //     finalCompanyallReviews,
+        //     reviewReatingChartArray,
+        //     reviewTagsCount,
+        //     reviewReatingChartArray,
+        //     facebook_url:facebook_url,
+        //     twitter_url:twitter_url,
+        //     instagram_url:instagram_url,
+        //     linkedin_url:linkedin_url,
+        //     youtube_url:youtube_url,
+        //     CompanySurveyDetails_formatted
+        // });
+
+        res.render('front-end/premium-company-update-survey', 
+        { 
+            menu_active_id: 'survey',
+            page_title: 'Update Survey',
             currentUserData,
             globalPageMeta:globalPageMeta,
             company,
