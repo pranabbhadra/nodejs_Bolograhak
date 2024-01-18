@@ -540,6 +540,11 @@ $("body").on('click', '.add-option', function(e){
 $("body").on('click', '#bulk-upload', function(e){
    $('#csv-field').toggleClass('d-none');
    $('#sendreviewtags_invitation').toggleClass('d-none');
+
+    // Toggle button text
+    var buttonText = $(this).text();
+    var newText = buttonText === 'Bulk Upload' ? 'Manual Upload' : 'Bulk Upload';
+    $(this).text(newText);
 });
 
 $('input[name="invitation_type"]').change(function() {
