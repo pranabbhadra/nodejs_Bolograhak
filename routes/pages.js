@@ -4333,6 +4333,7 @@ router.get('/edit-global', checkLoggedIn, (req, res) => {
     }
 });
 
+
 //Edit Complaint ragister Page
 router.get('/edit-complaint', checkLoggedIn, (req, res) => {
     try {
@@ -4460,6 +4461,50 @@ router.get('/edit-payment/:paymentId', checkLoggedIn, async (req, res) => {
             membershipPlans:getmembershipPlans,
             paymentDetails:getpaymentDetailsById[0]
         });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+});
+
+//Edit Global Page Management
+router.get('/edit-survey/:id', checkLoggedIn, async (req, res)=> {
+    try {
+        const encodedUserData = req.cookies.user;
+        const currentUserData = JSON.parse(encodedUserData);
+        const surveyId = req.params.id;
+
+        const [ getSurveyDetails ] = await Promise.all([
+            comFunction2.getSurveyDetails(surveyId),
+        ]);
+
+        console.log('getSurveyDetails', getSurveyDetails);
+
+        const sql = `SELECT * FROM page_info where secret_Key = 'global' `;
+        db.query(sql, (err, results, fields) => {
+            if (err) throw err;
+            const common = results[0];
+            const meta_sql = `SELECT * FROM page_meta where page_id = ${common.id}`;
+            db.query(meta_sql, async (meta_err, _meta_result) => {
+                if (meta_err) throw meta_err;
+
+                const meta_values = _meta_result;
+                let meta_values_array = {};
+                await meta_values.forEach((item) => {
+                    meta_values_array[item.page_meta_key] = item.page_meta_value;
+                })
+                //console.log(meta_values_array);
+                res.render('edit-survey', {
+                    menu_active_id: 'miscellaneous',
+                    page_title: 'Edit Survey',
+                    currentUserData,
+                    common,
+                    meta_values_array,
+                    SurveyDetails:getSurveyDetails
+                });
+            })
+
+        })
     } catch (err) {
         console.error(err);
         res.status(500).send('An error occurred');

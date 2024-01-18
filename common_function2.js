@@ -4681,6 +4681,23 @@ async function getSurveyInvitedEmail(encryptedEmail) {
 
 }
 
+// Fetch a survey details by id
+function getSurveyDetails(surveyId) {
+  return new Promise((resolve, reject) => {
+    db.query(
+      `SELECT *
+      FROM survey
+      WHERE id = ${surveyId}; `,
+      async(err, result) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
+
 module.exports = {
   getFaqPage,
   getFaqCategories,
@@ -4779,5 +4796,6 @@ module.exports = {
   getAllSurveys,
   SurveyInvitationFile,
   SurveyInvitationByArray,
-  getSurveyInvitedEmail
+  getSurveyInvitedEmail,
+  getSurveyDetails
 };
