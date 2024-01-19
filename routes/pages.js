@@ -1312,6 +1312,7 @@ router.get('/update-survey/:slug/:survey_id', checkClientClaimedCompany, async (
     const slug = req.params.slug;
     const comp_res =await comFunction2.getCompanyIdBySlug(slug);
     const companyId = comp_res.ID;
+    const surveyUniqueId = req.params.survey_id;
 
     const currentDate = new Date();
     // Get the day, month, and year components
@@ -1321,7 +1322,7 @@ router.get('/update-survey/:slug/:survey_id', checkClientClaimedCompany, async (
     const formattedDate = `${day < 10 ? '0' : ''}${day}/${month < 10 ? '0' : ''}${month}/${year}`;
 
 
-    const [globalPageMeta, company, allRatingTags, companyReviewNumbers, allCompanyReviews, allCompanyReviewTags, PremiumCompanyData, reviewTagsCount, CompanySurveyDetails, CompanySurveySubmitionsCount ] = await Promise.all([
+    const [globalPageMeta, company, allRatingTags, companyReviewNumbers, allCompanyReviews, allCompanyReviewTags, PremiumCompanyData, reviewTagsCount, CompanySurveyDetails, CompanySurveySubmitionsCount,SurveyAnswerCount,a ] = await Promise.all([
         comFunction2.getPageMetaValues('global'),
         comFunction.getCompany(companyId),
         comFunction.getAllRatingTags(),
@@ -1330,9 +1331,11 @@ router.get('/update-survey/:slug/:survey_id', checkClientClaimedCompany, async (
         comFunction2.getAllReviewTags(),
         comFunction2.getPremiumCompanyData(companyId),
         comFunction.reviewTagsCountByCompanyID(companyId),
-        comFunction.getCompanySurveyDetails(companyId),
-        comFunction.getCompanySurveySubmitionsCount()
+        comFunction2.getSurveyDetailsByUniqueId(surveyUniqueId),
+        comFunction.getCompanySurveySubmitionsCount(),
+        comFunction2.countSurveyAnswerByUniqueId(surveyUniqueId),
     ]);
+    console.log('SurveyAnswerCount',SurveyAnswerCount)
 
     let facebook_url = '';
     let twitter_url = '';
@@ -1424,7 +1427,8 @@ router.get('/update-survey/:slug/:survey_id', checkClientClaimedCompany, async (
             instagram_url:instagram_url,
             linkedin_url:linkedin_url,
             youtube_url:youtube_url,
-            CompanySurveyDetails_formatted
+            CompanySurveyDetails_formatted,
+            SurveyAnswerCount
         });
     }
 });

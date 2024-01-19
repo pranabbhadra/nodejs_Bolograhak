@@ -6056,6 +6056,103 @@ exports.createSurvey = async (req, res) => {
     })
 }
 
+// Create Survey
+exports.updateSurveyData = async (req, res) => {
+     console.log( 'updateSurveyData', req.body );
+     console.log( 'updateSurveyData', req.file );
+     //return false;
+    const {unique_id, created_at, expire_at, title, invitation_type, email, email_body, company_id, questions } = req.body ;
+    // const jsonString = Object.keys(req.body)[0];
+    // const surveyResponse = JSON.parse(jsonString);
+    // console.log(surveyResponse[0].questions);
+
+    // const currentDate = new Date();
+    // const year = currentDate.getFullYear();
+    // const month = currentDate.getMonth() + 1; // Months are zero-based (0 = January, 11 = December), so add 1
+    // const day = currentDate.getDate();
+    // const formattedDate = `${year}-${month < 10 ? '0' : ''}${month}-${day < 10 ? '0' : ''}${day}`;
+    // const uniqueNumber = Date.now().toString().replace(/\D/g, "");
+    // req.body.unique_id = uniqueNumber;
+
+    if (invitation_type[0] == 'Email' || invitation_type[0] == 'Both' ) {
+        if (req.file) {
+            const csvFilePath = path.join(__dirname, '..', 'company-csv', req.file.filename);
+            const connection = await mysql.createConnection(dbConfig);
+
+            const workbook = new ExcelJS.Workbook();
+            await workbook.csv.readFile(csvFilePath);
+
+            const worksheet = workbook.getWorksheet(1);
+            const emailsArr = await processReviewCSVRows(worksheet);
+            const emails = emailsArr.flat();
+            console.log(emails);
+            if (emails.length > 0) {
+                req.body.emails = emails;
+                // console.log('emails',emails);
+                // console.log('req.body',req.body);
+                
+                const [ SurveyInvitationFile] = await Promise.all([
+                    comFunction2.SurveyInvitationFile(req.body)
+                ]);
+                
+            } else {
+                
+                return res.send(
+                    {
+                        status: 'err',
+                        message: 'You have to submit at least one email id.'
+                    }
+                )  
+                
+            }
+        } else {
+
+            if (email.length > 2) {
+                // console.log('emails',emails);
+                // console.log('req.body',req.body);
+                
+                const [ SurveyInvitationByArray] = await Promise.all([
+                    comFunction2.SurveyInvitationByArray(req.body)
+                ]);
+                
+            } else {
+                
+                return res.send(
+                    {
+                        status: 'err',
+                        message: 'You have to submit at least one email id.'
+                    }
+                )  
+                
+            }
+        }
+    }
+
+    const surveyInsertData = [
+        expire_at[0],
+        title[0],
+        questions,
+        invitation_type[0],
+        unique_id[0]
+    ];
+    const sql = "UPDATE survey SET expire_at = ?, title = ?, questions = ?, invitation_type = ? WHERE unique_id = ?";
+
+    
+    db.query(sql, surveyInsertData, async (err, result) => {
+        if(err){
+            return res.send({
+                status: 'error',
+                message: err
+            });
+        } else {
+            return res.send({
+                status: 'ok',
+                message: 'Survey successfully Updated'
+            });
+        }
+    })
+}
+
 // Update Survey
 exports.updateSurvey = async (req, res) => {
     //console.log( 'Survey Response', req.body );

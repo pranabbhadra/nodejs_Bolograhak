@@ -377,6 +377,10 @@ router.post('/create-survey', csvupload.single('email_file'), authController.cre
 router.post('/update-survey', authController.updateSurvey);
 router.post('/create-survey-answer', authController.createSurveyAnswer);
 
+
+//Edit Survey Data
+router.post('/update-survey-data', csvupload.single('email_file'), authController.updateSurveyData);
+
 router.post('/create-invited-survey-answer', authController.createInvitedSurveyAnswer);
 
 //survey Invitation Email

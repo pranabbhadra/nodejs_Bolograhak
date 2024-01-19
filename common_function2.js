@@ -3614,6 +3614,12 @@ async function SurveyInvitationFile(req) {
     const day = currentDate.getDate();
     const formattedDate = `${year}-${month < 10 ? '0' : ''}${month}-${day < 10 ? '0' : ''}${day}`;
 
+    let uniqueIdValue;
+    if (Array.isArray(unique_id)) {
+      uniqueIdValue = unique_id[0]; 
+    } else {
+      uniqueIdValue = unique_id;
+    }
   if(emails.length > 0){
      emails.forEach(async (email)=>{
       
@@ -3628,7 +3634,7 @@ async function SurveyInvitationFile(req) {
         email, 
         hashedEmail,
         formattedDate,
-        unique_id
+        uniqueIdValue
       ]
       const connection = await mysql.createConnection({
         host: process.env.DATABASE_HOST,
@@ -3691,7 +3697,7 @@ async function SurveyInvitationFile(req) {
                                 </tr>
                                 <tr>
                                   <td colspan="2">
-                                  <p style="font-size:15px; line-height:20px">Please <a href="${process.env.MAIN_URL}${company_slug[0]}/survey/${unique_id}/${hashedEmail}">click here</a> to participate this survey.</p>
+                                  <p style="font-size:15px; line-height:20px">Please <a href="${process.env.MAIN_URL}${company_slug[0]}/survey/${uniqueIdValue}/${hashedEmail}">click here</a> to participate this survey.</p>
                                   </td>
                                 </tr>
                               </table>
@@ -3765,7 +3771,14 @@ async function SurveyInvitationByArray(req) {
     const month = currentDate.getMonth() + 1; // Months are zero-based (0 = January, 11 = December), so add 1
     const day = currentDate.getDate();
     const formattedDate = `${year}-${month < 10 ? '0' : ''}${month}-${day < 10 ? '0' : ''}${day}`;
-
+    let uniqueIdValue;
+    if (Array.isArray(unique_id)) {
+      // If it's an array, you might want to choose a specific value from the array or convert it to a string
+      uniqueIdValue = unique_id[0]; // Change this according to your requirements
+    } else {
+      // If it's not an array, use the original value
+      uniqueIdValue = unique_id;
+    }
   if(email.length > 1 ){
      email.forEach(async (email)=>{
       if (email != '' ) {
@@ -3780,7 +3793,7 @@ async function SurveyInvitationByArray(req) {
             email, 
             hashedEmail,
             formattedDate,
-            unique_id
+            uniqueIdValue 
           ]
           const connection = await mysql.createConnection({
             host: process.env.DATABASE_HOST,
@@ -3843,7 +3856,7 @@ async function SurveyInvitationByArray(req) {
                                     </tr>
                                     <tr>
                                       <td colspan="2">
-                                      <p style="font-size:15px; line-height:20px">Please <a href="${process.env.MAIN_URL}${company_slug[0]}/survey/${unique_id}/${hashedEmail}">click here</a> to participate this survey.</p>
+                                      <p style="font-size:15px; line-height:20px">Please <a href="${process.env.MAIN_URL}${company_slug[0]}/survey/${uniqueIdValue}/${hashedEmail}">click here</a> to participate this survey.</p>
                                       </td>
                                     </tr>
                                   </table>
@@ -4698,6 +4711,34 @@ function getSurveyDetails(surveyId) {
   });
 }
 
+async function getSurveyDetailsByUniqueId(unique_id) {
+  const get_company_survey_details_query = `
+  SELECT survey.*
+  FROM survey
+  WHERE survey.unique_id = ${unique_id};
+  `;
+  try{
+    const get_company_survey_details_result = await query(get_company_survey_details_query);
+    return get_company_survey_details_result;
+  }catch(error){
+    return 'Error during user get_survey_details_query:'+error;
+  }
+}
+
+async function countSurveyAnswerByUniqueId(unique_id) {
+  const get_company_survey_details_query = `
+  SELECT COUNT(*) AS total_ans
+  FROM survey_customer_answers
+  WHERE survey_unique_id = ${unique_id};
+  `;
+  try{
+    const get_company_survey_details_result = await query(get_company_survey_details_query);
+    return get_company_survey_details_result;
+  }catch(error){
+    return 'Error during user get_survey_details_query:'+error;
+  }
+}
+
 module.exports = {
   getFaqPage,
   getFaqCategories,
@@ -4797,5 +4838,7 @@ module.exports = {
   SurveyInvitationFile,
   SurveyInvitationByArray,
   getSurveyInvitedEmail,
-  getSurveyDetails
+  getSurveyDetails,
+  getSurveyDetailsByUniqueId,
+  countSurveyAnswerByUniqueId
 };
