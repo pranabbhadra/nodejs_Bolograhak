@@ -6058,8 +6058,8 @@ exports.createSurvey = async (req, res) => {
 
 // Create Survey
 exports.updateSurveyData = async (req, res) => {
-     console.log( 'updateSurveyData', req.body );
-     console.log( 'updateSurveyData', req.file );
+    //  console.log( 'updateSurveyData', req.body );
+    //  console.log( 'updateSurveyData', req.file );
      //return false;
     const {unique_id, created_at, expire_at, title, invitation_type, email, email_body, company_id, questions } = req.body ;
     // const jsonString = Object.keys(req.body)[0];
@@ -6107,7 +6107,7 @@ exports.updateSurveyData = async (req, res) => {
             }
         } else {
 
-            if (email.length > 2) {
+            if (email.length > 1) {
                 // console.log('emails',emails);
                 // console.log('req.body',req.body);
                 

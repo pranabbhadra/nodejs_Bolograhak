@@ -242,8 +242,8 @@
                                  </div>
                                  <h4>Send Survey Invitation:</h4>
                                  <div id="sendreviewtags_invitation" class="custom-form">
-                                    <label>Add Emails</label>
-                                    <input type="text" name="email" placeholder="Add an email" class="form-control mb-4" />
+                                    <label><span>Add Emails</span></label>
+                                    <input type="text" name="email" placeholder="Add an email" />
                                  </div>
                                  <div class="custom-form d-none" id="csv-field">
                                     <label><span>Choose a CSV file:</span></label>
@@ -427,7 +427,7 @@
                <div class="custom-form">
                   <label><span>Message</span></label>
                   <textarea name="email_body" id="email_body" class="form-control mb-4">
-                  Hello Dear,
+                  Hello Dear,&nbsp;
                   <%= company.company_name  %> cordially invite you to participate our company survey, through the platform of BoloGrahak. 
                   </textarea>
                </div>

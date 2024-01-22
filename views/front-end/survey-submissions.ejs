@@ -115,6 +115,26 @@
                                         <% counter++; } %>
                                     </ol>
                                 <% } %>
+                                <% if( qun.type == 'type_textarea' ){ %>
+                                    <h5><%- qun.question %></h5>
+                                    <% var question_name = 'question_'+(index+1); %>
+                                    
+                                    <ol>
+                                            <%
+                                                let opt_count = 0;
+                                                companySurveySubmissions.forEach((submission, key) => {
+                                                    if (submission.answer && submission.answer[question_name] && key < 10) {
+                                            %>
+                                            <li><span class="position-relative" style="z-index: 9;"> <%- submission.answer[question_name] %></span> <span class="suvey-progress-value" style="width:100%"></span></li>
+                                            <!-- <h1><%= question_name %>  <%= submission.answer[question_name] %></h1> -->
+                                                     
+                                            <%
+                                                    }
+                                                });
+                                            %>
+                                            
+                                    </ol>
+                                <% } %>
                             <% }) %>
                             </div>
                         <% } %>

@@ -28,13 +28,21 @@
                <div class="survey-wrapper">
                   <% if(index == 0) { %>
                      <div class="survey-head"><strong></strong> Enter your Name *</div>
-                     <div class="survey-body rows" style="display: flex;">
-                        <div class="custom-form col-6" >
-                           <input type="text"  class="form-control" placeholder="First Name" name="first_name" required />
+                     <div class="survey-body">
+                        <div class="row">
+                           <div class="col-md-6">
+                              <div class="custom-form" >
+                                 <input type="text"  class="form-control" placeholder="First Name" name="first_name" required />
+                              </div>
+                           </div>
+                           <div class="col-md-6">
+                              <div class="custom-form">
+                                 <input type="text"  class="form-control" placeholder="Last Name" name="last_name" required />
+                              </div>
+                           </div>
                         </div>
-                        <div class="custom-form col-6" style="margin-left: 10px;">
-                           <input type="text"  class="form-control" placeholder="Last Name" name="last_name" required />
-                        </div>
+                        
+                        
                      </div><br>
                   <% } %>
                   
